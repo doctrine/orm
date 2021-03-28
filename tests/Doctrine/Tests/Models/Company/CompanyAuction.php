@@ -1,17 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
 
 /** @Entity @Table(name="company_auctions") */
-class CompanyAuction extends CompanyEvent {
-    /** @Column(type="string") */
+class CompanyAuction extends CompanyEvent
+{
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $data;
 
-    public function setData($data) {
+    public function setData(string $data): void
+    {
         $this->data = $data;
     }
 
-    public function getData() {
+    public function getData(): string
+    {
         return $this->data;
     }
 }

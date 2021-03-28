@@ -1,38 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\CacheFactory;
-use Doctrine\ORM\Cache\QueryCacheValidator;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
+use Doctrine\ORM\Cache\QueryCacheValidator;
 use Doctrine\ORM\Cache\TimestampQueryCacheValidator;
 use Doctrine\ORM\Cache\TimestampRegion;
 use Doctrine\Tests\DoctrineTestCase;
 
 /**
  * @group DDC-2183
- *
  * @covers \Doctrine\ORM\Cache\CacheConfiguration
  */
 class CacheConfigTest extends DoctrineTestCase
 {
-    /**
-     * @var \Doctrine\ORM\Cache\CacheConfiguration
-     */
+    /** @var CacheConfiguration */
     private $config;
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->config = new CacheConfiguration();
     }
 
-    public function testSetGetRegionLifetime()
+    public function testSetGetRegionLifetime(): void
     {
         $config = $this->config->getRegionsConfiguration();
 
@@ -45,7 +41,7 @@ class CacheConfigTest extends DoctrineTestCase
         $this->assertEquals(222, $config->getLifetime('foo_region'));
     }
 
-    public function testSetGetCacheLogger()
+    public function testSetGetCacheLogger(): void
     {
         $logger = $this->createMock(CacheLogger::class);
 
@@ -56,7 +52,7 @@ class CacheConfigTest extends DoctrineTestCase
         $this->assertEquals($logger, $this->config->getCacheLogger());
     }
 
-    public function testSetGetCacheFactory()
+    public function testSetGetCacheFactory(): void
     {
         $factory = $this->createMock(CacheFactory::class);
 
@@ -67,7 +63,7 @@ class CacheConfigTest extends DoctrineTestCase
         $this->assertEquals($factory, $this->config->getCacheFactory());
     }
 
-    public function testSetGetQueryValidator()
+    public function testSetGetQueryValidator(): void
     {
         $factory = $this->createMock(CacheFactory::class);
         $factory->method('getTimestampRegion')->willReturn($this->createMock(TimestampRegion::class));

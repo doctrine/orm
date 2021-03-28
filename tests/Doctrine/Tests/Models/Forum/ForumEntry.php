@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Forum;
 
 /**
@@ -9,18 +11,20 @@ namespace Doctrine\Tests\Models\Forum;
 class ForumEntry
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
     /**
+     * @var string
      * @Column(type="string", length=50)
      */
     public $topic;
 
-    public function &getTopicByReference() {
+    public function &getTopicByReference(): string
+    {
         return $this->topic;
     }
 }
-

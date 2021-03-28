@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -23,41 +24,25 @@ namespace Doctrine\ORM\Query\AST;
  * SelectStatement = SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class SelectStatement extends Node
 {
-    /**
-     * @var SelectClause
-     */
+    /** @var SelectClause */
     public $selectClause;
 
-    /**
-     * @var FromClause
-     */
+    /** @var FromClause */
     public $fromClause;
 
-    /**
-     * @var WhereClause|null
-     */
+    /** @var WhereClause|null */
     public $whereClause;
 
-    /**
-     * @var GroupByClause|null
-     */
+    /** @var GroupByClause|null */
     public $groupByClause;
 
-    /**
-     * @var HavingClause|null
-     */
+    /** @var HavingClause|null */
     public $havingClause;
 
-    /**
-     * @var OrderByClause|null
-     */
+    /** @var OrderByClause|null */
     public $orderByClause;
 
     /**
@@ -67,7 +52,7 @@ class SelectStatement extends Node
     public function __construct($selectClause, $fromClause)
     {
         $this->selectClause = $selectClause;
-        $this->fromClause = $fromClause;
+        $this->fromClause   = $fromClause;
     }
 
     /**

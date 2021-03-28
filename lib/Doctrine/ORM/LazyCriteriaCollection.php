@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -23,7 +24,6 @@ use Doctrine\Common\Collections\AbstractLazyCollection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
-use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
 /**
@@ -31,32 +31,18 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
  * Once count gets executed once without collection being initialized, result
  * is cached and returned on subsequent calls until collection gets loaded,
  * then returning the number of loaded results.
- *
- * @since   2.5
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Michaël Gallego <mic.gallego@gmail.com>
  */
 class LazyCriteriaCollection extends AbstractLazyCollection implements Selectable
 {
-    /**
-     * @var BasicEntityPersister
-     */
+    /** @var EntityPersister */
     protected $entityPersister;
 
-    /**
-     * @var Criteria
-     */
+    /** @var Criteria */
     protected $criteria;
 
-    /**
-     * @var integer|null
-     */
+    /** @var int|null */
     private $count;
 
-    /**
-     * @param EntityPersister $entityPersister
-     * @param Criteria        $criteria
-     */
     public function __construct(EntityPersister $entityPersister, Criteria $criteria)
     {
         $this->entityPersister = $entityPersister;
@@ -66,7 +52,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
     /**
      * Do an efficient count on the collection
      *
-     * @return integer
+     * @return int
      */
     public function count()
     {
@@ -85,7 +71,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
     /**
      * check if collection is empty without loading it
      *
-     * @return boolean TRUE if the collection is empty, FALSE otherwise.
+     * @return bool TRUE if the collection is empty, FALSE otherwise.
      */
     public function isEmpty()
     {
@@ -93,7 +79,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
             return $this->collection->isEmpty();
         }
 
-        return !$this->count();
+        return ! $this->count();
     }
 
     /**

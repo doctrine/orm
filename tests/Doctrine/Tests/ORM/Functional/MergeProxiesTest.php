@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
+use DateTime;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Logging\SQLLogger;
@@ -11,26 +14,19 @@ use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
+
+use function count;
+use function realpath;
+use function serialize;
+use function unserialize;
 
 class MergeProxiesTest extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('generic');
 
         parent::setUp();
-    }
-
-    /** @after */
-    public function ensureTestGeneratedDeprecationMessages() : void
-    {
-        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -39,7 +35,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * @group DDC-3368
      * @group #1172
      */
-    public function testMergeDetachedUnInitializedProxy()
+    public function testMergeDetachedUnInitializedProxy(): void
     {
         $detachedUninitialized = $this->_em->getReference(DateTimeModel::class, 123);
 
@@ -59,7 +55,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * @group DDC-3368
      * @group #1172
      */
-    public function testMergeUnserializedUnInitializedProxy()
+    public function testMergeUnserializedUnInitializedProxy(): void
     {
         $detachedUninitialized = $this->_em->getReference(DateTimeModel::class, 123);
 
@@ -82,7 +78,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * @group DDC-3368
      * @group #1172
      */
-    public function testMergeManagedProxy()
+    public function testMergeManagedProxy(): void
     {
         $managed = $this->_em->getReference(DateTimeModel::class, 123);
 
@@ -100,7 +96,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * Bug discovered while working on DDC-2704 - merging towards un-initialized proxies does not initialize them,
      * causing merged data to be lost when they are actually initialized
      */
-    public function testMergeWithExistingUninitializedManagedProxy()
+    public function testMergeWithExistingUninitializedManagedProxy(): void
     {
         $date = new DateTimeModel();
 
@@ -113,7 +109,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(Proxy::class, $managed);
         $this->assertFalse($managed->__isInitialized());
 
-        $date->date = $dateTime = new \DateTime();
+        $date->date = $dateTime = new DateTime();
 
         $this->assertSame($managed, $this->_em->merge($date));
         $this->assertTrue($managed->__isInitialized());
@@ -126,7 +122,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * @group DDC-3368
      * @group #1172
      */
-    public function testMergingProxyFromDifferentEntityManagerWithExistingManagedInstanceDoesNotReplaceInitializer()
+    public function testMergingProxyFromDifferentEntityManagerWithExistingManagedInstanceDoesNotReplaceInitializer(): void
     {
         $em1 = $this->createEntityManager($logger1 = new DebugStack());
         $em2 = $this->createEntityManager($logger2 = new DebugStack());
@@ -187,7 +183,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * @group DDC-3368
      * @group #1172
      */
-    public function testMergingUnInitializedProxyDoesNotInitializeIt()
+    public function testMergingUnInitializedProxyDoesNotInitializeIt(): void
     {
         $em1 = $this->createEntityManager($logger1 = new DebugStack());
         $em2 = $this->createEntityManager($logger2 = new DebugStack());
@@ -237,12 +233,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @param SQLLogger $logger
-     *
-     * @return EntityManager
-     */
-    private function createEntityManager(SQLLogger $logger)
+    private function createEntityManager(SQLLogger $logger): EntityManager
     {
         $config = new Configuration();
 
@@ -260,11 +251,10 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         $connection = DriverManager::getConnection(
             [
                 'driver' => 'pdo_sqlite',
-                'memory' => true
+                'memory' => true,
             ],
             $config
         );
-
 
         $entityManager = EntityManager::create($connection, $config);
 

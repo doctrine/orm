@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3699;
 
 /**
@@ -8,9 +10,16 @@ namespace Doctrine\Tests\Models\DDC3699;
  */
 class DDC3699RelationOne
 {
-    /** @Id @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC3699Child", mappedBy="oneRelation") */
+    /**
+     * @var DDC3699Child
+     * @OneToOne(targetEntity="DDC3699Child", mappedBy="oneRelation")
+     */
     public $child;
 }

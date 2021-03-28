@@ -1,37 +1,44 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC345Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC345Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC345User::class),
-            $this->_em->getClassMetadata(DDC345Group::class),
-            $this->_em->getClassMetadata(DDC345Membership::class),
+                $this->_em->getClassMetadata(DDC345User::class),
+                $this->_em->getClassMetadata(DDC345Group::class),
+                $this->_em->getClassMetadata(DDC345Membership::class),
             ]
         );
     }
 
-    public function testTwoIterateHydrations()
+    public function testTwoIterateHydrations(): void
     {
         // Create User
-        $user = new DDC345User;
+        $user       = new DDC345User();
         $user->name = 'Test User';
         $this->_em->persist($user); // $em->flush() does not change much here
 
         // Create Group
-        $group = new DDC345Group;
+        $group       = new DDC345Group();
         $group->name = 'Test Group';
         $this->_em->persist($group); // $em->flush() does not change much here
 
-        $membership = new DDC345Membership;
+        $membership        = new DDC345Membership();
         $membership->group = $group;
-        $membership->user = $user;
+        $membership->user  = $user;
         $membership->state = 'active';
 
         //$this->_em->persist($membership); // COMMENT OUT TO SEE BUG
@@ -41,8 +48,8 @@ class DDC345Test extends \Doctrine\Tests\OrmFunctionalTestCase
         ones set by LifecycleCallbacks are deleted.
         */
 
-        $user->Memberships->add($membership);
-        $group->Memberships->add($membership);
+        $user->memberships->add($membership);
+        $group->memberships->add($membership);
 
         $this->_em->flush();
 
@@ -58,21 +65,28 @@ class DDC345Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC345User
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
-    /** @OneToMany(targetEntity="DDC345Membership", mappedBy="user", cascade={"persist"}) */
-    public $Memberships;
+    /**
+     * @psalm-var Collection<int, DDC345Membership>
+     * @OneToMany(targetEntity="DDC345Membership", mappedBy="user", cascade={"persist"})
+     */
+    public $memberships;
 
     public function __construct()
     {
-        $this->Memberships = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->memberships = new ArrayCollection();
     }
 }
 
@@ -82,22 +96,28 @@ class DDC345User
 class DDC345Group
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
-    /** @OneToMany(targetEntity="DDC345Membership", mappedBy="group", cascade={"persist"}) */
-    public $Memberships;
-
+    /**
+     * @psalm-var Collection<int, DDC345Membership>
+     * @OneToMany(targetEntity="DDC345Membership", mappedBy="group", cascade={"persist"})
+     */
+    public $memberships;
 
     public function __construct()
     {
-        $this->Memberships = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->memberships = new ArrayCollection();
     }
 }
 
@@ -111,6 +131,7 @@ class DDC345Group
 class DDC345Membership
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -118,40 +139,50 @@ class DDC345Membership
     public $id;
 
     /**
-     * @OneToOne(targetEntity="DDC345User", inversedBy="Memberships")
+     * @var DDC345User
+     * @OneToOne(targetEntity="DDC345User", inversedBy="memberships")
      * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      */
     public $user;
 
     /**
-     * @OneToOne(targetEntity="DDC345Group", inversedBy="Memberships")
+     * @var DDC345Group
+     * @OneToOne(targetEntity="DDC345Group", inversedBy="memberships")
      * @JoinColumn(name="group_id", referencedColumnName="id", nullable=false)
      */
     public $group;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $state;
 
-    /** @Column(type="datetime") */
+    /**
+     * @var DateTime
+     * @Column(type="datetime")
+     */
     public $updated;
 
+    /** @var int */
     public $prePersistCallCount = 0;
+
+    /** @var int */
     public $preUpdateCallCount = 0;
 
     /** @PrePersist */
-    public function doStuffOnPrePersist()
+    public function doStuffOnPrePersist(): void
     {
         //echo "***** PrePersist\n";
         ++$this->prePersistCallCount;
-        $this->updated = new \DateTime;
+        $this->updated = new DateTime();
     }
 
     /** @PreUpdate */
-    public function doStuffOnPreUpdate()
+    public function doStuffOnPreUpdate(): void
     {
         //echo "***** PreUpdate\n";
         ++$this->preUpdateCallCount;
-        $this->updated = new \DateTime;
+        $this->updated = new DateTime();
     }
 }
-

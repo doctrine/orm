@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC144Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -21,10 +23,10 @@ class DDC144Test extends OrmFunctionalTestCase
     /**
      * @group DDC-144
      */
-    public function testIssue()
+    public function testIssue(): void
     {
-        $operand = new DDC144Operand;
-        $operand->property = 'flowValue';
+        $operand                  = new DDC144Operand();
+        $operand->property        = 'flowValue';
         $operand->operandProperty = 'operandValue';
 
         $this->_em->persist($operand);
@@ -49,22 +51,28 @@ class DDC144FlowElement
      */
     public $id;
 
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     public $property;
 }
 
 abstract class DDC144Expression extends DDC144FlowElement
 {
-    abstract public function method();
+    abstract public function method(): void;
 }
 
 /** @Entity @Table(name="ddc144_operands") */
 class DDC144Operand extends DDC144Expression
 {
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     public $operandProperty;
 
-    public function method()
+    public function method(): void
     {
     }
 }

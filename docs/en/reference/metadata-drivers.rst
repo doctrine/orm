@@ -14,6 +14,7 @@ metadata:
 
 -  **XML files** (XmlDriver)
 -  **Class DocBlock Annotations** (AnnotationDriver)
+-  **Attributes** (AttributeDriver)
 -  **YAML files** (YamlDriver)
 -  **PHP Code in files or static functions** (PhpDriver)
 

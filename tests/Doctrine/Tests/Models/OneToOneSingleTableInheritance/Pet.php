@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\OneToOneSingleTableInheritance;
 
 /**
@@ -10,6 +12,11 @@ namespace Doctrine\Tests\Models\OneToOneSingleTableInheritance;
  */
 abstract class Pet
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 }

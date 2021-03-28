@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,26 +20,31 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Attribute;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+
 /**
  * Caching to an entity or a collection.
  *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since   2.5
- *
  * @Annotation
+ * @NamedArgumentConstructor()
  * @Target({"CLASS","PROPERTY"})
  */
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
 final class Cache implements Annotation
 {
     /**
      * @Enum({"READ_ONLY", "NONSTRICT_READ_WRITE", "READ_WRITE"})
-     * 
      * @var string The concurrency strategy.
      */
     public $usage = 'READ_ONLY';
 
-    /**
-     * @var string Cache region name.
-     */
+    /** @var string Cache region name. */
     public $region;
+
+    public function __construct(string $usage = 'READ_ONLY', ?string $region = null)
+    {
+        $this->usage  = $usage;
+        $this->region = $region;
+    }
 }

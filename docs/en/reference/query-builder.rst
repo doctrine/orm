@@ -277,10 +277,17 @@ following syntax:
 .. code-block:: php
 
     <?php
+
+    use Doctrine\Common\Collections\ArrayCollection;
+    use Doctrine\ORM\Query\Parameter;
+    
     // $qb instanceof QueryBuilder
 
     // Query here...
-    $qb->setParameters(array(1 => 'value for ?1', 2 => 'value for ?2'));
+    $qb->setParameters(new ArrayCollection([
+        new Parameter('1', 'value for ?1'),
+        new Parameter('2', 'value for ?2')
+    ]));
 
 Getting already bound parameters is easy - simply use the above
 mentioned syntax with "getParameter()" or "getParameters()":

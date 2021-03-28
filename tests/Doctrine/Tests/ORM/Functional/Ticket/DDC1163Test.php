@@ -1,29 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function assert;
+use function get_class;
 
 /**
  * @group DDC-1163
  */
-class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1163Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1163Product::class),
-            $this->_em->getClassMetadata(DDC1163SpecialProduct::class),
-            $this->_em->getClassMetadata(DDC1163ProxyHolder::class),
-            $this->_em->getClassMetadata(DDC1163Tag::class),
+                $this->_em->getClassMetadata(DDC1163Product::class),
+                $this->_em->getClassMetadata(DDC1163SpecialProduct::class),
+                $this->_em->getClassMetadata(DDC1163ProxyHolder::class),
+                $this->_em->getClassMetadata(DDC1163Tag::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $this->createSpecialProductAndProxyHolderReferencingIt();
         $this->_em->clear();
@@ -36,7 +42,7 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    private function createSpecialProductAndProxyHolderReferencingIt()
+    private function createSpecialProductAndProxyHolderReferencingIt(): void
     {
         $specialProduct = new DDC1163SpecialProduct();
         $this->_em->persist($specialProduct);
@@ -48,7 +54,7 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->flush();
 
-        $this->productId = $specialProduct->getId();
+        $this->productId     = $specialProduct->getId();
         $this->proxyHolderId = $proxyHolder->getId();
     }
 
@@ -59,18 +65,18 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
      * When Doctrine loads the 'ProxyHolder', it will do just that because the 'ProxyHolder'
      * references the 'SpecialProduct'.
      */
-    private function createProxyForSpecialProduct()
+    private function createProxyForSpecialProduct(): void
     {
-        /* @var $proxyHolder DDC1163ProxyHolder */
         $proxyHolder = $this->_em->find(DDC1163ProxyHolder::class, $this->proxyHolderId);
+        assert($proxyHolder instanceof DDC1163ProxyHolder);
 
         $this->assertInstanceOf(DDC1163SpecialProduct::class, $proxyHolder->getSpecialProduct());
     }
 
-    private function setPropertyAndAssignTagToSpecialProduct()
+    private function setPropertyAndAssignTagToSpecialProduct(): void
     {
-        /* @var $specialProduct DDC1163SpecialProduct */
         $specialProduct = $this->_em->find(DDC1163SpecialProduct::class, $this->productId);
+        assert($specialProduct instanceof DDC1163SpecialProduct);
 
         $this->assertInstanceOf(DDC1163SpecialProduct::class, $specialProduct);
         $this->assertInstanceOf(Proxy::class, $specialProduct);
@@ -94,7 +100,6 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC1163ProxyHolder
 {
-
     /**
      * @var int
      * @Column(name="id", type="integer")
@@ -102,27 +107,27 @@ class DDC1163ProxyHolder
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
+
     /**
-     * @var SpecialProduct
+     * @var DDC1163SpecialProduct
      * @OneToOne(targetEntity="DDC1163SpecialProduct")
      */
     private $specialProduct;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setSpecialProduct(DDC1163SpecialProduct $specialProduct)
+    public function setSpecialProduct(DDC1163SpecialProduct $specialProduct): void
     {
         $this->specialProduct = $specialProduct;
     }
 
-    public function getSpecialProduct()
+    public function getSpecialProduct(): DDC1163SpecialProduct
     {
         return $this->specialProduct;
     }
-
 }
 
 /**
@@ -133,7 +138,6 @@ class DDC1163ProxyHolder
  */
 abstract class DDC1163Product
 {
-
     /**
      * @var int
      * @Column(name="id", type="integer")
@@ -142,11 +146,10 @@ abstract class DDC1163Product
      */
     protected $id;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
-
 }
 
 /**
@@ -154,21 +157,16 @@ abstract class DDC1163Product
  */
 class DDC1163SpecialProduct extends DDC1163Product
 {
-
     /**
      * @var string
      * @Column(name="subclass_property", type="string", nullable=true)
      */
     private $subclassProperty;
 
-    /**
-     * @param string $value
-     */
-    public function setSubclassProperty($value)
+    public function setSubclassProperty(string $value): void
     {
         $this->subclassProperty = $value;
     }
-
 }
 
 /**
@@ -176,7 +174,6 @@ class DDC1163SpecialProduct extends DDC1163Product
  */
 class DDC1163Tag
 {
-
     /**
      * @var int
      * @Column(name="id", type="integer")
@@ -198,10 +195,7 @@ class DDC1163Tag
      */
     private $product;
 
-    /**
-     * @param string $name
-     */
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -209,9 +203,8 @@ class DDC1163Tag
     /**
      * @param Product $product
      */
-    public function setProduct(DDC1163Product $product)
+    public function setProduct(DDC1163Product $product): void
     {
         $this->product = $product;
     }
-
 }

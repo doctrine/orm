@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\NonPublicSchemaJoins;
 
 /**
@@ -11,6 +13,7 @@ namespace Doctrine\Tests\Models\NonPublicSchemaJoins;
 class User
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      */
@@ -24,14 +27,12 @@ class User
      *      joinColumns={@JoinColumn(name="author_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="reader_id", referencedColumnName="id")}
      * )
-     *
      * @var User[]
      */
     public $readers;
 
     /**
      * @ManyToMany(targetEntity="Doctrine\Tests\Models\NonPublicSchemaJoins\User", mappedBy="readers")
-     *
      * @var User[]
      */
     public $authors;

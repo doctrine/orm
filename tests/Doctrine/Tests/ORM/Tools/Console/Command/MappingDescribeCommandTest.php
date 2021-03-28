@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
+use Doctrine\ORM\Tools\Console\Command\InfoCommand;
 use Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Doctrine\Tests\Models\Cache\AttractionInfo;
@@ -17,22 +20,16 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class MappingDescribeCommandTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var \Symfony\Component\Console\Application
-     */
+    /** @var Application */
     private $application;
 
-    /**
-     * @var \Doctrine\ORM\Tools\Console\Command\InfoCommand
-     */
+    /** @var InfoCommand */
     private $command;
 
-    /**
-     * @var \Symfony\Component\Console\Tester\CommandTester
-     */
+    /** @var CommandTester */
     private $tester;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -44,7 +41,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         $this->tester  = new CommandTester($this->command);
     }
 
-    public function testShowSpecificFuzzySingle()
+    public function testShowSpecificFuzzySingle(): void
     {
         $this->tester->execute(
             [
@@ -59,7 +56,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         self::assertStringContainsString('Root entity name', $display);
     }
 
-    public function testShowSpecificFuzzyAmbiguous()
+    public function testShowSpecificFuzzyAmbiguous(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('possible matches');
@@ -71,7 +68,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testShowSpecificNotFound()
+    public function testShowSpecificNotFound(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Could not find any mapped Entity classes matching "AttractionFooBar"');
@@ -83,4 +80,3 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         );
     }
 }
-

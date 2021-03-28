@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Taxi;
+
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -9,6 +13,7 @@ namespace Doctrine\Tests\Models\Taxi;
 class Driver
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -16,26 +21,29 @@ class Driver
     private $id;
 
     /**
+     * @var string
      * @Column(type="string", length=255);
      */
     private $name;
 
     /**
+     * @psalm-var Collection<int, Ride>
      * @OneToMany(targetEntity="Ride", mappedBy="driver")
      */
     private $freeDriverRides;
 
     /**
+     * @psalm-var Collection<int, PaidRide>
      * @OneToMany(targetEntity="PaidRide", mappedBy="driver")
      */
     private $driverRides;
-    
-    public function getId()
+
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }

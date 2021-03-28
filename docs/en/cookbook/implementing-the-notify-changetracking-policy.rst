@@ -10,6 +10,11 @@ code should look like. We will implement it on a
 `Layer Supertype <http://martinfowler.com/eaaCatalog/layerSupertype.html>`_
 for all our domain objects.
 
+.. warning::
+
+    The notify change tracking policy is deprecated and will be removed in ORM 3.0.
+    (`Details <https://github.com/doctrine/orm/issues/8383>`_)
+
 Implementing NotifyPropertyChanged
 ----------------------------------
 

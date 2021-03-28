@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Cache\Region;
@@ -10,12 +12,14 @@ use Doctrine\Tests\Models\Cache\Token;
 use Doctrine\Tests\Models\Cache\Travel;
 use Doctrine\Tests\Models\Cache\Traveler;
 
+use function sprintf;
+
 /**
  * @group DDC-2183
  */
 class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
 {
-    public function testShouldPutCollectionInverseSideOnPersist()
+    public function testShouldPutCollectionInverseSideOnPersist(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -29,7 +33,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->assertTrue($this->cache->containsCollection(State::class, 'cities', $this->states[1]->getId()));
     }
 
-    public function testPutAndLoadOneToManyRelation()
+    public function testPutAndLoadOneToManyRelation(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -127,7 +131,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
-    public function testLoadOneToManyCollectionFromDatabaseWhenEntityMissing()
+    public function testLoadOneToManyCollectionFromDatabaseWhenEntityMissing(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -167,13 +171,12 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
-
-    public function testShoudNotPutOneToManyRelationOnPersist()
+    public function testShoudNotPutOneToManyRelationOnPersist(): void
     {
         $this->loadFixturesCountries();
         $this->evictRegions();
 
-        $state = new State("State Foo", $this->countries[0]);
+        $state = new State('State Foo', $this->countries[0]);
 
         $this->_em->persist($state);
         $this->_em->flush();
@@ -183,7 +186,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->assertFalse($this->cache->containsCollection(State::class, 'cities', $state->getId()));
     }
 
-    public function testOneToManyRemove()
+    public function testOneToManyRemove(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -288,7 +291,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getCollectionRegion(State::class, 'cities')));
     }
 
-    public function testOneToManyWithEmptyRelation()
+    public function testOneToManyWithEmptyRelation(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -314,10 +317,9 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
 
         $this->assertEquals(0, $entity->getCities()->count());
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
-
     }
 
-    public function testOneToManyCount()
+    public function testOneToManyCount(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -345,13 +347,13 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
-    public function testCacheInitializeCollectionWithNewObjects()
+    public function testCacheInitializeCollectionWithNewObjects(): void
     {
         $this->_em->clear();
 
         $this->evictRegions();
 
-        $traveler = new Traveler("Doctrine Bot");
+        $traveler = new Traveler('Doctrine Bot');
 
         for ($i = 0; $i < 3; ++$i) {
             $traveler->getTravels()->add(new Travel($traveler));
@@ -381,20 +383,23 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->_em->flush();
         $this->_em->clear();
 
-        $query  = "SELECT t, tt FROM Doctrine\Tests\Models\Cache\Traveler t JOIN t.travels tt WHERE t.id = $travelerId";
+        $query  = sprintf(
+            'SELECT t, tt FROM Doctrine\Tests\Models\Cache\Traveler t JOIN t.travels tt WHERE t.id = %s',
+            $travelerId
+        );
         $result = $this->_em->createQuery($query)->getSingleResult();
 
         $this->assertEquals(4, $result->getTravels()->count());
     }
 
-    public function testPutAndLoadNonCacheableOneToMany()
+    public function testPutAndLoadNonCacheableOneToMany(): void
     {
         $this->assertNull($this->cache->getEntityCacheRegion(Login::class));
         $this->assertInstanceOf(Region::class, $this->cache->getEntityCacheRegion(Token::class));
 
-        $l1 = new Login('session1');
-        $l2 = new Login('session2');
-        $token  = new Token('token-hash');
+        $l1    = new Login('session1');
+        $l2    = new Login('session2');
+        $token = new Token('token-hash');
         $token->addLogin($l1);
         $token->addLogin($l2);
 

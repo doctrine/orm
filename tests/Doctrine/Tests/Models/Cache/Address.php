@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 /**
@@ -9,6 +11,7 @@ namespace Doctrine\Tests\Models\Cache;
 class Address
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -16,17 +19,19 @@ class Address
     public $id;
 
     /**
+     * @var Person
      * @JoinColumn(name="person_id", referencedColumnName="id")
      * @OneToOne(targetEntity="Person", inversedBy="address")
      */
     public $person;
 
     /**
+     * @var string
      * @Column
      */
     public $location;
 
-    public function __construct($location)
+    public function __construct(string $location)
     {
         $this->location = $location;
     }

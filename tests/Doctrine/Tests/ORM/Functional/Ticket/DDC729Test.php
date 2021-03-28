@@ -1,42 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\Tests\VerifyDeprecations;
+use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
-class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use function count;
+
+class DDC729Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         try {
-            $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->_em);
+            $schemaTool = new SchemaTool($this->_em);
             $schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC729A::class),
-                $this->_em->getClassMetadata(DDC729B::class),
+                    $this->_em->getClassMetadata(DDC729A::class),
+                    $this->_em->getClassMetadata(DDC729B::class),
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (Exception $e) {
         }
     }
 
-    /** @after */
-    public function ensureTestGeneratedDeprecationMessages() : void
+    public function testMergeManyToMany(): void
     {
-        $this->assertHasDeprecationMessages();
-    }
-
-    public function testMergeManyToMany()
-    {
-        $a = new DDC729A();
-        $b = new DDC729B();
+        $a            = new DDC729A();
+        $b            = new DDC729B();
         $a->related[] = $b;
 
         $this->_em->persist($a);
@@ -45,7 +43,7 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
         $aId = $a->id;
 
-        $a = new DDC729A();
+        $a     = new DDC729A();
         $a->id = $aId;
 
         $this->assertInstanceOf(ArrayCollection::class, $a->related);
@@ -54,8 +52,8 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertInstanceOf(PersistentCollection::class, $a->related);
 
-        $this->assertFalse($a->related->isInitialized(), "Collection should not be marked initialized.");
-        $this->assertFalse($a->related->isDirty(), "Collection should not be marked as dirty.");
+        $this->assertFalse($a->related->isInitialized(), 'Collection should not be marked initialized.');
+        $this->assertFalse($a->related->isDirty(), 'Collection should not be marked as dirty.');
 
         $this->_em->flush();
         $this->_em->clear();
@@ -64,11 +62,11 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(1, count($a->related));
     }
 
-    public function testUnidirectionalMergeManyToMany()
+    public function testUnidirectionalMergeManyToMany(): void
     {
-        $a = new DDC729A();
-        $b1 = new DDC729B();
-        $b2 = new DDC729B();
+        $a            = new DDC729A();
+        $b1           = new DDC729B();
+        $b2           = new DDC729B();
         $a->related[] = $b1;
 
         $this->_em->persist($a);
@@ -78,7 +76,7 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
         $aId = $a->id;
 
-        $a = new DDC729A();
+        $a     = new DDC729A();
         $a->id = $aId;
 
         $a = $this->_em->merge($a);
@@ -94,11 +92,11 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(2, count($a->related));
     }
 
-    public function testBidirectionalMergeManyToMany()
+    public function testBidirectionalMergeManyToMany(): void
     {
-        $a = new DDC729A();
-        $b1 = new DDC729B();
-        $b2 = new DDC729B();
+        $a            = new DDC729A();
+        $b1           = new DDC729B();
+        $b2           = new DDC729B();
         $a->related[] = $b1;
 
         $this->_em->persist($a);
@@ -108,7 +106,7 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
         $aId = $a->id;
 
-        $a = new DDC729A();
+        $a     = new DDC729A();
         $a->id = $aId;
 
         $a = $this->_em->merge($a);
@@ -126,11 +124,11 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(2, count($a->related));
     }
 
-    public function testBidirectionalMultiMergeManyToMany()
+    public function testBidirectionalMultiMergeManyToMany(): void
     {
-        $a = new DDC729A();
-        $b1 = new DDC729B();
-        $b2 = new DDC729B();
+        $a            = new DDC729A();
+        $b1           = new DDC729B();
+        $b2           = new DDC729B();
         $a->related[] = $b1;
 
         $this->_em->persist($a);
@@ -140,7 +138,7 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
         $aId = $a->id;
 
-        $a = new DDC729A();
+        $a     = new DDC729A();
         $a->id = $aId;
 
         $a = $this->_em->merge($a);
@@ -164,15 +162,23 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC729A
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
 
-    /** @ManyToMany(targetEntity="DDC729B", inversedBy="related") */
+    /**
+     * @psalm-var Collection<int, DDC729B>
+     * @ManyToMany(targetEntity="DDC729B", inversedBy="related")
+     */
     public $related;
 
     public function __construct()
     {
-        $this->related = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->related = new ArrayCollection();
     }
 }
 
@@ -181,14 +187,22 @@ class DDC729A
  */
 class DDC729B
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
 
-    /** @ManyToMany(targetEntity="DDC729B", mappedBy="related") */
+    /**
+     * @psalm-var Collection<int, DDC729B>
+     * @ManyToMany(targetEntity="DDC729B", mappedBy="related")
+     */
     public $related;
 
     public function __construct()
     {
-        $this->related = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->related = new ArrayCollection();
     }
 }

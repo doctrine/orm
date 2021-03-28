@@ -211,6 +211,25 @@ list:
 - ``options``: (optional) Key-value pairs of options that get passed
   to the underlying database platform when generating DDL statements.
 
+.. _reference-php-mapping-types:
+
+PHP Types Mapping
+_________________
+
+Since version 2.9 Doctrine can determine usable defaults from property types
+on entity classes. When property type is nullable the default for ``nullable``
+Column attribute is set to TRUE. Additionally, Doctrine will map PHP types
+to ``type`` attribute as follows:
+
+- ``DateInterval``: ``dateinterval``
+- ``DateTime``: ``datetime``
+- ``DateTimeImmutable``: ``datetime_immutable``
+- ``array``: ``json``
+- ``bool``: ``boolean``
+- ``float``: ``float``
+- ``int``: ``integer``
+- ``string`` or any other type: ``string``
+
 .. _reference-mapping-types:
 
 Doctrine Mapping Types
@@ -328,7 +347,7 @@ annotation.
 
 In most cases using the automatic generator strategy (``@GeneratedValue``) is
 what you want. It defaults to the identifier generation mechanism your current
-database vendor prefers: AUTO_INCREMENT with MySQL, sequences with PostgreSQL 
+database vendor prefers: AUTO_INCREMENT with MySQL, sequences with PostgreSQL
 and Oracle and so on.
 
 Identifier Generation Strategies

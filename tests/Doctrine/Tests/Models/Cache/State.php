@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -12,6 +15,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class State
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -19,11 +23,13 @@ class State
     protected $id;
 
     /**
+     * @var string
      * @Column(unique=true)
      */
     protected $name;
 
     /**
+     * @var Country|null
      * @Cache
      * @ManyToOne(targetEntity="Country")
      * @JoinColumn(name="country_id", referencedColumnName="id")
@@ -31,59 +37,66 @@ class State
     protected $country;
 
     /**
+     * @psalm-var Collection<int, City>
      * @Cache("NONSTRICT_READ_WRITE")
      * @OneToMany(targetEntity="City", mappedBy="state")
      */
     protected $cities;
 
-    public function __construct($name, Country $country = null)
+    public function __construct(string $name, ?Country $country = null)
     {
-        $this->name     = $name;
-        $this->country  = $country;
-        $this->cities   = new ArrayCollection();
+        $this->name    = $name;
+        $this->country = $country;
+        $this->cities  = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getCountry()
+    public function getCountry(): ?Country
     {
         return $this->country;
     }
 
-    public function setCountry(Country $country)
+    public function setCountry(Country $country): void
     {
         $this->country = $country;
     }
 
-    public function getCities()
+    /**
+     * @psalm-return Collection<int, City>
+     */
+    public function getCities(): Collection
     {
         return $this->cities;
     }
 
-    public function setCities(ArrayCollection $cities)
+    /**
+     * @psalm-param Collection<int, City> $cities
+     */
+    public function setCities(Collection $cities): void
     {
         $this->cities = $cities;
     }
 
-    public function addCity(City $city)
+    public function addCity(City $city): void
     {
         $this->cities[] = $city;
     }

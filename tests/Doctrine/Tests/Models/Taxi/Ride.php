@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Taxi;
 
 /**
@@ -11,6 +13,7 @@ namespace Doctrine\Tests\Models\Taxi;
 class Ride
 {
     /**
+     * @var Driver
      * @Id
      * @ManyToOne(targetEntity="Driver", inversedBy="freeDriverRides")
      * @JoinColumn(name="driver_id", referencedColumnName="id")
@@ -18,6 +21,7 @@ class Ride
     private $driver;
 
     /**
+     * @var Car
      * @Id
      * @ManyToOne(targetEntity="Car", inversedBy="freeCarRides")
      * @JoinColumn(name="car", referencedColumnName="brand")
@@ -27,6 +31,6 @@ class Ride
     public function __construct(Driver $driver, Car $car)
     {
         $this->driver = $driver;
-        $this->car = $car;
+        $this->car    = $car;
     }
 }

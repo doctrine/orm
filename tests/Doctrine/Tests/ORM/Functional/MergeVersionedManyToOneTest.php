@@ -1,20 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\VersionedManyToOne\Article;
 use Doctrine\Tests\Models\VersionedManyToOne\Category;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 
 /**
  * @group MergeVersionedOneToMany
  */
 class MergeVersionedManyToOneTest extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('versioned_many_to_one');
 
@@ -25,7 +24,7 @@ class MergeVersionedManyToOneTest extends OrmFunctionalTestCase
      * This test case asserts that a detached and unmodified entity could be merge without firing
      * OptimisticLockException.
      */
-    public function testSetVersionOnCreate()
+    public function testSetVersionOnCreate(): void
     {
         $category = new Category();
         $article  = new Article();
@@ -43,6 +42,5 @@ class MergeVersionedManyToOneTest extends OrmFunctionalTestCase
 
         $this->_em->flush();
         $this->assertEquals(2, $articleMerged->version);
-        $this->assertHasDeprecationMessages();
     }
 }

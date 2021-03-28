@@ -1,20 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Driver\Statement;
+use IteratorAggregate;
+use PDO;
+
+use function array_shift;
+use function current;
+use function is_array;
+use function next;
 
 /**
  * This class is a mock of the Statement interface that can be passed in to the Hydrator
  * to test the hydration standalone with faked result sets.
- *
- * @author  Roman Borschel <roman@code-factory.org>
  */
-class HydratorMockStatement implements \IteratorAggregate, Statement
+class HydratorMockStatement implements IteratorAggregate, Statement
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     private $_resultSet;
 
     /**
@@ -30,12 +35,11 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
     /**
      * Fetches all rows from the result set.
      *
-     * @param int|null   $fetchMode
-     * @param int|null   $fetchArgument
      * @param array|null $ctorArgs
+     *
      * @return array
      */
-    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
+    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null): array
     {
         return $this->_resultSet;
     }
@@ -46,18 +50,23 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
     public function fetchColumn($columnNumber = 0)
     {
         $row = current($this->_resultSet);
-        if ( ! is_array($row)) return false;
+        if (! is_array($row)) {
+            return false;
+        }
+
         $val = array_shift($row);
-        return $val !== null ? $val : false;
+
+        return $val ?? false;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function fetch($fetchStyle = null, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
+    public function fetch($fetchStyle = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
         $current = current($this->_resultSet);
         next($this->_resultSet);
+
         return $current;
     }
 

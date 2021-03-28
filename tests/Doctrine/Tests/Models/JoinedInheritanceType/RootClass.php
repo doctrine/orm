@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\JoinedInheritanceType;
 
 /**
@@ -9,6 +11,7 @@ namespace Doctrine\Tests\Models\JoinedInheritanceType;
 class RootClass
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id @GeneratedValue
      */

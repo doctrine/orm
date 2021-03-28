@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC2504;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\PersistentCollection;
 
 /**
  * @Entity
@@ -10,17 +13,16 @@ use Doctrine\Common\Collections\ArrayCollection;
 class DDC2504OtherClass
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id @GeneratedValue
      */
     public $id;
 
     /**
-     * @var \Doctrine\Tests\Models\DDC2504\DDC2504ChildClass
-     *
+     * @var DDC2504ChildClass
      * @OneToMany(targetEntity="DDC2504ChildClass", mappedBy="other", fetch="EXTRA_LAZY")
-     *
-     * @var ArrayCollection|\Doctrine\ORM\PersistentCollection
+     * @var ArrayCollection|PersistentCollection
      */
     public $childClasses;
 

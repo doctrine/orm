@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -6,10 +9,13 @@ use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use InvalidArgumentException;
+
+use function in_array;
 
 class GH6141Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -31,9 +37,9 @@ class GH6141Test extends OrmFunctionalTestCase
      *
      * @group GH-6141
      */
-    public function testEnumDiscriminatorsShouldBeConvertedToString()
+    public function testEnumDiscriminatorsShouldBeConvertedToString(): void
     {
-        $boss = new GH6141Boss('John');
+        $boss     = new GH6141Boss('John');
         $employee = new GH6141Employee('Bob');
 
         $this->_em->persist($boss);
@@ -67,14 +73,14 @@ class GH6141Test extends OrmFunctionalTestCase
 
 class GH6141PeopleType extends StringType
 {
-    const NAME = 'gh6141people';
+    public const NAME = 'gh6141people';
 
     /**
      * {@inheritdoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        if (!$value instanceof GH6141People) {
+        if (! $value instanceof GH6141People) {
             $value = GH6141People::get($value);
         }
 
@@ -84,7 +90,7 @@ class GH6141PeopleType extends StringType
     /**
      * {@inheritdoc}
      */
-    public function convertToPhpValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         return GH6141People::get($value);
     }
@@ -100,60 +106,40 @@ class GH6141PeopleType extends StringType
 
 class GH6141People
 {
-    const BOSS = 'boss';
-    const EMPLOYEE = 'employee';
+    public const BOSS     = 'boss';
+    public const EMPLOYEE = 'employee';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $value;
 
     /**
-     * @param string $value
-     *
-     * @return GH6141People
-     *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public static function get($value)
+    public static function get(string $value): GH6141People
     {
-        if (!self::isValid($value)) {
-            throw new \InvalidArgumentException();
+        if (! self::isValid($value)) {
+            throw new InvalidArgumentException();
         }
 
         return new self($value);
     }
 
-    /**
-     * @param string $valid
-     *
-     * @return bool
-     */
-    private static function isValid($valid)
+    private static function isValid(string $valid): bool
     {
         return in_array($valid, [self::BOSS, self::EMPLOYEE]);
     }
 
-    /**
-     * @param string $value
-     */
-    private function __construct($value)
+    private function __construct(string $value)
     {
         $this->value = $value;
     }
 
-    /**
-     * @return string
-     */
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->value;
     }
@@ -171,6 +157,7 @@ class GH6141People
 abstract class GH6141Person
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -178,14 +165,12 @@ abstract class GH6141Person
     public $id;
 
     /**
+     * @var string
      * @Column(type="string")
      */
     public $name;
 
-    /**
-     * @param string $name
-     */
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,6 +22,7 @@ namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
+use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,11 +30,13 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use function get_class;
+use function gettype;
+use function is_object;
+use function sprintf;
+
 /**
  * Command to clear a entity cache region.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class EntityRegionCommand extends Command
 {
@@ -86,19 +90,19 @@ EOT
         $entityId    = $input->getArgument('entity-id');
         $cache       = $em->getCache();
 
-        if ( ! $cache instanceof Cache) {
-            throw new \InvalidArgumentException('No second-level cache is configured on the given EntityManager.');
+        if (! $cache instanceof Cache) {
+            throw new InvalidArgumentException('No second-level cache is configured on the given EntityManager.');
         }
 
-        if ( ! $entityClass && ! $input->getOption('all')) {
-            throw new \InvalidArgumentException('Invalid argument "--entity-class"');
+        if (! $entityClass && ! $input->getOption('all')) {
+            throw new InvalidArgumentException('Invalid argument "--entity-class"');
         }
 
         if ($input->getOption('flush')) {
-            $entityRegion  = $cache->getEntityCacheRegion($entityClass);
+            $entityRegion = $cache->getEntityCacheRegion($entityClass);
 
-            if ( ! $entityRegion instanceof DefaultRegion) {
-                throw new \InvalidArgumentException(sprintf(
+            if (! $entityRegion instanceof DefaultRegion) {
+                throw new InvalidArgumentException(sprintf(
                     'The option "--flush" expects a "Doctrine\ORM\Cache\Region\DefaultRegion", but got "%s".',
                     is_object($entityRegion) ? get_class($entityRegion) : gettype($entityRegion)
                 ));

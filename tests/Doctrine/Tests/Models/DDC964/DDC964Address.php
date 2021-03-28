@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC964;
 
 /**
@@ -7,117 +9,91 @@ namespace Doctrine\Tests\Models\DDC964;
  */
 class DDC964Address
 {
-
     /**
+     * @var int
      * @GeneratedValue
      * @Id @Column(type="integer")
      */
     private $id;
 
     /**
+     * @var string|null
      * @Column
      */
     private $country;
 
     /**
+     * @var string|null
      * @Column
      */
     private $zip;
 
     /**
+     * @var string|null
      * @Column
      */
     private $city;
 
     /**
+     * @var string|null
      * @Column
      */
     private $street;
 
-    /**
-     * @param string $zip
-     * @param string $country
-     * @param string $city
-     * @param string $street
-     */
-    public function __construct($zip = null, $country = null, $city = null, $street = null)
-    {
-        $this->zip      = $zip;
-        $this->country  = $country;
-        $this->city     = $city;
-        $this->street   = $street;
+    public function __construct(
+        ?string $zip = null,
+        ?string $country = null,
+        ?string $city = null,
+        ?string $street = null
+    ) {
+        $this->zip     = $zip;
+        $this->country = $country;
+        $this->city    = $city;
+        $this->street  = $street;
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getCountry()
+    public function getCountry(): ?string
     {
         return $this->country;
     }
 
-    /**
-     * @param string $country
-     */
-    public function setCountry($country)
+    public function setCountry(string $country): void
     {
         $this->country = $country;
     }
 
-    /**
-     * @return string
-     */
-    public function getZip()
+    public function getZip(): ?string
     {
         return $this->zip;
     }
 
-    /**
-     * @param string $zip
-     */
-    public function setZip($zip)
+    public function setZip(string $zip): void
     {
         $this->zip = $zip;
     }
 
-    /**
-     * @return string
-     */
-    public function getCity()
+    public function getCity(): ?string
     {
         return $this->city;
     }
 
-    /**
-     * @param string $city
-     */
-    public function setCity($city)
+    public function setCity(string $city): void
     {
         $this->city = $city;
     }
 
-    /**
-     * @return string
-     */
-    public function getStreet()
+    public function getStreet(): ?string
     {
         return $this->street;
     }
 
-    /**
-     * @param string $street
-     */
-    public function setStreet($street)
+    public function setStreet(string $street): void
     {
         $this->street = $street;
     }
-
 }

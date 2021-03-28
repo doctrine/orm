@@ -1,21 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\Mock;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Proxy\ProxyFactory;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\ORM\Performance\MockUnitOfWork;
 
 /**
  * An entity manager mock that prevents lazy-loading of proxies
  */
 class NonProxyLoadingEntityManager implements EntityManagerInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $realEntityManager;
 
     public function __construct(EntityManagerInterface $realEntityManager)

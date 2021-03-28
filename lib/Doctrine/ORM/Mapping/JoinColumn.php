@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,40 +20,33 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Attribute;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+
 /**
  * @Annotation
+ * @NamedArgumentConstructor()
  * @Target({"PROPERTY","ANNOTATION"})
  */
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 final class JoinColumn implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $referencedColumnName = 'id';
 
-    /**
-     * @var boolean
-     */
+    /** @var bool */
     public $unique = false;
 
-    /**
-     * @var boolean
-     */
+    /** @var bool */
     public $nullable = true;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $onDelete;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $columnDefinition;
 
     /**
@@ -61,4 +55,22 @@ final class JoinColumn implements Annotation
      * @var string
      */
     public $fieldName;
+
+    public function __construct(
+        ?string $name = null,
+        string $referencedColumnName = 'id',
+        bool $unique = false,
+        bool $nullable = true,
+        $onDelete = null,
+        ?string $columnDefinition = null,
+        ?string $fieldName = null
+    ) {
+        $this->name                 = $name;
+        $this->referencedColumnName = $referencedColumnName;
+        $this->unique               = $unique;
+        $this->nullable             = $nullable;
+        $this->onDelete             = $onDelete;
+        $this->columnDefinition     = $columnDefinition;
+        $this->fieldName            = $fieldName;
+    }
 }

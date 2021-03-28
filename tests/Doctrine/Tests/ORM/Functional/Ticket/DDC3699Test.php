@@ -1,34 +1,32 @@
 <?php
 
-use Doctrine\Tests\Models\DDC3699\DDC3699RelationOne;
-use Doctrine\Tests\Models\DDC3699\DDC3699RelationMany;
+declare(strict_types=1);
+
+namespace Doctrine\Tests\ORM\Functional\Ticket;
+
 use Doctrine\Tests\Models\DDC3699\DDC3699Child;
-use Doctrine\Tests\VerifyDeprecations;
+use Doctrine\Tests\Models\DDC3699\DDC3699RelationMany;
+use Doctrine\Tests\Models\DDC3699\DDC3699RelationOne;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function assert;
 
 /**
  * @group DDC-3699
  */
-class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3699Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('ddc3699');
 
         parent::setUp();
     }
 
-    /** @after */
-    public function ensureTestGeneratedDeprecationMessages() : void
-    {
-        $this->assertHasDeprecationMessages();
-    }
-
     /**
      * @group DDC-3699
      */
-    public function testMergingParentClassFieldsDoesNotStopMergingScalarFieldsForToOneUninitializedAssociations()
+    public function testMergingParentClassFieldsDoesNotStopMergingScalarFieldsForToOneUninitializedAssociations(): void
     {
         $id = 1;
 
@@ -41,7 +39,7 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $relation = new DDC3699RelationOne();
 
         $relation->id       = $id;
-        $relation->child    = $child ;
+        $relation->child    = $child;
         $child->oneRelation = $relation;
 
         $this->_em->persist($relation);
@@ -49,9 +47,8 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        // fixtures loaded
-        /* @var $unManagedChild DDC3699Child */
         $unManagedChild = $this->_em->find(DDC3699Child::class, $id);
+        assert($unManagedChild instanceof DDC3699Child);
 
         $this->_em->detach($unManagedChild);
 
@@ -61,8 +58,8 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $unManagedChild->childField  = 'modifiedChildValue';
         $unManagedChild->parentField = 'modifiedParentValue';
 
-        /* @var $mergedChild DDC3699Child */
         $mergedChild = $this->_em->merge($unManagedChild);
+        assert($mergedChild instanceof DDC3699Child);
 
         $this->assertSame($mergedChild->childField, 'modifiedChildValue');
         $this->assertSame($mergedChild->parentField, 'modifiedParentValue');
@@ -71,7 +68,7 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-3699
      */
-    public function testMergingParentClassFieldsDoesNotStopMergingScalarFieldsForToManyUninitializedAssociations()
+    public function testMergingParentClassFieldsDoesNotStopMergingScalarFieldsForToManyUninitializedAssociations(): void
     {
         $id = 2;
 
@@ -84,7 +81,7 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $relation = new DDC3699RelationMany();
 
         $relation->id       = $id;
-        $relation->child    = $child ;
+        $relation->child    = $child;
         $child->relations[] = $relation;
 
         $this->_em->persist($relation);
@@ -92,8 +89,8 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        /* @var $unmanagedChild DDC3699Child */
         $unmanagedChild = $this->_em->find(DDC3699Child::class, $id);
+        assert($unmanagedChild instanceof DDC3699Child);
         $this->_em->detach($unmanagedChild);
 
         // make it managed again
@@ -102,8 +99,8 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $unmanagedChild->childField  = 'modifiedChildValue';
         $unmanagedChild->parentField = 'modifiedParentValue';
 
-        /* @var $mergedChild DDC3699Child */
         $mergedChild = $this->_em->merge($unmanagedChild);
+        assert($mergedChild instanceof DDC3699Child);
 
         $this->assertSame($mergedChild->childField, 'modifiedChildValue');
         $this->assertSame($mergedChild->parentField, 'modifiedParentValue');

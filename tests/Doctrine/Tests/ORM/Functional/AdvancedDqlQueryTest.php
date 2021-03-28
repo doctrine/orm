@@ -1,22 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\IterableTester;
-use Doctrine\Tests\Models\Company\CompanyEmployee,
-    Doctrine\Tests\Models\Company\CompanyManager,
-    Doctrine\Tests\Models\Company\CompanyCar;
+use Doctrine\Tests\Models\Company\CompanyCar;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
 use function count;
 
 /**
  * Functional Query tests.
- *
- * @author Benjamin <kontakt@beberlei.de>
  */
 class AdvancedDqlQueryTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('company');
         parent::setUp();
@@ -24,10 +25,10 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
         $this->generateFixture();
     }
 
-    public function testAggregateWithHavingClause()
+    public function testAggregateWithHavingClause(): void
     {
-        $dql = 'SELECT p.department, AVG(p.salary) AS avgSalary '.
-               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p '.
+        $dql = 'SELECT p.department, AVG(p.salary) AS avgSalary ' .
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
                'GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department';
 
         $result = $this->_em->createQuery($dql)->getScalarResult();
@@ -39,7 +40,7 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
         $this->assertEquals(600000, $result[1]['avgSalary']);
     }
 
-    public function testCommentsInDQL()
+    public function testCommentsInDQL(): void
     {
         //same test than testAggregateWithHavingClause but with comments into the DQL
         $dql = "SELECT p.department, AVG(p.salary) AS avgSalary -- comment end of line
@@ -57,10 +58,10 @@ GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department -- com
         $this->assertEquals(600000, $result[1]['avgSalary']);
     }
 
-    public function testUnnamedScalarResultsAreOneBased()
+    public function testUnnamedScalarResultsAreOneBased(): void
     {
-        $dql = 'SELECT p.department, AVG(p.salary) '.
-               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p '.
+        $dql = 'SELECT p.department, AVG(p.salary) ' .
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
                'GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department';
 
         $result = $this->_em->createQuery($dql)->getScalarResult();
@@ -70,7 +71,7 @@ GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department -- com
         $this->assertEquals(600000, $result[1][1]);
     }
 
-    public function testOrderByResultVariableCollectionSize()
+    public function testOrderByResultVariableCollectionSize(): void
     {
         $dql = 'SELECT p.name, size(p.friends) AS friends ' .
                'FROM Doctrine\Tests\Models\Company\CompanyPerson p ' .
@@ -81,7 +82,7 @@ GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department -- com
 
         $this->assertEquals(4, count($result));
 
-        $this->assertEquals("Jonathan W.", $result[0]['name']);
+        $this->assertEquals('Jonathan W.', $result[0]['name']);
         $this->assertEquals(3, $result[0]['friends']);
 
         $this->assertEquals('Guilherme B.', $result[1]['name']);
@@ -94,7 +95,7 @@ GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department -- com
         $this->assertEquals(1, $result[3]['friends']);
     }
 
-    public function testOrderBySimpleCaseExpression() : void
+    public function testOrderBySimpleCaseExpression(): void
     {
         $dql = <<<'DQL'
             SELECT p.name
@@ -117,7 +118,7 @@ DQL;
         self::assertEquals('Jonathan W.', $result[3]['name']);
     }
 
-    public function testOrderByGeneralCaseExpression() : void
+    public function testOrderByGeneralCaseExpression(): void
     {
         $dql = <<<'DQL'
             SELECT p.name
@@ -140,7 +141,7 @@ DQL;
         self::assertEquals('Jonathan W.', $result[3]['name']);
     }
 
-    public function testIsNullAssociation()
+    public function testIsNullAssociation(): void
     {
         $dql    = 'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p ' .
                'WHERE p.spouse IS NULL';
@@ -159,7 +160,7 @@ DQL;
         IterableTester::assertResultsAreTheSame($query);
     }
 
-    public function testSelectSubselect()
+    public function testSelectSubselect(): void
     {
         $dql    = 'SELECT p, (SELECT c.brand FROM Doctrine\Tests\Models\Company\CompanyCar c WHERE p.car = c) brandName ' .
                'FROM Doctrine\Tests\Models\Company\CompanyManager p';
@@ -167,14 +168,12 @@ DQL;
         $result = $query->getArrayResult();
 
         $this->assertEquals(1, count($result));
-        $this->assertEquals("Caramba", $result[0]['brandName']);
+        $this->assertEquals('Caramba', $result[0]['brandName']);
 
         $this->_em->clear();
-
-        IterableTester::assertResultsAreTheSame($query);
     }
 
-    public function testInSubselect()
+    public function testInSubselect(): void
     {
         $dql    = <<<DQL
 SELECT p.name FROM Doctrine\Tests\Models\Company\CompanyPerson p
@@ -191,7 +190,7 @@ DQL;
         IterableTester::assertResultsAreTheSame($query);
     }
 
-    public function testGroupByMultipleFields()
+    public function testGroupByMultipleFields(): void
     {
         $dql    = 'SELECT p.department, p.name, count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
                'GROUP BY p.department, p.name';
@@ -205,7 +204,7 @@ DQL;
         IterableTester::assertResultsAreTheSame($query);
     }
 
-    public function testUpdateAs()
+    public function testUpdateAs(): void
     {
         $dql = 'UPDATE Doctrine\Tests\Models\Company\CompanyEmployee AS p SET p.salary = 1';
         $this->_em->createQuery($dql)->execute();
@@ -220,18 +219,18 @@ DQL;
         IterableTester::assertResultsAreTheSame($query);
     }
 
-    public function testDeleteAs()
+    public function testDeleteAs(): void
     {
         $dql = 'DELETE Doctrine\Tests\Models\Company\CompanyEmployee AS p';
         $this->_em->createQuery($dql)->getResult();
 
-        $dql = 'SELECT count(p) FROM Doctrine\Tests\Models\Company\CompanyEmployee p';
+        $dql    = 'SELECT count(p) FROM Doctrine\Tests\Models\Company\CompanyEmployee p';
         $result = $this->_em->createQuery($dql)->getSingleScalarResult();
 
         $this->assertEquals(0, $result);
     }
 
-    public function generateFixture()
+    public function generateFixture(): void
     {
         $car = new CompanyCar('Caramba');
 

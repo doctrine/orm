@@ -1,28 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function assert;
 
 /**
  * @group DDC-2306
  */
-class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2306Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2306Zone::class),
-            $this->_em->getClassMetadata(DDC2306User::class),
-            $this->_em->getClassMetadata(DDC2306Address::class),
-            $this->_em->getClassMetadata(DDC2306UserAddress::class),
+                $this->_em->getClassMetadata(DDC2306Zone::class),
+                $this->_em->getClassMetadata(DDC2306User::class),
+                $this->_em->getClassMetadata(DDC2306Address::class),
+                $this->_em->getClassMetadata(DDC2306UserAddress::class),
             ]
         );
     }
@@ -39,11 +42,11 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
      * As a result, a refresh requested for an entity `Foo` with identifier `123` may cause a proxy
      * of type `Bar` with identifier `123` to be marked as un-managed.
      */
-    public function testIssue()
+    public function testIssue(): void
     {
         $zone          = new DDC2306Zone();
-        $user          = new DDC2306User;
-        $address       = new DDC2306Address;
+        $user          = new DDC2306User();
+        $address       = new DDC2306Address();
         $userAddress   = new DDC2306UserAddress($user, $address);
         $user->zone    = $zone;
         $address->zone = $zone;
@@ -55,10 +58,10 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        /* @var $address DDC2306Address */
         $address = $this->_em->find(DDC2306Address::class, $address->id);
-        /* @var $user DDC2306User|Proxy */
-        $user    = $address->users->first()->user;
+        assert($address instanceof DDC2306Address);
+        $user = $address->users->first()->user;
+        assert($user instanceof DDC2306User || $user instanceof Proxy);
 
         $this->assertInstanceOf(Proxy::class, $user);
         $this->assertInstanceOf(DDC2306User::class, $user);
@@ -80,7 +83,12 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
 /** @Entity */
 class DDC2306Zone
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
@@ -89,21 +97,29 @@ class DDC2306Zone
  */
 class DDC2306User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**
-     * @var DDC2306UserAddress[]|\Doctrine\Common\Collections\Collection
-     *
+     * @var DDC2306UserAddress[]|Collection
      * @OneToMany(targetEntity="DDC2306UserAddress", mappedBy="user")
      */
     public $addresses;
 
-    /** @ManyToOne(targetEntity="DDC2306Zone", fetch="EAGER") */
+    /**
+     * @var DDC2306Zone
+     * @ManyToOne(targetEntity="DDC2306Zone", fetch="EAGER")
+     */
     public $zone;
 
     /** Constructor */
-    public function __construct() {
+    public function __construct()
+    {
         $this->addresses = new ArrayCollection();
     }
 }
@@ -111,21 +127,29 @@ class DDC2306User
 /** @Entity */
 class DDC2306Address
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**
-     * @var DDC2306UserAddress[]|\Doctrine\Common\Collections\Collection
-     *
+     * @var DDC2306UserAddress[]|Collection
      * @OneToMany(targetEntity="DDC2306UserAddress", mappedBy="address", orphanRemoval=true)
      */
     public $users;
 
-    /** @ManyToOne(targetEntity="DDC2306Zone", fetch="EAGER") */
+    /**
+     * @var DDC2306Zone
+     * @ManyToOne(targetEntity="DDC2306Zone", fetch="EAGER")
+     */
     public $zone;
 
     /** Constructor */
-    public function __construct() {
+    public function __construct()
+    {
         $this->users = new ArrayCollection();
     }
 }
@@ -133,13 +157,24 @@ class DDC2306Address
 /** @Entity */
 class DDC2306UserAddress
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2306User") */
+    /**
+     * @var DDC2306User
+     * @ManyToOne(targetEntity="DDC2306User")
+     */
     public $user;
 
-    /** @ManyToOne(targetEntity="DDC2306Address", fetch="LAZY") */
+    /**
+     * @var DDC2306Address
+     * @ManyToOne(targetEntity="DDC2306Address", fetch="LAZY")
+     */
     public $address;
 
     /** Constructor */

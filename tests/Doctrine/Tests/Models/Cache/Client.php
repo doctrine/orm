@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 /**
@@ -9,6 +11,7 @@ namespace Doctrine\Tests\Models\Cache;
 class Client
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -16,6 +19,7 @@ class Client
     public $id;
 
     /**
+     * @var string
      * @Column(unique=true)
      */
     public $name;

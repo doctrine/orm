@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class Ticket4646InstanceOfAbstractTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -21,9 +23,9 @@ class Ticket4646InstanceOfAbstractTest extends OrmFunctionalTestCase
         $this->_em->persist(new EmployeeTicket4646Abstract());
         $this->_em->flush();
 
-        $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Abstract p
+        $dql    = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Abstract p
                 WHERE p INSTANCE OF Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Abstract';
-        $query = $this->_em->createQuery($dql);
+        $query  = $this->_em->createQuery($dql);
         $result = $query->getResult();
 
         self::assertCount(1, $result);
@@ -43,6 +45,7 @@ class Ticket4646InstanceOfAbstractTest extends OrmFunctionalTestCase
 abstract class PersonTicket4646Abstract
 {
     /**
+     * @var int
      * @Id()
      * @GeneratedValue()
      * @Column(type="integer")

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
@@ -10,41 +12,38 @@ use Doctrine\Tests\OrmTestCase;
  */
 class EntityListenerResolverTest extends OrmTestCase
 {
-
-    /**
-     * @var \Doctrine\ORM\Mapping\DefaultEntityListenerResolver
-     */
+    /** @var DefaultEntityListenerResolver */
     private $resolver;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
-        $this->resolver  = new DefaultEntityListenerResolver();
+        $this->resolver = new DefaultEntityListenerResolver();
     }
 
-    public function testResolve()
+    public function testResolve(): void
     {
-        $className  = '\Doctrine\Tests\Models\Company\CompanyContractListener';
-        $object     = $this->resolver->resolve($className);
+        $className = '\Doctrine\Tests\Models\Company\CompanyContractListener';
+        $object    = $this->resolver->resolve($className);
 
         $this->assertInstanceOf($className, $object);
         $this->assertSame($object, $this->resolver->resolve($className));
     }
 
-    public function testRegisterAndResolve()
+    public function testRegisterAndResolve(): void
     {
-        $className  = '\Doctrine\Tests\Models\Company\CompanyContractListener';
-        $object     = new $className();
+        $className = '\Doctrine\Tests\Models\Company\CompanyContractListener';
+        $object    = new $className();
 
         $this->resolver->register($object);
 
         $this->assertSame($object, $this->resolver->resolve($className));
     }
 
-    public function testClearOne()
+    public function testClearOne(): void
     {
-        $className1  = '\Doctrine\Tests\Models\Company\CompanyContractListener';
-        $className2  = '\Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener';
+        $className1 = '\Doctrine\Tests\Models\Company\CompanyContractListener';
+        $className2 = '\Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener';
 
         $obj1 = $this->resolver->resolve($className1);
         $obj2 = $this->resolver->resolve($className2);
@@ -64,10 +63,10 @@ class EntityListenerResolverTest extends OrmTestCase
         $this->assertSame($obj2, $this->resolver->resolve($className2));
     }
 
-    public function testClearAll()
+    public function testClearAll(): void
     {
-        $className1  = '\Doctrine\Tests\Models\Company\CompanyContractListener';
-        $className2  = '\Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener';
+        $className1 = '\Doctrine\Tests\Models\Company\CompanyContractListener';
+        $className2 = '\Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener';
 
         $obj1 = $this->resolver->resolve($className1);
         $obj2 = $this->resolver->resolve($className2);
@@ -87,7 +86,7 @@ class EntityListenerResolverTest extends OrmTestCase
         $this->assertNotSame($obj2, $this->resolver->resolve($className2));
     }
 
-    public function testRegisterStringException()
+    public function testRegisterStringException(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('An object was expected, but got "string".');

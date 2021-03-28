@@ -1,23 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC1258Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(TestEntity::class),
-            $this->_em->getClassMetadata(TestAdditionalEntity::class)
+                $this->_em->getClassMetadata(TestEntity::class),
+                $this->_em->getClassMetadata(TestAdditionalEntity::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $testEntity = new TestEntity();
         $testEntity->setValue(3);
@@ -58,36 +60,41 @@ class DDC1258Test extends OrmFunctionalTestCase
 class TestEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
     /**
+     * @var int
      * @Column(type="integer")
      */
     protected $value;
+
     /**
+     * @var TestAdditionalEntity
      * @OneToOne(targetEntity="TestAdditionalEntity", inversedBy="entity", orphanRemoval=true, cascade={"persist", "remove"})
      */
     protected $additional;
 
-    public function getValue()
+    public function getValue(): int
     {
         return $this->value;
     }
 
-    public function setValue($value)
+    public function setValue(int $value): void
     {
         $this->value = $value;
     }
 
-    public function getAdditional()
+    public function getAdditional(): TestAdditionalEntity
     {
         return $this->additional;
     }
 
-    public function setAdditional($additional)
+    public function setAdditional(TestAdditionalEntity $additional): void
     {
         $this->additional = $additional;
     }
@@ -98,16 +105,20 @@ class TestEntity
 class TestAdditionalEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
     /**
+     * @var TestEntity
      * @OneToOne(targetEntity="TestEntity", mappedBy="additional")
      */
     protected $entity;
+
     /**
+     * @var bool
      * @Column(type="boolean")
      */
     protected $bool;
@@ -117,12 +128,12 @@ class TestAdditionalEntity
         $this->bool = false;
     }
 
-    public function getBool()
+    public function getBool(): bool
     {
         return $this->bool;
     }
 
-    public function setBool($bool)
+    public function setBool(bool $bool): void
     {
         $this->bool = $bool;
     }

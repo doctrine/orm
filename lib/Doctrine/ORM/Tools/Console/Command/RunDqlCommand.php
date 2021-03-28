@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,6 +21,9 @@
 namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\Common\Util\Debug;
+use Doctrine\ORM\EntityManagerInterface;
+use LogicException;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,15 +31,18 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use function assert;
+use function constant;
+use function defined;
+use function is_numeric;
+use function sprintf;
+use function str_replace;
+use function strtoupper;
+
 /**
  * Command to execute DQL queries in a given EntityManager.
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class RunDqlCommand extends Command
 {
@@ -62,41 +69,45 @@ class RunDqlCommand extends Command
     {
         $ui = new SymfonyStyle($input, $output);
 
-        /* @var $em \Doctrine\ORM\EntityManagerInterface */
         $em = $this->getHelper('em')->getEntityManager();
+        assert($em instanceof EntityManagerInterface);
 
-        if (($dql = $input->getArgument('dql')) === null) {
-            throw new \RuntimeException("Argument 'dql' is required in order to execute this command correctly.");
+        $dql = $input->getArgument('dql');
+        if ($dql === null) {
+            throw new RuntimeException("Argument 'dql' is required in order to execute this command correctly.");
         }
 
         $depth = $input->getOption('depth');
 
-        if ( ! is_numeric($depth)) {
-            throw new \LogicException("Option 'depth' must contain an integer value");
+        if (! is_numeric($depth)) {
+            throw new LogicException("Option 'depth' must contain an integer value");
         }
 
         $hydrationModeName = $input->getOption('hydrate');
-        $hydrationMode = 'Doctrine\ORM\Query::HYDRATE_' . strtoupper(str_replace('-', '_', $hydrationModeName));
+        $hydrationMode     = 'Doctrine\ORM\Query::HYDRATE_' . strtoupper(str_replace('-', '_', $hydrationModeName));
 
-        if ( ! defined($hydrationMode)) {
-            throw new \RuntimeException(
-                "Hydration mode '$hydrationModeName' does not exist. It should be either: object. array, scalar or single-scalar."
-            );
+        if (! defined($hydrationMode)) {
+            throw new RuntimeException(sprintf(
+                "Hydration mode '%s' does not exist. It should be either: object. array, scalar or single-scalar.",
+                $hydrationModeName
+            ));
         }
 
         $query = $em->createQuery($dql);
 
-        if (($firstResult = $input->getOption('first-result')) !== null) {
-            if ( ! is_numeric($firstResult)) {
-                throw new \LogicException("Option 'first-result' must contain an integer value");
+        $firstResult = $input->getOption('first-result');
+        if ($firstResult !== null) {
+            if (! is_numeric($firstResult)) {
+                throw new LogicException("Option 'first-result' must contain an integer value");
             }
 
             $query->setFirstResult((int) $firstResult);
         }
 
-        if (($maxResult = $input->getOption('max-result')) !== null) {
-            if ( ! is_numeric($maxResult)) {
-                throw new \LogicException("Option 'max-result' must contain an integer value");
+        $maxResult = $input->getOption('max-result');
+        if ($maxResult !== null) {
+            if (! is_numeric($maxResult)) {
+                throw new LogicException("Option 'max-result' must contain an integer value");
             }
 
             $query->setMaxResults((int) $maxResult);
@@ -104,6 +115,7 @@ class RunDqlCommand extends Command
 
         if ($input->getOption('show-sql')) {
             $ui->text($query->getSQL());
+
             return 0;
         }
 

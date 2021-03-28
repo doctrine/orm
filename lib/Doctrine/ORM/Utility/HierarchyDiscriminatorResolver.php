@@ -2,9 +2,8 @@
 
 namespace Doctrine\ORM\Utility;
 
-use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
-use function interface_exists;
+use Doctrine\Persistence\Mapping\ClassMetadata;
 
 /**
  * @internal This class exists only to avoid code duplication, do not reuse it externally
@@ -27,16 +26,16 @@ final class HierarchyDiscriminatorResolver
         ClassMetadata $rootClassMetadata,
         EntityManagerInterface $entityManager
     ): array {
-        $hierarchyClasses = $rootClassMetadata->subClasses;
+        $hierarchyClasses   = $rootClassMetadata->subClasses;
         $hierarchyClasses[] = $rootClassMetadata->name;
 
         $discriminators = [];
 
         foreach ($hierarchyClasses as $class) {
-            $currentMetadata = $entityManager->getClassMetadata($class);
+            $currentMetadata      = $entityManager->getClassMetadata($class);
             $currentDiscriminator = $currentMetadata->discriminatorValue;
 
-            if (null !== $currentDiscriminator) {
+            if ($currentDiscriminator !== null) {
                 $discriminators[$currentDiscriminator] = null;
             }
         }

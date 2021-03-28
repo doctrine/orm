@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -27,36 +28,23 @@ namespace Doctrine\ORM\Query\AST;
  * CollectionValuedPathExpression ::= IdentificationVariable "." CollectionValuedAssociationField
  * StateField ::= {EmbeddedClassStateField "."}* SimpleStateField
  * SimpleStateFieldPathExpression ::= IdentificationVariable "." StateField
- *
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class PathExpression extends Node
 {
-    const TYPE_COLLECTION_VALUED_ASSOCIATION = 2;
-    const TYPE_SINGLE_VALUED_ASSOCIATION = 4;
-    const TYPE_STATE_FIELD = 8;
+    public const TYPE_COLLECTION_VALUED_ASSOCIATION = 2;
+    public const TYPE_SINGLE_VALUED_ASSOCIATION     = 4;
+    public const TYPE_STATE_FIELD                   = 8;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $type;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $expectedType;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $identificationVariable;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     public $field;
 
     /**
@@ -66,9 +54,9 @@ class PathExpression extends Node
      */
     public function __construct($expectedType, $identificationVariable, $field = null)
     {
-        $this->expectedType = $expectedType;
+        $this->expectedType           = $expectedType;
         $this->identificationVariable = $identificationVariable;
-        $this->field = $field;
+        $this->field                  = $field;
     }
 
     /**

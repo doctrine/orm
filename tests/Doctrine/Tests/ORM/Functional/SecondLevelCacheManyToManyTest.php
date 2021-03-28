@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Cache\City;
@@ -12,7 +14,7 @@ use Doctrine\Tests\Models\Cache\Traveler;
  */
 class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
 {
-    public function testShouldPutManyToManyCollectionOwningSideOnPersist()
+    public function testShouldPutManyToManyCollectionOwningSideOnPersist(): void
     {
         $this->evictRegions();
 
@@ -35,7 +37,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->assertTrue($this->cache->containsEntity(City::class, $this->cities[3]->getId()));
     }
 
-    public function testPutAndLoadManyToManyRelation()
+    public function testPutAndLoadManyToManyRelation(): void
     {
         $this->evictRegions();
 
@@ -145,7 +147,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
-    public function testStoreManyToManyAssociationWhitCascade()
+    public function testStoreManyToManyAssociationWhitCascade(): void
     {
         $this->evictRegions();
 
@@ -159,8 +161,8 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->cache->evictCollectionRegion(State::class, 'cities');
         $this->cache->evictCollectionRegion(Traveler::class, 'travels');
 
-        $traveler   = new Traveler('Doctrine Bot');
-        $travel     = new Travel($traveler);
+        $traveler = new Traveler('Doctrine Bot');
+        $travel   = new Travel($traveler);
 
         $travel->addVisitedCity($this->cities[0]);
         $travel->addVisitedCity($this->cities[1]);
@@ -186,7 +188,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount1, $this->getCurrentQueryCount());
     }
 
-    public function testReadOnlyCollection()
+    public function testReadOnlyCollection(): void
     {
         $this->expectException('Doctrine\ORM\Cache\CacheException');
         $this->expectExceptionMessage('Cannot update a readonly collection "Doctrine\Tests\Models\Cache\Travel#visitedCities');
@@ -213,7 +215,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->_em->flush();
     }
 
-    public function testManyToManyWithEmptyRelation()
+    public function testManyToManyWithEmptyRelation(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -226,19 +228,18 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $entitiId   = $this->travels[2]->getId(); //empty travel
-        $entity     = $this->_em->find(Travel::class, $entitiId);
+        $entitiId = $this->travels[2]->getId(); //empty travel
+        $entity   = $this->_em->find(Travel::class, $entitiId);
 
         $this->assertEquals(0, $entity->getVisitedCities()->count());
-        $this->assertEquals($queryCount+2, $this->getCurrentQueryCount());
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
 
         $this->_em->clear();
 
-        $entity     = $this->_em->find(Travel::class, $entitiId);
+        $entity = $this->_em->find(Travel::class, $entitiId);
 
         $queryCount = $this->getCurrentQueryCount();
         $this->assertEquals(0, $entity->getVisitedCities()->count());
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
-
     }
 }

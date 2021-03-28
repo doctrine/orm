@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
@@ -9,19 +11,20 @@ use PHPUnit\Framework\TestCase;
 
 class ParserResultTest extends TestCase
 {
+    /** @var ParserResult */
     public $parserResult;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->parserResult = new ParserResult();
     }
 
-    public function testGetRsm()
+    public function testGetRsm(): void
     {
         $this->assertInstanceOf(ResultSetMapping::class, $this->parserResult->getResultSetMapping());
     }
 
-    public function testSetGetSqlExecutor()
+    public function testSetGetSqlExecutor(): void
     {
         $this->assertNull($this->parserResult->getSqlExecutor());
 
@@ -30,14 +33,14 @@ class ParserResultTest extends TestCase
         $this->assertSame($executor, $this->parserResult->getSqlExecutor());
     }
 
-    public function testGetSqlParameterPosition()
+    public function testGetSqlParameterPosition(): void
     {
         $this->parserResult->addParameterMapping(1, 1);
         $this->parserResult->addParameterMapping(1, 2);
         $this->assertEquals([1, 2], $this->parserResult->getSqlParameterPositions(1));
     }
 
-    public function testGetParameterMappings()
+    public function testGetParameterMappings(): void
     {
         $this->assertIsArray($this->parserResult->getParameterMappings());
 

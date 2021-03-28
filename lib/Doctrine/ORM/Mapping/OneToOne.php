@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,43 +20,56 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Attribute;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+
 /**
  * @Annotation
+ * @NamedArgumentConstructor()
  * @Target("PROPERTY")
  */
+#[Attribute(Attribute::TARGET_PROPERTY)]
 final class OneToOne implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $targetEntity;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $mappedBy;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $inversedBy;
 
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     public $cascade;
 
     /**
      * The fetching strategy to use for the association.
      *
      * @var string
-     *
      * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
      */
     public $fetch = 'LAZY';
 
-    /**
-     * @var boolean
-     */
+    /** @var bool */
     public $orphanRemoval = false;
+
+    /**
+     * @param array<string> $cascade
+     */
+    public function __construct(
+        ?string $mappedBy = null,
+        ?string $inversedBy = null,
+        ?string $targetEntity = null,
+        ?array $cascade = null,
+        string $fetch = 'LAZY',
+        bool $orphanRemoval = false
+    ) {
+        $this->mappedBy      = $mappedBy;
+        $this->inversedBy    = $inversedBy;
+        $this->targetEntity  = $targetEntity;
+        $this->cascade       = $cascade;
+        $this->fetch         = $fetch;
+        $this->orphanRemoval = $orphanRemoval;
+    }
 }

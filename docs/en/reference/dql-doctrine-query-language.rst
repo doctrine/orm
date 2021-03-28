@@ -603,6 +603,13 @@ then phonenumber-id:
               ...
           'nameUpper' => string 'JWAGE' (length=5)
 
+You can also index by a to-one association, which will use the id of
+the associated entity (the join column) as the key in the result set:
+
+.. code-block:: sql
+
+    SELECT p, u FROM Participant INDEX BY p.user JOIN p.user u WHERE p.event = 3
+
 UPDATE queries
 --------------
 
@@ -1370,7 +1377,8 @@ userland:
    that contain char or binary data. Doctrine has no way of implicitly
    reloading this data. Partially loaded objects have to be passed to
    ``EntityManager::refresh()`` if they are to be reloaded fully from
-   the database.
+   the database. This query hint is deprecated and will be removed
+   in the future (`Details <https://github.com/doctrine/orm/issues/8471>`_)
 -  Query::HINT\_REFRESH - This query is used internally by
    ``EntityManager::refresh()`` and can be used in userland as well.
    If you specify this hint and a query returns the data for an entity
@@ -1615,7 +1623,7 @@ From, Join and Index by
     RangeVariableDeclaration                   ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
     JoinAssociationDeclaration                 ::= JoinAssociationPathExpression ["AS"] AliasIdentificationVariable [IndexBy]
     Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" (JoinAssociationDeclaration | RangeVariableDeclaration) ["WITH" ConditionalExpression]
-    IndexBy                                    ::= "INDEX" "BY" StateFieldPathExpression
+    IndexBy                                    ::= "INDEX" "BY" SingleValuedPathExpression
 
 Select Expressions
 ~~~~~~~~~~~~~~~~~~
