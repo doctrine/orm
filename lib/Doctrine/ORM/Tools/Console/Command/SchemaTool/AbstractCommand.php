@@ -20,8 +20,8 @@
 
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
-use Doctrine\ORM\Tools\Console\Command\AbstractEntityManagerCommand;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\Console\Command\AbstractEntityManagerCommand;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
