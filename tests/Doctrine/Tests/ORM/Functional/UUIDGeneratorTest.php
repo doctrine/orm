@@ -54,9 +54,9 @@ class UUIDEntity
     /**
      * Get id.
      *
-     * @return id.
+     * @return string.
      */
-    public function getId(): id
+    public function getId(): string
     {
         return $this->id;
     }
