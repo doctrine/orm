@@ -185,7 +185,7 @@ class EntityRepository implements ObjectRepository, Selectable
      * @param int|null $offset
      *
      * @psalm-param array<string, mixed> $criteria
-     * @psalm-param list<string>|null $orderBy
+     * @psalm-param array<string, string>|null $orderBy
      * @psalm-return list<T> The objects.
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null)
