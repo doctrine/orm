@@ -18,6 +18,7 @@ use ReflectionProperty;
 use function assert;
 use function class_exists;
 use function constant;
+use function count;
 use function defined;
 
 class AttributeDriver extends AnnotationDriver
