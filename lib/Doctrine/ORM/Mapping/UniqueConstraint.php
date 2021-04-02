@@ -50,10 +50,12 @@ final class UniqueConstraint implements Annotation
     public function __construct(
         ?string $name = null,
         ?array $columns = null,
+        ?array $fields = null,
         ?array $options = null
     ) {
         $this->name    = $name;
         $this->columns = $columns;
+        $this->fields  = $fields;
         $this->options = $options;
     }
 }

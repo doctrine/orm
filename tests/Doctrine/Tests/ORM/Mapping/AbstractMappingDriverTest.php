@@ -1089,8 +1089,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
  */
 #[ORM\Entity(), ORM\HasLifecycleCallbacks()]
 #[ORM\Table(name: "cms_users", options: ["foo" => "bar", "baz" => ["key" => "val"]])]
-#[ORM\Index(name: "name_idx", columns: ["name"]), ORM\Index(name: "0", columns: ["user_email"])]
-#[ORM\UniqueConstraint(name: "search_idx", columns: ["name", "user_email"], options: ["where" => "name IS NOT NULL"])]
+#[ORM\Index(name: "name_idx", columns: ["name"]), ORM\Index(name: "0", columns: ["user_email"]), ORM\Index(name: "fields", fields: ["name", "email"])]
+#[ORM\UniqueConstraint(name: "search_idx", columns: ["name", "user_email"], options: ["where" => "name IS NOT NULL"]), ORM\UniqueConstraint(name: "phone_idx", fields: ["name", "phone"])]
 class User
 {
     /**
