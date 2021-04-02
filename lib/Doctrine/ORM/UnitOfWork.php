@@ -2984,7 +2984,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the identity map of the UnitOfWork.
      *
-     * @psalm-return array<class-string, list<object>>
+     * @psalm-return array<class-string, array<string, object|null>>
      */
     public function getIdentityMap()
     {

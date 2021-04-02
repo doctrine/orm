@@ -435,10 +435,18 @@ class ClassMetadataInfo implements ClassMetadata
      *      type: string,
      *      fieldName: string,
      *      columnName?: string,
-     *      inherited?: class-string,
+     *      length?: int,
+     *      id?: bool,
      *      nullable?: bool,
+     *      columnDefinition?: string,
+     *      precision?: int,
+     *      scale?: int,
+     *      unique?: string,
+     *      inherited?: class-string,
      *      originalClass?: class-string,
-     *      originalField?: string
+     *      originalField?: string,
+     *      quoted?: bool,
+     *      requireSQLConversion?: bool,
      * }>
      */
     public $fieldMappings = [];
@@ -1608,7 +1616,8 @@ class ClassMetadataInfo implements ClassMetadata
      *                   isCascadeDetach: bool,
      *                   type: int,
      *                   originalField: string,
-     *                   originalClass: class-string
+     *                   originalClass: class-string,
+     *                   ?orphanRemoval: bool
      *               }
      */
     protected function _validateAndCompleteAssociationMapping(array $mapping)
