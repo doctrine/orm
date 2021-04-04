@@ -1642,6 +1642,13 @@ class ClassMetadataInfo implements ClassMetadata
 
         if ($this->isTypedProperty($mapping['fieldName'])) {
             $mapping = $this->validateAndCompleteTypedAssociationMapping($mapping);
+        } elseif (isset($mapping['joinColumns'])) {
+            foreach ($mapping['joinColumns'] as &$joinColumn) {
+                if (! isset($joinColumn['nullable'])) {
+                    $joinColumn['nullable'] = true;
+                }
+            }
+            unset($joinColumn);
         }
 
         if (isset($mapping['targetEntity'])) {

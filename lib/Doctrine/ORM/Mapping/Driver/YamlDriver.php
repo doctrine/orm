@@ -370,7 +370,7 @@ class YamlDriver extends FileDriver
             foreach ($element['oneToOne'] as $name => $oneToOneElement) {
                 $mapping = [
                     'fieldName' => $name,
-                    'targetEntity' => $oneToOneElement['targetEntity'],
+                    'targetEntity' => $oneToOneElement['targetEntity'] ?? null,
                 ];
 
                 if (isset($associationIds[$mapping['fieldName']])) {
