@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use DateInterval;
 use DateTime;
 use DateTimeImmutable;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 
 /**
@@ -62,4 +63,78 @@ class UserTyped
      */
     #[ORM\OneToOne(cascade: ["persist"], orphanRemoval: true), ORM\JoinColumn]
     public CmsEmail $email;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    {
+        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+        $metadata->setPrimaryTable(
+            ['name' => 'cms_users']
+        );
+
+        $metadata->mapField(
+            [
+                'id' => true,
+                'fieldName' => 'id',
+            ]
+        );
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+
+        $metadata->mapField(
+            [
+                'fieldName' => 'status',
+                'length' => 50,
+            ]
+        );
+        $metadata->mapField(
+            [
+                'fieldName' => 'username',
+                'length' => 255,
+                'unique' => true,
+            ]
+        );
+        $metadata->mapField(
+            [
+                'fieldName' => 'dateInterval',
+            ]
+        );
+        $metadata->mapField(
+            [
+                'fieldName' => 'dateTime',
+            ]
+        );
+        $metadata->mapField(
+            [
+                'fieldName' => 'dateTimeImmutable',
+            ]
+        );
+        $metadata->mapField(
+            [
+                'fieldName' => 'array',
+            ]
+        );
+        $metadata->mapField(
+            [
+                'fieldName' => 'boolean',
+            ]
+        );
+        $metadata->mapField(
+            [
+                'fieldName' => 'float',
+            ]
+        );
+
+        $metadata->mapOneToOne(
+            [
+                'fieldName' => 'email',
+                'cascade' =>
+                    [0 => 'persist'],
+                'joinColumns' =>
+                    [
+                        0 =>
+                            [],
+                    ],
+                'orphanRemoval' => true,
+            ]
+        );
+    }
 }

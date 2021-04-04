@@ -3,9 +3,6 @@
 declare(strict_types=1);
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
-use Doctrine\Tests\ORM\Mapping\Address;
-use Doctrine\Tests\ORM\Mapping\Group;
-use Doctrine\Tests\ORM\Mapping\Phonenumber;
 
 $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
 $metadata->setPrimaryTable(
