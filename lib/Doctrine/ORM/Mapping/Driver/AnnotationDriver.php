@@ -327,10 +327,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
             // @Column, @OneToOne, @OneToMany, @ManyToOne, @ManyToMany
             $columnAnnot = $this->reader->getPropertyAnnotation($property, Mapping\Column::class);
             if ($columnAnnot) {
-                if ($columnAnnot->type === null) {
-                    throw MappingException::propertyTypeIsRequired($className, $property->getName());
-                }
-
                 $mapping = $this->columnToArray($property->getName(), $columnAnnot);
 
                 $idAnnot = $this->reader->getPropertyAnnotation($property, Mapping\Id::class);

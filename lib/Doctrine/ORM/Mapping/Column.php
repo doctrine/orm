@@ -35,7 +35,7 @@ final class Column implements Annotation
     public $name;
 
     /** @var mixed */
-    public $type = 'string';
+    public $type;
 
     /** @var int */
     public $length;
@@ -57,8 +57,8 @@ final class Column implements Annotation
     /** @var bool */
     public $unique = false;
 
-    /** @var bool */
-    public $nullable = false;
+    /** @var bool|null */
+    public $nullable;
 
     /** @var array<string,mixed> */
     public $options = [];
@@ -71,12 +71,12 @@ final class Column implements Annotation
      */
     public function __construct(
         ?string $name = null,
-        string $type = 'string',
+        ?string $type = null,
         ?int $length = null,
         ?int $precision = null,
         ?int $scale = null,
         bool $unique = false,
-        bool $nullable = false,
+        ?bool $nullable = null,
         array $options = [],
         ?string $columnDefinition = null
     ) {

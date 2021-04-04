@@ -40,8 +40,8 @@ final class JoinColumn implements Annotation
     /** @var bool */
     public $unique = false;
 
-    /** @var bool */
-    public $nullable = true;
+    /** @var bool|null */
+    public $nullable;
 
     /** @var mixed */
     public $onDelete;
@@ -60,7 +60,7 @@ final class JoinColumn implements Annotation
         ?string $name = null,
         string $referencedColumnName = 'id',
         bool $unique = false,
-        bool $nullable = true,
+        ?bool $nullable = null,
         $onDelete = null,
         ?string $columnDefinition = null,
         ?string $fieldName = null
