@@ -68,7 +68,7 @@ class UserTyped
     {
         $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(
-            ['name' => 'cms_users']
+            ['name' => 'cms_users_typed']
         );
 
         $metadata->mapField(
