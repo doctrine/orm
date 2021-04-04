@@ -31,46 +31,29 @@ $metadata->mapField(
     ]
 );
 $metadata->mapField(
-    [
-        'fieldName' => 'dateInterval',
-    ]
+    ['fieldName' => 'dateInterval']
 );
 $metadata->mapField(
-    [
-        'fieldName' => 'dateTime',
-    ]
+    ['fieldName' => 'dateTime']
 );
 $metadata->mapField(
-    [
-        'fieldName' => 'dateTimeImmutable',
-    ]
+    ['fieldName' => 'dateTimeImmutable']
 );
 $metadata->mapField(
-    [
-        'fieldName' => 'array',
-    ]
+    ['fieldName' => 'array']
 );
 $metadata->mapField(
-    [
-        'fieldName' => 'boolean',
-    ]
+    ['fieldName' => 'boolean']
 );
 $metadata->mapField(
-    [
-        'fieldName' => 'float',
-    ]
+    ['fieldName' => 'float']
 );
 
 $metadata->mapOneToOne(
     [
         'fieldName' => 'email',
-        'cascade' =>
-            [0 => 'persist'],
-        'joinColumns' =>
-            [
-                0 =>
-                    [],
-            ],
+        'cascade' => [0 => 'persist'],
+        'joinColumns' => [[]],
         'orphanRemoval' => true,
     ]
 );

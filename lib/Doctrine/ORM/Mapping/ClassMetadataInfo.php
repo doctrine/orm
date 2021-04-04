@@ -1648,6 +1648,7 @@ class ClassMetadataInfo implements ClassMetadata
                     $joinColumn['nullable'] = true;
                 }
             }
+
             unset($joinColumn);
         }
 

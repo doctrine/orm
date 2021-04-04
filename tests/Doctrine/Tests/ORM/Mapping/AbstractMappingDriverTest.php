@@ -53,6 +53,7 @@ use function strpos;
 use function strtolower;
 
 use const CASE_UPPER;
+use const PHP_VERSION_ID;
 
 abstract class AbstractMappingDriverTest extends OrmTestCase
 {

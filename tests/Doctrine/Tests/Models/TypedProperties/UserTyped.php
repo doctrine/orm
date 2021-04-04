@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\TypedProperties;
 
-use Doctrine\ORM\Mapping as ORM;
-
 use DateInterval;
 use DateTime;
 use DateTimeImmutable;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 
@@ -93,34 +92,22 @@ class UserTyped
             ]
         );
         $metadata->mapField(
-            [
-                'fieldName' => 'dateInterval',
-            ]
+            ['fieldName' => 'dateInterval']
         );
         $metadata->mapField(
-            [
-                'fieldName' => 'dateTime',
-            ]
+            ['fieldName' => 'dateTime']
         );
         $metadata->mapField(
-            [
-                'fieldName' => 'dateTimeImmutable',
-            ]
+            ['fieldName' => 'dateTimeImmutable']
         );
         $metadata->mapField(
-            [
-                'fieldName' => 'array',
-            ]
+            ['fieldName' => 'array']
         );
         $metadata->mapField(
-            [
-                'fieldName' => 'boolean',
-            ]
+            ['fieldName' => 'boolean']
         );
         $metadata->mapField(
-            [
-                'fieldName' => 'float',
-            ]
+            ['fieldName' => 'float']
         );
 
         $metadata->mapOneToOne(
