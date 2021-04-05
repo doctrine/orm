@@ -843,6 +843,11 @@ Example:
 
 @NamedNativeQuery
 ~~~~~~~~~~~~~~~~~
+
+.. note::
+
+    Named Native Queries are deprecated as of version 2.9 and will be removed in ORM 3.0
+
 Is used to specify a native SQL named query.
 The NamedNativeQuery annotation can be applied to an entity or mapped superclass.
 
