@@ -2617,6 +2617,8 @@ class ClassMetadataInfo implements ClassMetadata
      * INTERNAL:
      * Adds a named query to this class.
      *
+     * @deprecated
+     *
      * @return void
      *
      * @throws MappingException
@@ -2628,6 +2630,14 @@ class ClassMetadataInfo implements ClassMetadata
         if (! isset($queryMapping['name'])) {
             throw MappingException::nameIsMandatoryForQueryMapping($this->name);
         }
+
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8592',
+            'Named Queries are deprecated, here "%s" on entity %s. Move the query logic into EntityRepository',
+            $queryMapping['name'],
+            $this->name
+        );
 
         if (isset($this->namedQueries[$queryMapping['name']])) {
             throw MappingException::duplicateQueryMapping($this->name, $queryMapping['name']);
@@ -2652,6 +2662,8 @@ class ClassMetadataInfo implements ClassMetadata
      * INTERNAL:
      * Adds a named native query to this class.
      *
+     * @deprecated
+     *
      * @return void
      *
      * @throws MappingException
@@ -2663,6 +2675,14 @@ class ClassMetadataInfo implements ClassMetadata
         if (! isset($queryMapping['name'])) {
             throw MappingException::nameIsMandatoryForQueryMapping($this->name);
         }
+
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8592',
+            'Named Native Queries are deprecated, here "%s" on entity %s. Move the query logic into EntityRepository',
+            $queryMapping['name'],
+            $this->name
+        );
 
         if (isset($this->namedNativeQueries[$queryMapping['name']])) {
             throw MappingException::duplicateQueryMapping($this->name, $queryMapping['name']);
