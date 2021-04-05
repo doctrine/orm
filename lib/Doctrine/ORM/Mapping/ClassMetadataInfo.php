@@ -1763,7 +1763,7 @@ class ClassMetadataInfo implements ClassMetadata
                     [
                         'name' => $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name),
                         'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
-                        'nullable' => true
+                        'nullable' => true,
                     ],
                 ];
             }

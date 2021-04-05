@@ -63,9 +63,7 @@ class UserTyped
     #[ORM\OneToOne(cascade: ["persist"], orphanRemoval: true), ORM\JoinColumn]
     public CmsEmail $email;
 
-    /**
-     * @ManyToOne
-     */
+    /** @ManyToOne */
     #[ORM\ManyToOne]
     public ?CmsEmail $mainEmail;
 
