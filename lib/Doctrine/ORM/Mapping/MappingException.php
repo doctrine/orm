@@ -386,6 +386,8 @@ class MappingException extends ORMException
      * @param string $propertyName
      *
      * @return MappingException
+     *
+     * @deprecated 2.9 no longer in use
      */
     public static function propertyTypeIsRequired($className, $propertyName)
     {
