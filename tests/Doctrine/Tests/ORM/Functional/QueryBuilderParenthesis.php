@@ -36,6 +36,7 @@ class QueryBuilderParenthesis extends OrmFunctionalTestCase
         $queryBuilder->select('o')->from(QueryBuilderParenthesisEntity::class, 'o');
         $queryBuilder->andWhere('o.property3 = :value3')->setParameter('value3', 'x');
         $queryBuilder->andWhere('o.property1 = :value1 OR o.property2 = :value2');
+        $queryBuilder->andWhere('o.property1 = :value1 or o.property2 = :value2');
         $queryBuilder->setParameter('value1', 'x');
         $queryBuilder->setParameter('value2', 'x');
 
@@ -46,7 +47,7 @@ class QueryBuilderParenthesis extends OrmFunctionalTestCase
         $dql = $query->getDQL();
 
         $this->assertSame(
-            'SELECT o FROM ' . QueryBuilderParenthesisEntity::class . ' o WHERE o.property3 = :value3 AND (o.property1 = :value1 OR o.property2 = :value2)',
+            'SELECT o FROM ' . QueryBuilderParenthesisEntity::class . ' o WHERE o.property3 = :value3 AND (o.property1 = :value1 OR o.property2 = :value2) AND (o.property1 = :value1 or o.property2 = :value2)',
             $dql
         );
     }
