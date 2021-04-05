@@ -23,5 +23,7 @@
       <cascade><cascade-persist /></cascade>
       <join-column/>
     </one-to-one>
+
+    <many-to-one field="mainEmail"/>
   </entity>
 </doctrine-mapping>

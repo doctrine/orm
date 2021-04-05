@@ -22,3 +22,5 @@ Doctrine\Tests\Models\TypedProperties\UserTyped:
             cascade: [ persist ]
             orphanRemoval: true
             joinColumn: []
+    manyToOne:
+        mainEmail: []

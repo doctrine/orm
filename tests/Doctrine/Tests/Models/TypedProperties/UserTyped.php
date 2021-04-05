@@ -63,6 +63,12 @@ class UserTyped
     #[ORM\OneToOne(cascade: ["persist"], orphanRemoval: true), ORM\JoinColumn]
     public CmsEmail $email;
 
+    /**
+     * @ManyToOne
+     */
+    #[ORM\ManyToOne]
+    public ?CmsEmail $mainEmail;
+
     public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
         $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
@@ -122,6 +128,10 @@ class UserTyped
                     ],
                 'orphanRemoval' => true,
             ]
+        );
+
+        $metadata->mapManyToOne(
+            ['fieldName' => 'mainEmail']
         );
     }
 }

@@ -57,3 +57,7 @@ $metadata->mapOneToOne(
         'orphanRemoval' => true,
     ]
 );
+
+$metadata->mapManyToOne(
+    ['fieldName' => 'mainEmail']
+);

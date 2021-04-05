@@ -539,7 +539,7 @@
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="target-entity" type="xs:string" use="required" />
+    <xs:attribute name="target-entity" type="xs:string" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
     <xs:anyAttribute namespace="##other"/>

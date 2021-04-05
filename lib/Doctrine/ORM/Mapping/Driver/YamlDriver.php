@@ -465,7 +465,7 @@ class YamlDriver extends FileDriver
             foreach ($element['manyToOne'] as $name => $manyToOneElement) {
                 $mapping = [
                     'fieldName' => $name,
-                    'targetEntity' => $manyToOneElement['targetEntity'],
+                    'targetEntity' => $manyToOneElement['targetEntity'] ?? null,
                 ];
 
                 if (isset($associationIds[$mapping['fieldName']])) {

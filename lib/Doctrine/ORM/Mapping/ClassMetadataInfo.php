@@ -1642,14 +1642,6 @@ class ClassMetadataInfo implements ClassMetadata
 
         if ($this->isTypedProperty($mapping['fieldName'])) {
             $mapping = $this->validateAndCompleteTypedAssociationMapping($mapping);
-        } elseif (isset($mapping['joinColumns'])) {
-            foreach ($mapping['joinColumns'] as &$joinColumn) {
-                if (! isset($joinColumn['nullable'])) {
-                    $joinColumn['nullable'] = true;
-                }
-            }
-
-            unset($joinColumn);
         }
 
         if (isset($mapping['targetEntity'])) {
@@ -1771,6 +1763,7 @@ class ClassMetadataInfo implements ClassMetadata
                     [
                         'name' => $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name),
                         'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
+                        'nullable' => true
                     ],
                 ];
             }
@@ -1786,6 +1779,10 @@ class ClassMetadataInfo implements ClassMetadata
                     } else {
                         $uniqueConstraintColumns[] = $joinColumn['name'];
                     }
+                }
+
+                if (! isset($joinColumn['nullable'])) {
+                    $joinColumn['nullable'] = true;
                 }
 
                 if (empty($joinColumn['name'])) {
