@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function assert;
 use function count;

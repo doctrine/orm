@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-class QueryBuilderParenthesis extends OrmFunctionalTestCase
+class QueryBuilderParenthesisTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
