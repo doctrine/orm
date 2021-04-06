@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -59,7 +58,6 @@ class ClassTableInheritanceSecondTest extends OrmFunctionalTestCase
 
         $this->assertInstanceOf(CTIRelated::class, $related2);
         $this->assertInstanceOf(CTIChild::class, $related2->getCTIParent());
-        $this->assertNotInstanceOf(Proxy::class, $related2->getCTIParent());
         $this->assertEquals('hello', $related2->getCTIParent()->getData());
 
         $this->assertSame($related2, $related2->getCTIParent()->getRelated());
