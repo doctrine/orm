@@ -273,8 +273,8 @@ interface EntityPersister
      * @param int|null $limit
      * @param int|null $offset
      *
-     * @psalm-param list<string>|null $orderBy
-     * @psalm-param array<string, mixed> $criteria
+     * @psalm-param array<string, string>|null $orderBy
+     * @psalm-param array<string, mixed>       $criteria
      */
     public function loadAll(array $criteria = [], ?array $orderBy = null, $limit = null, $offset = null);
 

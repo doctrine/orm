@@ -761,7 +761,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param object $entity
      *
-     * @return array<string|int, mixed>
+     * @return array<string, mixed>
      */
     public function getIdentifierValues($entity)
     {
