@@ -22,7 +22,7 @@ class HierarchyDiscriminatorResolverTest extends TestCase
         $classMetadata->name               = 'Some\Class\Name';
         $classMetadata->discriminatorValue = 'discriminator';
 
-        $em = $this->getMockBuilder(EntityManagerInterface::class)->getMock();
+        $em = $this->createMock(EntityManagerInterface::class);
         $em->expects($this->exactly(2))
             ->method('getClassMetadata')
             ->willReturnMap(
@@ -46,7 +46,7 @@ class HierarchyDiscriminatorResolverTest extends TestCase
         $classMetadata->name               = 'Some\Class\Name';
         $classMetadata->discriminatorValue = 'discriminator';
 
-        $em = $this->getMockBuilder(EntityManagerInterface::class)->getMock();
+        $em = $this->createMock(EntityManagerInterface::class);
         $em->expects($this->exactly(1))
             ->method('getClassMetadata')
             ->with($classMetadata->name)
