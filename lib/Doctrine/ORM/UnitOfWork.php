@@ -2989,7 +2989,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      *
-     * @psalm-return array<string, array<string, mixed>>
+     * @psalm-return array<string, mixed>
      */
     public function getOriginalEntityData($entity)
     {
