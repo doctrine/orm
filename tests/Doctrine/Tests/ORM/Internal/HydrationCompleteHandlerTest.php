@@ -28,8 +28,8 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
 
 use function assert;
@@ -42,10 +42,10 @@ use function in_array;
  */
 class HydrationCompleteHandlerTest extends TestCase
 {
-    /** @var ListenersInvoker|PHPUnit_Framework_MockObject_MockObject */
+    /** @var ListenersInvoker|MockObject */
     private $listenersInvoker;
 
-    /** @var EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject */
+    /** @var EntityManagerInterface|MockObject */
     private $entityManager;
 
     /** @var HydrationCompleteHandler */

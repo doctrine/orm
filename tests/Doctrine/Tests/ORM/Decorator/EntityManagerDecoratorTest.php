@@ -8,8 +8,8 @@ use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\VerifyDeprecations;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -35,7 +35,7 @@ class EntityManagerDecoratorTest extends TestCase
         'lock',
     ];
 
-    /** @var EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject */
+    /** @var EntityManagerInterface|MockObject */
     private $wrapped;
 
     /** @before */
