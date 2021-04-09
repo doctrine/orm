@@ -17,14 +17,14 @@ class DDC869Payment
      * @Column(type="integer")
      * @GeneratedValue
      */
-    #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue]
+    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue]
     protected $id;
 
     /**
      * @var float
      * @Column(type="float")
      */
-    #[ORM\Column(type: "float")]
+    #[ORM\Column(type: 'float')]
     protected $value;
 
     public static function loadMetadata(ClassMetadataInfo $metadata): void

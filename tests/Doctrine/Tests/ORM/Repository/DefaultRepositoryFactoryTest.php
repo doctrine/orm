@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\Tests\Models\DDC753\DDC753DefaultRepository;
 use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 
 use function assert;
 
@@ -22,10 +22,10 @@ use function assert;
  */
 class DefaultRepositoryFactoryTest extends TestCase
 {
-    /** @var EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject */
+    /** @var EntityManagerInterface|MockObject */
     private $entityManager;
 
-    /** @var Configuration|PHPUnit_Framework_MockObject_MockObject */
+    /** @var Configuration|MockObject */
     private $configuration;
 
     /** @var DefaultRepositoryFactory */
@@ -108,14 +108,14 @@ class DefaultRepositoryFactoryTest extends TestCase
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|ClassMetadata
+     * @return MockObject|ClassMetadata
      *
      * @private
      */
     public function buildClassMetadata(string $className)
     {
         $metadata = $this->createMock(ClassMetadata::class);
-        assert($metadata instanceof ClassMetadata || $metadata instanceof PHPUnit_Framework_MockObject_MockObject);
+        assert($metadata instanceof ClassMetadata || $metadata instanceof MockObject);
 
         $metadata->expects($this->any())->method('getName')->will($this->returnValue($className));
 
@@ -125,7 +125,7 @@ class DefaultRepositoryFactoryTest extends TestCase
     }
 
     /**
-     * @return EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject
+     * @return EntityManagerInterface|MockObject
      */
     private function createEntityManager(): EntityManagerInterface
     {

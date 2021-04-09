@@ -13,7 +13,7 @@ use function max;
  * @EntityListeners({"CompanyContractListener","CompanyFlexUltraContractListener"})
  */
 #[ORM\Entity]
-#[ORM\EntityListeners(["CompanyContractListener", "CompanyFlexUltraContractListener"])]
+#[ORM\EntityListeners(['CompanyContractListener', 'CompanyFlexUltraContractListener'])]
 class CompanyFlexUltraContract extends CompanyFlexContract
 {
     /**

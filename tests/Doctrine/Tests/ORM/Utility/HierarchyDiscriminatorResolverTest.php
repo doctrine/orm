@@ -22,15 +22,17 @@ class HierarchyDiscriminatorResolverTest extends TestCase
         $classMetadata->name               = 'Some\Class\Name';
         $classMetadata->discriminatorValue = 'discriminator';
 
-        $em = $this->prophesize(EntityManagerInterface::class);
-        $em->getClassMetadata($classMetadata->name)
-            ->shouldBeCalled()
-            ->willReturn($classMetadata);
-        $em->getClassMetadata($childClassMetadata->name)
-            ->shouldBeCalled()
-            ->willReturn($childClassMetadata);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $em->expects($this->exactly(2))
+            ->method('getClassMetadata')
+            ->willReturnMap(
+                [
+                    [$classMetadata->name, $classMetadata],
+                    [$childClassMetadata->name, $childClassMetadata],
+                ]
+            );
 
-        $discriminators = HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($classMetadata, $em->reveal());
+        $discriminators = HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($classMetadata, $em);
 
         $this->assertCount(2, $discriminators);
         $this->assertArrayHasKey($classMetadata->discriminatorValue, $discriminators);
@@ -44,12 +46,13 @@ class HierarchyDiscriminatorResolverTest extends TestCase
         $classMetadata->name               = 'Some\Class\Name';
         $classMetadata->discriminatorValue = 'discriminator';
 
-        $em = $this->prophesize(EntityManagerInterface::class);
-        $em->getClassMetadata($classMetadata->name)
-            ->shouldBeCalled()
+        $em = $this->createMock(EntityManagerInterface::class);
+        $em->expects($this->exactly(1))
+            ->method('getClassMetadata')
+            ->with($classMetadata->name)
             ->willReturn($classMetadata);
 
-        $discriminators = HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($classMetadata, $em->reveal());
+        $discriminators = HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($classMetadata, $em);
 
         $this->assertCount(1, $discriminators);
         $this->assertArrayHasKey($classMetadata->discriminatorValue, $discriminators);
