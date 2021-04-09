@@ -30,7 +30,7 @@ class OneToManyAssociationBuilder extends AssociationBuilder
     /**
      * @return static
      *
-     * @psalm-param list<string> $fieldNames
+     * @psalm-param array<string, string> $fieldNames
      */
     public function setOrderBy(array $fieldNames)
     {

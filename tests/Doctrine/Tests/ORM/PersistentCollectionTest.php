@@ -13,7 +13,7 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmTestCase;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
 use function array_keys;
@@ -153,7 +153,7 @@ class PersistentCollectionTest extends OrmTestCase
     public function testWillKeepNewItemsInDirtyCollectionAfterInitialization(): void
     {
         $unitOfWork = $this->createMock(UnitOfWork::class);
-        assert($unitOfWork instanceof UnitOfWork || $unitOfWork instanceof PHPUnit_Framework_MockObject_MockObject);
+        assert($unitOfWork instanceof UnitOfWork || $unitOfWork instanceof MockObject);
 
         $this->_emMock->setUnitOfWork($unitOfWork);
 
@@ -188,7 +188,7 @@ class PersistentCollectionTest extends OrmTestCase
     public function testWillDeDuplicateNewItemsThatWerePreviouslyPersistedInDirtyCollectionAfterInitialization(): void
     {
         $unitOfWork = $this->createMock(UnitOfWork::class);
-        assert($unitOfWork instanceof UnitOfWork || $unitOfWork instanceof PHPUnit_Framework_MockObject_MockObject);
+        assert($unitOfWork instanceof UnitOfWork || $unitOfWork instanceof MockObject);
 
         $this->_emMock->setUnitOfWork($unitOfWork);
 
@@ -232,7 +232,7 @@ class PersistentCollectionTest extends OrmTestCase
     public function testWillNotMarkCollectionAsDirtyAfterInitializationIfNoElementsWereAdded(): void
     {
         $unitOfWork = $this->createMock(UnitOfWork::class);
-        assert($unitOfWork instanceof UnitOfWork || $unitOfWork instanceof PHPUnit_Framework_MockObject_MockObject);
+        assert($unitOfWork instanceof UnitOfWork || $unitOfWork instanceof MockObject);
 
         $this->_emMock->setUnitOfWork($unitOfWork);
 
