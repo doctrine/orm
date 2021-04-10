@@ -69,7 +69,7 @@ final class ConsoleRunnerTest extends DoctrineTestCase
 
     public function testCreateApplicationWithProvider(): void
     {
-        $provider = $this->getMockBuilder(EntityManagerProvider::class)->getMock();
+        $provider = $this->createMock(EntityManagerProvider::class);
         $app      = ConsoleRunner::createApplication($provider, []);
 
         self::assertTrue($app->has('orm:info'));
