@@ -976,6 +976,8 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
+     * @param object $sourceEntity
+     *
      * @return \Doctrine\DBAL\Driver\Statement
      *
      * @throws MappingException
@@ -984,7 +986,7 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getManyToManyStatement(
         array $assoc,
-        object $sourceEntity,
+        $sourceEntity,
         ?int $offset = null,
         ?int $limit = null
     ) {
