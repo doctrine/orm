@@ -174,11 +174,11 @@ abstract class OrmTestCase extends DoctrineTestCase
      *
      * @return mixed
      */
-    public static function __callStatic(string $name, array $arguments)
+    public static function __callStatic(string $method, array $arguments)
     {
-        if ($name === 'assertMatchesRegularExpression') {
+        if ($method === 'assertMatchesRegularExpression') {
             self::assertRegExp(...$arguments);
-        } elseif ($name === 'assertFileDoesNotExist') {
+        } elseif ($methodg === 'assertFileDoesNotExist') {
             self::assertFileNotExists(...$arguments);
         }
 
@@ -199,6 +199,10 @@ abstract class OrmTestCase extends DoctrineTestCase
                 ->disableArgumentCloning()
                 ->disallowMockingUnknownTypes()
                 ->getMock();
+        } elseif ($method === 'assertMatchesRegularExpression') {
+            self::assertRegExp(...$arguments);
+        } elseif ($method === 'assertFileDoesNotExist') {
+            self::assertFileNotExists(...$arguments);
         }
 
         return null;
