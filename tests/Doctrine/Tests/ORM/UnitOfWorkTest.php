@@ -516,7 +516,7 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @param object $entity
+     * @param object               $entity
      * @param array<string, mixed> $identifier
      *
      * @dataProvider entitiesWithInvalidIdentifiersProvider
