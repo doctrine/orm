@@ -89,7 +89,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
             $tester->getDisplay()
         );
 
-        self::assertStringContainsString(' // entity identified by "1"', $tester->getDisplay());
+        self::assertStringContainsString('identified by "1"', $tester->getDisplay());
     }
 
     public function testFlushRegionName(): void

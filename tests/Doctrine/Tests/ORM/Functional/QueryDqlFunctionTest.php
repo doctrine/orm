@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use DateTimeImmutable;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -338,8 +339,18 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertArrayHasKey('now', $result);
         self::assertArrayHasKey('sub', $result);
 
+        $now        = new DateTimeImmutable($result['now']);
+        $oneUnitAgo = $now->modify(sprintf('-%d %s', $amount, $unit));
+        if (
+            $unit === 'month'
+            && $oneUnitAgo->format('m') === $now->format('m')
+            && ! $this->_em->getConnection()->getDatabasePlatform() instanceof SqlitePlatform
+        ) {
+            $oneUnitAgo = new DateTimeImmutable('last day of previous month');
+        }
+
         self::assertEqualsWithDelta(
-            (new DateTimeImmutable($result['now']))->modify(sprintf('-%d %s', $amount, $unit)),
+            $oneUnitAgo,
             new DateTimeImmutable($result['sub']),
             $delta
         );

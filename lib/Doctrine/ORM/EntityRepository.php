@@ -109,17 +109,29 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Creates a new Query instance based on a predefined metadata named query.
      *
+     * @deprecated
+     *
      * @param string $queryName
      *
      * @return Query
      */
     public function createNamedQuery($queryName)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8592',
+            'Named Queries are deprecated, here "%s" on entity %s. Move the query logic into EntityRepository',
+            $queryName,
+            $this->_class->name
+        );
+
         return $this->_em->createQuery($this->_class->getNamedQuery($queryName));
     }
 
     /**
      * Creates a native SQL query.
+     *
+     * @deprecated
      *
      * @param string $queryName
      *
@@ -127,6 +139,14 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function createNativeNamedQuery($queryName)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8592',
+            'Named Native Queries are deprecated, here "%s" on entity %s. Move the query logic into EntityRepository',
+            $queryName,
+            $this->_class->name
+        );
+
         $queryMapping = $this->_class->getNamedNativeQuery($queryName);
         $rsm          = new Query\ResultSetMappingBuilder($this->_em);
         $rsm->addNamedNativeQueryMapping($this->_class, $queryMapping);
@@ -188,7 +208,7 @@ class EntityRepository implements ObjectRepository, Selectable
      * @param int|null $offset
      *
      * @psalm-param array<string, mixed> $criteria
-     * @psalm-param list<string>|null $orderBy
+     * @psalm-param array<string, string>|null $orderBy
      * @psalm-return list<T> The objects.
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null)

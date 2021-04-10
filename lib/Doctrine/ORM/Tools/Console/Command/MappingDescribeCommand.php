@@ -292,7 +292,7 @@ EOT
      *
      * @return string[]
      *
-     * @psalm-param list<class-string> $entityListeners
+     * @psalm-param list<object> $entityListeners
      * @psalm-return array{0: string, 1: string}
      */
     private function formatEntityListeners(array $entityListeners): array

@@ -1,12 +1,18 @@
-name: Static Analysis
+
+name: "Static Analysis"
 
 on:
   pull_request:
+    branches:
+      - "*.x"
+  push:
+    branches:
+      - "*.x"
 
 jobs:
   static-analysis-phpstan:
-    name: "PHPStan"
-    runs-on: "ubuntu-latest"
+    name: "Static Analysis with PHPStan"
+    runs-on: "ubuntu-20.04"
 
     strategy:
       matrix:
@@ -22,17 +28,18 @@ jobs:
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
-          tools: cs2pr
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
+        with:
+          dependency-versions: "highest"
 
       - name: "Run a static analysis with phpstan/phpstan"
-        run: "php vendor/bin/phpstan analyse --error-format=checkstyle | cs2pr"
+        run: "vendor/bin/phpstan analyse"
 
   static-analysis-psalm:
-    name: "Psalm"
-    runs-on: "ubuntu-latest"
+    name: "Static Analysis with Psalm"
+    runs-on: "ubuntu-20.04"
 
     strategy:
       matrix:
@@ -51,6 +58,8 @@ jobs:
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
+        with:
+          dependency-versions: "highest"
 
       - name: "Run a static analysis with vimeo/psalm"
         run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc)"
