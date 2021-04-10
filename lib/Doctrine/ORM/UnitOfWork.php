@@ -1937,7 +1937,6 @@ class UnitOfWork implements PropertyChangedListener
      * @param string[] $assoc
      *
      * @return object The managed copy of the entity.
-     * @return object
      *
      * @throws OptimisticLockException If the entity uses optimistic locking through a version
      *         attribute and the version check against the managed copy fails.
