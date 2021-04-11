@@ -9,8 +9,8 @@ use Doctrine\Persistence\Mapping\ReflectionService;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\Reflection\ClassWithMixedProperties;
 use Doctrine\Tests\Models\Reflection\ParentClass;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use ReflectionClass;
 
 use function assert;
@@ -95,7 +95,7 @@ class ReflectionPropertiesGetterTest extends TestCase
     public function testPropertyGetterWillSkipPropertiesNotRetrievedByTheRuntimeReflectionService(): void
     {
         $reflectionService = $this->createMock(ReflectionService::class);
-        assert($reflectionService instanceof ReflectionService || $reflectionService instanceof PHPUnit_Framework_MockObject_MockObject);
+        assert($reflectionService instanceof ReflectionService || $reflectionService instanceof MockObject);
 
         $reflectionService
             ->expects($this->exactly(2))
@@ -118,7 +118,7 @@ class ReflectionPropertiesGetterTest extends TestCase
     public function testPropertyGetterWillSkipClassesNotRetrievedByTheRuntimeReflectionService(): void
     {
         $reflectionService = $this->createMock(ReflectionService::class);
-        assert($reflectionService instanceof ReflectionService || $reflectionService instanceof PHPUnit_Framework_MockObject_MockObject);
+        assert($reflectionService instanceof ReflectionService || $reflectionService instanceof MockObject);
 
         $reflectionService
             ->expects($this->once())

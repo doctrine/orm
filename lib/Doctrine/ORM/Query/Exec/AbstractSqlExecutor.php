@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Types\Type;
 
 /**
@@ -73,7 +73,7 @@ abstract class AbstractSqlExecutor
      *
      * @param Connection $conn The database connection that is used to execute the queries.
      *
-     * @return Statement
+     * @return ResultStatement|int
      *
      * @psalm-param array<int, mixed>|array<string, mixed> $params The parameters.
      * @psalm-param array<int, int|string|Type|null>|

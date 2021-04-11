@@ -59,7 +59,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
     /**
      * @param <type> $query
      *
-     * @depends testQueryCache_DependsOnHints
+     * @depends testQueryCacheDependsOnHints
      */
     public function testQueryCacheDependsOnFirstResult($query): void
     {
@@ -76,7 +76,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
     /**
      * @param <type> $query
      *
-     * @depends testQueryCache_DependsOnHints
+     * @depends testQueryCacheDependsOnHints
      */
     public function testQueryCacheDependsOnMaxResults($query): void
     {
@@ -92,7 +92,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
     /**
      * @param <type> $query
      *
-     * @depends testQueryCache_DependsOnHints
+     * @depends testQueryCacheDependsOnHints
      */
     public function testQueryCacheDependsOnHydrationMode($query): void
     {
@@ -146,11 +146,16 @@ class QueryCacheTest extends OrmFunctionalTestCase
                       ->setMethods(['doFetch', 'doContains', 'doSave', 'doDelete', 'doFlush', 'doGetStats'])
                       ->getMock();
 
-        $cache->expects($this->at(0))->method('doFetch')->will($this->returnValue(1));
-        $cache->expects($this->at(1))
-              ->method('doFetch')
-              ->with($this->isType('string'))
-              ->will($this->returnValue($parserResultMock));
+        $cache->expects($this->exactly(2))
+            ->method('doFetch')
+            ->withConsecutive(
+                [$this->isType('string')],
+                [$this->isType('string')]
+            )
+            ->willReturnOnConsecutiveCalls(
+                $this->returnValue(1),
+                $this->returnValue($parserResultMock)
+            );
 
         $cache->expects($this->never())
               ->method('doSave');

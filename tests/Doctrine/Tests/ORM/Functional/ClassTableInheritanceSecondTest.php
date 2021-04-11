@@ -6,9 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function count;
 use function get_class;
@@ -16,23 +14,28 @@ use function get_class;
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
  */
-class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
+class ClassTableInheritanceSecondTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(CTIParent::class),
-                    $this->_em->getClassMetadata(CTIChild::class),
-                    $this->_em->getClassMetadata(CTIRelated::class),
-                    $this->_em->getClassMetadata(CTIRelated2::class),
-                ]
-            );
-        } catch (Exception $ignored) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(CTIParent::class),
+            $this->_em->getClassMetadata(CTIChild::class),
+            $this->_em->getClassMetadata(CTIRelated::class),
+            $this->_em->getClassMetadata(CTIRelated2::class),
+        ]);
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        $this->_schemaTool->dropSchema([
+            $this->_em->getClassMetadata(CTIParent::class),
+            $this->_em->getClassMetadata(CTIChild::class),
+            $this->_em->getClassMetadata(CTIRelated::class),
+            $this->_em->getClassMetadata(CTIRelated2::class),
+        ]);
     }
 
     public function testOneToOneAssocToBaseTypeBidirectional(): void
@@ -55,7 +58,6 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
 
         $this->assertInstanceOf(CTIRelated::class, $related2);
         $this->assertInstanceOf(CTIChild::class, $related2->getCTIParent());
-        $this->assertNotInstanceOf(Proxy::class, $related2->getCTIParent());
         $this->assertEquals('hello', $related2->getCTIParent()->getData());
 
         $this->assertSame($related2, $related2->getCTIParent()->getRelated());

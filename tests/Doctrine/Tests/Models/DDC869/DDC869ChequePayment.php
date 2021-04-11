@@ -15,7 +15,7 @@ class DDC869ChequePayment extends DDC869Payment
      * @var string
      * @Column(type="string")
      */
-    #[ORM\Column(type: "string")]
+    #[ORM\Column(type: 'string')]
     protected $serialNumber;
 
     public static function loadMetadata(ClassMetadataInfo $metadata): void
