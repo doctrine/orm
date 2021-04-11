@@ -20,6 +20,7 @@ class IndexByAssociationTest extends OrmFunctionalTestCase
     /** @var Market */
     private $market;
 
+    /** @var Bond */
     private $bond;
 
     protected function setUp(): void

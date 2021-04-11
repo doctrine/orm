@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
 use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
@@ -94,6 +95,7 @@ class DDC2825Test extends OrmFunctionalTestCase
  * @Entity
  * @Table(name="myschema.order")
  */
+#[ORM\Entity, ORM\Table(name: 'myschema.order')]
 class DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName
 {
     /**
@@ -101,5 +103,6 @@ class DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName
      * @Column(type="integer")
      * @var int
      */
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
     public $id;
 }

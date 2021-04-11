@@ -893,7 +893,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $this->assertTrue($rc2->hasProperty('name'));
         $this->assertTrue($rc2->hasProperty('id'));
-        $this->assertTrue($rc2->hasProperty('created_at'));
+        $this->assertTrue($rc2->hasProperty('createdAt'));
 
         $this->assertTrue($rc2->hasMethod('getName'));
         $this->assertTrue($rc2->hasMethod('setName'));
@@ -907,7 +907,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $this->assertTrue($rc3->hasProperty('name'));
         $this->assertFalse($rc3->hasProperty('id'));
-        $this->assertFalse($rc3->hasProperty('created_at'));
+        $this->assertFalse($rc3->hasProperty('createdAt'));
 
         $this->assertTrue($rc3->hasMethod('getName'));
         $this->assertTrue($rc3->hasMethod('setName'));
@@ -1200,7 +1200,7 @@ class
         $docComment = $property->getDocComment();
         $regex      = '/@var\s+([\S]+)$/m';
 
-        $this->assertRegExp($regex, $docComment);
+        $this->assertMatchesRegularExpression($regex, $docComment);
         $this->assertEquals(1, preg_match($regex, $docComment, $matches));
         $this->assertEquals($type, $matches[1]);
     }
@@ -1210,7 +1210,7 @@ class
         $docComment = $method->getDocComment();
         $regex      = '/@return\s+([\S]+)(\s+.*)$/m';
 
-        $this->assertRegExp($regex, $docComment);
+        $this->assertMatchesRegularExpression($regex, $docComment);
         $this->assertEquals(1, preg_match($regex, $docComment, $matches));
         $this->assertEquals($type, $matches[1]);
     }

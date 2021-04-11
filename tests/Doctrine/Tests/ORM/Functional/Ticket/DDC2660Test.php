@@ -49,7 +49,7 @@ class DDC2660Test extends OrmFunctionalTestCase
     {
         $sql = 'SELECT o.product_id, o.customer_id, o.name FROM ddc_2660_customer_order o';
 
-        $rsm = new ResultSetMappingBuilder($this->_getEntityManager());
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata(DDC2660CustomerOrder::class, 'c');
 
         $query  = $this->_em->createNativeQuery($sql, $rsm);
@@ -67,7 +67,7 @@ class DDC2660Test extends OrmFunctionalTestCase
     {
         $sql = 'SELECT o.product_id, o.customer_id FROM ddc_2660_customer_order o';
 
-        $rsm = new ResultSetMappingBuilder($this->_getEntityManager());
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata(DDC2660CustomerOrder::class, 'c');
 
         $query  = $this->_em->createNativeQuery($sql, $rsm);
@@ -110,10 +110,18 @@ class DDC2660Customer
 /** @Entity @Table(name="ddc_2660_customer_order") */
 class DDC2660CustomerOrder
 {
-    /** @Id @ManyToOne(targetEntity="DDC2660Product") */
+    /**
+     * @var DDC2660Product
+     * @Id
+     * @ManyToOne(targetEntity="DDC2660Product")
+     */
     public $product;
 
-    /** @Id @ManyToOne(targetEntity="DDC2660Customer") */
+    /**
+     * @var DDC2660Customer
+     * @Id
+     * @ManyToOne(targetEntity="DDC2660Customer")
+     */
     public $customer;
 
     /**

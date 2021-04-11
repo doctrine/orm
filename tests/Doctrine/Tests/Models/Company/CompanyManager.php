@@ -31,17 +31,17 @@ class CompanyManager extends CompanyEmployee
      */
     public $managedContracts;
 
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function setTitle($title): void
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
 
-    public function getCar()
+    public function getCar(): CompanyCar
     {
         return $this->car;
     }

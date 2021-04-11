@@ -1,10 +1,9 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Doctrine\Tests\Models\Company;
 
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 use function max;
@@ -13,6 +12,8 @@ use function max;
  * @Entity
  * @EntityListeners({"CompanyContractListener","CompanyFlexUltraContractListener"})
  */
+#[ORM\Entity]
+#[ORM\EntityListeners(['CompanyContractListener', 'CompanyFlexUltraContractListener'])]
 class CompanyFlexUltraContract extends CompanyFlexContract
 {
     /**
@@ -26,12 +27,12 @@ class CompanyFlexUltraContract extends CompanyFlexContract
         return max($this->maxPrice, parent::calculatePrice());
     }
 
-    public function getMaxPrice()
+    public function getMaxPrice(): int
     {
         return $this->maxPrice;
     }
 
-    public function setMaxPrice($maxPrice): void
+    public function setMaxPrice(int $maxPrice): void
     {
         $this->maxPrice = $maxPrice;
     }

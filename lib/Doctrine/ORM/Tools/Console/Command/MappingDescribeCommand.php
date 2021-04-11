@@ -268,10 +268,9 @@ EOT
     /**
      * Format the association mappings
      *
-     * @param array $propertyMappings
-     *
      * @return string[][]
      *
+     * @psalm-param array<string, array<string, mixed>> $propertyMappings
      * @psalm-return list<array{0: string, 1: string}>
      */
     private function formatMappings(array $propertyMappings): array
@@ -292,10 +291,9 @@ EOT
     /**
      * Format the entity listeners
      *
-     * @param array $entityListeners
-     *
      * @return string[]
      *
+     * @psalm-param list<object> $entityListeners
      * @psalm-return array{0: string, 1: string}
      */
     private function formatEntityListeners(array $entityListeners): array

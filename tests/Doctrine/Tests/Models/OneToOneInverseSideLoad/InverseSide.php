@@ -11,12 +11,16 @@ namespace Doctrine\Tests\Models\OneToOneInverseSideLoad;
 class InverseSide
 {
     /**
+     * @var string
      * @Id()
      * @Column(type="string")
      * @GeneratedValue(strategy="NONE")
      */
     public $id;
 
-    /** @OneToOne(targetEntity=OwningSide::class, mappedBy="inverse") */
+    /**
+     * @var OwningSide
+     * @OneToOne(targetEntity=OwningSide::class, mappedBy="inverse")
+     */
     public $owning;
 }

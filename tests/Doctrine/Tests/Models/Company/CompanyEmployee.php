@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
+use DateTime;
 use Doctrine\Common\Collections\Collection;
 
 /**
@@ -24,7 +25,10 @@ class CompanyEmployee extends CompanyPerson
      */
     private $department;
 
-    /** @Column(type="datetime", nullable=true) */
+    /**
+     * @var DateTime|null
+     * @Column(type="datetime", nullable=true)
+     */
     private $startDate;
 
     /**
@@ -33,35 +37,38 @@ class CompanyEmployee extends CompanyPerson
      */
     public $contracts;
 
-    /** @OneToMany(targetEntity="CompanyFlexUltraContract", mappedBy="salesPerson", fetch="EXTRA_LAZY") */
+    /**
+     * @psalm-var Collection<int, CompanyFlexUltraContract>
+     * @OneToMany(targetEntity="CompanyFlexUltraContract", mappedBy="salesPerson", fetch="EXTRA_LAZY")
+     */
     public $soldContracts;
 
-    public function getSalary()
+    public function getSalary(): int
     {
         return $this->salary;
     }
 
-    public function setSalary($salary): void
+    public function setSalary(int $salary): void
     {
         $this->salary = $salary;
     }
 
-    public function getDepartment()
+    public function getDepartment(): string
     {
         return $this->department;
     }
 
-    public function setDepartment($dep): void
+    public function setDepartment(string $dep): void
     {
         $this->department = $dep;
     }
 
-    public function getStartDate()
+    public function getStartDate(): ?DateTime
     {
         return $this->startDate;
     }
 
-    public function setStartDate($date): void
+    public function setStartDate(DateTime $date): void
     {
         $this->startDate = $date;
     }

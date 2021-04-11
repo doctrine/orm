@@ -15,12 +15,25 @@ use function count;
  */
 class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociationTestCase
 {
-    protected $_firstField  = 'product_id';
-    protected $_secondField = 'category_id';
-    protected $_table       = 'ecommerce_products_categories';
+    /** @var string */
+    protected $firstField = 'product_id';
+
+    /** @var string */
+    protected $secondField = 'category_id';
+
+    /** @var string */
+    protected $table = 'ecommerce_products_categories';
+
+    /** @var ECommerceProduct */
     private $firstProduct;
+
+    /** @var ECommerceProduct */
     private $secondProduct;
+
+    /** @var ECommerceCategory */
     private $firstCategory;
+
+    /** @var ECommerceCategory */
     private $secondCategory;
 
     protected function setUp(): void
@@ -69,20 +82,20 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     public function testEagerLoadFromInverseSideAndLazyLoadFromOwningSide(): void
     {
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_createLoadingFixture();
-        $categories = $this->_findCategories();
+        $this->createLoadingFixture();
+        $categories = $this->findCategories();
         $this->assertLazyLoadFromOwningSide($categories);
     }
 
     public function testEagerLoadFromOwningSideAndLazyLoadFromInverseSide(): void
     {
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_createLoadingFixture();
-        $products = $this->_findProducts();
+        $this->createLoadingFixture();
+        $products = $this->findProducts();
         $this->assertLazyLoadFromInverseSide($products);
     }
 
-    private function _createLoadingFixture(): void
+    private function createLoadingFixture(): void
     {
         $this->firstProduct->addCategory($this->firstCategory);
         $this->firstProduct->addCategory($this->secondCategory);
@@ -95,7 +108,10 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->_em->clear();
     }
 
-    protected function _findProducts()
+    /**
+     * @psalm-return list<ECommerceProduct>
+     */
+    protected function findProducts(): array
     {
         $query = $this->_em->createQuery('SELECT p, c FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p LEFT JOIN p.categories c ORDER BY p.id, c.id');
         //$query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
@@ -111,7 +127,10 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         return $result;
     }
 
-    protected function _findCategories()
+    /**
+     * @psalm-return list<ECommerceCategory>
+     */
+    protected function findCategories(): array
     {
         $query = $this->_em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\ECommerce\ECommerceCategory c LEFT JOIN c.products p ORDER BY c.id, p.id');
         //$query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
@@ -130,7 +149,10 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         return $result;
     }
 
-    public function assertLazyLoadFromInverseSide($products): void
+    /**
+     * @psalm-param list<ECommerceProduct>
+     */
+    public function assertLazyLoadFromInverseSide(array $products): void
     {
         [$firstProduct, $secondProduct] = $products;
 
@@ -165,7 +187,10 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->assertCollectionEquals($firstCategoryProducts, $secondCategoryProducts);
     }
 
-    public function assertLazyLoadFromOwningSide($categories): void
+    /**
+     * @psalm-param list<ECommerceCategory>
+     */
+    public function assertLazyLoadFromOwningSide(array $categories): void
     {
         [$firstCategory, $secondCategory] = $categories;
 

@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function assert;
 use function count;
@@ -23,19 +22,25 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(Phrase::class),
-                    $this->_em->getClassMetadata(PhraseType::class),
-                    $this->_em->getClassMetadata(Definition::class),
-                    $this->_em->getClassMetadata(Lemma::class),
-                    $this->_em->getClassMetadata(Type::class),
-                ]
-            );
-        } catch (Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(Phrase::class),
+            $this->_em->getClassMetadata(PhraseType::class),
+            $this->_em->getClassMetadata(Definition::class),
+            $this->_em->getClassMetadata(Lemma::class),
+            $this->_em->getClassMetadata(Type::class),
+        ]);
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        $this->_schemaTool->dropSchema([
+            $this->_em->getClassMetadata(Phrase::class),
+            $this->_em->getClassMetadata(PhraseType::class),
+            $this->_em->getClassMetadata(Definition::class),
+            $this->_em->getClassMetadata(Lemma::class),
+            $this->_em->getClassMetadata(Type::class),
+        ]);
     }
 
     public function testIssue(): void
@@ -347,7 +352,10 @@ class Phrase
      */
     private $type;
 
-    /** @OneToMany(targetEntity="Definition", mappedBy="phrase", cascade={"persist"}) */
+    /**
+     * @psalm-var Collection<int, Definition>
+     * @OneToMany(targetEntity="Definition", mappedBy="phrase", cascade={"persist"})
+     */
     private $definitions;
 
     public function __construct()
@@ -420,7 +428,10 @@ class PhraseType
      */
     private $abbreviation;
 
-    /** @OneToMany(targetEntity="Phrase", mappedBy="type") */
+    /**
+     * @psalm-var Collection<int, Phrase>
+     * @OneToMany(targetEntity="Phrase", mappedBy="type")
+     */
     private $phrases;
 
     public function __construct()
@@ -487,7 +498,10 @@ class Definition
      */
     private $phrase;
 
-    /** @Column(type="text", name="definition_text") */
+    /**
+     * @var string
+     * @Column(type="text", name="definition_text")
+     */
     private $definition;
 
     public function getId(): int

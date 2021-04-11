@@ -27,7 +27,7 @@ class DDC2084Test extends OrmFunctionalTestCase
         }
     }
 
-    public function loadFixture()
+    public function loadFixture(): DDC2084\MyEntity1
     {
         $e2 = new DDC2084\MyEntity2('Foo');
         $e1 = new DDC2084\MyEntity1($e2);
@@ -71,6 +71,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket\DDC2084;
 class MyEntity1
 {
     /**
+     * @var MyEntity2
      * @Id
      * @OneToOne(targetEntity="MyEntity2")
      * @JoinColumn(name="entity2_id", referencedColumnName="id", nullable=false)
@@ -87,7 +88,7 @@ class MyEntity1
         $this->entity2 = $myEntity2;
     }
 
-    public function getMyEntity2()
+    public function getMyEntity2(): MyEntity2
     {
         return $this->entity2;
     }
@@ -107,25 +108,28 @@ class MyEntity2
      */
     private $id;
 
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     private $value;
 
-    public function __construct($value)
+    public function __construct(string $value)
     {
         $this->value = $value;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }
 
-    public function setValue($value): void
+    public function setValue(string $value): void
     {
         $this->value = $value;
     }

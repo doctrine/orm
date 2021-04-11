@@ -16,6 +16,10 @@ class BooleanModel
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /** @Column(type="boolean") */
+
+    /**
+     * @var bool
+     * @Column(type="boolean")
+     */
     public $booleanField;
 }

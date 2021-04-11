@@ -54,7 +54,11 @@ class DDC1884Test extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    private function createCars($class)
+    /**
+     * @psalm-var class-string<Car> $class
+     * @psalm-return array{Car, Car, Car, Car}
+     */
+    private function createCars(string $class): array
     {
         $bimmer = new $class();
         $bimmer->setBrand('BMW');
@@ -80,7 +84,11 @@ class DDC1884Test extends OrmFunctionalTestCase
         return [$bimmer, $crysler, $merc, $volvo];
     }
 
-    private function createDrivers($class)
+    /**
+     * @psalm-var class-string<Driver> $class
+     * @psalm-return array{Driver, Driver}
+     */
+    private function createDrivers(string $class): array
     {
         $john = new $class();
         $john->setName('John Doe');

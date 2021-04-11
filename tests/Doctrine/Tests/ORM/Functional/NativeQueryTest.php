@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query\Parameter;
@@ -33,6 +34,9 @@ use function is_numeric;
  */
 class NativeQueryTest extends OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
+    /** @var AbstractPlatform */
     private $platform = null;
 
     protected function setUp(): void
@@ -404,6 +408,8 @@ class NativeQueryTest extends OrmFunctionalTestCase
      */
     public function testBasicNativeNamedQueryWithResultClass(): void
     {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8592');
+
         $user           = new CmsUser();
         $user->name     = 'Fabio B. Silva';
         $user->username = 'FabioBatSilva';

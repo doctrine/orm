@@ -18,7 +18,10 @@ class City
      */
     public $id;
 
-    /** @Column(name="`city-name`") */
+    /**
+     * @var string
+     * @Column(name="`city-name`")
+     */
     public $name;
 
     public function __construct(string $name)

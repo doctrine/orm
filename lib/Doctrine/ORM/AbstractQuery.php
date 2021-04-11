@@ -24,7 +24,7 @@ use Countable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
-use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
@@ -110,7 +110,7 @@ abstract class AbstractQuery
     /**
      * The map of query hints.
      *
-     * @var array
+     * @psalm-var array<string, mixed>
      */
     protected $_hints = [];
 
@@ -794,7 +794,7 @@ abstract class AbstractQuery
      *
      * Alias for execute(null, HYDRATE_ARRAY).
      *
-     * @return array<int,mixed>
+     * @return mixed[]
      */
     public function getArrayResult()
     {
@@ -806,7 +806,7 @@ abstract class AbstractQuery
      *
      * Alias for execute(null, HYDRATE_SCALAR).
      *
-     * @return array<int,mixed>
+     * @return mixed[]
      */
     public function getScalarResult()
     {
@@ -1211,7 +1211,9 @@ abstract class AbstractQuery
     /**
      * Executes the query and returns a the resulting Statement object.
      *
-     * @return Statement The executed database statement that holds the results.
+     * @return ResultStatement|int The executed database statement that holds
+     *                             the results, or an integer indicating how
+     *                             many rows were affected.
      */
     abstract protected function _doExecute();
 

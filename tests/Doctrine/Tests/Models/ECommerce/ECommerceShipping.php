@@ -21,21 +21,27 @@ class ECommerceShipping
     private $id;
 
     /**
-     * @var int
+     * @var int|string
      * @Column(type="integer")
      */
     private $days;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
+    /**
+     * @return int|string
+     */
     public function getDays()
     {
         return $this->days;
     }
 
+    /**
+     * @param int|string $days
+     */
     public function setDays($days): void
     {
         $this->days = $days;

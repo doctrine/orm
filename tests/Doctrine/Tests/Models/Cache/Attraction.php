@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Cache("NONSTRICT_READ_WRITE")
@@ -27,10 +28,14 @@ abstract class Attraction
      */
     protected $id;
 
-    /** @Column(unique=true) */
+    /**
+     * @var string
+     * @Column(unique=true)
+     */
     protected $name;
 
     /**
+     * @var City
      * @Cache
      * @ManyToOne(targetEntity="City", inversedBy="attractions")
      * @JoinColumn(name="city_id", referencedColumnName="id")
@@ -38,39 +43,40 @@ abstract class Attraction
     protected $city;
 
     /**
+     * @psalm-var Collection<int, AttractionInfo>
      * @Cache
      * @OneToMany(targetEntity="AttractionInfo", mappedBy="attraction")
      */
     protected $infos;
 
-    public function __construct($name, City $city)
+    public function __construct(string $name, City $city)
     {
         $this->name  = $name;
         $this->city  = $city;
         $this->infos = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId($id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getCity()
+    public function getCity(): City
     {
         return $this->city;
     }
@@ -80,7 +86,10 @@ abstract class Attraction
         $this->city = $city;
     }
 
-    public function getInfos()
+    /**
+     * @psalm-return Collection<int, AttractionInfo>
+     */
+    public function getInfos(): Collection
     {
         return $this->infos;
     }

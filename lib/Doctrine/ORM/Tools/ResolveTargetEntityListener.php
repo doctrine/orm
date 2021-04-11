@@ -58,9 +58,10 @@ class ResolveTargetEntityListener implements EventSubscriber
      *
      * @param string $originalEntity
      * @param string $newEntity
-     * @param array  $mapping
      *
      * @return void
+     *
+     * @psalm-param array<string, mixed> $mapping
      */
     public function addResolveTargetEntity($originalEntity, $newEntity, array $mapping)
     {

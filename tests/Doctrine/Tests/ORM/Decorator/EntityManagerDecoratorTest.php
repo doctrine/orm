@@ -7,8 +7,9 @@ namespace Doctrine\Tests\ORM\Decorator;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\VerifyDeprecations;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -32,7 +33,7 @@ class EntityManagerDecoratorTest extends TestCase
         'lock',
     ];
 
-    /** @var EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject */
+    /** @var EntityManagerInterface|MockObject */
     private $wrapped;
 
     protected function setUp(): void
@@ -40,7 +41,8 @@ class EntityManagerDecoratorTest extends TestCase
         $this->wrapped = $this->createMock(EntityManagerInterface::class);
     }
 
-    public function getMethodParameters()
+    /** @psalm-return array<string, mixed[]> */
+    public function getMethodParameters(): array
     {
         $class   = new ReflectionClass(EntityManagerInterface::class);
         $methods = [];
@@ -56,7 +58,10 @@ class EntityManagerDecoratorTest extends TestCase
         return $methods;
     }
 
-    private function getParameters(ReflectionMethod $method)
+    /**
+     * @return mixed[]
+     */
+    private function getParameters(ReflectionMethod $method): array
     {
         /** Special case EntityManager::createNativeQuery() */
         if ($method->getName() === 'createNativeQuery') {

@@ -91,7 +91,8 @@ final class ReflectionPropertiesGetter
             $classes[]       = $currentClass;
             $parentClassName = null;
 
-            if ($parentClass = $currentClass->getParentClass()) {
+            $parentClass = $currentClass->getParentClass();
+            if ($parentClass) {
                 $parentClassName = $parentClass->getName();
             }
         }

@@ -26,6 +26,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 use function array_diff;
 use function array_key_exists;
+use function array_search;
 use function array_values;
 use function class_exists;
 use function class_parents;
@@ -58,7 +59,7 @@ class SchemaValidator
      * 2. Check if "mappedBy" and "inversedBy" are consistent to each other.
      * 3. Check if "referencedColumnName" attributes are really pointing to primary key columns.
      *
-     * @return array
+     * @psalm-return array<string, list<string>>
      */
     public function validateMapping()
     {
@@ -67,7 +68,8 @@ class SchemaValidator
         $classes = $cmf->getAllMetadata();
 
         foreach ($classes as $class) {
-            if ($ce = $this->validateClass($class)) {
+            $ce = $this->validateClass($class);
+            if ($ce) {
                 $errors[$class->name] = $ce;
             }
         }
@@ -252,6 +254,12 @@ class SchemaValidator
                     }
                 }
             }
+        }
+
+        if (! $class->isInheritanceTypeNone() && ! $class->isRootEntity() && array_search($class->name, $class->discriminatorMap) === false) {
+            $ce[] = "Entity class '" . $class->name . "' is part of inheritance hierarchy, but is " .
+                "not mapped in the root entity '" . $class->rootEntityName . "' discriminator map. " .
+                'All subclasses must be listed in the discriminator map.';
         }
 
         foreach ($class->subClasses as $subClass) {

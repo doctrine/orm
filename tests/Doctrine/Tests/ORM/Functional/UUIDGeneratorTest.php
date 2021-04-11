@@ -43,15 +43,20 @@ class UUIDGeneratorTest extends OrmFunctionalTestCase
  */
 class UUIDEntity
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="UUID") */
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string")
+     * @GeneratedValue(strategy="UUID")
+     */
     private $id;
 
     /**
      * Get id.
      *
-     * @return id.
+     * @return string.
      */
-    public function getId(): id
+    public function getId(): string
     {
         return $this->id;
     }

@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Symfony\Component\Yaml\Yaml;
@@ -59,11 +60,18 @@ class ConvertDoctrine1Schema
      * Constructor passes the directory or array of directories
      * to convert the Doctrine 1 schema files from.
      *
-     * @param array $from
+     * @psalm-param list<string>|string $from
      */
     public function __construct($from)
     {
         $this->from = (array) $from;
+
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8458',
+            '%s is deprecated with no replacement',
+            self::class
+        );
     }
 
     /**
@@ -97,12 +105,9 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * @param string $className
-     * @param array  $mappingInformation
-     *
-     * @return ClassMetadataInfo
+     * @param mixed[] $mappingInformation
      */
-    private function convertToClassMetadataInfo($className, $mappingInformation)
+    private function convertToClassMetadataInfo(string $className, $mappingInformation): ClassMetadataInfo
     {
         $metadata = new ClassMetadataInfo($className);
 
@@ -115,12 +120,9 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * @param string  $className
      * @param mixed[] $model
-     *
-     * @return void
      */
-    private function convertTableName($className, array $model, ClassMetadataInfo $metadata)
+    private function convertTableName(string $className, array $model, ClassMetadataInfo $metadata): void
     {
         if (isset($model['tableName']) && $model['tableName']) {
             $e = explode('.', $model['tableName']);

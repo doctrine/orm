@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -13,6 +14,8 @@ use function count;
  */
 class DDC1404Test extends OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -32,6 +35,8 @@ class DDC1404Test extends OrmFunctionalTestCase
 
     public function testTicket(): void
     {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8592');
+
         $repository  = $this->_em->getRepository(DDC1404ChildEntity::class);
         $queryAll    = $repository->createNamedQuery('all');
         $queryFirst  = $repository->createNamedQuery('first');
@@ -90,7 +95,10 @@ class DDC1404ParentEntity
  */
 class DDC1404ChildEntity extends DDC1404ParentEntity
 {
-    /** @column(type="string") */
+    /**
+     * @var string
+     * @column(type="string")
+     */
     private $name;
 
     public function __construct(string $name)

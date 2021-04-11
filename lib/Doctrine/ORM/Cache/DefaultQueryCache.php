@@ -428,7 +428,7 @@ class DefaultQueryCache implements QueryCache
      * @param mixed        $value
      * @param array<mixed> $path
      *
-     * @return array<object>|object|null
+     * @return mixed
      */
     private function getAssociationPathValue($value, array $path)
     {
@@ -441,7 +441,7 @@ class DefaultQueryCache implements QueryCache
             return null;
         }
 
-        if (empty($path)) {
+        if ($path === []) {
             return $value;
         }
 

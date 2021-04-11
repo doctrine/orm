@@ -42,7 +42,7 @@ class OrderBy
     /** @var string[] */
     protected $allowedClasses = [];
 
-    /** @var mixed[] */
+    /** @psalm-var list<string> */
     protected $parts = [];
 
     /**
@@ -77,7 +77,7 @@ class OrderBy
     }
 
     /**
-     * @return array
+     * @psalm-return list<string>
      */
     public function getParts()
     {

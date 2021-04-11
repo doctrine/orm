@@ -93,7 +93,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         return $coll;
     }
 
-    protected function createPersisterDefault()
+    protected function createPersisterDefault(): AbstractCollectionPersister
     {
         $assoc = $this->em->getClassMetadata(State::class)->associationMappings['cities'];
 

@@ -90,12 +90,14 @@ class CascadeRemoveOrderEntityO
     private $id;
 
     /**
+     * @var CascadeRemoveOrderEntityG
      * @OneToOne(targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG")
      * @JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $oneToOneG;
 
     /**
+     * @psalm-var Collection<int, CascadeRemoveOrderEntityG>
      * @OneToMany(
      *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG",
      *     mappedBy="ownerO",
@@ -109,7 +111,7 @@ class CascadeRemoveOrderEntityO
         $this->oneToManyG = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -119,7 +121,7 @@ class CascadeRemoveOrderEntityO
         $this->oneToOneG = $eG;
     }
 
-    public function getOneToOneG()
+    public function getOneToOneG(): CascadeRemoveOrderEntityG
     {
         return $this->oneToOneG;
     }
@@ -129,7 +131,10 @@ class CascadeRemoveOrderEntityO
         $this->oneToManyG->add($eG);
     }
 
-    public function getOneToManyGs()
+    /**
+     * @psalm-return array<int, CascadeRemoveOrderEntityG>
+     */
+    public function getOneToManyGs(): array
     {
         return $this->oneToManyG->toArray();
     }
@@ -148,12 +153,16 @@ class CascadeRemoveOrderEntityG
     private $id;
 
     /**
+     * @var CascadeRemoveOrderEntityO
      * @ManyToOne(
      *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO",
      *     inversedBy="oneToMany"
      * )
      */
     private $ownerO;
+
+    /** @var int */
+    private $position;
 
     public function __construct(CascadeRemoveOrderEntityO $eO, $position = 1)
     {
@@ -162,7 +171,7 @@ class CascadeRemoveOrderEntityG
         $this->ownerO->addOneToManyG($this);
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

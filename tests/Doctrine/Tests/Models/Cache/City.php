@@ -6,6 +6,7 @@ namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
@@ -13,6 +14,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  * @Entity
  * @Table("cache_city")
  */
+#[ORM\Entity, ORM\Table(name: 'cache_city'), ORM\Cache]
 class City
 {
     /**
@@ -21,32 +23,45 @@ class City
      * @GeneratedValue
      * @Column(type="integer")
      */
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
     protected $id;
 
-    /** @Column(unique=true) */
+    /**
+     * @var string
+     * @Column(unique=true)
+     */
+    #[ORM\Column(unique: true)]
     protected $name;
 
     /**
+     * @var State|null
      * @Cache
      * @ManyToOne(targetEntity="State", inversedBy="cities")
      * @JoinColumn(name="state_id", referencedColumnName="id")
      */
+    #[ORM\Cache]
+    #[ORM\ManyToOne(targetEntity: 'State', inversedBy: 'citities')]
+    #[ORM\JoinColumn(name: 'state_id', referencedColumnName: 'id')]
     protected $state;
 
     /**
      * @var Collection<int, Travel>
      * @ManyToMany(targetEntity="Travel", mappedBy="visitedCities")
      */
+    #[ORM\ManyToMany(targetEntity: 'Travel', mappedBy: 'visitedCities')]
     public $travels;
 
-     /**
-      * @Cache
-      * @OrderBy({"name" = "ASC"})
-      * @OneToMany(targetEntity="Attraction", mappedBy="city")
-      */
+    /**
+     * @psalm-var Collection<int, Attraction>
+     * @Cache
+     * @OrderBy({"name" = "ASC"})
+     * @OneToMany(targetEntity="Attraction", mappedBy="city")
+     */
+    #[ORM\Cache, ORM\OrderBy(['name' => 'ASC'])]
+    #[ORM\OneToMany(targetEntity: 'Attraction', mappedBy: 'city')]
     public $attractions;
 
-    public function __construct($name, ?State $state = null)
+    public function __construct(string $name, ?State $state = null)
     {
         $this->name        = $name;
         $this->state       = $state;
@@ -54,27 +69,27 @@ class City
         $this->attractions = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId($id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getState()
+    public function getState(): ?State
     {
         return $this->state;
     }
@@ -89,7 +104,10 @@ class City
         $this->travels[] = $travel;
     }
 
-    public function getTravels()
+    /**
+     * @psalm-return Collection<int, Travel>
+     */
+    public function getTravels(): Collection
     {
         return $this->travels;
     }
@@ -99,7 +117,10 @@ class City
         $this->attractions[] = $attraction;
     }
 
-    public function getAttractions()
+    /**
+     * @psalm-return Collection<int, Attraction>
+     */
+    public function getAttractions(): Collection
     {
         return $this->attractions;
     }

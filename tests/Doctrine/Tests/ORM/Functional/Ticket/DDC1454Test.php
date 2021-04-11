@@ -55,6 +55,7 @@ class DDC1454Picture extends DDC1454File
 class DDC1454File
 {
     /**
+     * @var int
      * @Column(name="file_id", type="integer")
      * @Id
      */
@@ -65,10 +66,7 @@ class DDC1454File
         $this->fileId = random_int(0, getrandmax());
     }
 
-    /**
-     * Get fileId
-     */
-    public function getFileId()
+    public function getFileId(): int
     {
         return $this->fileId;
     }

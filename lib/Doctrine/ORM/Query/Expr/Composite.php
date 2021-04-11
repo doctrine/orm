@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Query\Expr;
 
 use function implode;
 use function is_object;
-use function stripos;
+use function preg_match;
 
 /**
  * Expression class for building DQL and parts.
@@ -63,7 +63,7 @@ class Composite extends Base
         }
 
         // Fixes DDC-1237: User may have added a where item containing nested expression (with "OR" or "AND")
-        if (stripos($queryPart, ' OR ') !== false || stripos($queryPart, ' AND ') !== false) {
+        if (preg_match('/\s(OR|AND)\s/i', $queryPart)) {
             return $this->preSeparator . $queryPart . $this->postSeparator;
         }
 

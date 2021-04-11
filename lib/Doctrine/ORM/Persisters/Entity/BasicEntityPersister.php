@@ -145,7 +145,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Queued inserts.
      *
-     * @var array
+     * @psalm-var array<string, object>
      */
     protected $queuedInserts = [];
 
@@ -313,8 +313,8 @@ class BasicEntityPersister implements EntityPersister
      * by the preceding INSERT statement and assigns it back in to the
      * entities version field.
      *
-     * @param object $entity
-     * @param array  $id
+     * @param object  $entity
+     * @param mixed[] $id
      *
      * @return void
      */
@@ -359,6 +359,8 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
+     * @param mixed[] $id
+     *
      * @return int[]|null[]|string[]
      *
      * @psalm-return list<(int|string|null)>
@@ -398,7 +400,7 @@ class BasicEntityPersister implements EntityPersister
         $this->updateTable($entity, $quotedTableName, $data, $isVersioned);
 
         if ($isVersioned) {
-            $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
+            $id = $this->class->getIdentifierValues($entity);
 
             $this->assignDefaultVersionValue($entity, $id);
         }
@@ -974,17 +976,18 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * @param array    $assoc
-     * @param object   $sourceEntity
-     * @param int|null $offset
-     * @param int|null $limit
-     *
      * @return \Doctrine\DBAL\Driver\Statement
      *
      * @throws MappingException
+     *
+     * @psalm-param array<string, mixed> $assoc
      */
-    private function getManyToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
-    {
+    private function getManyToManyStatement(
+        array $assoc,
+        object $sourceEntity,
+        ?int $offset = null,
+        ?int $limit = null
+    ) {
         $this->switchPersisterContext($offset, $limit);
 
         $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
@@ -1137,12 +1140,11 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Gets the ORDER BY SQL snippet for ordered collections.
      *
-     * @param array  $orderBy
-     * @param string $baseTableAlias
-     *
      * @throws ORMException
+     *
+     * @psalm-param array<string, string> $orderBy
      */
-    final protected function getOrderBySQL(array $orderBy, $baseTableAlias): string
+    final protected function getOrderBySQL(array $orderBy, string $baseTableAlias): string
     {
         $orderByList = [];
 
@@ -1286,7 +1288,8 @@ class BasicEntityPersister implements EntityPersister
                 }
 
                 // Add filter SQL
-                if ($filterSql = $this->generateFilterConditionSQL($eagerEntity, $tableAlias)) {
+                $filterSql = $this->generateFilterConditionSQL($eagerEntity, $tableAlias);
+                if ($filterSql) {
                     $joinCondition[] = $filterSql;
                 }
             } else {
@@ -1347,9 +1350,9 @@ class BasicEntityPersister implements EntityPersister
      * Gets the SQL join fragment used when selecting entities from a
      * many-to-many association.
      *
-     * @param array $manyToMany
-     *
      * @return string
+     *
+     * @psalm-param array<string, mixed> $manyToMany
      */
     protected function getSelectManyToManyJoinSQL(array $manyToMany)
     {
@@ -1657,13 +1660,13 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Builds the left-hand-side of a where condition statement.
      *
-     * @param string     $field
-     * @param array|null $assoc
+     * @param string $field
      *
      * @return string[]
      *
      * @throws ORMException
      *
+     * @psalm-param array<string, mixed>|null $assoc
      * @psalm-return list<string>
      */
     private function getSelectConditionStatementColumnSQL($field, $assoc = null)
@@ -1726,10 +1729,10 @@ class BasicEntityPersister implements EntityPersister
      * Subclasses are supposed to override this method if they intend to change
      * or alter the criteria by which entities are selected.
      *
-     * @param array      $criteria
-     * @param array|null $assoc
-     *
      * @return string
+     *
+     * @psalm-param array<string, mixed> $criteria
+     * @psalm-param array<string, mixed>|null $assoc
      */
     protected function getSelectConditionSQL(array $criteria, $assoc = null)
     {
@@ -1767,12 +1770,13 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Builds criteria and execute SQL statement to fetch the one to many entities from.
      *
-     * @param array    $assoc
      * @param object   $sourceEntity
      * @param int|null $offset
      * @param int|null $limit
      *
      * @return Statement
+     *
+     * @psalm-param array<string, mixed> $assoc
      */
     private function getOneToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
@@ -1932,7 +1936,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @param mixed $value
      *
-     * @return array
+     * @return array{mixed}
      */
     private function getValues($value)
     {
@@ -2005,7 +2009,8 @@ class BasicEntityPersister implements EntityPersister
             $types  = array_merge($types, $criteriaTypes);
         }
 
-        if ($filterSql = $this->generateFilterConditionSQL($this->class, $alias)) {
+        $filterSql = $this->generateFilterConditionSQL($this->class, $alias);
+        if ($filterSql) {
             $sql .= ' AND ' . $filterSql;
         }
 
@@ -2015,9 +2020,9 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Generates the appropriate join SQL for the given join column.
      *
-     * @param array $joinColumns The join columns definition of an association.
-     *
      * @return string LEFT JOIN if one of the columns is nullable, INNER JOIN otherwise.
+     *
+     * @psalm-param array<array<string, mixed>> $joinColumns The join columns definition of an association.
      */
     protected function getJoinSQLForJoinColumns($joinColumns)
     {
@@ -2054,7 +2059,8 @@ class BasicEntityPersister implements EntityPersister
         $filterClauses = [];
 
         foreach ($this->em->getFilters()->getEnabledFilters() as $filter) {
-            if ('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+            $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias);
+            if ($filterExpr !== '') {
                 $filterClauses[] = '(' . $filterExpr . ')';
             }
         }

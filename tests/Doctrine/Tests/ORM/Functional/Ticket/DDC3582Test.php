@@ -29,13 +29,20 @@ class DDC3582Test extends OrmFunctionalTestCase
 /** @Entity */
 class DDC3582Entity
 {
-    /** @Column @Id */
+    /**
+     * @var string
+     * @Column
+     * @Id
+     */
     private $id;
 
-    /** @Embedded(class="DDC3582Embeddable1") @var DDC3582Embeddable1 */
+    /**
+     * @var DDC3582Embeddable1
+     * @Embedded(class="DDC3582Embeddable1")
+     */
     public $embeddable1;
 
-    public function __construct($id)
+    public function __construct(string $id)
     {
         $this->id          = $id;
         $this->embeddable1 = new DDC3582Embeddable1();
@@ -45,7 +52,10 @@ class DDC3582Entity
 /** @Embeddable */
 class DDC3582Embeddable1
 {
-    /** @Embedded(class="DDC3582Embeddable2") @var DDC3582Embeddable2 */
+    /**
+     * @var DDC3582Embeddable2
+     * @Embedded(class="DDC3582Embeddable2")
+     */
     public $embeddable2;
 
     public function __construct()
@@ -57,7 +67,10 @@ class DDC3582Embeddable1
 /** @Embeddable */
 class DDC3582Embeddable2
 {
-    /** @Embedded(class="DDC3582Embeddable3") @var DDC3582Embeddable3 */
+    /**
+     * @var DDC3582Embeddable3
+     * @Embedded(class="DDC3582Embeddable3")
+     */
     public $embeddable3;
 
     public function __construct()
@@ -69,6 +82,9 @@ class DDC3582Embeddable2
 /** @Embeddable */
 class DDC3582Embeddable3
 {
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     public $embeddedValue = 'foo';
 }

@@ -13,12 +13,12 @@ class CompanyAuction extends CompanyEvent
      */
     private $data;
 
-    public function setData($data): void
+    public function setData(string $data): void
     {
         $this->data = $data;
     }
 
-    public function getData()
+    public function getData(): string
     {
         return $this->data;
     }

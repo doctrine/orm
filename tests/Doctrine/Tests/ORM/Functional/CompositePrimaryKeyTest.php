@@ -34,7 +34,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function putTripAroundEurope()
+    public function putTripAroundEurope(): NavTour
     {
         $poi = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
 

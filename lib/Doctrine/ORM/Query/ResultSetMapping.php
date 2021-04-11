@@ -57,7 +57,7 @@ class ResultSetMapping
      * Maps alias names to class names.
      *
      * @ignore
-     * @var array
+     * @psalm-var array<string, class-string>
      */
     public $aliasMap = [];
 
@@ -65,7 +65,7 @@ class ResultSetMapping
      * Maps alias names to related association field names.
      *
      * @ignore
-     * @var array
+     * @psalm-var array<string, string>
      */
     public $relationMap = [];
 
@@ -73,7 +73,7 @@ class ResultSetMapping
      * Maps alias names to parent alias names.
      *
      * @ignore
-     * @var array
+     * @psalm-var array<string, string>
      */
     public $parentAliasMap = [];
 
@@ -81,7 +81,7 @@ class ResultSetMapping
      * Maps column names in the result set to field names for each class.
      *
      * @ignore
-     * @var array
+     * @psalm-var array<string, string>
      */
     public $fieldMappings = [];
 
@@ -89,7 +89,7 @@ class ResultSetMapping
      * Maps column names in the result set to the alias/field name to use in the mapped result.
      *
      * @ignore
-     * @var array
+     * @psalm-var array<string, string>
      */
     public $scalarMappings = [];
 
@@ -97,7 +97,7 @@ class ResultSetMapping
      * Maps column names in the result set to the alias/field type to use in the mapped result.
      *
      * @ignore
-     * @var array
+     * @psalm-var array<string, string>
      */
     public $typeMappings = [];
 
@@ -105,7 +105,7 @@ class ResultSetMapping
      * Maps entities in the result set to the alias name to use in the mapped result.
      *
      * @ignore
-     * @var array
+     * @psalm-var array<string, string|null>
      */
     public $entityMappings = [];
 
@@ -113,7 +113,7 @@ class ResultSetMapping
      * Maps column names of meta columns (foreign keys, discriminator columns, ...) to field names.
      *
      * @ignore
-     * @var array
+     * @psalm-var array<string, string>
      */
     public $metaMappings = [];
 
@@ -121,7 +121,7 @@ class ResultSetMapping
      * Maps column names in the result set to the alias they belong to.
      *
      * @ignore
-     * @var array
+     * @psalm-var array<string, string>
      */
     public $columnOwnerMap = [];
 
@@ -129,7 +129,7 @@ class ResultSetMapping
      * List of columns in the result set that are used as discriminator columns.
      *
      * @ignore
-     * @var array
+     * @psalm-var array<string, string>
      */
     public $discriminatorColumns = [];
 
@@ -137,7 +137,7 @@ class ResultSetMapping
      * Maps alias names to field names that should be used for indexing.
      *
      * @ignore
-     * @var array
+     * @psalm-var array<string, string>
      */
     public $indexByMap = [];
 
@@ -145,35 +145,35 @@ class ResultSetMapping
      * Map from column names to class names that declare the field the column is mapped to.
      *
      * @ignore
-     * @var array
+     * @psalm-var array<string, class-string>
      */
     public $declaringClasses = [];
 
     /**
      * This is necessary to hydrate derivate foreign keys correctly.
      *
-     * @var array
+     * @psalm-var array<string, array<string, bool>>
      */
     public $isIdentifierColumn = [];
 
     /**
      * Maps column names in the result set to field names for each new object expression.
      *
-     * @var array
+     * @psalm-var array<string, array<string, mixed>>
      */
     public $newObjectMappings = [];
 
     /**
      * Maps metadata parameter names to the metadata attribute.
      *
-     * @var array
+     * @psalm-var array<int|string, string>
      */
     public $metadataParameterMapping = [];
 
     /**
      * Contains query parameter names to be resolved as discriminator values
      *
-     * @var array
+     * @psalm-var array<string, string>
      */
     public $discriminatorParameters = [];
 
@@ -528,7 +528,7 @@ class ResultSetMapping
     }
 
     /**
-     * @return array
+     * @psalm-return array<string, class-string>
      */
     public function getAliasMap()
     {

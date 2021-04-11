@@ -32,8 +32,10 @@ class LockTest extends OrmFunctionalTestCase
     /**
      * @group DDC-178
      * @group locking
+     * @testWith [false]
+     *           [true]
      */
-    public function testLockVersionedEntity(): void
+    public function testLockVersionedEntity(bool $useStringVersion): void
     {
         $article        = new CmsArticle();
         $article->text  = 'my article';
@@ -42,7 +44,15 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->flush();
 
-        $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version);
+        $lockVersion = $article->version;
+        if ($useStringVersion) {
+            // NOTE: Officially, the lock method (and callers) do not accept a string argument. Calling code should
+            // cast the version to (int) as per the docs. However, this is not currently enforced. This may change in
+            // a future release.
+            $lockVersion = (string) $lockVersion;
+        }
+
+        $this->_em->lock($article, LockMode::OPTIMISTIC, $lockVersion);
 
         $this->addToAssertionCount(1);
     }
@@ -50,8 +60,10 @@ class LockTest extends OrmFunctionalTestCase
     /**
      * @group DDC-178
      * @group locking
+     * @testWith [false]
+     *           [true]
      */
-    public function testLockVersionedEntityMismatchThrowsException(): void
+    public function testLockVersionedEntityMismatchThrowsException(bool $useStringVersion): void
     {
         $article        = new CmsArticle();
         $article->text  = 'my article';
@@ -61,8 +73,12 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->expectException(OptimisticLockException::class);
+        $lockVersion = $article->version + 1;
+        if ($useStringVersion) {
+            $lockVersion = (string) $lockVersion;
+        }
 
-        $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
+        $this->_em->lock($article, LockMode::OPTIMISTIC, $lockVersion);
     }
 
     /**
@@ -165,7 +181,7 @@ class LockTest extends OrmFunctionalTestCase
 
         $query = array_pop($this->_sqlLoggerStack->queries);
         $query = array_pop($this->_sqlLoggerStack->queries);
-        $this->assertContains($writeLockSql, $query['sql']);
+        $this->assertStringContainsString($writeLockSql, $query['sql']);
     }
 
     /**
@@ -200,7 +216,7 @@ class LockTest extends OrmFunctionalTestCase
         array_pop($this->_sqlLoggerStack->queries);
         $query = array_pop($this->_sqlLoggerStack->queries);
 
-        $this->assertContains($readLockSql, $query['sql']);
+        $this->assertStringContainsString($readLockSql, $query['sql']);
     }
 
     /**

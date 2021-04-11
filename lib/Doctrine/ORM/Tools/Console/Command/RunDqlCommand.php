@@ -35,6 +35,7 @@ use function assert;
 use function constant;
 use function defined;
 use function is_numeric;
+use function sprintf;
 use function str_replace;
 use function strtoupper;
 
@@ -71,7 +72,8 @@ class RunDqlCommand extends Command
         $em = $this->getHelper('em')->getEntityManager();
         assert($em instanceof EntityManagerInterface);
 
-        if (($dql = $input->getArgument('dql')) === null) {
+        $dql = $input->getArgument('dql');
+        if ($dql === null) {
             throw new RuntimeException("Argument 'dql' is required in order to execute this command correctly.");
         }
 
@@ -85,14 +87,16 @@ class RunDqlCommand extends Command
         $hydrationMode     = 'Doctrine\ORM\Query::HYDRATE_' . strtoupper(str_replace('-', '_', $hydrationModeName));
 
         if (! defined($hydrationMode)) {
-            throw new RuntimeException(
-                "Hydration mode '$hydrationModeName' does not exist. It should be either: object. array, scalar or single-scalar."
-            );
+            throw new RuntimeException(sprintf(
+                "Hydration mode '%s' does not exist. It should be either: object. array, scalar or single-scalar.",
+                $hydrationModeName
+            ));
         }
 
         $query = $em->createQuery($dql);
 
-        if (($firstResult = $input->getOption('first-result')) !== null) {
+        $firstResult = $input->getOption('first-result');
+        if ($firstResult !== null) {
             if (! is_numeric($firstResult)) {
                 throw new LogicException("Option 'first-result' must contain an integer value");
             }
@@ -100,7 +104,8 @@ class RunDqlCommand extends Command
             $query->setFirstResult((int) $firstResult);
         }
 
-        if (($maxResult = $input->getOption('max-result')) !== null) {
+        $maxResult = $input->getOption('max-result');
+        if ($maxResult !== null) {
             if (! is_numeric($maxResult)) {
                 throw new LogicException("Option 'max-result' must contain an integer value");
             }

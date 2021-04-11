@@ -7,15 +7,18 @@ namespace Doctrine\Tests\Models\Company;
 /** @Entity @Table(name="company_raffles") */
 class CompanyRaffle extends CompanyEvent
 {
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     private $data;
 
-    public function setData($data): void
+    public function setData(string $data): void
     {
         $this->data = $data;
     }
 
-    public function getData()
+    public function getData(): string
     {
         return $this->data;
     }

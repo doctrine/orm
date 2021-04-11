@@ -26,7 +26,7 @@ final class GH8061Test extends OrmTestCase
         $entityManager = $this->getTestEntityManager();
         $query         = $entityManager->createQuery($dql);
 
-        self::assertRegExp('/SELECT DatabaseFunction\(\w+\.field\) AS /', $query->getSQL());
+        self::assertMatchesRegularExpression('/SELECT DatabaseFunction\(\w+\.field\) AS /', $query->getSQL());
     }
 }
 

@@ -109,7 +109,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
     public function testEntityManagerEnableFilter(): void
     {
-        $em = $this->_getEntityManager();
+        $em = $this->getEntityManager();
         $this->configureFilters($em);
 
         // Enable an existing filter
@@ -133,7 +133,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
     public function testEntityManagerEnabledFilters(): void
     {
-        $em = $this->_getEntityManager();
+        $em = $this->getEntityManager();
 
         // No enabled filters
         $this->assertEquals([], $em->getFilters()->getEnabledFilters());
@@ -148,7 +148,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
     public function testEntityManagerDisableFilter(): void
     {
-        $em = $this->_getEntityManager();
+        $em = $this->getEntityManager();
         $this->configureFilters($em);
 
         // Enable the filter
@@ -181,7 +181,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
     public function testEntityManagerGetFilter(): void
     {
-        $em = $this->_getEntityManager();
+        $em = $this->getEntityManager();
         $this->configureFilters($em);
 
         // Enable the filter
@@ -206,7 +206,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
      */
     public function testEntityManagerIsFilterEnabled(): void
     {
-        $em = $this->_getEntityManager();
+        $em = $this->getEntityManager();
         $this->configureFilters($em);
 
         // Check for an enabled filter

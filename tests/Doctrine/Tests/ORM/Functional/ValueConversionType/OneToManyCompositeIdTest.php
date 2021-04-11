@@ -44,7 +44,7 @@ class OneToManyCompositeIdTest extends OrmFunctionalTestCase
 
     public static function tearDownAfterClass(): void
     {
-        $conn = static::$_sharedConn;
+        $conn = static::$sharedConn;
 
         $conn->executeUpdate('DROP TABLE vct_owning_manytoone_compositeid');
         $conn->executeUpdate('DROP TABLE vct_inversed_onetomany_compositeid');

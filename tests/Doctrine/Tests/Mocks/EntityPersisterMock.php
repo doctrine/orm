@@ -8,8 +8,6 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 
-use function is_null;
-
 /**
  * EntityPersister implementation used for mocking during tests.
  */
@@ -30,7 +28,7 @@ class EntityPersisterMock extends BasicEntityPersister
     /** @var int|null */
     private $mockIdGeneratorType;
 
-    /** @var array */
+    /** @psalm-var list<array{generatedId: int, entity: object}> */
     private $postInsertIds = [];
 
     /** @var bool */
@@ -43,7 +41,7 @@ class EntityPersisterMock extends BasicEntityPersister
     {
         $this->inserts[] = $entity;
         if (
-            ! is_null($this->mockIdGeneratorType) && $this->mockIdGeneratorType === ClassMetadata::GENERATOR_TYPE_IDENTITY
+            $this->mockIdGeneratorType !== null && $this->mockIdGeneratorType === ClassMetadata::GENERATOR_TYPE_IDENTITY
                 || $this->class->isIdGeneratorIdentity()
         ) {
             $id                    = $this->identityColumnValueCounter++;
@@ -59,7 +57,7 @@ class EntityPersisterMock extends BasicEntityPersister
     }
 
     /**
-     * @return array
+     * @psalm-return list<array{generatedId: int, entity: object}>
      */
     public function executeInserts(): array
     {

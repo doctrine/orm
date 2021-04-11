@@ -18,7 +18,10 @@ class Article
      */
     public $id;
 
-    /** @Column(name="name") */
+    /**
+     * @var string
+     * @Column(name="name")
+     */
     public $name;
 
     /**
@@ -30,6 +33,7 @@ class Article
     /**
      * Version column
      *
+     * @var int
      * @Column(type="integer", name="version")
      * @Version
      */

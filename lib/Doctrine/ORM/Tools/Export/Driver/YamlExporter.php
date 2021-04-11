@@ -65,11 +65,13 @@ class YamlExporter extends AbstractExporter
             $array['inheritanceType'] = $this->_getInheritanceTypeString($inheritanceType);
         }
 
-        if ($column = $metadata->discriminatorColumn) {
+        $column = $metadata->discriminatorColumn;
+        if ($column) {
             $array['discriminatorColumn'] = $column;
         }
 
-        if ($map = $metadata->discriminatorMap) {
+        $map = $metadata->discriminatorMap;
+        if ($map) {
             $array['discriminatorMap'] = $map;
         }
 
@@ -241,6 +243,10 @@ class YamlExporter extends AbstractExporter
         return Yaml::dump($array, $inline);
     }
 
+    /**
+     * @psalm-param array<string, mixed> $array
+     * @psalm-return array<string, mixed>&array{entityListeners: array<class-string, array<string, array{string}>>}
+     */
     private function processEntityListeners(ClassMetadataInfo $metadata, array $array): array
     {
         if (count($metadata->entityListeners) === 0) {
@@ -256,8 +262,16 @@ class YamlExporter extends AbstractExporter
         return $array;
     }
 
-    private function processEntityListenerConfig(array $array, array $entityListenerConfig, string $event): array
-    {
+    /**
+     * @psalm-param array{entityListeners: array<class-string, array<string, array{string}>>} $array
+     * @psalm-param list<array{class: class-string, method: string}> $entityListenerConfig
+     * @psalm-return array{entityListeners: array<class-string, array<string, array{string}>>}
+     */
+    private function processEntityListenerConfig(
+        array $array,
+        array $entityListenerConfig,
+        string $event
+    ): array {
         foreach ($entityListenerConfig as $entityListener) {
             if (! isset($array['entityListeners'][$entityListener['class']])) {
                 $array['entityListeners'][$entityListener['class']] = [];
