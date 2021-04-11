@@ -358,7 +358,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $this->assertEquals("'en','es'", $filter->getParameterList('locale'));
     }
 
-    public function testSQLFilterAddConstraint(): void
+    public function testSQLFilterAddConstraint()
     {
         // Set up metadata mock
         $targetEntity = $this->getMockBuilder(ClassMetadata::class)
