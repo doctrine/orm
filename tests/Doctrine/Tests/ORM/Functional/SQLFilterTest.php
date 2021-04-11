@@ -332,19 +332,14 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         // Setup mock connection
         $conn = $this->getMockConnection();
-        $conn->expects($this->at(0))
-            ->method('quote')
-            ->with($this->equalTo('en'))
-            ->will($this->returnValue("'en'"));
-        $conn->expects($this->at(1))
-            ->method('quote')
-            ->with($this->equalTo('es'))
-            ->will($this->returnValue("'es'"));
+        $conn->method('quote')
+             ->will($this->returnCallback(function ($value) {
+                 return "'" . $value . "'";
+             }));
 
         $em = $this->getMockEntityManager();
-        $em->expects($this->once())
-            ->method('getConnection')
-            ->will($this->returnValue($conn));
+        $em->method('getConnection')
+           ->will($this->returnValue($conn));
 
         $filterCollection = $this->addMockFilterCollection($em);
         $filterCollection
