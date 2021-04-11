@@ -66,7 +66,7 @@ final class MappingDescribeCommand extends AbstractEntityManagerCommand
         $this->setName('orm:mapping:describe')
              ->addArgument('entityName', InputArgument::REQUIRED, 'Full or partial name of entity')
              ->setDescription('Display information about mapped objects')
-             ->addOption('entity-manager', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->setHelp(<<<EOT
 The %command.full_name% command describes the metadata for the given full or partial entity class name.
 

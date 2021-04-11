@@ -40,7 +40,7 @@ class EnsureProductionSettingsCommand extends AbstractEntityManagerCommand
     {
         $this->setName('orm:ensure-production-settings')
              ->setDescription('Verify that Doctrine is properly configured for a production environment')
-             ->addOption('entity-manager', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->addOption('complete', null, InputOption::VALUE_NONE, 'Flag to also inspect database connection existence.')
              ->setHelp('Verify that Doctrine is properly configured for a production environment.');
     }

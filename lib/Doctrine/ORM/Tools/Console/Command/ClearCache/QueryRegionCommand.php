@@ -48,7 +48,7 @@ class QueryRegionCommand extends AbstractEntityManagerCommand
         $this->setName('orm:clear-cache:region:query')
              ->setDescription('Clear a second-level cache query region')
              ->addArgument('region-name', InputArgument::OPTIONAL, 'The query region to clear.')
-             ->addOption('entity-manager', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->addOption('all', null, InputOption::VALUE_NONE, 'If defined, all query regions will be deleted/invalidated.')
              ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, all cache entries will be flushed.')
              ->setHelp(<<<EOT

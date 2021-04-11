@@ -51,7 +51,7 @@ class GenerateProxiesCommand extends AbstractEntityManagerCommand
              ->setAliases(['orm:generate:proxies'])
              ->setDescription('Generates proxy classes for entity classes')
              ->addArgument('dest-path', InputArgument::OPTIONAL, 'The path to generate your proxy classes. If none is provided, it will attempt to grab from configuration.')
-             ->addOption('entity-manager', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->addOption('filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'A string pattern used to match entities that should be processed.')
              ->setHelp('Generates proxy classes for entity classes.');
     }

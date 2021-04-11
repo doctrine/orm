@@ -49,7 +49,7 @@ class EntityRegionCommand extends AbstractEntityManagerCommand
              ->setDescription('Clear a second-level cache entity region')
              ->addArgument('entity-class', InputArgument::OPTIONAL, 'The entity name.')
              ->addArgument('entity-id', InputArgument::OPTIONAL, 'The entity identifier.')
-             ->addOption('entity-manager', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->addOption('all', null, InputOption::VALUE_NONE, 'If defined, all entity regions will be deleted/invalidated.')
              ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, all cache entries will be flushed.')
              ->setHelp(<<<EOT

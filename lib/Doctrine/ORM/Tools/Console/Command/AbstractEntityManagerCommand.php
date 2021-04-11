@@ -23,7 +23,7 @@ abstract class AbstractEntityManagerCommand extends Command
     protected function getEntityManager(InputInterface $input): EntityManagerInterface
     {
         // This is a backwards compatibility required check for commands extending Doctrine ORM commands
-        if (! $input->hasOption('entity-manager') || $this->entityManagerProvider === null) {
+        if (! $input->hasOption('em') || $this->entityManagerProvider === null) {
             Deprecation::trigger(
                 'doctrine/orm',
                 'https://github.com/doctrine/orm/issues/8327',
@@ -34,6 +34,6 @@ abstract class AbstractEntityManagerCommand extends Command
             return $this->getHelper('em')->getEntityManager();
         }
 
-        return $this->entityManagerProvider->getManager($input->getOption('entity-manager'));
+        return $this->entityManagerProvider->getManager($input->getOption('em'));
     }
 }

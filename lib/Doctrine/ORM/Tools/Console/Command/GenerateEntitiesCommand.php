@@ -53,7 +53,7 @@ class GenerateEntitiesCommand extends AbstractEntityManagerCommand
              ->setAliases(['orm:generate:entities'])
              ->setDescription('Generate entity classes and method stubs from your mapping information')
              ->addArgument('dest-path', InputArgument::REQUIRED, 'The path to generate your entity classes.')
-             ->addOption('entity-manager', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->addOption('filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'A string pattern used to match entities that should be processed.')
              ->addOption('generate-annotations', null, InputOption::VALUE_OPTIONAL, 'Flag to define if generator should generate annotation metadata on entities.', false)
              ->addOption('generate-methods', null, InputOption::VALUE_OPTIONAL, 'Flag to define if generator should generate stub methods on entities.', true)

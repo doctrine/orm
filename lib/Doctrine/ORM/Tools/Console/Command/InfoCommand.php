@@ -43,7 +43,7 @@ class InfoCommand extends AbstractEntityManagerCommand
     {
         $this->setName('orm:info')
              ->setDescription('Show basic information about all mapped entities')
-             ->addOption('entity-manager', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->setHelp(<<<EOT
 The <info>%command.name%</info> shows basic information about which
 entities exist and possibly if their mapping information contains errors or

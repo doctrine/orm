@@ -42,7 +42,7 @@ class ValidateSchemaCommand extends AbstractEntityManagerCommand
     {
         $this->setName('orm:validate-schema')
              ->setDescription('Validate the mapping files')
-             ->addOption('entity-manager', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->addOption('skip-mapping', null, InputOption::VALUE_NONE, 'Skip the mapping validation check')
              ->addOption('skip-sync', null, InputOption::VALUE_NONE, 'Skip checking if the mapping is in sync with the database')
              ->setHelp('Validate that the mapping files are correct and in sync with the database.');
