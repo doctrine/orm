@@ -91,9 +91,9 @@ abstract class AbstractExporter
     /**
      * Sets the array of ClassMetadata instances to export.
      *
-     * @return void
-     *
      * @psalm-param list<ClassMetadata> $metadata
+     *
+     * @return void
      */
     public function setMetadata(array $metadata)
     {
@@ -190,10 +190,9 @@ abstract class AbstractExporter
 
     /**
      * @param int $type
+     * @psalm-param ClassMetadataInfo::INHERITANCE_TYPE_* $type
      *
      * @return string
-     *
-     * @psalm-param ClassMetadataInfo::INHERITANCE_TYPE_* $type
      */
     protected function _getInheritanceTypeString($type)
     {
@@ -214,10 +213,9 @@ abstract class AbstractExporter
 
     /**
      * @param int $mode
+     * @psalm-param ClassMetadataInfo::FETCH_* $mode
      *
      * @return string
-     *
-     * @psalm-param ClassMetadataInfo::FETCH_* $mode
      */
     protected function _getFetchModeString($mode)
     {
@@ -235,10 +233,9 @@ abstract class AbstractExporter
 
     /**
      * @param int $policy
+     * @psalm-param ClassMetadataInfo::CHANGETRACKING_* $policy
      *
      * @return string
-     *
-     * @psalm-param ClassMetadataInfo::CHANGETRACKING_* $policy
      */
     protected function _getChangeTrackingPolicyString($policy)
     {
@@ -256,10 +253,9 @@ abstract class AbstractExporter
 
     /**
      * @param int $type
+     * @psalm-param ClassMetadataInfo::GENERATOR_TYPE_* $type
      *
      * @return string
-     *
-     * @psalm-param ClassMetadataInfo::GENERATOR_TYPE_* $type
      */
     protected function _getIdGeneratorTypeString($type)
     {
