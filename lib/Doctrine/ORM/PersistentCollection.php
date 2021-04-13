@@ -111,7 +111,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @param EntityManagerInterface $em    The EntityManager the collection will be associated with.
      * @param ClassMetadata          $class The class descriptor of the entity type of this collection.
-     *
      * @psalm-param Collection<TKey, T> $collection The collection elements.
      */
     public function __construct(EntityManagerInterface $em, $class, Collection $collection)
@@ -128,10 +127,9 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * describes the association between the owner and the elements of the collection.
      *
      * @param object $entity
+     * @psalm-param array<string, mixed> $assoc
      *
      * @return void
-     *
-     * @psalm-param array<string, mixed> $assoc
      */
     public function setOwner($entity, array $assoc)
     {
@@ -605,7 +603,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *                with circular references. This solution seems simpler and works well.
      *
      * @return string[]
-     *
      * @psalm-return array{0: string, 1: string}
      */
     public function __sleep(): array

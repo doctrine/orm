@@ -56,7 +56,6 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
 
     /**
      * @return string|false
-     *
      * @psalm-return class-string<TreeWalker>|false
      */
     public function rewind()

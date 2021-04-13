@@ -71,7 +71,6 @@ class ConvertDoctrine1Schema
      * Doctrine 1 schema.
      *
      * @return ClassMetadataInfo[] An array of ClassMetadataInfo instances
-     *
      * @psalm-return list<ClassMetadataInfo>
      */
     public function getMetadata()

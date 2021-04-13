@@ -883,11 +883,10 @@ class UnitOfWork implements PropertyChangedListener
      * Computes the changes of an association.
      *
      * @param mixed $value The value of the association.
+     * @psalm-param array<string, mixed> $assoc The association mapping.
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
-     *
-     * @psalm-param array<string, mixed> $assoc The association mapping.
      */
     private function computeAssociationChanges(array $assoc, $value): void
     {
@@ -1412,10 +1411,10 @@ class UnitOfWork implements PropertyChangedListener
      * Extra updates for entities are stored as (entity, changeset) tuples.
      *
      * @param object $entity The entity for which to schedule an extra update.
+     * @psalm-param array<string, array{mixed, mixed}>  $changeset The changeset of the entity (what to update).
      *
      * @return void
      *
-     * @psalm-param array<string, array{mixed, mixed}>  $changeset The changeset of the entity (what to update).
      * @ignore
      */
     public function scheduleExtraUpdate($entity, array $changeset)
@@ -1772,11 +1771,10 @@ class UnitOfWork implements PropertyChangedListener
      * the already visited entities to prevent infinite recursions.
      *
      * @param object $entity The entity to persist.
+     * @psalm-param array<string, object> $visited The already visited entities.
      *
      * @throws ORMInvalidArgumentException
      * @throws UnexpectedValueException
-     *
-     * @psalm-param array<string, object> $visited The already visited entities.
      */
     private function doPersist(object $entity, array &$visited): void
     {
@@ -1858,11 +1856,10 @@ class UnitOfWork implements PropertyChangedListener
      * the already visited entities to prevent infinite recursions.
      *
      * @param object $entity The entity to delete.
+     * @psalm-param array<string, object> $visited The map of the already visited entities.
      *
      * @throws ORMInvalidArgumentException If the instance is a detached entity.
      * @throws UnexpectedValueException
-     *
-     * @psalm-param array<string, object> $visited The map of the already visited entities.
      */
     private function doRemove($entity, array &$visited): void
     {
@@ -1932,6 +1929,7 @@ class UnitOfWork implements PropertyChangedListener
      * Executes a merge operation on an entity.
      *
      * @param string[] $assoc
+     * @psalm-param array<string, object> $visited
      *
      * @return object The managed copy of the entity.
      *
@@ -1939,8 +1937,6 @@ class UnitOfWork implements PropertyChangedListener
      *         attribute and the version check against the managed copy fails.
      * @throws ORMInvalidArgumentException If the entity instance is NEW.
      * @throws EntityNotFoundException if an assigned identifier is used in the entity, but none is provided.
-     *
-     * @psalm-param array<string, object> $visited
      */
     private function doMerge(
         object $entity,
@@ -2186,10 +2182,9 @@ class UnitOfWork implements PropertyChangedListener
      * Executes a refresh operation on an entity.
      *
      * @param object $entity The entity to refresh.
+     * @psalm-param array<string, object>  $visited The already visited entities during cascades.
      *
      * @throws ORMInvalidArgumentException If the entity is not MANAGED.
-     *
-     * @psalm-param array<string, object>  $visited The already visited entities during cascades.
      */
     private function doRefresh(object $entity, array &$visited): void
     {
@@ -2637,10 +2632,10 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param string  $className The name of the entity class.
      * @param mixed[] $data      The data for the entity.
+     * @psalm-param array<string, mixed> $hints Any hints to account for during reconstitution/lookup of the entity.
      *
      * @return object The managed entity instance.
      *
-     * @psalm-param array<string, mixed> $hints Any hints to account for during reconstitution/lookup of the entity.
      * @ignore
      * @todo Rename: getOrCreateEntity
      */
@@ -3170,9 +3165,9 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Gets a collection persister for a collection-valued association.
      *
-     * @return CollectionPersister
-     *
      * @psalm-param array<string, mixed> $association
+     *
+     * @return CollectionPersister
      */
     public function getCollectionPersister(array $association)
     {

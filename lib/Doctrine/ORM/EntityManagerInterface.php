@@ -155,14 +155,14 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param string $entityName The name of the entity type.
      * @param mixed  $id         The entity identifier.
+     * @psalm-param class-string<T> $entityName
      *
      * @return object|null The entity reference.
+     * @psalm-return ?T
      *
      * @throws ORMException
      *
      * @template T
-     * @psalm-param class-string<T> $entityName
-     * @psalm-return ?T
      */
     public function getReference($entityName, $id);
 

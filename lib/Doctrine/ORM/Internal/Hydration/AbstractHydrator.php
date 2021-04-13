@@ -123,10 +123,9 @@ abstract class AbstractHydrator
      *
      * @param object $stmt
      * @param object $resultSetMapping
+     * @psalm-param array<string, mixed> $hints
      *
      * @return IterableResult
-     *
-     * @psalm-param array<string, mixed> $hints
      */
     public function iterate($stmt, $resultSetMapping, array $hints = [])
     {
@@ -151,9 +150,9 @@ abstract class AbstractHydrator
     /**
      * Initiates a row-by-row hydration.
      *
-     * @return iterable<mixed>
-     *
      * @psalm-param array<string, mixed> $hints
+     *
+     * @return iterable<mixed>
      */
     public function toIterable(ResultStatement $stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
     {
@@ -195,10 +194,9 @@ abstract class AbstractHydrator
      *
      * @param object $stmt
      * @param object $resultSetMapping
+     * @psalm-param array<string, string> $hints
      *
      * @return mixed[]
-     *
-     * @psalm-param array<string, string> $hints
      */
     public function hydrateAll($stmt, $resultSetMapping, array $hints = [])
     {
@@ -322,14 +320,13 @@ abstract class AbstractHydrator
      * the values applied. Scalar values are kept in a specific key 'scalars'.
      *
      * @param mixed[] $data SQL Result Row.
+     * @psalm-param array<string, string> $id                 Dql-Alias => ID-Hash.
+     * @psalm-param array<string, bool>   $nonemptyComponents Does this DQL-Alias has at least one non NULL value?
      *
      * @return array<string, array<string, mixed>> An array with all the fields
      *                                             (name => value) of the data
      *                                             row, grouped by their
      *                                             component alias.
-     *
-     * @psalm-param array<string, string> $id                 Dql-Alias => ID-Hash.
-     * @psalm-param array<string, bool>   $nonemptyComponents Does this DQL-Alias has at least one non NULL value?
      * @psalm-return array{
      *                   data: array<array-key, array>,
      *                   newObjects?: array<array-key, array{
@@ -415,6 +412,7 @@ abstract class AbstractHydrator
      * of elements as before.
      *
      * @psalm-param array<string, mixed> $data
+     *
      * @psalm-return array<string, mixed> The processed row.
      */
     protected function gatherScalarRowData(&$data)
