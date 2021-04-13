@@ -52,10 +52,9 @@ class Expr
      * @param Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string $x Optional clause. Defaults to null,
      *                                                               but requires at least one defined
      *                                                               when converting to string.
+     * @psalm-param Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string ...$x
      *
      * @return Expr\Andx
-     *
-     * @psalm-param Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string ...$x
      */
     public function andX($x = null)
     {
@@ -74,10 +73,9 @@ class Expr
      * @param Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string $x Optional clause. Defaults to null,
      *                                                               but requires at least one defined
      *                                                               when converting to string.
+     * @psalm-param Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string ...$x
      *
      * @return Expr\Orx
-     *
-     * @psalm-param Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string ...$x
      */
     public function orX($x = null)
     {

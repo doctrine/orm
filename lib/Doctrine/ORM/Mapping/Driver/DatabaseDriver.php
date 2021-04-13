@@ -145,10 +145,10 @@ class DatabaseDriver implements MappingDriver
     /**
      * Sets tables manually instead of relying on the reverse engineering capabilities of SchemaManager.
      *
-     * @return void
-     *
      * @psalm-param list<Table> $entityTables
      * @psalm-param list<Table> $manyToManyTables
+     *
+     * @return void
      */
     public function setTables($entityTables, $manyToManyTables)
     {
@@ -498,7 +498,6 @@ class DatabaseDriver implements MappingDriver
      * Retrieve schema table definition foreign keys.
      *
      * @return ForeignKeyConstraint[]
-     *
      * @psalm-return array<string, ForeignKeyConstraint>
      */
     private function getTableForeignKeys(Table $table)

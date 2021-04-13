@@ -488,7 +488,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
     /**
      * @param mixed[] $joinColumns
-     *
      * @psalm-param array<string, mixed> $mapping
      */
     private function loadRelationShipMapping(
@@ -618,7 +617,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * Parses the given method.
      *
      * @return callable[]
-     *
      * @psalm-return list<callable-array>
      */
     private function getMethodCallbacks(ReflectionMethod $method)
@@ -667,7 +665,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * Parse the given JoinColumn as array
      *
      * @return mixed[]
-     *
      * @psalm-return array{
      *                   name: string,
      *                   unique: bool,
@@ -695,7 +692,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * @param string $fieldName
      *
      * @return mixed[]
-     *
      * @psalm-return array{
      *                   fieldName: string,
      *                   type: mixed,

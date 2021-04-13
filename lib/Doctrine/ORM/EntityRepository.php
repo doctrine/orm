@@ -183,7 +183,6 @@ class EntityRepository implements ObjectRepository, Selectable
      * @param int|null $lockVersion The lock version.
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
-     *
      * @psalm-return ?T
      */
     public function find($id, $lockMode = null, $lockVersion = null)
@@ -206,9 +205,9 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @param int|null $limit
      * @param int|null $offset
-     *
      * @psalm-param array<string, mixed> $criteria
      * @psalm-param array<string, string>|null $orderBy
+     *
      * @psalm-return list<T> The objects.
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null)
@@ -221,10 +220,10 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Finds a single entity by a set of criteria.
      *
-     * @return object|null The entity instance or NULL if the entity can not be found.
-     *
      * @psalm-param array<string, mixed> $criteria
      * @psalm-param array<string, string>|null $orderBy
+     *
+     * @return object|null The entity instance or NULL if the entity can not be found.
      * @psalm-return ?T
      */
     public function findOneBy(array $criteria, ?array $orderBy = null)
@@ -237,9 +236,10 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Counts entities by a set of criteria.
      *
+     * @psalm-param array<string, mixed> $criteria
+     *
      * @return int The cardinality of the objects that match the given criteria.
      *
-     * @psalm-param array<string, mixed> $criteria
      * @todo Add this method to `ObjectRepository` interface in the next major release
      */
     public function count(array $criteria)
@@ -251,13 +251,12 @@ class EntityRepository implements ObjectRepository, Selectable
      * Adds support for magic method calls.
      *
      * @param string $method
+     * @psalm-param list<mixed> $arguments
      *
      * @return mixed The returned value from the resolved method.
      *
      * @throws ORMException
      * @throws BadMethodCallException If the method called is invalid.
-     *
-     * @psalm-param list<mixed> $arguments
      */
     public function __call($method, $arguments)
     {
@@ -330,12 +329,11 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @param string $method The method to call
      * @param string $by     The property name used as condition
+     * @psalm-param list<mixed> $arguments The arguments to pass at method call
      *
      * @return mixed
      *
      * @throws ORMException If the method called is invalid or the requested field/association does not exist.
-     *
-     * @psalm-param list<mixed> $arguments The arguments to pass at method call
      */
     private function resolveMagicCall(string $method, string $by, array $arguments)
     {
