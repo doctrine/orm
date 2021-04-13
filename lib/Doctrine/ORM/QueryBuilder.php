@@ -455,7 +455,6 @@ class QueryBuilder
      * </code>
      *
      * @return mixed[]
-     *
      * @psalm-return list<mixed>
      */
     public function getRootAliases()
@@ -491,7 +490,6 @@ class QueryBuilder
      * </code>
      *
      * @return mixed[]
-     *
      * @psalm-return list<mixed>
      */
     public function getAllAliases()
@@ -512,7 +510,6 @@ class QueryBuilder
      * </code>
      *
      * @return mixed[]
-     *
      * @psalm-return list<mixed>
      */
     public function getRootEntities()
@@ -695,10 +692,9 @@ class QueryBuilder
      *
      * @param string $dqlPartName The DQL part name.
      * @param bool   $append      Whether to append (true) or replace (false).
+     * @psalm-param string|object|list<string>|array{join: array<int|string, object>} $dqlPart     An Expr object.
      *
      * @return self
-     *
-     * @psalm-param string|object|list<string>|array{join: array<int|string, object>} $dqlPart     An Expr object.
      */
     public function add($dqlPartName, $dqlPart, $append = false)
     {
@@ -1469,9 +1465,9 @@ class QueryBuilder
     /**
      * Resets DQL parts.
      *
-     * @return self
-     *
      * @psalm-param list<string>|null $parts
+     *
+     * @return self
      */
     public function resetDQLParts($parts = null)
     {

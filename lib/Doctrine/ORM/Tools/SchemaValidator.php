@@ -80,7 +80,6 @@ class SchemaValidator
      * Validates a single class of the current.
      *
      * @return string[]
-     *
      * @psalm-return list<string>
      */
     public function validateClass(ClassMetadataInfo $class)

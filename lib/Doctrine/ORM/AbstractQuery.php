@@ -346,10 +346,9 @@ abstract class AbstractQuery
      * Sets a collection of query parameters.
      *
      * @param ArrayCollection|mixed[] $parameters
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
      *
      * @return static This query instance.
-     *
-     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
      */
     public function setParameters($parameters)
     {
@@ -402,10 +401,9 @@ abstract class AbstractQuery
      * @param mixed $value
      *
      * @return mixed[]|string|int|float|bool
+     * @psalm-return array|scalar
      *
      * @throws ORMInvalidArgumentException
-     *
-     * @psalm-return array|scalar
      */
     public function processParameterValue($value)
     {
