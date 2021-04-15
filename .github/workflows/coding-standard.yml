@@ -19,6 +19,9 @@ jobs:
           - "7.4"
 
     steps:
+      - name: "Check env"
+        run: "env"
+
       - name: "Checkout"
         uses: "actions/checkout@v2"
 
