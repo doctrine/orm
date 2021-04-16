@@ -26,6 +26,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
 use FilterIterator;
 use RuntimeException;
 
+use function assert;
 use function count;
 use function iterator_to_array;
 use function preg_match;
@@ -79,7 +80,7 @@ class MetadataFilter extends FilterIterator implements Countable
         $metadata = $it->current();
 
         foreach ($this->filter as $filter) {
-            $pregResult = preg_match('/' . $filter . '/', $metadata->name);
+            $pregResult = preg_match('/' . $filter . '/', $metadata->getName());
 
             if ($pregResult === false) {
                 throw new RuntimeException(
@@ -93,6 +94,18 @@ class MetadataFilter extends FilterIterator implements Countable
         }
 
         return false;
+    }
+
+    /**
+     * @return ArrayIterator<int, ClassMetadata>
+     */
+    public function getInnerIterator()
+    {
+        $innerIterator = parent::getInnerIterator();
+
+        assert($innerIterator instanceof ArrayIterator);
+
+        return $innerIterator;
     }
 
     /**

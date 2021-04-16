@@ -2316,11 +2316,6 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Console/Command/RunDqlCommand.php
 
 		-
-			message: "#^Parameter \\#1 \\$var of function count expects array\\|Countable, Iterator given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/MetadataFilter.php
-
-		-
 			message: "#^Offset 'declaredField' does not exist on array\\('type' \\=\\> string, 'fieldName' \\=\\> string, \\?'columnName' \\=\\> string, \\?'length' \\=\\> int, \\?'id' \\=\\> bool, \\?'nullable' \\=\\> bool, \\?'columnDefinition' \\=\\> string, \\?'precision' \\=\\> int, \\.\\.\\.\\)\\.$#"
 			count: 3
 			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
