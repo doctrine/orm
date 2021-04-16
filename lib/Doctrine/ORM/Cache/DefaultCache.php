@@ -48,7 +48,7 @@ class DefaultCache implements Cache
     /** @var QueryCache[] */
     private $queryCaches = [];
 
-    /** @var QueryCache */
+    /** @var QueryCache|null */
     private $defaultQueryCache;
 
     public function __construct(EntityManagerInterface $em)

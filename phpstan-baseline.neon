@@ -11,11 +11,6 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/DefaultCache.php
 
 		-
-			message: "#^Ternary operator condition is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/DefaultCache.php
-
-		-
 			message: "#^Parameter \\#2 \\$region of class Doctrine\\\\ORM\\\\Cache\\\\Persister\\\\Collection\\\\ReadWriteCachedCollectionPersister constructor expects Doctrine\\\\ORM\\\\Cache\\\\ConcurrentRegion, Doctrine\\\\ORM\\\\Cache\\\\Region given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/DefaultCacheFactory.php
