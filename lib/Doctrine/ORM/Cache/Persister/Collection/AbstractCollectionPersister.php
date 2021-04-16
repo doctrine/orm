@@ -72,7 +72,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     /** @var CollectionHydrator */
     protected $hydrator;
 
-    /** @var CacheLogger */
+    /** @var CacheLogger|null */
     protected $cacheLogger;
 
     /**

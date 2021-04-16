@@ -66,21 +66,6 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
 
 		-
-			message: "#^Call to function is_array\\(\\) with Doctrine\\\\Common\\\\Collections\\\\Collection&iterable will always evaluate to false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
-
-		-
-			message: "#^If condition is always true\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
-
-		-
-			message: "#^Left side of && is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
-
-		-
 			message: "#^Parameter \\#1 \\$metadata of method Doctrine\\\\ORM\\\\Cache\\\\EntityHydrator\\:\\:buildCacheEntry\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
@@ -91,17 +76,7 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
 
 		-
-			message: "#^Parameter \\#3 \\$collection of method Doctrine\\\\ORM\\\\Cache\\\\CollectionHydrator\\:\\:buildCacheEntry\\(\\) expects Doctrine\\\\Common\\\\Collections\\\\Collection&iterable, array\\<int, mixed\\>\\|\\(Doctrine\\\\Common\\\\Collections\\\\Collection&iterable\\) given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
-
-		-
 			message: "#^Parameter \\#3 \\$entry of method Doctrine\\\\ORM\\\\Cache\\\\CollectionHydrator\\:\\:loadCacheEntry\\(\\) expects Doctrine\\\\ORM\\\\Cache\\\\CollectionCacheEntry, Doctrine\\\\ORM\\\\Cache\\\\CacheEntry given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
-
-		-
-			message: "#^Property Doctrine\\\\ORM\\\\Cache\\\\Persister\\\\Collection\\\\AbstractCollectionPersister\\:\\:\\$metadataFactory \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) does not accept Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
 
@@ -162,11 +137,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#3 \\$entry of method Doctrine\\\\ORM\\\\Cache\\\\EntityHydrator\\:\\:loadCacheEntry\\(\\) expects Doctrine\\\\ORM\\\\Cache\\\\EntityCacheEntry, Doctrine\\\\ORM\\\\Cache\\\\CacheEntry given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
-
-		-
-			message: "#^Property Doctrine\\\\ORM\\\\Cache\\\\Persister\\\\Entity\\\\AbstractEntityPersister\\:\\:\\$metadataFactory \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) does not accept Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
 
