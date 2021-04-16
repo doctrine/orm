@@ -63,7 +63,7 @@ class Composite extends Base
         }
 
         // Fixes DDC-1237: User may have added a where item containing nested expression (with "OR" or "AND")
-        if (preg_match('/\s(OR|AND)\s/', $queryPart)) {
+        if (preg_match('/\s(OR|AND)\s/i', $queryPart)) {
             return $this->preSeparator . $queryPart . $this->postSeparator;
         }
 

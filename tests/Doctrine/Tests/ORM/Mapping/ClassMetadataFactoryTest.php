@@ -141,14 +141,18 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         $cmf    = new ClassMetadataFactory();
         $driver = $this->createMock(MappingDriver::class);
-        $driver->expects($this->at(0))
-               ->method('isTransient')
-               ->with($this->equalTo(CmsUser::class))
-               ->will($this->returnValue(true));
-        $driver->expects($this->at(1))
-               ->method('isTransient')
-               ->with($this->equalTo(CmsArticle::class))
-               ->will($this->returnValue(false));
+        $driver->expects($this->exactly(2))
+            ->method('isTransient')
+            ->withConsecutive(
+                [CmsUser::class],
+                [CmsArticle::class]
+            )
+            ->willReturnMap(
+                [
+                    [CmsUser::class, true],
+                    [CmsArticle::class, false],
+                ]
+            );
 
         $em = $this->createEntityManager($driver);
 
@@ -163,14 +167,18 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         $cmf    = new ClassMetadataFactory();
         $driver = $this->createMock(MappingDriver::class);
-        $driver->expects($this->at(0))
-               ->method('isTransient')
-               ->with($this->equalTo(CmsUser::class))
-               ->will($this->returnValue(true));
-        $driver->expects($this->at(1))
-               ->method('isTransient')
-               ->with($this->equalTo(CmsArticle::class))
-               ->will($this->returnValue(false));
+        $driver->expects($this->exactly(2))
+            ->method('isTransient')
+            ->withConsecutive(
+                [CmsUser::class],
+                [CmsArticle::class]
+            )
+            ->willReturnMap(
+                [
+                    [CmsUser::class, true],
+                    [CmsArticle::class, false],
+                ]
+            );
 
         $em = $this->createEntityManager($driver);
         $em->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
@@ -501,6 +509,7 @@ class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
 
     /**
      * @psalm-param class-string<object> $className
+     *
      * @override
      */
     protected function newClassMetadataInstance($className): ClassMetadata

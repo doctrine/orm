@@ -61,11 +61,11 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  *      ),
  * })
  */
-#[ORM\Entity, ORM\Table(name: "company_contracts")]
-#[ORM\InheritanceType("SINGLE_TABLE")]
-#[ORM\DiscriminatorColumn(name: "discr", type: "string")]
-#[ORM\DiscriminatorMap(["fix" => "CompanyFixContract", "flexible" => "CompanyFlexContract", "flexultra" => "CompanyFlexUltraContract"])]
-#[ORM\EntityListeners(["CompanyContractListener"])]
+#[ORM\Entity, ORM\Table(name: 'company_contracts')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['fix' => 'CompanyFixContract', 'flexible' => 'CompanyFlexContract', 'flexultra' => 'CompanyFlexUltraContract'])]
+#[ORM\EntityListeners(['CompanyContractListener'])]
 abstract class CompanyContract
 {
     /**
@@ -74,7 +74,7 @@ abstract class CompanyContract
      * @column(type="integer")
      * @GeneratedValue
      */
-    #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue]
+    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue]
     private $id;
 
     /**

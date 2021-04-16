@@ -165,9 +165,9 @@ class QueryException extends ORMException
     }
 
     /**
-     * @return QueryException
-     *
      * @psalm-param array<string, string> $assoc
+     *
+     * @return QueryException
      */
     public static function iterateWithFetchJoinCollectionNotAllowed($assoc)
     {
@@ -190,9 +190,9 @@ class QueryException extends ORMException
     }
 
     /**
-     * @return QueryException
-     *
      * @psalm-param array<string, string> $assoc
+     *
+     * @return QueryException
      */
     public static function overwritingJoinConditionsNotYetSupported($assoc)
     {
@@ -215,9 +215,9 @@ class QueryException extends ORMException
     }
 
     /**
-     * @return QueryException
-     *
      * @psalm-param array<string, string> $assoc
+     *
+     * @return QueryException
      */
     public static function iterateWithFetchJoinNotAllowed($assoc)
     {

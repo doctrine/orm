@@ -263,9 +263,9 @@ class Parser
     /**
      * Adds a custom tree walker for modifying the AST.
      *
-     * @return void
-     *
      * @psalm-param class-string $className
+     *
+     * @return void
      */
     public function addCustomTreeWalker($className)
     {
@@ -493,13 +493,12 @@ class Parser
      * Generates a new syntax error.
      *
      * @param string $expected Expected string.
+     * @psalm-param array<string, mixed>|null $token    Got token.
      *
      * @return void
+     * @psalm-return no-return
      *
      * @throws QueryException
-     *
-     * @psalm-param array<string, mixed>|null $token    Got token.
-     * @psalm-return no-return
      */
     public function syntaxError($expected = '', $token = null)
     {
@@ -520,12 +519,11 @@ class Parser
      * Generates a new semantical error.
      *
      * @param string $message Optional message.
+     * @psalm-param array<string, mixed>|null $token Optional token.
      *
      * @return void
      *
      * @throws QueryException
-     *
-     * @psalm-param array<string, mixed>|null $token Optional token.
      */
     public function semanticalError($message = '', $token = null)
     {
@@ -616,9 +614,9 @@ class Parser
     /**
      * Checks whether the given token type indicates an aggregate function.
      *
-     * @return bool TRUE if the token type is an aggregate function, FALSE otherwise.
-     *
      * @psalm-param Lexer::T_* $tokenType
+     *
+     * @return bool TRUE if the token type is an aggregate function, FALSE otherwise.
      */
     private function isAggregateFunction(int $tokenType): bool
     {

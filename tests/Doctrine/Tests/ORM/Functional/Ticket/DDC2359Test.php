@@ -11,8 +11,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 
 use function assert;
 
@@ -34,7 +34,7 @@ class DDC2359Test extends TestCase
         $metadataFactory = $this->getMockBuilder(ClassMetadataFactory::class)
                                 ->setMethods(['newClassMetadataInstance', 'wakeupReflection'])
                                 ->getMock();
-        assert($metadataFactory instanceof ClassMetadataFactory || $metadataFactory instanceof PHPUnit_Framework_MockObject_MockObject);
+        assert($metadataFactory instanceof ClassMetadataFactory || $metadataFactory instanceof MockObject);
 
         $configuration = $this->getMockBuilder(Configuration::class)
                               ->setMethods(['getMetadataDriverImpl'])

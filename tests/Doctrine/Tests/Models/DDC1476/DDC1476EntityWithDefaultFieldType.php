@@ -19,7 +19,7 @@ class DDC1476EntityWithDefaultFieldType
      * @Column()
      * @GeneratedValue("NONE")
      */
-    #[ORM\Id, ORM\Column, ORM\GeneratedValue(strategy: "NONE")]
+    #[ORM\Id, ORM\Column, ORM\GeneratedValue(strategy: 'NONE')]
     protected $id;
 
     /**

@@ -507,7 +507,6 @@ class AttributeDriver extends AnnotationDriver
      * @param Mapping\JoinColumn|Mapping\InverseJoinColumn $joinColumn
      *
      * @return mixed[]
-     *
      * @psalm-return array{
      *                   name: string,
      *                   unique: bool,
@@ -533,7 +532,6 @@ class AttributeDriver extends AnnotationDriver
      * Parse the given Column as array
      *
      * @return mixed[]
-     *
      * @psalm-return array{
      *                   fieldName: string,
      *                   type: mixed,

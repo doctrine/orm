@@ -514,7 +514,6 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
     /**
      * @return array-key[]
-     *
      * @psalm-return array<array-key, array-key>
      */
     private function getSQLIdentifier(SelectStatement $AST)

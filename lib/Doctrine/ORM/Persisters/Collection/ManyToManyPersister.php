@@ -298,11 +298,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * have to join in the actual entities table leading to additional
      * JOIN.
      *
+     * @psalm-param array<string, mixed> $mapping Array containing mapping information.
+     *
      * @return string[] ordered tuple:
      *                   - JOIN condition to add to the SQL
      *                   - WHERE condition to add to the SQL
-     *
-     * @psalm-param array<string, mixed> $mapping Array containing mapping information.
      * @psalm-return array{0: string, 1: string}
      */
     public function getFilterSql($mapping)
@@ -350,9 +350,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * Generate ON condition
      *
-     * @return string[]
-     *
      * @psalm-param array<string, mixed> $mapping
+     *
+     * @return string[]
      * @psalm-return list<string>
      */
     protected function getOnConditionSQL($mapping)
@@ -429,7 +429,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @return string[]|string[][] ordered tuple containing the SQL to be executed and an array
      *                             of types for bound parameters
-     *
      * @psalm-return array{0: string, 1: list<string>}
      */
     protected function getDeleteRowSQL(PersistentCollection $collection)
@@ -477,7 +476,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @return string[]|string[][] ordered tuple containing the SQL to be executed and an array
      *                             of types for bound parameters
-     *
      * @psalm-return array{0: string, 1: list<string>}
      */
     protected function getInsertRowSQL(PersistentCollection $collection)
@@ -529,7 +527,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * @param object $element
      *
      * @return mixed[]
-     *
      * @psalm-return list<mixed>
      */
     private function collectJoinTableColumnParameters(PersistentCollection $collection, $element)
@@ -577,7 +574,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *                - where clauses to be added for filtering
      *                - parameters to be bound for filtering
      *                - types of the parameters to be bound for filtering
-     *
      * @psalm-return array{0: string, 1: list<string>, 2: list<mixed>, 3: list<string>}
      */
     private function getJoinTableRestrictionsWithKey(PersistentCollection $collection, $key, $addFilters)
@@ -663,7 +659,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *                - where clauses to be added for filtering
      *                - parameters to be bound for filtering
      *                - types of the parameters to be bound for filtering
-     *
      * @psalm-return array{0: string, 1: list<string>, 2: list<mixed>, 3: list<string>}
      */
     private function getJoinTableRestrictions(PersistentCollection $collection, $element, $addFilters)

@@ -197,7 +197,6 @@ class PhpExporter extends AbstractExporter
 
     /**
      * @return string[]
-     *
      * @psalm-return list<string>
      */
     private function processEntityListeners(ClassMetadataInfo $metadata): array

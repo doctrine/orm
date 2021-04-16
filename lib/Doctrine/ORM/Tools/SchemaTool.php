@@ -88,11 +88,11 @@ class SchemaTool
     /**
      * Creates the database schema for the given array of ClassMetadata instances.
      *
+     * @psalm-param list<ClassMetadata> $classes
+     *
      * @return void
      *
      * @throws ToolsException
-     *
-     * @psalm-param list<ClassMetadata> $classes
      */
     public function createSchema(array $classes)
     {
@@ -112,9 +112,9 @@ class SchemaTool
      * Gets the list of DDL statements that are required to create the database schema for
      * the given list of ClassMetadata instances.
      *
-     * @return string[] The SQL statements needed to create the schema for the classes.
-     *
      * @psalm-param list<ClassMetadata> $classes
+     *
+     * @return string[] The SQL statements needed to create the schema for the classes.
      */
     public function getCreateSchemaSql(array $classes)
     {
@@ -185,11 +185,11 @@ class SchemaTool
     /**
      * Creates a Schema instance from a given set of metadata classes.
      *
+     * @psalm-param list<ClassMetadata> $classes
+     *
      * @return Schema
      *
      * @throws ORMException
-     *
-     * @psalm-param list<ClassMetadata> $classes
      */
     public function getSchemaFromMetadata(array $classes)
     {
@@ -476,7 +476,6 @@ class SchemaTool
      * Creates a column definition as required by the DBAL from an ORM field mapping definition.
      *
      * @param ClassMetadata $class The class that owns the field mapping.
-     *
      * @psalm-param array<string, mixed> $mapping The field mapping.
      */
     private function gatherColumn(
@@ -545,13 +544,13 @@ class SchemaTool
      * Gathers the SQL for properly setting up the relations of the given class.
      * This includes the SQL for foreign key constraints and join tables.
      *
-     * @throws ORMException
-     *
      * @psalm-param array<string, array{
      *                  foreignTableName: string,
      *                  foreignColumns: list<string>
      *              }>                               $addedFks
      * @psalm-param array<string, bool>              $blacklistedFks
+     *
+     * @throws ORMException
      */
     private function gatherRelationsSql(
         ClassMetadata $class,
@@ -659,8 +658,6 @@ class SchemaTool
     /**
      * Gathers columns and fk constraints that are required for one part of relationship.
      *
-     * @throws ORMException
-     *
      * @psalm-param array<string, mixed>             $joinColumns
      * @psalm-param array<string, mixed>             $mapping
      * @psalm-param list<string>                     $primaryKeyColumns
@@ -669,6 +666,8 @@ class SchemaTool
      *                  foreignColumns: list<string>
      *              }>                               $addedFks
      * @psalm-param array<string,bool>               $blacklistedFks
+     *
+     * @throws ORMException
      */
     private function gatherRelationJoinColumns(
         array $joinColumns,
@@ -808,9 +807,9 @@ class SchemaTool
      * In any way when an exception is thrown it is suppressed since drop was
      * issued for all classes of the schema and some probably just don't exist.
      *
-     * @return void
-     *
      * @psalm-param list<ClassMetadata> $classes
+     *
+     * @return void
      */
     public function dropSchema(array $classes)
     {
@@ -860,9 +859,9 @@ class SchemaTool
     /**
      * Gets SQL to drop the tables defined by the passed classes.
      *
-     * @return string[]
-     *
      * @psalm-param list<ClassMetadata> $classes
+     *
+     * @return string[]
      */
     public function getDropSchemaSQL(array $classes)
     {

@@ -757,7 +757,6 @@ class XmlDriver extends FileDriver
      * @param SimpleXMLElement $joinColumnElement The XML element.
      *
      * @return mixed[] The mapping array.
-     *
      * @psalm-return array{
      *                   name: string,
      *                   referencedColumnName: string,
@@ -797,7 +796,6 @@ class XmlDriver extends FileDriver
       * Parses the given field as array.
       *
       * @return mixed[]
-      *
       * @psalm-return array{
       *                   fieldName: string,
       *                   type?: string,
@@ -865,7 +863,6 @@ class XmlDriver extends FileDriver
      * Parse / Normalize the cache configuration
      *
      * @return mixed[]
-     *
      * @psalm-return array{usage: mixed, region: string|null}
      */
     private function cacheToArray(SimpleXMLElement $cacheMapping)
@@ -893,7 +890,6 @@ class XmlDriver extends FileDriver
      * @param SimpleXMLElement $cascadeElement The cascade element.
      *
      * @return string[] The list of cascade options.
-     *
      * @psalm-return list<string>
      */
     private function getCascadeMappings(SimpleXMLElement $cascadeElement)

@@ -24,7 +24,7 @@ use Countable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
-use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
@@ -344,10 +344,9 @@ abstract class AbstractQuery
      * Sets a collection of query parameters.
      *
      * @param ArrayCollection|mixed[] $parameters
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
      *
      * @return static This query instance.
-     *
-     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
      */
     public function setParameters($parameters)
     {
@@ -400,10 +399,9 @@ abstract class AbstractQuery
      * @param mixed $value
      *
      * @return mixed[]|string|int|float|bool
+     * @psalm-return array|scalar
      *
      * @throws ORMInvalidArgumentException
-     *
-     * @psalm-return array|scalar
      */
     public function processParameterValue($value)
     {
@@ -983,10 +981,9 @@ abstract class AbstractQuery
      *
      * @param ArrayCollection|mixed[] $parameters    The query parameters.
      * @param string|int|null         $hydrationMode The hydration mode to use.
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
      *
      * @return iterable<mixed>
-     *
-     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
      */
     public function toIterable(iterable $parameters = [], $hydrationMode = null): iterable
     {
@@ -1017,10 +1014,9 @@ abstract class AbstractQuery
      *
      * @param ArrayCollection|mixed[]|null $parameters    Query parameters.
      * @param string|int|null              $hydrationMode Processing mode to be used during the hydration process.
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[]|null $parameters
      *
      * @return mixed
-     *
-     * @psalm-param ArrayCollection<int, Parameter>|mixed[]|null $parameters
      */
     public function execute($parameters = null, $hydrationMode = null)
     {
@@ -1036,10 +1032,9 @@ abstract class AbstractQuery
      *
      * @param ArrayCollection|mixed[]|null $parameters
      * @param string|int|null              $hydrationMode
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[]|null $parameters
      *
      * @return mixed
-     *
-     * @psalm-param ArrayCollection<int, Parameter>|mixed[]|null $parameters
      */
     private function executeIgnoreQueryCache($parameters = null, $hydrationMode = null)
     {
@@ -1097,10 +1092,9 @@ abstract class AbstractQuery
      *
      * @param ArrayCollection|mixed[]|null $parameters
      * @param string|int|null              $hydrationMode
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[]|null $parameters
      *
      * @return mixed
-     *
-     * @psalm-param ArrayCollection<int, Parameter>|mixed[]|null $parameters
      */
     private function executeUsingQueryCache($parameters = null, $hydrationMode = null)
     {
@@ -1211,7 +1205,9 @@ abstract class AbstractQuery
     /**
      * Executes the query and returns a the resulting Statement object.
      *
-     * @return Statement The executed database statement that holds the results.
+     * @return ResultStatement|int The executed database statement that holds
+     *                             the results, or an integer indicating how
+     *                             many rows were affected.
      */
     abstract protected function _doExecute();
 
