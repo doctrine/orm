@@ -1,5 +1,8 @@
+includes:
+    - phpstan-baseline.neon
+
 parameters:
-    level: 1
+    level: 5
     paths:
         - %currentWorkingDirectory%/lib
     earlyTerminatingMethodCalls:
