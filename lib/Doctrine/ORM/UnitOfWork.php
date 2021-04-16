@@ -2215,7 +2215,6 @@ class UnitOfWork implements PropertyChangedListener
      * Cascades a refresh operation to associated entities.
      *
      * @param object $entity
-     *
      * @psalm-param array<string, object> $visited
      */
     private function cascadeRefresh($entity, array &$visited): void
@@ -2342,7 +2341,6 @@ class UnitOfWork implements PropertyChangedListener
      * Cascades the save operation to associated entities.
      *
      * @param object $entity
-     *
      * @psalm-param array<string, object> $visited
      */
     private function cascadePersist($entity, array &$visited): void
@@ -2403,7 +2401,6 @@ class UnitOfWork implements PropertyChangedListener
      * Cascades the delete operation to associated entities.
      *
      * @param object $entity
-     *
      * @psalm-param array<string, object> $visited
      */
     private function cascadeRemove($entity, array &$visited): void

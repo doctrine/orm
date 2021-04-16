@@ -973,8 +973,8 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * @psalm-param array<string, mixed> $assoc
      * @param object $sourceEntity
+     * @psalm-param array<string, mixed> $assoc
      *
      * @return \Doctrine\DBAL\Driver\Statement
      *
