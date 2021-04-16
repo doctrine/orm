@@ -25,7 +25,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\QuoteStrategy;
@@ -107,7 +107,7 @@ class SqlWalker implements TreeWalker
     /** @var ParserResult */
     private $parserResult;
 
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     private $em;
 
     /** @var Connection */
@@ -228,7 +228,7 @@ class SqlWalker implements TreeWalker
     /**
      * Gets the EntityManager used by the walker.
      *
-     * @return EntityManager
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {

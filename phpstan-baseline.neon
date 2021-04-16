@@ -1,41 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Closure invoked with 1 parameter, 0 required\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/AbstractQuery.php
-
-		-
-			message: "#^Default value of the parameter \\#1 \\$parameters \\(array\\) of method Doctrine\\\\ORM\\\\AbstractQuery\\:\\:toIterable\\(\\) is incompatible with type Doctrine\\\\Common\\\\Collections\\\\ArrayCollection&iterable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/AbstractQuery.php
-
-		-
-			message: "#^Left side of && is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/AbstractQuery.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\AbstractQuery\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManager but returns Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/AbstractQuery.php
-
-		-
-			message: "#^Property Doctrine\\\\ORM\\\\AbstractQuery\\:\\:\\$_queryCacheProfile \\(Doctrine\\\\DBAL\\\\Cache\\\\QueryCacheProfile\\) does not accept null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/AbstractQuery.php
-
-		-
-			message: "#^Result of && is always false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/AbstractQuery.php
-
-		-
-			message: "#^Ternary operator condition is always true\\.$#"
-			count: 5
-			path: lib/Doctrine/ORM/AbstractQuery.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$associationMappings\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/DefaultCache.php
@@ -1446,17 +1411,7 @@ parameters:
 			path: lib/Doctrine/ORM/Query.php
 
 		-
-			message: "#^Default value of the parameter \\#1 \\$parameters \\(array\\) of method Doctrine\\\\ORM\\\\Query\\:\\:toIterable\\(\\) is incompatible with type Doctrine\\\\Common\\\\Collections\\\\ArrayCollection&iterable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query.php
-
-		-
 			message: "#^If condition is always false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query.php
-
-		-
-			message: "#^If condition is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query.php
 

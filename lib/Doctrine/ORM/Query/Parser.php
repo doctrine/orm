@@ -20,7 +20,7 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\AggregateExpression;
@@ -190,7 +190,7 @@ class Parser
     /**
      * The EntityManager.
      *
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -293,7 +293,7 @@ class Parser
     /**
      * Gets the EntityManager used by the parser.
      *
-     * @return EntityManager
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {
