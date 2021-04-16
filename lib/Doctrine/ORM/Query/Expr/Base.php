@@ -60,9 +60,9 @@ abstract class Base
     }
 
     /**
-     * @return static
-     *
      * @psalm-param list<string|object> $args
+     *
+     * @return static
      */
     public function addMultiple($args = [])
     {

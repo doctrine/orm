@@ -148,15 +148,7 @@
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty">
-        <exclude-pattern>*/tests/*</exclude-pattern>
-    </rule>
-
     <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingTraversableTypeHintSpecification">
-        <exclude-pattern>*/tests/*</exclude-pattern>
-    </rule>
-
-    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty">
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
@@ -201,13 +193,6 @@
 
     <rule ref="SlevomatCodingStandard.Commenting.ForbiddenAnnotations.AnnotationForbidden">
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC832Test.php</exclude-pattern>
-    </rule>
-
-    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod">
-        <!-- https://github.com/slevomat/coding-standard/issues/1094 -->
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/Reflection/ReflectionPropertiesGetter.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/EntityGenerator.php</exclude-pattern>
     </rule>
 
     <rule ref="Squiz.Commenting.FunctionComment.WrongStyle">

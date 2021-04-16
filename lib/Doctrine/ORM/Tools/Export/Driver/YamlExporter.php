@@ -245,6 +245,7 @@ class YamlExporter extends AbstractExporter
 
     /**
      * @psalm-param array<string, mixed> $array
+     *
      * @psalm-return array<string, mixed>&array{entityListeners: array<class-string, array<string, array{string}>>}
      */
     private function processEntityListeners(ClassMetadataInfo $metadata, array $array): array
@@ -265,6 +266,7 @@ class YamlExporter extends AbstractExporter
     /**
      * @psalm-param array{entityListeners: array<class-string, array<string, array{string}>>} $array
      * @psalm-param list<array{class: class-string, method: string}> $entityListenerConfig
+     *
      * @psalm-return array{entityListeners: array<class-string, array<string, array{string}>>}
      */
     private function processEntityListenerConfig(
