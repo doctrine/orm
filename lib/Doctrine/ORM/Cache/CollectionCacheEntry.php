@@ -26,7 +26,7 @@ namespace Doctrine\ORM\Cache;
 class CollectionCacheEntry implements CacheEntry
 {
     /**
-     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     * @psalm-immutable Public only for performance reasons, it should be considered immutable.
      *
      * @var CacheKey[] The list of entity identifiers hold by the collection
      */

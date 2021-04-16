@@ -232,14 +232,14 @@ class ClassMetadataInfo implements ClassMetadata
     public const CACHE_USAGE_READ_WRITE = 3;
 
     /**
-     * READ-ONLY: The name of the entity class.
+     * @psalm-immutable The name of the entity class.
      *
      * @var string
      */
     public $name;
 
     /**
-     * READ-ONLY: The namespace the entity class is contained in.
+     * @psalm-immutable The namespace the entity class is contained in.
      *
      * @var string
      * @todo Not really needed. Usage could be localized.
@@ -247,7 +247,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $namespace;
 
     /**
-     * READ-ONLY: The name of the entity class that is at the root of the mapped entity inheritance
+     * @psalm-immutable The name of the entity class that is at the root of the mapped entity inheritance
      * hierarchy. If the entity is not part of a mapped inheritance hierarchy this is the same
      * as {@link $name}.
      *
@@ -256,7 +256,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $rootEntityName;
 
     /**
-     * READ-ONLY: The definition of custom generator. Only used for CUSTOM
+     * @psalm-immutable The definition of custom generator. Only used for CUSTOM
      * generator type
      *
      * The definition has the following structure:
@@ -281,49 +281,49 @@ class ClassMetadataInfo implements ClassMetadata
     public $customRepositoryClassName;
 
     /**
-     * READ-ONLY: Whether this class describes the mapping of a mapped superclass.
+     * @psalm-immutable Whether this class describes the mapping of a mapped superclass.
      *
      * @var bool
      */
     public $isMappedSuperclass = false;
 
     /**
-     * READ-ONLY: Whether this class describes the mapping of an embeddable class.
+     * @psalm-immutable Whether this class describes the mapping of an embeddable class.
      *
      * @var bool
      */
     public $isEmbeddedClass = false;
 
     /**
-     * READ-ONLY: The names of the parent classes (ancestors).
+     * @psalm-immutable The names of the parent classes (ancestors).
      *
      * @psalm-var list<class-string>
      */
     public $parentClasses = [];
 
     /**
-     * READ-ONLY: The names of all subclasses (descendants).
+     * @psalm-immutable The names of all subclasses (descendants).
      *
      * @psalm-var list<class-string>
      */
     public $subClasses = [];
 
     /**
-     * READ-ONLY: The names of all embedded classes based on properties.
+     * @psalm-immutable The names of all embedded classes based on properties.
      *
      * @psalm-var array<string, mixed[]>
      */
     public $embeddedClasses = [];
 
     /**
-     * READ-ONLY: The named queries allowed to be called directly from Repository.
+     * @psalm-immutable The named queries allowed to be called directly from Repository.
      *
      * @psalm-var array<string, array<string, mixed>>
      */
     public $namedQueries = [];
 
     /**
-     * READ-ONLY: The named native queries allowed to be called directly from Repository.
+     * @psalm-immutable The named native queries allowed to be called directly from Repository.
      *
      * A native SQL named query definition has the following structure:
      * <pre>
@@ -340,7 +340,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $namedNativeQueries = [];
 
     /**
-     * READ-ONLY: The mappings of the results of native SQL queries.
+     * @psalm-immutable The mappings of the results of native SQL queries.
      *
      * A native result mapping definition has the following structure:
      * <pre>
@@ -360,7 +360,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $sqlResultSetMappings = [];
 
     /**
-     * READ-ONLY: The field names of all fields that are part of the identifier/primary key
+     * @psalm-immutable The field names of all fields that are part of the identifier/primary key
      * of the mapped entity class.
      *
      * @psalm-var list<string>
@@ -368,21 +368,21 @@ class ClassMetadataInfo implements ClassMetadata
     public $identifier = [];
 
     /**
-     * READ-ONLY: The inheritance mapping type used by the class.
+     * @psalm-immutable The inheritance mapping type used by the class.
      *
      * @var int
      */
     public $inheritanceType = self::INHERITANCE_TYPE_NONE;
 
     /**
-     * READ-ONLY: The Id generator type used by the class.
+     * @psalm-immutable The Id generator type used by the class.
      *
      * @var int
      */
     public $generatorType = self::GENERATOR_TYPE_NONE;
 
     /**
-     * READ-ONLY: The field mappings of the class.
+     * @psalm-immutable The field mappings of the class.
      * Keys are field names and values are mapping definitions.
      *
      * The mapping definition array has the following values:
@@ -441,7 +441,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $fieldMappings = [];
 
     /**
-     * READ-ONLY: An array of field names. Used to look up field names from column names.
+     * @psalm-immutable An array of field names. Used to look up field names from column names.
      * Keys are column names and values are field names.
      *
      * @psalm-var array<string, string>
@@ -449,7 +449,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $fieldNames = [];
 
     /**
-     * READ-ONLY: A map of field names to column names. Keys are field names and values column names.
+     * @psalm-immutable A map of field names to column names. Keys are field names and values column names.
      * Used to look up column names from field names.
      * This is the reverse lookup map of $_fieldNames.
      *
@@ -460,7 +460,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $columnNames = [];
 
     /**
-     * READ-ONLY: The discriminator value of this class.
+     * @psalm-immutable The discriminator value of this class.
      *
      * <b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
      * where a discriminator column is used.</b>
@@ -472,7 +472,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $discriminatorValue;
 
     /**
-     * READ-ONLY: The discriminator map of all mapped classes in the hierarchy.
+     * @psalm-immutable The discriminator map of all mapped classes in the hierarchy.
      *
      * <b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
      * where a discriminator column is used.</b>
@@ -484,7 +484,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $discriminatorMap = [];
 
     /**
-     * READ-ONLY: The definition of the discriminator column used in JOINED and SINGLE_TABLE
+     * @psalm-immutable The definition of the discriminator column used in JOINED and SINGLE_TABLE
      * inheritance mappings.
      *
      * @psalm-var array<string, mixed>
@@ -492,7 +492,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $discriminatorColumn;
 
     /**
-     * READ-ONLY: The primary table definition. The definition is an array with the
+     * @psalm-immutable The primary table definition. The definition is an array with the
      * following entries:
      *
      * name => <tableName>
@@ -505,21 +505,21 @@ class ClassMetadataInfo implements ClassMetadata
     public $table;
 
     /**
-     * READ-ONLY: The registered lifecycle callbacks for entities of this class.
+     * @psalm-immutable The registered lifecycle callbacks for entities of this class.
      *
      * @psalm-var array<string, list<string>>
      */
     public $lifecycleCallbacks = [];
 
     /**
-     * READ-ONLY: The registered entity listeners.
+     * @psalm-immutable The registered entity listeners.
      *
      * @psalm-var array<string, list<array{class: class-string, method: string}>>
      */
     public $entityListeners = [];
 
     /**
-     * READ-ONLY: The association mappings of this class.
+     * @psalm-immutable The association mappings of this class.
      *
      * The mapping definition array supports the following keys:
      *
@@ -576,14 +576,14 @@ class ClassMetadataInfo implements ClassMetadata
     public $associationMappings = [];
 
     /**
-     * READ-ONLY: Flag indicating whether the identifier/primary key of the class is composite.
+     * @psalm-immutable Flag indicating whether the identifier/primary key of the class is composite.
      *
      * @var bool
      */
     public $isIdentifierComposite = false;
 
     /**
-     * READ-ONLY: Flag indicating whether the identifier/primary key contains at least one foreign key association.
+     * @psalm-immutable Flag indicating whether the identifier/primary key contains at least one foreign key association.
      *
      * This flag is necessary because some code blocks require special treatment of this cases.
      *
@@ -592,7 +592,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $containsForeignIdentifier = false;
 
     /**
-     * READ-ONLY: The ID generator used for generating IDs for this class.
+     * @psalm-immutable The ID generator used for generating IDs for this class.
      *
      * @var AbstractIdGenerator
      * @todo Remove!
@@ -600,7 +600,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $idGenerator;
 
     /**
-     * READ-ONLY: The definition of the sequence generator of this class. Only used for the
+     * @psalm-immutable The definition of the sequence generator of this class. Only used for the
      * SEQUENCE generation strategy.
      *
      * The definition has the following structure:
@@ -618,7 +618,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $sequenceGeneratorDefinition;
 
     /**
-     * READ-ONLY: The definition of the table generator of this class. Only used for the
+     * @psalm-immutable The definition of the table generator of this class. Only used for the
      * TABLE generation strategy.
      *
      * @var array<string, mixed>
@@ -627,14 +627,14 @@ class ClassMetadataInfo implements ClassMetadata
     public $tableGeneratorDefinition;
 
     /**
-     * READ-ONLY: The policy used for change-tracking on entities of this class.
+     * @psalm-immutable The policy used for change-tracking on entities of this class.
      *
      * @var int
      */
     public $changeTrackingPolicy = self::CHANGETRACKING_DEFERRED_IMPLICIT;
 
     /**
-     * READ-ONLY: A flag for whether or not instances of this class are to be versioned
+     * @psalm-immutable A flag for whether or not instances of this class are to be versioned
      * with optimistic locking.
      *
      * @var bool
@@ -642,7 +642,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $isVersioned;
 
     /**
-     * READ-ONLY: The name of the field which is used for versioning in optimistic locking (if any).
+     * @psalm-immutable The name of the field which is used for versioning in optimistic locking (if any).
      *
      * @var mixed
      */

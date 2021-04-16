@@ -28,21 +28,21 @@ use Doctrine\ORM\Cache;
 class QueryCacheKey extends CacheKey
 {
     /**
-     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     * @psalm-immutable Public only for performance reasons, it should be considered immutable.
      *
      * @var int Cache key lifetime
      */
     public $lifetime;
 
     /**
-     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     * @psalm-immutable Public only for performance reasons, it should be considered immutable.
      *
      * @var int Cache mode (Doctrine\ORM\Cache::MODE_*)
      */
     public $cacheMode;
 
     /**
-     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     * @psalm-immutable Public only for performance reasons, it should be considered immutable.
      *
      * @var TimestampCacheKey|null
      */

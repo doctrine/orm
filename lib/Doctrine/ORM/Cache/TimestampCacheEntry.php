@@ -28,7 +28,7 @@ use function microtime;
 class TimestampCacheEntry implements CacheEntry
 {
     /**
-     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
+     * @psalm-immutable Public only for performance reasons, it should be considered immutable.
      *
      * @var float
      */

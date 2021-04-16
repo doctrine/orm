@@ -103,7 +103,7 @@ use function substr;
 class Parser
 {
     /**
-     * READ-ONLY: Maps BUILT-IN string function names to AST class names.
+     * @psalm-immutable Maps BUILT-IN string function names to AST class names.
      *
      * @psalm-var array<string, class-string<Functions\FunctionNode>>
      */
@@ -117,7 +117,7 @@ class Parser
     ];
 
     /**
-     * READ-ONLY: Maps BUILT-IN numeric function names to AST class names.
+     * @psalm-immutable Maps BUILT-IN numeric function names to AST class names.
      *
      * @psalm-var array<string, class-string<Functions\FunctionNode>>
      */
@@ -141,7 +141,7 @@ class Parser
     ];
 
     /**
-     * READ-ONLY: Maps BUILT-IN datetime function names to AST class names.
+     * @psalm-immutable Maps BUILT-IN datetime function names to AST class names.
      *
      * @psalm-var array<string, class-string<Functions\FunctionNode>>
      */
