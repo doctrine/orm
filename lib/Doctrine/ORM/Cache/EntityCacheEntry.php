@@ -31,14 +31,12 @@ class EntityCacheEntry implements CacheEntry
 {
     /**
      * @psalm-immutable Public only for performance reasons, it should be considered immutable.
-     *
      * @var array<string,mixed> The entity map data
      */
     public $data;
 
     /**
      * @psalm-immutable Public only for performance reasons, it should be considered immutable.
-     *
      * @var string The entity class name
      */
     public $class;

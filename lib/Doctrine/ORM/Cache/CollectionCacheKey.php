@@ -32,21 +32,18 @@ class CollectionCacheKey extends CacheKey
 {
     /**
      * @psalm-immutable Public only for performance reasons, it should be considered immutable.
-     *
      * @var array<string, mixed> The owner entity identifier
      */
     public $ownerIdentifier;
 
     /**
      * @psalm-immutable Public only for performance reasons, it should be considered immutable.
-     *
      * @var string The owner entity class
      */
     public $entityClass;
 
     /**
      * @psalm-immutable Public only for performance reasons, it should be considered immutable.
-     *
      * @var string The association name
      */
     public $association;

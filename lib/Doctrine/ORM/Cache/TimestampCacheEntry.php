@@ -29,7 +29,6 @@ class TimestampCacheEntry implements CacheEntry
 {
     /**
      * @psalm-immutable Public only for performance reasons, it should be considered immutable.
-     *
      * @var float
      */
     public $time;

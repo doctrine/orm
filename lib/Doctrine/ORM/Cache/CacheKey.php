@@ -28,7 +28,6 @@ abstract class CacheKey
 {
     /**
      * @psalm-immutable Public only for performance reasons, it should be considered immutable.
-     *
      * @var string Unique identifier
      */
     public $hash;

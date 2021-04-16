@@ -233,14 +233,12 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * @psalm-immutable The name of the entity class.
-     *
      * @var string
      */
     public $name;
 
     /**
      * @psalm-immutable The namespace the entity class is contained in.
-     *
      * @var string
      * @todo Not really needed. Usage could be localized.
      */
@@ -250,7 +248,6 @@ class ClassMetadataInfo implements ClassMetadata
      * @psalm-immutable The name of the entity class that is at the root of the mapped entity inheritance
      * hierarchy. If the entity is not part of a mapped inheritance hierarchy this is the same
      * as {@link $name}.
-     *
      * @var string
      */
     public $rootEntityName;
@@ -265,7 +262,6 @@ class ClassMetadataInfo implements ClassMetadata
      *     'class' => 'ClassName',
      * )
      * </code>
-     *
      * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
      * @var array<string, string>|null
      */
@@ -282,42 +278,36 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * @psalm-immutable Whether this class describes the mapping of a mapped superclass.
-     *
      * @var bool
      */
     public $isMappedSuperclass = false;
 
     /**
      * @psalm-immutable Whether this class describes the mapping of an embeddable class.
-     *
      * @var bool
      */
     public $isEmbeddedClass = false;
 
     /**
      * @psalm-immutable The names of the parent classes (ancestors).
-     *
      * @psalm-var list<class-string>
      */
     public $parentClasses = [];
 
     /**
      * @psalm-immutable The names of all subclasses (descendants).
-     *
      * @psalm-var list<class-string>
      */
     public $subClasses = [];
 
     /**
      * @psalm-immutable The names of all embedded classes based on properties.
-     *
      * @psalm-var array<string, mixed[]>
      */
     public $embeddedClasses = [];
 
     /**
      * @psalm-immutable The named queries allowed to be called directly from Repository.
-     *
      * @psalm-var array<string, array<string, mixed>>
      */
     public $namedQueries = [];
@@ -334,7 +324,6 @@ class ClassMetadataInfo implements ClassMetadata
      *     'resultSetMapping'   => <name of a SqlResultSetMapping>
      * )
      * </pre>
-     *
      * @psalm-var array<string, array<string, mixed>>
      */
     public $namedNativeQueries = [];
@@ -350,7 +339,6 @@ class ClassMetadataInfo implements ClassMetadata
      *     'columns'            => array(<column result mapping>)
      * )
      * </pre>
-     *
      * @psalm-var array<string, array{
      *                name: string,
      *                entities: mixed[],
@@ -362,21 +350,18 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * @psalm-immutable The field names of all fields that are part of the identifier/primary key
      * of the mapped entity class.
-     *
      * @psalm-var list<string>
      */
     public $identifier = [];
 
     /**
      * @psalm-immutable The inheritance mapping type used by the class.
-     *
      * @var int
      */
     public $inheritanceType = self::INHERITANCE_TYPE_NONE;
 
     /**
      * @psalm-immutable The Id generator type used by the class.
-     *
      * @var int
      */
     public $generatorType = self::GENERATOR_TYPE_NONE;
@@ -419,7 +404,6 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * - <b>'unique'</b> (string, optional, schema-only)
      * Whether a unique constraint should be generated for the column.
-     *
      * @psalm-var array<string, array{
      *      type: string,
      *      fieldName: string,
@@ -443,42 +427,38 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * @psalm-immutable An array of field names. Used to look up field names from column names.
      * Keys are column names and values are field names.
-     *
      * @psalm-var array<string, string>
      */
     public $fieldNames = [];
 
     /**
+     * @deprecated 3.0 Remove this.
+     *
      * @psalm-immutable A map of field names to column names. Keys are field names and values column names.
      * Used to look up column names from field names.
      * This is the reverse lookup map of $_fieldNames.
-     *
-     * @deprecated 3.0 Remove this.
-     *
      * @var mixed[]
      */
     public $columnNames = [];
 
     /**
+     * @see discriminatorColumn
+     *
      * @psalm-immutable The discriminator value of this class.
      *
      * <b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
      * where a discriminator column is used.</b>
-     *
-     * @see discriminatorColumn
-     *
      * @var mixed
      */
     public $discriminatorValue;
 
     /**
+     * @see discriminatorColumn
+     *
      * @psalm-immutable The discriminator map of all mapped classes in the hierarchy.
      *
      * <b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
      * where a discriminator column is used.</b>
-     *
-     * @see discriminatorColumn
-     *
      * @var mixed
      */
     public $discriminatorMap = [];
@@ -486,7 +466,6 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * @psalm-immutable The definition of the discriminator column used in JOINED and SINGLE_TABLE
      * inheritance mappings.
-     *
      * @psalm-var array<string, mixed>
      */
     public $discriminatorColumn;
@@ -499,21 +478,18 @@ class ClassMetadataInfo implements ClassMetadata
      * schema => <schemaName>
      * indexes => array
      * uniqueConstraints => array
-     *
      * @psalm-var array<string, mixed>
      */
     public $table;
 
     /**
      * @psalm-immutable The registered lifecycle callbacks for entities of this class.
-     *
      * @psalm-var array<string, list<string>>
      */
     public $lifecycleCallbacks = [];
 
     /**
      * @psalm-immutable The registered entity listeners.
-     *
      * @psalm-var array<string, list<array{class: class-string, method: string}>>
      */
     public $entityListeners = [];
@@ -570,14 +546,12 @@ class ClassMetadataInfo implements ClassMetadata
      *      'inverseJoinColumns' => array(<join column mapping from join table to target table>)
      * )
      * </pre>
-     *
      * @psalm-var array<string, array<string, mixed>>
      */
     public $associationMappings = [];
 
     /**
      * @psalm-immutable Flag indicating whether the identifier/primary key of the class is composite.
-     *
      * @var bool
      */
     public $isIdentifierComposite = false;
@@ -586,14 +560,12 @@ class ClassMetadataInfo implements ClassMetadata
      * @psalm-immutable Flag indicating whether the identifier/primary key contains at least one foreign key association.
      *
      * This flag is necessary because some code blocks require special treatment of this cases.
-     *
      * @var bool
      */
     public $containsForeignIdentifier = false;
 
     /**
      * @psalm-immutable The ID generator used for generating IDs for this class.
-     *
      * @var AbstractIdGenerator
      * @todo Remove!
      */
@@ -611,7 +583,6 @@ class ClassMetadataInfo implements ClassMetadata
      *     'initialValue' => 1
      * )
      * </code>
-     *
      * @psalm-var array<string, mixed>
      * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
      */
@@ -620,7 +591,6 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * @psalm-immutable The definition of the table generator of this class. Only used for the
      * TABLE generation strategy.
-     *
      * @var array<string, mixed>
      * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
      */
@@ -628,7 +598,6 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * @psalm-immutable The policy used for change-tracking on entities of this class.
-     *
      * @var int
      */
     public $changeTrackingPolicy = self::CHANGETRACKING_DEFERRED_IMPLICIT;
@@ -636,14 +605,12 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * @psalm-immutable A flag for whether or not instances of this class are to be versioned
      * with optimistic locking.
-     *
      * @var bool
      */
     public $isVersioned;
 
     /**
      * @psalm-immutable The name of the field which is used for versioning in optimistic locking (if any).
-     *
      * @var mixed
      */
     public $versionField;

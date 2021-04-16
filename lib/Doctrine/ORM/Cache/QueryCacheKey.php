@@ -29,21 +29,18 @@ class QueryCacheKey extends CacheKey
 {
     /**
      * @psalm-immutable Public only for performance reasons, it should be considered immutable.
-     *
      * @var int Cache key lifetime
      */
     public $lifetime;
 
     /**
      * @psalm-immutable Public only for performance reasons, it should be considered immutable.
-     *
      * @var int Cache mode (Doctrine\ORM\Cache::MODE_*)
      */
     public $cacheMode;
 
     /**
      * @psalm-immutable Public only for performance reasons, it should be considered immutable.
-     *
      * @var TimestampCacheKey|null
      */
     public $timestampKey;

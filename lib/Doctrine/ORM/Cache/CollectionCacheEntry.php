@@ -27,7 +27,6 @@ class CollectionCacheEntry implements CacheEntry
 {
     /**
      * @psalm-immutable Public only for performance reasons, it should be considered immutable.
-     *
      * @var CacheKey[] The list of entity identifiers hold by the collection
      */
     public $identifiers;

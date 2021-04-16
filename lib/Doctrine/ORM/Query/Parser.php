@@ -104,7 +104,6 @@ class Parser
 {
     /**
      * @psalm-immutable Maps BUILT-IN string function names to AST class names.
-     *
      * @psalm-var array<string, class-string<Functions\FunctionNode>>
      */
     private static $stringFunctions = [
@@ -118,7 +117,6 @@ class Parser
 
     /**
      * @psalm-immutable Maps BUILT-IN numeric function names to AST class names.
-     *
      * @psalm-var array<string, class-string<Functions\FunctionNode>>
      */
     private static $numericFunctions = [
@@ -142,7 +140,6 @@ class Parser
 
     /**
      * @psalm-immutable Maps BUILT-IN datetime function names to AST class names.
-     *
      * @psalm-var array<string, class-string<Functions\FunctionNode>>
      */
     private static $datetimeFunctions = [
