@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="4.3.2@57b53ff26237074fdf5cbcb034f7da5172be4524">
+  <file src="lib/Doctrine/ORM/AbstractQuery.php">
+    <FalsableReturnStatement occurrences="1">
+      <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
+    </FalsableReturnStatement>
+    <InvalidNullableReturnType occurrences="3">
+      <code>\Doctrine\Common\Cache\Cache</code>
+      <code>int</code>
+      <code>string</code>
+    </InvalidNullableReturnType>
+    <NullableReturnStatement occurrences="4">
+      <code>$this-&gt;_em-&gt;getConfiguration()-&gt;getResultCacheImpl()</code>
+      <code>$this-&gt;_queryCacheProfile ? $this-&gt;_queryCacheProfile-&gt;getCacheKey() : null</code>
+      <code>$this-&gt;_queryCacheProfile-&gt;getResultCacheDriver()</code>
+      <code>$this-&gt;cacheMode</code>
+    </NullableReturnStatement>
+  </file>
+  <file src="lib/Doctrine/ORM/Cache/DefaultCacheFactory.php">
+    <InvalidNullableReturnType occurrences="1">
+      <code>string</code>
+    </InvalidNullableReturnType>
+    <NullableReturnStatement occurrences="1">
+      <code>$this-&gt;fileLockRegionDirectory</code>
+    </NullableReturnStatement>
+  </file>
+  <file src="lib/Doctrine/ORM/Cache/DefaultCollectionHydrator.php">
+    <InvalidNullableReturnType occurrences="1">
+      <code>loadCacheEntry</code>
+    </InvalidNullableReturnType>
+    <NullableReturnStatement occurrences="1">
+      <code>null</code>
+    </NullableReturnStatement>
+  </file>
+  <file src="lib/Doctrine/ORM/Cache/DefaultEntityHydrator.php">
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>getCacheRegion</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Cache/DefaultQueryCache.php">
+    <UndefinedInterfaceMethod occurrences="5">
+      <code>getCacheRegion</code>
+      <code>resolveAssociationEntries</code>
+      <code>resolveAssociationEntries</code>
+      <code>storeEntityCache</code>
+      <code>storeEntityCache</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Cache/Persister/Collection/ReadWriteCachedCollectionPersister.php">
+    <UndefinedInterfaceMethod occurrences="2">
+      <code>lock</code>
+      <code>lock</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php">
+    <NullableReturnStatement occurrences="1">
+      <code>null</code>
+    </NullableReturnStatement>
+    <UndefinedInterfaceMethod occurrences="9">
+      <code>getCacheRegion</code>
+      <code>getCacheRegion</code>
+      <code>getCacheRegion</code>
+      <code>getCacheRegion</code>
+      <code>loadCollectionCache</code>
+      <code>loadCollectionCache</code>
+      <code>storeCollectionCache</code>
+      <code>storeCollectionCache</code>
+      <code>storeEntityCache</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Cache/Persister/Entity/ReadWriteCachedEntityPersister.php">
+    <UndefinedInterfaceMethod occurrences="2">
+      <code>lock</code>
+      <code>lock</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Cache/Region/FileLockRegion.php">
+    <InvalidNullableReturnType occurrences="1">
+      <code>lock</code>
+    </InvalidNullableReturnType>
+    <NullableReturnStatement occurrences="2">
+      <code>null</code>
+      <code>null</code>
+    </NullableReturnStatement>
+  </file>
+  <file src="lib/Doctrine/ORM/EntityManager.php">
+    <InvalidReturnStatement occurrences="6">
+      <code>$entity</code>
+      <code>$entity</code>
+      <code>$entity</code>
+      <code>$entity instanceof $class-&gt;name ? $entity : null</code>
+      <code>$persister-&gt;load($sortedId, null, null, [], $lockMode)</code>
+      <code>$persister-&gt;loadById($sortedId)</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="2">
+      <code>?T</code>
+      <code>getReference</code>
+    </InvalidReturnType>
+    <UndefinedInterfaceMethod occurrences="2">
+      <code>newInstance</code>
+      <code>setIdentifierValues</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/EntityRepository.php">
+    <InvalidReturnStatement occurrences="3">
+      <code>$persister-&gt;load($criteria, null, null, [], null, 1, $orderBy)</code>
+      <code>$this-&gt;_em-&gt;find($this-&gt;_entityName, $id, $lockMode, $lockVersion)</code>
+      <code>new LazyCriteriaCollection($persister, $criteria)</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="3">
+      <code>?T</code>
+      <code>?T</code>
+      <code>Collection&lt;int, T&gt;</code>
+    </InvalidReturnType>
+    <MoreSpecificImplementedParamType occurrences="3">
+      <code>$criteria</code>
+      <code>$criteria</code>
+      <code>$orderBy</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="lib/Doctrine/ORM/Id/TableGenerator.php">
+    <UndefinedMethod occurrences="2">
+      <code>getTableHiLoCurrentValSql</code>
+      <code>getTableHiLoUpdateNextValSql</code>
+    </UndefinedMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/LazyCriteriaCollection.php">
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$element</code>
+    </MoreSpecificImplementedParamType>
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>matching</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php">
+    <InvalidArrayOffset occurrences="1">
+      <code>$subClass-&gt;table[$indexType][$indexName]</code>
+    </InvalidArrayOffset>
+    <UndefinedInterfaceMethod occurrences="17">
+      <code>inlineEmbeddable</code>
+      <code>isInheritanceTypeNone</code>
+      <code>isInheritanceTypeSingleTable</code>
+      <code>isRootEntity</code>
+      <code>setChangeTrackingPolicy</code>
+      <code>setCustomGeneratorDefinition</code>
+      <code>setCustomRepositoryClass</code>
+      <code>setDiscriminatorColumn</code>
+      <code>setDiscriminatorMap</code>
+      <code>setIdGeneratorType</code>
+      <code>setIdentifier</code>
+      <code>setInheritanceType</code>
+      <code>setLifecycleCallbacks</code>
+      <code>setParentClasses</code>
+      <code>setPrimaryTable</code>
+      <code>setVersionField</code>
+      <code>setVersioned</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php">
+    <InvalidNullableReturnType occurrences="2">
+      <code>ReflectionProperty</code>
+      <code>ReflectionProperty</code>
+    </InvalidNullableReturnType>
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>$definition</code>
+    </InvalidPropertyAssignmentValue>
+    <NullableReturnStatement occurrences="2">
+      <code>$this-&gt;reflFields[$name]</code>
+      <code>$this-&gt;reflFields[$this-&gt;identifier[0]]</code>
+    </NullableReturnStatement>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php">
+    <UndefinedInterfaceMethod occurrences="32">
+      <code>addEntityListener</code>
+      <code>addLifecycleCallback</code>
+      <code>addNamedNativeQuery</code>
+      <code>addNamedQuery</code>
+      <code>addSqlResultSetMapping</code>
+      <code>enableCache</code>
+      <code>fullyQualifiedClassName</code>
+      <code>getAssociationCacheDefaults</code>
+      <code>isInheritedAssociation</code>
+      <code>isInheritedEmbeddedClass</code>
+      <code>isInheritedField</code>
+      <code>mapEmbedded</code>
+      <code>mapField</code>
+      <code>mapManyToMany</code>
+      <code>mapManyToOne</code>
+      <code>mapOneToMany</code>
+      <code>mapOneToOne</code>
+      <code>markReadOnly</code>
+      <code>setAssociationOverride</code>
+      <code>setAttributeOverride</code>
+      <code>setChangeTrackingPolicy</code>
+      <code>setCustomGeneratorDefinition</code>
+      <code>setCustomRepositoryClass</code>
+      <code>setCustomRepositoryClass</code>
+      <code>setDiscriminatorColumn</code>
+      <code>setDiscriminatorColumn</code>
+      <code>setDiscriminatorMap</code>
+      <code>setIdGeneratorType</code>
+      <code>setInheritanceType</code>
+      <code>setPrimaryTable</code>
+      <code>setSequenceGeneratorDefinition</code>
+      <code>setVersionMapping</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php">
+    <InvalidArgument occurrences="1">
+      <code>new AttributeReader()</code>
+    </InvalidArgument>
+    <InvalidArrayAccess occurrences="4">
+      <code>$value[0]</code>
+      <code>$value[0]</code>
+      <code>$value[1]</code>
+      <code>$value[1]</code>
+    </InvalidArrayAccess>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>$instances</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>array&lt;Annotation&gt;</code>
+    </InvalidReturnType>
+    <UndefinedMethod occurrences="4">
+      <code>getAttributes</code>
+      <code>getAttributes</code>
+      <code>getAttributes</code>
+      <code>getAttributes</code>
+    </UndefinedMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php">
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>mapManyToMany</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php">
+    <UndefinedInterfaceMethod occurrences="34">
+      <code>addEntityListener</code>
+      <code>addLifecycleCallback</code>
+      <code>addNamedNativeQuery</code>
+      <code>addNamedQuery</code>
+      <code>addSqlResultSetMapping</code>
+      <code>enableCache</code>
+      <code>getAssociationCacheDefaults</code>
+      <code>getAssociationCacheDefaults</code>
+      <code>getAssociationCacheDefaults</code>
+      <code>getAssociationCacheDefaults</code>
+      <code>mapEmbedded</code>
+      <code>mapField</code>
+      <code>mapField</code>
+      <code>mapField</code>
+      <code>mapManyToMany</code>
+      <code>mapManyToOne</code>
+      <code>mapOneToMany</code>
+      <code>mapOneToOne</code>
+      <code>markReadOnly</code>
+      <code>setAssociationOverride</code>
+      <code>setAttributeOverride</code>
+      <code>setChangeTrackingPolicy</code>
+      <code>setCustomGeneratorDefinition</code>
+      <code>setCustomRepositoryClass</code>
+      <code>setCustomRepositoryClass</code>
+      <code>setDiscriminatorColumn</code>
+      <code>setDiscriminatorColumn</code>
+      <code>setDiscriminatorMap</code>
+      <code>setIdGeneratorType</code>
+      <code>setInheritanceType</code>
+      <code>setPrimaryTable</code>
+      <code>setSequenceGeneratorDefinition</code>
+      <code>setVersionMapping</code>
+      <code>setVersionMapping</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/Driver/YamlDriver.php">
+    <UndefinedInterfaceMethod occurrences="43">
+      <code>$element</code>
+      <code>$element</code>
+      <code>$element</code>
+      <code>$element</code>
+      <code>$element</code>
+      <code>$element</code>
+      <code>$element</code>
+      <code>$element</code>
+      <code>$element</code>
+      <code>$element</code>
+      <code>addEntityListener</code>
+      <code>addLifecycleCallback</code>
+      <code>addNamedNativeQuery</code>
+      <code>addNamedQuery</code>
+      <code>addSqlResultSetMapping</code>
+      <code>enableCache</code>
+      <code>getAssociationCacheDefaults</code>
+      <code>getAssociationCacheDefaults</code>
+      <code>getAssociationCacheDefaults</code>
+      <code>getAssociationCacheDefaults</code>
+      <code>mapEmbedded</code>
+      <code>mapField</code>
+      <code>mapField</code>
+      <code>mapManyToMany</code>
+      <code>mapManyToOne</code>
+      <code>mapOneToMany</code>
+      <code>mapOneToOne</code>
+      <code>markReadOnly</code>
+      <code>setAssociationOverride</code>
+      <code>setAttributeOverride</code>
+      <code>setChangeTrackingPolicy</code>
+      <code>setCustomGeneratorDefinition</code>
+      <code>setCustomRepositoryClass</code>
+      <code>setCustomRepositoryClass</code>
+      <code>setDiscriminatorColumn</code>
+      <code>setDiscriminatorColumn</code>
+      <code>setDiscriminatorMap</code>
+      <code>setIdGeneratorType</code>
+      <code>setIdGeneratorType</code>
+      <code>setInheritanceType</code>
+      <code>setPrimaryTable</code>
+      <code>setSequenceGeneratorDefinition</code>
+      <code>setVersionMapping</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/NativeQuery.php">
+    <LessSpecificImplementedReturnType occurrences="1">
+      <code>mixed</code>
+    </LessSpecificImplementedReturnType>
+  </file>
+  <file src="lib/Doctrine/ORM/PersistentCollection.php">
+    <InvalidReturnStatement occurrences="5">
+      <code>$persister-&gt;slice($this, $offset, $length)</code>
+      <code>$this-&gt;collection</code>
+      <code>new ArrayCollection($persister-&gt;loadCriteria($this, $criteria))</code>
+      <code>parent::slice($offset, $length)</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="2">
+      <code>Collection&lt;TKey, T&gt;</code>
+      <code>array&lt;TKey,T&gt;</code>
+    </InvalidReturnType>
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>matching</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php">
+    <FalsableReturnStatement occurrences="1">
+      <code>$this-&gt;conn-&gt;fetchColumn($sql, $params, 0, $types)</code>
+    </FalsableReturnStatement>
+  </file>
+  <file src="lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php">
+    <InvalidNullableReturnType occurrences="2">
+      <code>loadById</code>
+      <code>loadOneToOneEntity</code>
+    </InvalidNullableReturnType>
+    <NullableReturnStatement occurrences="3">
+      <code>$targetEntity</code>
+      <code>$targetEntity</code>
+      <code>$this-&gt;load($identifier, $entity)</code>
+    </NullableReturnStatement>
+  </file>
+  <file src="lib/Doctrine/ORM/Proxy/ProxyFactory.php">
+    <InvalidArgument occurrences="1">
+      <code>$classMetadata-&gt;getReflectionProperties()</code>
+    </InvalidArgument>
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>__wakeup</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Query.php">
+    <InvalidArgument occurrences="2">
+      <code>$paramMappings</code>
+      <code>$sqlPositions</code>
+    </InvalidArgument>
+    <InvalidArrayOffset occurrences="1">
+      <code>$value[$i % $countValue]</code>
+    </InvalidArrayOffset>
+    <LessSpecificImplementedReturnType occurrences="1">
+      <code>mixed</code>
+    </LessSpecificImplementedReturnType>
+    <MoreSpecificImplementedParamType occurrences="2">
+      <code>$hydrationMode</code>
+      <code>$parameters</code>
+    </MoreSpecificImplementedParamType>
+    <UndefinedMethod occurrences="1">
+      <code>$sqlPositions</code>
+    </UndefinedMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php">
+    <UndefinedPropertyFetch occurrences="1">
+      <code>$this-&gt;unit-&gt;value</code>
+    </UndefinedPropertyFetch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php">
+    <UndefinedPropertyFetch occurrences="1">
+      <code>$this-&gt;unit-&gt;value</code>
+    </UndefinedPropertyFetch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/IndexBy.php">
+    <InvalidNullableReturnType occurrences="1">
+      <code>dispatch</code>
+    </InvalidNullableReturnType>
+    <NullableReturnStatement occurrences="1">
+      <code>$sqlWalker-&gt;walkIndexBy($this)</code>
+    </NullableReturnStatement>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/JoinClassPathExpression.php">
+    <UndefinedMethod occurrences="1">
+      <code>walkJoinPathExpression</code>
+    </UndefinedMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/JoinVariableDeclaration.php">
+    <UndefinedMethod occurrences="1">
+      <code>walkJoinVariableDeclaration</code>
+    </UndefinedMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/SimpleWhenClause.php">
+    <UndefinedMethod occurrences="1">
+      <code>walkWhenClauseExpression</code>
+    </UndefinedMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/WhenClause.php">
+    <UndefinedMethod occurrences="1">
+      <code>walkWhenClauseExpression</code>
+    </UndefinedMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/Parser.php">
+    <InvalidArrayOffset occurrences="2">
+      <code>$this-&gt;identVariableExpressions[$dqlAlias]</code>
+      <code>$this-&gt;queryComponents[$dqlAlias]</code>
+    </InvalidArrayOffset>
+    <InvalidNullableReturnType occurrences="2">
+      <code>FunctionNode</code>
+      <code>SelectStatement|UpdateStatement|DeleteStatement</code>
+    </InvalidNullableReturnType>
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>$this-&gt;identVariableExpressions</code>
+    </InvalidPropertyAssignmentValue>
+    <InvalidReturnStatement occurrences="9">
+      <code>$primary</code>
+      <code>$this-&gt;CollectionMemberExpression()</code>
+      <code>$this-&gt;ComparisonExpression()</code>
+      <code>$this-&gt;EmptyCollectionComparisonExpression()</code>
+      <code>$this-&gt;ExistsExpression()</code>
+      <code>$this-&gt;InExpression()</code>
+      <code>$this-&gt;InstanceOfExpression()</code>
+      <code>$this-&gt;LikeExpression()</code>
+      <code>$this-&gt;NullComparisonExpression()</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="2">
+      <code>AST\BetweenExpression|</code>
+      <code>ArithmeticFactor</code>
+    </InvalidReturnType>
+    <NullableReturnStatement occurrences="10">
+      <code>$aliasIdentVariable</code>
+      <code>$factors[0]</code>
+      <code>$identVariable</code>
+      <code>$resultVariable</code>
+      <code>$resultVariable</code>
+      <code>$statement</code>
+      <code>$terms[0]</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>null</code>
+    </NullableReturnStatement>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php">
+    <InvalidNullableReturnType occurrences="1">
+      <code>string</code>
+    </InvalidNullableReturnType>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
+    <InvalidArgument occurrences="1">
+      <code>$selectedClass['class']-&gt;name</code>
+    </InvalidArgument>
+    <InvalidArrayOffset occurrences="1">
+      <code>$this-&gt;selectedClasses[$joinedDqlAlias]</code>
+    </InvalidArrayOffset>
+    <InvalidNullableReturnType occurrences="1">
+      <code>walkConditionalPrimary</code>
+    </InvalidNullableReturnType>
+    <InvalidPropertyAssignmentValue occurrences="9">
+      <code>$this-&gt;scalarFields</code>
+      <code>$this-&gt;scalarResultAliasMap</code>
+      <code>$this-&gt;scalarResultAliasMap</code>
+      <code>$this-&gt;scalarResultAliasMap</code>
+      <code>$this-&gt;scalarResultAliasMap</code>
+      <code>$this-&gt;scalarResultAliasMap</code>
+      <code>$this-&gt;scalarResultAliasMap</code>
+      <code>$this-&gt;scalarResultAliasMap</code>
+      <code>$this-&gt;scalarResultAliasMap</code>
+    </InvalidPropertyAssignmentValue>
+  </file>
+  <file src="lib/Doctrine/ORM/QueryBuilder.php">
+    <FalsableReturnStatement occurrences="1">
+      <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
+    </FalsableReturnStatement>
+    <InvalidNullableReturnType occurrences="1">
+      <code>int</code>
+    </InvalidNullableReturnType>
+    <NullableReturnStatement occurrences="1">
+      <code>$this-&gt;cacheMode</code>
+    </NullableReturnStatement>
+  </file>
+  <file src="lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php">
+    <InvalidNullableReturnType occurrences="1">
+      <code>execute</code>
+    </InvalidNullableReturnType>
+  </file>
+  <file src="lib/Doctrine/ORM/Tools/Console/Command/MappingDescribeCommand.php">
+    <InvalidArgument occurrences="1">
+      <code>$metadata-&gt;entityListeners</code>
+    </InvalidArgument>
+  </file>
+  <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/AbstractCommand.php">
+    <InvalidNullableReturnType occurrences="1">
+      <code>execute</code>
+    </InvalidNullableReturnType>
+    <NullableReturnStatement occurrences="1">
+      <code>$this-&gt;executeSchemaCommand($input, $output, new SchemaTool($em), $metadatas, $ui)</code>
+    </NullableReturnStatement>
+  </file>
+  <file src="lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php">
+    <InvalidNullableReturnType occurrences="1">
+      <code>string</code>
+    </InvalidNullableReturnType>
+  </file>
+  <file src="lib/Doctrine/ORM/Tools/Pagination/CountOutputWalker.php">
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$query</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php">
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$query</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="lib/Doctrine/ORM/Tools/SchemaValidator.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>$errors</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>array&lt;string, list&lt;string&gt;&gt;</code>
+    </InvalidReturnType>
+    <UndefinedInterfaceMethod occurrences="5">
+      <code>getIdentifierColumnNames</code>
+      <code>getIdentifierColumnNames</code>
+      <code>getIdentifierColumnNames</code>
+      <code>getIdentifierColumnNames</code>
+      <code>getIdentifierColumnNames</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/UnitOfWork.php">
+    <InvalidNullableReturnType occurrences="1">
+      <code>object</code>
+    </InvalidNullableReturnType>
+    <InvalidPropertyAssignmentValue occurrences="2">
+      <code>$this-&gt;entityChangeSets</code>
+      <code>$this-&gt;entityChangeSets</code>
+    </InvalidPropertyAssignmentValue>
+    <NullableReturnStatement occurrences="1">
+      <code>$this-&gt;identityMap[$rootClassName][$idHash]</code>
+    </NullableReturnStatement>
+    <UndefinedInterfaceMethod occurrences="6">
+      <code>getMapping</code>
+      <code>getMapping</code>
+      <code>takeSnapshot</code>
+      <code>unwrap</code>
+      <code>unwrap</code>
+      <code>unwrap</code>
+    </UndefinedInterfaceMethod>
+  </file>
+</files>
