@@ -53,9 +53,6 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php">
-    <NullableReturnStatement occurrences="1">
-      <code>null</code>
-    </NullableReturnStatement>
     <UndefinedInterfaceMethod occurrences="9">
       <code>getCacheRegion</code>
       <code>getCacheRegion</code>
@@ -329,14 +326,12 @@
     <InvalidArgument occurrences="1">
       <code>$hints</code>
     </InvalidArgument>
-    <InvalidNullableReturnType occurrences="2">
-      <code>loadById</code>
+    <InvalidNullableReturnType occurrences="1">
       <code>loadOneToOneEntity</code>
     </InvalidNullableReturnType>
-    <NullableReturnStatement occurrences="3">
+    <NullableReturnStatement occurrences="2">
       <code>$targetEntity</code>
       <code>$targetEntity</code>
-      <code>$this-&gt;load($identifier, $entity)</code>
     </NullableReturnStatement>
   </file>
   <file src="lib/Doctrine/ORM/Proxy/ProxyFactory.php">

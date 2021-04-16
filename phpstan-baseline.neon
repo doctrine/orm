@@ -112,16 +112,6 @@ parameters:
 
 		-
 			message: "#^If condition is always true\\.$#"
-			count: 13
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
-
-		-
-			message: "#^Left side of && is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Cache\\\\Persister\\\\Entity\\\\AbstractEntityPersister\\:\\:loadById\\(\\) should return object but returns null\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
 
@@ -141,17 +131,7 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between object and null will always evaluate to false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$rootEntityName\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/NonStrictReadWriteCachedEntityPersister.php
-
-		-
-			message: "#^Left side of && is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Entity/NonStrictReadWriteCachedEntityPersister.php
 
@@ -237,12 +217,12 @@ parameters:
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:find\\(\\) should return T\\|null but returns object\\.$#"
-			count: 2
+			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:find\\(\\) should return T\\|null but returns object\\|null\\.$#"
-			count: 2
+			count: 3
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
@@ -1342,11 +1322,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$class of method Doctrine\\\\ORM\\\\Utility\\\\IdentifierFlattener\\:\\:flattenIdentifier\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between object and null will always evaluate to false\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
 
