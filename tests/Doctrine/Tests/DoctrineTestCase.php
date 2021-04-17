@@ -17,6 +17,13 @@ use function sprintf;
  */
 abstract class DoctrineTestCase extends TestCase
 {
+    /** @var array<string,string> */
+    private static $phpunitMethodRenames = [
+        'assertMatchesRegularExpression' => 'assertRegExp', // can be removed when PHPUnit 9 is minimum
+        'assertDoesNotMatchRegularExpression' => 'assertNotRegExp', // can be removed when PHPUnit 9 is minimum
+        'assertFileDoesNotExist' => 'assertFileNotExists', // can be removed PHPUnit 9 is minimum
+    ];
+
     /**
      * @param array<mixed> $arguments
      *
@@ -24,12 +31,9 @@ abstract class DoctrineTestCase extends TestCase
      */
     public static function __callStatic(string $method, array $arguments)
     {
-        if ($method === 'assertMatchesRegularExpression') {
-            return self::assertRegExp(...$arguments);
-        } elseif ($method === 'assertDoesNotMatchRegularExpression') {
-            return self::assertNotRegExp(...$arguments);
-        } elseif ($method === 'assertFileDoesNotExist') {
-            return self::assertFileNotExists(...$arguments);
+        if (isset(self::$phpunitMethodRenames[$method])) {
+            $method = self::$phpunitMethodRenames[$method];
+            return self::$method(...$arguments);
         }
 
         throw new BadMethodCallException(sprintf('%s::%s does not exist', static::class, $method));
@@ -49,12 +53,11 @@ abstract class DoctrineTestCase extends TestCase
                 ->disableArgumentCloning()
                 ->disallowMockingUnknownTypes()
                 ->getMock();
-        } elseif ($method === 'assertMatchesRegularExpression') {
-            return self::assertRegExp(...$arguments);
-        } elseif ($method === 'assertDoesNotMatchRegularExpression') {
-            return self::assertNotRegExp(...$arguments);
-        } elseif ($method === 'assertFileDoesNotExist') {
-            return self::assertFileNotExists(...$arguments);
+        }
+
+        if (isset(self::$phpunitMethodRenames[$method])) {
+            $method = self::$phpunitMethodRenames[$method];
+            return self::$method(...$arguments);
         }
 
         throw new BadMethodCallException(sprintf('%s::%s does not exist', static::class, $method));
