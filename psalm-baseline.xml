@@ -564,4 +564,3202 @@
       <code>unwrap</code>
     </UndefinedInterfaceMethod>
   </file>
+  <file src="tests/Doctrine/Performance/EntityManagerFactory.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>new ArrayStatement([])</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>executeQuery</code>
+    </InvalidReturnType>
+    <ParamNameMismatch occurrences="1">
+      <code>$query</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Performance/Hydration/SimpleInsertPerformanceBench.php">
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>execute</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="tests/Doctrine/Performance/Mock/NonProxyLoadingUnitOfWork.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>new NonLoadingPersister()</code>
+    </InvalidPropertyAssignmentValue>
+    <InvalidReturnStatement occurrences="1">
+      <code>$this-&gt;entityPersister</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>getEntityPersister</code>
+    </InvalidReturnType>
+    <UndefinedDocblockClass occurrences="1">
+      <code>PersisterMock</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/DbalFunctionalTestCase.php">
+    <MissingDependency occurrences="1">
+      <code>DbalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/DbalTestCase.php">
+    <MissingDependency occurrences="1">
+      <code>DoctrineTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/DbalTypes/CustomIdObjectType.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$fieldDeclaration</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Tests/DbalTypes/NegativeToPositiveType.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$fieldDeclaration</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Tests/DbalTypes/Rot13Type.php">
+    <MoreSpecificImplementedParamType occurrences="2">
+      <code>$value</code>
+      <code>$value</code>
+    </MoreSpecificImplementedParamType>
+    <ParamNameMismatch occurrences="1">
+      <code>$fieldDeclaration</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Tests/DoctrineTestCase.php">
+    <UndefinedClass occurrences="1">
+      <code>PolyfillableTestCase</code>
+    </UndefinedClass>
+  </file>
+  <file src="tests/Doctrine/Tests/Mocks/ClassMetadataMock.php">
+    <UndefinedThisPropertyAssignment occurrences="1">
+      <code>$this-&gt;_generatorType</code>
+    </UndefinedThisPropertyAssignment>
+  </file>
+  <file src="tests/Doctrine/Tests/Mocks/ConcurrentRegionMock.php">
+    <InvalidNullableReturnType occurrences="1">
+      <code>lock</code>
+    </InvalidNullableReturnType>
+    <InvalidReturnType occurrences="1">
+      <code>mixed</code>
+    </InvalidReturnType>
+    <NullableReturnStatement occurrences="1">
+      <code>null</code>
+    </NullableReturnStatement>
+    <UndefinedMethod occurrences="1">
+      <code>LockException::unexpectedLockValue($lock)</code>
+    </UndefinedMethod>
+  </file>
+  <file src="tests/Doctrine/Tests/Mocks/ConnectionMock.php">
+    <InvalidNullableReturnType occurrences="1">
+      <code>Statement</code>
+    </InvalidNullableReturnType>
+    <InvalidReturnStatement occurrences="1">
+      <code>$this-&gt;_lastInsertId</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="4">
+      <code>delete</code>
+      <code>executeUpdate</code>
+      <code>insert</code>
+      <code>lastInsertId</code>
+    </InvalidReturnType>
+    <NullableReturnStatement occurrences="1">
+      <code>$this-&gt;_queryResult</code>
+    </NullableReturnStatement>
+    <ParamNameMismatch occurrences="5">
+      <code>$colnum</code>
+      <code>$input</code>
+      <code>$query</code>
+      <code>$statement</code>
+      <code>$tableName</code>
+    </ParamNameMismatch>
+    <UndefinedThisPropertyAssignment occurrences="1">
+      <code>$this-&gt;_platform</code>
+    </UndefinedThisPropertyAssignment>
+  </file>
+  <file src="tests/Doctrine/Tests/Mocks/DatabasePlatformMock.php">
+    <InvalidReturnType occurrences="7">
+      <code>_getCommonIntegerTypeDeclarationSQL</code>
+      <code>getBigIntTypeDeclarationSQL</code>
+      <code>getBooleanTypeDeclarationSQL</code>
+      <code>getClobTypeDeclarationSQL</code>
+      <code>getIntegerTypeDeclarationSQL</code>
+      <code>getSmallIntTypeDeclarationSQL</code>
+      <code>getVarcharTypeDeclarationSQL</code>
+    </InvalidReturnType>
+    <UndefinedClass occurrences="1">
+      <code>DBALException</code>
+    </UndefinedClass>
+  </file>
+  <file src="tests/Doctrine/Tests/Mocks/DriverConnectionMock.php">
+    <InvalidReturnType occurrences="7">
+      <code>beginTransaction</code>
+      <code>commit</code>
+      <code>errorInfo</code>
+      <code>exec</code>
+      <code>lastInsertId</code>
+      <code>quote</code>
+      <code>rollBack</code>
+    </InvalidReturnType>
+    <ParamNameMismatch occurrences="1">
+      <code>$input</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Tests/Mocks/EntityManagerMock.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$conn</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Tests/Mocks/EntityPersisterMock.php">
+    <InvalidReturnType occurrences="2">
+      <code>delete</code>
+      <code>exists</code>
+    </InvalidReturnType>
+    <LessSpecificImplementedReturnType occurrences="2">
+      <code>array</code>
+      <code>mixed</code>
+    </LessSpecificImplementedReturnType>
+  </file>
+  <file src="tests/Doctrine/Tests/Mocks/HydratorMockStatement.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>$this-&gt;_resultSet</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="9">
+      <code>bindParam</code>
+      <code>bindValue</code>
+      <code>columnCount</code>
+      <code>errorCode</code>
+      <code>errorInfo</code>
+      <code>execute</code>
+      <code>getIterator</code>
+      <code>rowCount</code>
+      <code>setFetchMode</code>
+    </InvalidReturnType>
+    <ParamNameMismatch occurrences="3">
+      <code>$column</code>
+      <code>$fetchStyle</code>
+      <code>$fetchStyle</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Tests/Mocks/MockTreeWalker.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>null</code>
+    </InvalidReturnStatement>
+  </file>
+  <file src="tests/Doctrine/Tests/Mocks/StatementMock.php">
+    <InvalidReturnType occurrences="13">
+      <code>bindParam</code>
+      <code>bindValue</code>
+      <code>closeCursor</code>
+      <code>columnCount</code>
+      <code>errorCode</code>
+      <code>errorInfo</code>
+      <code>execute</code>
+      <code>fetch</code>
+      <code>fetchAll</code>
+      <code>fetchColumn</code>
+      <code>getIterator</code>
+      <code>rowCount</code>
+      <code>setFetchMode</code>
+    </InvalidReturnType>
+    <ParamNameMismatch occurrences="2">
+      <code>$column</code>
+      <code>$fetchStyle</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Tests/Mocks/UnitOfWorkMock.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$originalData</code>
+    </ParamNameMismatch>
+    <UndefinedThisPropertyAssignment occurrences="1">
+      <code>$this-&gt;_originalEntityData</code>
+    </UndefinedThisPropertyAssignment>
+    <UndefinedThisPropertyFetch occurrences="1">
+      <code>$this-&gt;_originalEntityData</code>
+    </UndefinedThisPropertyFetch>
+  </file>
+  <file src="tests/Doctrine/Tests/Models/CMS/CmsUser.php">
+    <DuplicateArrayKey occurrences="1"/>
+  </file>
+  <file src="tests/Doctrine/Tests/Models/Company/CompanyContract.php">
+    <UndefinedClass occurrences="1"/>
+  </file>
+  <file src="tests/Doctrine/Tests/Models/CompositeKeyInheritance/JoinedDerivedRootClass.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>'part-1'</code>
+    </InvalidPropertyAssignmentValue>
+  </file>
+  <file src="tests/Doctrine/Tests/Models/DDC2372/DDC2372Address.php">
+    <UndefinedClass occurrences="2">
+      <code>User</code>
+      <code>User</code>
+    </UndefinedClass>
+    <UndefinedDocblockClass occurrences="1">
+      <code>User</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/Models/DDC2372/Traits/DDC2372AddressAndAccessors.php">
+    <InvalidArgument occurrences="1">
+      <code>$this</code>
+    </InvalidArgument>
+  </file>
+  <file src="tests/Doctrine/Tests/Models/DDC3346/DDC3346Author.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>[]</code>
+    </InvalidPropertyAssignmentValue>
+  </file>
+  <file src="tests/Doctrine/Tests/Models/DDC3579/DDC3579User.php">
+    <UndefinedMethod occurrences="1">
+      <code>addUser</code>
+    </UndefinedMethod>
+  </file>
+  <file src="tests/Doctrine/Tests/Models/Generic/DateTimeModel.php">
+    <UndefinedDocblockClass occurrences="3">
+      <code>DateTime|null</code>
+      <code>DateTime|null</code>
+      <code>DateTime|null</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/Models/GeoNames/Admin1.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>[]</code>
+    </InvalidPropertyAssignmentValue>
+    <UndefinedDocblockClass occurrences="2">
+      <code>Collection&lt;int, Admin1AlternateName&gt;</code>
+      <code>public $names = [];</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/Models/GeoNames/City.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>$id</code>
+    </InvalidPropertyAssignmentValue>
+  </file>
+  <file src="tests/Doctrine/Tests/Models/Hydration/EntityWithArrayDefaultArrayValueM2M.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>[]</code>
+    </InvalidPropertyAssignmentValue>
+  </file>
+  <file src="tests/Doctrine/Tests/Models/ManyToManyPersister/ChildClass.php">
+    <InvalidTemplateParam occurrences="1">
+      <code>Collection&lt;ParentClass&gt;</code>
+    </InvalidTemplateParam>
+    <MissingTemplateParam occurrences="1">
+      <code>Collection&lt;ParentClass&gt;</code>
+    </MissingTemplateParam>
+  </file>
+  <file src="tests/Doctrine/Tests/Models/ManyToManyPersister/ParentClass.php">
+    <InvalidTemplateParam occurrences="1">
+      <code>Collection&lt;ChildClass&gt;</code>
+    </InvalidTemplateParam>
+    <MissingTemplateParam occurrences="1">
+      <code>Collection&lt;ChildClass&gt;</code>
+    </MissingTemplateParam>
+  </file>
+  <file src="tests/Doctrine/Tests/Models/Routing/RoutingLeg.php">
+    <UndefinedDocblockClass occurrences="2">
+      <code>DateTime</code>
+      <code>DateTime</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/Models/Routing/RoutingRoute.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>[]</code>
+    </InvalidPropertyAssignmentValue>
+  </file>
+  <file src="tests/Doctrine/Tests/Models/ValueConversionType/OwningManyToOneIdForeignKeyEntity.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>associatedEntities</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/AbstractRegionTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/CacheConfigTest.php">
+    <MissingDependency occurrences="1">
+      <code>DoctrineTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/CacheKeyTest.php">
+    <MissingDependency occurrences="1">
+      <code>DoctrineTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/CacheLoggerChainTest.php">
+    <MissingDependency occurrences="1">
+      <code>DoctrineTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/DefaultCacheFactoryTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/DefaultCacheTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/DefaultCollectionHydratorTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/DefaultEntityHydratorTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/DefaultQueryCacheTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/DefaultRegionTest.php">
+    <InaccessibleMethod occurrences="6">
+      <code>doContains</code>
+      <code>doDelete</code>
+      <code>doFetch</code>
+      <code>doFlush</code>
+      <code>doGetStats</code>
+      <code>doSave</code>
+    </InaccessibleMethod>
+    <MissingDependency occurrences="1">
+      <code>AbstractRegionTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/FileLockRegionTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractRegionTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/MultiGetRegionTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractRegionTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/Persister/Collection/AbstractCollectionPersisterTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/Persister/Collection/NonStrictReadWriteCachedCollectionPersisterTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractCollectionPersisterTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/Persister/Collection/ReadOnlyCachedCollectionPersisterTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractCollectionPersisterTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/Persister/Collection/ReadWriteCachedCollectionPersisterTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractCollectionPersisterTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/Persister/Entity/AbstractEntityPersisterTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/Persister/Entity/NonStrictReadWriteCachedEntityPersisterTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractEntityPersisterTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/Persister/Entity/ReadOnlyCachedEntityPersisterTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractEntityPersisterTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/Persister/Entity/ReadWriteCachedEntityPersisterTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractEntityPersisterTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Cache/StatisticsCacheLoggerTest.php">
+    <MissingDependency occurrences="1">
+      <code>DoctrineTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/CommitOrderCalculatorTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Entity/ConstructorTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/EntityManagerTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/AbstractManyToManyAssociationTestCase.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/AdvancedAssociationTest.php">
+    <InvalidPropertyAssignmentValue occurrences="2">
+      <code>new ArrayCollection()</code>
+      <code>new ArrayCollection()</code>
+    </InvalidPropertyAssignmentValue>
+    <InvalidReturnStatement occurrences="1">
+      <code>$this-&gt;types</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>Collection</code>
+    </InvalidReturnType>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <UndefinedClass occurrences="3">
+      <code>$phrase</code>
+      <code>kateglo\application\helpers\collections\ArrayCollection</code>
+      <code>kateglo\application\models\Phrase</code>
+    </UndefinedClass>
+    <UndefinedDocblockClass occurrences="6">
+      <code>kateglo\application\helpers\collections\ArrayCollection</code>
+      <code>kateglo\application\models\Lemma</code>
+      <code>kateglo\application\models\Lemma</code>
+      <code>kateglo\application\models\Type</code>
+      <code>kateglo\application\models\Type</code>
+      <code>kateglo\application\utilities\collections\ArrayCollection</code>
+    </UndefinedDocblockClass>
+    <UndefinedThisPropertyFetch occurrences="1">
+      <code>$this-&gt;categories</code>
+    </UndefinedThisPropertyFetch>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/AdvancedDqlQueryTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/BasicFunctionalTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/CascadeRemoveOrderTest.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>new ArrayCollection()</code>
+    </InvalidPropertyAssignmentValue>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <UndefinedDocblockClass occurrences="3">
+      <code>$this-&gt;oneToManyG</code>
+      <code>$this-&gt;oneToManyG</code>
+      <code>Collection&lt;int, CascadeRemoveOrderEntityG&gt;</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ClassTableInheritanceSecondTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ClassTableInheritanceTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ClearEventTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/CompositePrimaryKeyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/CompositePrimaryKeyWithAssociationsTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/CustomFunctionsTest.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>$parser-&gt;ArithmeticPrimary()</code>
+    </InvalidPropertyAssignmentValue>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/CustomIdObjectTypeTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/DatabaseDriverTest.php">
+    <MissingDependency occurrences="1">
+      <code>DatabaseDriverTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/DatabaseDriverTestCase.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/DefaultValuesTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/DetachedEntityTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/EntityListenersTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/EntityRepositoryCriteriaTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/EntityRepositoryTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ExtraLazyCollectionTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/FlushEventTest.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>12345</code>
+    </InvalidPropertyAssignmentValue>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>takeSnapshot</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/GH5988Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <ParamNameMismatch occurrences="1">
+      <code>$fieldDeclaration</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/HydrationCacheTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/IdentityMapTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/IndexByAssociationTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/JoinedTableCompositeKeyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/LifecycleCallbackTest.php">
+    <InvalidPropertyAssignmentValue occurrences="8">
+      <code>$this-&gt;calls</code>
+      <code>$this-&gt;calls</code>
+      <code>$this-&gt;calls</code>
+      <code>$this-&gt;calls</code>
+      <code>$this-&gt;calls</code>
+      <code>$this-&gt;calls</code>
+      <code>$this-&gt;calls</code>
+      <code>$this-&gt;calls</code>
+    </InvalidPropertyAssignmentValue>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <UndefinedDocblockClass occurrences="2">
+      <code>array&lt;string, BaseLifecycleEventArgs&gt;</code>
+      <code>public $calls = [];</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Locking/GearmanLockTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Locking/LockAgentWorker.php">
+    <UndefinedClass occurrences="5">
+      <code>$query</code>
+      <code>$query</code>
+      <code>$query</code>
+      <code>Doctrine\ORM\Query</code>
+      <code>GearmanWorker</code>
+    </UndefinedClass>
+    <UndefinedConstant occurrences="1">
+      <code>GEARMAN_SUCCESS</code>
+    </UndefinedConstant>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Locking/LockTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Locking/OptimisticTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ManyToManyBasicAssociationTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ManyToManyBidirectionalAssociationTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractManyToManyAssociationTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ManyToManyEventTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ManyToManySelfReferentialAssociationTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractManyToManyAssociationTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ManyToManyUnidirectionalAssociationTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractManyToManyAssociationTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ManyToOneOrphanRemovalTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/MappedSuperclassTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/MergeCompositeToOneKeyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/MergeProxiesTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/MergeSharedEntitiesTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/MergeVersionedManyToOneTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/NativeQueryTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/NewOperatorTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <UndefinedThisPropertyAssignment occurrences="3">
+      <code>$this-&gt;bor</code>
+      <code>$this-&gt;foo</code>
+      <code>$this-&gt;foo</code>
+    </UndefinedThisPropertyAssignment>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/NotifyPolicyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/OneToManyBidirectionalAssociationTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/OneToManyOrphanRemovalTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/OneToManySelfReferentialAssociationTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/OneToManyUnidirectionalAssociationTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/OneToOneBidirectionalAssociationTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/OneToOneEagerLoadingTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/OneToOneInverseSideLoadAfterDqlQueryTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/OneToOneOrphanRemovalTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/OneToOneSelfReferentialAssociationTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/OneToOneSingleTableInheritanceTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/OneToOneUnidirectionalAssociationTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/OrderedCollectionTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/OrderedJoinedTableInheritanceCollectionTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <UndefinedDocblockClass occurrences="2">
+      <code>Collection&lt;int, OJTICPet&gt;</code>
+      <code>Collection&lt;int, OJTICPet&gt;</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/PaginationTest.php">
+    <InvalidArgument occurrences="1">
+      <code>$condition</code>
+    </InvalidArgument>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/PersistentCollectionCriteriaTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/PersistentCollectionTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/PersistentObjectTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/PostFlushEventTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/PostLoadEventTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ProxiesLikeEntitiesTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/QueryBuilderParenthesisTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/QueryCacheTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/QueryDqlFunctionTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/QueryIterableTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/QueryTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ReadOnlyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ReferenceProxyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ResultCacheTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SQLFilterTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SchemaTool/CompanySchemaTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SchemaTool/DBAL483Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SchemaTool/DDC214Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SchemaTool/MySqlSchemaToolTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SchemaTool/PostgreSqlSchemaToolTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <UndefinedDocblockClass occurrences="2">
+      <code>Date</code>
+      <code>Stonewood\Model\Entity\Avatar</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SchemaValidatorTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheAbstractTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheCompositePrimaryKeyTest.php">
+    <MissingDependency occurrences="1">
+      <code>SecondLevelCacheAbstractTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheCompositePrimaryKeyWithAssociationsTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheConcurrentTest.php">
+    <MissingDependency occurrences="1">
+      <code>SecondLevelCacheAbstractTest</code>
+    </MissingDependency>
+    <UndefinedThisPropertyAssignment occurrences="1">
+      <code>$this-&gt;cache</code>
+    </UndefinedThisPropertyAssignment>
+    <UndefinedThisPropertyFetch occurrences="1">
+      <code>$this-&gt;cache</code>
+    </UndefinedThisPropertyFetch>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheCriteriaTest.php">
+    <MissingDependency occurrences="1">
+      <code>SecondLevelCacheAbstractTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheExtraLazyCollectionTest.php">
+    <MissingDependency occurrences="1">
+      <code>SecondLevelCacheAbstractTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheJoinTableInheritanceTest.php">
+    <MissingDependency occurrences="1">
+      <code>SecondLevelCacheAbstractTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheManyToManyTest.php">
+    <MissingDependency occurrences="1">
+      <code>SecondLevelCacheAbstractTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheManyToOneTest.php">
+    <MissingDependency occurrences="1">
+      <code>SecondLevelCacheAbstractTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheOneToManyTest.php">
+    <MissingDependency occurrences="1">
+      <code>SecondLevelCacheAbstractTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheOneToOneTest.php">
+    <MissingDependency occurrences="1">
+      <code>SecondLevelCacheAbstractTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheQueryCacheTest.php">
+    <MissingDependency occurrences="1">
+      <code>SecondLevelCacheAbstractTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheRepositoryTest.php">
+    <MissingDependency occurrences="1">
+      <code>SecondLevelCacheAbstractTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheSingleTableInheritanceTest.php">
+    <MissingDependency occurrences="1">
+      <code>SecondLevelCacheAbstractTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheTest.php">
+    <MissingDependency occurrences="1">
+      <code>SecondLevelCacheAbstractTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SequenceEmulatedIdentityStrategyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SequenceGeneratorTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SingleTableCompositeKeyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/SingleTableInheritanceTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/StandardEntityPersisterTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1040Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1041Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1043Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1080Test.php">
+    <InvalidPropertyAssignmentValue occurrences="2">
+      <code>$fooBars</code>
+      <code>$fooBars</code>
+    </InvalidPropertyAssignmentValue>
+    <InvalidTemplateParam occurrences="4">
+      <code>Collection&lt;DDC1080FooBar&gt;</code>
+      <code>Collection&lt;DDC1080FooBar&gt;</code>
+      <code>Collection&lt;DDC1080FooBar&gt;</code>
+      <code>Collection&lt;DDC1080FooBar&gt;</code>
+    </InvalidTemplateParam>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <MissingTemplateParam occurrences="4">
+      <code>Collection&lt;DDC1080FooBar&gt;</code>
+      <code>Collection&lt;DDC1080FooBar&gt;</code>
+      <code>Collection&lt;DDC1080FooBar&gt;</code>
+      <code>Collection&lt;DDC1080FooBar&gt;</code>
+    </MissingTemplateParam>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1113Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1129Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1151Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1163Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <UndefinedDocblockClass occurrences="2">
+      <code>Product</code>
+      <code>Product</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC117Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1181Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <UndefinedDocblockClass occurrences="3">
+      <code>Booking[]</code>
+      <code>Hotel</code>
+      <code>Room</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1193Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1209Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1225Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1228Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1238Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1250Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1276Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1300Test.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>new ArrayCollection()</code>
+    </InvalidPropertyAssignmentValue>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <UndefinedDocblockClass occurrences="2">
+      <code>Collection&lt;int, DDC1300FooLocale&gt;</code>
+      <code>public $fooLocaleRefFoo = null;</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1301Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1306Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1335Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1360Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1383Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1392Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1400Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1404Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC142Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1430Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1436Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC144Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1452Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1454Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1458Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1461Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1509Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1514Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1515Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1526Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1545Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1548Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1594Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1595Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC163Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1643Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1654Test.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>[]</code>
+    </InvalidPropertyAssignmentValue>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1655Test.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>[]</code>
+    </InvalidPropertyAssignmentValue>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1666Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1685Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC168Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1690Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1695Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <UndefinedDocblockClass occurrences="1">
+      <code>DateTimeZone</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1707Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1719Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1734Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1757Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1778Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1787Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1843Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1884Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1885Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1918Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1925Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC192Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1995Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1998Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC199Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2012Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <ParamNameMismatch occurrences="1">
+      <code>$fieldDeclaration</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2074Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2084Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2090Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2106Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC211Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2138Test.php">
+    <InvalidReturnStatement occurrences="2">
+      <code>$this-&gt;followedStructures</code>
+      <code>$this-&gt;followedUsers</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="2">
+      <code>Doctrine\Common\Collections\Collection</code>
+      <code>Doctrine\Common\Collections\Collection</code>
+    </InvalidReturnType>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <UndefinedClass occurrences="8">
+      <code>Doctrine\Common\Collections\Collection</code>
+      <code>Doctrine\Common\Collections\Collection</code>
+      <code>Structure</code>
+      <code>Structure</code>
+      <code>UserFollowedStructure</code>
+      <code>UserFollowedStructure</code>
+      <code>UserFollowedUser</code>
+      <code>UserFollowedUser</code>
+    </UndefinedClass>
+    <UndefinedDocblockClass occurrences="1">
+      <code>Structure</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2175Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2182Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2214Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2224Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <ParamNameMismatch occurrences="1">
+      <code>$fieldDeclaration</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2230Test.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>$listener</code>
+    </InvalidPropertyAssignmentValue>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <UndefinedDocblockClass occurrences="1">
+      <code>\Doctrine\Common\PropertyChangedListener</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2231Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2252Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2256Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2306Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2346Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2350Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC237Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2387Test.php">
+    <MissingDependency occurrences="1">
+      <code>DatabaseDriverTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2409Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2415Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2494Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <ParamNameMismatch occurrences="1">
+      <code>$fieldDeclaration</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2519Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2575Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2579Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC258Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2602Test.php">
+    <InvalidArgument occurrences="1">
+      <code>$fieldSelection</code>
+    </InvalidArgument>
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>$fieldList</code>
+    </InvalidPropertyAssignmentValue>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2645Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2655Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2660Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2692Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2759Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2775Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2780Test.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>new ArrayCollection()</code>
+    </InvalidPropertyAssignmentValue>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2790Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC279Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2825Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2862Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2895Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2931Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2943Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2984Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2996Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3033Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3042Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3068Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC309Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3103Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3123Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3160Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3170Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3192Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <ParamNameMismatch occurrences="1">
+      <code>$fieldDeclaration</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3223Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3300Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3303Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC331Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3330Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3346Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC345Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC353Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3582Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3597Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3634Test.php">
+    <InvalidReturnStatement occurrences="5">
+      <code>$this-&gt;forwardCall()</code>
+      <code>$this-&gt;forwardCall()</code>
+      <code>$this-&gt;forwardCall()</code>
+      <code>$this-&gt;forwardCall()</code>
+      <code>$this-&gt;identifier</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>lastInsertId</code>
+    </InvalidReturnType>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <ParamNameMismatch occurrences="13">
+      <code>$identifier</code>
+      <code>$identifier</code>
+      <code>$input</code>
+      <code>$query</code>
+      <code>$query</code>
+      <code>$query</code>
+      <code>$query</code>
+      <code>$statement</code>
+      <code>$statement</code>
+      <code>$statement</code>
+      <code>$tableExpression</code>
+      <code>$tableExpression</code>
+      <code>$tableExpression</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3644Test.php">
+    <InvalidPropertyAssignmentValue occurrences="2">
+      <code>[]</code>
+      <code>[]</code>
+    </InvalidPropertyAssignmentValue>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3699Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3711Test.php">
+    <MissingDependency occurrences="1">
+      <code>YamlMappingDriverTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3719Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC371Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3785Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <ParamNameMismatch occurrences="1">
+      <code>$fieldDeclaration</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC381Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3967Test.php">
+    <MissingDependency occurrences="1">
+      <code>SecondLevelCacheAbstractTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC4003Test.php">
+    <MissingDependency occurrences="1">
+      <code>SecondLevelCacheAbstractTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC4024Test.php">
+    <MissingDependency occurrences="1">
+      <code>DoctrineTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC422Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC425Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC440Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC444Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC448Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC493Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC501Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC512Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC513Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC518Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC522Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC531Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC5684Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC588Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC599Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC618Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC6303Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC633Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC6460Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC656Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC657Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC698Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC69Test.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>$this-&gt;parent</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>Phrase</code>
+    </InvalidReturnType>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <NullableReturnStatement occurrences="1">
+      <code>$this-&gt;parent</code>
+    </NullableReturnStatement>
+    <UndefinedClass occurrences="1">
+      <code>Phrase</code>
+    </UndefinedClass>
+    <UndefinedMethod occurrences="1">
+      <code>removeLemma</code>
+    </UndefinedMethod>
+    <UndefinedThisPropertyAssignment occurrences="1">
+      <code>$this-&gt;types</code>
+    </UndefinedThisPropertyAssignment>
+    <UndefinedThisPropertyFetch occurrences="1">
+      <code>$this-&gt;lemma</code>
+    </UndefinedThisPropertyFetch>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC719Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <UndefinedClass occurrences="5">
+      <code>ArrayCollection</code>
+      <code>ArrayCollection</code>
+      <code>ArrayCollection</code>
+      <code>Channel</code>
+      <code>Group</code>
+    </UndefinedClass>
+    <UndefinedDocblockClass occurrences="1">
+      <code>Collection&lt;int, Channel&gt;</code>
+    </UndefinedDocblockClass>
+    <UndefinedMethod occurrences="1">
+      <code>parent::__construct()</code>
+    </UndefinedMethod>
+    <UndefinedThisPropertyAssignment occurrences="1">
+      <code>$this-&gt;channels</code>
+    </UndefinedThisPropertyAssignment>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC729Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC735Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC736Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC742Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC748Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC758Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC767Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC7969Test.php">
+    <MissingDependency occurrences="1">
+      <code>SecondLevelCacheAbstractTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC809Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC812Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC832Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC837Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC849Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC881Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC933Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC949Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC960Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC992Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH2947Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH5562Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH5762Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH5804Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <ParamNameMismatch occurrences="1">
+      <code>$fieldDeclaration</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH5887Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH6029Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH6141Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH6217Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH6362Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH6394Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH6402Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH6464Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH6531Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH6682Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH6699Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH6740Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH6937Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7012Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7062Test.php">
+    <InvalidArgument occurrences="1">
+      <code>new GH7062RankingPosition($this, $team)</code>
+    </InvalidArgument>
+    <InvalidTemplateParam occurrences="1">
+      <code>Collection&lt;GH7062RankingPosition&gt;</code>
+    </InvalidTemplateParam>
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+    <MissingTemplateParam occurrences="1">
+      <code>Collection&lt;GH7062RankingPosition&gt;</code>
+    </MissingTemplateParam>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7067Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7068Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7079Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7259Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7286Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7366Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7496WithToIterableTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7505Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7629Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7684Test.php">
+    <MissingDependency occurrences="1">
+      <code>DatabaseDriverTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7735Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7737Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7761Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7767Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7820Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7829Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7836Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7864Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7869Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7875Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7941Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH8055Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH8061Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+    <ParamNameMismatch occurrences="1">
+      <code>$fieldDeclaration</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH8499Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/Issue5989Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/Ticket2481Test.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/Ticket4646InstanceOfAbstractTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/Ticket4646InstanceOfMultiLevelTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/Ticket4646InstanceOfParametricTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/Ticket4646InstanceOfTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/Ticket4646InstanceOfWithMultipleParametersTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/TypeTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/TypeValueSqlTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/UUIDGeneratorTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/UnitOfWorkLifecycleTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ValueConversionType/ManyToManyCompositeIdForeignKeyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ValueConversionType/ManyToManyCompositeIdTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ValueConversionType/ManyToManyExtraLazyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ValueConversionType/ManyToManyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ValueConversionType/OneToManyCompositeIdForeignKeyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ValueConversionType/OneToManyCompositeIdTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ValueConversionType/OneToManyExtraLazyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ValueConversionType/OneToManyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ValueConversionType/OneToOneCompositeIdForeignKeyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ValueConversionType/OneToOneCompositeIdTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ValueConversionType/OneToOneTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/ValueObjectsTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Functional/VersionedOneToOneTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Hydration/AbstractHydratorTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Hydration/ArrayHydratorTest.php">
+    <MissingDependency occurrences="1">
+      <code>HydrationTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Hydration/CustomHydratorTest.php">
+    <MissingDependency occurrences="1">
+      <code>HydrationTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Hydration/HydrationTestCase.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Hydration/ObjectHydratorTest.php">
+    <MissingDependency occurrences="1">
+      <code>HydrationTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Hydration/ResultSetMappingTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Hydration/ScalarHydratorTest.php">
+    <MissingDependency occurrences="1">
+      <code>HydrationTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Hydration/SimpleObjectHydratorTest.php">
+    <MissingDependency occurrences="1">
+      <code>HydrationTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Hydration/SingleScalarHydratorTest.php">
+    <MissingDependency occurrences="1">
+      <code>HydrationTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Id/AssignedGeneratorTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Id/SequenceGeneratorTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/AbstractMappingDriverTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/AnnotationDriverTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractMappingDriverTest</code>
+    </MissingDependency>
+    <UndefinedDocblockClass occurrences="1">
+      <code>Collection&lt;int, CmsUser&gt;</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/AnsiQuoteStrategyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/BasicInheritanceMappingTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/ClassMetadataBuilderTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/ClassMetadataFactoryTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/ClassMetadataLoadEventTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/ClassMetadataTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/DefaultQuoteStrategyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/EntityListenerResolverTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/FieldBuilderTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/NamingStrategyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/PHPMappingDriverTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractMappingDriverTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/QuoteStrategyTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/StaticPHPMappingDriverTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractMappingDriverTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/Symfony/AbstractDriverTest.php">
+    <UndefinedThisPropertyAssignment occurrences="1">
+      <code>$this-&gt;dir</code>
+    </UndefinedThisPropertyAssignment>
+    <UndefinedThisPropertyFetch occurrences="5">
+      <code>$this-&gt;dir</code>
+      <code>$this-&gt;dir</code>
+      <code>$this-&gt;dir</code>
+      <code>$this-&gt;dir</code>
+      <code>$this-&gt;dir</code>
+    </UndefinedThisPropertyFetch>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/XmlMappingDriverTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractMappingDriverTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/YamlMappingDriverTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractMappingDriverTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.CMS.CmsAddress.php">
+    <UndefinedGlobalVariable occurrences="19">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.CMS.CmsUser.php">
+    <DuplicateArrayKey occurrences="1"/>
+    <UndefinedGlobalVariable occurrences="11">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.Cache.City.php">
+    <UndefinedGlobalVariable occurrences="12">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.Company.CompanyContract.php">
+    <UndefinedGlobalVariable occurrences="14">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.Company.CompanyFixContract.php">
+    <UndefinedGlobalVariable occurrences="1">
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.Company.CompanyFlexContract.php">
+    <UndefinedGlobalVariable occurrences="2">
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.Company.CompanyFlexUltraContract.php">
+    <UndefinedGlobalVariable occurrences="11">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.Company.CompanyPerson.php">
+    <UndefinedGlobalVariable occurrences="4">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.DDC1476.DDC1476EntityWithDefaultFieldType.php">
+    <UndefinedGlobalVariable occurrences="3">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.DDC3579.DDC3579Admin.php">
+    <UndefinedGlobalVariable occurrences="1">
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.DDC3579.DDC3579User.php">
+    <UndefinedGlobalVariable occurrences="5">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.DDC5934.DDC5934BaseContract.php">
+    <UndefinedGlobalVariable occurrences="3">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.DDC5934.DDC5934Contract.php">
+    <UndefinedGlobalVariable occurrences="1">
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.DDC869.DDC869ChequePayment.php">
+    <UndefinedGlobalVariable occurrences="1">
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.DDC869.DDC869CreditCardPayment.php">
+    <UndefinedGlobalVariable occurrences="1">
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.DDC869.DDC869Payment.php">
+    <UndefinedGlobalVariable occurrences="5">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.DDC889.DDC889Class.php">
+    <UndefinedGlobalVariable occurrences="1">
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.DDC889.DDC889SuperClass.php">
+    <UndefinedGlobalVariable occurrences="4">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.DDC964.DDC964Admin.php">
+    <UndefinedGlobalVariable occurrences="2">
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.DDC964.DDC964Guest.php">
+    <UndefinedGlobalVariable occurrences="2">
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.Models.DDC964.DDC964User.php">
+    <UndefinedGlobalVariable occurrences="6">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.ORM.Mapping.Comment.php">
+    <UndefinedGlobalVariable occurrences="3">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.ORM.Mapping.DDC1170Entity.php">
+    <UndefinedGlobalVariable occurrences="3">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.ORM.Mapping.DDC807Entity.php">
+    <UndefinedGlobalVariable occurrences="3">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.ORM.Mapping.PHPSLC.php">
+    <UndefinedGlobalVariable occurrences="2">
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests.ORM.Mapping.User.php">
+    <UndefinedGlobalVariable occurrences="20">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/ORMInvalidArgumentExceptionTest.php">
+    <InvalidReturnStatement occurrences="1"/>
+    <InvalidReturnType occurrences="1">
+      <code>string[][]</code>
+    </InvalidReturnType>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Performance/SecondLevelCacheTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/PersistentCollectionTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Persisters/BasicEntityPersisterCompositeTypeParametersTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Persisters/BasicEntityPersisterCompositeTypeSqlTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Persisters/BasicEntityPersisterTypeValueSqlTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Persisters/JoinedSubclassPersisterTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Persisters/ManyToManyPersisterTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Proxy/ProxyFactoryTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Query/CustomTreeWalkersJoinTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Query/CustomTreeWalkersTest.php">
+    <InvalidArgument occurrences="1">
+      <code>1</code>
+    </InvalidArgument>
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+    <UndefinedPropertyAssignment occurrences="3">
+      <code>$selectStatement-&gt;whereClause-&gt;conditionalExpression-&gt;conditionalTerms</code>
+      <code>$selectStatement-&gt;whereClause-&gt;conditionalExpression-&gt;conditionalTerms</code>
+      <code>$selectStatement-&gt;whereClause-&gt;conditionalExpression-&gt;conditionalTerms</code>
+    </UndefinedPropertyAssignment>
+    <UndefinedPropertyFetch occurrences="2">
+      <code>$selectStatement-&gt;whereClause-&gt;conditionalExpression-&gt;conditionalTerms</code>
+      <code>$whereClause-&gt;conditionalExpression-&gt;conditionalTerms</code>
+    </UndefinedPropertyFetch>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Query/DeleteSqlGenerationTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Query/ExprTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Query/FilterCollectionTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Query/LanguageRecognitionTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Query/LexerTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Query/ParameterTypeInfererTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Query/ParserTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Query/QueryTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Query/SelectSqlGenerationTest.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>$float</code>
+    </InvalidPropertyAssignmentValue>
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Query/SqlWalkerTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Query/UpdateSqlGenerationTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/QueryBuilderTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/AttachEntityListenersListenerTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Console/Command/ClearCacheCollectionRegionCommandTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Console/Command/ClearCacheEntityRegionCommandTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Console/Command/ClearCacheQueryRegionCommandTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Console/Command/ConvertDoctrine1SchemaCommandTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Console/Command/EnsureProductionSettingsCommandTest.php">
+    <MissingDependency occurrences="1">
+      <code>DoctrineTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Console/Command/GenerateRepositoriesCommandTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Console/Command/InfoCommandTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Console/Command/MappingDescribeCommandTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Console/Command/RunDqlCommandTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Console/ConsoleRunnerTest.php">
+    <MissingDependency occurrences="1">
+      <code>DoctrineTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Console/MetadataFilterTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/ConvertDoctrine1SchemaTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/EntityGeneratorTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/EntityRepositoryGeneratorTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Export/AbstractClassMetadataExporterTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Export/AnnotationClassMetadataExporterTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractClassMetadataExporterTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Export/PhpClassMetadataExporterTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractClassMetadataExporterTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Export/XmlClassMetadataExporterTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractClassMetadataExporterTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Export/YamlClassMetadataExporterTest.php">
+    <MissingDependency occurrences="1">
+      <code>AbstractClassMetadataExporterTest</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Export/php/Doctrine.Tests.ORM.Tools.Export.User.php">
+    <UndefinedClass occurrences="1">
+      <code>Export\Cart</code>
+    </UndefinedClass>
+    <UndefinedGlobalVariable occurrences="20">
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+      <code>$metadata</code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Pagination/CountOutputWalkerTest.php">
+    <MissingDependency occurrences="1">
+      <code>PaginationTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Pagination/CountWalkerTest.php">
+    <MissingDependency occurrences="1">
+      <code>PaginationTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Pagination/LimitSubqueryOutputWalkerTest.php">
+    <MissingDependency occurrences="1">
+      <code>PaginationTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Pagination/LimitSubqueryWalkerTest.php">
+    <MissingDependency occurrences="1">
+      <code>PaginationTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Pagination/PaginationTestCase.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Pagination/PaginatorTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/Pagination/WhereInWalkerTest.php">
+    <MissingDependency occurrences="1">
+      <code>PaginationTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/ResolveTargetEntityListenerTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/SchemaToolTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/SchemaValidatorTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+    <UndefinedDocblockClass occurrences="6">
+      <code>Collection&lt;int, DDC3322ValidEntity1&gt;</code>
+      <code>Collection&lt;int, DDC3322ValidEntity1&gt;</code>
+      <code>Collection&lt;int, DDC3322ValidEntity1&gt;</code>
+      <code>Collection&lt;int, DDC3322ValidEntity1&gt;</code>
+      <code>Collection&lt;int, DDC3322ValidEntity1&gt;</code>
+      <code>Identifier</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Tools/SetupTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/UnitOfWorkTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/ORM/Utility/IdentifierFlattenerTest.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/OrmFunctionalTestCase.php">
+    <MissingDependency occurrences="1">
+      <code>OrmTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/OrmPerformanceTestCase.php">
+    <MissingDependency occurrences="1">
+      <code>OrmFunctionalTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/OrmTestCase.php">
+    <MissingDependency occurrences="1">
+      <code>DoctrineTestCase</code>
+    </MissingDependency>
+  </file>
+  <file src="tests/Doctrine/Tests/TestInit.php">
+    <MissingFile occurrences="1">
+      <code>require __DIR__ . '/../../../../../autoload.php'</code>
+    </MissingFile>
+  </file>
+  <file src="tests/Doctrine/Tests/VerifyDeprecations.php">
+    <InvalidArgument occurrences="1"/>
+  </file>
+  <file src="vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php">
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>$params['pdo']</code>
+    </InvalidPropertyAssignmentValue>
+  </file>
 </files>

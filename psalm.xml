@@ -9,8 +9,10 @@
 >
     <projectFiles>
         <directory name="lib/Doctrine/ORM" />
+        <directory name="tests" />
         <ignoreFiles>
-            <directory name="vendor" />
+            <directory name="tests/Doctrine/Tests/Proxies" />
+            <directory name="tests/Doctrine/Tests/ORM/Tools/Export/export" />
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>

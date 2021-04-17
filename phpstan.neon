@@ -1,10 +1,16 @@
 includes:
     - phpstan-baseline.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
 
 parameters:
     level: 5
     paths:
         - lib
+        - tests
+    excludePaths:
+        analyse:
+            - tests/Doctrine/Tests/ORM/Tools/Export/export/*
+            - tests/Doctrine/Tests/Proxies/*
     earlyTerminatingMethodCalls:
         Doctrine\ORM\Query\Parser:
             - syntaxError
