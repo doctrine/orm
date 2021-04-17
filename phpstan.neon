@@ -4,7 +4,7 @@ includes:
 parameters:
     level: 5
     paths:
-        - %currentWorkingDirectory%/lib
+        - lib
     earlyTerminatingMethodCalls:
         Doctrine\ORM\Query\Parser:
             - syntaxError
