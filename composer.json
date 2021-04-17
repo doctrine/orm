@@ -37,7 +37,7 @@
         "phpunit/phpunit": "^8.5|^9.4",
         "squizlabs/php_codesniffer": "3.6.0",
         "symfony/yaml": "^3.4|^4.0|^5.0",
-        "vimeo/psalm": "4.1.1"
+        "vimeo/psalm": "4.3.2"
     },
     "suggest": {
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
