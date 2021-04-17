@@ -141,8 +141,7 @@ class SchemaTool
     /**
      * Resolves fields in index mapping to column names
      *
-     * @param ClassMetadata $class
-     * @param mixed[]       $indexData index or unique constraint data
+     * @param mixed[] $indexData index or unique constraint data
      *
      * @return string[] Column names from combined fields and columns mappings
      */
@@ -355,10 +354,10 @@ class SchemaTool
                     }
 
                     $table->addIndex(
-                                        $this->getIndexColumns($class, $indexData),
-                                        is_numeric($indexName) ? null : $indexName,
-                                        (array) $indexData['flags'],
-                                        $indexData['options'] ?? []
+                        $this->getIndexColumns($class, $indexData),
+                        is_numeric($indexName) ? null : $indexName,
+                        (array) $indexData['flags'],
+                        $indexData['options'] ?? []
                     );
                 }
             }
