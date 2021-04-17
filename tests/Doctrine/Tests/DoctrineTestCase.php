@@ -13,15 +13,22 @@ use PHPUnit\Framework\TestCase;
  */
 abstract class DoctrineTestCase extends TestCase
 {
+    /**
+     * @param array<mixed> $arguments
+     *
+     * @return mixed
+     */
     public static function __callStatic(string $method, array $arguments)
     {
         if ($method === 'assertMatchesRegularExpression') {
-            self::assertRegExp(...$arguments);
+            return self::assertRegExp(...$arguments);
+        } elseif ($method === 'assertDoesNotMatchRegularExpression') {
+            return self::assertNotRegExp(...$arguments);
         } elseif ($method === 'assertFileDoesNotExist') {
-            self::assertFileNotExists(...$arguments);
+            return self::assertFileNotExists(...$arguments);
         }
 
-        return null;
+        throw new \BadMethodCallException(sprintf('%s::%s does not exist', get_called_class(), $method));
     }
 
     /**
@@ -39,11 +46,13 @@ abstract class DoctrineTestCase extends TestCase
                 ->disallowMockingUnknownTypes()
                 ->getMock();
         } elseif ($method === 'assertMatchesRegularExpression') {
-            self::assertRegExp(...$arguments);
+            return self::assertRegExp(...$arguments);
+        } elseif ($method === 'assertDoesNotMatchRegularExpression') {
+            return self::assertNotRegExp(...$arguments);
         } elseif ($method === 'assertFileDoesNotExist') {
-            self::assertFileNotExists(...$arguments);
+            return self::assertFileNotExists(...$arguments);
         }
 
-        return null;
+        throw new \BadMethodCallException(sprintf('%s::%s does not exist', get_called_class(), $method));
     }
 }
