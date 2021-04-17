@@ -168,43 +168,4 @@ abstract class OrmTestCase extends DoctrineTestCase
 
         return $this->secondLevelCacheDriverImpl;
     }
-
-    /**
-     * @param array<mixed> $arguments
-     *
-     * @return mixed
-     */
-    public static function __callStatic(string $method, array $arguments)
-    {
-        if ($method === 'assertMatchesRegularExpression') {
-            self::assertRegExp(...$arguments);
-        } elseif ($methodg === 'assertFileDoesNotExist') {
-            self::assertFileNotExists(...$arguments);
-        }
-
-        return null;
-    }
-
-    /**
-     * @param array<mixed> $arguments
-     *
-     * @return mixed
-     */
-    public function __call(string $method, array $arguments)
-    {
-        if ($method === 'createStub') {
-            return $this->getMockBuilder(...$arguments)
-                ->disableOriginalConstructor()
-                ->disableOriginalClone()
-                ->disableArgumentCloning()
-                ->disallowMockingUnknownTypes()
-                ->getMock();
-        } elseif ($method === 'assertMatchesRegularExpression') {
-            self::assertRegExp(...$arguments);
-        } elseif ($method === 'assertFileDoesNotExist') {
-            self::assertFileNotExists(...$arguments);
-        }
-
-        return null;
-    }
 }
