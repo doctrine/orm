@@ -146,7 +146,7 @@ class SchemaTool
      *
      * @return string[] Column names from combined fields and columns mappings
      */
-    private function getIndexColumns($class, array $indexData)
+    private function getIndexColumns(ClassMetadata $class, array $indexData): array
     {
         $columns = [];
 
@@ -354,7 +354,12 @@ class SchemaTool
                         $indexData['flags'] = [];
                     }
 
-                    $table->addIndex($this->getIndexColumns($class, $indexData), is_numeric($indexName) ? null : $indexName, (array) $indexData['flags'], $indexData['options'] ?? []);
+                    $table->addIndex(
+                                        $this->getIndexColumns($class, $indexData),
+                                        is_numeric($indexName) ? null : $indexName,
+                                        (array) $indexData['flags'],
+                                        $indexData['options'] ?? []
+                    );
                 }
             }
 
