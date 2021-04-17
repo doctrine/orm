@@ -1476,6 +1476,26 @@ parameters:
 			path: lib/Doctrine/ORM/Query.php
 
 		-
+			message: "#^Call to function is_array\\(\\) with Doctrine\\\\Common\\\\Collections\\\\ArrayCollection&iterable will always evaluate to false\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/QueryBuilder.php
+
+		-
+			message: "#^Method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManager but returns Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/QueryBuilder.php
+
+		-
+			message: "#^PHPDoc tag @param references unknown parameter\\: \\$where$#"
+			count: 2
+			path: lib/Doctrine/ORM/QueryBuilder.php
+
+		-
+			message: "#^Parameter \\#2 \\$dqlPart of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:add\\(\\) expects array\\<'join'\\|int, array\\<int\\|string, object\\>\\|string\\>\\|object\\|string, array\\<string, Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Join\\> given\\.$#"
+			count: 2
+			path: lib/Doctrine/ORM/QueryBuilder.php
+
+		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\:\\:\\$value\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php
@@ -2219,26 +2239,6 @@ parameters:
 			message: "#^Array \\(array\\<class\\-string\\<Doctrine\\\\ORM\\\\Query\\\\TreeWalker\\>\\>\\) does not accept Doctrine\\\\ORM\\\\Query\\\\TreeWalker\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/Query/TreeWalkerChainIterator.php
-
-		-
-			message: "#^Call to function is_array\\(\\) with Doctrine\\\\Common\\\\Collections\\\\ArrayCollection&iterable will always evaluate to false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/QueryBuilder.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManager but returns Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/QueryBuilder.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$where$#"
-			count: 2
-			path: lib/Doctrine/ORM/QueryBuilder.php
-
-		-
-			message: "#^Parameter \\#2 \\$dqlPart of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:add\\(\\) expects array\\<'join'\\|int, array\\<int\\|string, object\\>\\|string\\>\\|object\\|string, array\\<string, Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Join\\> given\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/QueryBuilder.php
 
 		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
