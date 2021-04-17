@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.3.2@57b53ff26237074fdf5cbcb034f7da5172be4524">
+<files psalm-version="4.7.0@d4377c0baf3ffbf0b1ec6998e8d1be2a40971005">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <FalsableReturnStatement occurrences="1">
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
@@ -326,6 +326,9 @@
     </FalsableReturnStatement>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php">
+    <InvalidArgument occurrences="1">
+      <code>$hints</code>
+    </InvalidArgument>
     <InvalidNullableReturnType occurrences="2">
       <code>loadById</code>
       <code>loadOneToOneEntity</code>
@@ -349,9 +352,6 @@
       <code>$paramMappings</code>
       <code>$sqlPositions</code>
     </InvalidArgument>
-    <InvalidArrayOffset occurrences="1">
-      <code>$value[$i % $countValue]</code>
-    </InvalidArrayOffset>
     <LessSpecificImplementedReturnType occurrences="1">
       <code>mixed</code>
     </LessSpecificImplementedReturnType>
@@ -555,13 +555,10 @@
     <NullableReturnStatement occurrences="1">
       <code>$this-&gt;identityMap[$rootClassName][$idHash]</code>
     </NullableReturnStatement>
-    <UndefinedInterfaceMethod occurrences="6">
+    <UndefinedInterfaceMethod occurrences="3">
       <code>getMapping</code>
       <code>getMapping</code>
       <code>takeSnapshot</code>
-      <code>unwrap</code>
-      <code>unwrap</code>
-      <code>unwrap</code>
     </UndefinedInterfaceMethod>
   </file>
 </files>
