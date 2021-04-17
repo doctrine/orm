@@ -7,7 +7,7 @@ use OutOfBoundsException;
 use function implode;
 use function sprintf;
 
-class UnknownManagerException extends OutOfBoundsException
+final class UnknownManagerException extends OutOfBoundsException
 {
     /**
      * @psalm-param list<string> $knownManagers

@@ -20,7 +20,7 @@ abstract class AbstractEntityManagerCommand extends Command
         $this->entityManagerProvider = $entityManagerProvider;
     }
 
-    protected function getEntityManager(InputInterface $input): EntityManagerInterface
+    final protected function getEntityManager(InputInterface $input): EntityManagerInterface
     {
         // This is a backwards compatibility required check for commands extending Doctrine ORM commands
         if (! $input->hasOption('em') || $this->entityManagerProvider === null) {
