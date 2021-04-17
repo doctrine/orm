@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests;
 
+use BadMethodCallException;
 use PHPUnit\Framework\TestCase;
+
+use function get_called_class;
+use function sprintf;
 
 /**
  * Base testcase class for all Doctrine testcases.
@@ -28,7 +32,7 @@ abstract class DoctrineTestCase extends TestCase
             return self::assertFileNotExists(...$arguments);
         }
 
-        throw new \BadMethodCallException(sprintf('%s::%s does not exist', get_called_class(), $method));
+        throw new BadMethodCallException(sprintf('%s::%s does not exist', static::class, $method));
     }
 
     /**
@@ -53,6 +57,6 @@ abstract class DoctrineTestCase extends TestCase
             return self::assertFileNotExists(...$arguments);
         }
 
-        throw new \BadMethodCallException(sprintf('%s::%s does not exist', get_called_class(), $method));
+        throw new BadMethodCallException(sprintf('%s::%s does not exist', static::class, $method));
     }
 }
