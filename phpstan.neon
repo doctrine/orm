@@ -1,10 +1,25 @@
 includes:
     - phpstan-baseline.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
 
 parameters:
     level: 5
     paths:
         - lib
+        - tests
+    excludePaths:
+        analyseAndScan:
+            # involves gearman extension
+            - tests/Doctrine/Tests/ORM/Functional/Locking/LockAgentWorker.php
+            # involves proxy classes generated when running the test suite
+            - tests/Doctrine/Tests/ORM/Tools/Export/AbstractClassMetadataExporterTest.php
+            - tests/Doctrine/Tests/ORM/Functional/ProxiesLikeEntitiesTest.php
+        analyse:
+            - tests/Doctrine/Performance/*
+            - tests/Doctrine/Tests/Mocks/*
+            - tests/Doctrine/Tests/Models/*
+            - tests/Doctrine/Tests/ORM/Tools/Export/export/*
+            - tests/Doctrine/Tests/Proxies/*
     earlyTerminatingMethodCalls:
         Doctrine\ORM\Query\Parser:
             - syntaxError
