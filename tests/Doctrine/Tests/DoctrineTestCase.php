@@ -33,6 +33,7 @@ abstract class DoctrineTestCase extends TestCase
     {
         if (isset(self::$phpunitMethodRenames[$method])) {
             $method = self::$phpunitMethodRenames[$method];
+
             return self::$method(...$arguments);
         }
 
@@ -57,6 +58,7 @@ abstract class DoctrineTestCase extends TestCase
 
         if (isset(self::$phpunitMethodRenames[$method])) {
             $method = self::$phpunitMethodRenames[$method];
+
             return self::$method(...$arguments);
         }
 
