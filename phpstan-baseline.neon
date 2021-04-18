@@ -1,41 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Closure invoked with 1 parameter, 0 required\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/AbstractQuery.php
-
-		-
-			message: "#^Default value of the parameter \\#1 \\$parameters \\(array\\) of method Doctrine\\\\ORM\\\\AbstractQuery\\:\\:toIterable\\(\\) is incompatible with type Doctrine\\\\Common\\\\Collections\\\\ArrayCollection&iterable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/AbstractQuery.php
-
-		-
-			message: "#^Left side of && is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/AbstractQuery.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\AbstractQuery\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManager but returns Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/AbstractQuery.php
-
-		-
-			message: "#^Property Doctrine\\\\ORM\\\\AbstractQuery\\:\\:\\$_queryCacheProfile \\(Doctrine\\\\DBAL\\\\Cache\\\\QueryCacheProfile\\) does not accept null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/AbstractQuery.php
-
-		-
-			message: "#^Result of && is always false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/AbstractQuery.php
-
-		-
-			message: "#^Ternary operator condition is always true\\.$#"
-			count: 5
-			path: lib/Doctrine/ORM/AbstractQuery.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$associationMappings\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/DefaultCache.php
@@ -44,26 +9,6 @@ parameters:
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$rootEntityName\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/DefaultCache.php
-
-		-
-			message: "#^Ternary operator condition is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/DefaultCache.php
-
-		-
-			message: "#^Parameter \\#2 \\$region of class Doctrine\\\\ORM\\\\Cache\\\\Persister\\\\Collection\\\\ReadWriteCachedCollectionPersister constructor expects Doctrine\\\\ORM\\\\Cache\\\\ConcurrentRegion, Doctrine\\\\ORM\\\\Cache\\\\Region given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/DefaultCacheFactory.php
-
-		-
-			message: "#^Parameter \\#2 \\$region of class Doctrine\\\\ORM\\\\Cache\\\\Persister\\\\Entity\\\\ReadWriteCachedEntityPersister constructor expects Doctrine\\\\ORM\\\\Cache\\\\ConcurrentRegion, Doctrine\\\\ORM\\\\Cache\\\\Region given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/DefaultCacheFactory.php
-
-		-
-			message: "#^Parameter \\#3 \\$lockLifetime of class Doctrine\\\\ORM\\\\Cache\\\\Region\\\\FileLockRegion constructor expects string, int given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/DefaultCacheFactory.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Cache\\\\DefaultCollectionHydrator\\:\\:loadCacheEntry\\(\\) should return array but returns null\\.$#"
@@ -121,21 +66,6 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
 
 		-
-			message: "#^Call to function is_array\\(\\) with Doctrine\\\\Common\\\\Collections\\\\Collection&iterable will always evaluate to false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
-
-		-
-			message: "#^If condition is always true\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
-
-		-
-			message: "#^Left side of && is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
-
-		-
 			message: "#^Parameter \\#1 \\$metadata of method Doctrine\\\\ORM\\\\Cache\\\\EntityHydrator\\:\\:buildCacheEntry\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
@@ -146,17 +76,7 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
 
 		-
-			message: "#^Parameter \\#3 \\$collection of method Doctrine\\\\ORM\\\\Cache\\\\CollectionHydrator\\:\\:buildCacheEntry\\(\\) expects Doctrine\\\\Common\\\\Collections\\\\Collection&iterable, array\\<int, mixed\\>\\|\\(Doctrine\\\\Common\\\\Collections\\\\Collection&iterable\\) given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
-
-		-
 			message: "#^Parameter \\#3 \\$entry of method Doctrine\\\\ORM\\\\Cache\\\\CollectionHydrator\\:\\:loadCacheEntry\\(\\) expects Doctrine\\\\ORM\\\\Cache\\\\CollectionCacheEntry, Doctrine\\\\ORM\\\\Cache\\\\CacheEntry given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
-
-		-
-			message: "#^Property Doctrine\\\\ORM\\\\Cache\\\\Persister\\\\Collection\\\\AbstractCollectionPersister\\:\\:\\$metadataFactory \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) does not accept Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
 
@@ -192,16 +112,6 @@ parameters:
 
 		-
 			message: "#^If condition is always true\\.$#"
-			count: 13
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
-
-		-
-			message: "#^Left side of && is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Cache\\\\Persister\\\\Entity\\\\AbstractEntityPersister\\:\\:loadById\\(\\) should return object but returns null\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
 
@@ -221,22 +131,7 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
 
 		-
-			message: "#^Property Doctrine\\\\ORM\\\\Cache\\\\Persister\\\\Entity\\\\AbstractEntityPersister\\:\\:\\$metadataFactory \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) does not accept Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between object and null will always evaluate to false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$rootEntityName\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/NonStrictReadWriteCachedEntityPersister.php
-
-		-
-			message: "#^Left side of && is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Entity/NonStrictReadWriteCachedEntityPersister.php
 
@@ -263,11 +158,6 @@ parameters:
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Cache\\\\Region\\\\FileLockRegion\\:\\:lock\\(\\) should return Doctrine\\\\ORM\\\\Cache\\\\Lock but returns null\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Cache/Region/FileLockRegion.php
-
-		-
-			message: "#^Property Doctrine\\\\ORM\\\\Cache\\\\Region\\\\FileLockRegion\\:\\:\\$lockLifetime \\(string&numeric\\) does not accept string\\.$#"
-			count: 1
 			path: lib/Doctrine/ORM/Cache/Region/FileLockRegion.php
 
 		-
@@ -327,12 +217,12 @@ parameters:
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:find\\(\\) should return T\\|null but returns object\\.$#"
-			count: 2
+			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:find\\(\\) should return T\\|null but returns object\\|null\\.$#"
-			count: 2
+			count: 3
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
@@ -1436,27 +1326,12 @@ parameters:
 			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between object and null will always evaluate to false\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
-
-		-
 			message: "#^Argument of an invalid type Doctrine\\\\ORM\\\\Query\\\\Parameter supplied for foreach, only iterables are supported\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query.php
 
 		-
-			message: "#^Default value of the parameter \\#1 \\$parameters \\(array\\) of method Doctrine\\\\ORM\\\\Query\\:\\:toIterable\\(\\) is incompatible with type Doctrine\\\\Common\\\\Collections\\\\ArrayCollection&iterable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query.php
-
-		-
 			message: "#^If condition is always false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query.php
-
-		-
-			message: "#^If condition is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query.php
 

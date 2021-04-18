@@ -26,7 +26,7 @@ use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\DBAL\Platforms\SQLAnywherePlatform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
@@ -81,7 +81,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /** @var int */
     private $maxResults;
 
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     private $em;
 
     /**
