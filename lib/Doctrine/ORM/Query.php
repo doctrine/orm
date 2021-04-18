@@ -374,10 +374,9 @@ final class Query extends AbstractQuery
      * @param Parameter[] $paramMappings
      *
      * @return mixed[][]
+     * @psalm-return array{0: list<mixed>, 1: array}
      *
      * @throws Query\QueryException
-     *
-     * @psalm-return array{0: list<mixed>, 1: array}
      */
     private function processParameterMappings(array $paramMappings): array
     {
@@ -426,7 +425,6 @@ final class Query extends AbstractQuery
 
     /**
      * @return mixed[] tuple of (value, type)
-     *
      * @psalm-return array{0: mixed, 1: mixed}
      */
     private function resolveParameterValue(Parameter $parameter): array
@@ -678,10 +676,9 @@ final class Query extends AbstractQuery
      *
      * @param ArrayCollection|mixed[]|null $parameters    The query parameters.
      * @param string|int                   $hydrationMode The hydration mode to use.
+     * @psalm-param ArrayCollection<int, Parameter>|array<string, mixed>|null $parameters
      *
      * @return IterableResult
-     *
-     * @psalm-param ArrayCollection<int, Parameter>|array<string, mixed>|null $parameters
      */
     public function iterate($parameters = null, $hydrationMode = self::HYDRATE_OBJECT)
     {

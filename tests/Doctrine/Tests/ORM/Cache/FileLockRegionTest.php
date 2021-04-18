@@ -88,7 +88,7 @@ class FileLockRegionTest extends AbstractRegionTest
         $this->assertNull($this->region->get($key));
 
         $this->assertTrue($this->region->unlock($key, $lock));
-        $this->assertFileNotExists($file);
+        $this->assertFileDoesNotExist($file);
     }
 
     public function testLockWithExistingLock(): void
@@ -183,7 +183,7 @@ class FileLockRegionTest extends AbstractRegionTest
         $this->assertFalse($this->region->contains($key));
         $this->assertTrue($this->region->evict($key));
         $this->assertFalse($this->region->contains($key));
-        $this->assertFileNotExists($file);
+        $this->assertFileDoesNotExist($file);
     }
 
     public function testLockedEvictAll(): void
@@ -215,8 +215,8 @@ class FileLockRegionTest extends AbstractRegionTest
 
         $this->assertTrue($this->region->evictAll());
 
-        $this->assertFileNotExists($file1);
-        $this->assertFileNotExists($file2);
+        $this->assertFileDoesNotExist($file1);
+        $this->assertFileDoesNotExist($file2);
 
         $this->assertFalse($this->region->contains($key1));
         $this->assertFalse($this->region->contains($key2));
@@ -243,7 +243,7 @@ class FileLockRegionTest extends AbstractRegionTest
         // outdated lock should be removed
         $this->assertTrue($this->region->contains($key));
         $this->assertNotNull($this->region->get($key));
-        $this->assertFileNotExists($file);
+        $this->assertFileDoesNotExist($file);
     }
 
     /**

@@ -110,10 +110,9 @@ class ProxyFactory extends AbstractProxyFactory
      * Creates a closure capable of initializing a proxy
      *
      * @return Closure
+     * @psalm-return Closure(BaseProxy ): void
      *
      * @throws EntityNotFoundException
-     *
-     * @psalm-return Closure(BaseProxy ): void
      */
     private function createInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister)
     {
@@ -163,10 +162,9 @@ class ProxyFactory extends AbstractProxyFactory
      * Creates a closure capable of finalizing state a cloned proxy
      *
      * @return Closure
+     * @psalm-return Closure(BaseProxy ): void
      *
      * @throws EntityNotFoundException
-     *
-     * @psalm-return Closure(BaseProxy ): void
      */
     private function createCloner(ClassMetadata $classMetadata, EntityPersister $entityPersister)
     {

@@ -100,10 +100,9 @@ class HydrationException extends ORMException
 
     /**
      * @param string $discrValue
+     * @psalm-param array<string, string> $discrMap
      *
      * @return HydrationException
-     *
-     * @psalm-param array<string, string> $discrMap
      */
     public static function invalidDiscriminatorValue($discrValue, $discrMap)
     {

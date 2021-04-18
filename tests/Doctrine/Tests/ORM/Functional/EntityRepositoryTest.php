@@ -499,6 +499,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
     public function testValidNamedQueryRetrieval(): void
     {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8592');
+
         $repos = $this->_em->getRepository(CmsUser::class);
 
         $query = $repos->createNamedQuery('all');

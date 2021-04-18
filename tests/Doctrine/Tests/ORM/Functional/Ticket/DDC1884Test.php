@@ -55,8 +55,9 @@ class DDC1884Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @psalm-var class-string<Car> $class
      * @psalm-return array{Car, Car, Car, Car}
+     *
+     * @psalm-var class-string<Car> $class
      */
     private function createCars(string $class): array
     {
@@ -85,8 +86,9 @@ class DDC1884Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @psalm-var class-string<Driver> $class
      * @psalm-return array{Driver, Driver}
+     *
+     * @psalm-var class-string<Driver> $class
      */
     private function createDrivers(string $class): array
     {
