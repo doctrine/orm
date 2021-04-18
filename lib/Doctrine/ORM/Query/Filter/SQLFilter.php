@@ -78,12 +78,8 @@ abstract class SQLFilter
      *
      * @return self The current SQL filter.
      */
-    final public function setParameterList(string $name, $values, string $type = Types::STRING): self
+    final public function setParameterList(string $name, array $values, string $type = Types::STRING): self
     {
-        if (! is_array($values)) {
-            throw new InvalidArgumentException('Value provided to setParameterList must be array.');
-        }
-
         $this->parameters[$name] = ['value' => $values, 'type' => $type, 'is_list' => true];
 
         // Keep the parameters sorted for the hash

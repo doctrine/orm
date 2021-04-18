@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Query\Filter\FilterException;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -1149,6 +1150,34 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
         $this->assertFalse($organization->events->isInitialized());
         $this->assertEquals(1, count($organization->events->slice(0, 10)));
+    }
+
+    public function testRetrieveSingleAsListThrowsException(): void
+    {
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter('country', '\Doctrine\Tests\ORM\Functional\CMSCountryFilter');
+
+        $this->_em->getFilters()->enable('country');
+
+        $this->expectException(FilterException::class);
+        $this->expectExceptionMessage('Cannot convert single SQL filter parameter "country" into a list value.');
+
+        $this->_em->getFilters()->getFilter('country')->setParameter('country', 'DE');
+        $this->_em->getFilters()->getFilter('country')->getParameterList('country');
+    }
+
+    public function testRetrieveListAsSingleThrowsException(): void
+    {
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter('country', '\Doctrine\Tests\ORM\Functional\CMSCountryFilter');
+
+        $this->_em->getFilters()->enable('country');
+
+        $this->expectException(FilterException::class);
+        $this->expectExceptionMessage('Cannot convert list-based SQL filter parameter "country" into a single value.');
+
+        $this->_em->getFilters()->getFilter('country')->setParameterList('country', ['DE']);
+        $this->_em->getFilters()->getFilter('country')->getParameter('country');
     }
 }
 
