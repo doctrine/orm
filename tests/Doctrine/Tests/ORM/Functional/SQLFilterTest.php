@@ -333,7 +333,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         // Setup mock connection
         $conn = $this->getMockConnection();
         $conn->method('quote')
-             ->will($this->returnCallback(function ($value) {
+             ->will($this->returnCallback(static function ($value) {
                  return "'" . $value . "'";
              }));
 
@@ -353,7 +353,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $this->assertEquals("'en','es'", $filter->getParameterList('locale'));
     }
 
-    public function testSQLFilterAddConstraint()
+    public function testSQLFilterAddConstraint(): void
     {
         // Set up metadata mock
         $targetEntity = $this->getMockBuilder(ClassMetadata::class)

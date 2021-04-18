@@ -54,7 +54,8 @@ proper quoting of parameters.
     }
 
 If the parameter is an array and should be quoted as a list of values for an IN query
-this is possible with the alternative ``SQLFilter#getParameterList()`` function.
+this is possible with the alternative ``SQLFilter#setParameterList()`` and
+``SQLFilter#getParameterList()`` functions.
 
 Configuration
 -------------

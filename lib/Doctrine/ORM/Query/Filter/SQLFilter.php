@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Query\Filter;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ParameterTypeInferer;
@@ -68,6 +69,33 @@ abstract class SQLFilter
     }
 
     /**
+     * Sets a parameter list that can be used by the filter.
+     *
+     * @param string       $name  Name of the parameter.
+     * @param array<mixed> $value Value of the parameter.
+     * @param string       $type  The parameter type. If specified, the given value will be run through
+     *                                the type conversion of this type.
+     *
+     * @return self The current SQL filter.
+     */
+    final public function setParameterList(string $name, $values, string $type = Types::STRING): self
+    {
+        if (! is_array($values)) {
+            throw new InvalidArgumentException('Value provided to setParameterList must be array.');
+        }
+
+        $this->parameters[$name] = ['value' => $values, 'type' => $type, 'is_list' => true];
+
+        // Keep the parameters sorted for the hash
+        ksort($this->parameters);
+
+        // The filter collection of the EM is now dirty
+        $this->em->getFilters()->setFiltersStateDirty();
+
+        return $this;
+    }
+
+    /**
      * Sets a parameter that can be used by the filter.
      *
      * @param string      $name  Name of the parameter.
@@ -81,14 +109,10 @@ abstract class SQLFilter
     final public function setParameter($name, $value, $type = null): self
     {
         if ($type === null) {
-            if (is_array($type)) {
-                $type = ParameterTypeInferer::inferType(current($value));
-            } else {
-                $type = ParameterTypeInferer::inferType($value);
-            }
+            $type = ParameterTypeInferer::inferType($value);
         }
 
-        $this->parameters[$name] = ['value' => $value, 'type' => $type];
+        $this->parameters[$name] = ['value' => $value, 'type' => $type, 'is_list' => false];
 
         // Keep the parameters sorted for the hash
         ksort($this->parameters);
@@ -117,16 +141,11 @@ abstract class SQLFilter
             throw new InvalidArgumentException("Parameter '" . $name . "' does not exist.");
         }
 
-        $param = $this->parameters[$name];
-        $isTraversable = is_array($param['value']) || $param['value'] instanceof \Traversable;
-        if ($isTraversable && !in_array($param['type'], array(Type::TARRAY, Type::SIMPLE_ARRAY, Type::JSON_ARRAY))) {
-            $connection = $this->em->getConnection();
-            $quoted = array_map(function ($value) use ($connection, $param) {
-                return $connection->quote($value, $param['type']);
-            }, $param['value']);
-
-            return implode(',', $quoted);
+        if ($this->parameters[$name]['is_list']) {
+            throw FilterException::cannotConvertListParameterIntoSingleValue($name);
         }
+
+        $param = $this->parameters[$name];
 
         return $this->em->getConnection()->quote($param['value'], $param['type']);
     }
@@ -150,15 +169,14 @@ abstract class SQLFilter
             throw new InvalidArgumentException("Parameter '" . $name . "' does not exist.");
         }
 
-        $param         = $this->parameters[$name];
-        $isTraversable = is_array($param['value']); // WARNING: no Traversable support, because it might break on hashing
-
-        if (! $isTraversable) {
-            throw new RuntimeException('Can only call SQLFilter::getParameterList on array values.');
+        if ($this->parameters[$name]['is_list'] === false) {
+            throw FilterException::cannotConvertSingleParameterIntoListValue($name);
         }
 
+        $param      = $this->parameters[$name];
         $connection = $this->em->getConnection();
-        $quoted     = array_map(static function ($value) use ($connection, $param) {
+
+        $quoted = array_map(static function ($value) use ($connection, $param) {
             return $connection->quote($value, $param['type']);
         }, $param['value']);
 
