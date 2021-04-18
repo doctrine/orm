@@ -34,6 +34,8 @@ class CacheLoggerChain implements CacheLogger
 
     /**
      * @param string $name
+     *
+     * @return void
      */
     public function setLogger($name, CacheLogger $logger)
     {

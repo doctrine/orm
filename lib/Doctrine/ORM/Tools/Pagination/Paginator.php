@@ -105,6 +105,7 @@ class Paginator implements Countable, IteratorAggregate
      * @param bool|null $useOutputWalkers
      *
      * @return $this
+     * @psalm-return static<T>
      */
     public function setUseOutputWalkers($useOutputWalkers)
     {
@@ -221,6 +222,8 @@ class Paginator implements Countable, IteratorAggregate
      * Appends a custom tree walker to the tree walkers hint.
      *
      * @param string $walkerClass
+     *
+     * @return void
      */
     private function appendTreeWalker(Query $query, $walkerClass)
     {

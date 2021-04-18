@@ -27,11 +27,11 @@ namespace Doctrine\ORM\Query\AST;
  */
 class OrderByClause extends Node
 {
-    /** @var mixed[] */
+    /** @var OrderByItem[] */
     public $orderByItems = [];
 
     /**
-     * @param mixed[] $orderByItems
+     * @param OrderByItem[] $orderByItems
      */
     public function __construct(array $orderByItems)
     {

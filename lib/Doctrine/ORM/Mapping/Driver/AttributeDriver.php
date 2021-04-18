@@ -230,10 +230,12 @@ class AttributeDriver extends AnnotationDriver
             // Evaluate @Cache annotation
             $cacheAttribute = $this->reader->getPropertyAnnotation($property, Mapping\Cache::class);
             if ($cacheAttribute !== null) {
+                assert($cacheAttribute instanceof Mapping\Cache);
+
                 $mapping['cache'] = $metadata->getAssociationCacheDefaults(
                     $mapping['fieldName'],
                     [
-                        'usage'  => constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $cacheAttribute->usage),
+                        'usage'  => (int) constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $cacheAttribute->usage),
                         'region' => $cacheAttribute->region,
                     ]
                 );

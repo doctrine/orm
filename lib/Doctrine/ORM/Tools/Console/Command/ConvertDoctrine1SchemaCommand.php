@@ -143,6 +143,8 @@ class ConvertDoctrine1SchemaCommand extends Command
      * @param int         $numSpaces
      * @param string|null $extend
      *
+     * @return void
+     *
      * @throws InvalidArgumentException
      */
     public function convertDoctrine1Schema(array $fromPaths, $destPath, $toType, $numSpaces, $extend, OutputInterface $output)

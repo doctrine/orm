@@ -70,6 +70,8 @@ class DefaultCacheFactory implements CacheFactory
 
     /**
      * @param string $fileLockRegionDirectory
+     *
+     * @return void
      */
     public function setFileLockRegionDirectory($fileLockRegionDirectory)
     {
@@ -84,11 +86,17 @@ class DefaultCacheFactory implements CacheFactory
         return $this->fileLockRegionDirectory;
     }
 
+    /**
+     * @return void
+     */
     public function setRegion(Region $region)
     {
         $this->regions[$region->getName()] = $region;
     }
 
+    /**
+     * @return void
+     */
     public function setTimestampRegion(TimestampRegion $region)
     {
         $this->timestampRegion = $region;

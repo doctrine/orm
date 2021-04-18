@@ -128,7 +128,7 @@ class FileLockRegion implements ConcurrentRegion
     /**
      * @param string $filename
      *
-     * @return string
+     * @return false|string
      */
     private function getLockContent($filename)
     {
@@ -138,7 +138,7 @@ class FileLockRegion implements ConcurrentRegion
     /**
      * @param string $filename
      *
-     * @return int
+     * @return false|int
      */
     private function getLockTime($filename)
     {

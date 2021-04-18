@@ -145,6 +145,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * Rebuilds a select statement's order by clause for use in a
      * ROW_NUMBER() OVER() expression.
+     *
+     * @return void
      */
     private function rebuildOrderByForRowNumber(SelectStatement $AST)
     {
@@ -305,6 +307,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * Finds all PathExpressions in an AST's OrderByClause, and ensures that
      * the referenced fields are present in the SelectClause of the passed AST.
+     *
+     * @return void
      */
     private function addMissingItemsFromOrderByToSelect(SelectStatement $AST)
     {
@@ -423,6 +427,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
     /**
      * @return string[][]
+     * @psalm-return array{0: list<string>, 1: list<string>}
      */
     private function generateSqlAliasReplacements(): array
     {
@@ -513,8 +518,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     }
 
     /**
-     * @return array-key[]
-     * @psalm-return array<array-key, array-key>
+     * @return string[]
      */
     private function getSQLIdentifier(SelectStatement $AST)
     {

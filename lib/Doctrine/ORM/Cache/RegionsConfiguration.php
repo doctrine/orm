@@ -57,6 +57,8 @@ class RegionsConfiguration
 
     /**
      * @param int $defaultLifetime
+     *
+     * @return void
      */
     public function setDefaultLifetime($defaultLifetime)
     {
@@ -73,6 +75,8 @@ class RegionsConfiguration
 
     /**
      * @param int $defaultLockLifetime
+     *
+     * @return void
      */
     public function setDefaultLockLifetime($defaultLockLifetime)
     {
@@ -92,6 +96,8 @@ class RegionsConfiguration
     /**
      * @param string $name
      * @param int    $lifetime
+     *
+     * @return void
      */
     public function setLifetime($name, $lifetime)
     {
@@ -111,6 +117,8 @@ class RegionsConfiguration
     /**
      * @param string $name
      * @param int    $lifetime
+     *
+     * @return void
      */
     public function setLockLifetime($name, $lifetime)
     {

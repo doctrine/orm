@@ -74,7 +74,7 @@ class SqlExpressionVisitor extends ExpressionVisitor
     /**
      * Converts a composite expression into the target query language output.
      *
-     * @return mixed
+     * @return string
      *
      * @throws RuntimeException
      */
@@ -101,7 +101,7 @@ class SqlExpressionVisitor extends ExpressionVisitor
     /**
      * Converts a value expression into the target query language part.
      *
-     * @return mixed
+     * @return string
      */
     public function walkValue(Value $value)
     {

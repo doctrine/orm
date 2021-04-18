@@ -735,6 +735,7 @@ class XmlDriver extends FileDriver
      * @param SimpleXMLElement $options The XML element.
      *
      * @return mixed[] The options array.
+     * @psalm-return array<int|string, array<int|string, mixed|string>|bool|string>
      */
     private function parseOptions(SimpleXMLElement $options)
     {
@@ -875,7 +876,7 @@ class XmlDriver extends FileDriver
      * Parse / Normalize the cache configuration
      *
      * @return mixed[]
-     * @psalm-return array{usage: mixed, region: string|null}
+     * @psalm-return array{usage: int|null, region?: string}
      */
     private function cacheToArray(SimpleXMLElement $cacheMapping)
     {
@@ -887,7 +888,7 @@ class XmlDriver extends FileDriver
         }
 
         if ($usage) {
-            $usage = constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $usage);
+            $usage = (int) constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $usage);
         }
 
         return [

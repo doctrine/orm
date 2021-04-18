@@ -130,7 +130,7 @@ class <className> extends <repositoryName>
      *
      * @param string $fullClassName The full repository class name.
      *
-     * @return string $namespace
+     * @return string
      */
     private function generateEntityRepositoryNamespace($fullClassName)
     {
@@ -184,7 +184,7 @@ class <className> extends <repositoryName>
     /**
      * @param string $repositoryName
      *
-     * @return self
+     * @return static
      */
     public function setDefaultRepositoryName($repositoryName)
     {

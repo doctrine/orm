@@ -148,6 +148,8 @@ class CommitOrderCalculator
      * {@internal Highly performance-sensitive method.}
      *
      * @param stdClass $vertex
+     *
+     * @return void
      */
     private function visit($vertex)
     {

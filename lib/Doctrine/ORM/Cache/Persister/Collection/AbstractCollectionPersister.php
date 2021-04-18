@@ -239,6 +239,8 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
 
     /**
      * Clears cache entries related to the current collection
+     *
+     * @return void
      */
     protected function evictCollectionCache(PersistentCollection $collection)
     {
@@ -258,6 +260,8 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     /**
      * @param string $targetEntity
      * @param object $element
+     *
+     * @return void
      */
     protected function evictElementCache($targetEntity, $element)
     {

@@ -121,6 +121,8 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
     /**
      * Validate the AST to ensure that this walker is able to properly manipulate it.
+     *
+     * @return void
      */
     private function validate(SelectStatement $AST)
     {
