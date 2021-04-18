@@ -64,7 +64,7 @@ class FileLockRegion implements ConcurrentRegion
 
     /**
      * @param string $directory
-     * @param int $lockLifetime
+     * @param int    $lockLifetime
      *
      * @throws InvalidArgumentException
      */
