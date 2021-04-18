@@ -15,7 +15,7 @@ use Doctrine\Tests\Models\CMS\CmsEmail;
  * @Entity
  * @Table(name="cms_users_typed")
  */
-#[ORM\Entity, ORM\Table(name: "cms_users_typed")]
+#[ORM\Entity, ORM\Table(name: 'cms_users_typed')]
 class UserTyped
 {
     /**
@@ -60,7 +60,7 @@ class UserTyped
      * @OneToOne(cascade={"persist"}, orphanRemoval=true)
      * @JoinColumn
      */
-    #[ORM\OneToOne(cascade: ["persist"], orphanRemoval: true), ORM\JoinColumn]
+    #[ORM\OneToOne(cascade: ['persist'], orphanRemoval: true), ORM\JoinColumn]
     public CmsEmail $email;
 
     /** @ManyToOne */
