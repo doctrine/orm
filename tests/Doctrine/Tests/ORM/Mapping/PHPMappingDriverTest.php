@@ -49,4 +49,14 @@ class PHPMappingDriverTest extends AbstractMappingDriverTest
         $class = new ClassMetadata(Mapping\PHPSLC::class);
         $mappingDriver->loadMetadataForClass(Mapping\PHPSLC::class, $class);
     }
+
+    public function testEntityIncorrectIndexes(): void
+    {
+        self::markTestSkipped('PHP driver does not ensure index correctness');
+    }
+
+    public function testEntityIncorrectUniqueContraint(): void
+    {
+        self::markTestSkipped('PHP driver does not ensure index correctness');
+    }
 }

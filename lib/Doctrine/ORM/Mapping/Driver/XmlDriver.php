@@ -31,6 +31,7 @@ use SimpleXMLElement;
 
 use function assert;
 use function constant;
+use function count;
 use function defined;
 use function explode;
 use function file_get_contents;
@@ -212,7 +213,28 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->indexes)) {
             $metadata->table['indexes'] = [];
             foreach ($xmlRoot->indexes->index as $indexXml) {
-                $index = ['columns' => explode(',', (string) $indexXml['columns'])];
+                $index = [];
+
+                if (isset($indexXml['columns']) && ! empty($indexXml['columns'])) {
+                    $index['columns'] = explode(',', (string) $indexXml['columns']);
+                }
+
+                if (isset($indexXml['fields'])) {
+                    $index['fields'] = explode(',', (string) $indexXml['fields']);
+                }
+
+                if (
+                    isset($index['columns'], $index['fields'])
+                    || (
+                        ! isset($index['columns'])
+                        && ! isset($index['fields'])
+                    )
+                ) {
+                    throw MappingException::invalidIndexConfiguration(
+                        $className,
+                        (string) ($indexXml['name'] ?? count($metadata->table['indexes']))
+                    );
+                }
 
                 if (isset($indexXml['flags'])) {
                     $index['flags'] = explode(',', (string) $indexXml['flags']);
@@ -234,7 +256,28 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'unique-constraints'})) {
             $metadata->table['uniqueConstraints'] = [];
             foreach ($xmlRoot->{'unique-constraints'}->{'unique-constraint'} as $uniqueXml) {
-                $unique = ['columns' => explode(',', (string) $uniqueXml['columns'])];
+                $unique = [];
+
+                if (isset($uniqueXml['columns']) && ! empty($uniqueXml['columns'])) {
+                    $unique['columns'] = explode(',', (string) $uniqueXml['columns']);
+                }
+
+                if (isset($uniqueXml['fields'])) {
+                    $unique['fields'] = explode(',', (string) $uniqueXml['fields']);
+                }
+
+                if (
+                    isset($unique['columns'], $unique['fields'])
+                    || (
+                        ! isset($unique['columns'])
+                        && ! isset($unique['fields'])
+                    )
+                ) {
+                    throw MappingException::invalidUniqueConstraintConfiguration(
+                        $className,
+                        (string) ($uniqueXml['name'] ?? count($metadata->table['uniqueConstraints']))
+                    );
+                }
 
                 if (isset($uniqueXml->options)) {
                     $unique['options'] = $this->parseOptions($uniqueXml->options->children());
@@ -714,7 +757,6 @@ class XmlDriver extends FileDriver
      * @param SimpleXMLElement $joinColumnElement The XML element.
      *
      * @return mixed[] The mapping array.
-     *
      * @psalm-return array{
      *                   name: string,
      *                   referencedColumnName: string,
@@ -754,7 +796,6 @@ class XmlDriver extends FileDriver
       * Parses the given field as array.
       *
       * @return mixed[]
-      *
       * @psalm-return array{
       *                   fieldName: string,
       *                   type?: string,
@@ -822,7 +863,6 @@ class XmlDriver extends FileDriver
      * Parse / Normalize the cache configuration
      *
      * @return mixed[]
-     *
      * @psalm-return array{usage: mixed, region: string|null}
      */
     private function cacheToArray(SimpleXMLElement $cacheMapping)
@@ -850,7 +890,6 @@ class XmlDriver extends FileDriver
      * @param SimpleXMLElement $cascadeElement The cascade element.
      *
      * @return string[] The list of cascade options.
-     *
      * @psalm-return list<string>
      */
     private function getCascadeMappings(SimpleXMLElement $cascadeElement)

@@ -1,7 +1,11 @@
+includes:
+    - phpstan-baseline.neon
+
 parameters:
-    level: 1
+    level: 5
     paths:
         - %currentWorkingDirectory%/lib
     earlyTerminatingMethodCalls:
         Doctrine\ORM\Query\Parser:
             - syntaxError
+    phpVersion: 70200
