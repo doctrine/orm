@@ -32,6 +32,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use function get_class;
+use function sprintf;
+
 /**
  * Command to clear the metadata cache of the various cache drivers.
  *
@@ -90,7 +93,7 @@ EOT
             throw new LogicException('Cannot clear XCache Cache from Console, its shared in the Webserver memory and not accessible from the CLI.');
         }
 
-        if (!($cacheDriver instanceof ClearableCache)) {
+        if (! ($cacheDriver instanceof ClearableCache)) {
             throw new LogicException(sprintf(
                 'Can only clear cache when ClearableCache interface is implemented, %s does not implement.',
                 get_class($cacheDriver)
@@ -103,7 +106,7 @@ EOT
         $message = $result ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
 
         if ($input->getOption('flush') === true) {
-            if (!($cacheDriver instanceof FlushableCache)) {
+            if (! ($cacheDriver instanceof FlushableCache)) {
                 throw new LogicException(sprintf(
                     'Can only clear cache when FlushableCache interface is implemented, %s does not implement.',
                     get_class($cacheDriver)
