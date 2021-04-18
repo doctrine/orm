@@ -45,4 +45,14 @@ class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
     {
         $this->markTestIncomplete();
     }
+
+    public function testEntityIncorrectIndexes(): void
+    {
+        self::markTestSkipped('Static PHP driver does not ensure index correctness');
+    }
+
+    public function testEntityIncorrectUniqueContraint(): void
+    {
+        self::markTestSkipped('Static PHP driver does not ensure index correctness');
+    }
 }

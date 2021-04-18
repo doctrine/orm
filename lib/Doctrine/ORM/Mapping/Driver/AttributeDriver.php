@@ -18,6 +18,7 @@ use ReflectionProperty;
 use function assert;
 use function class_exists;
 use function constant;
+use function count;
 use function defined;
 
 class AttributeDriver extends AnnotationDriver
@@ -76,7 +77,28 @@ class AttributeDriver extends AnnotationDriver
 
             if (isset($classAttributes[Mapping\Index::class])) {
                 foreach ($classAttributes[Mapping\Index::class] as $indexAnnot) {
-                    $index = ['columns' => $indexAnnot->columns];
+                    $index = [];
+
+                    if (! empty($indexAnnot->columns)) {
+                        $index['columns'] = $indexAnnot->columns;
+                    }
+
+                    if (! empty($indexAnnot->fields)) {
+                        $index['fields'] = $indexAnnot->fields;
+                    }
+
+                    if (
+                        isset($index['columns'], $index['fields'])
+                        || (
+                            ! isset($index['columns'])
+                            && ! isset($index['fields'])
+                        )
+                    ) {
+                        throw MappingException::invalidIndexConfiguration(
+                            $className,
+                            (string) ($indexAnnot->name ?? count($primaryTable['indexes']))
+                        );
+                    }
 
                     if (! empty($indexAnnot->flags)) {
                         $index['flags'] = $indexAnnot->flags;
@@ -96,7 +118,28 @@ class AttributeDriver extends AnnotationDriver
 
             if (isset($classAttributes[Mapping\UniqueConstraint::class])) {
                 foreach ($classAttributes[Mapping\UniqueConstraint::class] as $uniqueConstraintAnnot) {
-                    $uniqueConstraint = ['columns' => $uniqueConstraintAnnot->columns];
+                    $uniqueConstraint = [];
+
+                    if (! empty($uniqueConstraintAnnot->columns)) {
+                        $uniqueConstraint['columns'] = $uniqueConstraintAnnot->columns;
+                    }
+
+                    if (! empty($uniqueConstraintAnnot->fields)) {
+                        $uniqueConstraint['fields'] = $uniqueConstraintAnnot->fields;
+                    }
+
+                    if (
+                        isset($uniqueConstraint['columns'], $uniqueConstraint['fields'])
+                        || (
+                            ! isset($uniqueConstraint['columns'])
+                            && ! isset($uniqueConstraint['fields'])
+                        )
+                    ) {
+                        throw MappingException::invalidUniqueConstraintConfiguration(
+                            $className,
+                            (string) ($uniqueConstraintAnnot->name ?? count($primaryTable['uniqueConstraints']))
+                        );
+                    }
 
                     if (! empty($uniqueConstraintAnnot->options)) {
                         $uniqueConstraint['options'] = $uniqueConstraintAnnot->options;

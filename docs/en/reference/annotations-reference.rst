@@ -513,7 +513,8 @@ Required attributes:
 
 
 -  **name**: Name of the Index
--  **columns**: Array of columns.
+-  **fields**: Array of fields. Exactly one of **fields**, **columns** is required.
+-  **columns**: Array of columns. Exactly one of **fields**, **columns** is required.
 
 Optional attributes:
 
@@ -530,6 +531,19 @@ Basic example:
     /**
      * @Entity
      * @Table(name="ecommerce_products",indexes={@Index(name="search_idx", columns={"name", "email"})})
+     */
+    class ECommerceProduct
+    {
+    }
+
+Basic example using fields:
+
+.. code-block:: php
+
+    <?php
+    /**
+     * @Entity
+     * @Table(name="ecommerce_products",indexes={@Index(name="search_idx", fields={"name", "email"})})
      */
     class ECommerceProduct
     {
@@ -1272,7 +1286,8 @@ Required attributes:
 
 
 -  **name**: Name of the Index
--  **columns**: Array of columns.
+-  **fields**: Array of fields. Exactly one of **fields**, **columns** is required.
+-  **columns**: Array of columns. Exactly one of **fields**, **columns** is required.
 
 Optional attributes:
 
@@ -1289,6 +1304,19 @@ Basic example:
     /**
      * @Entity
      * @Table(name="ecommerce_products",uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "email"})})
+     */
+    class ECommerceProduct
+    {
+    }
+
+Basic example using fields:
+
+.. code-block:: php
+
+    <?php
+    /**
+     * @Entity
+     * @Table(name="ecommerce_products",uniqueConstraints={@UniqueConstraint(name="search_idx", fields={"name", "email"})})
      */
     class ECommerceProduct
     {
