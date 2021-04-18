@@ -77,7 +77,10 @@ class DDC1734Test extends OrmFunctionalTestCase
         $this->assertEquals('Foo', $unserializedProxy->getName(), 'The entity is broken');
     }
 
-    private function getProxy(object $object): \Doctrine\Common\Proxy\Proxy
+    /**
+     * @param object $object
+     */
+    private function getProxy($object): \Doctrine\Common\Proxy\Proxy
     {
         $metadataFactory = $this->_em->getMetadataFactory();
         $className       = get_class($object);

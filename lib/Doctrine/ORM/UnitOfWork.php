@@ -1779,7 +1779,7 @@ class UnitOfWork implements PropertyChangedListener
      * @throws ORMInvalidArgumentException
      * @throws UnexpectedValueException
      */
-    private function doPersist(object $entity, array &$visited): void
+    private function doPersist($entity, array &$visited): void
     {
         $oid = spl_object_hash($entity);
 
@@ -1942,11 +1942,11 @@ class UnitOfWork implements PropertyChangedListener
      * @throws EntityNotFoundException if an assigned identifier is used in the entity, but none is provided.
      */
     private function doMerge(
-        object $entity,
+        $entity,
         array &$visited,
-        ?object $prevManagedCopy = null,
+        $prevManagedCopy = null,
         array $assoc = []
-    ): object {
+    ) {
         $oid = spl_object_hash($entity);
 
         if (isset($visited[$oid])) {
@@ -2079,10 +2079,10 @@ class UnitOfWork implements PropertyChangedListener
      * @param string[] $association
      */
     private function updateAssociationWithMergedEntity(
-        object $entity,
+        $entity,
         array $association,
-        object $previousManagedCopy,
-        object $managedCopy
+        $previousManagedCopy,
+        $managedCopy
     ): void {
         $assocField = $association['fieldName'];
         $prevClass  = $this->em->getClassMetadata(get_class($previousManagedCopy));
@@ -2187,7 +2187,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @throws ORMInvalidArgumentException If the entity is not MANAGED.
      */
-    private function doRefresh(object $entity, array &$visited): void
+    private function doRefresh($entity, array &$visited): void
     {
         $oid = spl_object_hash($entity);
 
@@ -2214,9 +2214,10 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Cascades a refresh operation to associated entities.
      *
+     * @param object $entity
      * @psalm-param array<string, object> $visited
      */
-    private function cascadeRefresh(object $entity, array &$visited): void
+    private function cascadeRefresh($entity, array &$visited): void
     {
         $class = $this->em->getClassMetadata(get_class($entity));
 
@@ -2257,9 +2258,10 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Cascades a detach operation to associated entities.
      *
+     * @param object                $entity
      * @param array<string, object> $visited
      */
-    private function cascadeDetach(object $entity, array &$visited): void
+    private function cascadeDetach($entity, array &$visited): void
     {
         $class = $this->em->getClassMetadata(get_class($entity));
 
@@ -2302,7 +2304,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @psalm-param array<string, object> $visited
      */
-    private function cascadeMerge(object $entity, object $managedCopy, array &$visited): void
+    private function cascadeMerge($entity, $managedCopy, array &$visited): void
     {
         $class = $this->em->getClassMetadata(get_class($entity));
 
@@ -2338,9 +2340,10 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Cascades the save operation to associated entities.
      *
+     * @param object $entity
      * @psalm-param array<string, object> $visited
      */
-    private function cascadePersist(object $entity, array &$visited): void
+    private function cascadePersist($entity, array &$visited): void
     {
         $class = $this->em->getClassMetadata(get_class($entity));
 
@@ -2397,9 +2400,10 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Cascades the delete operation to associated entities.
      *
+     * @param object $entity
      * @psalm-param array<string, object> $visited
      */
-    private function cascadeRemove(object $entity, array &$visited): void
+    private function cascadeRemove($entity, array &$visited): void
     {
         $class = $this->em->getClassMetadata(get_class($entity));
 
@@ -2446,13 +2450,14 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Acquire a lock on the given entity.
      *
+     * @param object                     $entity
      * @param int|DateTimeInterface|null $lockVersion
      *
      * @throws ORMInvalidArgumentException
      * @throws TransactionRequiredException
      * @throws OptimisticLockException
      */
-    public function lock(object $entity, int $lockMode, $lockVersion = null): void
+    public function lock($entity, int $lockMode, $lockVersion = null): void
     {
         if ($this->getEntityState($entity, self::STATE_DETACHED) !== self::STATE_MANAGED) {
             throw ORMInvalidArgumentException::entityNotManaged($entity);
@@ -3350,8 +3355,10 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Helper method to show an object as string.
+     *
+     * @param object $obj
      */
-    private static function objToStr(object $obj): string
+    private static function objToStr($obj): string
     {
         return method_exists($obj, '__toString') ? (string) $obj : get_class($obj) . '@' . spl_object_hash($obj);
     }
@@ -3447,8 +3454,11 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Verifies if two given entities actually are the same based on identifier comparison
+     *
+     * @param object $entity1
+     * @param object $entity2
      */
-    private function isIdentifierEquals(object $entity1, object $entity2): bool
+    private function isIdentifierEquals($entity1, $entity2): bool
     {
         if ($entity1 === $entity2) {
             return true;
@@ -3486,11 +3496,14 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * @param object $entity
+     * @param object $managedCopy
+     *
      * @throws ORMException
      * @throws OptimisticLockException
      * @throws TransactionRequiredException
      */
-    private function mergeEntityStateIntoManagedCopy(object $entity, object $managedCopy): void
+    private function mergeEntityStateIntoManagedCopy($entity, $managedCopy): void
     {
         if (! $this->isLoaded($entity)) {
             return;

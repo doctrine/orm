@@ -967,6 +967,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
+     * @param object $sourceEntity
      * @psalm-param array<string, mixed> $assoc
      *
      * @return \Doctrine\DBAL\Driver\Statement
@@ -975,7 +976,7 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getManyToManyStatement(
         array $assoc,
-        object $sourceEntity,
+        $sourceEntity,
         ?int $offset = null,
         ?int $limit = null
     ) {

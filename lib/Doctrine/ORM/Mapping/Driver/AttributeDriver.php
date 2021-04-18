@@ -514,7 +514,7 @@ class AttributeDriver extends AnnotationDriver
      *                   referencedColumnName: string
      *               }
      */
-    private function joinColumnToArray(object $joinColumn): array
+    private function joinColumnToArray($joinColumn): array
     {
         return [
             'name' => $joinColumn->name,
