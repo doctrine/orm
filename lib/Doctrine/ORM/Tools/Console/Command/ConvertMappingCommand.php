@@ -28,7 +28,6 @@ use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 use Doctrine\ORM\Tools\Export\Driver\AbstractExporter;
 use Doctrine\ORM\Tools\Export\Driver\AnnotationExporter;
 use InvalidArgumentException;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -48,7 +47,7 @@ use function strtolower;
  *
  * @link    www.doctrine-project.org
  */
-class ConvertMappingCommand extends Command
+class ConvertMappingCommand extends AbstractEntityManagerCommand
 {
     /**
      * {@inheritdoc}
@@ -60,6 +59,7 @@ class ConvertMappingCommand extends Command
              ->setDescription('Convert mapping information between supported formats')
              ->addArgument('to-type', InputArgument::REQUIRED, 'The mapping type to be converted.')
              ->addArgument('dest-path', InputArgument::REQUIRED, 'The path to generate your entities classes.')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->addOption('filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'A string pattern used to match entities that should be processed.')
              ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force to overwrite existing mapping files.')
              ->addOption('from-database', null, null, 'Whether or not to convert mapping information from existing database.')
@@ -99,7 +99,7 @@ EOT
     {
         $ui = new SymfonyStyle($input, $output);
 
-        $em = $this->getHelper('em')->getEntityManager();
+        $em = $this->getEntityManager($input);
 
         if ($input->getOption('from-database') === true) {
             $databaseDriver = new DatabaseDriver(

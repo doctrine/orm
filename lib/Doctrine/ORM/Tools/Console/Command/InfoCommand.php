@@ -20,14 +20,12 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\MappingException;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use function assert;
 use function count;
 use function sprintf;
 
@@ -36,7 +34,7 @@ use function sprintf;
  *
  * @link    www.doctrine-project.org
  */
-class InfoCommand extends Command
+class InfoCommand extends AbstractEntityManagerCommand
 {
     /**
      * {@inheritdoc}
@@ -45,6 +43,7 @@ class InfoCommand extends Command
     {
         $this->setName('orm:info')
              ->setDescription('Show basic information about all mapped entities')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->setHelp(<<<EOT
 The <info>%command.name%</info> shows basic information about which
 entities exist and possibly if their mapping information contains errors or
@@ -60,8 +59,7 @@ EOT
     {
         $ui = new SymfonyStyle($input, $output);
 
-        $entityManager = $this->getHelper('em')->getEntityManager();
-        assert($entityManager instanceof EntityManagerInterface);
+        $entityManager = $this->getEntityManager($input);
 
         $entityClassNames = $entityManager->getConfiguration()
                                           ->getMetadataDriverImpl()

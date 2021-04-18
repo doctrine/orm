@@ -20,17 +20,14 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
 use InvalidArgumentException;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use function assert;
 use function file_exists;
 use function is_dir;
 use function is_writable;
@@ -43,7 +40,7 @@ use function sprintf;
  *
  * @link    www.doctrine-project.org
  */
-class GenerateProxiesCommand extends Command
+class GenerateProxiesCommand extends AbstractEntityManagerCommand
 {
     /**
      * {@inheritdoc}
@@ -54,6 +51,7 @@ class GenerateProxiesCommand extends Command
              ->setAliases(['orm:generate:proxies'])
              ->setDescription('Generates proxy classes for entity classes')
              ->addArgument('dest-path', InputArgument::OPTIONAL, 'The path to generate your proxy classes. If none is provided, it will attempt to grab from configuration.')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->addOption('filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'A string pattern used to match entities that should be processed.')
              ->setHelp('Generates proxy classes for entity classes.');
     }
@@ -65,8 +63,7 @@ class GenerateProxiesCommand extends Command
     {
         $ui = new SymfonyStyle($input, $output);
 
-        $em = $this->getHelper('em')->getEntityManager();
-        assert($em instanceof EntityManagerInterface);
+        $em = $this->getEntityManager($input);
 
         $metadatas = $em->getMetadataFactory()->getAllMetadata();
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));

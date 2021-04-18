@@ -24,16 +24,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\MappingException;
 use InvalidArgumentException;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 use function array_filter;
 use function array_map;
 use function array_merge;
-use function assert;
 use function count;
 use function current;
 use function get_class;
@@ -57,7 +56,7 @@ use const JSON_UNESCAPED_UNICODE;
  *
  * @link    www.doctrine-project.org
  */
-final class MappingDescribeCommand extends Command
+final class MappingDescribeCommand extends AbstractEntityManagerCommand
 {
     /**
      * {@inheritdoc}
@@ -67,6 +66,7 @@ final class MappingDescribeCommand extends Command
         $this->setName('orm:mapping:describe')
              ->addArgument('entityName', InputArgument::REQUIRED, 'Full or partial name of entity')
              ->setDescription('Display information about mapped objects')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->setHelp(<<<EOT
 The %command.full_name% command describes the metadata for the given full or partial entity class name.
 
@@ -86,8 +86,7 @@ EOT
     {
         $ui = new SymfonyStyle($input, $output);
 
-        $entityManager = $this->getHelper('em')->getEntityManager();
-        assert($entityManager instanceof EntityManagerInterface);
+        $entityManager = $this->getEntityManager($input);
 
         $this->displayEntity($input->getArgument('entityName'), $entityManager, $ui);
 

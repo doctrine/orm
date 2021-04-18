@@ -8,11 +8,10 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand;
-use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\DoctrineTestCase;
 use RuntimeException;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
 use function array_merge;
@@ -107,8 +106,7 @@ class EnsureProductionSettingsCommandTest extends DoctrineTestCase
         array $input = []
     ): int {
         $application = new Application();
-        $application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($em)]));
-        $application->add(new EnsureProductionSettingsCommand());
+        $application->add(new EnsureProductionSettingsCommand(new SingleManagerProvider($em)));
 
         $command = $application->find('orm:ensure-production-settings');
         $tester  = new CommandTester($command);

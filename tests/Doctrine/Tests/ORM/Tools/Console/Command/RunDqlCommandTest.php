@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Tools\Console\Command\RunDqlCommand;
-use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
 use function trim;
@@ -36,10 +35,9 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $this->command = new RunDqlCommand();
+        $this->command = new RunDqlCommand(new SingleManagerProvider($this->_em));
 
         $this->application = new Application();
-        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->_em)]));
         $this->application->add($this->command);
 
         $this->tester = new CommandTester($this->command);

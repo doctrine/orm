@@ -21,17 +21,14 @@
 namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\Common\Util\Debug;
-use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
 use RuntimeException;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use function assert;
 use function constant;
 use function defined;
 use function is_numeric;
@@ -44,7 +41,7 @@ use function strtoupper;
  *
  * @link    www.doctrine-project.org
  */
-class RunDqlCommand extends Command
+class RunDqlCommand extends AbstractEntityManagerCommand
 {
     /**
      * {@inheritdoc}
@@ -54,6 +51,7 @@ class RunDqlCommand extends Command
         $this->setName('orm:run-dql')
              ->setDescription('Executes arbitrary DQL directly from the command line')
              ->addArgument('dql', InputArgument::REQUIRED, 'The DQL to execute.')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->addOption('hydrate', null, InputOption::VALUE_REQUIRED, 'Hydration mode of result set. Should be either: object, array, scalar or single-scalar.', 'object')
              ->addOption('first-result', null, InputOption::VALUE_REQUIRED, 'The first result in the result set.')
              ->addOption('max-result', null, InputOption::VALUE_REQUIRED, 'The maximum number of results in the result set.')
@@ -69,8 +67,7 @@ class RunDqlCommand extends Command
     {
         $ui = new SymfonyStyle($input, $output);
 
-        $em = $this->getHelper('em')->getEntityManager();
-        assert($em instanceof EntityManagerInterface);
+        $em = $this->getEntityManager($input);
 
         $dql = $input->getArgument('dql');
         if ($dql === null) {

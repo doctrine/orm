@@ -22,8 +22,8 @@ namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
+use Doctrine\ORM\Tools\Console\Command\AbstractEntityManagerCommand;
 use InvalidArgumentException;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -38,7 +38,7 @@ use function sprintf;
 /**
  * Command to clear a entity cache region.
  */
-class EntityRegionCommand extends Command
+class EntityRegionCommand extends AbstractEntityManagerCommand
 {
     /**
      * {@inheritdoc}
@@ -49,6 +49,7 @@ class EntityRegionCommand extends Command
              ->setDescription('Clear a second-level cache entity region')
              ->addArgument('entity-class', InputArgument::OPTIONAL, 'The entity name.')
              ->addArgument('entity-id', InputArgument::OPTIONAL, 'The entity identifier.')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->addOption('all', null, InputOption::VALUE_NONE, 'If defined, all entity regions will be deleted/invalidated.')
              ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, all cache entries will be flushed.')
              ->setHelp(<<<EOT
@@ -85,7 +86,7 @@ EOT
     {
         $ui = new SymfonyStyle($input, $output);
 
-        $em          = $this->getHelper('em')->getEntityManager();
+        $em          = $this->getEntityManager($input);
         $entityClass = $input->getArgument('entity-class');
         $entityId    = $input->getArgument('entity-id');
         $cache       = $em->getCache();
