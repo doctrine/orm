@@ -40,7 +40,7 @@ final class DefaultRepositoryFactory implements RepositoryFactory
     /**
      * {@inheritdoc}
      */
-    public function getRepository(EntityManagerInterface $entityManager, $entityName)
+    public function getRepository(EntityManagerInterface $entityManager, $entityName): ObjectRepository
     {
         $repositoryHash = $entityManager->getClassMetadata($entityName)->getName() . spl_object_hash($entityManager);
 
@@ -56,11 +56,11 @@ final class DefaultRepositoryFactory implements RepositoryFactory
      *
      * @param EntityManagerInterface $entityManager The EntityManager instance.
      * @param string                 $entityName    The name of the entity.
-     *
-     * @return ObjectRepository
      */
-    private function createRepository(EntityManagerInterface $entityManager, $entityName)
-    {
+    private function createRepository(
+        EntityManagerInterface $entityManager,
+        string $entityName
+    ): ObjectRepository {
         $metadata            = $entityManager->getClassMetadata($entityName);
         $repositoryClassName = $metadata->customRepositoryClassName
             ?: $entityManager->getConfiguration()->getDefaultRepositoryClassName();

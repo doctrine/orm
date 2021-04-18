@@ -278,10 +278,8 @@ class DefaultCache implements Cache
      /**
       * @param ClassMetadata $metadata   The entity metadata.
       * @param mixed         $identifier The entity identifier.
-      *
-      * @return EntityCacheKey
       */
-    private function buildEntityCacheKey(ClassMetadata $metadata, $identifier)
+    private function buildEntityCacheKey(ClassMetadata $metadata, $identifier): EntityCacheKey
     {
         if (! is_array($identifier)) {
             $identifier = $this->toIdentifierArray($metadata, $identifier);
@@ -294,11 +292,12 @@ class DefaultCache implements Cache
      * @param ClassMetadata $metadata        The entity metadata.
      * @param string        $association     The field name that represents the association.
      * @param mixed         $ownerIdentifier The identifier of the owning entity.
-     *
-     * @return CollectionCacheKey
      */
-    private function buildCollectionCacheKey(ClassMetadata $metadata, $association, $ownerIdentifier)
-    {
+    private function buildCollectionCacheKey(
+        ClassMetadata $metadata,
+        string $association,
+        $ownerIdentifier
+    ): CollectionCacheKey {
         if (! is_array($ownerIdentifier)) {
             $ownerIdentifier = $this->toIdentifierArray($metadata, $ownerIdentifier);
         }
@@ -312,7 +311,7 @@ class DefaultCache implements Cache
      *
      * @return array<string, mixed>
      */
-    private function toIdentifierArray(ClassMetadata $metadata, $identifier)
+    private function toIdentifierArray(ClassMetadata $metadata, $identifier): array
     {
         if (is_object($identifier) && $this->em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($identifier))) {
             $identifier = $this->uow->getSingleIdentifierValue($identifier);

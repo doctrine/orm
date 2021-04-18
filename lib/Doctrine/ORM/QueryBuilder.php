@@ -292,7 +292,7 @@ class QueryBuilder
     /**
      * Gets the associated EntityManager for this query builder.
      *
-     * @return EntityManager
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {
@@ -393,10 +393,8 @@ class QueryBuilder
      *
      * @param string $alias       The alias of the new join entity
      * @param string $parentAlias The parent entity alias of the join relationship
-     *
-     * @return string
      */
-    private function findRootAlias($alias, $parentAlias)
+    private function findRootAlias(string $alias, string $parentAlias): string
     {
         $rootAlias = null;
 
@@ -1388,10 +1386,7 @@ class QueryBuilder
         return $this->_dqlParts;
     }
 
-    /**
-     * @return string
-     */
-    private function getDQLForDelete()
+    private function getDQLForDelete(): string
     {
          return 'DELETE'
               . $this->getReducedDQLQueryPart('from', ['pre' => ' ', 'separator' => ', '])
@@ -1399,10 +1394,7 @@ class QueryBuilder
               . $this->getReducedDQLQueryPart('orderBy', ['pre' => ' ORDER BY ', 'separator' => ', ']);
     }
 
-    /**
-     * @return string
-     */
-    private function getDQLForUpdate()
+    private function getDQLForUpdate(): string
     {
          return 'UPDATE'
               . $this->getReducedDQLQueryPart('from', ['pre' => ' ', 'separator' => ', '])
@@ -1411,10 +1403,7 @@ class QueryBuilder
               . $this->getReducedDQLQueryPart('orderBy', ['pre' => ' ORDER BY ', 'separator' => ', ']);
     }
 
-    /**
-     * @return string
-     */
-    private function getDQLForSelect()
+    private function getDQLForSelect(): string
     {
         $dql = 'SELECT'
              . ($this->_dqlParts['distinct'] === true ? ' DISTINCT' : '')

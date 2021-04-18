@@ -799,11 +799,9 @@ use function sprintf;
     /**
      * Throws an exception if the EntityManager is closed or currently not active.
      *
-     * @return void
-     *
      * @throws ORMException If the EntityManager is closed.
      */
-    private function errorIfClosed()
+    private function errorIfClosed(): void
     {
         if ($this->closed) {
             throw ORMException::entityManagerClosed();

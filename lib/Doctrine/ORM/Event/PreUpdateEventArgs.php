@@ -113,13 +113,9 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     /**
      * Asserts the field exists in changeset.
      *
-     * @param string $field
-     *
-     * @return void
-     *
      * @throws InvalidArgumentException
      */
-    private function assertValidField($field)
+    private function assertValidField(string $field): void
     {
         if (! isset($this->entityChangeSet[$field])) {
             throw new InvalidArgumentException(sprintf(

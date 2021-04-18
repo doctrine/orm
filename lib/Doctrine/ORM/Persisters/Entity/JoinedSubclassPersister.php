@@ -68,10 +68,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * This function finds the ClassMetadata instance in an inheritance hierarchy
      * that is responsible for enabling versioning.
-     *
-     * @return ClassMetadata
      */
-    private function getVersionedClassMetadata()
+    private function getVersionedClassMetadata(): ClassMetadata
     {
         if (isset($this->class->fieldMappings[$this->class->versionField]['inherited'])) {
             $definingClassName = $this->class->fieldMappings[$this->class->versionField]['inherited'];
@@ -576,12 +574,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $this->class->setFieldValue($entity, $this->class->versionField, $value);
     }
 
-    /**
-     * @param string $baseTableAlias
-     *
-     * @return string
-     */
-    private function getJoinSql($baseTableAlias)
+    private function getJoinSql(string $baseTableAlias): string
     {
         $joinSql          = '';
         $identifierColumn = $this->class->getIdentifierColumnNames();

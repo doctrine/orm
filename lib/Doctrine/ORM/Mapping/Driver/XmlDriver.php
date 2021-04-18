@@ -737,7 +737,7 @@ class XmlDriver extends FileDriver
      * @return mixed[] The options array.
      * @psalm-return array<int|string, array<int|string, mixed|string>|bool|string>
      */
-    private function parseOptions(SimpleXMLElement $options)
+    private function parseOptions(SimpleXMLElement $options): array
     {
         $array = [];
 
@@ -779,7 +779,7 @@ class XmlDriver extends FileDriver
      *                   columnDefinition?: string
      *               }
      */
-    private function joinColumnToArray(SimpleXMLElement $joinColumnElement)
+    private function joinColumnToArray(SimpleXMLElement $joinColumnElement): array
     {
         $joinColumn = [
             'name' => (string) $joinColumnElement['name'],
@@ -823,7 +823,7 @@ class XmlDriver extends FileDriver
       *                   options?: array
       *               }
       */
-    private function columnToArray(SimpleXMLElement $fieldMapping)
+    private function columnToArray(SimpleXMLElement $fieldMapping): array
     {
         $mapping = [
             'fieldName' => (string) $fieldMapping['name'],
@@ -878,7 +878,7 @@ class XmlDriver extends FileDriver
      * @return mixed[]
      * @psalm-return array{usage: int|null, region?: string}
      */
-    private function cacheToArray(SimpleXMLElement $cacheMapping)
+    private function cacheToArray(SimpleXMLElement $cacheMapping): array
     {
         $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : null;
         $usage  = isset($cacheMapping['usage']) ? strtoupper($cacheMapping['usage']) : null;
@@ -905,7 +905,7 @@ class XmlDriver extends FileDriver
      * @return string[] The list of cascade options.
      * @psalm-return list<string>
      */
-    private function getCascadeMappings(SimpleXMLElement $cascadeElement)
+    private function getCascadeMappings(SimpleXMLElement $cascadeElement): array
     {
         $cascades = [];
         foreach ($cascadeElement->children() as $action) {

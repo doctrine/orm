@@ -529,8 +529,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * @return mixed[]
      * @psalm-return list<mixed>
      */
-    private function collectJoinTableColumnParameters(PersistentCollection $collection, $element)
-    {
+    private function collectJoinTableColumnParameters(
+        PersistentCollection $collection,
+        $element
+    ): array {
         $params      = [];
         $mapping     = $collection->getMapping();
         $isComposite = count($mapping['joinTableColumns']) > 2;
@@ -566,8 +568,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * @param string $key
-     * @param bool   $addFilters Whether the filter SQL should be included or not.
+     * @param bool $addFilters Whether the filter SQL should be included or not.
      *
      * @return mixed[] ordered vector:
      *                - quoted join table name
@@ -576,8 +577,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *                - types of the parameters to be bound for filtering
      * @psalm-return array{0: string, 1: list<string>, 2: list<mixed>, 3: list<string>}
      */
-    private function getJoinTableRestrictionsWithKey(PersistentCollection $collection, $key, $addFilters)
-    {
+    private function getJoinTableRestrictionsWithKey(
+        PersistentCollection $collection,
+        string $key,
+        bool $addFilters
+    ): array {
         $filterMapping = $collection->getMapping();
         $mapping       = $filterMapping;
         $indexBy       = $mapping['indexBy'];
@@ -651,8 +655,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * @param object $element
      * @param bool   $addFilters Whether the filter SQL should be included or not.
+     * @param object $element
      *
      * @return mixed[] ordered vector:
      *                - quoted join table name
@@ -661,8 +665,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *                - types of the parameters to be bound for filtering
      * @psalm-return array{0: string, 1: list<string>, 2: list<mixed>, 3: list<string>}
      */
-    private function getJoinTableRestrictions(PersistentCollection $collection, $element, $addFilters)
-    {
+    private function getJoinTableRestrictions(
+        PersistentCollection $collection,
+        $element,
+        bool $addFilters
+    ): array {
         $filterMapping = $collection->getMapping();
         $mapping       = $filterMapping;
 
@@ -722,7 +729,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @return mixed[][]
      */
-    private function expandCriteriaParameters(Criteria $criteria)
+    private function expandCriteriaParameters(Criteria $criteria): array
     {
         $expression = $criteria->getWhereExpression();
 
@@ -739,10 +746,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         return $types;
     }
 
-    /**
-     * @return string
-     */
-    private function getOrderingSql(Criteria $criteria, ClassMetadata $targetClass)
+    private function getOrderingSql(Criteria $criteria, ClassMetadata $targetClass): string
     {
         $orderings = $criteria->getOrderings();
         if ($orderings) {
@@ -763,11 +767,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * @return string
-     *
      * @throws DBALException
      */
-    private function getLimitSql(Criteria $criteria)
+    private function getLimitSql(Criteria $criteria): string
     {
         $limit  = $criteria->getMaxResults();
         $offset = $criteria->getFirstResult();

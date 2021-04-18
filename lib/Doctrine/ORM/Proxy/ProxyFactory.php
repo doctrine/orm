@@ -109,12 +109,11 @@ class ProxyFactory extends AbstractProxyFactory
     /**
      * Creates a closure capable of initializing a proxy
      *
-     * @return Closure
      * @psalm-return Closure(BaseProxy):void
      *
      * @throws EntityNotFoundException
      */
-    private function createInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister)
+    private function createInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister): Closure
     {
         $wakeupProxy = $classMetadata->getReflectionClass()->hasMethod('__wakeup');
 
@@ -161,12 +160,11 @@ class ProxyFactory extends AbstractProxyFactory
     /**
      * Creates a closure capable of finalizing state a cloned proxy
      *
-     * @return Closure
      * @psalm-return Closure(BaseProxy):void
      *
      * @throws EntityNotFoundException
      */
-    private function createCloner(ClassMetadata $classMetadata, EntityPersister $entityPersister)
+    private function createCloner(ClassMetadata $classMetadata, EntityPersister $entityPersister): Closure
     {
         return function (BaseProxy $proxy) use ($entityPersister, $classMetadata): void {
             if ($proxy->__isInitialized()) {

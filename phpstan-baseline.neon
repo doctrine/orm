@@ -396,11 +396,6 @@ parameters:
 			path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between array and null will always evaluate to false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Internal/Hydration/ArrayHydrator.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Proxy\\\\Proxy\\:\\:\\$__isInitialized__\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php
@@ -607,7 +602,7 @@ parameters:
 
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
-			count: 4
+			count: 3
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
@@ -1386,13 +1381,8 @@ parameters:
 			path: lib/Doctrine/ORM/PersistentCollection.php
 
 		-
-			message: "#^Property Doctrine\\\\ORM\\\\PersistentCollection\\<TKey,T\\>\\:\\:\\$owner \\(object\\) does not accept null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/PersistentCollection.php
-
-		-
 			message: "#^Right side of && is always true\\.$#"
-			count: 7
+			count: 2
 			path: lib/Doctrine/ORM/PersistentCollection.php
 
 		-
@@ -1411,27 +1401,7 @@ parameters:
 			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\BasicEntityPersister\\:\\:getManyToManyStatement\\(\\) should return Doctrine\\\\DBAL\\\\Driver\\\\Statement but returns Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement&Doctrine\\\\DBAL\\\\Result\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\BasicEntityPersister\\:\\:getOneToManyStatement\\(\\) should return Doctrine\\\\DBAL\\\\Statement but returns Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement&Doctrine\\\\DBAL\\\\Result\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: "#^Parameter \\#1 \\$em of method Doctrine\\\\ORM\\\\Id\\\\AbstractIdGenerator\\:\\:generate\\(\\) expects Doctrine\\\\ORM\\\\EntityManager, Doctrine\\\\ORM\\\\EntityManagerInterface given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: "#^Parameter \\#2 \\$stmt of method Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\BasicEntityPersister\\:\\:loadArrayFromStatement\\(\\) expects Doctrine\\\\DBAL\\\\Statement, Doctrine\\\\DBAL\\\\Driver\\\\Statement given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: "#^Parameter \\#2 \\$stmt of method Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\BasicEntityPersister\\:\\:loadCollectionFromStatement\\(\\) expects Doctrine\\\\DBAL\\\\Statement, Doctrine\\\\DBAL\\\\Driver\\\\Statement given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
 
@@ -1504,21 +1474,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$sqlParams of method Doctrine\\\\ORM\\\\Query\\:\\:evictResultSetCache\\(\\) expects array\\<string, mixed\\>, array\\<int, mixed\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManager but returns Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/QueryBuilder.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$where$#"
-			count: 2
-			path: lib/Doctrine/ORM/QueryBuilder.php
-
-		-
-			message: "#^Parameter \\#2 \\$dqlPart of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:add\\(\\) expects array\\<'join'\\|int, array\\<int\\|string, object\\>\\|string\\>\\|object\\|string, array\\<string, Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Join\\> given\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/QueryBuilder.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\:\\:\\$value\\.$#"
@@ -1686,11 +1641,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:CustomFunctionDeclaration\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\Functions\\\\FunctionNode but returns null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/Parser.php
-
-		-
 			message:
 				"""
 					#^PHPDoc tag @return has invalid value \\(AST\\\\BetweenExpression\\|
@@ -1727,13 +1677,13 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\ResultSetMappingBuilder\\:\\:getColumnAlias\\(\\) should return string but return statement is missing\\.$#"
+			message: "#^Parameter \\#2 \\$class of static method Doctrine\\\\ORM\\\\Utility\\\\PersisterHelper\\:\\:getTypeOfColumn\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php
 
 		-
-			message: "#^Parameter \\#2 \\$class of static method Doctrine\\\\ORM\\\\Utility\\\\PersisterHelper\\:\\:getTypeOfColumn\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo given\\.$#"
-			count: 1
+			message: "#^Parameter \\#2 \\$mode of method Doctrine\\\\ORM\\\\Query\\\\ResultSetMappingBuilder\\:\\:getColumnAliasMap\\(\\) expects 1\\|2\\|3, int given\\.$#"
+			count: 2
 			path: lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php
 
 		-
@@ -2277,6 +2227,16 @@ parameters:
 			path: lib/Doctrine/ORM/Query/TreeWalkerChainIterator.php
 
 		-
+			message: "#^PHPDoc tag @param references unknown parameter\\: \\$where$#"
+			count: 2
+			path: lib/Doctrine/ORM/QueryBuilder.php
+
+		-
+			message: "#^Parameter \\#2 \\$dqlPart of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:add\\(\\) expects array\\<'join'\\|int, array\\<int\\|string, object\\>\\|string\\>\\|object\\|string, array\\<string, Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Join\\> given\\.$#"
+			count: 2
+			path: lib/Doctrine/ORM/QueryBuilder.php
+
+		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryRegionCommand.php
@@ -2533,11 +2493,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#3 \\$changeSet of class Doctrine\\\\ORM\\\\Event\\\\PreUpdateEventArgs constructor is passed by reference, so it expects variables only$#"
-			count: 1
-			path: lib/Doctrine/ORM/UnitOfWork.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between object and null will always evaluate to false\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/UnitOfWork.php
 

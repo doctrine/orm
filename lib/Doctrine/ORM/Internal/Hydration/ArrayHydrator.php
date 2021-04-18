@@ -259,15 +259,16 @@ class ArrayHydrator extends AbstractHydrator
      * Updates the result pointer for an Entity. The result pointers point to the
      * last seen instance of each Entity type. This is used for graph construction.
      *
-     * @param mixed[]  $coll     The element.
-     * @param bool|int $index    Index of the element in the collection.
-     * @param string   $dqlAlias
-     * @param bool     $oneToOne Whether it is a single-valued association or not.
-     *
-     * @return void
+     * @param mixed[]|null $coll     The element.
+     * @param bool|int     $index    Index of the element in the collection.
+     * @param bool         $oneToOne Whether it is a single-valued association or not.
      */
-    private function updateResultPointer(array &$coll, $index, $dqlAlias, $oneToOne)
-    {
+    private function updateResultPointer(
+        ?array &$coll,
+        $index,
+        string $dqlAlias,
+        bool $oneToOne
+    ): void {
         if ($coll === null) {
             unset($this->_resultPointers[$dqlAlias]); // Ticket #1228
 

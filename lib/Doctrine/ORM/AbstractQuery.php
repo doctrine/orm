@@ -506,10 +506,8 @@ abstract class AbstractQuery
 
     /**
      * Allows to translate entity namespaces to full qualified names.
-     *
-     * @return void
      */
-    private function translateNamespaces(Query\ResultSetMapping $rsm)
+    private function translateNamespaces(Query\ResultSetMapping $rsm): void
     {
         $translate = function ($alias): string {
             return $this->_em->getClassMetadata($alias)->getName();
@@ -1132,10 +1130,7 @@ abstract class AbstractQuery
         return $result;
     }
 
-    /**
-     * @return TimestampCacheKey|null
-     */
-    private function getTimestampKey()
+    private function getTimestampKey(): ?TimestampCacheKey
     {
         $entityName = reset($this->_resultSetMapping->aliasMap);
 

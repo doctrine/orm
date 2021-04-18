@@ -2613,11 +2613,9 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Checks whether the given type identifies an inheritance type.
      *
-     * @param int $type
-     *
-     * @return bool TRUE if the given type identifies an inheritance type, FALSe otherwise.
+     * @return bool TRUE if the given type identifies an inheritance type, FALSE otherwise.
      */
-    private function isInheritanceType($type)
+    private function isInheritanceType(int $type): bool
     {
         return $type === self::INHERITANCE_TYPE_NONE ||
                 $type === self::INHERITANCE_TYPE_SINGLE_TABLE ||
