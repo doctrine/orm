@@ -21,6 +21,8 @@
 namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
 use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Cache\ClearableCache;
+use Doctrine\Common\Cache\FlushableCache;
 use Doctrine\Common\Cache\XcacheCache;
 use Doctrine\ORM\Tools\Console\Command\AbstractEntityManagerCommand;
 use InvalidArgumentException;
@@ -88,12 +90,26 @@ EOT
             throw new LogicException('Cannot clear XCache Cache from Console, its shared in the Webserver memory and not accessible from the CLI.');
         }
 
+        if (!($cacheDriver instanceof ClearableCache)) {
+            throw new LogicException(sprintf(
+                'Can only clear cache when ClearableCache interface is implemented, %s does not implement.',
+                get_class($cacheDriver)
+            ));
+        }
+
         $ui->comment('Clearing <info>all</info> Metadata cache entries');
 
         $result  = $cacheDriver->deleteAll();
         $message = $result ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
 
         if ($input->getOption('flush') === true) {
+            if (!($cacheDriver instanceof FlushableCache)) {
+                throw new LogicException(sprintf(
+                    'Can only clear cache when FlushableCache interface is implemented, %s does not implement.',
+                    get_class($cacheDriver)
+                ));
+            }
+
             $result  = $cacheDriver->flushAll();
             $message = $result ? 'Successfully flushed cache entries.' : $message;
         }
