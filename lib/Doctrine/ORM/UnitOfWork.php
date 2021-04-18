@@ -2707,6 +2707,10 @@ class UnitOfWork implements PropertyChangedListener
             if ($entity instanceof NotifyPropertyChanged) {
                 $entity->addPropertyChangedListener($this);
             }
+
+            if (isset($hints[Query::HINT_READ_ONLY])) {
+                $this->readOnlyObjects[$oid] = true;
+            }
         }
 
         foreach ($data as $field => $value) {

@@ -111,7 +111,13 @@ final class Query extends AbstractQuery
      */
     public const HINT_CUSTOM_OUTPUT_WALKER = 'doctrine.customOutputWalker';
 
-    //const HINT_READ_ONLY = 'doctrine.readOnly';
+    /**
+     * Marks queries as creating only read only objects.
+     *
+     * If the object retrieved from the query is already in the identity map
+     * then it does not get marked as read only if it wasn't already.
+     */
+    public const HINT_READ_ONLY = 'doctrine.readOnly';
 
     public const HINT_INTERNAL_ITERATION = 'doctrine.internal.iteration';
 
