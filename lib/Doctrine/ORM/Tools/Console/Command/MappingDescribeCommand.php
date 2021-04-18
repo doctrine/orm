@@ -252,7 +252,6 @@ EOT
      * @param mixed  $value A Value to show
      *
      * @return string[]
-     *
      * @psalm-return array{0: string, 1: string}
      */
     private function formatField($label, $value): array
@@ -267,9 +266,9 @@ EOT
     /**
      * Format the association mappings
      *
-     * @return string[][]
-     *
      * @psalm-param array<string, array<string, mixed>> $propertyMappings
+     *
+     * @return string[][]
      * @psalm-return list<array{0: string, 1: string}>
      */
     private function formatMappings(array $propertyMappings): array
@@ -290,9 +289,9 @@ EOT
     /**
      * Format the entity listeners
      *
-     * @return string[]
-     *
      * @psalm-param list<object> $entityListeners
+     *
+     * @return string[]
      * @psalm-return array{0: string, 1: string}
      */
     private function formatEntityListeners(array $entityListeners): array

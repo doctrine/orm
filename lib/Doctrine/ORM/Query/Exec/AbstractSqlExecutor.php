@@ -72,12 +72,11 @@ abstract class AbstractSqlExecutor
      * Executes all sql statements.
      *
      * @param Connection $conn The database connection that is used to execute the queries.
-     *
-     * @return ResultStatement|int
-     *
      * @psalm-param array<int, mixed>|array<string, mixed> $params The parameters.
      * @psalm-param array<int, int|string|Type|null>|
      *              array<string, int|string|Type|null> $types The parameter types.
+     *
+     * @return ResultStatement|int
      */
     abstract public function execute(Connection $conn, array $params, array $types);
 }

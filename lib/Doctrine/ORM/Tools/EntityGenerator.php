@@ -388,10 +388,9 @@ public function __construct(<params>)
      * Generates and writes entity classes for the given array of ClassMetadataInfo instances.
      *
      * @param string $outputDirectory
+     * @psalm-param list<ClassMetadataInfo> $metadatas
      *
      * @return void
-     *
-     * @psalm-param list<ClassMetadataInfo> $metadatas
      */
     public function generate(array $metadatas, $outputDirectory)
     {
@@ -543,12 +542,11 @@ public function __construct(<params>)
      * Sets the class fields visibility for the entity (can either be private or protected).
      *
      * @param string $visibility
+     * @psalm-param self::FIELD_VISIBLE_*
      *
      * @return void
      *
      * @throws InvalidArgumentException
-     *
-     * @psalm-param self::FIELD_VISIBLE_*
      */
     public function setFieldVisibility($visibility)
     {
@@ -950,10 +948,9 @@ public function __construct(<params>)
 
     /**
      * @return ReflectionClass[]
+     * @psalm-return array<trait-string, ReflectionClass>
      *
      * @throws ReflectionException
-     *
-     * @psalm-return array<trait-string, ReflectionClass>
      */
     protected function getTraits(ClassMetadataInfo $metadata)
     {
@@ -1119,10 +1116,9 @@ public function __construct(<params>)
 
     /**
      * @param string $constraintName
+     * @psalm-param array<string, array<string, mixed>> $constraints
      *
      * @return string
-     *
-     * @psalm-param array<string, array<string, mixed>> $constraints
      */
     protected function generateTableConstraints($constraintName, array $constraints)
     {
@@ -1290,9 +1286,9 @@ public function __construct(<params>)
     }
 
     /**
-     * @return bool
-     *
      * @psalm-param array<string, mixed> $associationMapping
+     *
+     * @return bool
      */
     protected function isAssociationIsNullable(array $associationMapping)
     {
@@ -1494,9 +1490,9 @@ public function __construct(<params>)
     }
 
     /**
-     * @return string
-     *
      * @psalm-param array<string, mixed> $joinColumn
+     *
+     * @return string
      */
     protected function generateJoinColumnAnnotation(array $joinColumn)
     {
@@ -1816,9 +1812,9 @@ public function __construct(<params>)
     }
 
     /**
-     * @return string
-     *
      * @psalm-param array<string, mixed> $embeddedClass
+     *
+     * @return string
      */
     protected function generateEmbeddedPropertyDocBlock(array $embeddedClass)
     {

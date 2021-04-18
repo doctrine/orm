@@ -223,12 +223,11 @@ class ObjectHydrator extends AbstractHydrator
      * Gets an entity instance.
      *
      * @param string $dqlAlias The DQL alias of the entity's class.
+     * @psalm-param array<string, mixed> $data     The instance data.
      *
      * @return object The entity.
      *
      * @throws HydrationException
-     *
-     * @psalm-param array<string, mixed> $data     The instance data.
      */
     private function getEntity(array $data, $dqlAlias)
     {
@@ -274,10 +273,9 @@ class ObjectHydrator extends AbstractHydrator
 
     /**
      * @param string $className
+     * @psalm-param array<string, mixed> $data
      *
      * @return mixed
-     *
-     * @psalm-param array<string, mixed> $data
      */
     private function getEntityFromIdentityMap($className, array $data)
     {

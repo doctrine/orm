@@ -41,7 +41,6 @@ interface TreeWalker
      * Returns internal queryComponents array.
      *
      * @return array<string, array<string, mixed>>
-     *
      * @psalm-return array<string, array{
      *                   metadata: ClassMetadata,
      *                   parent: string,
