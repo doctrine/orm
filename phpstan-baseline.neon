@@ -56,11 +56,6 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/DefaultCacheFactory.php
 
 		-
-			message: "#^Parameter \\#3 \\$lockLifetime of class Doctrine\\\\ORM\\\\Cache\\\\Region\\\\FileLockRegion constructor expects string, int given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/DefaultCacheFactory.php
-
-		-
 			message: "#^Method Doctrine\\\\ORM\\\\Cache\\\\DefaultCollectionHydrator\\:\\:loadCacheEntry\\(\\) should return array but returns null\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/DefaultCollectionHydrator.php
@@ -258,11 +253,6 @@ parameters:
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Cache\\\\Region\\\\FileLockRegion\\:\\:lock\\(\\) should return Doctrine\\\\ORM\\\\Cache\\\\Lock but returns null\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Cache/Region/FileLockRegion.php
-
-		-
-			message: "#^Property Doctrine\\\\ORM\\\\Cache\\\\Region\\\\FileLockRegion\\:\\:\\$lockLifetime \\(string&numeric\\) does not accept string\\.$#"
-			count: 1
 			path: lib/Doctrine/ORM/Cache/Region/FileLockRegion.php
 
 		-
