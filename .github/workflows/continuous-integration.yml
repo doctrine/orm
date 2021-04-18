@@ -19,11 +19,6 @@ jobs:
           - "7.3"
           - "7.4"
           - "8.0"
-        deps:
-          - "highest"
-        include:
-          - deps: "lowest"
-            php-version: "7.3"
 
     steps:
       - name: "Checkout"
@@ -41,8 +36,6 @@ jobs:
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
-        with:
-          dependency-versions: "${{ matrix.deps }}"
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit -c ci/github/phpunit/sqlite.xml --coverage-clover=coverage-no-cache.xml"
@@ -57,7 +50,7 @@ jobs:
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v2"
         with:
-          name: "phpunit-sqlite-${{ matrix.deps }}-${{ matrix.php-version }}-coverage"
+          name: "phpunit-sqlite-${{ matrix.php-version }}-coverage"
           path: "coverage*.xml"
 
 
@@ -236,6 +229,9 @@ jobs:
       matrix:
         php-version:
           - "7.1"
+        deps:
+          - "highest"
+          - "lowest"
 
     steps:
       - name: "Checkout"
@@ -251,6 +247,8 @@ jobs:
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
+        with:
+          dependency-versions: "${{ matrix.deps }}"
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit -c ci/github/phpunit/sqlite.xml"
