@@ -382,6 +382,8 @@ class MappingException extends ORMException
     }
 
     /**
+     * @deprecated 2.9 no longer in use
+     *
      * @param string $className
      * @param string $propertyName
      *

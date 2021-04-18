@@ -1758,6 +1758,7 @@ class ClassMetadataInfo implements ClassMetadata
                     [
                         'name' => $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name),
                         'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
+                        'nullable' => true,
                     ],
                 ];
             }
@@ -1773,6 +1774,10 @@ class ClassMetadataInfo implements ClassMetadata
                     } else {
                         $uniqueConstraintColumns[] = $joinColumn['name'];
                     }
+                }
+
+                if (! isset($joinColumn['nullable'])) {
+                    $joinColumn['nullable'] = true;
                 }
 
                 if (empty($joinColumn['name'])) {

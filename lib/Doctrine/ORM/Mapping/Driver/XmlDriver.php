@@ -409,8 +409,11 @@ class XmlDriver extends FileDriver
             foreach ($xmlRoot->{'one-to-one'} as $oneToOneElement) {
                 $mapping = [
                     'fieldName' => (string) $oneToOneElement['field'],
-                    'targetEntity' => (string) $oneToOneElement['target-entity'],
                 ];
+
+                if (isset($oneToOneElement['target-entity'])) {
+                    $mapping['targetEntity'] = (string) $oneToOneElement['target-entity'];
+                }
 
                 if (isset($associationIds[$mapping['fieldName']])) {
                     $mapping['id'] = true;
@@ -462,9 +465,12 @@ class XmlDriver extends FileDriver
             foreach ($xmlRoot->{'one-to-many'} as $oneToManyElement) {
                 $mapping = [
                     'fieldName' => (string) $oneToManyElement['field'],
-                    'targetEntity' => (string) $oneToManyElement['target-entity'],
                     'mappedBy' => (string) $oneToManyElement['mapped-by'],
                 ];
+
+                if (isset($oneToManyElement['target-entity'])) {
+                    $mapping['targetEntity'] = (string) $oneToManyElement['target-entity'];
+                }
 
                 if (isset($oneToManyElement['fetch'])) {
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string) $oneToManyElement['fetch']);
@@ -509,8 +515,11 @@ class XmlDriver extends FileDriver
             foreach ($xmlRoot->{'many-to-one'} as $manyToOneElement) {
                 $mapping = [
                     'fieldName' => (string) $manyToOneElement['field'],
-                    'targetEntity' => (string) $manyToOneElement['target-entity'],
                 ];
+
+                if (isset($manyToOneElement['target-entity'])) {
+                    $mapping['targetEntity'] = (string) $manyToOneElement['target-entity'];
+                }
 
                 if (isset($associationIds[$mapping['fieldName']])) {
                     $mapping['id'] = true;
@@ -554,8 +563,11 @@ class XmlDriver extends FileDriver
             foreach ($xmlRoot->{'many-to-many'} as $manyToManyElement) {
                 $mapping = [
                     'fieldName' => (string) $manyToManyElement['field'],
-                    'targetEntity' => (string) $manyToManyElement['target-entity'],
                 ];
+
+                if (isset($manyToManyElement['target-entity'])) {
+                    $mapping['targetEntity'] = (string) $manyToManyElement['target-entity'];
+                }
 
                 if (isset($manyToManyElement['fetch'])) {
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string) $manyToManyElement['fetch']);

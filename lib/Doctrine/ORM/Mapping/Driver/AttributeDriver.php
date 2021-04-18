@@ -258,10 +258,6 @@ class AttributeDriver extends AnnotationDriver
             $embeddedAttribute   = $this->reader->getPropertyAnnotation($property, Mapping\Embedded::class);
 
             if ($columnAttribute !== null) {
-                if ($columnAttribute->type === null) {
-                    throw MappingException::propertyTypeIsRequired($className, $property->getName());
-                }
-
                 $mapping = $this->columnToArray($property->getName(), $columnAttribute);
 
                 if ($this->reader->getPropertyAnnotation($property, Mapping\Id::class)) {

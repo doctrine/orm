@@ -21,6 +21,7 @@ use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsAddressListener;
+use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\Company\CompanyContractListener;
@@ -41,6 +42,7 @@ use Doctrine\Tests\Models\DDC889\DDC889Class;
 use Doctrine\Tests\Models\DDC889\DDC889Entity;
 use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
+use Doctrine\Tests\Models\TypedProperties\UserTyped;
 use Doctrine\Tests\OrmTestCase;
 
 use function assert;
@@ -51,6 +53,7 @@ use function strpos;
 use function strtolower;
 
 use const CASE_UPPER;
+use const PHP_VERSION_ID;
 
 abstract class AbstractMappingDriverTest extends OrmTestCase
 {
@@ -260,6 +263,46 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertTrue($class->fieldMappings['name']['unique']);
 
         return $class;
+    }
+
+    public function testFieldIsNullableByType(): void
+    {
+        if (PHP_VERSION_ID < 70400) {
+            $this->markTestSkipped('requies PHP 7.4');
+        }
+
+        $class = $this->createClassMetadata(UserTyped::class);
+
+        // Explicit Nullable
+        $this->assertTrue($class->isNullable('status'));
+
+        // Explicit Not Nullable
+        $this->assertFalse($class->isNullable('username'));
+
+        // Join table Nullable
+        $this->assertFalse($class->getAssociationMapping('email')['joinColumns'][0]['nullable']);
+        $this->assertEquals(CmsEmail::class, $class->getAssociationMapping('email')['targetEntity']);
+
+        $this->assertTrue($class->getAssociationMapping('mainEmail')['joinColumns'][0]['nullable']);
+        $this->assertEquals(CmsEmail::class, $class->getAssociationMapping('mainEmail')['targetEntity']);
+    }
+
+    public function testFieldTypeFromReflection(): void
+    {
+        if (PHP_VERSION_ID < 70400) {
+            $this->markTestSkipped('requies PHP 7.4');
+        }
+
+        $class = $this->createClassMetadata(UserTyped::class);
+
+        $this->assertEquals('integer', $class->getTypeOfField('id'));
+        $this->assertEquals('string', $class->getTypeOfField('username'));
+        $this->assertEquals('dateinterval', $class->getTypeOfField('dateInterval'));
+        $this->assertEquals('datetime', $class->getTypeOfField('dateTime'));
+        $this->assertEquals('datetime_immutable', $class->getTypeOfField('dateTimeImmutable'));
+        $this->assertEquals('json', $class->getTypeOfField('array'));
+        $this->assertEquals('boolean', $class->getTypeOfField('boolean'));
+        $this->assertEquals('float', $class->getTypeOfField('float'));
     }
 
     /**
