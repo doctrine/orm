@@ -10,7 +10,7 @@ use Symfony\Component\Console\Helper\HelperSet;
 
 use function assert;
 
-class HelperSetManagerProvider implements EntityManagerProvider
+final class HelperSetManagerProvider implements EntityManagerProvider
 {
     /** @var HelperSet */
     private $helperSet;

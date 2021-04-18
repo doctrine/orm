@@ -5,7 +5,7 @@ namespace Doctrine\ORM\Tools\Console\EntityManagerProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 
-class SingleManagerProvider implements EntityManagerProvider
+final class SingleManagerProvider implements EntityManagerProvider
 {
     /** @var EntityManagerInterface */
     private $entityManager;

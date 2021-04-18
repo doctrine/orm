@@ -6,7 +6,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Tools\Console\ConnectionProvider;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 
-class ConnectionFromManagerProvider implements ConnectionProvider
+final class ConnectionFromManagerProvider implements ConnectionProvider
 {
     /** @var EntityManagerProvider */
     private $entityManagerProvider;
