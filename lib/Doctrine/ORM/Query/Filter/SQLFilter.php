@@ -54,7 +54,7 @@ abstract class SQLFilter
     /**
      * Parameters for the filter.
      *
-     * @psalm-var array<string,array{type: string, value: mixed}>
+     * @psalm-var array<string,array{type: string, value: mixed, is_list: bool}>
      */
     private $parameters = [];
 
@@ -71,10 +71,10 @@ abstract class SQLFilter
     /**
      * Sets a parameter list that can be used by the filter.
      *
-     * @param string       $name  Name of the parameter.
-     * @param array<mixed> $value Value of the parameter.
-     * @param string       $type  The parameter type. If specified, the given value will be run through
-     *                                the type conversion of this type.
+     * @param string       $name   Name of the parameter.
+     * @param array<mixed> $values List of parameter values.
+     * @param string       $type   The parameter type. If specified, the given value will be run through
+     *                             the type conversion of this type.
      *
      * @return self The current SQL filter.
      */

@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -275,7 +275,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
         $filter = new MyLocaleFilter($em);
 
-        $filter->setParameter('locale', 'en', DBALType::STRING);
+        $filter->setParameter('locale', 'en', Types::STRING);
 
         $this->assertEquals("'en'", $filter->getParameter('locale'));
     }
@@ -348,7 +348,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
         $filter = new MyLocaleFilter($em);
 
-        $filter->setParameter('locale', ['en', 'es']);
+        $filter->setParameterList('locale', ['en', 'es']);
 
         $this->assertEquals("'en','es'", $filter->getParameterList('locale'));
     }
@@ -377,16 +377,16 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $filterCollection = $this->addMockFilterCollection($em);
 
         $filter = new MyLocaleFilter($em);
-        $filter->setParameter('locale', 'en', DBALType::STRING);
-        $filter->setParameter('foo', 'bar', DBALType::STRING);
+        $filter->setParameter('locale', 'en', Types::STRING);
+        $filter->setParameter('foo', 'bar', Types::STRING);
 
         $filter2 = new MyLocaleFilter($em);
-        $filter2->setParameter('foo', 'bar', DBALType::STRING);
-        $filter2->setParameter('locale', 'en', DBALType::STRING);
+        $filter2->setParameter('foo', 'bar', Types::STRING);
+        $filter2->setParameter('locale', 'en', Types::STRING);
 
         $parameters = [
-            'foo' => ['value' => 'bar', 'type' => DBALType::STRING],
-            'locale' => ['value' => 'en', 'type' => DBALType::STRING],
+            'foo' => ['value' => 'bar', 'type' => Types::STRING, 'is_list' => false],
+            'locale' => ['value' => 'en', 'type' => Types::STRING, 'is_list' => false],
         ];
 
         $this->assertEquals(serialize($parameters), '' . $filter);
@@ -426,7 +426,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $conf = $this->_em->getConfiguration();
         $conf->addFilter('country', '\Doctrine\Tests\ORM\Functional\CMSCountryFilter');
         $this->_em->getFilters()->enable('country')
-            ->setParameter('country', ['en'], DBALType::STRING);
+            ->setParameterList('country', ['en'], Types::STRING);
 
         $this->assertNotEquals($firstSQLQuery, $query->getSQL());
     }
@@ -525,12 +525,12 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
         $conf = $this->_em->getConfiguration();
         $conf->addFilter('country', '\Doctrine\Tests\ORM\Functional\CMSCountryFilter');
-        $this->_em->getFilters()->enable('country')->setParameter('country', ['Germany'], DBALType::STRING);
+        $this->_em->getFilters()->enable('country')->setParameterList('country', ['Germany'], Types::STRING);
 
         // We get one user after enabling the filter
         $this->assertEquals(1, count($query->getResult()));
 
-        $this->_em->getFilters()->enable('country')->setParameter('country', ['Germany', 'France'], DBALType::STRING);
+        $this->_em->getFilters()->enable('country')->setParameterList('country', ['Germany', 'France'], Types::STRING);
 
         $this->assertEquals(2, count($query->getResult()));
     }
@@ -545,7 +545,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
         $conf = $this->_em->getConfiguration();
         $conf->addFilter('group_prefix', '\Doctrine\Tests\ORM\Functional\CMSGroupPrefixFilter');
-        $this->_em->getFilters()->enable('group_prefix')->setParameter('prefix', 'bar_%', DBALType::STRING);
+        $this->_em->getFilters()->enable('group_prefix')->setParameter('prefix', 'bar_%', Types::STRING);
 
         // We get one user after enabling the filter
         $this->assertEquals(1, count($query->getResult()));
@@ -561,7 +561,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
         $conf = $this->_em->getConfiguration();
         $conf->addFilter('group_prefix', '\Doctrine\Tests\ORM\Functional\CMSGroupPrefixFilter');
-        $this->_em->getFilters()->enable('group_prefix')->setParameter('prefix', 'bar_%', DBALType::STRING);
+        $this->_em->getFilters()->enable('group_prefix')->setParameter('prefix', 'bar_%', Types::STRING);
 
         // We get one user after enabling the filter
         $this->assertEquals(1, count($query->getResult()));
@@ -577,7 +577,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
         $conf = $this->_em->getConfiguration();
         $conf->addFilter('group_prefix', '\Doctrine\Tests\ORM\Functional\CMSGroupPrefixFilter');
-        $this->_em->getFilters()->enable('group_prefix')->setParameter('prefix', 'bar_%', DBALType::STRING);
+        $this->_em->getFilters()->enable('group_prefix')->setParameter('prefix', 'bar_%', Types::STRING);
 
         // We get one user after enabling the filter
         $this->assertEquals(1, count($query->getResult()));
@@ -595,7 +595,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $conf = $this->_em->getConfiguration();
         $conf->addFilter('article_topic', '\Doctrine\Tests\ORM\Functional\CMSArticleTopicFilter');
-        $this->_em->getFilters()->enable('article_topic')->setParameter('topic', 'Test1', DBALType::STRING);
+        $this->_em->getFilters()->enable('article_topic')->setParameter('topic', 'Test1', Types::STRING);
     }
 
     public function testOneToManyExtraLazyCountWithFilter(): void
@@ -642,7 +642,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $conf = $this->_em->getConfiguration();
         $conf->addFilter('group_prefix', '\Doctrine\Tests\ORM\Functional\CMSGroupPrefixFilter');
-        $this->_em->getFilters()->enable('group_prefix')->setParameter('prefix', 'foo%', DBALType::STRING);
+        $this->_em->getFilters()->enable('group_prefix')->setParameter('prefix', 'foo%', Types::STRING);
     }
 
     public function testManyToManyExtraLazyCountWithFilter(): void
@@ -821,7 +821,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $conf->addFilter('completed_contract', '\Doctrine\Tests\ORM\Functional\CompletedContractFilter');
         $this->_em->getFilters()
             ->enable('completed_contract')
-            ->setParameter('completed', true, DBALType::BOOLEAN);
+            ->setParameter('completed', true, Types::BOOLEAN);
 
         $this->assertEquals(1, count($this->_em->getRepository(CompanyFlexUltraContract::class)->findAll()));
         $this->assertEquals(1, count($this->_em->createQuery('SELECT cfc FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract cfc')->getResult()));
@@ -838,7 +838,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $conf->addFilter('completed_contract', '\Doctrine\Tests\ORM\Functional\CompletedContractFilter');
         $this->_em->getFilters()
             ->enable('completed_contract')
-            ->setParameter('completed', true, DBALType::BOOLEAN);
+            ->setParameter('completed', true, Types::BOOLEAN);
 
         $this->assertEquals(2, count($this->_em->getRepository(CompanyFlexContract::class)->findAll()));
         $this->assertEquals(2, count($this->_em->createQuery('SELECT cfc FROM Doctrine\Tests\Models\Company\CompanyFlexContract cfc')->getResult()));
@@ -897,7 +897,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $conf->addFilter('completed_contract', '\Doctrine\Tests\ORM\Functional\CompletedContractFilter');
         $this->_em->getFilters()
             ->enable('completed_contract')
-            ->setParameter('completed', true, DBALType::BOOLEAN);
+            ->setParameter('completed', true, Types::BOOLEAN);
     }
 
     public function testManyToManyExtraLazyCountWithFilterOnSTI(): void
@@ -959,7 +959,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $conf->addFilter('person_name', '\Doctrine\Tests\ORM\Functional\CompanyPersonNameFilter');
         $this->_em->getFilters()
             ->enable('person_name')
-            ->setParameter('name', $name, DBALType::STRING);
+            ->setParameter('name', $name, Types::STRING);
     }
 
     public function testManyToManyExtraLazyCountWithFilterOnCTI(): void
