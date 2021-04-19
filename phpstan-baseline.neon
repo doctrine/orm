@@ -1151,27 +1151,7 @@ parameters:
 			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\BasicEntityPersister\\:\\:getManyToManyStatement\\(\\) should return Doctrine\\\\DBAL\\\\Driver\\\\Statement but returns Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement&Doctrine\\\\DBAL\\\\Result\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\BasicEntityPersister\\:\\:getOneToManyStatement\\(\\) should return Doctrine\\\\DBAL\\\\Statement but returns Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement&Doctrine\\\\DBAL\\\\Result\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: "#^Parameter \\#1 \\$em of method Doctrine\\\\ORM\\\\Id\\\\AbstractIdGenerator\\:\\:generate\\(\\) expects Doctrine\\\\ORM\\\\EntityManager, Doctrine\\\\ORM\\\\EntityManagerInterface given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: "#^Parameter \\#2 \\$stmt of method Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\BasicEntityPersister\\:\\:loadArrayFromStatement\\(\\) expects Doctrine\\\\DBAL\\\\Statement, Doctrine\\\\DBAL\\\\Driver\\\\Statement given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: "#^Parameter \\#2 \\$stmt of method Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\BasicEntityPersister\\:\\:loadCollectionFromStatement\\(\\) expects Doctrine\\\\DBAL\\\\Statement, Doctrine\\\\DBAL\\\\Driver\\\\Statement given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
 
