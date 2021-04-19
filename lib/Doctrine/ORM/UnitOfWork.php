@@ -24,6 +24,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -45,7 +46,6 @@ use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\NotifyPropertyChanged;
@@ -558,7 +558,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Ignore uninitialized proxy objects
-        if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
+        if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
             return;
         }
 
@@ -865,7 +865,7 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($entitiesToProcess as $entity) {
                 // Ignore uninitialized proxy objects
-                if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
+                if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
                     continue;
                 }
 
@@ -890,7 +890,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function computeAssociationChanges(array $assoc, $value): void
     {
-        if ($value instanceof Proxy && ! $value->__isInitialized__) {
+        if ($value instanceof Proxy && ! $value->__isInitialized()) {
             return;
         }
 
@@ -2412,7 +2412,7 @@ class UnitOfWork implements PropertyChangedListener
         $entitiesToCascade = [];
 
         foreach ($associationMappings as $assoc) {
-            if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
+            if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
                 $entity->__load();
             }
 
@@ -2469,7 +2469,7 @@ class UnitOfWork implements PropertyChangedListener
                     return;
                 }
 
-                if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
+                if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
                     $entity->__load();
                 }
 
@@ -2813,7 +2813,7 @@ class UnitOfWork implements PropertyChangedListener
                                 isset($hints[self::HINT_DEFEREAGERLOAD]) &&
                                 ! $targetClass->isIdentifierComposite &&
                                 $newValue instanceof Proxy &&
-                                $newValue->__isInitialized__ === false
+                                $newValue->__isInitialized() === false
                             ) {
                                 $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($associatedId);
                             }

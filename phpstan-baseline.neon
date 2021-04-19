@@ -321,11 +321,6 @@ parameters:
 			path: lib/Doctrine/ORM/Internal/Hydration/IterableResult.php
 
 		-
-			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Proxy\\\\Proxy\\:\\:\\$__isInitialized__\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php
-
-		-
 			message: "#^Parameter \\#2 \\$discrMap of static method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\HydrationException\\:\\:invalidDiscriminatorValue\\(\\) expects array\\<string, string\\>, array\\<int, int\\|string\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php
@@ -2329,11 +2324,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$code of class Doctrine\\\\ORM\\\\Tools\\\\ToolsException constructor expects int, string given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/ToolsException.php
-
-		-
-			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Proxy\\\\Proxy\\:\\:\\$__isInitialized__\\.$#"
-			count: 6
-			path: lib/Doctrine/ORM/UnitOfWork.php
 
 		-
 			message: "#^Binary operation \"&\" between string and 3 results in an error\\.$#"
