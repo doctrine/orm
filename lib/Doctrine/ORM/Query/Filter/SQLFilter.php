@@ -135,10 +135,8 @@ abstract class SQLFilter
 
     /**
      * Returns the database connection used by the entity manager
-     *
-     * @return Connection
      */
-    final protected function getConnection()
+    final protected function getConnection(): Connection
     {
         return $this->em->getConnection();
     }

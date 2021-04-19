@@ -128,10 +128,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
     /**
      * Check if the platform supports the ROW_NUMBER window function.
-     *
-     * @return bool
      */
-    private function platformSupportsRowNumber()
+    private function platformSupportsRowNumber(): bool
     {
         return $this->platform instanceof PostgreSqlPlatform
             || $this->platform instanceof SQLServerPlatform
@@ -145,10 +143,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * Rebuilds a select statement's order by clause for use in a
      * ROW_NUMBER() OVER() expression.
-     *
-     * @return void
      */
-    private function rebuildOrderByForRowNumber(SelectStatement $AST)
+    private function rebuildOrderByForRowNumber(SelectStatement $AST): void
     {
         $orderByClause              = $AST->orderByClause;
         $selectAliasToExpressionMap = [];
@@ -307,10 +303,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * Finds all PathExpressions in an AST's OrderByClause, and ensures that
      * the referenced fields are present in the SelectClause of the passed AST.
-     *
-     * @return void
      */
-    private function addMissingItemsFromOrderByToSelect(SelectStatement $AST)
+    private function addMissingItemsFromOrderByToSelect(SelectStatement $AST): void
     {
         $this->orderByPathExpressions = [];
 
@@ -490,12 +484,10 @@ class LimitSubqueryOutputWalker extends SqlWalker
     }
 
     /**
-     * @return string
-     *
      * @throws OptimisticLockException
      * @throws QueryException
      */
-    private function getInnerSQL(SelectStatement $AST)
+    private function getInnerSQL(SelectStatement $AST): string
     {
         // Set every select expression as visible(hidden = false) to
         // make $AST have scalar mappings properly - this is relevant for referencing selected
@@ -520,7 +512,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * @return string[]
      */
-    private function getSQLIdentifier(SelectStatement $AST)
+    private function getSQLIdentifier(SelectStatement $AST): array
     {
         // Find out the SQL alias of the identifier column of the root entity.
         // It may be possible to make this work with multiple root entities but that

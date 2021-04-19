@@ -24,9 +24,9 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\ResultStatement as DriverStatement;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -414,13 +414,15 @@ class BasicEntityPersister implements EntityPersister
      * @param mixed[] $updateData      The map of columns to update (column => value).
      * @param bool    $versioned       Whether the UPDATE should be versioned.
      *
-     * @return void
-     *
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    final protected function updateTable($entity, $quotedTableName, array $updateData, $versioned = false)
-    {
+    final protected function updateTable(
+        $entity,
+        $quotedTableName,
+        array $updateData,
+        $versioned = false
+    ): void {
         $set    = [];
         $types  = [];
         $params = [];
@@ -913,12 +915,11 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Loads an array of entities from a given DBAL statement.
      *
-     * @param mixed[]   $assoc
-     * @param Statement $stmt
+     * @param mixed[] $assoc
      *
      * @return mixed[]
      */
-    private function loadArrayFromStatement($assoc, $stmt)
+    private function loadArrayFromStatement(array $assoc, DriverStatement $stmt): array
     {
         $rsm   = $this->currentPersisterContext->rsm;
         $hints = [UnitOfWork::HINT_DEFEREAGERLOAD => true];
@@ -934,14 +935,15 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Hydrates a collection from a given DBAL statement.
      *
-     * @param mixed[]              $assoc
-     * @param Statement            $stmt
-     * @param PersistentCollection $coll
+     * @param mixed[] $assoc
      *
      * @return mixed[]
      */
-    private function loadCollectionFromStatement($assoc, $stmt, $coll)
-    {
+    private function loadCollectionFromStatement(
+        array $assoc,
+        DriverStatement $stmt,
+        PersistentCollection $coll
+    ): array {
         $rsm   = $this->currentPersisterContext->rsm;
         $hints = [
             UnitOfWork::HINT_DEFEREAGERLOAD => true,
@@ -970,7 +972,7 @@ class BasicEntityPersister implements EntityPersister
      * @param object $sourceEntity
      * @psalm-param array<string, mixed> $assoc
      *
-     * @return \Doctrine\DBAL\Driver\Statement
+     * @return DriverStatement
      *
      * @throws MappingException
      */
@@ -1651,7 +1653,6 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Builds the left-hand-side of a where condition statement.
      *
-     * @param string $field
      * @psalm-param array<string, mixed>|null $assoc
      *
      * @return string[]
@@ -1659,8 +1660,10 @@ class BasicEntityPersister implements EntityPersister
      *
      * @throws ORMException
      */
-    private function getSelectConditionStatementColumnSQL($field, $assoc = null)
-    {
+    private function getSelectConditionStatementColumnSQL(
+        string $field,
+        ?array $assoc = null
+    ): array {
         if (isset($this->class->fieldMappings[$field])) {
             $className = $this->class->fieldMappings[$field]['inherited'] ?? $this->class->name;
 
@@ -1760,15 +1763,15 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Builds criteria and execute SQL statement to fetch the one to many entities from.
      *
-     * @param object   $sourceEntity
-     * @param int|null $offset
-     * @param int|null $limit
+     * @param object $sourceEntity
      * @psalm-param array<string, mixed> $assoc
-     *
-     * @return Statement
      */
-    private function getOneToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
-    {
+    private function getOneToManyStatement(
+        array $assoc,
+        $sourceEntity,
+        ?int $offset = null,
+        ?int $limit = null
+    ): DriverStatement {
         $this->switchPersisterContext($offset, $limit);
 
         $criteria    = [];
@@ -1846,7 +1849,7 @@ class BasicEntityPersister implements EntityPersister
      * @return mixed[][]
      * @psalm-return array{0: array, 1: list<int|string|null>}
      */
-    private function expandToManyParameters($criteria)
+    private function expandToManyParameters(array $criteria): array
     {
         $params = [];
         $types  = [];
@@ -1866,15 +1869,14 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Infers field types to be used by parameter type casting.
      *
-     * @param string $field
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return int[]|null[]|string[]
      * @psalm-return list<int|string|null>
      *
      * @throws QueryException
      */
-    private function getTypes($field, $value, ClassMetadata $class)
+    private function getTypes(string $field, $value, ClassMetadata $class): array
     {
         $types = [];
 
@@ -1925,7 +1927,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return mixed[]
      */
-    private function getValues($value)
+    private function getValues($value): array
     {
         if (is_array($value)) {
             $newValue = [];

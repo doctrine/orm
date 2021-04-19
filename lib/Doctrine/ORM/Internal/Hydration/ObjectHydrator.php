@@ -171,15 +171,16 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * Initializes a related collection.
      *
-     * @param object        $entity         The entity to which the collection belongs.
-     * @param ClassMetadata $class
-     * @param string        $fieldName      The name of the field on the entity that holds the collection.
-     * @param string        $parentDqlAlias Alias of the parent fetch joining this collection.
-     *
-     * @return PersistentCollection
+     * @param object $entity         The entity to which the collection belongs.
+     * @param string $fieldName      The name of the field on the entity that holds the collection.
+     * @param string $parentDqlAlias Alias of the parent fetch joining this collection.
      */
-    private function initRelatedCollection($entity, $class, $fieldName, $parentDqlAlias)
-    {
+    private function initRelatedCollection(
+        $entity,
+        ClassMetadata $class,
+        string $fieldName,
+        string $parentDqlAlias
+    ): PersistentCollection {
         $oid      = spl_object_hash($entity);
         $relation = $class->associationMappings[$fieldName];
         $value    = $class->reflFields[$fieldName]->getValue($entity);
@@ -225,11 +226,11 @@ class ObjectHydrator extends AbstractHydrator
      * @param string $dqlAlias The DQL alias of the entity's class.
      * @psalm-param array<string, mixed> $data     The instance data.
      *
-     * @return object The entity.
+     * @return object
      *
      * @throws HydrationException
      */
-    private function getEntity(array $data, $dqlAlias)
+    private function getEntity(array $data, string $dqlAlias)
     {
         $className = $this->_rsm->aliasMap[$dqlAlias];
 
@@ -272,12 +273,12 @@ class ObjectHydrator extends AbstractHydrator
     }
 
     /**
-     * @param string $className
+     * @psalm-param class-string $className
      * @psalm-param array<string, mixed> $data
      *
      * @return mixed
      */
-    private function getEntityFromIdentityMap($className, array $data)
+    private function getEntityFromIdentityMap(string $className, array $data)
     {
         // TODO: Abstract this code and UnitOfWork::createEntity() equivalent?
         $class = $this->_metadataCache[$className];

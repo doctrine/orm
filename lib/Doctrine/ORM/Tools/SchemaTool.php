@@ -422,12 +422,8 @@ class SchemaTool
     /**
      * Gets a portable column definition as required by the DBAL for the discriminator
      * column of a class.
-     *
-     * @param ClassMetadata $class
-     *
-     * @return void
      */
-    private function addDiscriminatorColumnDefinition($class, Table $table)
+    private function addDiscriminatorColumnDefinition(ClassMetadata $class, Table $table): void
     {
         $discrColumn = $class->discriminatorColumn;
 
@@ -454,12 +450,8 @@ class SchemaTool
     /**
      * Gathers the column definitions as required by the DBAL of all field mappings
      * found in the given class.
-     *
-     * @param ClassMetadata $class
-     *
-     * @return void
      */
-    private function gatherColumns($class, Table $table)
+    private function gatherColumns(ClassMetadata $class, Table $table): void
     {
         $pkColumns = [];
 

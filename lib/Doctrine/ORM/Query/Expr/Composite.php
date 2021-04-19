@@ -51,10 +51,8 @@ class Composite extends Base
 
     /**
      * @param string|object $part
-     *
-     * @return string
      */
-    private function processQueryPart($part)
+    private function processQueryPart($part): string
     {
         $queryPart = (string) $part;
 

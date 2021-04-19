@@ -215,12 +215,7 @@ class DefaultCacheFactory implements CacheFactory
         return $this->regions[$cache['region']] = $region;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return CacheAdapter
-     */
-    private function createRegionCache($name)
+    private function createRegionCache(string $name): CacheAdapter
     {
         $cacheAdapter = clone $this->cache;
 

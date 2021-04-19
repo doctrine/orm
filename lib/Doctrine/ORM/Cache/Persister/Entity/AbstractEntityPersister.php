@@ -225,10 +225,8 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
 
     /**
      * @param object $entity
-     *
-     * @return void
      */
-    private function storeJoinedAssociations($entity)
+    private function storeJoinedAssociations($entity): void
     {
         if ($this->joinedAssociations === null) {
             $associations = [];

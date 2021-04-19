@@ -463,10 +463,8 @@ class Parser
      * as the hydration process relies on that order for proper operation.
      *
      * @param AST\SelectStatement|AST\DeleteStatement|AST\UpdateStatement $AST
-     *
-     * @return void
      */
-    private function fixIdentificationVariableOrder($AST)
+    private function fixIdentificationVariableOrder(Node $AST): void
     {
         if (count($this->identVariableExpressions) <= 1) {
             return;
@@ -557,7 +555,7 @@ class Parser
      * @return mixed[]
      * @psalm-return array{value: string, type: int|null|string, position: int}|null
      */
-    private function peekBeyondClosingParenthesis(bool $resetPeek = true)
+    private function peekBeyondClosingParenthesis(bool $resetPeek = true): ?array
     {
         $token        = $this->lexer->peek();
         $numUnmatched = 1;
@@ -589,9 +587,9 @@ class Parser
     /**
      * Checks if the given token indicates a mathematical operator.
      *
-     * @psalm-param array<string, mixed> $token
+     * @psalm-param array<string, mixed>|null $token
      */
-    private function isMathOperator($token): bool
+    private function isMathOperator(?array $token): bool
     {
         return $token !== null && in_array($token['type'], [Lexer::T_PLUS, Lexer::T_MINUS, Lexer::T_DIVIDE, Lexer::T_MULTIPLY]);
     }
@@ -1039,11 +1037,9 @@ class Parser
      *
      * @param string $schemaName The name to validate.
      *
-     * @return void
-     *
      * @throws QueryException if the name does not exist.
      */
-    private function validateAbstractSchemaName($schemaName)
+    private function validateAbstractSchemaName(string $schemaName): void
     {
         if (! (class_exists($schemaName, true) || interface_exists($schemaName, true))) {
             $this->semanticalError(
@@ -3488,10 +3484,8 @@ class Parser
 
     /**
      * Helper function for FunctionDeclaration grammar rule.
-     *
-     * @return FunctionNode
      */
-    private function CustomFunctionDeclaration()
+    private function CustomFunctionDeclaration(): ?FunctionNode
     {
         $token    = $this->lexer->lookahead;
         $funcName = strtolower($token['value']);

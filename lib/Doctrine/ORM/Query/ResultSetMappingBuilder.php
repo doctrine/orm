@@ -194,13 +194,9 @@ class ResultSetMappingBuilder extends ResultSetMapping
     /**
      * Gets column alias for a given column.
      *
-     * @param string $columnName
-     * @param int    $mode
      * @psalm-param array<string, string>  $customRenameColumns
-     *
-     * @return string
      */
-    private function getColumnAlias($columnName, $mode, array $customRenameColumns)
+    private function getColumnAlias(string $columnName, int $mode, array $customRenameColumns): string
     {
         switch ($mode) {
             case self::COLUMN_RENAMING_INCREMENT:
@@ -211,6 +207,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
             case self::COLUMN_RENAMING_NONE:
                 return $columnName;
+
+            default:
+                throw new InvalidArgumentException(sprintf(
+                    '%d is not a valid value for $mode',
+                    $mode
+                ));
         }
     }
 
@@ -219,15 +221,18 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * This depends on the renaming mode selected by the user.
      *
-     * @param string $className
-     * @param int    $mode
+     * @psalm-param class-string $className
+     * @psalm-param self::COLUMN_RENAMING_* $mode
      * @psalm-param array<string, string> $customRenameColumns
      *
      * @return string[]
      * @psalm-return array<array-key, string>
      */
-    private function getColumnAliasMap($className, $mode, array $customRenameColumns)
-    {
+    private function getColumnAliasMap(
+        string $className,
+        int $mode,
+        array $customRenameColumns
+    ): array {
         if ($customRenameColumns) { // for BC with 2.2-2.3 API
             $mode = self::COLUMN_RENAMING_CUSTOM;
         }

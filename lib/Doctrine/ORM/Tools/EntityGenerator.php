@@ -747,10 +747,7 @@ public function __construct(<params>)
         return '';
     }
 
-    /**
-     * @return string
-     */
-    private function generateEmbeddableConstructor(ClassMetadataInfo $metadata)
+    private function generateEmbeddableConstructor(ClassMetadataInfo $metadata): string
     {
         $paramTypes     = [];
         $paramVariables = [];

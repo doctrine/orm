@@ -83,10 +83,7 @@ class FileLockRegion implements ConcurrentRegion
         $this->lockLifetime = $lockLifetime;
     }
 
-    /**
-     * @return bool
-     */
-    private function isLocked(CacheKey $key, ?Lock $lock = null)
+    private function isLocked(CacheKey $key, ?Lock $lock = null): bool
     {
         $filename = $this->getLockFileName($key);
 
@@ -117,30 +114,23 @@ class FileLockRegion implements ConcurrentRegion
         return true;
     }
 
-    /**
-     * @return string
-     */
-    private function getLockFileName(CacheKey $key)
+    private function getLockFileName(CacheKey $key): string
     {
         return $this->directory . DIRECTORY_SEPARATOR . $key->hash . '.' . self::LOCK_EXTENSION;
     }
 
     /**
-     * @param string $filename
-     *
-     * @return false|string
+     * @return string|false
      */
-    private function getLockContent($filename)
+    private function getLockContent(string $filename)
     {
         return @file_get_contents($filename);
     }
 
     /**
-     * @param string $filename
-     *
-     * @return false|int
+     * @return int|false
      */
-    private function getLockTime($filename)
+    private function getLockTime(string $filename)
     {
         return @fileatime($filename);
     }
