@@ -147,10 +147,10 @@ abstract class SQLFilter
     }
 
     /**
-     * Gets a parameter to use in a query assuming its a list of entries.
+     * Gets a parameter to use in a query assuming it's a list of entries.
      *
      * The function is responsible for the right output escaping to use the
-     * value in a query, seperating each entry by comma to inline it into
+     * value in a query, separating each entry by comma to inline it into
      * an IN() query part.
      *
      * @param string $name Name of the parameter.
