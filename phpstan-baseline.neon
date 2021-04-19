@@ -1,16 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$associationMappings\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/DefaultCache.php
-
-		-
-			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$rootEntityName\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/DefaultCache.php
-
-		-
 			message: "#^Method Doctrine\\\\ORM\\\\Cache\\\\DefaultCollectionHydrator\\:\\:loadCacheEntry\\(\\) should return array but returns null\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/DefaultCollectionHydrator.php
@@ -66,11 +56,6 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
 
 		-
-			message: "#^Parameter \\#1 \\$metadata of method Doctrine\\\\ORM\\\\Cache\\\\EntityHydrator\\:\\:buildCacheEntry\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
-
-		-
 			message: "#^Parameter \\#2 \\$key of method Doctrine\\\\ORM\\\\Cache\\\\EntityHydrator\\:\\:buildCacheEntry\\(\\) expects Doctrine\\\\ORM\\\\Cache\\\\EntityCacheKey, Doctrine\\\\ORM\\\\Cache\\\\CacheKey given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
@@ -88,11 +73,6 @@ parameters:
 		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Cache\\\\CacheEntry\\:\\:\\$class\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
-
-		-
-			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$rootEntityName\\.$#"
-			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
 
 		-
@@ -116,29 +96,9 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
 
 		-
-			message: "#^Parameter \\#1 \\$metadata of method Doctrine\\\\ORM\\\\Cache\\\\EntityHydrator\\:\\:buildCacheEntry\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
-
-		-
-			message: "#^Parameter \\#1 \\$metadata of method Doctrine\\\\ORM\\\\Cache\\\\EntityHydrator\\:\\:loadCacheEntry\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
-
-		-
 			message: "#^Parameter \\#3 \\$entry of method Doctrine\\\\ORM\\\\Cache\\\\EntityHydrator\\:\\:loadCacheEntry\\(\\) expects Doctrine\\\\ORM\\\\Cache\\\\EntityCacheEntry, Doctrine\\\\ORM\\\\Cache\\\\CacheEntry given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
-
-		-
-			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$rootEntityName\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/NonStrictReadWriteCachedEntityPersister.php
-
-		-
-			message: "#^Parameter \\#1 \\$metadata of method Doctrine\\\\ORM\\\\Cache\\\\EntityHydrator\\:\\:buildCacheEntry\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/NonStrictReadWriteCachedEntityPersister.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Cache\\\\Region\\:\\:lock\\(\\)\\.$#"
@@ -176,41 +136,6 @@ parameters:
 			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
 
 		-
-			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$identifier\\.$#"
-			count: 5
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$isIdentifierComposite\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$name\\.$#"
-			count: 10
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$rootEntityName\\.$#"
-			count: 3
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$subClasses\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:newInstance\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:setIdentifierValues\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/EntityManager.php
@@ -226,22 +151,12 @@ parameters:
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getClassMetadata\\(\\) should return Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata but returns Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
 			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getReference\\(\\) should return T\\|null but returns Doctrine\\\\Common\\\\Proxy\\\\Proxy\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getReference\\(\\) should return T\\|null but returns object\\|null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Parameter \\#2 \\$class of method Doctrine\\\\ORM\\\\EntityManager\\:\\:checkLockRequirements\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
 
@@ -401,11 +316,6 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
-			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$isEmbeddedClass\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$isMappedSuperclass\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
@@ -422,7 +332,7 @@ parameters:
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$name\\.$#"
-			count: 4
+			count: 3
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
@@ -596,18 +506,13 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$subClass of method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\:\\:addNestedEmbeddedClasses\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
-
-		-
 			message: "#^Parameter \\#2 \\$class of method Doctrine\\\\ORM\\\\Mapping\\\\QuoteStrategy\\:\\:getSequenceName\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo given\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
 			message: "#^Parameter \\#2 \\$parent of method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\:\\:inheritIdGeneratorMapping\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
-			count: 2
+			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
@@ -1349,26 +1254,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$sqlParams of method Doctrine\\\\ORM\\\\Query\\:\\:evictResultSetCache\\(\\) expects array\\<string, mixed\\>, array\\<int, mixed\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query.php
-
-		-
-			message: "#^Call to function is_array\\(\\) with Doctrine\\\\Common\\\\Collections\\\\ArrayCollection&iterable will always evaluate to false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/QueryBuilder.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManager but returns Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/QueryBuilder.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$where$#"
-			count: 2
-			path: lib/Doctrine/ORM/QueryBuilder.php
-
-		-
-			message: "#^Parameter \\#2 \\$dqlPart of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:add\\(\\) expects array\\<'join'\\|int, array\\<int\\|string, object\\>\\|string\\>\\|object\\|string, array\\<string, Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Join\\> given\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/QueryBuilder.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\:\\:\\$value\\.$#"
@@ -2116,6 +2001,26 @@ parameters:
 			path: lib/Doctrine/ORM/Query/TreeWalkerChainIterator.php
 
 		-
+			message: "#^Call to function is_array\\(\\) with Doctrine\\\\Common\\\\Collections\\\\ArrayCollection&iterable will always evaluate to false\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/QueryBuilder.php
+
+		-
+			message: "#^Method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManager but returns Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/QueryBuilder.php
+
+		-
+			message: "#^PHPDoc tag @param references unknown parameter\\: \\$where$#"
+			count: 2
+			path: lib/Doctrine/ORM/QueryBuilder.php
+
+		-
+			message: "#^Parameter \\#2 \\$dqlPart of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:add\\(\\) expects array\\<'join'\\|int, array\\<int\\|string, object\\>\\|string\\>\\|object\\|string, array\\<string, Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Join\\> given\\.$#"
+			count: 2
+			path: lib/Doctrine/ORM/QueryBuilder.php
+
+		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryRegionCommand.php
@@ -2299,31 +2204,6 @@ parameters:
 			message: "#^Negated boolean expression is always false\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/SchemaTool.php
-
-		-
-			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$associationMappings\\.$#"
-			count: 5
-			path: lib/Doctrine/ORM/Tools/SchemaValidator.php
-
-		-
-			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$containsForeignIdentifier\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/SchemaValidator.php
-
-		-
-			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$name\\.$#"
-			count: 12
-			path: lib/Doctrine/ORM/Tools/SchemaValidator.php
-
-		-
-			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:getIdentifierColumnNames\\(\\)\\.$#"
-			count: 5
-			path: lib/Doctrine/ORM/Tools/SchemaValidator.php
-
-		-
-			message: "#^Parameter \\#1 \\$class of method Doctrine\\\\ORM\\\\Tools\\\\SchemaValidator\\:\\:validateClass\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/SchemaValidator.php
 
 		-
 			message: "#^Parameter \\#2 \\$code of class Doctrine\\\\ORM\\\\Tools\\\\ToolsException constructor expects int, string given\\.$#"
