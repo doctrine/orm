@@ -6,5 +6,6 @@ use Doctrine\ORM\EntityManagerInterface;
 
 interface EntityManagerProvider
 {
-    public function getManager(string $name = 'default'): EntityManagerInterface;
+    public function getDefaultManager(): EntityManagerInterface;
+    public function getManager(string $name): EntityManagerInterface;
 }

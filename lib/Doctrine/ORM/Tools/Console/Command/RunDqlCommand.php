@@ -51,7 +51,7 @@ class RunDqlCommand extends AbstractEntityManagerCommand
         $this->setName('orm:run-dql')
              ->setDescription('Executes arbitrary DQL directly from the command line')
              ->addArgument('dql', InputArgument::REQUIRED, 'The DQL to execute.')
-             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('hydrate', null, InputOption::VALUE_REQUIRED, 'Hydration mode of result set. Should be either: object, array, scalar or single-scalar.', 'object')
              ->addOption('first-result', null, InputOption::VALUE_REQUIRED, 'The first result in the result set.')
              ->addOption('max-result', null, InputOption::VALUE_REQUIRED, 'The maximum number of results in the result set.')

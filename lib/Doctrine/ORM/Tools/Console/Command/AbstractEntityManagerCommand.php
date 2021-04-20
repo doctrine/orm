@@ -34,6 +34,8 @@ abstract class AbstractEntityManagerCommand extends Command
             return $this->getHelper('em')->getEntityManager();
         }
 
-        return $this->entityManagerProvider->getManager($input->getOption('em'));
+        return $input->getOption('em') === null
+            ? $this->entityManagerProvider->getDefaultManager()
+            : $this->entityManagerProvider->getManager($input->getOption('em'));
     }
 }
