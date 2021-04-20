@@ -15,7 +15,7 @@ final class SingleManagerProvider implements EntityManagerProvider
 
     public function __construct(EntityManagerInterface $entityManager, string $defaultManagerName = 'default')
     {
-        $this->entityManager = $entityManager;
+        $this->entityManager      = $entityManager;
         $this->defaultManagerName = $defaultManagerName;
     }
 
