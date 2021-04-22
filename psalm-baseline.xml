@@ -93,10 +93,6 @@
       <code>?T</code>
       <code>getReference</code>
     </InvalidReturnType>
-    <UndefinedInterfaceMethod occurrences="2">
-      <code>newInstance</code>
-      <code>setIdentifierValues</code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/EntityRepository.php">
     <InvalidReturnStatement occurrences="3">
@@ -523,21 +519,6 @@
     <MoreSpecificImplementedParamType occurrences="1">
       <code>$query</code>
     </MoreSpecificImplementedParamType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/SchemaValidator.php">
-    <InvalidReturnStatement occurrences="1">
-      <code>$errors</code>
-    </InvalidReturnStatement>
-    <InvalidReturnType occurrences="1">
-      <code>array&lt;string, list&lt;string&gt;&gt;</code>
-    </InvalidReturnType>
-    <UndefinedInterfaceMethod occurrences="5">
-      <code>getIdentifierColumnNames</code>
-      <code>getIdentifierColumnNames</code>
-      <code>getIdentifierColumnNames</code>
-      <code>getIdentifierColumnNames</code>
-      <code>getIdentifierColumnNames</code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/UnitOfWork.php">
     <InvalidNullableReturnType occurrences="1">

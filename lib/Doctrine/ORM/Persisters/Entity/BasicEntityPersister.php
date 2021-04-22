@@ -24,9 +24,9 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\ResultStatement as DriverStatement;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -919,8 +919,8 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Loads an array of entities from a given DBAL statement.
      *
-     * @param mixed[]   $assoc
-     * @param Statement $stmt
+     * @param mixed[]         $assoc
+     * @param DriverStatement $stmt
      *
      * @return mixed[]
      */
@@ -941,7 +941,7 @@ class BasicEntityPersister implements EntityPersister
      * Hydrates a collection from a given DBAL statement.
      *
      * @param mixed[]              $assoc
-     * @param Statement            $stmt
+     * @param DriverStatement      $stmt
      * @param PersistentCollection $coll
      *
      * @return mixed[]
@@ -975,7 +975,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * @psalm-param array<string, mixed> $assoc
      *
-     * @return \Doctrine\DBAL\Driver\Statement
+     * @return DriverStatement
      *
      * @throws MappingException
      */
@@ -1770,7 +1770,7 @@ class BasicEntityPersister implements EntityPersister
      * @param int|null $limit
      * @psalm-param array<string, mixed> $assoc
      *
-     * @return Statement
+     * @return DriverStatement
      */
     private function getOneToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
