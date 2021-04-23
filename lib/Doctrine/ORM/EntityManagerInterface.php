@@ -207,20 +207,6 @@ interface EntityManagerInterface extends ObjectManager
     public function close();
 
     /**
-     * Creates a copy of the given entity. Can create a shallow or a deep copy.
-     *
-     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
-     *
-     * @param object $entity The entity to copy.
-     * @param bool   $deep   FALSE for a shallow copy, TRUE for a deep copy.
-     *
-     * @return object The new entity.
-     *
-     * @throws BadMethodCallException
-     */
-    public function copy($entity, $deep = false);
-
-    /**
      * Acquire a lock on the given entity.
      *
      * @param object                     $entity

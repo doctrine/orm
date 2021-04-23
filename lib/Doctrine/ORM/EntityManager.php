@@ -730,21 +730,6 @@ use function sprintf;
     /**
      * {@inheritDoc}
      */
-    public function copy($entity, $deep = false)
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/8462',
-            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0.',
-            __METHOD__
-        );
-
-        throw new BadMethodCallException('Not implemented.');
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function lock($entity, $lockMode, $lockVersion = null)
     {
         $this->unitOfWork->lock($entity, $lockMode, $lockVersion);
