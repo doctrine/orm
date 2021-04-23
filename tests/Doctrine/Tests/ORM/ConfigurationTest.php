@@ -136,7 +136,7 @@ class ConfigurationTest extends TestCase
     public function testSetGetMetadataCache(): void
     {
         $this->assertNull($this->configuration->getMetadataCache());
-        $cache = $this->createMock(CacheItemPoolInterface::class);
+        $cache = $this->createStub(CacheItemPoolInterface::class);
         $this->configuration->setMetadataCache($cache);
         $this->assertSame($cache, $this->configuration->getMetadataCache());
     }
@@ -233,7 +233,7 @@ class ConfigurationTest extends TestCase
         $this->configuration->ensureProductionSettings();
     }
 
-    public function testEnsureProductionSettingsLegacyLegacyMetadataArrayCache(): void
+    public function testEnsureProductionSettingsLegacyMetadataArrayCache(): void
     {
         $this->setProductionSettings();
         $this->configuration->setMetadataCacheImpl(new ArrayCache());
