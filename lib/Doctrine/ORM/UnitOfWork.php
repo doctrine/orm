@@ -1884,7 +1884,7 @@ class UnitOfWork implements PropertyChangedListener
                 break;
 
             case self::STATE_MANAGED:
-                $class = $this->em->getClassMetadata(get_class($entity));
+                $class  = $this->em->getClassMetadata(get_class($entity));
                 $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::preRemove);
 
                 if ($invoke !== ListenersInvoker::INVOKE_NONE) {
