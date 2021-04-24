@@ -26,52 +26,23 @@ use Doctrine\ORM\EntityManagerInterface;
 /**
  * Provides event arguments for the onClear event.
  *
- * @link        www.doctrine-project.org
+ * @link www.doctrine-project.org
  */
 class OnClearEventArgs extends EventArgs
 {
     /** @var EntityManagerInterface */
     private $em;
 
-    /** @var string|null */
-    private $entityClass;
-
-    /**
-     * @param string|null $entityClass Optional entity class.
-     */
-    public function __construct(EntityManagerInterface $em, $entityClass = null)
+    public function __construct(EntityManagerInterface $em)
     {
-        $this->em          = $em;
-        $this->entityClass = $entityClass;
+        $this->em = $em;
     }
 
     /**
      * Retrieves associated EntityManager.
-     *
-     * @return EntityManagerInterface
      */
-    public function getEntityManager()
+    public function getEntityManager(): EntityManagerInterface
     {
         return $this->em;
-    }
-
-    /**
-     * Name of the entity class that is cleared, or empty if all are cleared.
-     *
-     * @return string|null
-     */
-    public function getEntityClass()
-    {
-        return $this->entityClass;
-    }
-
-    /**
-     * Checks if event clears all entities.
-     *
-     * @return bool
-     */
-    public function clearsAllEntities()
-    {
-        return $this->entityClass === null;
     }
 }
