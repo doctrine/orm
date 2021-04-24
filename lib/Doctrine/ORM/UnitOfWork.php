@@ -2557,7 +2557,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $id     = $this->identifierFlattener->flattenIdentifier($class, $data);
         $idHash = implode(' ', $id);
-        $identityMap = $this->identityMap;
+        $identityMap = $this->identityMapObject->getIdentityMap();
 
         if (isset($identityMap[$class->rootEntityName][$idHash])) {
             $entity = $identityMap[$class->rootEntityName][$idHash];
