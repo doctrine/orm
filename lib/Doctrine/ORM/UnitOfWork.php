@@ -2442,8 +2442,6 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function clear(): void
     {
-        $this->identityMap                    =
-        $this->entityIdentifiers              =
         $this->originalEntityData             =
         $this->entityChangeSets               =
         $this->entityStates                   =
@@ -2459,6 +2457,8 @@ class UnitOfWork implements PropertyChangedListener
         $this->visitedCollections             =
         $this->eagerLoadingEntities           =
         $this->orphanRemovals                 = [];
+
+        $this->identityMapObject->clear();
 
         if ($this->evm->hasListeners(Events::onClear)) {
             $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->em));
@@ -2557,9 +2557,10 @@ class UnitOfWork implements PropertyChangedListener
 
         $id     = $this->identifierFlattener->flattenIdentifier($class, $data);
         $idHash = implode(' ', $id);
+        $identityMap = $this->identityMap;
 
-        if (isset($this->identityMap[$class->rootEntityName][$idHash])) {
-            $entity = $this->identityMap[$class->rootEntityName][$idHash];
+        if (isset($identityMap[$class->rootEntityName][$idHash])) {
+            $entity = $identityMap[$class->rootEntityName][$idHash];
             $oid    = spl_object_hash($entity);
 
             if (
@@ -2613,7 +2614,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->entityStates[$oid]       = self::STATE_MANAGED;
             $this->originalEntityData[$oid] = $data;
 
-            $this->identityMap[$class->rootEntityName][$idHash] = $entity;
+            $identityMap[$class->rootEntityName][$idHash] = $entity;
 
             if ($entity instanceof NotifyPropertyChanged) {
                 $entity->addPropertyChangedListener($this);
@@ -2725,8 +2726,8 @@ class UnitOfWork implements PropertyChangedListener
                     $relatedIdHash = implode(' ', $associatedId);
 
                     switch (true) {
-                        case isset($this->identityMap[$targetClass->rootEntityName][$relatedIdHash]):
-                            $newValue = $this->identityMap[$targetClass->rootEntityName][$relatedIdHash];
+                        case isset($identityMap[$targetClass->rootEntityName][$relatedIdHash]):
+                            $newValue = $identityMap[$targetClass->rootEntityName][$relatedIdHash];
 
                             // If this is an uninitialized proxy, we are deferring eager loads,
                             // this association is marked as eager fetch, and its an uninitialized proxy (wtf!)
@@ -2774,7 +2775,7 @@ class UnitOfWork implements PropertyChangedListener
                             // PERF: Inlined & optimized code from UnitOfWork#registerManaged()
                             $newValueOid                                                     = spl_object_hash($newValue);
                             $this->entityIdentifiers[$newValueOid]                           = $associatedId;
-                            $this->identityMap[$targetClass->rootEntityName][$relatedIdHash] = $newValue;
+                            $identityMap[$targetClass->rootEntityName][$relatedIdHash] = $newValue;
 
                             if (
                                 $newValue instanceof NotifyPropertyChanged &&

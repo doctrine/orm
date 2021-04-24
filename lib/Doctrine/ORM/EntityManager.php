@@ -560,7 +560,7 @@ use function sprintf;
      * Clears the EntityManager. All entities that are currently managed
      * by this EntityManager become detached.
      */
-    public function clear(): void
+    public function clear($objectName = null): void
     {
         $this->unitOfWork->clear();
     }

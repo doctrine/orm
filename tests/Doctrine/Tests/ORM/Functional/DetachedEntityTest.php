@@ -96,7 +96,6 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $user = $this->_em->merge($user); // merge cascaded to phonenumbers
         $this->assertInstanceOf(CmsUser::class, $user->phonenumbers[0]->user);
         $this->assertInstanceOf(CmsUser::class, $user->phonenumbers[1]->user);
-        $im = $this->_em->getUnitOfWork()->getIdentityMap();
         $this->_em->flush();
 
         $this->assertTrue($this->_em->contains($user), 'Failed to assert that merged user is contained inside EntityManager persistence context.');

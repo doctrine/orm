@@ -93,7 +93,7 @@ class IdentityMap
      *
      * @psalm-return array<class-string, array<string, object|null>>
      */
-    public function getIdentityMap(): iterable
+    public function & getIdentityMap(): iterable
     {
         return $this->identityMap;
     }
@@ -114,7 +114,6 @@ class IdentityMap
 
         return isset($this->identityMap[$classMetadata->rootEntityName][$idHash]);
     }
-
 
     /**
      * Removes an entity from the identity map.
@@ -193,5 +192,14 @@ class IdentityMap
     protected function getClassMetadata(object $entity): ClassMetadata
     {
         return $this->em->getClassMetadata(get_class($entity));
+    }
+
+    /**
+     * Clears the identioty map.
+     */
+    public function clear(): void
+    {
+        $this->identityMap       =
+        $this->entityIdentifiers = [];
     }
 }
