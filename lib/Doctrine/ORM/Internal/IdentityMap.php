@@ -43,6 +43,26 @@ class IdentityMap
      */
     private $identityMap = [];
 
+    public function addEntityIdentifier(string $oid, $identifier): void
+    {
+        $this->entityIdentifiers[$oid] = $identifier;
+    }
+
+    public function getEntityIdentifier(string $oid)
+    {
+        return $this->entityIdentifiers[$oid];
+    }
+
+    public function hasEntityIdentifier(string $oid): bool
+    {
+        return isset($this->entityIdentifiers[$oid]);
+    }
+
+    public function unsetEntityIdentifier(string $oid): void
+    {
+        unset($this->entityIdentifiers[$oid]);
+    }
+
     /**
      * Registers an entity in the identity map.
      * Note that entities in a hierarchy are registered with the class name of
@@ -134,9 +154,8 @@ class IdentityMap
 
         $rootEntityName = $classMetadata->rootEntityName;
 
-        if (isset($this->identityMap[$rootEntityName][$idHash])) {
-            unset($this->identityMap[$rootEntityName][$idHash]);
-        }
+        unset($this->identityMap[$rootEntityName][$idHash]);
+        $this->unsetEntityIdentifier($oid);
     }
 
     /**
