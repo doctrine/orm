@@ -332,7 +332,8 @@
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="optional"/>
-    <xs:attribute name="columns" type="xs:string" use="required"/>
+    <xs:attribute name="columns" type="xs:string" use="optional"/>
+    <xs:attribute name="fields" type="xs:string" use="optional"/>
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
 
@@ -351,6 +352,7 @@
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="optional"/>
     <xs:attribute name="columns" type="xs:string" use="required"/>
+    <xs:attribute name="fields" type="xs:string" use="optional"/>
     <xs:attribute name="flags" type="xs:string" use="optional"/>
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
@@ -539,7 +541,7 @@
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="target-entity" type="xs:string" use="required" />
+    <xs:attribute name="target-entity" type="xs:string" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
     <xs:anyAttribute namespace="##other"/>
@@ -557,7 +559,7 @@
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="target-entity" type="xs:string" use="required" />
+    <xs:attribute name="target-entity" type="xs:string" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />

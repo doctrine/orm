@@ -8,6 +8,7 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Tools\Console\Command\InfoCommand;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Models\Cache\AttractionInfo;
@@ -34,8 +35,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
         $this->application = new Application();
 
-        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->_em)]));
-        $this->application->add(new InfoCommand());
+        $this->application->add(new InfoCommand(new SingleManagerProvider($this->_em)));
 
         $this->command = $this->application->find('orm:info');
         $this->tester  = new CommandTester($this->command);

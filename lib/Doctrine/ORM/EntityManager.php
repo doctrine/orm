@@ -386,8 +386,10 @@ use function sprintf;
      *    during the search.
      * @param int|null $lockVersion The version of the entity to find when using
      * optimistic locking.
+     * @psalm-param class-string<T> $className
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
+     * @psalm-return ?T
      *
      * @throws OptimisticLockException
      * @throws ORMInvalidArgumentException
@@ -395,8 +397,6 @@ use function sprintf;
      * @throws ORMException
      *
      * @template T
-     * @psalm-param class-string<T> $className
-     * @psalm-return ?T
      */
     public function find($className, $id, $lockMode = null, $lockVersion = null)
     {
@@ -754,12 +754,12 @@ use function sprintf;
      * Gets the repository for an entity class.
      *
      * @param string $entityName The name of the entity.
+     * @psalm-param class-string<T> $entityName
      *
      * @return ObjectRepository|EntityRepository The repository class.
+     * @psalm-return EntityRepository<T>
      *
      * @template T
-     * @psalm-param class-string<T> $entityName
-     * @psalm-return EntityRepository<T>
      */
     public function getRepository($entityName)
     {
@@ -799,11 +799,9 @@ use function sprintf;
     /**
      * Throws an exception if the EntityManager is closed or currently not active.
      *
-     * @return void
-     *
      * @throws ORMException If the EntityManager is closed.
      */
-    private function errorIfClosed()
+    private function errorIfClosed(): void
     {
         if ($this->closed) {
             throw ORMException::entityManagerClosed();

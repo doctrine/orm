@@ -63,6 +63,9 @@ class CacheConfiguration
          return $this->cacheLogger;
     }
 
+    /**
+     * @return void
+     */
     public function setCacheLogger(CacheLogger $logger)
     {
         $this->cacheLogger = $logger;
@@ -80,6 +83,9 @@ class CacheConfiguration
         return $this->regionsConfig;
     }
 
+    /**
+     * @return void
+     */
     public function setRegionsConfiguration(RegionsConfiguration $regionsConfig)
     {
         $this->regionsConfig = $regionsConfig;
@@ -99,6 +105,9 @@ class CacheConfiguration
          return $this->queryValidator;
     }
 
+    /**
+     * @return void
+     */
     public function setQueryValidator(QueryCacheValidator $validator)
     {
         $this->queryValidator = $validator;

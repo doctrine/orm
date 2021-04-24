@@ -71,7 +71,6 @@ use Doctrine\ORM\Query\AST\SimpleSelectExpression;
 use Doctrine\ORM\Query\AST\SimpleWhenClause;
 use Doctrine\ORM\Query\AST\Subselect;
 use Doctrine\ORM\Query\AST\SubselectFromClause;
-use Doctrine\ORM\Query\AST\SubselectIdentificationVariableDeclaration;
 use Doctrine\ORM\Query\AST\UpdateClause;
 use Doctrine\ORM\Query\AST\UpdateItem;
 use Doctrine\ORM\Query\AST\UpdateStatement;
@@ -263,9 +262,9 @@ class Parser
     /**
      * Adds a custom tree walker for modifying the AST.
      *
-     * @return void
-     *
      * @psalm-param class-string $className
+     *
+     * @return void
      */
     public function addCustomTreeWalker($className)
     {
@@ -464,10 +463,8 @@ class Parser
      * as the hydration process relies on that order for proper operation.
      *
      * @param AST\SelectStatement|AST\DeleteStatement|AST\UpdateStatement $AST
-     *
-     * @return void
      */
-    private function fixIdentificationVariableOrder($AST)
+    private function fixIdentificationVariableOrder(Node $AST): void
     {
         if (count($this->identVariableExpressions) <= 1) {
             return;
@@ -493,13 +490,12 @@ class Parser
      * Generates a new syntax error.
      *
      * @param string $expected Expected string.
+     * @psalm-param array<string, mixed>|null $token    Got token.
      *
      * @return void
+     * @psalm-return no-return
      *
      * @throws QueryException
-     *
-     * @psalm-param array<string, mixed>|null $token    Got token.
-     * @psalm-return no-return
      */
     public function syntaxError($expected = '', $token = null)
     {
@@ -520,12 +516,11 @@ class Parser
      * Generates a new semantical error.
      *
      * @param string $message Optional message.
+     * @psalm-param array<string, mixed>|null $token Optional token.
      *
      * @return void
      *
      * @throws QueryException
-     *
-     * @psalm-param array<string, mixed>|null $token Optional token.
      */
     public function semanticalError($message = '', $token = null)
     {
@@ -557,9 +552,10 @@ class Parser
      *
      * @param bool $resetPeek Reset peek after finding the closing parenthesis.
      *
-     * @psalm-return array<string, mixed>| null
+     * @return mixed[]
+     * @psalm-return array{value: string, type: int|null|string, position: int}|null
      */
-    private function peekBeyondClosingParenthesis(bool $resetPeek = true)
+    private function peekBeyondClosingParenthesis(bool $resetPeek = true): ?array
     {
         $token        = $this->lexer->peek();
         $numUnmatched = 1;
@@ -591,9 +587,9 @@ class Parser
     /**
      * Checks if the given token indicates a mathematical operator.
      *
-     * @psalm-param array<string, mixed> $token
+     * @psalm-param array<string, mixed>|null $token
      */
-    private function isMathOperator($token): bool
+    private function isMathOperator(?array $token): bool
     {
         return $token !== null && in_array($token['type'], [Lexer::T_PLUS, Lexer::T_MINUS, Lexer::T_DIVIDE, Lexer::T_MULTIPLY]);
     }
@@ -616,9 +612,9 @@ class Parser
     /**
      * Checks whether the given token type indicates an aggregate function.
      *
-     * @return bool TRUE if the token type is an aggregate function, FALSE otherwise.
-     *
      * @psalm-param Lexer::T_* $tokenType
+     *
+     * @return bool TRUE if the token type is an aggregate function, FALSE otherwise.
      */
     private function isAggregateFunction(int $tokenType): bool
     {
@@ -1043,7 +1039,7 @@ class Parser
      *
      * @throws QueryException if the name does not exist.
      */
-    private function validateAbstractSchemaName($schemaName)
+    private function validateAbstractSchemaName(string $schemaName): void
     {
         if (! (class_exists($schemaName, true) || interface_exists($schemaName, true))) {
             $this->semanticalError(
@@ -1683,7 +1679,7 @@ class Parser
      * accessible is "FROM", prohibiting an easy implementation without larger
      * changes.}
      *
-     * @return SubselectIdentificationVariableDeclaration|IdentificationVariableDeclaration
+     * @return IdentificationVariableDeclaration
      */
     public function SubselectIdentificationVariableDeclaration()
     {
@@ -3488,10 +3484,8 @@ class Parser
 
     /**
      * Helper function for FunctionDeclaration grammar rule.
-     *
-     * @return FunctionNode
      */
-    private function CustomFunctionDeclaration()
+    private function CustomFunctionDeclaration(): ?FunctionNode
     {
         $token    = $this->lexer->lookahead;
         $funcName = strtolower($token['value']);

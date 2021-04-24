@@ -44,12 +44,34 @@ Read-Only Entities
 ------------------
 
 You can mark entities as read only (See metadata mapping
-references for details). This means that the entity marked as read only is never considered
-for updates, which means when you call flush on the EntityManager these entities are skipped
-even if properties changed. Read-Only allows to persist new entities of a kind and remove existing
-ones, they are just not considered for updates.
+references for details).
+
+This means that the entity marked as read only is never considered for updates.
+During flush on the EntityManager these entities are skipped even if properties
+changed.
+
+Read-Only allows to persist new entities of a kind and remove existing ones,
+they are just not considered for updates.
 
 See :ref:`annref_entity`
+
+You can also explicitly mark individual entities read only directly on the
+UnitOfWork via a call to ``markReadOnly()``:
+
+.. code-block:: php
+
+   $user = $entityManager->find(User::class, $id);
+   $entityManager->getUnitOfWork()->markReadOnly($user);
+
+Or you can set all objects that are the result of a query hydration to be
+marked as read only with the following query hint:
+
+.. code-block:: php
+
+   $query = $entityManager->createQuery('SELECT u FROM App\\Entity\\User u');
+   $query->setHint(Query::HINT_READ_ONLY, true);
+
+   $users = $query->getResult();
 
 Extra-Lazy Collections
 ----------------------

@@ -180,11 +180,9 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * @return int
-     *
      * @throws DBALException
      */
-    private function deleteEntityCollection(PersistentCollection $collection)
+    private function deleteEntityCollection(PersistentCollection $collection): int
     {
         $mapping     = $collection->getMapping();
         $identifier  = $this->uow->getEntityIdentifier($collection->getOwner());
@@ -210,11 +208,9 @@ class OneToManyPersister extends AbstractCollectionPersister
      *
      * Thanks Steve Ebersole (Hibernate) for idea on how to tackle reliably this scenario, we owe him a beer! =)
      *
-     * @return int
-     *
      * @throws DBALException
      */
-    private function deleteJoinedEntityCollection(PersistentCollection $collection)
+    private function deleteJoinedEntityCollection(PersistentCollection $collection): int
     {
         $mapping     = $collection->getMapping();
         $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);

@@ -22,8 +22,8 @@ namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
+use Doctrine\ORM\Tools\Console\Command\AbstractEntityManagerCommand;
 use InvalidArgumentException;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -38,7 +38,7 @@ use function sprintf;
 /**
  * Command to clear a collection cache region.
  */
-class CollectionRegionCommand extends Command
+class CollectionRegionCommand extends AbstractEntityManagerCommand
 {
     /**
      * {@inheritdoc}
@@ -50,6 +50,7 @@ class CollectionRegionCommand extends Command
              ->addArgument('owner-class', InputArgument::OPTIONAL, 'The owner entity name.')
              ->addArgument('association', InputArgument::OPTIONAL, 'The association collection name.')
              ->addArgument('owner-id', InputArgument::OPTIONAL, 'The owner identifier.')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->addOption('all', null, InputOption::VALUE_NONE, 'If defined, all entity regions will be deleted/invalidated.')
              ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, all cache entries will be flushed.')
              ->setHelp(<<<EOT
@@ -86,7 +87,7 @@ EOT
     {
         $ui = new SymfonyStyle($input, $output);
 
-        $em         = $this->getHelper('em')->getEntityManager();
+        $em         = $this->getEntityManager($input);
         $ownerClass = $input->getArgument('owner-class');
         $assoc      = $input->getArgument('association');
         $ownerId    = $input->getArgument('owner-id');

@@ -216,6 +216,8 @@ class FilterCollection
 
     /**
      * Sets the filter state to dirty.
+     *
+     * @return void
      */
     public function setFiltersStateDirty()
     {

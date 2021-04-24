@@ -26,6 +26,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 use function array_diff;
 use function array_key_exists;
+use function array_search;
 use function array_values;
 use function class_exists;
 use function class_parents;
@@ -80,7 +81,6 @@ class SchemaValidator
      * Validates a single class of the current.
      *
      * @return string[]
-     *
      * @psalm-return list<string>
      */
     public function validateClass(ClassMetadataInfo $class)
@@ -253,6 +253,12 @@ class SchemaValidator
                     }
                 }
             }
+        }
+
+        if (! $class->isInheritanceTypeNone() && ! $class->isRootEntity() && array_search($class->name, $class->discriminatorMap) === false) {
+            $ce[] = "Entity class '" . $class->name . "' is part of inheritance hierarchy, but is " .
+                "not mapped in the root entity '" . $class->rootEntityName . "' discriminator map. " .
+                'All subclasses must be listed in the discriminator map.';
         }
 
         foreach ($class->subClasses as $subClass) {

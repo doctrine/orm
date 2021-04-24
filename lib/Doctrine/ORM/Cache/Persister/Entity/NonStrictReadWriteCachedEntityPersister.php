@@ -100,17 +100,14 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
 
     /**
      * @param object $entity
-     * @param bool   $isChanged
-     *
-     * @return bool
      */
-    private function updateCache($entity, $isChanged)
+    private function updateCache($entity, bool $isChanged): bool
     {
         $class     = $this->metadataFactory->getMetadataFor(get_class($entity));
         $key       = new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($entity));
         $entry     = $this->hydrator->buildCacheEntry($class, $key, $entity);
         $cached    = $this->region->put($key, $entry);
-        $isChanged = $isChanged ?: $cached;
+        $isChanged = $isChanged || $cached;
 
         if ($this->cacheLogger && $cached) {
             $this->cacheLogger->entityCachePut($this->regionName, $key);

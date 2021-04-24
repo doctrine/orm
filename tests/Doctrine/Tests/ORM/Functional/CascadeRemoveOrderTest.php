@@ -158,6 +158,7 @@ class CascadeRemoveOrderEntityG
      *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO",
      *     inversedBy="oneToMany"
      * )
+     * @JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $ownerO;
 

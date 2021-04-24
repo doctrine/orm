@@ -130,10 +130,12 @@ $metadata->table['options']           = [
 ];
 $metadata->table['uniqueConstraints'] = [
     'search_idx' => ['columns' => ['name', 'user_email'], 'options' => ['where' => 'name IS NOT NULL']],
+    'phone_idx' => ['fields' => ['name', 'phone']],
 ];
 $metadata->table['indexes']           = [
     'name_idx' => ['columns' => ['name']],
     0 => ['columns' => ['user_email']],
+    'fields' => ['fields' => ['name', 'email']],
 ];
 $metadata->setSequenceGeneratorDefinition(
     [

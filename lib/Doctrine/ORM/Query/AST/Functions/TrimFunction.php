@@ -93,9 +93,9 @@ class TrimFunction extends FunctionNode
     }
 
     /**
-     * @return int
+     * @psalm-return AbstractPlatform::TRIM_*
      */
-    private function getTrimMode()
+    private function getTrimMode(): int
     {
         if ($this->leading) {
             return AbstractPlatform::TRIM_LEADING;
@@ -112,10 +112,7 @@ class TrimFunction extends FunctionNode
         return AbstractPlatform::TRIM_UNSPECIFIED;
     }
 
-    /**
-     * @return void
-     */
-    private function parseTrimMode(Parser $parser)
+    private function parseTrimMode(Parser $parser): void
     {
         $lexer = $parser->getLexer();
         $value = $lexer->lookahead['value'];

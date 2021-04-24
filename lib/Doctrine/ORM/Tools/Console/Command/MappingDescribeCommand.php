@@ -24,16 +24,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\MappingException;
 use InvalidArgumentException;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 use function array_filter;
 use function array_map;
 use function array_merge;
-use function assert;
 use function count;
 use function current;
 use function get_class;
@@ -57,16 +56,14 @@ use const JSON_UNESCAPED_UNICODE;
  *
  * @link    www.doctrine-project.org
  */
-final class MappingDescribeCommand extends Command
+final class MappingDescribeCommand extends AbstractEntityManagerCommand
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('orm:mapping:describe')
              ->addArgument('entityName', InputArgument::REQUIRED, 'Full or partial name of entity')
              ->setDescription('Display information about mapped objects')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->setHelp(<<<EOT
 The %command.full_name% command describes the metadata for the given full or partial entity class name.
 
@@ -79,15 +76,11 @@ EOT
              );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);
 
-        $entityManager = $this->getHelper('em')->getEntityManager();
-        assert($entityManager instanceof EntityManagerInterface);
+        $entityManager = $this->getEntityManager($input);
 
         $this->displayEntity($input->getArgument('entityName'), $entityManager, $ui);
 
@@ -99,8 +92,11 @@ EOT
      *
      * @param string $entityName Full or partial entity class name
      */
-    private function displayEntity($entityName, EntityManagerInterface $entityManager, SymfonyStyle $ui)
-    {
+    private function displayEntity(
+        string $entityName,
+        EntityManagerInterface $entityManager,
+        SymfonyStyle $ui
+    ): void {
         $metadata = $this->getClassMetadata($entityName, $entityManager);
 
         $ui->table(
@@ -171,11 +167,11 @@ EOT
      * name
      *
      * @param string $entityName Full or partial entity name
-     *
-     * @return ClassMetadata
      */
-    private function getClassMetadata($entityName, EntityManagerInterface $entityManager)
-    {
+    private function getClassMetadata(
+        string $entityName,
+        EntityManagerInterface $entityManager
+    ): ClassMetadata {
         try {
             return $entityManager->getClassMetadata($entityName);
         } catch (MappingException $e) {
@@ -210,10 +206,8 @@ EOT
      * Format the given value for console output
      *
      * @param mixed $value
-     *
-     * @return string
      */
-    private function formatValue($value)
+    private function formatValue($value): string
     {
         if ($value === '') {
             return '';
@@ -253,10 +247,9 @@ EOT
      * @param mixed  $value A Value to show
      *
      * @return string[]
-     *
      * @psalm-return array{0: string, 1: string}
      */
-    private function formatField($label, $value): array
+    private function formatField(string $label, $value): array
     {
         if ($value === null) {
             $value = '<comment>None</comment>';
@@ -268,9 +261,9 @@ EOT
     /**
      * Format the association mappings
      *
-     * @return string[][]
-     *
      * @psalm-param array<string, array<string, mixed>> $propertyMappings
+     *
+     * @return string[][]
      * @psalm-return list<array{0: string, 1: string}>
      */
     private function formatMappings(array $propertyMappings): array
@@ -291,9 +284,9 @@ EOT
     /**
      * Format the entity listeners
      *
-     * @return string[]
-     *
      * @psalm-param list<object> $entityListeners
+     *
+     * @return string[]
      * @psalm-return array{0: string, 1: string}
      */
     private function formatEntityListeners(array $entityListeners): array

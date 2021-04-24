@@ -62,9 +62,9 @@ class OptimisticLockException extends ORMException
     }
 
     /**
-     * @param object $entity
-     * @param int    $expectedLockVersion
-     * @param int    $actualLockVersion
+     * @param object                $entity
+     * @param int|DateTimeInterface $expectedLockVersion
+     * @param int|DateTimeInterface $actualLockVersion
      *
      * @return OptimisticLockException
      */

@@ -146,10 +146,8 @@ class CommitOrderCalculator
      * Visit a given node definition for reordering.
      *
      * {@internal Highly performance-sensitive method.}
-     *
-     * @param stdClass $vertex
      */
-    private function visit($vertex)
+    private function visit(stdClass $vertex): void
     {
         $vertex->state = self::IN_PROGRESS;
 

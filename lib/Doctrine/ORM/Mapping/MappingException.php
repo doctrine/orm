@@ -382,6 +382,8 @@ class MappingException extends ORMException
     }
 
     /**
+     * @deprecated 2.9 no longer in use
+     *
      * @param string $className
      * @param string $propertyName
      *
@@ -930,6 +932,34 @@ class MappingException extends ORMException
                 'declared on a mapped superclass or a trait.',
                 $className,
                 $propertyName
+            )
+        );
+    }
+
+    /**
+     * @return self
+     */
+    public static function invalidIndexConfiguration($className, $indexName)
+    {
+        return new self(
+            sprintf(
+                'Index %s for entity %s should contain columns or fields values, but not both.',
+                $indexName,
+                $className
+            )
+        );
+    }
+
+    /**
+     * @return self
+     */
+    public static function invalidUniqueConstraintConfiguration($className, $indexName)
+    {
+        return new self(
+            sprintf(
+                'Unique constraint %s for entity %s should contain columns or fields values, but not both.',
+                $indexName,
+                $className
             )
         );
     }

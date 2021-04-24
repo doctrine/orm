@@ -15,7 +15,7 @@ class DDC869CreditCardPayment extends DDC869Payment
      * @var string
      * @Column(type="string")
      */
-    #[ORM\Column(type: "string")]
+    #[ORM\Column(type: 'string')]
     protected $creditCardNumber;
 
     public static function loadMetadata(ClassMetadataInfo $metadata): void

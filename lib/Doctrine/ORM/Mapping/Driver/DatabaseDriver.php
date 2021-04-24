@@ -145,10 +145,10 @@ class DatabaseDriver implements MappingDriver
     /**
      * Sets tables manually instead of relying on the reverse engineering capabilities of SchemaManager.
      *
-     * @return void
-     *
      * @psalm-param list<Table> $entityTables
      * @psalm-param list<Table> $manyToManyTables
+     *
+     * @return void
      */
     public function setTables($entityTables, $manyToManyTables)
     {
@@ -259,11 +259,9 @@ class DatabaseDriver implements MappingDriver
     }
 
     /**
-     * @return void
-     *
      * @throws MappingException
      */
-    private function reverseEngineerMappingFromDatabase()
+    private function reverseEngineerMappingFromDatabase(): void
     {
         if ($this->tables !== null) {
             return;
@@ -316,7 +314,7 @@ class DatabaseDriver implements MappingDriver
     /**
      * Build indexes from a class metadata.
      */
-    private function buildIndexes(ClassMetadataInfo $metadata)
+    private function buildIndexes(ClassMetadataInfo $metadata): void
     {
         $tableName = $metadata->table['name'];
         $indexes   = $this->tables[$tableName]->getIndexes();
@@ -339,7 +337,7 @@ class DatabaseDriver implements MappingDriver
     /**
      * Build field mapping from class metadata.
      */
-    private function buildFieldMappings(ClassMetadataInfo $metadata)
+    private function buildFieldMappings(ClassMetadataInfo $metadata): void
     {
         $tableName      = $metadata->table['name'];
         $columns        = $this->tables[$tableName]->getColumns();
@@ -382,8 +380,6 @@ class DatabaseDriver implements MappingDriver
     /**
      * Build field mapping from a schema column definition
      *
-     * @param string $tableName
-     *
      * @psalm-return array{
      *                   fieldName: string,
      *                   columnName: string,
@@ -400,7 +396,7 @@ class DatabaseDriver implements MappingDriver
      *                   length?: int|null
      *               }
      */
-    private function buildFieldMapping($tableName, Column $column)
+    private function buildFieldMapping(string $tableName, Column $column): array
     {
         $fieldMapping = [
             'fieldName'  => $this->getFieldNameForColumn($tableName, $column->getName(), false),
@@ -453,6 +449,8 @@ class DatabaseDriver implements MappingDriver
 
     /**
      * Build to one (one to one, many to one) association mapping from class metadata.
+     *
+     * @return void
      */
     private function buildToOneAssociationMappings(ClassMetadataInfo $metadata)
     {
@@ -498,10 +496,9 @@ class DatabaseDriver implements MappingDriver
      * Retrieve schema table definition foreign keys.
      *
      * @return ForeignKeyConstraint[]
-     *
      * @psalm-return array<string, ForeignKeyConstraint>
      */
-    private function getTableForeignKeys(Table $table)
+    private function getTableForeignKeys(Table $table): array
     {
         return $this->_sm->getDatabasePlatform()->supportsForeignKeyConstraints()
             ? $table->getForeignKeys()
@@ -513,7 +510,7 @@ class DatabaseDriver implements MappingDriver
      *
      * @return string[]
      */
-    private function getTablePrimaryKeys(Table $table)
+    private function getTablePrimaryKeys(Table $table): array
     {
         try {
             return $table->getPrimaryKey()->getColumns();
@@ -527,11 +524,9 @@ class DatabaseDriver implements MappingDriver
     /**
      * Returns the mapped class name for a table if it exists. Otherwise return "classified" version.
      *
-     * @param string $tableName
-     *
-     * @return string
+     * @psalm-return class-string
      */
-    private function getClassNameForTable($tableName)
+    private function getClassNameForTable(string $tableName): string
     {
         if (isset($this->classNamesForTables[$tableName])) {
             return $this->namespace . $this->classNamesForTables[$tableName];
@@ -543,14 +538,13 @@ class DatabaseDriver implements MappingDriver
     /**
      * Return the mapped field name for a column, if it exists. Otherwise return camelized version.
      *
-     * @param string $tableName
-     * @param string $columnName
-     * @param bool   $fk         Whether the column is a foreignkey or not.
-     *
-     * @return string
+     * @param bool $fk Whether the column is a foreignkey or not.
      */
-    private function getFieldNameForColumn($tableName, $columnName, $fk = false)
-    {
+    private function getFieldNameForColumn(
+        string $tableName,
+        string $columnName,
+        bool $fk = false
+    ): string {
         if (isset($this->fieldNamesForColumns[$tableName]) && isset($this->fieldNamesForColumns[$tableName][$columnName])) {
             return $this->fieldNamesForColumns[$tableName][$columnName];
         }

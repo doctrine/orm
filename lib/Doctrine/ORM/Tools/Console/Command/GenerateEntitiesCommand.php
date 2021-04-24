@@ -24,7 +24,6 @@ use Doctrine\ORM\Tools\Console\MetadataFilter;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Tools\EntityGenerator;
 use InvalidArgumentException;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -43,7 +42,7 @@ use function sprintf;
  *
  * @link    www.doctrine-project.org
  */
-class GenerateEntitiesCommand extends Command
+class GenerateEntitiesCommand extends AbstractEntityManagerCommand
 {
     /**
      * {@inheritdoc}
@@ -54,6 +53,7 @@ class GenerateEntitiesCommand extends Command
              ->setAliases(['orm:generate:entities'])
              ->setDescription('Generate entity classes and method stubs from your mapping information')
              ->addArgument('dest-path', InputArgument::REQUIRED, 'The path to generate your entity classes.')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->addOption('filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'A string pattern used to match entities that should be processed.')
              ->addOption('generate-annotations', null, InputOption::VALUE_OPTIONAL, 'Flag to define if generator should generate annotation metadata on entities.', false)
              ->addOption('generate-methods', null, InputOption::VALUE_OPTIONAL, 'Flag to define if generator should generate stub methods on entities.', true)
@@ -93,7 +93,7 @@ EOT
         $ui = new SymfonyStyle($input, $output);
         $ui->warning('Command ' . $this->getName() . ' is deprecated and will be removed in Doctrine ORM 3.0.');
 
-        $em = $this->getHelper('em')->getEntityManager();
+        $em = $this->getEntityManager($input);
 
         $cmf = new DisconnectedClassMetadataFactory();
         $cmf->setEntityManager($em);

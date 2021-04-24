@@ -731,9 +731,7 @@ class SqlWalker implements TreeWalker
 
         $addMetaColumns = ! $this->query->getHint(Query::HINT_FORCE_PARTIAL_LOAD) &&
             $this->query->getHydrationMode() === Query::HYDRATE_OBJECT
-            ||
-            $this->query->getHydrationMode() !== Query::HYDRATE_OBJECT &&
-            $this->query->getHint(Query::HINT_INCLUDE_META_COLUMNS);
+            || $this->query->getHint(Query::HINT_INCLUDE_META_COLUMNS);
 
         foreach ($this->selectedClasses as $selectedClass) {
             $class       = $selectedClass['class'];
@@ -936,11 +934,11 @@ class SqlWalker implements TreeWalker
 
     /**
      * Generate appropriate SQL for RangeVariableDeclaration AST node
-     *
-     * @param AST\RangeVariableDeclaration $rangeVariableDeclaration
      */
-    private function generateRangeVariableDeclarationSQL($rangeVariableDeclaration, bool $buildNestedJoins): string
-    {
+    private function generateRangeVariableDeclarationSQL(
+        AST\RangeVariableDeclaration $rangeVariableDeclaration,
+        bool $buildNestedJoins
+    ): string {
         $class    = $this->em->getClassMetadata($rangeVariableDeclaration->abstractSchemaName);
         $dqlAlias = $rangeVariableDeclaration->aliasIdentificationVariable;
 
@@ -2354,8 +2352,10 @@ class SqlWalker implements TreeWalker
      *
      * @throws QueryException
      */
-    private function getChildDiscriminatorsFromClassMetadata(ClassMetadataInfo $rootClass, AST\InstanceOfExpression $instanceOfExpr): string
-    {
+    private function getChildDiscriminatorsFromClassMetadata(
+        ClassMetadataInfo $rootClass,
+        AST\InstanceOfExpression $instanceOfExpr
+    ): string {
         $sqlParameterList = [];
         $discriminators   = [];
         foreach ($instanceOfExpr->value as $parameter) {

@@ -72,7 +72,7 @@ class SqlValueVisitor extends ExpressionVisitor
     /**
      * Converts a value expression into the target query language part.
      *
-     * @return mixed
+     * @return void
      */
     public function walkValue(Value $value)
     {
@@ -83,8 +83,7 @@ class SqlValueVisitor extends ExpressionVisitor
      * Returns the Parameters and Types necessary for matching the last visited expression.
      *
      * @return mixed[][]
-     *
-     * @psalm-return array{0: array, 1: array}
+     * @psalm-return array{0: array, 1: array<array<mixed>>}
      */
     public function getParamsAndTypes()
     {

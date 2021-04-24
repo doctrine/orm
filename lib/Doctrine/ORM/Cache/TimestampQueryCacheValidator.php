@@ -48,10 +48,7 @@ class TimestampQueryCacheValidator implements QueryCacheValidator
         return $entry->time + $key->lifetime > microtime(true);
     }
 
-    /**
-     * @return bool
-     */
-    private function regionUpdated(QueryCacheKey $key, QueryCacheEntry $entry)
+    private function regionUpdated(QueryCacheKey $key, QueryCacheEntry $entry): bool
     {
         if ($key->timestampKey === null) {
             return false;

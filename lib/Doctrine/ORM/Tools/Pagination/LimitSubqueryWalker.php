@@ -24,6 +24,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions\IdentityFunction;
+use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
@@ -122,7 +123,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
     /**
      * Validate the AST to ensure that this walker is able to properly manipulate it.
      */
-    private function validate(SelectStatement $AST)
+    private function validate(SelectStatement $AST): void
     {
         // Prevent LimitSubqueryWalker from being used with queries that include
         // a limit, a fetched to-many join, and an order by condition that
@@ -163,7 +164,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
      *
      * @return IdentityFunction|PathExpression
      */
-    private function createSelectExpressionItem(PathExpression $pathExpression)
+    private function createSelectExpressionItem(PathExpression $pathExpression): Node
     {
         if ($pathExpression->type === PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION) {
             $identity = new IdentityFunction('identity');

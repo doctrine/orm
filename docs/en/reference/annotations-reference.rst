@@ -513,7 +513,8 @@ Required attributes:
 
 
 -  **name**: Name of the Index
--  **columns**: Array of columns.
+-  **fields**: Array of fields. Exactly one of **fields**, **columns** is required.
+-  **columns**: Array of columns. Exactly one of **fields**, **columns** is required.
 
 Optional attributes:
 
@@ -530,6 +531,19 @@ Basic example:
     /**
      * @Entity
      * @Table(name="ecommerce_products",indexes={@Index(name="search_idx", columns={"name", "email"})})
+     */
+    class ECommerceProduct
+    {
+    }
+
+Basic example using fields:
+
+.. code-block:: php
+
+    <?php
+    /**
+     * @Entity
+     * @Table(name="ecommerce_products",indexes={@Index(name="search_idx", fields={"name", "email"})})
      */
     class ECommerceProduct
     {
@@ -843,6 +857,11 @@ Example:
 
 @NamedNativeQuery
 ~~~~~~~~~~~~~~~~~
+
+.. note::
+
+    Named Native Queries are deprecated as of version 2.9 and will be removed in ORM 3.0
+
 Is used to specify a native SQL named query.
 The NamedNativeQuery annotation can be applied to an entity or mapped superclass.
 
@@ -1267,7 +1286,8 @@ Required attributes:
 
 
 -  **name**: Name of the Index
--  **columns**: Array of columns.
+-  **fields**: Array of fields. Exactly one of **fields**, **columns** is required.
+-  **columns**: Array of columns. Exactly one of **fields**, **columns** is required.
 
 Optional attributes:
 
@@ -1284,6 +1304,19 @@ Basic example:
     /**
      * @Entity
      * @Table(name="ecommerce_products",uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "email"})})
+     */
+    class ECommerceProduct
+    {
+    }
+
+Basic example using fields:
+
+.. code-block:: php
+
+    <?php
+    /**
+     * @Entity
+     * @Table(name="ecommerce_products",uniqueConstraints={@UniqueConstraint(name="search_idx", fields={"name", "email"})})
      */
     class ECommerceProduct
     {

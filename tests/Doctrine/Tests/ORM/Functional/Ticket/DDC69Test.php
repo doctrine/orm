@@ -5,30 +5,34 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function assert;
 
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
  */
-class AdvancedAssociationTest extends OrmFunctionalTestCase
+class DDC69Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(Lemma::class),
-                    $this->_em->getClassMetadata(Relation::class),
-                    $this->_em->getClassMetadata(RelationType::class),
-                ]
-            );
-        } catch (Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(Lemma::class),
+            $this->_em->getClassMetadata(Relation::class),
+            $this->_em->getClassMetadata(RelationType::class),
+        ]);
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        $this->_schemaTool->dropSchema([
+            $this->_em->getClassMetadata(Lemma::class),
+            $this->_em->getClassMetadata(Relation::class),
+            $this->_em->getClassMetadata(RelationType::class),
+        ]);
     }
 
     public function testIssue(): void
@@ -124,9 +128,8 @@ class Lemma
      */
     private $lemma;
 
-
     /**
-     * @var kateglo\application\utilities\collections\ArrayCollection
+     * @var Collection<int, Relation>
      * @OneToMany(targetEntity="Relation", mappedBy="parent", cascade={"persist"})
      */
     private $relations;
@@ -167,7 +170,10 @@ class Lemma
         }
     }
 
-    public function getRelations(): kateglo\application\utilities\collections\ArrayCollection
+    /**
+     * @psalm-return Collection<int, Relation>
+     */
+    public function getRelations(): Collection
     {
         return $this->relations;
     }
@@ -288,7 +294,7 @@ class RelationType
     private $abbreviation;
 
     /**
-     * @var kateglo\application\utilities\collections\ArrayCollection
+     * @var Collection<int, Relation>
      * @OneToMany(targetEntity="Relation", mappedBy="type", cascade={"persist"})
      */
     private $relations;
@@ -338,7 +344,10 @@ class RelationType
         }
     }
 
-    public function getRelations(): kateglo\application\utilities\collections\ArrayCollection
+    /**
+     * @psalm-return Collection<int, Relation>
+     */
+    public function getRelations(): Collection
     {
         return $this->relations;
     }

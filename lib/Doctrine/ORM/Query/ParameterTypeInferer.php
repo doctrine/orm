@@ -46,7 +46,7 @@ class ParameterTypeInferer
      *
      * @param mixed $value Parameter value.
      *
-     * @return mixed Parameter type constant.
+     * @return int|string Parameter type constant.
      */
     public static function inferType($value)
     {

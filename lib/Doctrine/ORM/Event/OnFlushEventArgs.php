@@ -21,7 +21,6 @@
 namespace Doctrine\ORM\Event;
 
 use Doctrine\Common\EventArgs;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -42,7 +41,7 @@ class OnFlushEventArgs extends EventArgs
     /**
      * Retrieve associated EntityManager.
      *
-     * @return EntityManager
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {

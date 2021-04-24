@@ -30,6 +30,7 @@ use Doctrine\DBAL\Schema\Visitor\DropSchemaSqlCollector;
 use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
@@ -87,11 +88,11 @@ class SchemaTool
     /**
      * Creates the database schema for the given array of ClassMetadata instances.
      *
+     * @psalm-param list<ClassMetadata> $classes
+     *
      * @return void
      *
      * @throws ToolsException
-     *
-     * @psalm-param list<ClassMetadata> $classes
      */
     public function createSchema(array $classes)
     {
@@ -111,9 +112,9 @@ class SchemaTool
      * Gets the list of DDL statements that are required to create the database schema for
      * the given list of ClassMetadata instances.
      *
-     * @return string[] The SQL statements needed to create the schema for the classes.
-     *
      * @psalm-param list<ClassMetadata> $classes
+     *
+     * @return string[] The SQL statements needed to create the schema for the classes.
      */
     public function getCreateSchemaSql(array $classes)
     {
@@ -138,13 +139,56 @@ class SchemaTool
     }
 
     /**
+     * Resolves fields in index mapping to column names
+     *
+     * @param mixed[] $indexData index or unique constraint data
+     *
+     * @return string[] Column names from combined fields and columns mappings
+     */
+    private function getIndexColumns(ClassMetadata $class, array $indexData): array
+    {
+        $columns = [];
+
+        if (
+            isset($indexData['columns'], $indexData['fields'])
+            || (
+                ! isset($indexData['columns'])
+                && ! isset($indexData['fields'])
+            )
+        ) {
+            throw MappingException::invalidIndexConfiguration(
+                $class,
+                $indexData['name'] ?? 'unnamed'
+            );
+        }
+
+        if (isset($indexData['columns'])) {
+            $columns = $indexData['columns'];
+        }
+
+        if (isset($indexData['fields'])) {
+            foreach ($indexData['fields'] as $fieldName) {
+                if ($class->hasField($fieldName)) {
+                    $columns[] = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
+                } elseif ($class->hasAssociation($fieldName)) {
+                    foreach ($class->getAssociationMapping($fieldName)['joinColumns'] as $joinColumn) {
+                        $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+                    }
+                }
+            }
+        }
+
+        return $columns;
+    }
+
+    /**
      * Creates a Schema instance from a given set of metadata classes.
+     *
+     * @psalm-param list<ClassMetadata> $classes
      *
      * @return Schema
      *
      * @throws ORMException
-     *
-     * @psalm-param list<ClassMetadata> $classes
      */
     public function getSchemaFromMetadata(array $classes)
     {
@@ -309,13 +353,18 @@ class SchemaTool
                         $indexData['flags'] = [];
                     }
 
-                    $table->addIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, (array) $indexData['flags'], $indexData['options'] ?? []);
+                    $table->addIndex(
+                        $this->getIndexColumns($class, $indexData),
+                        is_numeric($indexName) ? null : $indexName,
+                        (array) $indexData['flags'],
+                        $indexData['options'] ?? []
+                    );
                 }
             }
 
             if (isset($class->table['uniqueConstraints'])) {
                 foreach ($class->table['uniqueConstraints'] as $indexName => $indexData) {
-                    $uniqIndex = new Index($indexName, $indexData['columns'], true, false, [], $indexData['options'] ?? []);
+                    $uniqIndex = new Index($indexName, $this->getIndexColumns($class, $indexData), true, false, [], $indexData['options'] ?? []);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
                         if ($tableIndex->isFullfilledBy($uniqIndex)) {
@@ -324,7 +373,7 @@ class SchemaTool
                         }
                     }
 
-                    $table->addUniqueIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, $indexData['options'] ?? []);
+                    $table->addUniqueIndex($uniqIndex->getColumns(), is_numeric($indexName) ? null : $indexName, $indexData['options'] ?? []);
                 }
             }
 
@@ -373,12 +422,8 @@ class SchemaTool
     /**
      * Gets a portable column definition as required by the DBAL for the discriminator
      * column of a class.
-     *
-     * @param ClassMetadata $class
-     *
-     * @return void
      */
-    private function addDiscriminatorColumnDefinition($class, Table $table)
+    private function addDiscriminatorColumnDefinition(ClassMetadata $class, Table $table): void
     {
         $discrColumn = $class->discriminatorColumn;
 
@@ -405,12 +450,8 @@ class SchemaTool
     /**
      * Gathers the column definitions as required by the DBAL of all field mappings
      * found in the given class.
-     *
-     * @param ClassMetadata $class
-     *
-     * @return void
      */
-    private function gatherColumns($class, Table $table)
+    private function gatherColumns(ClassMetadata $class, Table $table): void
     {
         $pkColumns = [];
 
@@ -431,7 +472,6 @@ class SchemaTool
      * Creates a column definition as required by the DBAL from an ORM field mapping definition.
      *
      * @param ClassMetadata $class The class that owns the field mapping.
-     *
      * @psalm-param array<string, mixed> $mapping The field mapping.
      */
     private function gatherColumn(
@@ -500,13 +540,13 @@ class SchemaTool
      * Gathers the SQL for properly setting up the relations of the given class.
      * This includes the SQL for foreign key constraints and join tables.
      *
-     * @throws ORMException
-     *
      * @psalm-param array<string, array{
      *                  foreignTableName: string,
      *                  foreignColumns: list<string>
      *              }>                               $addedFks
      * @psalm-param array<string, bool>              $blacklistedFks
+     *
+     * @throws ORMException
      */
     private function gatherRelationsSql(
         ClassMetadata $class,
@@ -614,8 +654,6 @@ class SchemaTool
     /**
      * Gathers columns and fk constraints that are required for one part of relationship.
      *
-     * @throws ORMException
-     *
      * @psalm-param array<string, mixed>             $joinColumns
      * @psalm-param array<string, mixed>             $mapping
      * @psalm-param list<string>                     $primaryKeyColumns
@@ -624,6 +662,8 @@ class SchemaTool
      *                  foreignColumns: list<string>
      *              }>                               $addedFks
      * @psalm-param array<string,bool>               $blacklistedFks
+     *
+     * @throws ORMException
      */
     private function gatherRelationJoinColumns(
         array $joinColumns,
@@ -763,9 +803,9 @@ class SchemaTool
      * In any way when an exception is thrown it is suppressed since drop was
      * issued for all classes of the schema and some probably just don't exist.
      *
-     * @return void
-     *
      * @psalm-param list<ClassMetadata> $classes
+     *
+     * @return void
      */
     public function dropSchema(array $classes)
     {
@@ -815,9 +855,9 @@ class SchemaTool
     /**
      * Gets SQL to drop the tables defined by the passed classes.
      *
-     * @return string[]
-     *
      * @psalm-param list<ClassMetadata> $classes
+     *
+     * @return string[]
      */
     public function getDropSchemaSQL(array $classes)
     {

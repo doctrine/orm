@@ -25,7 +25,6 @@ use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 use function array_key_exists;
 use function array_replace_recursive;
@@ -58,10 +57,9 @@ class ResolveTargetEntityListener implements EventSubscriber
      *
      * @param string $originalEntity
      * @param string $newEntity
+     * @psalm-param array<string, mixed> $mapping
      *
      * @return void
-     *
-     * @psalm-param array<string, mixed> $mapping
      */
     public function addResolveTargetEntity($originalEntity, $newEntity, array $mapping)
     {
@@ -110,12 +108,9 @@ class ResolveTargetEntityListener implements EventSubscriber
     }
 
     /**
-     * @param ClassMetadataInfo $classMetadata
-     * @param mixed[]           $mapping
-     *
-     * @return void
+     * @param mixed[] $mapping
      */
-    private function remapAssociation($classMetadata, $mapping)
+    private function remapAssociation(ClassMetadata $classMetadata, array $mapping): void
     {
         $newMapping              = $this->resolveTargetEntities[$mapping['targetEntity']];
         $newMapping              = array_replace_recursive($mapping, $newMapping);

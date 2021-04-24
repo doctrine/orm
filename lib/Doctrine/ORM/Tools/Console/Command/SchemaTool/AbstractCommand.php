@@ -21,20 +21,18 @@
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\Console\Command\AbstractEntityManagerCommand;
 use Doctrine\ORM\Tools\SchemaTool;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-
-use function assert;
 
 /**
  * Base class for CreateCommand, DropCommand and UpdateCommand.
  *
  * @link    www.doctrine-project.org
  */
-abstract class AbstractCommand extends Command
+abstract class AbstractCommand extends AbstractEntityManagerCommand
 {
     /**
      * @param mixed[] $metadatas
@@ -50,10 +48,7 @@ abstract class AbstractCommand extends Command
     {
         $ui = new SymfonyStyle($input, $output);
 
-        $emHelper = $this->getHelper('em');
-
-        $em = $emHelper->getEntityManager();
-        assert($em instanceof EntityManagerInterface);
+        $em = $this->getEntityManager($input);
 
         $metadatas = $em->getMetadataFactory()->getAllMetadata();
 

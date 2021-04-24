@@ -6,10 +6,15 @@ namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\ToolEvents;
+use Doctrine\Persistence\Mapping\Driver\StaticPHPDriver;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
@@ -277,6 +282,52 @@ class SchemaToolTest extends OrmTestCase
             self::assertSame($foreignColumns, $foreignKey->getForeignColumns());
         }
     }
+
+    public function testIndexesBasedOnFields(): void
+    {
+        $em = $this->getTestEntityManager();
+        $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy());
+
+        $schemaTool = new SchemaTool($em);
+        $metadata   = $em->getClassMetadata(IndexByFieldEntity::class);
+        $schema     = $schemaTool->getSchemaFromMetadata([$metadata]);
+        $table      = $schema->getTable('field_index');
+
+        self::assertEquals(['index', 'field_name'], $table->getIndex('index')->getColumns());
+        self::assertEquals(['index', 'table'], $table->getIndex('uniq')->getColumns());
+    }
+
+    public function testIncorrectIndexesBasedOnFields(): void
+    {
+        $em = $this->getTestEntityManager();
+        $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy());
+
+        $schemaTool    = new SchemaTool($em);
+        $mappingDriver = new StaticPHPDriver([]);
+        $class         = new ClassMetadata(IncorrectIndexByFieldEntity::class);
+
+        $class->initializeReflection(new RuntimeReflectionService());
+        $mappingDriver->loadMetadataForClass(IncorrectIndexByFieldEntity::class, $class);
+
+        $this->expectException(MappingException::class);
+        $schemaTool->getSchemaFromMetadata([$class]);
+    }
+
+    public function testIncorrectUniqueConstraintsBasedOnFields(): void
+    {
+        $em = $this->getTestEntityManager();
+        $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy());
+
+        $schemaTool    = new SchemaTool($em);
+        $mappingDriver = new StaticPHPDriver([]);
+        $class         = new ClassMetadata(IncorrectUniqueConstraintByFieldEntity::class);
+
+        $class->initializeReflection(new RuntimeReflectionService());
+        $mappingDriver->loadMetadataForClass(IncorrectUniqueConstraintByFieldEntity::class, $class);
+
+        $this->expectException(MappingException::class);
+        $schemaTool->getSchemaFromMetadata([$class]);
+    }
 }
 
 /**
@@ -424,4 +475,122 @@ class GH6830Category
      * @OneToMany(targetEntity=GH6830Board::class, mappedBy="category")
      */
     public $boards;
+}
+
+/**
+ * @Entity
+ * @Table(
+ *     name="field_index",
+ *     indexes={
+ *         @Index(name="index", fields={"index", "fieldName"}),
+ *     },
+ *     uniqueConstraints={
+ *         @UniqueConstraint(name="uniq", fields={"index", "table"})
+ *     }
+ * )
+ */
+class IndexByFieldEntity
+{
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
+    public $id;
+
+    /**
+     * @var string
+     * @Column
+     */
+    public $index;
+
+    /**
+     * @var string
+     * @Column
+     */
+    public $table;
+
+    /**
+     * @var string
+     * @Column
+     */
+    public $fieldName;
+}
+
+class IncorrectIndexByFieldEntity
+{
+    /** @var int */
+    public $id;
+
+    /** @var string */
+    public $index;
+
+    /** @var string */
+    public $table;
+
+    /** @var string */
+    public $fieldName;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    {
+        $metadata->mapField(
+            [
+                'id'                 => true,
+                'fieldName'          => 'id',
+            ]
+        );
+
+        $metadata->mapField(['fieldName' => 'index']);
+
+        $metadata->mapField(['fieldName' => 'table']);
+
+        $metadata->mapField(['fieldName' => 'fieldName']);
+
+        $metadata->setPrimaryTable(
+            [
+                'indexes' => [
+                    ['columns' => ['index'], 'fields' => ['fieldName']],
+                ],
+            ]
+        );
+    }
+}
+
+class IncorrectUniqueConstraintByFieldEntity
+{
+    /** @var int */
+    public $id;
+
+    /** @var string */
+    public $index;
+
+    /** @var string */
+    public $table;
+
+    /** @var string */
+    public $fieldName;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    {
+        $metadata->mapField(
+            [
+                'id'                 => true,
+                'fieldName'          => 'id',
+            ]
+        );
+
+        $metadata->mapField(['fieldName' => 'index']);
+
+        $metadata->mapField(['fieldName' => 'table']);
+
+        $metadata->mapField(['fieldName' => 'fieldName']);
+
+        $metadata->setPrimaryTable(
+            [
+                'uniqueConstraints' => [
+                    ['columns' => ['index'], 'fields' => ['fieldName']],
+                ],
+            ]
+        );
+    }
 }

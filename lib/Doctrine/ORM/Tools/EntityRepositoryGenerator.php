@@ -96,11 +96,9 @@ class <className> extends <repositoryName>
     /**
      * Generates the namespace, if class do not have namespace, return empty string instead.
      *
-     * @param string $fullClassName
-     *
-     * @return string $namespace
+     * @psalm-param class-string $fullClassName
      */
-    private function getClassNamespace($fullClassName)
+    private function getClassNamespace(string $fullClassName): string
     {
         return substr($fullClassName, 0, strrpos($fullClassName, '\\'));
     }
@@ -108,11 +106,9 @@ class <className> extends <repositoryName>
     /**
      * Generates the class name
      *
-     * @param string $fullClassName
-     *
-     * @return string
+     * @psalm-param class-string $fullClassName
      */
-    private function generateClassName($fullClassName)
+    private function generateClassName(string $fullClassName): string
     {
         $namespace = $this->getClassNamespace($fullClassName);
 
@@ -128,23 +124,16 @@ class <className> extends <repositoryName>
     /**
      * Generates the namespace statement, if class do not have namespace, return empty string instead.
      *
-     * @param string $fullClassName The full repository class name.
-     *
-     * @return string $namespace
+     * @psalm-param class-string $fullClassName The full repository class name.
      */
-    private function generateEntityRepositoryNamespace($fullClassName)
+    private function generateEntityRepositoryNamespace(string $fullClassName): string
     {
         $namespace = $this->getClassNamespace($fullClassName);
 
         return $namespace ? 'namespace ' . $namespace . ';' : '';
     }
 
-    /**
-     * @param string $fullClassName
-     *
-     * @return string $repositoryName
-     */
-    private function generateEntityRepositoryName($fullClassName)
+    private function generateEntityRepositoryName(string $fullClassName): string
     {
         $namespace = $this->getClassNamespace($fullClassName);
 
@@ -184,7 +173,7 @@ class <className> extends <repositoryName>
     /**
      * @param string $repositoryName
      *
-     * @return self
+     * @return static
      */
     public function setDefaultRepositoryName($repositoryName)
     {

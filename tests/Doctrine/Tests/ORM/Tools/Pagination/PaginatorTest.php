@@ -62,19 +62,14 @@ class PaginatorTest extends OrmTestCase
         $query->setMaxResults(1);
         $paginator = (new Paginator($query, true))->setUseOutputWalkers(false);
 
-        $this->connection->expects($this->exactly(3))->method('executeQuery');
-
-        $this->connection->expects($this->at(0))
+        $this->connection
+            ->expects($this->exactly(3))
             ->method('executeQuery')
-            ->with($this->anything(), [$paramInWhere]);
-
-        $this->connection->expects($this->at(1))
-            ->method('executeQuery')
-            ->with($this->anything(), [$paramInWhere]);
-
-        $this->connection->expects($this->at(2))
-            ->method('executeQuery')
-            ->with($this->anything(), [$paramInSubSelect, $paramInWhere, $returnedIds]);
+            ->withConsecutive(
+                [$this->anything(), [$paramInWhere]],
+                [$this->anything(), [$paramInWhere]],
+                [$this->anything(), [$paramInSubSelect, $paramInWhere, $returnedIds]]
+            );
 
         $paginator->count();
         $paginator->getIterator();

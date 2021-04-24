@@ -194,6 +194,8 @@ class StatisticsCacheLogger implements CacheLogger
      * Clear region statistics
      *
      * @param string $regionName The name of the cache region.
+     *
+     * @return void
      */
     public function clearRegionStats($regionName)
     {
@@ -204,6 +206,8 @@ class StatisticsCacheLogger implements CacheLogger
 
     /**
      * Clear all statistics
+     *
+     * @return void
      */
     public function clearStats()
     {
