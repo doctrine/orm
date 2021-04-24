@@ -89,26 +89,6 @@ class IdentityMap
     }
 
     /**
-     * Checks whether an identifier hash exists in the identity map.
-     *
-     * @ignore
-     */
-    public function containsIdHash(string $idHash, string $rootClassName): bool
-    {
-        return isset($this->identityMap[$rootClassName][$idHash]);
-    }
-
-    /**
-     * Gets an entity in the identity map by its identifier hash.
-     *
-     * @ignore
-     */
-    public function getByIdHash(string $idHash, string $rootClassName): object
-    {
-        return $this->identityMap[$rootClassName][$idHash];
-    }
-
-    /**
      * Gets the identity map of the UnitOfWork.
      *
      * @psalm-return array<class-string, array<string, object|null>>

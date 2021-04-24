@@ -1577,23 +1577,6 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * INTERNAL:
-     * Gets an entity in the identity map by its identifier hash.
-     *
-     * @param string $idHash
-     * @param string $rootClassName
-     *
-     * @return object
-     *
-     * @ignore
-     * @deprecated
-     */
-    public function getByIdHash($idHash, $rootClassName)
-    {
-        return $this->identityMap->getByIdHash($idHash, $rootClassName);
-    }
-
-    /**
-     * INTERNAL:
      * Tries to get an entity by its identifier hash. If no entity is found for
      * the given hash, FALSE is returned.
      *
@@ -1615,22 +1598,6 @@ class UnitOfWork implements PropertyChangedListener
     public function isInIdentityMap(object $entity): bool
     {
         return $this->identityMap->isInIdentityMap($entity);
-    }
-
-    /**
-     * INTERNAL:
-     * Checks whether an identifier hash exists in the identity map.
-     *
-     * @param string $idHash
-     * @param string $rootClassName
-     *
-     * @return bool
-     *
-     * @ignore
-     */
-    public function containsIdHash($idHash, $rootClassName)
-    {
-        return $this->identityMap->containsIdHash($idHash, $rootClassName);
     }
 
     /**
