@@ -36,6 +36,7 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
+use Doctrine\ORM\Internal\IdentityMap;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
@@ -318,6 +319,9 @@ class UnitOfWork implements PropertyChangedListener
     /** @var ReflectionPropertiesGetter */
     private $reflectionPropertiesGetter;
 
+    /** @var IdentityMap */
+    private $identityMapObject;
+
     /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      */
@@ -330,6 +334,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->identifierFlattener        = new IdentifierFlattener($this, $em->getMetadataFactory());
         $this->hydrationCompleteHandler   = new HydrationCompleteHandler($this->listenersInvoker, $em);
         $this->reflectionPropertiesGetter = new ReflectionPropertiesGetter(new RuntimeReflectionService());
+        $this->identityMapObject          = new IdentityMap($this->em);
     }
 
     /**
@@ -839,7 +844,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->computeScheduleInsertsChangeSets();
 
         // Compute changes for other MANAGED entities. Change tracking policies take effect here.
-        foreach ($this->identityMap as $className => $entities) {
+        foreach ($this->identityMapObject->getIdentityMap() as $className => $entities) {
             $class = $this->em->getClassMetadata($className);
 
             // Skip class if instances are read-only
@@ -1460,10 +1465,10 @@ class UnitOfWork implements PropertyChangedListener
 
         if (isset($this->entityInsertions[$oid])) {
             if ($this->isInIdentityMap($entity)) {
-                $this->removeFromIdentityMap($entity);
+                $this->identityMapObject->removeFromIdentityMap($entity);
             }
 
-            unset($this->entityInsertions[$oid], $this->entityStates[$oid]);
+            unset($this->entityInsertions[$oid], $this->entityStates[$oid], $this->readOnlyObjects[$oid]);
 
             return; // entity has not been persisted yet, so nothing more to do.
         }
@@ -1472,9 +1477,9 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        $this->removeFromIdentityMap($entity);
+        $this->identityMapObject->removeFromIdentityMap($entity);
 
-        unset($this->entityUpdates[$oid]);
+        unset($this->entityUpdates[$oid], $this->readOnlyObjects[$oid]);
 
         if (! isset($this->entityDeletions[$oid])) {
             $this->entityDeletions[$oid] = $entity;
@@ -1512,39 +1517,11 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
-     * Registers an entity in the identity map.
-     * Note that entities in a hierarchy are registered with the class name of
-     * the root entity.
-     *
-     * @param object $entity The entity to register.
-     *
-     * @return bool TRUE if the registration was successful, FALSE if the identity of
-     * the entity in question is already managed.
-     *
-     * @throws ORMInvalidArgumentException
-     *
-     * @ignore
+     * @deprecated
      */
     public function addToIdentityMap($entity)
     {
-        $classMetadata = $this->em->getClassMetadata(get_class($entity));
-        $identifier    = $this->entityIdentifiers[spl_object_hash($entity)];
-
-        if (empty($identifier) || in_array(null, $identifier, true)) {
-            throw ORMInvalidArgumentException::entityWithoutIdentity($classMetadata->name, $entity);
-        }
-
-        $idHash    = implode(' ', $identifier);
-        $className = $classMetadata->rootEntityName;
-
-        if (isset($this->identityMap[$className][$idHash])) {
-            return false;
-        }
-
-        $this->identityMap[$className][$idHash] = $entity;
-
-        return true;
+        $this->identityMapObject->addToIdentityMap($entity);
     }
 
     /**
@@ -1630,43 +1607,6 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * INTERNAL:
-     * Removes an entity from the identity map. This effectively detaches the
-     * entity from the persistence management of Doctrine.
-     *
-     * @param object $entity
-     *
-     * @return bool
-     *
-     * @throws ORMInvalidArgumentException
-     *
-     * @ignore
-     */
-    public function removeFromIdentityMap($entity)
-    {
-        $oid           = spl_object_hash($entity);
-        $classMetadata = $this->em->getClassMetadata(get_class($entity));
-        $idHash        = implode(' ', $this->entityIdentifiers[$oid]);
-
-        if ($idHash === '') {
-            throw ORMInvalidArgumentException::entityHasNoIdentity($entity, 'remove from identity map');
-        }
-
-        $className = $classMetadata->rootEntityName;
-
-        if (isset($this->identityMap[$className][$idHash])) {
-            unset($this->identityMap[$className][$idHash]);
-            unset($this->readOnlyObjects[$oid]);
-
-            //$this->entityStates[$oid] = self::STATE_DETACHED;
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * INTERNAL:
      * Gets an entity in the identity map by its identifier hash.
      *
      * @param string $idHash
@@ -1675,10 +1615,11 @@ class UnitOfWork implements PropertyChangedListener
      * @return object
      *
      * @ignore
+     * @deprecated
      */
     public function getByIdHash($idHash, $rootClassName)
     {
-        return $this->identityMap[$rootClassName][$idHash];
+        return $this->identityMapObject->getByIdHash($idHash, $rootClassName);
     }
 
     /**
@@ -1695,9 +1636,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function tryGetByIdHash($idHash, $rootClassName)
     {
-        $stringIdHash = (string) $idHash;
-
-        return $this->identityMap[$rootClassName][$stringIdHash] ?? false;
+        return $this->identityMapObject->tryGetByIdHash($idHash, $rootClassName);
     }
 
     /**
@@ -1709,16 +1648,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function isInIdentityMap($entity)
     {
-        $oid = spl_object_hash($entity);
-
-        if (empty($this->entityIdentifiers[$oid])) {
-            return false;
-        }
-
-        $classMetadata = $this->em->getClassMetadata(get_class($entity));
-        $idHash        = implode(' ', $this->entityIdentifiers[$oid]);
-
-        return isset($this->identityMap[$classMetadata->rootEntityName][$idHash]);
+        return $this->identityMapObject->isInIdentityMap($entity);
     }
 
     /**
@@ -1734,7 +1664,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function containsIdHash($idHash, $rootClassName)
     {
-        return isset($this->identityMap[$rootClassName][$idHash]);
+        return $this->identityMapObject->containsIdHash($idHash, $rootClassName);
     }
 
     /**
@@ -2126,7 +2056,7 @@ class UnitOfWork implements PropertyChangedListener
         switch ($this->getEntityState($entity, self::STATE_DETACHED)) {
             case self::STATE_MANAGED:
                 if ($this->isInIdentityMap($entity)) {
-                    $this->removeFromIdentityMap($entity);
+                    $this->identityMapObject->removeFromIdentityMap($entity);
                 }
 
                 unset(
@@ -2135,7 +2065,8 @@ class UnitOfWork implements PropertyChangedListener
                     $this->entityDeletions[$oid],
                     $this->entityIdentifiers[$oid],
                     $this->entityStates[$oid],
-                    $this->originalEntityData[$oid]
+                    $this->originalEntityData[$oid],
+                    $this->readOnlyObjects[$oid]
                 );
                 break;
             case self::STATE_NEW:
@@ -2978,7 +2909,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getIdentityMap()
     {
-        return $this->identityMap;
+        return $this->identityMapObject->getIdentityMap();
     }
 
     /**
@@ -3078,9 +3009,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function tryGetById($id, $rootClassName)
     {
-        $idHash = implode(' ', (array) $id);
-
-        return $this->identityMap[$rootClassName][$idHash] ?? false;
+        return $this->identityMapObject->tryGetById($id, $rootClassName);
     }
 
     /**
@@ -3117,9 +3046,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function size()
     {
-        $countArray = array_map('count', $this->identityMap);
-
-        return array_sum($countArray);
+        return $this->identityMapObject->size();
     }
 
     /**
