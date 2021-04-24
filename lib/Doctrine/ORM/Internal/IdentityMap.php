@@ -214,10 +214,11 @@ class IdentityMap
     }
 
     /**
-     * Clears the identioty map.
+     * Clears the identity map.
      */
     public function clear(): void
     {
-        $this->identityMap = [];
+        $this->identityMap       =
+        $this->entityIdentifiers = [];
     }
 }

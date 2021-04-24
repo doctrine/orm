@@ -456,19 +456,6 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @param object $entity
-     *
-     * @dataProvider entitiesWithValidIdentifiersProvider
-     */
-    public function testAddToIdentityMapValidIdentifiers($entity, string $idHash): void
-    {
-        $this->_unitOfWork->persist($entity);
-        $this->_unitOfWork->addToIdentityMap($entity);
-
-        self::assertSame($entity, $this->_unitOfWork->getByIdHash($idHash, get_class($entity)));
-    }
-
-    /**
      * @psalm-return array<string, array{object, string}>
      */
     public function entitiesWithValidIdentifiersProvider()
