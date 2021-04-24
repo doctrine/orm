@@ -63,9 +63,9 @@ class IdentityMap
             throw ORMInvalidArgumentException::entityWithoutIdentity($classMetadata->name, $entity);
         }
 
-        $idHash                                 = implode(' ', $identifier);
-        $className                              = $classMetadata->rootEntityName;
-        $this->identityMap[$className][$idHash] = $entity;
+        $idHash                                      = implode(' ', $identifier);
+        $rootEntityName                              = $classMetadata->rootEntityName;
+        $this->identityMap[$rootEntityName][$idHash] = $entity;
     }
 
     /**
@@ -132,10 +132,10 @@ class IdentityMap
             throw ORMInvalidArgumentException::entityHasNoIdentity($entity, 'remove from identity map');
         }
 
-        $className = $classMetadata->rootEntityName;
+        $rootEntityName = $classMetadata->rootEntityName;
 
-        if (isset($this->identityMap[$className][$idHash])) {
-            unset($this->identityMap[$className][$idHash]);
+        if (isset($this->identityMap[$rootEntityName][$idHash])) {
+            unset($this->identityMap[$rootEntityName][$idHash]);
         }
     }
 
@@ -199,7 +199,6 @@ class IdentityMap
      */
     public function clear(): void
     {
-        $this->identityMap       =
-        $this->entityIdentifiers = [];
+        $this->identityMap = [];
     }
 }

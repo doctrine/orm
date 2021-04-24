@@ -122,17 +122,6 @@ class UnitOfWork implements PropertyChangedListener
     public const HINT_DEFEREAGERLOAD = 'deferEagerLoad';
 
     /**
-     * The identity map that holds references to all managed entities that have
-     * an identity. The entities are grouped by their class name.
-     * Since all classes in a hierarchy must share the same identifier set,
-     * we always take the root class name of the hierarchy.
-     *
-     * @var mixed[]
-     * @psalm-var array<class-string, array<string, object|null>>
-     */
-    private $identityMap = [];
-
-    /**
      * Map of all identifiers of managed entities.
      * Keys are object ids (spl_object_hash).
      *
@@ -1132,7 +1121,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->entityStates[$oid]                 = self::STATE_MANAGED;
                 $this->originalEntityData[$oid][$idField] = $idValue;
 
-                $this->addToIdentityMap($entity);
+                $this->identityMapObject->addToIdentityMap($entity);
             }
         } else {
             foreach ($insertionsForClass as $oid => $entity) {
@@ -1173,7 +1162,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->entityStates[$oid]      = self::STATE_MANAGED;
         $this->entityIdentifiers[$oid] = $identifier;
 
-        $this->addToIdentityMap($entity);
+        $this->identityMapObject->addToIdentityMap($entity);
     }
 
     /**
@@ -1349,7 +1338,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->entityInsertions[$oid] = $entity;
 
         if (isset($this->entityIdentifiers[$oid])) {
-            $this->addToIdentityMap($entity);
+            $this->identityMapObject->addToIdentityMap($entity);
         }
 
         if ($entity instanceof NotifyPropertyChanged) {
@@ -1641,12 +1630,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Checks whether an entity is registered in the identity map of this UnitOfWork.
-     *
-     * @param object $entity
-     *
-     * @return bool
      */
-    public function isInIdentityMap($entity)
+    public function isInIdentityMap(object $entity): bool
     {
         return $this->identityMapObject->isInIdentityMap($entity);
     }
@@ -1727,7 +1712,7 @@ class UnitOfWork implements PropertyChangedListener
             case self::STATE_REMOVED:
                 // Entity becomes managed again
                 unset($this->entityDeletions[$oid]);
-                $this->addToIdentityMap($entity);
+                $this->identityMapObject->addToIdentityMap($entity);
 
                 $this->entityStates[$oid] = self::STATE_MANAGED;
 
@@ -3135,7 +3120,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->entityStates[$oid]       = self::STATE_MANAGED;
         $this->originalEntityData[$oid] = $data;
 
-        $this->addToIdentityMap($entity);
+        $this->identityMapObject->addToIdentityMap($entity);
 
         if ($entity instanceof NotifyPropertyChanged && ( ! $entity instanceof Proxy || $entity->__isInitialized())) {
             $entity->addPropertyChangedListener($this);
