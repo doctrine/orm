@@ -18,7 +18,7 @@ final class ConnectionFromManagerProvider implements ConnectionProvider
 
     public function getDefaultConnection(): Connection
     {
-        return $this->entityManagerProvider->getManager('default')->getConnection();
+        return $this->entityManagerProvider->getDefaultManager()->getConnection();
     }
 
     public function getConnection(string $name): Connection

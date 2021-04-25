@@ -10,15 +10,24 @@ final class SingleManagerProvider implements EntityManagerProvider
     /** @var EntityManagerInterface */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    /** @var string */
+    private $defaultManagerName;
+
+    public function __construct(EntityManagerInterface $entityManager, string $defaultManagerName = 'default')
     {
-        $this->entityManager = $entityManager;
+        $this->entityManager      = $entityManager;
+        $this->defaultManagerName = $defaultManagerName;
     }
 
-    public function getManager(string $name = 'default'): EntityManagerInterface
+    public function getDefaultManager(): EntityManagerInterface
     {
-        if ($name !== 'default') {
-            throw UnknownManagerException::unknownManager($name, ['default']);
+        return $this->entityManager;
+    }
+
+    public function getManager(string $name): EntityManagerInterface
+    {
+        if ($name !== $this->defaultManagerName) {
+            throw UnknownManagerException::unknownManager($name, [$this->defaultManagerName]);
         }
 
         return $this->entityManager;
