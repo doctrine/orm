@@ -11,18 +11,14 @@ final class ConnectionFromManagerProvider implements ConnectionProvider
     /** @var EntityManagerProvider */
     private $entityManagerProvider;
 
-    /** @var string */
-    private $defaultManagerName;
-
-    public function __construct(EntityManagerProvider $entityManagerProvider, $defaultManagerName = 'default')
+    public function __construct(EntityManagerProvider $entityManagerProvider)
     {
         $this->entityManagerProvider = $entityManagerProvider;
-        $this->defaultManagerName    = $defaultManagerName;
     }
 
     public function getDefaultConnection(): Connection
     {
-        return $this->entityManagerProvider->getManager($this->defaultManagerName)->getConnection();
+        return $this->entityManagerProvider->getDefaultManager()->getConnection();
     }
 
     public function getConnection(string $name): Connection
