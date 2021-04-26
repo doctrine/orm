@@ -2,6 +2,7 @@
 
 namespace Doctrine\ORM\Internal;
 
+use Countable;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
@@ -11,16 +12,15 @@ use function array_sum;
 use function get_class;
 use function implode;
 use function in_array;
-use function spl_object_hash;
 
-class IdentityMap
+class IdentityMap implements Countable
 {
     /** @var EntityManagerInterface */
-    private $em;
+    private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->em = $entityManager;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -48,6 +48,29 @@ class IdentityMap
         $this->entityIdentifiers[$oid] = $identifier;
     }
 
+    /**
+     * Clears the identity map.
+     */
+    public function clear(): void
+    {
+        $this->identityMap       =
+        $this->entityIdentifiers = [];
+    }
+
+    /**
+     * Calculates the size of the UnitOfWork. The size of the UnitOfWork is the
+     * number of entities in the identity map.
+     */
+    public function count(): int
+    {
+        $countArray = array_map('count', $this->identityMap);
+
+        return array_sum($countArray);
+    }
+
+    /**
+     * @return mixed|mixed[]
+     */
     public function getEntityIdentifier(string $oid)
     {
         return $this->entityIdentifiers[$oid];
@@ -55,7 +78,7 @@ class IdentityMap
 
     public function hasEntityIdentifier(string $oid): bool
     {
-        return isset($this->entityIdentifiers[$oid]);
+        return isset($this->entityIdentifiers[$oid]) && ! empty($this->entityIdentifiers[$oid]);
     }
 
     public function unsetEntityIdentifier(string $oid): void
@@ -76,16 +99,15 @@ class IdentityMap
      */
     public function addToIdentityMap(object $entity): void
     {
+        $oid           = ObjectIdFetcher::fetchObjectId($entity);
         $classMetadata = $this->getClassMetadata($entity);
-        $identifier    = $this->getEntityIdentifier(spl_object_hash($entity));
+        $identifier    = $this->getEntityIdentifier($oid);
 
         if (empty($identifier) || in_array(null, $identifier, true)) {
             throw ORMInvalidArgumentException::entityWithoutIdentity($classMetadata->name, $entity);
         }
 
-        $idHash                                      = implode(' ', $identifier);
-        $rootEntityName                              = $classMetadata->rootEntityName;
-        $this->identityMap[$rootEntityName][$idHash] = $entity;
+        $this->identityMap[$classMetadata->rootEntityName][$this->getIdHash($oid)] = $entity;
     }
 
     /**
@@ -103,14 +125,14 @@ class IdentityMap
      */
     public function isInIdentityMap(object $entity): bool
     {
-        $oid = spl_object_hash($entity);
+        $oid = ObjectIdFetcher::fetchObjectId($entity);
 
-        if (empty($this->entityIdentifiers[$oid])) {
+        if (! $this->hasEntityIdentifier($oid)) {
             return false;
         }
 
         $classMetadata = $this->getClassMetadata($entity);
-        $idHash        = implode(' ', $this->entityIdentifiers[$oid]);
+        $idHash        = $this->getIdHash($oid);
 
         return isset($this->identityMap[$classMetadata->rootEntityName][$idHash]);
     }
@@ -124,28 +146,24 @@ class IdentityMap
      */
     public function removeFromIdentityMap(object $entity): void
     {
-        $oid           = spl_object_hash($entity);
         $classMetadata = $this->getClassMetadata($entity);
-        $idHash        = implode(' ', $this->entityIdentifiers[$oid]);
+        $idHash        = $this->getIdHash(ObjectIdFetcher::fetchObjectId($entity));
 
         if ($idHash === '') {
             throw ORMInvalidArgumentException::entityHasNoIdentity($entity, 'remove from identity map');
         }
 
-        $rootEntityName = $classMetadata->rootEntityName;
-
-        unset($this->identityMap[$rootEntityName][$idHash]);
+        unset($this->identityMap[$classMetadata->rootEntityName][$idHash]);
     }
 
     /**
-     * Calculates the size of the UnitOfWork. The size of the UnitOfWork is the
-     * number of entities in the identity map.
+     * @deprecated
+     *
+     * @use self::count()
      */
     public function size(): int
     {
-        $countArray = array_map('count', $this->identityMap);
-
-        return array_sum($countArray);
+        return $this->count();
     }
 
     /**
@@ -189,15 +207,11 @@ class IdentityMap
 
     protected function getClassMetadata(object $entity): ClassMetadata
     {
-        return $this->em->getClassMetadata(get_class($entity));
+        return $this->entityManager->getClassMetadata(get_class($entity));
     }
 
-    /**
-     * Clears the identity map.
-     */
-    public function clear(): void
+    protected function getIdHash(string $oid): string
     {
-        $this->identityMap       =
-        $this->entityIdentifiers = [];
+        return implode(' ', $this->entityIdentifiers[$oid]);
     }
 }
