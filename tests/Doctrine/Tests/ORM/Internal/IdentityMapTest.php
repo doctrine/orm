@@ -9,8 +9,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-use function get_class;
-use function implode;
+use function array_keys;
 
 class IdentityMapTest extends TestCase
 {
@@ -28,8 +27,9 @@ class IdentityMapTest extends TestCase
 
         $this->entityManagerMock = $this->createMock(EntityManagerInterface::class);
 
-        $entityInfo = ['Foo' => ['size' => 3], 'Bar' => ['size' => 2], 'Baz' => ['size' => 2, 'rootEntityName' => 'Bar']];
-        foreach ($entityInfo as $className => $parameters) {
+        $entityConfig = ['Foo' => ['size' => 3], 'Bar' => ['size' => 2], 'Baz' => ['size' => 2, 'rootEntityName' => 'Bar']];
+
+        foreach ($entityConfig as $className => $parameters) {
             $classMetadata                 = $this->createMock(ClassMetadata::class);
             $classMetadata->name           = $className;
             $classMetadata->rootEntityName = $parameters['rootEntityName'] ?? $className;
@@ -42,25 +42,30 @@ class IdentityMapTest extends TestCase
                 $entity->rootEntityName = $classMetadata->rootEntityName;
                 $entity->identifier     = [$entity->name . '_Identifier'];
 
-                $this->entities[$entity->name] = $entity;
+                $this->entities[$className][] = $entity;
             }
         }
 
-        foreach (array_keys($this->entities) as $className) {
-            $this->entityManagerMock->expects($this->atLeastOnce())->method('getClassMetadata')->with($className)->willReturnMap([$className, $this->entitiesClassMetadata[$className]]);
+        $returnMap = [];
+        foreach (array_keys($entityConfig) as $className) {
+            $returnMap[] = [$className, $this->entitiesClassMetadata[$className]];
         }
+
+        $this->entityManagerMock->method('getClassMetadata')->willReturnMap($returnMap);
     }
 
     public function testIdentityMapAddRemove(): void
     {
         $identityMap = new IdentityMap($this->entityManagerMock);
-        foreach ($this->entities as $entity) {
-            $oid = ObjectIdFetcher::fetchObjectId($entity);
-            $identityMap->addEntityIdentifier($oid, $entity->identifier);
-            $this->assertTrue($identityMap->hasEntityIdentifier($oid));
+        foreach ($this->entities as $entities) {
+            foreach ($entities as $entity) {
+                $oid = ObjectIdFetcher::fetchObjectId($entity);
+                $identityMap->addEntityIdentifier($oid, $entity->identifier);
+                $this->assertTrue($identityMap->hasEntityIdentifier($oid));
 
-            $identityMap->addToIdentityMap($entity);
-            $this->assertTrue($identityMap->isInIdentityMap($entity));
+                $identityMap->addToIdentityMap($entity);
+                $this->assertTrue($identityMap->isInIdentityMap($entity));
+            }
         }
     }
 }
