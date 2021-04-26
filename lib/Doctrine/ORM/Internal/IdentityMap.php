@@ -77,7 +77,7 @@ class IdentityMap
     public function addToIdentityMap(object $entity): void
     {
         $classMetadata = $this->getClassMetadata($entity);
-        $identifier    = $this->entityIdentifiers[spl_object_hash($entity)];
+        $identifier    = $this->getEntityIdentifier(spl_object_hash($entity));
 
         if (empty($identifier) || in_array(null, $identifier, true)) {
             throw ORMInvalidArgumentException::entityWithoutIdentity($classMetadata->name, $entity);
@@ -135,7 +135,6 @@ class IdentityMap
         $rootEntityName = $classMetadata->rootEntityName;
 
         unset($this->identityMap[$rootEntityName][$idHash]);
-        $this->unsetEntityIdentifier($oid);
     }
 
     /**
