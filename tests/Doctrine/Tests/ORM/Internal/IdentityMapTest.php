@@ -36,13 +36,14 @@ class IdentityMapTest extends TestCase
 
             $this->entitiesClassMetadata[$className] = $classMetadata;
 
-            for ($i = 0; $i < $parameters['size']; $i++) {
-                $entity                 = $this->getMockBuilder(stdClass::class)->setMockClassName($className)->getMock();
-                $entity->name           = $classMetadata->name;
-                $entity->rootEntityName = $classMetadata->rootEntityName;
-                $entity->identifier     = [$entity->name . '_Identifier'];
+            for ($i = 1; $i <= $parameters['size']; $i++) {
 
-                $this->entities[$className][] = $entity;
+                $entity                 = $this->getMockBuilder(stdClass::class)->setMockClassName($className)->getMock();
+                $entity->name           = implode('_', [$classMetadata->name, 'Entity', $i]);
+                $entity->rootEntityName = $classMetadata->rootEntityName;
+                $entity->identifier     = [implode('_', [$className, 'Identifier', $i])];
+
+                $this->entities[$className][$entity->name] = $entity;
             }
         }
 
@@ -64,6 +65,35 @@ class IdentityMapTest extends TestCase
                 $this->assertTrue($identityMap->hasEntityIdentifier($oid));
 
                 $identityMap->addToIdentityMap($entity);
+                $this->assertTrue($identityMap->isInIdentityMap($entity));
+            }
+        }
+
+        //Removing regular entity
+        $barEntity2 = $this->entities['Bar']['Bar_Entity_2'];
+        unset($this->entities['Bar']['Bar_Entity_2']);
+        $identityMap->removeFromIdentityMap($barEntity2);
+        $this->assertFalse($identityMap->isInIdentityMap($barEntity2));
+        $this->assertEntitiesInIdentityMap($identityMap);
+        $identityMap->unsetEntityIdentifier(ObjectIdFetcher::fetchObjectId($barEntity2));
+        $this->assertFalse($identityMap->hasEntityIdentifier(ObjectIdFetcher::fetchObjectId($barEntity2)));
+
+        //Removing an entity that has parent entity
+        $barEntity2 = $this->entities['Baz']['Baz_Entity_1'];
+        unset($this->entities['Baz']['Baz_Entity_1']);
+        $identityMap->removeFromIdentityMap($barEntity2);
+        $this->assertFalse($identityMap->isInIdentityMap($barEntity2));
+        $this->assertEntitiesInIdentityMap($identityMap);
+        $identityMap->unsetEntityIdentifier(ObjectIdFetcher::fetchObjectId($barEntity2));
+        $this->assertFalse($identityMap->hasEntityIdentifier(ObjectIdFetcher::fetchObjectId($barEntity2)));
+    }
+
+    private function assertEntitiesInIdentityMap(IdentityMap $identityMap): void
+    {
+        foreach ($this->entities as $entities) {
+            foreach ($entities as $entity) {
+                $oid = ObjectIdFetcher::fetchObjectId($entity);
+                $this->assertTrue($identityMap->hasEntityIdentifier($oid));
                 $this->assertTrue($identityMap->isInIdentityMap($entity));
             }
         }
