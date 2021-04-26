@@ -6,10 +6,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\IdentityMap;
 use Doctrine\ORM\Internal\ObjectIdFetcher;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\ORMInvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
 use function array_keys;
+use function get_class;
+use function implode;
 
 class IdentityMapTest extends TestCase
 {
@@ -37,7 +40,6 @@ class IdentityMapTest extends TestCase
             $this->entitiesClassMetadata[$className] = $classMetadata;
 
             for ($i = 1; $i <= $parameters['size']; $i++) {
-
                 $entity                 = $this->getMockBuilder(stdClass::class)->setMockClassName($className)->getMock();
                 $entity->name           = implode('_', [$classMetadata->name, 'Entity', $i]);
                 $entity->rootEntityName = $classMetadata->rootEntityName;
@@ -86,6 +88,44 @@ class IdentityMapTest extends TestCase
         $this->assertEntitiesInIdentityMap($identityMap);
         $identityMap->unsetEntityIdentifier(ObjectIdFetcher::fetchObjectId($barEntity2));
         $this->assertFalse($identityMap->hasEntityIdentifier(ObjectIdFetcher::fetchObjectId($barEntity2)));
+    }
+
+    public function testFailAddToIdentityMap(): void
+    {
+        $entity = new \StdClass();
+        $this->expectException(ORMInvalidArgumentException::class);
+        $entityManagerMock = $this->createMock(EntityManagerInterface::class);
+        $entityManagerMock->expects($this->atLeastOnce())->method('getClassMetadata')->with(get_class($entity))->willReturn($this->createMock(ClassMetadata::class));
+        $identityMap = new IdentityMap($entityManagerMock);
+        $identityMap->addToIdentityMap($entity);
+    }
+
+    public function testCheckingEntitiesInIdentityMap(): void
+    {
+        $entity            = new \StdClass();
+        $entityManagerMock = $this->createMock(EntityManagerInterface::class);
+        $entityManagerMock->expects($this->atLeastOnce())->method('getClassMetadata')->with(get_class($entity))->willReturn($this->createMock(ClassMetadata::class));
+        $identityMap = new IdentityMap($entityManagerMock);
+        $this->assertFalse($identityMap->isInIdentityMap($entity));
+        $identityMap->addEntityIdentifier(ObjectIdFetcher::fetchObjectId($entity), ['identifier']);
+        $identityMap->addToIdentityMap($entity);
+        $this->assertTrue($identityMap->isInIdentityMap($entity));
+    }
+
+    public function testClearingIdentityMap(): void
+    {
+        $identityMap = new IdentityMap($this->entityManagerMock);
+        foreach ($this->entities as $entities) {
+            foreach ($entities as $entity) {
+                $oid = ObjectIdFetcher::fetchObjectId($entity);
+                $identityMap->addEntityIdentifier($oid, $entity->identifier);
+                $identityMap->addToIdentityMap($entity);
+            }
+        }
+
+        $identityMap->clear();
+
+        $this->assertEmpty($identityMap);
     }
 
     private function assertEntitiesInIdentityMap(IdentityMap $identityMap): void

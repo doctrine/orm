@@ -73,7 +73,7 @@ class IdentityMap implements Countable
      */
     public function getEntityIdentifier(string $oid)
     {
-        return $this->entityIdentifiers[$oid];
+        return $this->entityIdentifiers[$oid] ?? null;
     }
 
     public function hasEntityIdentifier(string $oid): bool
