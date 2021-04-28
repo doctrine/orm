@@ -559,10 +559,35 @@ use function sprintf;
     /**
      * Clears the EntityManager. All entities that are currently managed
      * by this EntityManager become detached.
+     *
+     * @param string|null $entityName if given, only entities of this type will get detached
+     *
+     * @return void
+     *
+     * @throws ORMInvalidArgumentException If a non-null non-string value is given.
+     * @throws MappingException            If a $entityName is given, but that entity is not
+     *                                     found in the mappings.
      */
-    public function clear($objectName = null): void
+    public function clear($entityName = null)
     {
-        $this->unitOfWork->clear();
+        if ($entityName !== null && ! is_string($entityName)) {
+            throw ORMInvalidArgumentException::invalidEntityName($entityName);
+        }
+
+        if ($entityName !== null) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8460',
+                'Calling %s() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
+                __METHOD__
+            );
+        }
+
+        $this->unitOfWork->clear(
+            $entityName === null
+                ? null
+                : $this->metadataFactory->getMetadataFor($entityName)->getName()
+        );
     }
 
     /**

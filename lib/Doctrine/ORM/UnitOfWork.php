@@ -2371,29 +2371,40 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Clears the UnitOfWork.
+     *
+     * @param string|null $entityName if given, only entities of this type will get detached.
+     *
+     * @return void
+     *
+     * @throws ORMInvalidArgumentException if an invalid entity name is given.
      */
-    public function clear(): void
+    public function clear($entityName = null)
     {
-        $this->originalEntityData             =
-        $this->entityChangeSets               =
-        $this->entityStates                   =
-        $this->scheduledForSynchronization    =
-        $this->entityInsertions               =
-        $this->entityUpdates                  =
-        $this->entityDeletions                =
-        $this->nonCascadedNewDetectedEntities =
-        $this->collectionDeletions            =
-        $this->collectionUpdates              =
-        $this->extraUpdates                   =
-        $this->readOnlyObjects                =
-        $this->visitedCollections             =
-        $this->eagerLoadingEntities           =
-        $this->orphanRemovals                 = [];
+        if ($entityName === null) {
+            $this->originalEntityData             =
+            $this->entityChangeSets               =
+            $this->entityStates                   =
+            $this->scheduledForSynchronization    =
+            $this->entityInsertions               =
+            $this->entityUpdates                  =
+            $this->entityDeletions                =
+            $this->nonCascadedNewDetectedEntities =
+            $this->collectionDeletions            =
+            $this->collectionUpdates              =
+            $this->extraUpdates                   =
+            $this->readOnlyObjects                =
+            $this->visitedCollections             =
+            $this->eagerLoadingEntities           =
+            $this->orphanRemovals                 = [];
+        } else {
+            $this->clearIdentityMapForEntityName($entityName);
+            $this->clearEntityInsertionsForEntityName($entityName);
+        }
 
         $this->identityMap->clear();
 
         if ($this->evm->hasListeners(Events::onClear)) {
-            $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->em));
+            $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->em, $entityName));
         }
     }
 
@@ -3450,6 +3461,29 @@ class UnitOfWork implements PropertyChangedListener
     public function hydrationComplete()
     {
         $this->hydrationCompleteHandler->hydrationComplete();
+    }
+
+    private function clearIdentityMapForEntityName(string $entityName): void
+    {
+        if (! isset($this->identityMap[$entityName])) {
+            return;
+        }
+
+        $visited = [];
+
+        foreach ($this->identityMap[$entityName] as $entity) {
+            $this->doDetach($entity, $visited, false);
+        }
+    }
+
+    private function clearEntityInsertionsForEntityName(string $entityName): void
+    {
+        foreach ($this->entityInsertions as $hash => $entity) {
+            // note: performance optimization - `instanceof` is much faster than a function call
+            if ($entity instanceof $entityName && get_class($entity) === $entityName) {
+                unset($this->entityInsertions[$hash]);
+            }
+        }
     }
 
     /**
