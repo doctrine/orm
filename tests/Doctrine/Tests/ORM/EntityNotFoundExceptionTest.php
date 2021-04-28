@@ -32,4 +32,12 @@ class EntityNotFoundExceptionTest extends TestCase
         $this->assertInstanceOf(EntityNotFoundException::class, $exception);
         $this->assertSame('Entity of type \'foo\' was not found', $exception->getMessage());
     }
+
+    public function testNoIdentifierFound(): void
+    {
+        $exception = EntityNotFoundException::noIdentifierFound('foo');
+
+        $this->assertInstanceOf(EntityNotFoundException::class, $exception);
+        $this->assertSame('Unable to find "foo" entity identifier associated with the UnitOfWork', $exception->getMessage());
+    }
 }

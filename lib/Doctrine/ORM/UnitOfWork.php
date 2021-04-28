@@ -3038,7 +3038,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getEntityIdentifier($entity)
     {
-        return $this->entityIdentifiers[spl_object_hash($entity)];
+        return $this->entityIdentifiers[spl_object_hash($entity)]
+            ?? EntityNotFoundException::noIdentifierFound(get_class($entity));
     }
 
     /**
