@@ -17,8 +17,8 @@ use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
-use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -26,7 +26,7 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 /**
  * Tests for the Configuration object
  */
-class ConfigurationTest extends TestCase
+class ConfigurationTest extends DoctrineTestCase
 {
     /** @var Configuration */
     private $configuration;
