@@ -55,6 +55,10 @@ use function strtolower;
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
  * metadata mapping information of a class which describes how a class should be mapped
  * to a relational database.
+ *
+ * @method ClassMetadata[] getAllMetadata()
+ * @method ClassMetadata[] getLoadedMetadata()
+ * @method ClassMetadata getMetadataFor($className)
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {

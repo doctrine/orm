@@ -55,7 +55,7 @@ class DDC1452Test extends OrmFunctionalTestCase
         $results = $this->_em->createQuery($dql)->setMaxResults(1)->getResult();
 
         $this->assertSame($results[0], $results[0]->entitiesB[0]->entityAFrom);
-        $this->assertFalse($results[0]->entitiesB[0]->entityATo instanceof Proxy);
+        $this->assertNotInstanceOf(Proxy::class, $results[0]->entitiesB[0]->entityATo);
         $this->assertInstanceOf(Collection::class, $results[0]->entitiesB[0]->entityATo->getEntitiesB());
     }
 
@@ -83,12 +83,12 @@ class DDC1452Test extends OrmFunctionalTestCase
         $data = $this->_em->createQuery($dql)->getResult();
         $this->_em->clear();
 
-        $this->assertFalse($data[0]->user instanceof Proxy);
+        $this->assertNotInstanceOf(Proxy::class, $data[0]->user);
 
         $dql  = 'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.address a';
         $data = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertFalse($data[0]->address instanceof Proxy);
+        $this->assertNotInstanceOf(Proxy::class, $data[0]->address);
     }
 }
 

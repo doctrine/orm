@@ -53,9 +53,6 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php">
-    <NullableReturnStatement occurrences="1">
-      <code>null</code>
-    </NullableReturnStatement>
     <UndefinedInterfaceMethod occurrences="9">
       <code>getCacheRegion</code>
       <code>getCacheRegion</code>
@@ -96,10 +93,6 @@
       <code>?T</code>
       <code>getReference</code>
     </InvalidReturnType>
-    <UndefinedInterfaceMethod occurrences="2">
-      <code>newInstance</code>
-      <code>setIdentifierValues</code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/EntityRepository.php">
     <InvalidReturnStatement occurrences="3">
@@ -349,14 +342,12 @@
     <InvalidArgument occurrences="1">
       <code>$hints</code>
     </InvalidArgument>
-    <InvalidNullableReturnType occurrences="2">
-      <code>loadById</code>
+    <InvalidNullableReturnType occurrences="1">
       <code>loadOneToOneEntity</code>
     </InvalidNullableReturnType>
-    <NullableReturnStatement occurrences="3">
+    <NullableReturnStatement occurrences="2">
       <code>$targetEntity</code>
       <code>$targetEntity</code>
-      <code>$this-&gt;load($identifier, $entity)</code>
     </NullableReturnStatement>
   </file>
   <file src="lib/Doctrine/ORM/Proxy/ProxyFactory.php">
@@ -517,21 +508,6 @@
     <MoreSpecificImplementedParamType occurrences="1">
       <code>$query</code>
     </MoreSpecificImplementedParamType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/SchemaValidator.php">
-    <InvalidReturnStatement occurrences="1">
-      <code>$errors</code>
-    </InvalidReturnStatement>
-    <InvalidReturnType occurrences="1">
-      <code>array&lt;string, list&lt;string&gt;&gt;</code>
-    </InvalidReturnType>
-    <UndefinedInterfaceMethod occurrences="5">
-      <code>getIdentifierColumnNames</code>
-      <code>getIdentifierColumnNames</code>
-      <code>getIdentifierColumnNames</code>
-      <code>getIdentifierColumnNames</code>
-      <code>getIdentifierColumnNames</code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/UnitOfWork.php">
     <InvalidNullableReturnType occurrences="1">
