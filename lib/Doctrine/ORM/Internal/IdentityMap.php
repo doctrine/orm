@@ -97,7 +97,7 @@ class IdentityMap implements Countable
      *
      * @ignore
      */
-    public function addToIdentityMap(object $entity): void
+    public function addToIdentityMap($entity): void
     {
         $oid           = ObjectIdFetcher::fetchObjectId($entity);
         $classMetadata = $this->getClassMetadata($entity);
@@ -122,8 +122,10 @@ class IdentityMap implements Countable
 
     /**
      * Checks whether an entity is registered in the identity map.
+     *
+     * @param object $entity
      */
-    public function isInIdentityMap(object $entity): bool
+    public function isInIdentityMap($entity): bool
     {
         $oid = ObjectIdFetcher::fetchObjectId($entity);
 
@@ -140,11 +142,13 @@ class IdentityMap implements Countable
     /**
      * Removes an entity from the identity map.
      *
+     * @param object $entity
+     *
      * @throws ORMInvalidArgumentException
      *
      * @ignore
      */
-    public function removeFromIdentityMap(object $entity): void
+    public function removeFromIdentityMap($entity): void
     {
         $classMetadata = $this->getClassMetadata($entity);
         $idHash        = $this->getIdHash(ObjectIdFetcher::fetchObjectId($entity));
@@ -157,9 +161,7 @@ class IdentityMap implements Countable
     }
 
     /**
-     * @deprecated
-     *
-     * @use self::count()
+     * @deprecated please use self::count()
      */
     public function size(): int
     {
@@ -205,7 +207,10 @@ class IdentityMap implements Countable
         return $this->identityMap[$rootClassName][$stringIdHash] ?? false;
     }
 
-    protected function getClassMetadata(object $entity): ClassMetadata
+    /**
+     * @param object $entity
+     */
+    protected function getClassMetadata($entity): ClassMetadata
     {
         return $this->entityManager->getClassMetadata(get_class($entity));
     }

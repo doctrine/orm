@@ -1595,7 +1595,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Checks whether an entity is registered in the identity map of this UnitOfWork.
      */
-    public function isInIdentityMap(object $entity): bool
+    public function isInIdentityMap($entity): bool
     {
         return $this->identityMap->isInIdentityMap($entity);
     }
@@ -1990,7 +1990,9 @@ class UnitOfWork implements PropertyChangedListener
             case self::STATE_MANAGED:
                 if ($this->isInIdentityMap($entity)) {
                     $this->identityMap->removeFromIdentityMap($entity);
+                    $this->identityMap->unsetEntityIdentifier($oid);
                 }
+                var_dump($this->identityMap->getIdentityMap());
 
                 unset(
                     $this->entityInsertions[$oid],
@@ -2396,12 +2398,12 @@ class UnitOfWork implements PropertyChangedListener
             $this->visitedCollections             =
             $this->eagerLoadingEntities           =
             $this->orphanRemovals                 = [];
+
+            $this->identityMap->clear();
         } else {
             $this->clearIdentityMapForEntityName($entityName);
             $this->clearEntityInsertionsForEntityName($entityName);
         }
-
-        $this->identityMap->clear();
 
         if ($this->evm->hasListeners(Events::onClear)) {
             $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->em, $entityName));
@@ -3465,13 +3467,14 @@ class UnitOfWork implements PropertyChangedListener
 
     private function clearIdentityMapForEntityName(string $entityName): void
     {
-        if (! isset($this->identityMap[$entityName])) {
+        $identityMap = $this->identityMap->getIdentityMap();
+        if (! isset($identityMap[$entityName])) {
             return;
         }
 
         $visited = [];
 
-        foreach ($this->identityMap[$entityName] as $entity) {
+        foreach ($identityMap[$entityName] as $entity) {
             $this->doDetach($entity, $visited, false);
         }
     }

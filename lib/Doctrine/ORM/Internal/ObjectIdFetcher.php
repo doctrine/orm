@@ -24,7 +24,10 @@ use function spl_object_hash;
 
 class ObjectIdFetcher
 {
-    public static function fetchObjectId(object $object): string
+    /**
+     * @param object $object
+     */
+    public static function fetchObjectId($object): string
     {
         return spl_object_hash($object);
     }
