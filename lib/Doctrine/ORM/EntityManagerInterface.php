@@ -35,6 +35,7 @@ use Doctrine\Persistence\ObjectManager;
  * EntityManager interface
  *
  * @method Mapping\ClassMetadata getClassMetadata($className)
+ * @method Mapping\ClassMetadataFactory getMetadataFactory()
  */
 interface EntityManagerInterface extends ObjectManager
 {

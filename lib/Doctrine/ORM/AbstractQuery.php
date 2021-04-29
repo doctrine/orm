@@ -121,7 +121,7 @@ abstract class AbstractQuery
      */
     protected $_hydrationMode = self::HYDRATE_OBJECT;
 
-    /** @var QueryCacheProfile */
+    /** @var QueryCacheProfile|null */
     protected $_queryCacheProfile;
 
     /**
@@ -287,7 +287,7 @@ abstract class AbstractQuery
     /**
      * Retrieves the associated EntityManager of this Query instance.
      *
-     * @return EntityManager
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {
@@ -588,6 +588,7 @@ abstract class AbstractQuery
      */
     public function setResultCacheDriver($resultCacheDriver = null)
     {
+        /** @phpstan-ignore-next-line */
         if ($resultCacheDriver !== null && ! ($resultCacheDriver instanceof \Doctrine\Common\Cache\Cache)) {
             throw ORMException::invalidResultCacheDriver();
         }
@@ -718,7 +719,7 @@ abstract class AbstractQuery
     }
 
     /**
-     * @return QueryCacheProfile
+     * @return QueryCacheProfile|null
      */
     public function getQueryCacheProfile()
     {
@@ -978,8 +979,8 @@ abstract class AbstractQuery
      * Executes the query and returns an iterable that can be used to incrementally
      * iterate over the result.
      *
-     * @param ArrayCollection|mixed[] $parameters    The query parameters.
-     * @param string|int|null         $hydrationMode The hydration mode to use.
+     * @param ArrayCollection|array|mixed[] $parameters    The query parameters.
+     * @param string|int|null               $hydrationMode The hydration mode to use.
      * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
      *
      * @return iterable<mixed>
@@ -1045,7 +1046,7 @@ abstract class AbstractQuery
             $this->setParameters($parameters);
         }
 
-        $setCacheEntry = static function (): void {
+        $setCacheEntry = static function ($data): void {
         };
 
         if ($this->_hydrationCacheProfile !== null) {

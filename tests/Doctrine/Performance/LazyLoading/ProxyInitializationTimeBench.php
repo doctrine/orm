@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Performance\LazyLoading;
 
-use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Performance\Mock\NonProxyLoadingEntityManager;
 use Doctrine\Tests\Models\CMS\CmsEmployee;
 use Doctrine\Tests\Models\CMS\CmsUser;
-use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
 /**
  * @BeforeMethods({"init"})

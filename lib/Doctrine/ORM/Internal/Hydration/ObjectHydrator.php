@@ -21,9 +21,9 @@
 namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use PDO;
@@ -432,7 +432,7 @@ class ObjectHydrator extends AbstractHydrator
                     // PATH B: Single-valued association
                     $reflFieldValue = $reflField->getValue($parentObject);
 
-                    if (! $reflFieldValue || isset($this->_hints[Query::HINT_REFRESH]) || ($reflFieldValue instanceof Proxy && ! $reflFieldValue->__isInitialized__)) {
+                    if (! $reflFieldValue || isset($this->_hints[Query::HINT_REFRESH]) || ($reflFieldValue instanceof Proxy && ! $reflFieldValue->__isInitialized())) {
                         // we only need to take action if this value is null,
                         // we refresh the entity or its an uninitialized proxy.
                         if (isset($nonemptyComponents[$dqlAlias])) {
