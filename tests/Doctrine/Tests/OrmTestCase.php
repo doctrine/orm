@@ -17,6 +17,8 @@ use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\Tests\Mocks\EntityManagerMock;
+use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function is_array;
 use function realpath;
@@ -29,9 +31,9 @@ abstract class OrmTestCase extends DoctrineTestCase
     /**
      * The metadata cache that is shared between all ORM tests (except functional tests).
      *
-     * @var Cache|null
+     * @var CacheItemPoolInterface|null
      */
-    private static $_metadataCacheImpl = null;
+    private static $_metadataCache = null;
 
     /**
      * The query cache that is shared between all ORM tests (except functional tests).
@@ -92,11 +94,11 @@ abstract class OrmTestCase extends DoctrineTestCase
     ): EntityManagerMock {
         $metadataCache = $withSharedMetadata
             ? self::getSharedMetadataCacheImpl()
-            : new ArrayCache();
+            : new ArrayAdapter();
 
         $config = new Configuration();
 
-        $config->setMetadataCacheImpl($metadataCache);
+        $config->setMetadataCache($metadataCache);
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], true));
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
         $config->setProxyDir(__DIR__ . '/Proxies');
@@ -142,13 +144,13 @@ abstract class OrmTestCase extends DoctrineTestCase
         $this->isSecondLevelCacheLogEnabled = $log;
     }
 
-    private static function getSharedMetadataCacheImpl(): Cache
+    private static function getSharedMetadataCacheImpl(): ?CacheItemPoolInterface
     {
-        if (self::$_metadataCacheImpl === null) {
-            self::$_metadataCacheImpl = new ArrayCache();
+        if (self::$_metadataCache === null) {
+            self::$_metadataCache = new ArrayAdapter();
         }
 
-        return self::$_metadataCacheImpl;
+        return self::$_metadataCache;
     }
 
     private static function getSharedQueryCacheImpl(): Cache
