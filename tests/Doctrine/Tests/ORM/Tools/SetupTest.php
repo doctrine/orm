@@ -60,7 +60,7 @@ class SetupTest extends OrmTestCase
 
     public function testAnnotationConfiguration(): void
     {
-        $config = Setup::createAnnotationMetadataConfiguration([], true);
+        $config = Setup::createAnnotationMetadataConfiguration([], true, null, DoctrineProvider::wrap(new ArrayAdapter()));
 
         $this->assertInstanceOf(Configuration::class, $config);
         $this->assertEquals(sys_get_temp_dir(), $config->getProxyDir());
@@ -70,7 +70,7 @@ class SetupTest extends OrmTestCase
 
     public function testXMLConfiguration(): void
     {
-        $config = Setup::createXMLMetadataConfiguration([], true);
+        $config = Setup::createXMLMetadataConfiguration([], true, null, DoctrineProvider::wrap(new ArrayAdapter()));
 
         $this->assertInstanceOf(Configuration::class, $config);
         $this->assertInstanceOf(XmlDriver::class, $config->getMetadataDriverImpl());
@@ -78,7 +78,7 @@ class SetupTest extends OrmTestCase
 
     public function testYAMLConfiguration(): void
     {
-        $config = Setup::createYAMLMetadataConfiguration([], true);
+        $config = Setup::createYAMLMetadataConfiguration([], true, null, DoctrineProvider::wrap(new ArrayAdapter()));
 
         $this->assertInstanceOf(Configuration::class, $config);
         $this->assertInstanceOf(YamlDriver::class, $config->getMetadataDriverImpl());
@@ -89,7 +89,7 @@ class SetupTest extends OrmTestCase
      */
     public function testCacheNamespaceShouldBeGeneratedWhenCacheIsNotGiven(): void
     {
-        $config = Setup::createConfiguration(false, '/foo');
+        $config = Setup::createConfiguration(false, '/foo', DoctrineProvider::wrap(new ArrayAdapter()));
         $cache  = $config->getMetadataCacheImpl();
 
         self::assertSame('dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $cache->getNamespace());
@@ -126,7 +126,7 @@ class SetupTest extends OrmTestCase
      */
     public function testConfigureProxyDir(): void
     {
-        $config = Setup::createAnnotationMetadataConfiguration([], true, '/foo');
+        $config = Setup::createAnnotationMetadataConfiguration([], true, '/foo', DoctrineProvider::wrap(new ArrayAdapter()));
         $this->assertEquals('/foo', $config->getProxyDir());
     }
 
