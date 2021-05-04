@@ -103,7 +103,7 @@ class SchemaValidator
             if (! class_exists($assoc['targetEntity']) || $cmf->isTransient($assoc['targetEntity'])) {
                 $ce[] = "The target entity '" . $assoc['targetEntity'] . "' specified on " . $class->name . '#' . $fieldName . ' is unknown or not an entity.';
 
-                return $ce;
+                continue;
             }
 
             if ($assoc['mappedBy'] && $assoc['inversedBy']) {
