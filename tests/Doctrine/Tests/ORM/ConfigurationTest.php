@@ -22,6 +22,7 @@ use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
 use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use function class_exists;
 
 /**
  * Tests for the Configuration object
@@ -224,6 +225,10 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testEnsureProductionSettingsQueryArrayCache(): void
     {
+        if (! class_exists(ArrayCache::class)) {
+            $this->markTestSkipped('Test only applies with doctrine/cache 1.x');
+        }
+
         $this->setProductionSettings();
         $this->configuration->setQueryCacheImpl(new ArrayCache());
 
@@ -235,6 +240,10 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testEnsureProductionSettingsLegacyMetadataArrayCache(): void
     {
+        if (! class_exists(ArrayCache::class)) {
+            $this->markTestSkipped('Test only applies with doctrine/cache 1.x');
+        }
+
         $this->setProductionSettings();
         $this->configuration->setMetadataCacheImpl(new ArrayCache());
 

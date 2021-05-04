@@ -10,6 +10,7 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
+use function class_exists;
 use function mkdir;
 use function sys_get_temp_dir;
 use function uniqid;
@@ -21,6 +22,10 @@ class DDC742Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
+        if (! class_exists(FilesystemCache::class)) {
+            $this->markTestSkipped('Test only applies with doctrine/cache 1.x');
+        }
+
         parent::setUp();
 
         $testDir = sys_get_temp_dir() . '/DDC742Test' . uniqid();

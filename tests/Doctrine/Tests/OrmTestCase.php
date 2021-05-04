@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests;
 
 use Doctrine\Common\Annotations;
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -68,7 +68,11 @@ abstract class OrmTestCase extends DoctrineTestCase
 
         $reader->addNamespace('Doctrine\ORM\Mapping');
 
-        $reader = new Annotations\CachedReader($reader, new ArrayCache());
+        if (class_exists(Annotations\PsrCachedReader::class)) {
+            $reader = new Annotations\PsrCachedReader($reader, new ArrayAdapter());
+        } else {
+            $reader = new Annotations\CachedReader($reader, DoctrineProvider::wrap(new ArrayAdapter()));
+        }
 
         Annotations\AnnotationRegistry::registerFile(__DIR__ . '/../../../lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
 
@@ -156,7 +160,7 @@ abstract class OrmTestCase extends DoctrineTestCase
     private static function getSharedQueryCacheImpl(): Cache
     {
         if (self::$_queryCacheImpl === null) {
-            self::$_queryCacheImpl = new ArrayCache();
+            self::$_queryCacheImpl = DoctrineProvider::wrap(new ArrayAdapter());
         }
 
         return self::$_queryCacheImpl;
@@ -165,7 +169,7 @@ abstract class OrmTestCase extends DoctrineTestCase
     protected function getSharedSecondLevelCacheDriverImpl(): Cache
     {
         if ($this->secondLevelCacheDriverImpl === null) {
-            $this->secondLevelCacheDriverImpl = new ArrayCache();
+            $this->secondLevelCacheDriverImpl = DoctrineProvider::wrap(new ArrayAdapter());
         }
 
         return $this->secondLevelCacheDriverImpl;

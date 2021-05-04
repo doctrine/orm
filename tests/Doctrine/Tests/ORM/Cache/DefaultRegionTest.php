@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Cache;
 
 use BadMethodCallException;
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
 
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use function assert;
+use function class_exists;
 
 /**
  * @group DDC-2183
@@ -34,6 +36,10 @@ class DefaultRegionTest extends AbstractRegionTest
 
     public function testSharedRegion(): void
     {
+        if (! class_exists(ArrayCache::class)) {
+            $this->markTestSkipped('Test only applies with doctrine/cache 1.x');
+        }
+
         $cache   = new SharedArrayCache();
         $key     = new CacheKeyMock('key');
         $entry   = new CacheEntryMock(['value' => 'foo']);
@@ -57,7 +63,7 @@ class DefaultRegionTest extends AbstractRegionTest
 
     public function testDoesNotModifyCacheNamespace(): void
     {
-        $cache = new ArrayCache();
+        $cache = DoctrineProvider::wrap(new ArrayAdapter());
 
         $cache->setNamespace('foo');
 
@@ -129,75 +135,76 @@ class DefaultRegionTest extends AbstractRegionTest
     }
 }
 
-/**
- * Cache provider that offers child cache items (sharing the same array)
- *
- * Declared as a different class for readability purposes and kept in this file
- * to keep its monstrosity contained.
- *
- * @internal
- */
-final class SharedArrayCache extends ArrayCache
-{
-    public function createChild(): Cache
+if (class_exists(ArrayCache::class)) {
+    /**
+     * Cache provider that offers child cache items (sharing the same array)
+     *
+     * Declared as a different class for readability purposes and kept in this file
+     * to keep its monstrosity contained.
+     *
+     * @internal
+     */
+    final class SharedArrayCache extends ArrayCache
     {
-        return new class ($this) extends CacheProvider
+        public function createChild(): Cache
         {
-            /** @var ArrayCache */
-            private $parent;
+            return new class ($this) extends CacheProvider {
+                /** @var ArrayCache */
+                private $parent;
 
-            public function __construct(ArrayCache $parent)
-            {
-                $this->parent = $parent;
-            }
+                public function __construct(ArrayCache $parent)
+                {
+                    $this->parent = $parent;
+                }
 
-            /**
-             * {@inheritDoc}
-             */
-            protected function doFetch($id)
-            {
-                return $this->parent->doFetch($id);
-            }
+                /**
+                 * {@inheritDoc}
+                 */
+                protected function doFetch($id)
+                {
+                    return $this->parent->doFetch($id);
+                }
 
-            /**
-             * {@inheritDoc}
-             */
-            protected function doContains($id)
-            {
-                return $this->parent->doContains($id);
-            }
+                /**
+                 * {@inheritDoc}
+                 */
+                protected function doContains($id)
+                {
+                    return $this->parent->doContains($id);
+                }
 
-            /**
-             * {@inheritDoc}
-             */
-            protected function doSave($id, $data, $lifeTime = 0)
-            {
-                return $this->parent->doSave($id, $data, $lifeTime);
-            }
+                /**
+                 * {@inheritDoc}
+                 */
+                protected function doSave($id, $data, $lifeTime = 0)
+                {
+                    return $this->parent->doSave($id, $data, $lifeTime);
+                }
 
-            /**
-             * {@inheritDoc}
-             */
-            protected function doDelete($id)
-            {
-                return $this->parent->doDelete($id);
-            }
+                /**
+                 * {@inheritDoc}
+                 */
+                protected function doDelete($id)
+                {
+                    return $this->parent->doDelete($id);
+                }
 
-            /**
-             * {@inheritDoc}
-             */
-            protected function doFlush()
-            {
-                return $this->parent->doFlush();
-            }
+                /**
+                 * {@inheritDoc}
+                 */
+                protected function doFlush()
+                {
+                    return $this->parent->doFlush();
+                }
 
-            /**
-             * {@inheritDoc}
-             */
-            protected function doGetStats()
-            {
-                return $this->parent->doGetStats();
-            }
-        };
+                /**
+                 * {@inheritDoc}
+                 */
+                protected function doGetStats()
+                {
+                    return $this->parent->doGetStats();
+                }
+            };
+        }
     }
 }

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
  * @group DDC-2183
@@ -25,7 +26,7 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->cache  = new ArrayCache();
+        $this->cache  = DoctrineProvider::wrap(new ArrayAdapter());
         $this->region = $this->createRegion();
     }
 

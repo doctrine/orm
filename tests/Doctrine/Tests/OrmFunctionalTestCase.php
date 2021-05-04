@@ -2,8 +2,8 @@
 
 namespace Doctrine\Tests;
 
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Types\Type;
@@ -710,7 +710,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (self::$_queryCacheImpl === null) {
-            self::$_queryCacheImpl = new ArrayCache();
+            self::$_queryCacheImpl = DoctrineProvider::wrap(new ArrayAdapter());
         }
 
         $this->_sqlLoggerStack          = new DebugStack();

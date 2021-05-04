@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools;
 
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\Tests\OrmTestCase;
 
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use function count;
 use function get_include_path;
 use function set_include_path;
@@ -99,7 +100,7 @@ class SetupTest extends OrmTestCase
      */
     public function testCacheNamespaceShouldBeGeneratedWhenCacheIsGivenButHasNoNamespace(): void
     {
-        $config = Setup::createConfiguration(false, '/foo', new ArrayCache());
+        $config = Setup::createConfiguration(false, '/foo', DoctrineProvider::wrap(new ArrayAdapter()));
         $cache  = $config->getMetadataCacheImpl();
 
         self::assertSame('dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $cache->getNamespace());
@@ -110,7 +111,7 @@ class SetupTest extends OrmTestCase
      */
     public function testConfiguredCacheNamespaceShouldBeUsedAsPrefixOfGeneratedNamespace(): void
     {
-        $originalCache = new ArrayCache();
+        $originalCache = DoctrineProvider::wrap(new ArrayAdapter());
         $originalCache->setNamespace('foo');
 
         $config = Setup::createConfiguration(false, '/foo', $originalCache);
@@ -134,7 +135,7 @@ class SetupTest extends OrmTestCase
      */
     public function testConfigureCache(): void
     {
-        $cache  = new ArrayCache();
+        $cache  = DoctrineProvider::wrap(new ArrayAdapter());
         $config = Setup::createAnnotationMetadataConfiguration([], true, null, $cache);
 
         $this->assertSame($cache, $config->getResultCacheImpl());
