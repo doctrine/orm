@@ -25,6 +25,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Cache\MemcachedCache;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\ClassLoader;
 use Doctrine\ORM\Configuration;
@@ -33,6 +34,8 @@ use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Memcached;
 use Redis;
 
+use RuntimeException;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use function class_exists;
 use function extension_loaded;
 use function md5;
@@ -164,6 +167,10 @@ class Setup
     {
         if ($cache !== null) {
             return $cache;
+        }
+
+        if (! class_exists(ArrayCache::class)) {
+            throw new RuntimeException('Cannot automatically configure caches without doctrine/cache. Please add an explicit depenedncy on doctrine/cache 1.11.');
         }
 
         if ($isDevMode === true) {

@@ -45,6 +45,7 @@ use Doctrine\Persistence\ObjectRepository;
 use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
 
+use function class_exists;
 use function strtolower;
 use function trim;
 
@@ -165,13 +166,16 @@ class Configuration extends \Doctrine\DBAL\Configuration
             // Register the ORM Annotations in the AnnotationRegistry
             $reader = new SimpleAnnotationReader();
             $reader->addNamespace('Doctrine\ORM\Mapping');
-            $cachedReader = new CachedReader($reader, new ArrayCache());
+        } else {
+            $reader = new AnnotationReader();
+        }
 
-            return new AnnotationDriver($cachedReader, (array) $paths);
+        if (class_exists(ArrayCache::class)) {
+            $reader = new CachedReader($reader, new ArrayCache);
         }
 
         return new AnnotationDriver(
-            new CachedReader(new AnnotationReader(), new ArrayCache()),
+            $reader,
             (array) $paths
         );
     }
