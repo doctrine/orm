@@ -680,12 +680,13 @@ class BasicEntityPersister implements EntityPersister
                 $sourceColumn = $joinColumn['name'];
                 $targetColumn = $joinColumn['referencedColumnName'];
                 $quotedColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
+                $value = $newValId ? $newValId[$targetClass->getFieldForColumn($targetColumn)] : null;
 
                 $this->quotedColumns[$sourceColumn]  = $quotedColumn;
-                $this->columnTypes[$sourceColumn]    = PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em);
-                $result[$owningTable][$sourceColumn] = $newValId
-                    ? $newValId[$targetClass->getFieldForColumn($targetColumn)]
-                    : null;
+                $result[$owningTable][$sourceColumn] = $value;
+                $this->columnTypes[$sourceColumn] = $joinColumn['nullable'] && $value !== null ?
+                    PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em):
+                    null;
             }
         }
 
