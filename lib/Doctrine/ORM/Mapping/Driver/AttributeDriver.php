@@ -67,98 +67,97 @@ class AttributeDriver extends AnnotationDriver
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
 
-        // Evaluate Table annotation
+        $primaryTable = [];
+
         if (isset($classAttributes[Mapping\Table::class])) {
-            $tableAnnot   = $classAttributes[Mapping\Table::class];
-            $primaryTable = [
-                'name'   => $tableAnnot->name,
-                'schema' => $tableAnnot->schema,
-            ];
-
-            if (isset($classAttributes[Mapping\Index::class])) {
-                foreach ($classAttributes[Mapping\Index::class] as $indexAnnot) {
-                    $index = [];
-
-                    if (! empty($indexAnnot->columns)) {
-                        $index['columns'] = $indexAnnot->columns;
-                    }
-
-                    if (! empty($indexAnnot->fields)) {
-                        $index['fields'] = $indexAnnot->fields;
-                    }
-
-                    if (
-                        isset($index['columns'], $index['fields'])
-                        || (
-                            ! isset($index['columns'])
-                            && ! isset($index['fields'])
-                        )
-                    ) {
-                        throw MappingException::invalidIndexConfiguration(
-                            $className,
-                            (string) ($indexAnnot->name ?? count($primaryTable['indexes']))
-                        );
-                    }
-
-                    if (! empty($indexAnnot->flags)) {
-                        $index['flags'] = $indexAnnot->flags;
-                    }
-
-                    if (! empty($indexAnnot->options)) {
-                        $index['options'] = $indexAnnot->options;
-                    }
-
-                    if (! empty($indexAnnot->name)) {
-                        $primaryTable['indexes'][$indexAnnot->name] = $index;
-                    } else {
-                        $primaryTable['indexes'][] = $index;
-                    }
-                }
-            }
-
-            if (isset($classAttributes[Mapping\UniqueConstraint::class])) {
-                foreach ($classAttributes[Mapping\UniqueConstraint::class] as $uniqueConstraintAnnot) {
-                    $uniqueConstraint = [];
-
-                    if (! empty($uniqueConstraintAnnot->columns)) {
-                        $uniqueConstraint['columns'] = $uniqueConstraintAnnot->columns;
-                    }
-
-                    if (! empty($uniqueConstraintAnnot->fields)) {
-                        $uniqueConstraint['fields'] = $uniqueConstraintAnnot->fields;
-                    }
-
-                    if (
-                        isset($uniqueConstraint['columns'], $uniqueConstraint['fields'])
-                        || (
-                            ! isset($uniqueConstraint['columns'])
-                            && ! isset($uniqueConstraint['fields'])
-                        )
-                    ) {
-                        throw MappingException::invalidUniqueConstraintConfiguration(
-                            $className,
-                            (string) ($uniqueConstraintAnnot->name ?? count($primaryTable['uniqueConstraints']))
-                        );
-                    }
-
-                    if (! empty($uniqueConstraintAnnot->options)) {
-                        $uniqueConstraint['options'] = $uniqueConstraintAnnot->options;
-                    }
-
-                    if (! empty($uniqueConstraintAnnot->name)) {
-                        $primaryTable['uniqueConstraints'][$uniqueConstraintAnnot->name] = $uniqueConstraint;
-                    } else {
-                        $primaryTable['uniqueConstraints'][] = $uniqueConstraint;
-                    }
-                }
-            }
+            $tableAnnot             = $classAttributes[Mapping\Table::class];
+            $primaryTable['name']   = $tableAnnot->name;
+            $primaryTable['schema'] = $tableAnnot->schema;
 
             if ($tableAnnot->options) {
                 $primaryTable['options'] = $tableAnnot->options;
             }
-
-            $metadata->setPrimaryTable($primaryTable);
         }
+
+        if (isset($classAttributes[Mapping\Index::class])) {
+            foreach ($classAttributes[Mapping\Index::class] as $indexAnnot) {
+                $index = [];
+
+                if (! empty($indexAnnot->columns)) {
+                    $index['columns'] = $indexAnnot->columns;
+                }
+
+                if (! empty($indexAnnot->fields)) {
+                    $index['fields'] = $indexAnnot->fields;
+                }
+
+                if (
+                    isset($index['columns'], $index['fields'])
+                    || (
+                        ! isset($index['columns'])
+                        && ! isset($index['fields'])
+                    )
+                ) {
+                    throw MappingException::invalidIndexConfiguration(
+                        $className,
+                        (string) ($indexAnnot->name ?? count($primaryTable['indexes']))
+                    );
+                }
+
+                if (! empty($indexAnnot->flags)) {
+                    $index['flags'] = $indexAnnot->flags;
+                }
+
+                if (! empty($indexAnnot->options)) {
+                    $index['options'] = $indexAnnot->options;
+                }
+
+                if (! empty($indexAnnot->name)) {
+                    $primaryTable['indexes'][$indexAnnot->name] = $index;
+                } else {
+                    $primaryTable['indexes'][] = $index;
+                }
+            }
+        }
+
+        if (isset($classAttributes[Mapping\UniqueConstraint::class])) {
+            foreach ($classAttributes[Mapping\UniqueConstraint::class] as $uniqueConstraintAnnot) {
+                $uniqueConstraint = [];
+
+                if (! empty($uniqueConstraintAnnot->columns)) {
+                    $uniqueConstraint['columns'] = $uniqueConstraintAnnot->columns;
+                }
+
+                if (! empty($uniqueConstraintAnnot->fields)) {
+                    $uniqueConstraint['fields'] = $uniqueConstraintAnnot->fields;
+                }
+
+                if (
+                    isset($uniqueConstraint['columns'], $uniqueConstraint['fields'])
+                    || (
+                        ! isset($uniqueConstraint['columns'])
+                        && ! isset($uniqueConstraint['fields'])
+                    )
+                ) {
+                    throw MappingException::invalidUniqueConstraintConfiguration(
+                        $className,
+                        (string) ($uniqueConstraintAnnot->name ?? count($primaryTable['uniqueConstraints']))
+                    );
+                }
+
+                if (! empty($uniqueConstraintAnnot->options)) {
+                    $uniqueConstraint['options'] = $uniqueConstraintAnnot->options;
+                }
+
+                if (! empty($uniqueConstraintAnnot->name)) {
+                    $primaryTable['uniqueConstraints'][$uniqueConstraintAnnot->name] = $uniqueConstraint;
+                } else {
+                    $primaryTable['uniqueConstraints'][] = $uniqueConstraint;
+                }
+            }
+        }
+
+        $metadata->setPrimaryTable($primaryTable);
 
         // Evaluate @Cache annotation
         if (isset($classAttributes[Mapping\Cache::class])) {
@@ -347,14 +346,14 @@ class AttributeDriver extends AnnotationDriver
                         'name' => $joinTableAttribute->name,
                         'schema' => $joinTableAttribute->schema,
                     ];
+                }
 
-                    foreach ($this->reader->getPropertyAnnotation($property, Mapping\JoinColumn::class) as $joinColumn) {
-                        $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
-                    }
+                foreach ($this->reader->getPropertyAnnotation($property, Mapping\JoinColumn::class) as $joinColumn) {
+                    $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
+                }
 
-                    foreach ($this->reader->getPropertyAnnotation($property, Mapping\InverseJoinColumn::class) as $joinColumn) {
-                        $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumn);
-                    }
+                foreach ($this->reader->getPropertyAnnotation($property, Mapping\InverseJoinColumn::class) as $joinColumn) {
+                    $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumn);
                 }
 
                 $mapping['joinTable']     = $joinTable;
