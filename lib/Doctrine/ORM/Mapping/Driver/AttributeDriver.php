@@ -80,7 +80,7 @@ class AttributeDriver extends AnnotationDriver
         }
 
         if (isset($classAttributes[Mapping\Index::class])) {
-            foreach ($classAttributes[Mapping\Index::class] as $indexAnnot) {
+            foreach ($classAttributes[Mapping\Index::class] as $idx => $indexAnnot) {
                 $index = [];
 
                 if (! empty($indexAnnot->columns)) {
@@ -100,7 +100,7 @@ class AttributeDriver extends AnnotationDriver
                 ) {
                     throw MappingException::invalidIndexConfiguration(
                         $className,
-                        (string) ($indexAnnot->name ?? count($primaryTable['indexes']))
+                        (string) ($indexAnnot->name ?? $idx)
                     );
                 }
 
@@ -121,7 +121,7 @@ class AttributeDriver extends AnnotationDriver
         }
 
         if (isset($classAttributes[Mapping\UniqueConstraint::class])) {
-            foreach ($classAttributes[Mapping\UniqueConstraint::class] as $uniqueConstraintAnnot) {
+            foreach ($classAttributes[Mapping\UniqueConstraint::class] as $idx => $uniqueConstraintAnnot) {
                 $uniqueConstraint = [];
 
                 if (! empty($uniqueConstraintAnnot->columns)) {
@@ -141,7 +141,7 @@ class AttributeDriver extends AnnotationDriver
                 ) {
                     throw MappingException::invalidUniqueConstraintConfiguration(
                         $className,
-                        (string) ($uniqueConstraintAnnot->name ?? count($primaryTable['uniqueConstraints']))
+                        (string) ($uniqueConstraintAnnot->name ?? $idx)
                     );
                 }
 
