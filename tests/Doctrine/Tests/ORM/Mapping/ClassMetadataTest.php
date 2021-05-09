@@ -127,15 +127,6 @@ class ClassMetadataTest extends OrmTestCase
         // Explicit Not Nullable
         $cm->mapField(['fieldName' => 'username', 'length' => 50]);
         $this->assertFalse($cm->isNullable('username'));
-
-        // Join table Nullable
-        $cm->mapOneToOne(['fieldName' => 'email', 'joinColumns' => [[]]]);
-        $this->assertFalse($cm->getAssociationMapping('email')['joinColumns'][0]['nullable']);
-        $this->assertEquals(CmsEmail::class, $cm->getAssociationMapping('email')['targetEntity']);
-
-        $cm->mapManyToOne(['fieldName' => 'mainEmail']);
-        $this->assertTrue($cm->getAssociationMapping('mainEmail')['joinColumns'][0]['nullable']);
-        $this->assertEquals(CmsEmail::class, $cm->getAssociationMapping('mainEmail')['targetEntity']);
     }
 
     public function testFieldTypeFromReflection(): void
