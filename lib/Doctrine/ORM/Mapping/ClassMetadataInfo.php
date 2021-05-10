@@ -1515,18 +1515,18 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
 
-        if (
-            ! isset($mapping['targetEntity'])
-            && ($mapping['type'] & self::TO_ONE) > 0
-            && $type instanceof ReflectionNamedType
-        ) {
+        if ($type === null || ($mapping['type'] & self::TO_ONE) === 0) {
+            return $mapping;
+        }
+
+        if (! isset($mapping['targetEntity']) && $type instanceof ReflectionNamedType) {
             $mapping['targetEntity'] = $type->getName();
         }
 
-        if ($type !== null && isset($mapping['joinColumns'])) {
+        if (isset($mapping['joinColumns'])) {
             foreach ($mapping['joinColumns'] as &$joinColumn) {
-                if (! isset($joinColumn['nullable'])) {
-                    $joinColumn['nullable'] = $type->allowsNull();
+                if ($type->allowsNull() === false) {
+                    $joinColumn['nullable'] = false;
                 }
             }
         }
@@ -1801,7 +1801,6 @@ class ClassMetadataInfo implements ClassMetadata
                     [
                         'name' => $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name),
                         'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
-                        'nullable' => true,
                     ],
                 ];
             }
@@ -1817,10 +1816,6 @@ class ClassMetadataInfo implements ClassMetadata
                     } else {
                         $uniqueConstraintColumns[] = $joinColumn['name'];
                     }
-                }
-
-                if (! isset($joinColumn['nullable'])) {
-                    $joinColumn['nullable'] = true;
                 }
 
                 if (empty($joinColumn['name'])) {
