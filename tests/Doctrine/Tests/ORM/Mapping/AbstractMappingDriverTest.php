@@ -278,6 +278,9 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         // Explicit Not Nullable
         $this->assertFalse($class->isNullable('username'));
+
+        $this->assertEquals(CmsEmail::class, $class->getAssociationMapping('email')['targetEntity']);
+        $this->assertEquals(CmsEmail::class, $class->getAssociationMapping('mainEmail')['targetEntity']);
     }
 
     public function testFieldTypeFromReflection(): void
