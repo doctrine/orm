@@ -43,6 +43,7 @@
         "vimeo/psalm": "4.7.0"
     },
     "suggest": {
+        "symfony/cache": "Provides cache support for Setup Tool with doctrine/cache 2.0",
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
     },
     "autoload": {
