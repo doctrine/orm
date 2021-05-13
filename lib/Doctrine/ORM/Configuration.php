@@ -171,7 +171,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         if (class_exists(ArrayCache::class)) {
-            $reader = new CachedReader($reader, new ArrayCache);
+            $reader = new CachedReader($reader, new ArrayCache());
         }
 
         return new AnnotationDriver(

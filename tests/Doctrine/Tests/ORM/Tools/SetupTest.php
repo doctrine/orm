@@ -14,8 +14,9 @@ use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\Tests\Common\Cache\ArrayCache;
 use Doctrine\Tests\OrmTestCase;
-
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+
+use function class_exists;
 use function count;
 use function get_include_path;
 use function method_exists;

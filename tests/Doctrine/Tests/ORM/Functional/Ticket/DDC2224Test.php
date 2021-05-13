@@ -9,8 +9,8 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+
 use function sprintf;
 
 /**

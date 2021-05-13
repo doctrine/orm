@@ -24,8 +24,8 @@ use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
 use PDO;
-
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+
 use function assert;
 use function count;
 

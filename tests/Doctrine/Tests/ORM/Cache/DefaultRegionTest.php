@@ -13,8 +13,8 @@ use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
-
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+
 use function assert;
 use function class_exists;
 

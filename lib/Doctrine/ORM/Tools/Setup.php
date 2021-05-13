@@ -43,6 +43,7 @@ use Symfony\Component\Cache\Adapter\RedisAdapter;
 use function class_exists;
 use function extension_loaded;
 use function md5;
+use function method_exists;
 use function sys_get_temp_dir;
 
 /**

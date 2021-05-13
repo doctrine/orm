@@ -22,6 +22,7 @@ use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
 use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+
 use function class_exists;
 
 /**
