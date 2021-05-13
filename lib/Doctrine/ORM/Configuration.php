@@ -26,6 +26,7 @@ use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache as CacheDriver;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
@@ -301,7 +302,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
             __METHOD__
         );
 
-        return $this->_attributes['metadataCacheImpl'] ?? null;
+        if (isset($this->_attributes['metadataCacheImpl'])) {
+            return $this->_attributes['metadataCacheImpl'];
+        }
+
+        return isset($this->_attributes['metadataCache']) ? DoctrineProvider::wrap($this->_attributes['metadataCache']) : null;
     }
 
     /**

@@ -123,13 +123,7 @@ class SetupTest extends OrmTestCase
         $originalCache->setNamespace('foo');
 
         $config = Setup::createConfiguration(false, '/foo', $originalCache);
-
-        if (method_exists(Configuration::class, 'getMetadataCache')) {
-            $cache = DoctrineProvider::wrap($config->getMetadataCache());
-        } else {
-            $cache = $config->getMetadataCacheImpl();
-        }
-
+        $cache = $config->getMetadataCacheImpl();
         self::assertSame($originalCache, $cache);
         self::assertSame('foo:dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $cache->getNamespace());
     }
