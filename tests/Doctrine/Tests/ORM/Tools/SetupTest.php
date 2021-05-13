@@ -91,20 +91,13 @@ class SetupTest extends OrmTestCase
     /**
      * @group 5904
      */
-    public function testCacheNamespaceShouldBeGeneratedWhenCacheIsNotGiven(): void
-    {
-        $config = Setup::createConfiguration(false, '/foo');
-        $cache  = $config->getMetadataCacheImpl();
-
-        self::assertSame('dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $cache->getNamespace());
-    }
-
-    /**
-     * @group 5904
-     */
     public function testCacheNamespaceShouldBeGeneratedWhenCacheIsGivenButHasNoNamespace(): void
     {
-        $config = Setup::createConfiguration(false, '/foo', DoctrineProvider::wrap(new ArrayAdapter()));
+        if (! class_exists(ArrayCache::class)) {
+            $this->markTestSkipped('Only applies when using doctrine/cache directly');
+        }
+
+        $config = Setup::createConfiguration(false, '/foo', new ArrayCache());
         $cache  = $config->getMetadataCacheImpl();
 
         self::assertSame('dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $cache->getNamespace());
@@ -123,7 +116,7 @@ class SetupTest extends OrmTestCase
         $originalCache->setNamespace('foo');
 
         $config = Setup::createConfiguration(false, '/foo', $originalCache);
-        $cache = $config->getMetadataCacheImpl();
+        $cache  = $config->getMetadataCacheImpl();
         self::assertSame($originalCache, $cache);
         self::assertSame('foo:dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $cache->getNamespace());
     }
