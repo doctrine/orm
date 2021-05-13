@@ -126,6 +126,16 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/TimestampQueryCacheValidator.php
 
 		-
+			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\ArrayCache not found\\.$#"
+			count: 2
+			path: lib/Doctrine/ORM/Configuration.php
+
+		-
+			message: "#^Parameter \\#2 \\$cache of class Doctrine\\\\Common\\\\Annotations\\\\CachedReader constructor expects Doctrine\\\\Common\\\\Cache\\\\Cache, Doctrine\\\\Common\\\\Cache\\\\ArrayCache given\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Configuration.php
+
+		-
 			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:find\\(\\) invoked with 4 parameters, 2 required\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
@@ -2032,9 +2042,29 @@ parameters:
 			path: lib/Doctrine/ORM/QueryBuilder.php
 
 		-
+			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\ApcCache not found\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryCommand.php
+
+		-
+			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\XcacheCache not found\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryCommand.php
+
+		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryRegionCommand.php
+
+		-
+			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\ApcCache not found\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php
+
+		-
+			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\XcacheCache not found\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php
 
 		-
 			message: "#^Parameter \\#1 \\$metadata of method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:setMetadata\\(\\) expects array\\<int, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata\\>, array\\<int, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\> given\\.$#"
