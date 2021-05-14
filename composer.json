@@ -35,7 +35,9 @@
     },
     "require-dev": {
         "doctrine/coding-standard": "^9.0",
+        "phpstan/extension-installer": "^1.1",
         "phpstan/phpstan": "^0.12.83",
+        "phpstan/phpstan-deprecation-rules": "^0.12.6",
         "phpunit/phpunit": "^7.5|^8.5|^9.4",
         "squizlabs/php_codesniffer": "3.6.0",
         "symfony/cache": "^4.4|^5.2",

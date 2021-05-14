@@ -111,6 +111,11 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/Persister/Entity/ReadWriteCachedEntityPersister.php
 
 		-
+			message: "#^Parameter \\$cache of method Doctrine\\\\ORM\\\\Cache\\\\Region\\\\DefaultMultiGetRegion\\:\\:__construct\\(\\) has typehint with deprecated interface Doctrine\\\\Common\\\\Cache\\\\MultiGetCache\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Cache/Region/DefaultMultiGetRegion.php
+
+		-
 			message: "#^Method Doctrine\\\\ORM\\\\Cache\\\\Region\\\\DefaultRegion\\:\\:getCache\\(\\) should return Doctrine\\\\Common\\\\Cache\\\\CacheProvider but returns Doctrine\\\\Common\\\\Cache\\\\Cache\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Region/DefaultRegion.php
@@ -126,6 +131,77 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/TimestampQueryCacheValidator.php
 
 		-
+			message:
+				"""
+					#^Call to deprecated method getAutoGenerateProxyClasses\\(\\) of class Doctrine\\\\ORM\\\\Configuration\\:
+					2\\.7 We're switch to `ocramius/proxy\\-manager` and this method isn't applicable any longer$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Configuration.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method getMetadataCacheImpl\\(\\) of class Doctrine\\\\ORM\\\\Configuration\\:
+					Deprecated in favor of getMetadataCache$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Configuration.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method registerFile\\(\\) of class Doctrine\\\\Common\\\\Annotations\\\\AnnotationRegistry\\:
+					This method is deprecated and will be removed in
+					            doctrine/annotations 2\\.0\\. Annotations will be autoloaded in 2\\.0\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Configuration.php
+
+		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\Common\\\\Annotations\\\\CachedReader\\:
+					the CachedReader is deprecated and will be removed
+					            in version 2\\.0\\.0 of doctrine/annotations\\. Please use the
+					            \\{@see \\\\Doctrine\\\\Common\\\\Annotations\\\\PsrCachedReader\\} instead\\.$#
+				"""
+			count: 2
+			path: lib/Doctrine/ORM/Configuration.php
+
+		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\Common\\\\Annotations\\\\SimpleAnnotationReader\\:
+					Deprecated in favour of using AnnotationReader$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Configuration.php
+
+		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\Common\\\\Cache\\\\ArrayCache\\:
+					Deprecated without replacement in doctrine/cache 1\\.11\\. This class will be dropped in 2\\.0$#
+				"""
+			count: 2
+			path: lib/Doctrine/ORM/Configuration.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method copy\\(\\) of class Doctrine\\\\ORM\\\\EntityManagerInterface\\:
+					2\\.7 This method is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
+
+		-
+			message: "#^Call to deprecated method getHydrator\\(\\) of class Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
+
+		-
 			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:find\\(\\) invoked with 4 parameters, 2 required\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
@@ -136,8 +212,62 @@ parameters:
 			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
 
 		-
+			message:
+				"""
+					#^Return type of method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getProxyFactory\\(\\) has typehint with deprecated class Doctrine\\\\ORM\\\\Proxy\\\\ProxyFactory\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method getAutoGenerateProxyClasses\\(\\) of class Doctrine\\\\ORM\\\\Configuration\\:
+					2\\.7 We're switch to `ocramius/proxy\\-manager` and this method isn't applicable any longer$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/EntityManager.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method getMetadataCacheImpl\\(\\) of class Doctrine\\\\ORM\\\\Configuration\\:
+					Deprecated in favor of getMetadataCache$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/EntityManager.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method getProxyDir\\(\\) of class Doctrine\\\\ORM\\\\Configuration\\:
+					2\\.7 We're switch to `ocramius/proxy\\-manager` and this method isn't applicable any longer$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/EntityManager.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method getProxyNamespace\\(\\) of class Doctrine\\\\ORM\\\\Configuration\\:
+					2\\.7 We're switch to `ocramius/proxy\\-manager` and this method isn't applicable any longer$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/EntityManager.php
+
+		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 2
+			path: lib/Doctrine/ORM/EntityManager.php
+
+		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\ORM\\\\Proxy\\\\ProxyFactory\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
@@ -164,6 +294,24 @@ parameters:
 			message: "#^Result of && is always false\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
+
+		-
+			message:
+				"""
+					#^Return type of method Doctrine\\\\ORM\\\\EntityManager\\:\\:getProxyFactory\\(\\) has typehint with deprecated class Doctrine\\\\ORM\\\\Proxy\\\\ProxyFactory\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/EntityManager.php
+
+		-
+			message:
+				"""
+					#^Return type of method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:getProxyFactory\\(\\) has typehint with deprecated class Doctrine\\\\ORM\\\\Proxy\\\\ProxyFactory\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/EntityManagerInterface.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\EntityRepository\\:\\:findOneBy\\(\\) should return T\\|null but returns object\\|null\\.$#"
@@ -196,6 +344,24 @@ parameters:
 			path: lib/Doctrine/ORM/Event/PreFlushEventArgs.php
 
 		-
+			message:
+				"""
+					#^Call to deprecated method fetchColumn\\(\\) of class Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement\\:
+					Use fetchOne\\(\\) instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Id/SequenceGenerator.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method query\\(\\) of class Doctrine\\\\DBAL\\\\Connection\\:
+					Use \\{@link executeQuery\\(\\)\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Id/SequenceGenerator.php
+
+		-
 			message: "#^Call to an undefined method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getTableHiLoCurrentValSql\\(\\)\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Id/TableGenerator.php
@@ -204,6 +370,78 @@ parameters:
 			message: "#^Call to an undefined method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getTableHiLoUpdateNextValSql\\(\\)\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Id/TableGenerator.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method executeUpdate\\(\\) of class Doctrine\\\\DBAL\\\\Connection\\:
+					Use \\{@link executeStatement\\(\\)\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Id/TableGenerator.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method fetchColumn\\(\\) of class Doctrine\\\\DBAL\\\\Connection\\:
+					Use fetchOne\\(\\) instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Id/TableGenerator.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method fetchColumn\\(\\) of class Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement\\:
+					Use fetchOne\\(\\) instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Id/UuidGenerator.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method getGuidExpression\\(\\) of class Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:
+					Use application\\-generated UUIDs instead$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Id/UuidGenerator.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method query\\(\\) of class Doctrine\\\\DBAL\\\\Connection\\:
+					Use \\{@link executeQuery\\(\\)\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Id/UuidGenerator.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method closeCursor\\(\\) of class Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement\\:
+					Use Result\\:\\:free\\(\\) instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method fetch\\(\\) of class Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement\\:
+					Use fetchNumeric\\(\\), fetchAssociative\\(\\) or fetchOne\\(\\) instead\\.$#
+				"""
+			count: 2
+			path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
+
+		-
+			message:
+				"""
+					#^Fetching class constant ASSOCIATIVE of deprecated class Doctrine\\\\DBAL\\\\FetchMode\\:
+					Use one of the fetch\\- or iterate\\-related methods on the Statement\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
 
 		-
 			message: "#^Property Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\AbstractHydrator\\:\\:\\$_rsm \\(Doctrine\\\\ORM\\\\Query\\\\ResultSetMapping\\) does not accept null\\.$#"
@@ -216,9 +454,50 @@ parameters:
 			path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
 
 		-
+			message:
+				"""
+					#^Call to deprecated method fetch\\(\\) of class Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement\\:
+					Use fetchNumeric\\(\\), fetchAssociative\\(\\) or fetchOne\\(\\) instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Internal/Hydration/ArrayHydrator.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method fetch\\(\\) of class Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement\\:
+					Use fetchNumeric\\(\\), fetchAssociative\\(\\) or fetchOne\\(\\) instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php
+
+		-
 			message: "#^Parameter \\#2 \\$discrMap of static method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\HydrationException\\:\\:invalidDiscriminatorValue\\(\\) expects array\\<string, string\\>, array\\<int, int\\|string\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method fetch\\(\\) of class Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement\\:
+					Use fetchNumeric\\(\\), fetchAssociative\\(\\) or fetchOne\\(\\) instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Internal/Hydration/ScalarHydrator.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method fetch\\(\\) of class Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement\\:
+					Use fetchNumeric\\(\\), fetchAssociative\\(\\) or fetchOne\\(\\) instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Internal/Hydration/SimpleObjectHydrator.php
+
+		-
+			message: "#^Call to deprecated method getSQLResultCasing\\(\\) of class Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Internal/Hydration/SimpleObjectHydrator.php
 
 		-
 			message: "#^Parameter \\#2 \\$discrMap of static method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\HydrationException\\:\\:invalidDiscriminatorValue\\(\\) expects array\\<string, string\\>, array\\<int, int\\|string\\> given\\.$#"
@@ -226,9 +505,28 @@ parameters:
 			path: lib/Doctrine/ORM/Internal/Hydration/SimpleObjectHydrator.php
 
 		-
+			message:
+				"""
+					#^Call to deprecated method fetchAll\\(\\) of class Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement\\:
+					Use fetchAllNumeric\\(\\), fetchAllAssociative\\(\\) or fetchFirstColumn\\(\\) instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Internal/Hydration/SingleScalarHydrator.php
+
+		-
 			message: "#^Call to an undefined method Doctrine\\\\Common\\\\Collections\\\\Collection\\<mixed, mixed\\>\\:\\:matching\\(\\)\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/LazyCriteriaCollection.php
+
+		-
+			message: "#^Call to deprecated method getSQLResultCasing\\(\\) of class Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/AnsiQuoteStrategy.php
+
+		-
+			message: "#^Call to deprecated method addNamedQuery\\(\\) of class Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$cache\\.$#"
@@ -401,6 +699,26 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
+			message: "#^Call to deprecated method addNamedNativeQuery\\(\\) of class Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
+
+		-
+			message: "#^Call to deprecated method addNamedQuery\\(\\) of class Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
+
+		-
+			message: "#^Call to deprecated method fixSchemaElementName\\(\\) of class Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\.$#"
+			count: 2
+			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
+
+		-
+			message: "#^Call to deprecated method prefersSequences\\(\\) of class Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
+
+		-
 			message: "#^If condition is always true\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
@@ -536,6 +854,15 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
+			message:
+				"""
+					#^Access to deprecated property \\$columnNames of class Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\:
+					3\\.0 Remove this\\.$#
+				"""
+			count: 4
+			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
+
+		-
 			message: "#^Array \\(array\\<string, array\\|string\\>\\) does not accept key 'options'\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
@@ -589,6 +916,11 @@ parameters:
 			message: "#^Array \\(array\\<class\\-string, object\\>\\) does not accept key string\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/DefaultEntityListenerResolver.php
+
+		-
+			message: "#^Call to deprecated method getSQLResultCasing\\(\\) of class Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/DefaultQuoteStrategy.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$inheritanceType\\.$#"
@@ -831,6 +1163,123 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
 
 		-
+			message:
+				"""
+					#^Fetching deprecated class constant BIGINT of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:BIGINT\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant BLOB of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:BLOB\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant DECIMAL of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:DECIMAL\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant FLOAT of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:FLOAT\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant GUID of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:GUID\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant INTEGER of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:INTEGER\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant JSON_ARRAY of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:JSON_ARRAY\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant OBJECT of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:OBJECT\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant SIMPLE_ARRAY of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:SIMPLE_ARRAY\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant SMALLINT of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:SMALLINT\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant STRING of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:STRING\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant TARRAY of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:ARRAY\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant TEXT of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:TEXT\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+
+		-
 			message: "#^Parameter \\#1 \\$metadata of method Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\DatabaseDriver\\:\\:buildFieldMappings\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
@@ -844,6 +1293,24 @@ parameters:
 			message: "#^Parameter \\#1 \\$metadata of method Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\DatabaseDriver\\:\\:buildToOneAssociationMappings\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message:
+				"""
+					#^Call to method __construct\\(\\) of deprecated class Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\YamlDriver\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/SimplifiedYamlDriver.php
+
+		-
+			message:
+				"""
+					#^Class Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\SimplifiedYamlDriver extends deprecated class Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\YamlDriver\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/SimplifiedYamlDriver.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$inheritanceType\\.$#"
@@ -1196,12 +1663,120 @@ parameters:
 			path: lib/Doctrine/ORM/PersistentCollection.php
 
 		-
+			message:
+				"""
+					#^Call to deprecated method executeUpdate\\(\\) of class Doctrine\\\\DBAL\\\\Connection\\:
+					Use \\{@link executeStatement\\(\\)\\} instead\\.$#
+				"""
+			count: 3
+			path: lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method fetchColumn\\(\\) of class Doctrine\\\\DBAL\\\\Connection\\:
+					Use fetchOne\\(\\) instead\\.$#
+				"""
+			count: 3
+			path: lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method executeUpdate\\(\\) of class Doctrine\\\\DBAL\\\\Connection\\:
+					Use \\{@link executeStatement\\(\\)\\} instead\\.$#
+				"""
+			count: 5
+			path: lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php
+
+		-
 			message: "#^Method Doctrine\\\\ORM\\\\Persisters\\\\Collection\\\\OneToManyPersister\\:\\:delete\\(\\) should return int\\|null but empty return statement found\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php
 
 		-
 			message: "#^Array \\(array\\<class\\-string, string\\>\\) does not accept key string\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method closeCursor\\(\\) of class Doctrine\\\\DBAL\\\\Statement\\:
+					Use Result\\:\\:free\\(\\) instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method execute\\(\\) of class Doctrine\\\\DBAL\\\\Statement\\:
+					Statement\\:\\:execute\\(\\) is deprecated, use Statement\\:\\:executeQuery\\(\\) or executeStatement\\(\\) instead$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method executeUpdate\\(\\) of class Doctrine\\\\DBAL\\\\Connection\\:
+					Use \\{@link executeStatement\\(\\)\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method fetchColumn\\(\\) of class Doctrine\\\\DBAL\\\\Connection\\:
+					Use fetchOne\\(\\) instead\\.$#
+				"""
+			count: 2
+			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method fetchColumn\\(\\) of class Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement\\:
+					Use fetchOne\\(\\) instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant BIGINT of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:BIGINT\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant DATETIME of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:DATETIME_MUTABLE\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant INTEGER of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:INTEGER\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant SMALLINT of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:SMALLINT\\} instead\\.$#
+				"""
 			count: 1
 			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
 
@@ -1231,6 +1806,38 @@ parameters:
 			path: lib/Doctrine/ORM/Persisters/Entity/CachedPersisterContext.php
 
 		-
+			message:
+				"""
+					#^Call to deprecated method closeCursor\\(\\) of class Doctrine\\\\DBAL\\\\Statement\\:
+					Use Result\\:\\:free\\(\\) instead\\.$#
+				"""
+			count: 2
+			path: lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method execute\\(\\) of class Doctrine\\\\DBAL\\\\Statement\\:
+					Statement\\:\\:execute\\(\\) is deprecated, use Statement\\:\\:executeQuery\\(\\) or executeStatement\\(\\) instead$#
+				"""
+			count: 2
+			path: lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
+
+		-
+			message: "#^Call to deprecated method getSQLResultCasing\\(\\) of class Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant STRING of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:STRING\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
+
+		-
 			message: "#^If condition is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
@@ -1244,6 +1851,11 @@ parameters:
 			message: "#^Parameter \\#1 \\$em of method Doctrine\\\\ORM\\\\Id\\\\AbstractIdGenerator\\:\\:generate\\(\\) expects Doctrine\\\\ORM\\\\EntityManager, Doctrine\\\\ORM\\\\EntityManagerInterface given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
+
+		-
+			message: "#^Call to deprecated method getSQLResultCasing\\(\\) of class Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Persisters/Entity/SingleTablePersister.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$isEmbeddedClass\\.$#"
@@ -1269,6 +1881,15 @@ parameters:
 			message: "#^Parameter \\#2 \\$sqlParams of method Doctrine\\\\ORM\\\\Query\\:\\:evictResultSetCache\\(\\) expects array\\<string, mixed\\>, array\\<int, mixed\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant INTEGER of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:INTEGER\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Query/AST/Functions/CountFunction.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\:\\:\\$value\\.$#"
@@ -1351,6 +1972,15 @@ parameters:
 			path: lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php
 
 		-
+			message:
+				"""
+					#^Fetching deprecated class constant INTEGER of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:INTEGER\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Query/AST/Functions/LengthFunction.php
+
+		-
 			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/AST/Functions/LengthFunction.php
@@ -1371,9 +2001,50 @@ parameters:
 			path: lib/Doctrine/ORM/Query/AST/Functions/SubstringFunction.php
 
 		-
+			message:
+				"""
+					#^Fetching deprecated class constant TRIM_BOTH of class Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:
+					Use TrimMode\\:\\:BOTH\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Query/AST/Functions/TrimFunction.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant TRIM_LEADING of class Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:
+					Use TrimMode\\:\\:LEADING\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Query/AST/Functions/TrimFunction.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant TRIM_TRAILING of class Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:
+					Use TrimMode\\:\\:TRAILING\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Query/AST/Functions/TrimFunction.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant TRIM_UNSPECIFIED of class Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:
+					Use TrimMode\\:\\:UNSPECIFIED\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Query/AST/Functions/TrimFunction.php
+
+		-
 			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/AST/Functions/UpperFunction.php
+
+		-
+			message: "#^Access to deprecated property \\$simpleStateFieldPathExpression of class Doctrine\\\\ORM\\\\Query\\\\AST\\\\IndexBy\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Query/AST/IndexBy.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\AST\\\\IndexBy\\:\\:dispatch\\(\\) should return string but returns void\\.$#"
@@ -1421,9 +2092,81 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php
 
 		-
+			message:
+				"""
+					#^Call to deprecated method executeUpdate\\(\\) of class Doctrine\\\\DBAL\\\\Connection\\:
+					Use \\{@link executeStatement\\(\\)\\} instead\\.$#
+				"""
+			count: 5
+			path: lib/Doctrine/ORM/Query/Exec/MultiTableDeleteExecutor.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method executeUpdate\\(\\) of class Doctrine\\\\DBAL\\\\Connection\\:
+					Use \\{@link executeStatement\\(\\)\\} instead\\.$#
+				"""
+			count: 5
+			path: lib/Doctrine/ORM/Query/Exec/MultiTableUpdateExecutor.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method executeUpdate\\(\\) of class Doctrine\\\\DBAL\\\\Connection\\:
+					Use \\{@link executeStatement\\(\\)\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Query/Exec/SingleTableDeleteUpdateExecutor.php
+
+		-
 			message: "#^Property Doctrine\\\\ORM\\\\Query\\\\FilterCollection\\:\\:\\$em \\(Doctrine\\\\ORM\\\\EntityManager\\) does not accept Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/FilterCollection.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant BOOLEAN of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:BOOLEAN\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Query/ParameterTypeInferer.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant DATEINTERVAL of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:DATEINTERVAL\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Query/ParameterTypeInferer.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant DATETIME of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:DATETIME_MUTABLE\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Query/ParameterTypeInferer.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant DATETIME_IMMUTABLE of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:DATETIME_IMMUTABLE\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Query/ParameterTypeInferer.php
+
+		-
+			message:
+				"""
+					#^Fetching deprecated class constant INTEGER of class Doctrine\\\\DBAL\\\\Types\\\\Type\\:
+					Use \\{@see Types\\:\\:INTEGER\\} instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Query/ParameterTypeInferer.php
 
 		-
 			message: "#^Array \\(array\\<int, Doctrine\\\\ORM\\\\Query\\\\AST\\\\SelectExpression\\>\\) does not accept key string\\.$#"
@@ -1470,6 +2213,11 @@ parameters:
 			message: "#^Unreachable statement \\- code above always terminates\\.$#"
 			count: 4
 			path: lib/Doctrine/ORM/Query/Parser.php
+
+		-
+			message: "#^Call to deprecated method getSQLResultCasing\\(\\) of class Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\.$#"
+			count: 2
+			path: lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php
 
 		-
 			message: "#^Parameter \\#2 \\$class of static method Doctrine\\\\ORM\\\\Utility\\\\PersisterHelper\\:\\:getTypeOfColumn\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo given\\.$#"
@@ -2022,6 +2770,15 @@ parameters:
 			path: lib/Doctrine/ORM/Query/TreeWalkerChainIterator.php
 
 		-
+			message:
+				"""
+					#^Call to deprecated method getRootAlias\\(\\) of class Doctrine\\\\ORM\\\\QueryBuilder\\:
+					Please use \\$qb\\-\\>getRootAliases\\(\\) instead\\.$#
+				"""
+			count: 2
+			path: lib/Doctrine/ORM/QueryBuilder.php
+
+		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$where$#"
 			count: 2
 			path: lib/Doctrine/ORM/QueryBuilder.php
@@ -2030,6 +2787,15 @@ parameters:
 			message: "#^Parameter \\#2 \\$dqlPart of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:add\\(\\) expects array\\<'join'\\|int, array\\<int\\|string, object\\>\\|string\\>\\|object\\|string, array\\<string, Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Join\\> given\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/QueryBuilder.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method getMetadataCacheImpl\\(\\) of class Doctrine\\\\ORM\\\\Configuration\\:
+					Deprecated in favor of getMetadataCache$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/MetadataCommand.php
 
 		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
@@ -2052,6 +2818,24 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php
 
 		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\ORM\\\\Tools\\\\EntityGenerator\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php
+
+		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\ORM\\\\Tools\\\\Export\\\\ClassMetadataExporter\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php
+
+		-
 			message: "#^Method Doctrine\\\\ORM\\\\Tools\\\\Console\\\\Command\\\\ConvertMappingCommand\\:\\:execute\\(\\) should return int but empty return statement found\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php
@@ -2063,6 +2847,15 @@ parameters:
 
 		-
 			message: "#^Parameter \\#5 \\$default of method Symfony\\\\Component\\\\Console\\\\Command\\\\Command\\:\\:addOption\\(\\) expects array\\<string\\>\\|bool\\|string\\|null, int given\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php
+
+		-
+			message:
+				"""
+					#^Return type of method Doctrine\\\\ORM\\\\Tools\\\\Console\\\\Command\\\\ConvertMappingCommand\\:\\:getExporter\\(\\) has typehint with deprecated class Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php
 
@@ -2087,6 +2880,15 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Console/Command/GenerateProxiesCommand.php
 
 		-
+			message:
+				"""
+					#^Call to deprecated method getProxyDir\\(\\) of class Doctrine\\\\ORM\\\\Configuration\\:
+					2\\.7 We're switch to `ocramius/proxy\\-manager` and this method isn't applicable any longer$#
+				"""
+			count: 2
+			path: lib/Doctrine/ORM/Tools/Console/Command/GenerateProxiesCommand.php
+
+		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$customRepositoryClassName\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Console/Command/GenerateRepositoriesCommand.php
@@ -2097,9 +2899,72 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Console/Command/MappingDescribeCommand.php
 
 		-
+			message:
+				"""
+					#^Call to method dump\\(\\) of deprecated class Doctrine\\\\Common\\\\Util\\\\Debug\\:
+					The Debug class is deprecated, please use symfony/var\\-dumper instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Console/Command/RunDqlCommand.php
+
+		-
 			message: "#^Parameter \\#5 \\$default of method Symfony\\\\Component\\\\Console\\\\Command\\\\Command\\:\\:addOption\\(\\) expects array\\<string\\>\\|bool\\|string\\|null, int given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Console/Command/RunDqlCommand.php
+
+		-
+			message:
+				"""
+					#^Call to method getVersion\\(\\) of deprecated class PackageVersions\\\\Versions\\:
+					in favor of the Composer\\\\InstalledVersions class provided by Composer 2\\. Require composer\\-runtime\\-api\\:\\^2 to ensure it is present\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
+
+		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\DBAL\\\\Tools\\\\Console\\\\Command\\\\ImportCommand\\:
+					Use a database client application instead$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
+
+		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\DBAL\\\\Tools\\\\Console\\\\Helper\\\\ConnectionHelper\\:
+					use a ConnectionProvider instead\\.$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
+
+		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\ORM\\\\Tools\\\\Console\\\\Command\\\\ConvertDoctrine1SchemaCommand\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
+
+		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\ORM\\\\Tools\\\\Console\\\\Command\\\\GenerateEntitiesCommand\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
+
+		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\ORM\\\\Tools\\\\Console\\\\Command\\\\GenerateRepositoriesCommand\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
 
 		-
 			message: "#^If condition is always true\\.$#"
@@ -2132,6 +2997,24 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php
 
 		-
+			message:
+				"""
+					#^Class Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AnnotationExporter extends deprecated class Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Export/Driver/AnnotationExporter.php
+
+		-
+			message:
+				"""
+					#^Class Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\PhpExporter extends deprecated class Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php
+
+		-
 			message: "#^If condition is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php
@@ -2140,6 +3023,15 @@ parameters:
 			message: "#^Parameter \\#1 \\$type of method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:_getIdGeneratorTypeString\\(\\) expects 1\\|2\\|3\\|4\\|5\\|6\\|7, int given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php
+
+		-
+			message:
+				"""
+					#^Class Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\XmlExporter extends deprecated class Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
 		-
 			message: "#^Parameter \\#1 \\$policy of method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:_getChangeTrackingPolicyString\\(\\) expects 1\\|2\\|3, int given\\.$#"
@@ -2172,6 +3064,15 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
 		-
+			message:
+				"""
+					#^Class Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\YamlExporter extends deprecated class Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php
+
+		-
 			message: "#^Parameter \\#1 \\$type of method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:_getIdGeneratorTypeString\\(\\) expects 1\\|2\\|3\\|4\\|5\\|6\\|7, int given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php
@@ -2190,6 +3091,11 @@ parameters:
 			message: "#^Return type \\(void\\) of method Doctrine\\\\ORM\\\\Tools\\\\Pagination\\\\LimitSubqueryWalker\\:\\:walkSelectStatement\\(\\) should be compatible with return type \\(string\\) of method Doctrine\\\\ORM\\\\Query\\\\TreeWalker\\:\\:walkSelectStatement\\(\\)$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryWalker.php
+
+		-
+			message: "#^Call to deprecated method getSQLResultCasing\\(\\) of class Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Pagination/Paginator.php
 
 		-
 			message: "#^Instanceof between \\*NEVER\\* and Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalFactor will always evaluate to false\\.$#"
@@ -2212,6 +3118,15 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Pagination/WhereInWalker.php
 
 		-
+			message:
+				"""
+					#^Call to deprecated method addUnnamedForeignKeyConstraint\\(\\) of class Doctrine\\\\DBAL\\\\Schema\\\\Table\\:
+					Use \\{@link addForeignKeyConstraint\\}$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/SchemaTool.php
+
+		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/SchemaTool.php
@@ -2220,6 +3135,69 @@ parameters:
 			message: "#^Negated boolean expression is always false\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/SchemaTool.php
+
+		-
+			message:
+				"""
+					#^Call to deprecated method setMetadataCacheImpl\\(\\) of class Doctrine\\\\ORM\\\\Configuration\\:
+					Deprecated in favor of setMetadataCache$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Setup.php
+
+		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\Common\\\\Cache\\\\ApcuCache\\:
+					Deprecated without replacement in doctrine/cache 1\\.11\\. This class will be dropped in 2\\.0$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Setup.php
+
+		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\Common\\\\Cache\\\\ArrayCache\\:
+					Deprecated without replacement in doctrine/cache 1\\.11\\. This class will be dropped in 2\\.0$#
+				"""
+			count: 2
+			path: lib/Doctrine/ORM/Tools/Setup.php
+
+		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\Common\\\\Cache\\\\MemcachedCache\\:
+					Deprecated without replacement in doctrine/cache 1\\.11\\. This class will be dropped in 2\\.0$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Setup.php
+
+		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\Common\\\\Cache\\\\RedisCache\\:
+					Deprecated without replacement in doctrine/cache 1\\.11\\. This class will be dropped in 2\\.0$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Setup.php
+
+		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\Common\\\\ClassLoader\\:
+					The ClassLoader is deprecated and will be removed in version 4\\.0 of doctrine/common\\.$#
+				"""
+			count: 2
+			path: lib/Doctrine/ORM/Tools/Setup.php
+
+		-
+			message:
+				"""
+					#^Instantiation of deprecated class Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\YamlDriver\\:
+					2\\.7 This class is being removed from the ORM and won't have any replacement$#
+				"""
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Setup.php
 
 		-
 			message: "#^Parameter \\#2 \\$code of class Doctrine\\\\ORM\\\\Tools\\\\ToolsException constructor expects int, string given\\.$#"
