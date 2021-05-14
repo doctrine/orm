@@ -19,8 +19,8 @@
         "php": "^7.1|^8.0",
         "ext-pdo": "*",
         "composer/package-versions-deprecated": "^1.8",
-        "doctrine/annotations": "^1.12",
-        "doctrine/cache": "^1.11.0",
+        "doctrine/annotations": "^1.13",
+        "doctrine/cache": "^1.11|^2.0",
         "doctrine/collections": "^1.5",
         "doctrine/common": "^3.0.3",
         "doctrine/dbal": "^2.13.0",
@@ -43,6 +43,7 @@
         "vimeo/psalm": "4.7.0"
     },
     "suggest": {
+        "symfony/cache": "Provides cache support for Setup Tool with doctrine/cache 2.0",
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
     },
     "autoload": {

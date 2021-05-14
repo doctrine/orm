@@ -1,3 +1,31 @@
+# Upgrade to 2.9
+
+## Minor BC BREAK: Setup tool needs cache implementation
+
+With the deprecation of doctrine/cache, the setup tool might no longer work as expected without a different cache
+implementation. To work around this:
+* Install symfony/cache: `composer require symfony/cache`. This will keep previous behaviour without any changes
+* Instantiate caches yourself: to use a different cache implementation, pass a cache instance when calling any
+  configuration factory in the setup tool:
+  ```diff
+  - $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, $proxyDir);
+  + $cache = \Doctrine\Common\Cache\Psr6\DoctrineProvider::wrap($anyPsr6Implementation);
+  + $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache);
+  ```
+* As a quick workaround, you can lock the doctrine/cache dependency to work around this: `composer require doctrine/cache ^1.11`.
+  Note that this is only recommended as a bandaid fix, as future versions of ORM will no longer work with doctrine/cache
+  1.11.
+  
+## Deprecated: doctrine/cache for metadata caching
+
+The `Doctrine\ORM\Configuration#setMetadataCacheImpl()` method is deprecated and should no longer be used. Please use
+`Doctrine\ORM\Configuration#setMetadataCache()` with any PSR-6 cache adapter instead.
+
+## Removed: flushing metadata cache
+
+To support PSR-6 caches, the `--flush` option for the `orm:clear-cache:metadata` command is ignored. Metadata cache is
+now always cleared regardless of the cache adapter being used.
+
 # Upgrade to 2.8
 
 ## Minor BC BREAK: Failed commit now throw OptimisticLockException

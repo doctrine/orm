@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use Closure;
-use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\EchoSQLLogger;
 use Doctrine\ORM\Configuration;
@@ -124,7 +124,7 @@ class LockAgentWorker
         $config->setMetadataDriverImpl($annotDriver);
         $config->setMetadataCache(new ArrayAdapter());
 
-        $cache = new ArrayCache();
+        $cache = DoctrineProvider::wrap(new ArrayAdapter());
         $config->setQueryCacheImpl($cache);
         $config->setSQLLogger(new EchoSQLLogger());
 

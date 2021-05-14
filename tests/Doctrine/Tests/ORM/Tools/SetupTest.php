@@ -4,17 +4,22 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools;
 
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\Psr6\CacheAdapter;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\Setup;
+use Doctrine\Tests\Common\Cache\ArrayCache;
 use Doctrine\Tests\OrmTestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
+use function class_exists;
 use function count;
 use function get_include_path;
+use function method_exists;
 use function set_include_path;
 use function spl_autoload_functions;
 use function spl_autoload_unregister;
@@ -86,19 +91,12 @@ class SetupTest extends OrmTestCase
     /**
      * @group 5904
      */
-    public function testCacheNamespaceShouldBeGeneratedWhenCacheIsNotGiven(): void
-    {
-        $config = Setup::createConfiguration(false, '/foo');
-        $cache  = $config->getMetadataCacheImpl();
-
-        self::assertSame('dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $cache->getNamespace());
-    }
-
-    /**
-     * @group 5904
-     */
     public function testCacheNamespaceShouldBeGeneratedWhenCacheIsGivenButHasNoNamespace(): void
     {
+        if (! class_exists(ArrayCache::class)) {
+            $this->markTestSkipped('Only applies when using doctrine/cache directly');
+        }
+
         $config = Setup::createConfiguration(false, '/foo', new ArrayCache());
         $cache  = $config->getMetadataCacheImpl();
 
@@ -110,12 +108,15 @@ class SetupTest extends OrmTestCase
      */
     public function testConfiguredCacheNamespaceShouldBeUsedAsPrefixOfGeneratedNamespace(): void
     {
+        if (! class_exists(ArrayCache::class)) {
+            $this->markTestSkipped('Only applies when using doctrine/cache directly');
+        }
+
         $originalCache = new ArrayCache();
         $originalCache->setNamespace('foo');
 
         $config = Setup::createConfiguration(false, '/foo', $originalCache);
         $cache  = $config->getMetadataCacheImpl();
-
         self::assertSame($originalCache, $cache);
         self::assertSame('foo:dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $cache->getNamespace());
     }
@@ -134,12 +135,18 @@ class SetupTest extends OrmTestCase
      */
     public function testConfigureCache(): void
     {
-        $cache  = new ArrayCache();
-        $config = Setup::createAnnotationMetadataConfiguration([], true, null, $cache);
+        $adapter = new ArrayAdapter();
+        $cache   = DoctrineProvider::wrap($adapter);
+        $config  = Setup::createAnnotationMetadataConfiguration([], true, null, $cache);
 
         $this->assertSame($cache, $config->getResultCacheImpl());
-        $this->assertSame($cache, $config->getMetadataCacheImpl());
         $this->assertSame($cache, $config->getQueryCacheImpl());
+
+        if (method_exists(Configuration::class, 'getMetadataCache')) {
+            $this->assertSame($adapter, $config->getMetadataCache());
+        } else {
+            $this->assertSame($cache, $config->getMetadataCacheImpl());
+        }
     }
 
     /**
@@ -151,7 +158,13 @@ class SetupTest extends OrmTestCase
         $config = Setup::createConfiguration(true, null, $cache);
 
         $this->assertSame($cache, $config->getResultCacheImpl());
-        $this->assertSame($cache, $config->getMetadataCacheImpl());
         $this->assertSame($cache, $config->getQueryCacheImpl());
+
+        if (method_exists(Configuration::class, 'getMetadataCache')) {
+            $this->assertInstanceOf(CacheAdapter::class, $config->getMetadataCache());
+            $this->assertSame($cache, $config->getMetadataCache()->getCache());
+        } else {
+            $this->assertSame($cache, $config->getMetadataCacheImpl());
+        }
     }
 }

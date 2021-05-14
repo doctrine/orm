@@ -11,6 +11,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use ReflectionProperty;
 
+use function class_exists;
 use function count;
 use function iterator_to_array;
 
@@ -24,6 +25,10 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
     protected function setUp(): void
     {
+        if (! class_exists(ArrayCache::class)) {
+            $this->markTestSkipped('Test only applies with doctrine/cache 1.x');
+        }
+
         $this->cacheDataReflection = new ReflectionProperty(ArrayCache::class, 'data');
         $this->cacheDataReflection->setAccessible(true);
         $this->useModelSet('cms');
