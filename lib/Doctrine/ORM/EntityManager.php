@@ -21,6 +21,7 @@
 namespace Doctrine\ORM;
 
 use BadMethodCallException;
+use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
@@ -47,6 +48,7 @@ use function is_callable;
 use function is_object;
 use function is_string;
 use function ltrim;
+use function method_exists;
 use function sprintf;
 use function trigger_error;
 
@@ -166,7 +168,14 @@ use const E_USER_DEPRECATED;
 
         $this->metadataFactory = new $metadataFactoryClassName();
         $this->metadataFactory->setEntityManager($this);
-        $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
+        $metadataCache = $this->config->getMetadataCacheImpl();
+        if ($metadataCache !== null) {
+            if (method_exists($this->metadataFactory, 'setCache')) {
+                $this->metadataFactory->setCache(CacheAdapter::wrap($metadataCache));
+            } else {
+                $this->metadataFactory->setCacheDriver($metadataCache);
+            }
+        }
 
         $this->repositoryFactory = $config->getRepositoryFactory();
         $this->unitOfWork        = new UnitOfWork($this);
