@@ -40,12 +40,14 @@ class EntityCacheEntry implements CacheEntry
      * READ-ONLY: Public only for performance reasons, it should be considered immutable.
      *
      * @var string The entity class name
+     * @psalm-var class-string
      */
     public $class;
 
     /**
      * @param string              $class The entity class.
      * @param array<string,mixed> $data  The entity data.
+     * @psalm-param class-string $class
      */
     public function __construct($class, array $data)
     {
