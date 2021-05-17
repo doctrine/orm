@@ -23,6 +23,7 @@ namespace Doctrine\ORM\Mapping;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Platforms;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
@@ -635,7 +636,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                         ->getSequenceName($definition, $class, $this->getTargetPlatform());
                 }
 
-                $generator = $fieldName && $class->fieldMappings[$fieldName]['type'] === 'bigint'
+                $generator = $fieldName && $class->fieldMappings[$fieldName]['type'] === Types::BIGINT
                     ? new BigIntegerIdentityGenerator($sequenceName)
                     : new IdentityGenerator($sequenceName);
 

@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata as Metadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -182,13 +183,13 @@ class XmlDriver extends FileDriver
                     $metadata->setDiscriminatorColumn(
                         [
                             'name' => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
-                            'type' => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
+                            'type' => isset($discrColumn['type']) ? (string) $discrColumn['type'] : Types::STRING,
                             'length' => isset($discrColumn['length']) ? (string) $discrColumn['length'] : 255,
                             'columnDefinition' => isset($discrColumn['column-definition']) ? (string) $discrColumn['column-definition'] : null,
                         ]
                     );
                 } else {
-                    $metadata->setDiscriminatorColumn(['name' => 'dtype', 'type' => 'string', 'length' => 255]);
+                    $metadata->setDiscriminatorColumn(['name' => 'dtype', 'type' => Types::STRING, 'length' => 255]);
                 }
 
                 // Evaluate <discriminator-map...>

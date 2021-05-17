@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Id\TableGenerator;
 use Doctrine\ORM\Mapping;
@@ -299,13 +300,13 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $metadata->setDiscriminatorColumn(
                         [
                             'name'             => $discrColumnAnnot->name,
-                            'type'             => $discrColumnAnnot->type ?: 'string',
+                            'type'             => $discrColumnAnnot->type ?: Types::STRING,
                             'length'           => $discrColumnAnnot->length ?: 255,
                             'columnDefinition' => $discrColumnAnnot->columnDefinition,
                         ]
                     );
                 } else {
-                    $metadata->setDiscriminatorColumn(['name' => 'dtype', 'type' => 'string', 'length' => 255]);
+                    $metadata->setDiscriminatorColumn(['name' => 'dtype', 'type' => Types::STRING, 'length' => 255]);
                 }
 
                 // Evaluate DiscriminatorMap annotation

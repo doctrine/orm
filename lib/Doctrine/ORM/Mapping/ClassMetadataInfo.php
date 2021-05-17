@@ -1556,7 +1556,7 @@ class ClassMetadataInfo implements ClassMetadata
 
         if (! isset($mapping['type'])) {
             // Default to string
-            $mapping['type'] = 'string';
+            $mapping['type'] = Types::STRING;
         }
 
         // Complete fieldName and columnName mapping
@@ -3068,10 +3068,10 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             if (! isset($columnDef['type'])) {
-                $columnDef['type'] = 'string';
+                $columnDef['type'] = Types::STRING;
             }
 
-            if (in_array($columnDef['type'], ['boolean', 'array', 'object', 'datetime', 'time', 'date'])) {
+            if (in_array($columnDef['type'], [Types::BOOLEAN, Types::ARRAY, Types::OBJECT, Types::DATETIME_MUTABLE, Types::TIME_MUTABLE, Types::DATE_MUTABLE])) {
                 throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']);
             }
 
@@ -3348,9 +3348,9 @@ class ClassMetadataInfo implements ClassMetadata
         $this->versionField = $mapping['fieldName'];
 
         if (! isset($mapping['default'])) {
-            if (in_array($mapping['type'], ['integer', 'bigint', 'smallint'])) {
+            if (in_array($mapping['type'], [Types::INTEGER, Types::BIGINT, Types::SMALLINT])) {
                 $mapping['default'] = 1;
-            } elseif ($mapping['type'] === 'datetime') {
+            } elseif ($mapping['type'] === Types::DATETIME_MUTABLE) {
                 $mapping['default'] = 'CURRENT_TIMESTAMP';
             } else {
                 throw MappingException::unsupportedOptimisticLockingType($this->name, $mapping['fieldName'], $mapping['type']);

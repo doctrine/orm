@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Tools;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
@@ -193,7 +194,7 @@ class EntityGenerator
      *
      * @var string
      */
-    protected $fieldVisibility = 'private';
+    protected $fieldVisibility = self::FIELD_VISIBLE_PRIVATE;
 
     /**
      * Whether or not to make generated embeddables immutable.
@@ -789,7 +790,7 @@ public function __construct(<params>)
             $param            = '$' . $fieldMapping['fieldName'];
             $paramVariables[] = $param;
 
-            if ($fieldMapping['type'] === 'datetime') {
+            if ($fieldMapping['type'] === Types::DATETIME_MUTABLE) {
                 $param = $this->getType($fieldMapping['type']) . ' ' . $param;
             }
 
@@ -1369,9 +1370,9 @@ public function __construct(<params>)
 
             $defaultValue = '';
             if (isset($fieldMapping['options']['default'])) {
-                if ($fieldMapping['type'] === 'boolean' && $fieldMapping['options']['default'] === '1') {
+                if ($fieldMapping['type'] === Types::BOOLEAN && $fieldMapping['options']['default'] === '1') {
                     $defaultValue = ' = true';
-                } elseif (($fieldMapping['type'] === 'integer' || $fieldMapping['type'] === 'float') && ! empty($fieldMapping['options']['default'])) {
+                } elseif (($fieldMapping['type'] === Types::INTEGER || $fieldMapping['type'] === Types::FLOAT) && ! empty($fieldMapping['options']['default'])) {
                     $defaultValue = ' = ' . (string) $fieldMapping['options']['default'];
                 } else {
                     $defaultValue = ' = ' . var_export($fieldMapping['options']['default'], true);

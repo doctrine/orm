@@ -28,6 +28,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Visitor\DropSchemaSqlCollector;
 use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -429,9 +430,9 @@ class SchemaTool
 
         if (
             ! isset($discrColumn['type']) ||
-            (strtolower($discrColumn['type']) === 'string' && ! isset($discrColumn['length']))
+            (strtolower($discrColumn['type']) === Types::STRING && ! isset($discrColumn['length']))
         ) {
-            $discrColumn['type']   = 'string';
+            $discrColumn['type']   = Types::STRING;
             $discrColumn['length'] = 255;
         }
 
@@ -492,7 +493,7 @@ class SchemaTool
         $options['platformOptions']            = [];
         $options['platformOptions']['version'] = $class->isVersioned && $class->versionField === $mapping['fieldName'];
 
-        if (strtolower($columnType) === 'string' && $options['length'] === null) {
+        if (strtolower($columnType) === Types::STRING && $options['length'] === null) {
             $options['length'] = 255;
         }
 
@@ -726,9 +727,9 @@ class SchemaTool
 
                 $columnOptions += $this->gatherColumnOptions($fieldMapping);
 
-                if ($fieldMapping['type'] === 'string' && isset($fieldMapping['length'])) {
+                if ($fieldMapping['type'] === Types::STRING && isset($fieldMapping['length'])) {
                     $columnOptions['length'] = $fieldMapping['length'];
-                } elseif ($fieldMapping['type'] === 'decimal') {
+                } elseif ($fieldMapping['type'] === Types::DECIMAL) {
                     $columnOptions['scale']     = $fieldMapping['scale'];
                     $columnOptions['precision'] = $fieldMapping['precision'];
                 }

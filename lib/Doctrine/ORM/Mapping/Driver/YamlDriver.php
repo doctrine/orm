@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata as Metadata;
@@ -199,13 +200,13 @@ class YamlDriver extends FileDriver
                     $metadata->setDiscriminatorColumn(
                         [
                             'name' => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
-                            'type' => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
+                            'type' => isset($discrColumn['type']) ? (string) $discrColumn['type'] : Types::STRING,
                             'length' => isset($discrColumn['length']) ? (string) $discrColumn['length'] : 255,
                             'columnDefinition' => isset($discrColumn['columnDefinition']) ? (string) $discrColumn['columnDefinition'] : null,
                         ]
                     );
                 } else {
-                    $metadata->setDiscriminatorColumn(['name' => 'dtype', 'type' => 'string', 'length' => 255]);
+                    $metadata->setDiscriminatorColumn(['name' => 'dtype', 'type' => Types::STRING, 'length' => 255]);
                 }
 
                 // Evaluate discriminatorMap
