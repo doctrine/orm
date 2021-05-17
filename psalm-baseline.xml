@@ -57,10 +57,6 @@
       <code>$_hydrationCacheProfile</code>
       <code>$_resultSetMapping</code>
     </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="2">
-      <code>array_map($translate, $rsm-&gt;aliasMap)</code>
-      <code>array_map($translate, $rsm-&gt;declaringClasses)</code>
-    </PropertyTypeCoercion>
     <RedundantCastGivenDocblockType occurrences="5">
       <code>(bool) $cacheable</code>
       <code>(int) $cacheMode</code>
@@ -89,6 +85,16 @@
     </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultCache.php">
+    <ArgumentTypeCoercion occurrences="8">
+      <code>$className</code>
+      <code>$className</code>
+      <code>$className</code>
+      <code>$className</code>
+      <code>$className</code>
+      <code>$className</code>
+      <code>$className</code>
+      <code>$className</code>
+    </ArgumentTypeCoercion>
     <InvalidOperand occurrences="1">
       <code>! $association['type']</code>
     </InvalidOperand>
@@ -467,12 +473,14 @@
     <DeprecatedClass occurrences="2">
       <code>ProxyFactory</code>
     </DeprecatedClass>
-    <DeprecatedMethod occurrences="5">
+    <DeprecatedMethod occurrences="7">
       <code>getAutoGenerateProxyClasses</code>
       <code>getMetadataCacheImpl</code>
       <code>getProxyDir</code>
       <code>getProxyNamespace</code>
       <code>merge</code>
+      <code>setCacheDriver</code>
+      <code>setCacheDriver</code>
     </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="10">
       <code>$connection instanceof Connection</code>
@@ -486,6 +494,9 @@
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
     </DocblockTypeContradiction>
+    <ImplementedReturnTypeMismatch occurrences="1">
+      <code>ClassMetadata</code>
+    </ImplementedReturnTypeMismatch>
     <InvalidReturnStatement occurrences="6">
       <code>$entity</code>
       <code>$entity</code>
@@ -530,8 +541,9 @@
     <RedundantCondition occurrences="1">
       <code>is_object($connection)</code>
     </RedundantCondition>
-    <RedundantConditionGivenDocblockType occurrences="1">
+    <RedundantConditionGivenDocblockType occurrences="2">
       <code>$this-&gt;filterCollection !== null</code>
+      <code>method_exists($this-&gt;metadataFactory, 'setCache')</code>
     </RedundantConditionGivenDocblockType>
     <TypeDoesNotContainType occurrences="1">
       <code>': "' . $connection . '"'</code>
@@ -563,10 +575,9 @@
       <code>?T</code>
       <code>Collection&lt;int, T&gt;</code>
     </InvalidReturnType>
-    <MoreSpecificImplementedParamType occurrences="3">
+    <MoreSpecificImplementedParamType occurrences="2">
       <code>$criteria</code>
       <code>$criteria</code>
-      <code>$orderBy</code>
     </MoreSpecificImplementedParamType>
     <PropertyTypeCoercion occurrences="1">
       <code>$em</code>
@@ -658,6 +669,9 @@
     </RedundantCondition>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$className</code>
+    </ArgumentTypeCoercion>
     <DeprecatedClass occurrences="3">
       <code>FetchMode::ASSOCIATIVE</code>
       <code>IterableResult</code>
@@ -941,10 +955,16 @@
       <code>$definition</code>
       <code>$parent-&gt;sequenceGeneratorDefinition</code>
     </InvalidScalarArgument>
+    <LessSpecificReturnStatement occurrences="1">
+      <code>$this-&gt;em-&gt;getConfiguration()-&gt;getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName</code>
+    </LessSpecificReturnStatement>
     <MissingConstructor occurrences="2">
       <code>$driver</code>
       <code>$evm</code>
     </MissingConstructor>
+    <MoreSpecificReturnType occurrences="1">
+      <code>getFqcnFromAlias</code>
+    </MoreSpecificReturnType>
     <NoInterfaceProperties occurrences="31">
       <code>$class-&gt;cache</code>
       <code>$class-&gt;changeTrackingPolicy</code>
@@ -1339,12 +1359,6 @@
       <code>$annotationName</code>
       <code>$annotationName</code>
     </MissingParamType>
-    <UndefinedMethod occurrences="4">
-      <code>getAttributes</code>
-      <code>getAttributes</code>
-      <code>getAttributes</code>
-      <code>getAttributes</code>
-    </UndefinedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php">
     <ArgumentTypeCoercion occurrences="3">
@@ -1425,13 +1439,16 @@
     <ImplicitToStringCast occurrences="1">
       <code>$cacheMapping['usage']</code>
     </ImplicitToStringCast>
-    <LessSpecificReturnStatement occurrences="1"/>
+    <LessSpecificReturnStatement occurrences="2">
+      <code>$result</code>
+    </LessSpecificReturnStatement>
     <MissingParamType occurrences="2">
       <code>$fileExtension</code>
       <code>$locator</code>
     </MissingParamType>
-    <MoreSpecificReturnType occurrences="1">
+    <MoreSpecificReturnType occurrences="2">
       <code>array{usage: int|null, region?: string}</code>
+      <code>loadMappingFile</code>
     </MoreSpecificReturnType>
     <NoInterfaceProperties occurrences="12">
       <code>$indexXml-&gt;options</code>
@@ -1451,9 +1468,6 @@
       <code>$indexXml-&gt;options</code>
       <code>$uniqueXml-&gt;options</code>
     </PossiblyInvalidPropertyFetch>
-    <PossiblyNullReference occurrences="1">
-      <code>getName</code>
-    </PossiblyNullReference>
     <RedundantCast occurrences="1">
       <code>(string) $attributes-&gt;name</code>
     </RedundantCast>
@@ -1735,6 +1749,11 @@
       <code>$mappedBy</code>
       <code>$targetEntity</code>
     </PossiblyNullPropertyAssignmentValue>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/Reflection/ReflectionPropertiesGetter.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$parentClassName</code>
+    </ArgumentTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ReflectionEmbeddedProperty.php">
     <ArgumentTypeCoercion occurrences="1">
@@ -2576,6 +2595,9 @@
     </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableDeleteExecutor.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$AST-&gt;deleteClause-&gt;abstractSchemaName</code>
+    </ArgumentTypeCoercion>
     <DeprecatedMethod occurrences="5">
       <code>executeUpdate</code>
       <code>executeUpdate</code>
@@ -2595,6 +2617,9 @@
     </UninitializedProperty>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableUpdateExecutor.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$updateClause-&gt;abstractSchemaName</code>
+    </ArgumentTypeCoercion>
     <DeprecatedMethod occurrences="5">
       <code>executeUpdate</code>
       <code>executeUpdate</code>
@@ -2730,7 +2755,10 @@
     </DeprecatedConstant>
   </file>
   <file src="lib/Doctrine/ORM/Query/Parser.php">
-    <ArgumentTypeCoercion occurrences="1">
+    <ArgumentTypeCoercion occurrences="4">
+      <code>$abstractSchemaName</code>
+      <code>$abstractSchemaName</code>
+      <code>$deleteClause-&gt;abstractSchemaName</code>
       <code>$stringPattern</code>
     </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="3">
@@ -2955,12 +2983,14 @@
     </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php">
-    <ArgumentTypeCoercion occurrences="5">
+    <ArgumentTypeCoercion occurrences="7">
+      <code>$class</code>
       <code>$class</code>
       <code>$class</code>
       <code>$class</code>
       <code>$renameMode</code>
       <code>$renameMode</code>
+      <code>$resultClassName</code>
     </ArgumentTypeCoercion>
     <DeprecatedMethod occurrences="2">
       <code>getSQLResultCasing</code>
@@ -2971,6 +3001,14 @@
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
+    <ArgumentTypeCoercion occurrences="6">
+      <code>$AST-&gt;deleteClause-&gt;abstractSchemaName</code>
+      <code>$AST-&gt;updateClause-&gt;abstractSchemaName</code>
+      <code>$deleteClause-&gt;abstractSchemaName</code>
+      <code>$joinDeclaration-&gt;abstractSchemaName</code>
+      <code>$rangeVariableDeclaration-&gt;abstractSchemaName</code>
+      <code>$updateClause-&gt;abstractSchemaName</code>
+    </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="10">
       <code>! ($factor instanceof AST\ConditionalFactor)</code>
       <code>$condExpr instanceof AST\ConditionalExpression</code>
@@ -3387,6 +3425,10 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Repository/DefaultRepositoryFactory.php">
+    <ArgumentTypeCoercion occurrences="2">
+      <code>$entityName</code>
+      <code>$entityName</code>
+    </ArgumentTypeCoercion>
     <LessSpecificReturnStatement occurrences="1">
       <code>new $repositoryClassName($entityManager, $metadata)</code>
     </LessSpecificReturnStatement>
@@ -3601,6 +3643,9 @@
     </PossiblyInvalidArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/InfoCommand.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$entityClassName</code>
+    </ArgumentTypeCoercion>
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
@@ -3609,6 +3654,10 @@
     </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/MappingDescribeCommand.php">
+    <ArgumentTypeCoercion occurrences="2">
+      <code>$entityName</code>
+      <code>current($matches)</code>
+    </ArgumentTypeCoercion>
     <InvalidArgument occurrences="1">
       <code>$metadata-&gt;entityListeners</code>
     </InvalidArgument>
@@ -3880,8 +3929,9 @@
       <code>$metadata-&gt;changeTrackingPolicy</code>
       <code>$metadata-&gt;generatorType</code>
     </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="1">
+    <DeprecatedClass occurrences="2">
       <code>AbstractExporter</code>
+      <code>YamlDriver::DEFAULT_FILE_EXTENSION</code>
     </DeprecatedClass>
     <DocblockTypeContradiction occurrences="1">
       <code>['name' =&gt; null]</code>
@@ -4040,12 +4090,14 @@
     </InvalidScalarArgument>
   </file>
   <file src="lib/Doctrine/ORM/UnitOfWork.php">
-    <ArgumentTypeCoercion occurrences="7">
+    <ArgumentTypeCoercion occurrences="9">
       <code>$class</code>
       <code>$class</code>
+      <code>$className</code>
       <code>$collectionToDelete</code>
       <code>$collectionToUpdate</code>
       <code>$commitOrder[$i]</code>
+      <code>$entityName</code>
       <code>$entityName</code>
       <code>$this-&gt;em</code>
     </ArgumentTypeCoercion>
