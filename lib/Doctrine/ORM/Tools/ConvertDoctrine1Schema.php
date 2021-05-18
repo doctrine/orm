@@ -203,7 +203,7 @@ class ConvertDoctrine1Schema
         }
 
         $fieldMapping = [
-            'nullable' => ! $column['notnull'] ?? true, // Doctrine 1 columns are nullable by default
+            'nullable' => ! ($column['notnull'] ?? true), // Doctrine 1 columns are nullable by default
         ];
 
         if (isset($column['primary'])) {
