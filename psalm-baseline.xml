@@ -81,16 +81,18 @@
     </NullableReturnStatement>
   </file>
   <file src="lib/Doctrine/ORM/EntityManager.php">
-    <InvalidReturnStatement occurrences="6">
+    <InvalidReturnStatement occurrences="7">
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity instanceof $class-&gt;name ? $entity : null</code>
       <code>$persister-&gt;load($sortedId, null, null, [], $lockMode)</code>
       <code>$persister-&gt;loadById($sortedId)</code>
+      <code>$this-&gt;metadataFactory-&gt;getMetadataFor($className)</code>
     </InvalidReturnStatement>
-    <InvalidReturnType occurrences="2">
+    <InvalidReturnType occurrences="3">
       <code>?T</code>
+      <code>getClassMetadata</code>
       <code>getReference</code>
     </InvalidReturnType>
   </file>
@@ -105,10 +107,9 @@
       <code>?T</code>
       <code>Collection&lt;int, T&gt;</code>
     </InvalidReturnType>
-    <MoreSpecificImplementedParamType occurrences="3">
+    <MoreSpecificImplementedParamType occurrences="2">
       <code>$criteria</code>
       <code>$criteria</code>
-      <code>$orderBy</code>
     </MoreSpecificImplementedParamType>
   </file>
   <file src="lib/Doctrine/ORM/Id/TableGenerator.php">
