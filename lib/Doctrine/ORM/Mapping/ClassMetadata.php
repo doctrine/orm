@@ -24,6 +24,8 @@ namespace Doctrine\ORM\Mapping;
  * {@inheritDoc}
  *
  * @todo remove or rename ClassMetadataInfo to ClassMetadata
+ * @template T of object
+ * @template-extends ClassMetadataInfo<T>
  */
 class ClassMetadata extends ClassMetadataInfo
 {
