@@ -208,6 +208,9 @@ class IdentityMapTest extends OrmFunctionalTestCase
         $this->assertEquals(4, count($user3->getPhonenumbers()));
     }
 
+    /**
+     * @group non-cacheable
+     */
     public function testCollectionValuedAssociationIdentityMapBehaviorWithRefresh(): void
     {
         $user           = new CmsUser();

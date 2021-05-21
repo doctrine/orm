@@ -67,9 +67,13 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $class->associationMappings['phonenumbers']['fetch']   = ClassMetadataInfo::FETCH_EXTRA_LAZY;
         $class->associationMappings['phonenumbers']['indexBy'] = 'phonenumber';
 
-        unset($class->associationMappings['phonenumbers']['cache']);
-        unset($class->associationMappings['articles']['cache']);
-        unset($class->associationMappings['users']['cache']);
+        foreach (['phonenumbers', 'articles', 'users'] as $field) {
+            if (isset($class->associationMappings[$field]['cache'])) {
+                $this->previousCacheConfig[$field] = $class->associationMappings[$field]['cache'];
+            }
+
+            unset($class->associationMappings[$field]['cache']);
+        }
 
         $class                                          = $this->_em->getClassMetadata(CmsGroup::class);
         $class->associationMappings['users']['fetch']   = ClassMetadataInfo::FETCH_EXTRA_LAZY;
@@ -86,6 +90,13 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $class->associationMappings['groups']['fetch']       = ClassMetadataInfo::FETCH_LAZY;
         $class->associationMappings['articles']['fetch']     = ClassMetadataInfo::FETCH_LAZY;
         $class->associationMappings['phonenumbers']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
+
+        foreach (['phonenumbers', 'articles', 'users'] as $field) {
+            if (isset($this->previousCacheConfig[$field])) {
+                $class->associationMappings[$field]['cache'] = $this->previousCacheConfig[$field];
+                unset($this->previousCacheConfig[$field]);
+            }
+        }
 
         unset($class->associationMappings['groups']['indexBy']);
         unset($class->associationMappings['articles']['indexBy']);

@@ -24,6 +24,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
@@ -46,7 +47,6 @@ use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\NotifyPropertyChanged;
@@ -301,7 +301,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Map of Entity Class-Names and corresponding IDs that should eager loaded when requested.
      *
-     * @psalm-var array<string, array<string, mixed>>
+     * @psalm-var array<class-string, array<string, mixed>>
      */
     private $eagerLoadingEntities = [];
 
@@ -557,7 +557,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Ignore uninitialized proxy objects
-        if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
+        if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
             return;
         }
 
@@ -627,8 +627,6 @@ class UnitOfWork implements PropertyChangedListener
      * {@link _collectionDeletions}
      * If a PersistentCollection has been de-referenced in a fully MANAGED entity,
      * then this collection is marked for deletion.
-     *
-     * @internal Don't call from the outside.
      *
      * @param ClassMetadata $class  The class descriptor of the entity.
      * @param object        $entity The entity for which to compute the changes.
@@ -864,7 +862,7 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($entitiesToProcess as $entity) {
                 // Ignore uninitialized proxy objects
-                if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
+                if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
                     continue;
                 }
 
@@ -889,7 +887,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function computeAssociationChanges(array $assoc, $value): void
     {
-        if ($value instanceof Proxy && ! $value->__isInitialized__) {
+        if ($value instanceof Proxy && ! $value->__isInitialized()) {
             return;
         }
 
@@ -2405,7 +2403,7 @@ class UnitOfWork implements PropertyChangedListener
         $entitiesToCascade = [];
 
         foreach ($associationMappings as $assoc) {
-            if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
+            if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
                 $entity->__load();
             }
 
@@ -2463,7 +2461,7 @@ class UnitOfWork implements PropertyChangedListener
                     return;
                 }
 
-                if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
+                if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
                     $entity->__load();
                 }
 
@@ -2624,6 +2622,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param string  $className The name of the entity class.
      * @param mixed[] $data      The data for the entity.
+     * @psalm-param class-string $className
      * @psalm-param array<string, mixed> $hints Any hints to account for during reconstitution/lookup of the entity.
      *
      * @return object The managed entity instance.
@@ -2816,7 +2815,7 @@ class UnitOfWork implements PropertyChangedListener
                                 isset($hints[self::HINT_DEFEREAGERLOAD]) &&
                                 ! $targetClass->isIdentifierComposite &&
                                 $newValue instanceof Proxy &&
-                                $newValue->__isInitialized__ === false
+                                $newValue->__isInitialized() === false
                             ) {
                                 $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($associatedId);
                             }
@@ -3038,7 +3037,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getEntityIdentifier($entity)
     {
-        return $this->entityIdentifiers[spl_object_hash($entity)];
+        return $this->entityIdentifiers[spl_object_hash($entity)]
+            ?? EntityNotFoundException::noIdentifierFound(get_class($entity));
     }
 
     /**

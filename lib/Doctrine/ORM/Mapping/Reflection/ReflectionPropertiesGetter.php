@@ -75,6 +75,8 @@ final class ReflectionPropertiesGetter
     }
 
     /**
+     * @psalm-param class-string $className
+     *
      * @return ReflectionClass[]
      * @psalm-return list<ReflectionClass<object>>
      */

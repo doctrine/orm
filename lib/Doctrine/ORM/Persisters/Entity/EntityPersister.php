@@ -220,7 +220,7 @@ interface EntityPersister
      * @param object|null $entity The entity to load the data into. If not specified, a new entity is created.
      * @psalm-param array<string, mixed> $identifier The entity identifier.
      *
-     * @return object The loaded and managed entity instance or NULL if the entity can not be found.
+     * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
      *
      * @todo Check parameters
      */

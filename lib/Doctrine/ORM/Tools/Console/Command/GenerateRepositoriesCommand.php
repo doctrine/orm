@@ -52,7 +52,7 @@ class GenerateRepositoriesCommand extends AbstractEntityManagerCommand
              ->setAliases(['orm:generate:repositories'])
              ->setDescription('Generate repository classes from your mapping information')
              ->addArgument('dest-path', InputArgument::REQUIRED, 'The path to generate your repository classes.')
-             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'A string pattern used to match entities that should be processed.')
              ->setHelp('Generate repository classes from your mapping information.');
     }

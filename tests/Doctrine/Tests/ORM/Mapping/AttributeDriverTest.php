@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 
@@ -60,4 +61,37 @@ class AttributeDriverTest extends AbstractMappingDriverTest
     {
         $this->markTestSkipped('AttributeDriver does not support association overrides.');
     }
+
+    public function testOriginallyNestedAttributesDeclaredWithoutOriginalParent(): void
+    {
+        $factory = $this->createClassMetadataFactory();
+
+        $metadata = $factory->getMetadataFor(AttributeEntityWithoutOriginalParents::class);
+
+        $this->assertEquals(
+            [
+                'name' => 'AttributeEntityWithoutOriginalParents',
+                'uniqueConstraints' => ['foo' => ['columns' => ['id']]],
+                'indexes' => ['bar' => ['columns' => ['id']]],
+            ],
+            $metadata->table
+        );
+        $this->assertEquals(['assoz_id', 'assoz_id'], $metadata->associationMappings['assoc']['joinTableColumns']);
+    }
+}
+
+#[ORM\Entity]
+#[ORM\UniqueConstraint(name: 'foo', columns: ['id'])]
+#[ORM\Index(name: 'bar', columns: ['id'])]
+class AttributeEntityWithoutOriginalParents
+{
+    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue]
+    /** @var int */
+    public $id;
+
+    #[ORM\ManyToMany(targetEntity: self::class)]
+    #[ORM\JoinColumn(name: 'assoz_id', referencedColumnName: 'assoz_id')]
+    #[ORM\InverseJoinColumn(name: 'assoz_id', referencedColumnName: 'assoz_id')]
+    /** @var AttributeEntityWithoutOriginalParents[] */
+    public $assoc;
 }

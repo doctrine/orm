@@ -17,14 +17,18 @@ use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
-use PHPUnit\Framework\TestCase;
+use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+
+use function class_exists;
 
 /**
  * Tests for the Configuration object
  */
-class ConfigurationTest extends TestCase
+class ConfigurationTest extends DoctrineTestCase
 {
     /** @var Configuration */
     private $configuration;
@@ -131,6 +135,14 @@ class ConfigurationTest extends TestCase
         $this->assertSame($queryCacheImpl, $this->configuration->getMetadataCacheImpl());
     }
 
+    public function testSetGetMetadataCache(): void
+    {
+        $this->assertNull($this->configuration->getMetadataCache());
+        $cache = $this->createStub(CacheItemPoolInterface::class);
+        $this->configuration->setMetadataCache($cache);
+        $this->assertSame($cache, $this->configuration->getMetadataCache());
+    }
+
     public function testAddGetNamedQuery(): void
     {
         $dql = 'SELECT u FROM User u';
@@ -182,7 +194,17 @@ class ConfigurationTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testEnsureProductionSettingsQueryCache(): void
+    public function testEnsureProductionSettingsWithNewMetadataCache(): void
+    {
+        $this->setProductionSettings('metadata');
+        $this->configuration->setMetadataCache(new ArrayAdapter());
+
+        $this->configuration->ensureProductionSettings();
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function testEnsureProductionSettingsMissingQueryCache(): void
     {
         $this->setProductionSettings('query');
 
@@ -192,7 +214,7 @@ class ConfigurationTest extends TestCase
         $this->configuration->ensureProductionSettings();
     }
 
-    public function testEnsureProductionSettingsMetadataCache(): void
+    public function testEnsureProductionSettingsMissingMetadataCache(): void
     {
         $this->setProductionSettings('metadata');
 
@@ -204,6 +226,10 @@ class ConfigurationTest extends TestCase
 
     public function testEnsureProductionSettingsQueryArrayCache(): void
     {
+        if (! class_exists(ArrayCache::class)) {
+            $this->markTestSkipped('Test only applies with doctrine/cache 1.x');
+        }
+
         $this->setProductionSettings();
         $this->configuration->setQueryCacheImpl(new ArrayCache());
 
@@ -213,8 +239,12 @@ class ConfigurationTest extends TestCase
         $this->configuration->ensureProductionSettings();
     }
 
-    public function testEnsureProductionSettingsMetadataArrayCache(): void
+    public function testEnsureProductionSettingsLegacyMetadataArrayCache(): void
     {
+        if (! class_exists(ArrayCache::class)) {
+            $this->markTestSkipped('Test only applies with doctrine/cache 1.x');
+        }
+
         $this->setProductionSettings();
         $this->configuration->setMetadataCacheImpl(new ArrayCache());
 

@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Query;
 
 use DateTime;
 use DateTimeImmutable;
-use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
@@ -24,6 +24,7 @@ use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
 use PDO;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function assert;
 use function count;
@@ -136,7 +137,7 @@ class QueryTest extends OrmTestCase
      */
     public function testQueryDefaultResultCache(): void
     {
-        $this->entityManager->getConfiguration()->setResultCacheImpl(new ArrayCache());
+        $this->entityManager->getConfiguration()->setResultCacheImpl(DoctrineProvider::wrap(new ArrayAdapter()));
         $q = $this->entityManager->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
         $q->enableResultCache();
         $this->assertSame($this->entityManager->getConfiguration()->getResultCacheImpl(), $q->getQueryCacheProfile()->getResultCacheDriver());
@@ -323,8 +324,8 @@ class QueryTest extends OrmTestCase
      */
     public function testResultCacheCaching(): void
     {
-        $this->entityManager->getConfiguration()->setResultCacheImpl(new ArrayCache());
-        $this->entityManager->getConfiguration()->setQueryCacheImpl(new ArrayCache());
+        $this->entityManager->getConfiguration()->setResultCacheImpl(DoctrineProvider::wrap(new ArrayAdapter()));
+        $this->entityManager->getConfiguration()->setQueryCacheImpl(DoctrineProvider::wrap(new ArrayAdapter()));
         $driverConnectionMock = $this->entityManager->getConnection()->getWrappedConnection();
         assert($driverConnectionMock instanceof DriverConnectionMock);
         $stmt = new StatementArrayMock([
@@ -363,7 +364,7 @@ class QueryTest extends OrmTestCase
      */
     public function testResultCacheEviction(): void
     {
-        $this->entityManager->getConfiguration()->setResultCacheImpl(new ArrayCache());
+        $this->entityManager->getConfiguration()->setResultCacheImpl(DoctrineProvider::wrap(new ArrayAdapter()));
 
         $query = $this->entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
                            ->enableResultCache();
@@ -482,7 +483,7 @@ class QueryTest extends OrmTestCase
      */
     public function testResultCacheProfileCanBeRemovedViaSetter(): void
     {
-        $this->entityManager->getConfiguration()->setResultCacheImpl(new ArrayCache());
+        $this->entityManager->getConfiguration()->setResultCacheImpl(DoctrineProvider::wrap(new ArrayAdapter()));
 
         $query = $this->entityManager->createQuery('SELECT u FROM ' . CmsUser::class . ' u');
         $query->enableResultCache();

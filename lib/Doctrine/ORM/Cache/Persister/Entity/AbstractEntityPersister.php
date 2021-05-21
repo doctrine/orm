@@ -75,7 +75,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /** @var Cache */
     protected $cache;
 
-    /** @var CacheLogger */
+    /** @var CacheLogger|null */
     protected $cacheLogger;
 
     /** @var string */

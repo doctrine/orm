@@ -4,11 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\DbalTypes\GH8565EmployeePayloadType;
+use Doctrine\Tests\DbalTypes\GH8565ManagerPayloadType;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\Models\GH8565\GH8565Employee;
+use Doctrine\Tests\Models\GH8565\GH8565Manager;
+use Doctrine\Tests\Models\GH8565\GH8565Person;
 use Doctrine\Tests\Models\Issue5989\Issue5989Employee;
 use Doctrine\Tests\Models\Issue5989\Issue5989Manager;
 use Doctrine\Tests\Models\Issue5989\Issue5989Person;
@@ -116,6 +122,38 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $expectedEntity       = new Issue5989Manager();
         $expectedEntity->id   = 1;
         $expectedEntity->tags = ['tag1', 'tag2'];
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new SimpleObjectHydrator($this->entityManager);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+        $this->assertEquals($result[0], $expectedEntity);
+    }
+
+    public function testWrongValuesShouldNotBeConvertedToPhpValue(): void
+    {
+        DBALType::addType(GH8565EmployeePayloadType::NAME, GH8565EmployeePayloadType::class);
+        DBALType::addType(GH8565ManagerPayloadType::NAME, GH8565ManagerPayloadType::class);
+
+        $rsm = new ResultSetMapping();
+        $rsm->addEntityResult(GH8565Person::class, 'p');
+        $rsm->addFieldResult('p', 'p__id', 'id');
+        $rsm->addFieldResult('p', 'm__type', 'type', GH8565Manager::class);
+        $rsm->addFieldResult('p', 'e__type', 'type', GH8565Employee::class);
+        $rsm->addMetaResult('p', 'discr', 'discr', false, 'string');
+        $rsm->setDiscriminatorColumn('p', 'type');
+        $resultSet = [
+            [
+                'p__id'   => '1',
+                'm__type' => 'type field',
+                'e__type' => 'type field',
+                'e__tags' => null,
+                'discr'   => 'manager',
+            ],
+        ];
+
+        $expectedEntity       = new GH8565Manager();
+        $expectedEntity->id   = 1;
+        $expectedEntity->type = 'type field';
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new SimpleObjectHydrator($this->entityManager);

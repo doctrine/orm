@@ -25,6 +25,8 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Cache\MemcachedCache;
+use Doctrine\Common\Cache\Psr6\CacheAdapter;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\ClassLoader;
 use Doctrine\ORM\Configuration;
@@ -32,10 +34,16 @@ use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Memcached;
 use Redis;
+use RuntimeException;
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\MemcachedAdapter;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 
 use function class_exists;
 use function extension_loaded;
 use function md5;
+use function method_exists;
 use function sys_get_temp_dir;
 
 /**
@@ -131,7 +139,13 @@ class Setup
         $cache = self::createCacheConfiguration($isDevMode, $proxyDir, $cache);
 
         $config = new Configuration();
-        $config->setMetadataCacheImpl($cache);
+
+        if (method_exists(Configuration::class, 'setMetadataCache')) {
+            $config->setMetadataCache(CacheAdapter::wrap($cache));
+        } else {
+            $config->setMetadataCacheImpl($cache);
+        }
+
         $config->setQueryCacheImpl($cache);
         $config->setResultCacheImpl($cache);
         $config->setProxyDir($proxyDir);
@@ -166,34 +180,38 @@ class Setup
             return $cache;
         }
 
+        if (! class_exists(ArrayCache::class) && ! class_exists(ArrayAdapter::class)) {
+            throw new RuntimeException('Setup tool cannot configure caches without doctrine/cache 1.11 or symfony/cache. Please add an explicit dependency to either library.');
+        }
+
         if ($isDevMode === true) {
-            return new ArrayCache();
-        }
-
-        if (extension_loaded('apcu')) {
-            return new ApcuCache();
-        }
-
-        if (extension_loaded('memcached')) {
+            $cache = class_exists(ArrayCache::class) ? new ArrayCache() : new ArrayAdapter();
+        } elseif (extension_loaded('apcu')) {
+            $cache = class_exists(ApcuCache::class) ? new ApcuCache() : new ApcuAdapter();
+        } elseif (extension_loaded('memcached')) {
             $memcached = new Memcached();
             $memcached->addServer('127.0.0.1', 11211);
 
-            $cache = new MemcachedCache();
-            $cache->setMemcached($memcached);
-
-            return $cache;
-        }
-
-        if (extension_loaded('redis')) {
+            if (class_exists(MemcachedCache::class)) {
+                $cache = new MemcachedCache();
+                $cache->setMemcached($memcached);
+            } else {
+                $cache = new MemcachedAdapter($memcached);
+            }
+        } elseif (extension_loaded('redis')) {
             $redis = new Redis();
             $redis->connect('127.0.0.1');
 
-            $cache = new RedisCache();
-            $cache->setRedis($redis);
-
-            return $cache;
+            if (class_exists(RedisCache::class)) {
+                $cache = new RedisCache();
+                $cache->setRedis($redis);
+            } else {
+                $cache = new RedisAdapter($redis);
+            }
+        } else {
+            $cache = class_exists(ArrayCache::class) ? new ArrayCache() : new ArrayAdapter();
         }
 
-        return new ArrayCache();
+        return $cache instanceof Cache ? $cache : DoctrineProvider::wrap($cache);
     }
 }

@@ -50,7 +50,7 @@ class CollectionRegionCommand extends AbstractEntityManagerCommand
              ->addArgument('owner-class', InputArgument::OPTIONAL, 'The owner entity name.')
              ->addArgument('association', InputArgument::OPTIONAL, 'The association collection name.')
              ->addArgument('owner-id', InputArgument::OPTIONAL, 'The owner identifier.')
-             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('all', null, InputOption::VALUE_NONE, 'If defined, all entity regions will be deleted/invalidated.')
              ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, all cache entries will be flushed.')
              ->setHelp(<<<EOT

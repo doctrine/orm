@@ -26,7 +26,9 @@ use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache as CacheDriver;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
@@ -41,8 +43,10 @@ use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectRepository;
+use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
 
+use function class_exists;
 use function strtolower;
 use function trim;
 
@@ -163,13 +167,16 @@ class Configuration extends \Doctrine\DBAL\Configuration
             // Register the ORM Annotations in the AnnotationRegistry
             $reader = new SimpleAnnotationReader();
             $reader->addNamespace('Doctrine\ORM\Mapping');
-            $cachedReader = new CachedReader($reader, new ArrayCache());
+        } else {
+            $reader = new AnnotationReader();
+        }
 
-            return new AnnotationDriver($cachedReader, (array) $paths);
+        if (class_exists(ArrayCache::class)) {
+            $reader = new CachedReader($reader, new ArrayCache());
         }
 
         return new AnnotationDriver(
-            new CachedReader(new AnnotationReader(), new ArrayCache()),
+            $reader,
             (array) $paths
         );
     }
@@ -282,21 +289,53 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the cache driver implementation that is used for metadata caching.
      *
+     * @deprecated Deprecated in favor of getMetadataCache
+     *
      * @return CacheDriver|null
      */
     public function getMetadataCacheImpl()
     {
-        return $this->_attributes['metadataCacheImpl'] ?? null;
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8650',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use getMetadataCache() instead.',
+            __METHOD__
+        );
+
+        if (isset($this->_attributes['metadataCacheImpl'])) {
+            return $this->_attributes['metadataCacheImpl'];
+        }
+
+        return isset($this->_attributes['metadataCache']) ? DoctrineProvider::wrap($this->_attributes['metadataCache']) : null;
     }
 
     /**
      * Sets the cache driver implementation that is used for metadata caching.
      *
+     * @deprecated Deprecated in favor of setMetadataCache
+     *
      * @return void
      */
     public function setMetadataCacheImpl(CacheDriver $cacheImpl)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8650',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use setMetadataCache() instead.',
+            __METHOD__
+        );
+
         $this->_attributes['metadataCacheImpl'] = $cacheImpl;
+    }
+
+    public function getMetadataCache(): ?CacheItemPoolInterface
+    {
+        return $this->_attributes['metadataCache'] ?? null;
+    }
+
+    public function setMetadataCache(CacheItemPoolInterface $cache): void
+    {
+        $this->_attributes['metadataCache'] = $cache;
     }
 
     /**
@@ -387,6 +426,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
             throw ORMException::queryCacheUsesNonPersistentCache($queryCacheImpl);
         }
 
+        if ($this->getAutoGenerateProxyClasses()) {
+            throw ORMException::proxyClassesAlwaysRegenerating();
+        }
+
+        if ($this->getMetadataCache()) {
+            return;
+        }
+
         $metadataCacheImpl = $this->getMetadataCacheImpl();
 
         if (! $metadataCacheImpl) {
@@ -395,10 +442,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
         if ($metadataCacheImpl instanceof ArrayCache) {
             throw ORMException::metadataCacheUsesNonPersistentCache($metadataCacheImpl);
-        }
-
-        if ($this->getAutoGenerateProxyClasses()) {
-            throw ORMException::proxyClassesAlwaysRegenerating();
         }
     }
 
