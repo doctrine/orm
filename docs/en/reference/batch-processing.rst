@@ -89,11 +89,11 @@ with the batching strategy that was already used for bulk inserts:
     foreach ($q->toIterable() as $user) {
         $user->increaseCredit();
         $user->calculateNewBonuses();
+        ++$i;
         if (($i % $batchSize) === 0) {
             $em->flush(); // Executes all updates.
             $em->clear(); // Detaches all objects from Doctrine!
         }
-        ++$i;
     }
     $em->flush();
 
@@ -147,11 +147,11 @@ The following example shows how to do this:
     $q = $em->createQuery('select u from MyProject\Model\User u');
     foreach($q->toIterable() as $row) {
         $em->remove($row);
+        ++$i;
         if (($i % $batchSize) === 0) {
             $em->flush(); // Executes all deletions.
             $em->clear(); // Detaches all objects from Doctrine!
         }
-        ++$i;
     }
     $em->flush();
 

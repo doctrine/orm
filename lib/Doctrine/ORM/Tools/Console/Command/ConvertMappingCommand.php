@@ -59,7 +59,7 @@ class ConvertMappingCommand extends AbstractEntityManagerCommand
              ->setDescription('Convert mapping information between supported formats')
              ->addArgument('to-type', InputArgument::REQUIRED, 'The mapping type to be converted.')
              ->addArgument('dest-path', InputArgument::REQUIRED, 'The path to generate your entities classes.')
-             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'A string pattern used to match entities that should be processed.')
              ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force to overwrite existing mapping files.')
              ->addOption('from-database', null, null, 'Whether or not to convert mapping information from existing database.')

@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\Tests\Models\Cms\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
  * @group DDC-1766
@@ -32,7 +33,7 @@ class HydrationCacheTest extends OrmFunctionalTestCase
 
     public function testHydrationCache(): void
     {
-        $cache = new ArrayCache();
+        $cache = DoctrineProvider::wrap(new ArrayAdapter());
         $dql   = 'SELECT u FROM Doctrine\Tests\Models\Cms\CmsUser u';
 
         $users = $this->_em->createQuery($dql)
@@ -72,7 +73,7 @@ class HydrationCacheTest extends OrmFunctionalTestCase
 
     public function testHydrationParametersSerialization(): void
     {
-        $cache = new ArrayCache();
+        $cache = DoctrineProvider::wrap(new ArrayAdapter());
 
         $dql   = 'SELECT u FROM Doctrine\Tests\Models\Cms\CmsUser u WHERE u.id = ?1';
         $query = $this->_em->createQuery($dql)

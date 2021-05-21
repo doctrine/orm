@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
  * @group GH-2947
@@ -15,7 +16,7 @@ class GH2947Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
-        $this->resultCacheImpl = new ArrayCache();
+        $this->resultCacheImpl = DoctrineProvider::wrap(new ArrayAdapter());
 
         parent::setUp();
 

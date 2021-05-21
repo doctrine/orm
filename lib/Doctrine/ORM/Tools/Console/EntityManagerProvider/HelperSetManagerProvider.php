@@ -26,12 +26,17 @@ final class HelperSetManagerProvider implements EntityManagerProvider
         );
     }
 
-    public function getManager(string $name = 'default'): EntityManagerInterface
+    public function getManager(string $name): EntityManagerInterface
     {
         if ($name !== 'default') {
             throw UnknownManagerException::unknownManager($name, ['default']);
         }
 
+        return $this->getDefaultManager();
+    }
+
+    public function getDefaultManager(): EntityManagerInterface
+    {
         $helper = $this->helperSet->get('entityManager');
 
         assert($helper instanceof EntityManagerHelper);

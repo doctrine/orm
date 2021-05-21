@@ -32,6 +32,7 @@ use InvalidArgumentException;
 use ReflectionMethod;
 use ReflectionProperty;
 
+use function class_exists;
 use function count;
 use function in_array;
 use function serialize;
@@ -396,6 +397,10 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
     public function testQueryCacheDependsOnFilters(): void
     {
+        if (! class_exists(ArrayCache::class)) {
+            $this->markTestSkipped('Test only applies with doctrine/cache 1.x');
+        }
+
         $cacheDataReflection = new ReflectionProperty(ArrayCache::class, 'data');
         $cacheDataReflection->setAccessible(true);
 

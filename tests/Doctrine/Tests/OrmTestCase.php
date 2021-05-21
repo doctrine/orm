@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests;
 
 use Doctrine\Common\Annotations;
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -17,7 +17,10 @@ use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\Tests\Mocks\EntityManagerMock;
+use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
+use function class_exists;
 use function is_array;
 use function realpath;
 
@@ -29,9 +32,9 @@ abstract class OrmTestCase extends DoctrineTestCase
     /**
      * The metadata cache that is shared between all ORM tests (except functional tests).
      *
-     * @var Cache|null
+     * @var CacheItemPoolInterface|null
      */
-    private static $_metadataCacheImpl = null;
+    private static $_metadataCache = null;
 
     /**
      * The query cache that is shared between all ORM tests (except functional tests).
@@ -66,7 +69,11 @@ abstract class OrmTestCase extends DoctrineTestCase
 
         $reader->addNamespace('Doctrine\ORM\Mapping');
 
-        $reader = new Annotations\CachedReader($reader, new ArrayCache());
+        if (class_exists(Annotations\PsrCachedReader::class)) {
+            $reader = new Annotations\PsrCachedReader($reader, new ArrayAdapter());
+        } else {
+            $reader = new Annotations\CachedReader($reader, DoctrineProvider::wrap(new ArrayAdapter()));
+        }
 
         Annotations\AnnotationRegistry::registerFile(__DIR__ . '/../../../lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
 
@@ -92,11 +99,11 @@ abstract class OrmTestCase extends DoctrineTestCase
     ): EntityManagerMock {
         $metadataCache = $withSharedMetadata
             ? self::getSharedMetadataCacheImpl()
-            : new ArrayCache();
+            : new ArrayAdapter();
 
         $config = new Configuration();
 
-        $config->setMetadataCacheImpl($metadataCache);
+        $config->setMetadataCache($metadataCache);
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], true));
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
         $config->setProxyDir(__DIR__ . '/Proxies');
@@ -142,19 +149,19 @@ abstract class OrmTestCase extends DoctrineTestCase
         $this->isSecondLevelCacheLogEnabled = $log;
     }
 
-    private static function getSharedMetadataCacheImpl(): Cache
+    private static function getSharedMetadataCacheImpl(): ?CacheItemPoolInterface
     {
-        if (self::$_metadataCacheImpl === null) {
-            self::$_metadataCacheImpl = new ArrayCache();
+        if (self::$_metadataCache === null) {
+            self::$_metadataCache = new ArrayAdapter();
         }
 
-        return self::$_metadataCacheImpl;
+        return self::$_metadataCache;
     }
 
     private static function getSharedQueryCacheImpl(): Cache
     {
         if (self::$_queryCacheImpl === null) {
-            self::$_queryCacheImpl = new ArrayCache();
+            self::$_queryCacheImpl = DoctrineProvider::wrap(new ArrayAdapter());
         }
 
         return self::$_queryCacheImpl;
@@ -163,7 +170,7 @@ abstract class OrmTestCase extends DoctrineTestCase
     protected function getSharedSecondLevelCacheDriverImpl(): Cache
     {
         if ($this->secondLevelCacheDriverImpl === null) {
-            $this->secondLevelCacheDriverImpl = new ArrayCache();
+            $this->secondLevelCacheDriverImpl = DoctrineProvider::wrap(new ArrayAdapter());
         }
 
         return $this->secondLevelCacheDriverImpl;

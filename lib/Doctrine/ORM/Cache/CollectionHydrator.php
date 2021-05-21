@@ -30,9 +30,9 @@ use Doctrine\ORM\PersistentCollection;
 interface CollectionHydrator
 {
     /**
-     * @param ClassMetadata      $metadata   The entity metadata.
-     * @param CollectionCacheKey $key        The cached collection key.
-     * @param mixed[]|Collection $collection The collection.
+     * @param ClassMetadata            $metadata   The entity metadata.
+     * @param CollectionCacheKey       $key        The cached collection key.
+     * @param array|mixed[]|Collection $collection The collection.
      *
      * @return CollectionCacheEntry
      */

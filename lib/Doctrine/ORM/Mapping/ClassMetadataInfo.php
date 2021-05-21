@@ -80,6 +80,9 @@ use const PHP_VERSION_ID;
  * 2) To drastically reduce the size of a serialized instance (private/protected members
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
+ *
+ * @template T of object
+ * @template-implements ClassMetadata<T>
  */
 class ClassMetadataInfo implements ClassMetadata
 {
@@ -243,7 +246,7 @@ class ClassMetadataInfo implements ClassMetadata
      * READ-ONLY: The name of the entity class.
      *
      * @var string
-     * @psalm-var class-string
+     * @psalm-var class-string<T>
      */
     public $name;
 
@@ -1515,18 +1518,18 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
 
-        if (
-            ! isset($mapping['targetEntity'])
-            && ($mapping['type'] & self::TO_ONE) > 0
-            && $type instanceof ReflectionNamedType
-        ) {
+        if ($type === null || ($mapping['type'] & self::TO_ONE) === 0) {
+            return $mapping;
+        }
+
+        if (! isset($mapping['targetEntity']) && $type instanceof ReflectionNamedType) {
             $mapping['targetEntity'] = $type->getName();
         }
 
-        if ($type !== null && isset($mapping['joinColumns'])) {
+        if (isset($mapping['joinColumns'])) {
             foreach ($mapping['joinColumns'] as &$joinColumn) {
-                if (! isset($joinColumn['nullable'])) {
-                    $joinColumn['nullable'] = $type->allowsNull();
+                if ($type->allowsNull() === false) {
+                    $joinColumn['nullable'] = false;
                 }
             }
         }
@@ -1801,7 +1804,6 @@ class ClassMetadataInfo implements ClassMetadata
                     [
                         'name' => $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name),
                         'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
-                        'nullable' => true,
                     ],
                 ];
             }
@@ -1817,10 +1819,6 @@ class ClassMetadataInfo implements ClassMetadata
                     } else {
                         $uniqueConstraintColumns[] = $joinColumn['name'];
                     }
-                }
-
-                if (! isset($joinColumn['nullable'])) {
-                    $joinColumn['nullable'] = true;
                 }
 
                 if (empty($joinColumn['name'])) {
