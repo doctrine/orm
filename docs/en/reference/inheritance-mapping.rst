@@ -274,6 +274,9 @@ be a leaf entity in the inheritance hierarchy, (ie. have no subclasses).
 Otherwise Doctrine *CANNOT* create proxy instances
 of this entity and will *ALWAYS* load the entity eagerly.
 
+Also, there is another important performance consideration: It is *NOT POSSIBLE* 
+to query for the base entity avoiding all the LEFT JOINs with the sub-types.
+
 SQL Schema considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
