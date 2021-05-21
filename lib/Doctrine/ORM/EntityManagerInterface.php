@@ -34,7 +34,6 @@ use Doctrine\Persistence\ObjectManager;
 /**
  * EntityManager interface
  *
- * @method Mapping\ClassMetadata getClassMetadata($className)
  * @method Mapping\ClassMetadataFactory getMetadataFactory()
  */
 interface EntityManagerInterface extends ObjectManager
@@ -317,4 +316,16 @@ interface EntityManagerInterface extends ObjectManager
      * @return bool True, if the EM has a filter collection.
      */
     public function hasFilters();
+
+    /**
+     * {@inheritDoc}
+     *
+     * @psalm-param string|class-string<T> $className
+     *
+     * @return Mapping\ClassMetadata
+     * @psalm-return Mapping\ClassMetadata<T>
+     *
+     * @template T of object
+     */
+    public function getClassMetadata($className);
 }

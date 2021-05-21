@@ -57,10 +57,6 @@
       <code>$_hydrationCacheProfile</code>
       <code>$_resultSetMapping</code>
     </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="2">
-      <code>array_map($translate, $rsm-&gt;aliasMap)</code>
-      <code>array_map($translate, $rsm-&gt;declaringClasses)</code>
-    </PropertyTypeCoercion>
     <RedundantCastGivenDocblockType occurrences="5">
       <code>(bool) $cacheable</code>
       <code>(int) $cacheMode</code>
@@ -467,12 +463,14 @@
     <DeprecatedClass occurrences="2">
       <code>ProxyFactory</code>
     </DeprecatedClass>
-    <DeprecatedMethod occurrences="5">
+    <DeprecatedMethod occurrences="7">
       <code>getAutoGenerateProxyClasses</code>
       <code>getMetadataCacheImpl</code>
       <code>getProxyDir</code>
       <code>getProxyNamespace</code>
       <code>merge</code>
+      <code>setCacheDriver</code>
+      <code>setCacheDriver</code>
     </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="10">
       <code>$connection instanceof Connection</code>
@@ -486,16 +484,18 @@
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
     </DocblockTypeContradiction>
-    <InvalidReturnStatement occurrences="6">
+    <InvalidReturnStatement occurrences="7">
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity instanceof $class-&gt;name ? $entity : null</code>
       <code>$persister-&gt;load($sortedId, null, null, [], $lockMode)</code>
       <code>$persister-&gt;loadById($sortedId)</code>
+      <code>$this-&gt;metadataFactory-&gt;getMetadataFor($className)</code>
     </InvalidReturnStatement>
-    <InvalidReturnType occurrences="2">
+    <InvalidReturnType occurrences="3">
       <code>?T</code>
+      <code>getClassMetadata</code>
       <code>getReference</code>
     </InvalidReturnType>
     <InvalidScalarArgument occurrences="2">
@@ -530,8 +530,9 @@
     <RedundantCondition occurrences="1">
       <code>is_object($connection)</code>
     </RedundantCondition>
-    <RedundantConditionGivenDocblockType occurrences="1">
+    <RedundantConditionGivenDocblockType occurrences="2">
       <code>$this-&gt;filterCollection !== null</code>
+      <code>method_exists($this-&gt;metadataFactory, 'setCache')</code>
     </RedundantConditionGivenDocblockType>
     <TypeDoesNotContainType occurrences="1">
       <code>': "' . $connection . '"'</code>
@@ -563,10 +564,9 @@
       <code>?T</code>
       <code>Collection&lt;int, T&gt;</code>
     </InvalidReturnType>
-    <MoreSpecificImplementedParamType occurrences="3">
+    <MoreSpecificImplementedParamType occurrences="2">
       <code>$criteria</code>
       <code>$criteria</code>
-      <code>$orderBy</code>
     </MoreSpecificImplementedParamType>
     <PropertyTypeCoercion occurrences="1">
       <code>$em</code>
@@ -894,7 +894,7 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php">
-    <ArgumentTypeCoercion occurrences="26">
+    <ArgumentTypeCoercion occurrences="24">
       <code>$class</code>
       <code>$class</code>
       <code>$class</code>
@@ -910,7 +910,6 @@
       <code>$class</code>
       <code>$class</code>
       <code>$class</code>
-      <code>$map</code>
       <code>$parent</code>
       <code>$parent</code>
       <code>$parent</code>
@@ -919,7 +918,6 @@
       <code>$parent</code>
       <code>$parent</code>
       <code>$parent</code>
-      <code>$subClassCandidate</code>
       <code>new $definition['class']()</code>
     </ArgumentTypeCoercion>
     <DeprecatedMethod occurrences="5">
@@ -3715,9 +3713,8 @@
       <code>Type::TEXT</code>
       <code>Type::TIME</code>
     </DeprecatedConstant>
-    <DocblockTypeContradiction occurrences="4">
+    <DocblockTypeContradiction occurrences="3">
       <code>$metadata-&gt;reflClass !== null</code>
-      <code>$metadata-&gt;reflClass !== null || class_exists($metadata-&gt;name)</code>
       <code>class_exists($metadata-&gt;name)</code>
       <code>new ReflectionClass($metadata-&gt;name)</code>
     </DocblockTypeContradiction>
@@ -3748,9 +3745,7 @@
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(bool) $embeddablesImmutable</code>
     </RedundantCastGivenDocblockType>
-    <RedundantConditionGivenDocblockType occurrences="5">
-      <code>! $this-&gt;isNew &amp;&amp; class_exists($metadata-&gt;name)</code>
-      <code>! $this-&gt;isNew &amp;&amp; class_exists($metadata-&gt;name)</code>
+    <RedundantConditionGivenDocblockType occurrences="3">
       <code>$metadata-&gt;reflClass</code>
       <code>$metadata-&gt;reflClass !== null</code>
       <code>isset($metadata-&gt;lifecycleCallbacks)</code>
@@ -4040,13 +4035,12 @@
     </InvalidScalarArgument>
   </file>
   <file src="lib/Doctrine/ORM/UnitOfWork.php">
-    <ArgumentTypeCoercion occurrences="7">
+    <ArgumentTypeCoercion occurrences="6">
       <code>$class</code>
       <code>$class</code>
       <code>$collectionToDelete</code>
       <code>$collectionToUpdate</code>
       <code>$commitOrder[$i]</code>
-      <code>$entityName</code>
       <code>$this-&gt;em</code>
     </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="4">
