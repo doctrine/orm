@@ -286,9 +286,7 @@ use function sprintf;
      *
      * Internal note: Performance-sensitive method.
      *
-     * @param string $className
-     *
-     * @return ClassMetadata
+     * {@inheritDoc}
      */
     public function getClassMetadata($className)
     {

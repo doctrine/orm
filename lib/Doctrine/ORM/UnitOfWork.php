@@ -301,7 +301,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Map of Entity Class-Names and corresponding IDs that should eager loaded when requested.
      *
-     * @psalm-var array<string, array<string, mixed>>
+     * @psalm-var array<class-string, array<string, mixed>>
      */
     private $eagerLoadingEntities = [];
 
@@ -627,8 +627,6 @@ class UnitOfWork implements PropertyChangedListener
      * {@link _collectionDeletions}
      * If a PersistentCollection has been de-referenced in a fully MANAGED entity,
      * then this collection is marked for deletion.
-     *
-     * @internal Don't call from the outside.
      *
      * @param ClassMetadata $class  The class descriptor of the entity.
      * @param object        $entity The entity for which to compute the changes.
@@ -2624,6 +2622,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param string  $className The name of the entity class.
      * @param mixed[] $data      The data for the entity.
+     * @psalm-param class-string $className
      * @psalm-param array<string, mixed> $hints Any hints to account for during reconstitution/lookup of the entity.
      *
      * @return object The managed entity instance.

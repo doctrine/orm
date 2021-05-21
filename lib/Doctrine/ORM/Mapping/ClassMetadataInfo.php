@@ -80,6 +80,9 @@ use const PHP_VERSION_ID;
  * 2) To drastically reduce the size of a serialized instance (private/protected members
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
+ *
+ * @template T of object
+ * @template-implements ClassMetadata<T>
  */
 class ClassMetadataInfo implements ClassMetadata
 {
@@ -243,7 +246,7 @@ class ClassMetadataInfo implements ClassMetadata
      * READ-ONLY: The name of the entity class.
      *
      * @var string
-     * @psalm-var class-string
+     * @psalm-var class-string<T>
      */
     public $name;
 

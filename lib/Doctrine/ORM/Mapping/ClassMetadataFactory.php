@@ -747,6 +747,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function getFqcnFromAlias($namespaceAlias, $simpleClassName)
     {
+        /** @psalm-var class-string */
         return $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
     }
 
