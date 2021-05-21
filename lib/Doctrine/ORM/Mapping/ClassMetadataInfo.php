@@ -3417,8 +3417,8 @@ class ClassMetadataInfo implements ClassMetadata
                     ->embeddedFieldToColumnName(
                         $property,
                         $fieldMapping['columnName'],
-                        $this->reflClass->name,
-                        $embeddable->reflClass->name
+                        $this->reflClass ? $this->reflClass->name : null,
+                        $embeddable->reflClass ? $embeddable->reflClass->name : null
                     );
             }
 
