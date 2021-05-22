@@ -710,6 +710,7 @@ class ClassMetadataInfo implements ClassMetadata
      * metadata of the class with the given name.
      *
      * @param string $entityName The name of the entity class the new instance is used for.
+     * @psalm-param class-string<T> $entityName
      */
     public function __construct($entityName, ?NamingStrategy $namingStrategy = null)
     {
