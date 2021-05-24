@@ -21,6 +21,7 @@
             "name": "2.9",
             "branchName": "2.9.x",
             "slug": "2.9",
+            "current": true,
             "aliases": [
                 "current",
                 "stable"
@@ -30,7 +31,7 @@
             "name": "2.8",
             "branchName": "2.8.x",
             "slug": "2.8",
-            "current": true
+            "maintained": false
         },
         {
             "name": "2.7",
