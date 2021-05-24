@@ -10,46 +10,46 @@ annotation metadata supported since the first version 2.0.
 Index
 -----
 
--  :ref:`#[Column] <annref_column>`
--  :ref:`#[Cache] <annref_cache>`
--  :ref:`#[ChangeTrackingPolicy <annref_changetrackingpolicy>`
--  :ref:`#[CustomIdGenerator] <annref_customidgenerator>`
--  :ref:`#[DiscriminatorColumn] <annref_discriminatorcolumn>`
--  :ref:`#[DiscriminatorMap] <annref_discriminatormap>`
--  :ref:`#[Embeddable] <annref_embeddable>`
--  :ref:`#[Embedded] <annref_embedded>`
--  :ref:`#[Entity] <annref_entity>`
--  :ref:`#[GeneratedValue] <annref_generatedvalue>`
--  :ref:`#[HasLifecycleCallbacks] <annref_haslifecyclecallbacks>`
--  :ref:`#[Index] <annref_index>`
--  :ref:`#[Id] <annref_id>`
--  :ref:`#[InheritanceType] <annref_inheritancetype>`
--  :ref:`#[JoinColumn] <annref_joincolumn>`
--  :ref:`#[JoinColumns] <annref_joincolumns>`
--  :ref:`#[JoinTable] <annref_jointable>`
--  :ref:`#[ManyToOne] <annref_manytoone>`
--  :ref:`#[ManyToMany] <annref_manytomany>`
--  :ref:`#[MappedSuperclass] <annref_mappedsuperclass>`
--  :ref:`#[OneToOne] <annref_onetoone>`
--  :ref:`#[OneToMany] <annref_onetomany>`
--  :ref:`#[OrderBy] <annref_orderby>`
--  :ref:`#[PostLoad] <annref_postload>`
--  :ref:`#[PostPersist] <annref_postpersist>`
--  :ref:`#[PostRemove] <annref_postremove>`
--  :ref:`#[PostUpdate] <annref_postupdate>`
--  :ref:`#[PrePersist] <annref_prepersist>`
--  :ref:`#[PreRemove] <annref_preremove>`
--  :ref:`#[PreUpdate] <annref_preupdate>`
--  :ref:`#[SequenceGenerator] <annref_sequencegenerator>`
--  :ref:`#[Table] <annref_table>`
--  :ref:`#[UniqueConstraint] <annref_uniqueconstraint>`
--  :ref:`#[Version] <annref_version>`
+-  :ref:`#[Column] <attrref_column>`
+-  :ref:`#[Cache] <attrref_cache>`
+-  :ref:`#[ChangeTrackingPolicy <attrref_changetrackingpolicy>`
+-  :ref:`#[CustomIdGenerator] <attrref_customidgenerator>`
+-  :ref:`#[DiscriminatorColumn] <attrref_discriminatorcolumn>`
+-  :ref:`#[DiscriminatorMap] <attrref_discriminatormap>`
+-  :ref:`#[Embeddable] <attrref_embeddable>`
+-  :ref:`#[Embedded] <attrref_embedded>`
+-  :ref:`#[Entity] <attrref_entity>`
+-  :ref:`#[GeneratedValue] <attrref_generatedvalue>`
+-  :ref:`#[HasLifecycleCallbacks] <attrref_haslifecyclecallbacks>`
+-  :ref:`#[Index] <attrref_index>`
+-  :ref:`#[Id] <attrref_id>`
+-  :ref:`#[InheritanceType] <attrref_inheritancetype>`
+-  :ref:`#[JoinColumn] <attrref_joincolumn>`
+-  :ref:`#[JoinColumns] <attrref_joincolumns>`
+-  :ref:`#[JoinTable] <attrref_jointable>`
+-  :ref:`#[ManyToOne] <attrref_manytoone>`
+-  :ref:`#[ManyToMany] <attrref_manytomany>`
+-  :ref:`#[MappedSuperclass] <attrref_mappedsuperclass>`
+-  :ref:`#[OneToOne] <attrref_onetoone>`
+-  :ref:`#[OneToMany] <attrref_onetomany>`
+-  :ref:`#[OrderBy] <attrref_orderby>`
+-  :ref:`#[PostLoad] <attrref_postload>`
+-  :ref:`#[PostPersist] <attrref_postpersist>`
+-  :ref:`#[PostRemove] <attrref_postremove>`
+-  :ref:`#[PostUpdate] <attrref_postupdate>`
+-  :ref:`#[PrePersist] <attrref_prepersist>`
+-  :ref:`#[PreRemove] <attrref_preremove>`
+-  :ref:`#[PreUpdate] <attrref_preupdate>`
+-  :ref:`#[SequenceGenerator] <attrref_sequencegenerator>`
+-  :ref:`#[Table] <attrref_table>`
+-  :ref:`#[UniqueConstraint] <attrref_uniqueconstraint>`
+-  :ref:`#[Version] <attrref_version>`
 
 
 Reference
 ---------
 
-.. _annref_column:
+.. _attrref_column:
 
 #[Column]
 ~~~~~~~~~
@@ -122,7 +122,7 @@ Optional attributes:
    attribute still handles the conversion between PHP and Database
    values. If you use this attribute on a column that is used for
    joins between tables you should also take a look at
-   :ref:`#[JoinColumn] <annref_joincolumn>`.
+   :ref:`#[JoinColumn] <attrref_joincolumn>`.
 
 .. note::
 
@@ -159,7 +159,7 @@ Examples:
     )]
     protected $loginCount;
 
-.. _annref_cache:
+.. _attrref_cache:
 
 #[Cache]
 ~~~~~~~~
@@ -170,7 +170,7 @@ Optional attributes:
 -  **usage**: One of ``READ_ONLY``, ``READ_WRITE`` or ``NONSTRICT_READ_WRITE``, By default this is ``READ_ONLY``.
 -  **region**: An specific region name
 
-.. _annref_changetrackingpolicy:
+.. _attrref_changetrackingpolicy:
 
 #[ChangeTrackingPolicy]
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -203,12 +203,12 @@ Example:
     ]
     class User {}
 
-.. _annref_customidgenerator:
+.. _attrref_customidgenerator:
 
 #[CustomIdGenerator]
 ~~~~~~~~~~~~~~~~~~~~
 
-This attribute allows you to specify a user-provided class to generate identifiers. This attribute only works when both :ref:`#[Id] <annref_id>` and :ref:`#[GeneratedValue(strategy: "CUSTOM")] <annref_generatedvalue>` are specified.
+This attribute allows you to specify a user-provided class to generate identifiers. This attribute only works when both :ref:`#[Id] <attrref_id>` and :ref:`#[GeneratedValue(strategy: "CUSTOM")] <attrref_generatedvalue>` are specified.
 
 Required attributes:
 
@@ -231,7 +231,7 @@ Example:
     #[CustomIdGenerator(class: MyIdGenerator::class)]
     public $id;
 
-.. _annref_discriminatorcolumn:
+.. _attrref_discriminatorcolumn:
 
 #[DiscriminatorColumn]
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -256,7 +256,7 @@ Optional attributes:
 -  **type**: By default this is string.
 -  **length**: By default this is 255.
 
-.. _annref_discriminatormap:
+.. _attrref_discriminatormap:
 
 #[DiscriminatorMap]
 ~~~~~~~~~~~~~~~~~~~
@@ -286,13 +286,13 @@ depending on whether the classes are in the namespace or not.
     }
 
 
-.. _annref_embeddable:
+.. _attrref_embeddable:
 
 #[Embeddable]
 ~~~~~~~~~~~~~
 
 The embeddable attribute is required on a class, in order to make it
-embeddable inside an entity. It works together with the :ref:`#[Embedded] <annref_embedded>`
+embeddable inside an entity. It works together with the :ref:`#[Embedded] <attrref_embedded>`
 attribute to establish the relationship between the two classes.
 
 .. code-block:: php
@@ -311,7 +311,7 @@ attribute to establish the relationship between the two classes.
         private $address;
 
 
-.. _annref_embedded:
+.. _attrref_embedded:
 
 #[Embedded]
 ~~~~~~~~~~~
@@ -323,7 +323,7 @@ Required attributes:
 
 -  **class**: The embeddable class
 
-.. _annref_entity:
+.. _attrref_entity:
 
 #[Entity]
 ~~~~~~~~~
@@ -355,13 +355,13 @@ Example:
         //...
     }
 
-.. _annref_entity_result:
+.. _attrref_entity_result:
 
 #[GeneratedValue]
 ~~~~~~~~~~~~~~~~~
 
 Specifies which strategy is used for identifier generation for an
-instance variable which is annotated by :ref:`#[Id] <annref_id>`. This
+instance variable which is annotated by :ref:`#[Id] <attrref_id>`. This
 attribute is optional and only has meaning when used in
 conjunction with #[Id].
 
@@ -387,7 +387,7 @@ Example:
     #[Id, Column(type: "integer"), GeneratedValue(strategy="IDENTITY")]
     protected $id = null;
 
-.. _annref_haslifecyclecallbacks:
+.. _attrref_haslifecyclecallbacks:
 
 #[HasLifecycleCallbacks]
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -415,7 +415,7 @@ Example:
         public function sendOptinMail() {}
     }
 
-.. _annref_index:
+.. _attrref_index:
 
 #[Index]
 ~~~~~~~~
@@ -466,7 +466,7 @@ Example with partial indexes:
     {
     }
 
-.. _annref_id:
+.. _attrref_id:
 
 #[Id]
 ~~~~~
@@ -488,7 +488,7 @@ Example:
     #[Id, Column(type="integer")]
     protected $id = null;
 
-.. _annref_inheritancetype:
+.. _attrref_inheritancetype:
 
 #[InheritanceType]
 ~~~~~~~~~~~~~~~~~~
@@ -499,8 +499,8 @@ inheritance. Currently Single Table and Class Table Inheritance are
 supported.
 
 This attribute has always been used in conjunction with the
-:ref:`#[DiscriminatorMap] <annref_discriminatormap>` and
-:ref:`#[DiscriminatorColumn] <annref_discriminatorcolumn>` attributes.
+:ref:`#[DiscriminatorMap] <attrref_discriminatormap>` and
+:ref:`#[DiscriminatorColumn] <attrref_discriminatorcolumn>` attributes.
 
 Examples:
 
@@ -530,14 +530,14 @@ Examples:
         // ...
     }
 
-.. _annref_joincolumn:
+.. _attrref_joincolumn:
 
 #[JoinColumn], #[InverseJoinColumn]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This attribute is used in the context of relations in
-:ref:`#[ManyToOne] <annref_manytoone>`, :ref:`#[OneToOne] <annref_onetoone>` fields
-and in the Context of a :ref:`#[ManyToMany] <annref_manytomany>`. If this attribute or both *name* and *referencedColumnName*
+:ref:`#[ManyToOne] <attrref_manytoone>`, :ref:`#[OneToOne] <attrref_onetoone>` fields
+and in the Context of a :ref:`#[ManyToMany] <attrref_manytomany>`. If this attribute or both *name* and *referencedColumnName*
 are missing they will be computed considering the field's name and the current
 :doc:`naming strategy <namingstrategy>`.
 
@@ -564,7 +564,7 @@ Optional attributes:
    this attribute on ``#[JoinColumn]`` is necessary if you need slightly
    different column definitions for joining columns, for example
    regarding NULL/NOT NULL defaults. However by default a
-   "columnDefinition" attribute on :ref:`#[Column] <annref_column>` also sets
+   "columnDefinition" attribute on :ref:`#[Column] <attrref_column>` also sets
    the related ``#[JoinColumn]``'s columnDefinition. This is necessary to
    make foreign keys work.
 
@@ -580,13 +580,13 @@ Example:
     #[JoinColumn(name: "customer_id", referencedColumnName: "id")]
     private $customer;
 
-.. _annref_jointable:
+.. _attrref_jointable:
 
 #[JoinTable]
 ~~~~~~~~~~~~
 
 Using
-:ref:`#[ManytoMany] <annref_manytomany>` on the owning side of the relation
+:ref:`#[ManytoMany] <attrref_manytomany>` on the owning side of the relation
 requires to specify the #[JoinTable] attribute which describes the
 details of the database join table. If you do not specify
 ``#[JoinTable]`` on these relations reasonable mapping defaults apply
@@ -612,7 +612,7 @@ Example:
     #[JoinTable(name: "users_phonenumbers")]
     public $phonenumbers;
 
-.. _annref_manytoone:
+.. _attrref_manytoone:
 
 #[ManyToOne]
 ~~~~~~~~~~~~
@@ -645,13 +645,13 @@ Example:
     #[ManyToOne(targetEntity: "Cart", cascade: ["all"], fetch: "EAGER")]
     private $cart;
 
-.. _annref_manytomany:
+.. _attrref_manytomany:
 
 #[ManyToMany]
 ~~~~~~~~~~~~~
 
 Defines that the annotated instance variable holds a many-to-many relationship
-between two entities. :ref:`#[JoinTable] <annref_jointable>` is an
+between two entities. :ref:`#[JoinTable] <attrref_jointable>` is an
 additional, optional attribute that has reasonable default
 configuration values using the table and names of the two related
 entities.
@@ -703,7 +703,7 @@ Example:
     #[ManyToMany(targetEntity: "User", mappedBy: "groups")]
     private $features;
 
-.. _annref_mappedsuperclass:
+.. _attrref_mappedsuperclass:
 
 #[MappedSuperclass]
 ~~~~~~~~~~~~~~~~~~~
@@ -742,15 +742,15 @@ Example:
         // ... fields and methods
     }
 
-.. _annref_onetoone:
+.. _attrref_onetoone:
 
 #[OneToOne]
 ~~~~~~~~~~~
 
 The ``#[OneToOne]`` attribute works almost exactly as the
-:ref:`#[ManyToOne] <annref_manytoone>` with one additional option which can
+:ref:`#[ManyToOne] <attrref_manytoone>` with one additional option which can
 be specified. When no
-:ref:`#[JoinColumn] <annref_joincolumn>` is specified it defaults to using the target entity table and
+:ref:`#[JoinColumn] <attrref_joincolumn>` is specified it defaults to using the target entity table and
 primary key column names and the current naming strategy to determine a name for the join column.
 
 Required attributes:
@@ -778,7 +778,7 @@ Example:
     #[JoinColumn(name: "customer_id", referencedColumnName: "id")]
     private $customer;
 
-.. _annref_onetomany:
+.. _attrref_onetomany:
 
 #[OneToMany]
 ~~~~~~~~~~~~
@@ -816,13 +816,13 @@ Example:
     ]
     public $phonenumbers;
 
-.. _annref_orderby:
+.. _attrref_orderby:
 
 #[OrderBy]
 ~~~~~~~~~~
 
 Optional attribute that can be specified with a
-:ref:`#[ManyToMany] <annref_manytomany>` or :ref:`#[OneToMany] <annref_onetomany>`
+:ref:`#[ManyToMany] <attrref_manytomany>` or :ref:`#[OneToMany] <attrref_onetomany>`
 attribute to specify by which criteria the collection should be
 retrieved from the database by using an ORDER BY clause.
 
@@ -841,7 +841,7 @@ positional statement. Multiple Fields are separated by a comma (,).
 The referenced field names have to exist on the ``targetEntity``
 class of the ``#[ManyToMany]`` or ``#[OneToMany]`` attribute.
 
-.. _annref_postload:
+.. _attrref_postload:
 
 #[PostLoad]
 ~~~~~~~~~~~~~~
@@ -850,7 +850,7 @@ Marks a method on the entity to be called as a ``#[PostLoad]`` event.
 Only works with ``#[HasLifecycleCallbacks]`` in the entity class PHP
 level.
 
-.. _annref_postpersist:
+.. _attrref_postpersist:
 
 #[PostPersist]
 ~~~~~~~~~~~~~~
@@ -859,7 +859,7 @@ Marks a method on the entity to be called as a ``#[PostPersist]`` event.
 Only works with ``#[HasLifecycleCallbacks]`` in the entity class PHP
 level.
 
-.. _annref_postremove:
+.. _attrref_postremove:
 
 #[PostRemove]
 ~~~~~~~~~~~~~~
@@ -868,7 +868,7 @@ Marks a method on the entity to be called as a ``#[PostRemove]`` event.
 Only works with ``#[HasLifecycleCallbacks]`` in the entity class PHP
 level.
 
-.. _annref_postupdate:
+.. _attrref_postupdate:
 
 #[PostUpdate]
 ~~~~~~~~~~~~~~
@@ -877,7 +877,7 @@ Marks a method on the entity to be called as a ``#[PostUpdate]`` event.
 Only works with ``#[HasLifecycleCallbacks]`` in the entity class PHP
 level.
 
-.. _annref_prepersist:
+.. _attrref_prepersist:
 
 #[PrePersist]
 ~~~~~~~~~~~~~~
@@ -886,7 +886,7 @@ Marks a method on the entity to be called as a ``#[PrePersist]`` event.
 Only works with ``#[HasLifecycleCallbacks]`` in the entity class PHP
 level.
 
-.. _annref_preremove:
+.. _attrref_preremove:
 
 #[PreRemove]
 ~~~~~~~~~~~~~~
@@ -895,7 +895,7 @@ Marks a method on the entity to be called as a #``[PreRemove]`` event.
 Only works with ``#[HasLifecycleCallbacks]`` in the entity class PHP
 level.
 
-.. _annref_preupdate:
+.. _attrref_preupdate:
 
 #[PreUpdate]
 ~~~~~~~~~~~~~~
@@ -904,7 +904,7 @@ Marks a method on the entity to be called as a ``#[PreUpdate]`` event.
 Only works with ``#[HasLifecycleCallbacks]`` in the entity class PHP
 level.
 
-.. _annref_sequencegenerator:
+.. _attrref_sequencegenerator:
 
 #[SequenceGenerator]
 ~~~~~~~~~~~~~~~~~~~~~
@@ -941,7 +941,7 @@ Example:
     #[SequenceGenerator(sequenceName: "tablename_seq", initialValue: 1, allocationSize: 100)]
     protected $id = null;
 
-.. _annref_table:
+.. _attrref_table:
 
 #[Table]
 ~~~~~~~~
@@ -971,7 +971,7 @@ Example:
     #[Table(name: "user", schema: "schema_name")]
     class User { }
 
-.. _annref_uniqueconstraint:
+.. _attrref_uniqueconstraint:
 
 #[UniqueConstraint]
 ~~~~~~~~~~~~~~~~~~~
@@ -1008,16 +1008,16 @@ Basic example:
     {
     }
 
-.. _annref_version:
+.. _attrref_version:
 
 #[Version]
 ~~~~~~~~~~
 
 Marker attribute that defines a specified column as version attribute used in
 an :ref:`optimistic locking <transactions-and-concurrency_optimistic-locking>`
-scenario. It only works on :ref:`#[Column] <annref_column>` attributes that have
+scenario. It only works on :ref:`#[Column] <attrref_column>` attributes that have
 the type ``integer`` or ``datetime``. Setting ``#[Version]`` on a property with
-:ref:`#[Id <annref_id>` is not supported.
+:ref:`#[Id <attrref_id>` is not supported.
 
 Example:
 
