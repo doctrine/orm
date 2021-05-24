@@ -19,6 +19,7 @@ use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\OrmTestCase;
+use Exception;
 use ReflectionProperty;
 use stdClass;
 
@@ -132,6 +133,32 @@ class ProxyFactoryTest extends OrmTestCase
             $proxy->getDescription();
             $this->fail('An exception was expected to be raised');
         } catch (EntityNotFoundException $exception) {
+        }
+
+        $this->assertFalse($proxy->__isInitialized());
+        $this->assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
+        $this->assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
+    }
+
+    public function testExceptionWhenLoadingProxyDoesNotMarkTheProxyAsInitialized(): void
+    {
+        $persister = $this->getMockBuilder(BasicEntityPersister::class)
+            ->setMethods(['load'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
+
+        $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, ['id' => 42]);
+
+        $persister
+            ->expects($this->atLeastOnce())
+            ->method('load')
+            ->willThrowException(new Exception());
+
+        try {
+            $proxy->getDescription();
+            $this->fail('An exception was expected to be raised');
+        } catch (Exception $exception) {
         }
 
         $this->assertFalse($proxy->__isInitialized());

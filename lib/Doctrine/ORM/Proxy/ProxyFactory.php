@@ -32,6 +32,7 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\ClassMetadata;
+use Throwable;
 
 /**
  * This factory is used to create proxy objects for entities at runtime.
@@ -145,15 +146,19 @@ class ProxyFactory extends AbstractProxyFactory
 
             $identifier = $classMetadata->getIdentifierValues($proxy);
 
-            if ($entityPersister->loadById($identifier, $proxy) === null) {
+            try {
+                if ($entityPersister->loadById($identifier, $proxy) === null) {
+                    throw EntityNotFoundException::fromClassNameAndIdentifier(
+                        $classMetadata->getName(),
+                        $this->identifierFlattener->flattenIdentifier($classMetadata, $identifier)
+                    );
+                }
+            } catch (Throwable $t) {
                 $proxy->__setInitializer($initializer);
                 $proxy->__setCloner($cloner);
                 $proxy->__setInitialized(false);
 
-                throw EntityNotFoundException::fromClassNameAndIdentifier(
-                    $classMetadata->getName(),
-                    $this->identifierFlattener->flattenIdentifier($classMetadata, $identifier)
-                );
+                throw $t;
             }
         };
     }
