@@ -78,7 +78,6 @@ use Doctrine\ORM\Query\AST\UpdateStatement;
 use Doctrine\ORM\Query\AST\WhenClause;
 use Doctrine\ORM\Query\AST\WhereClause;
 use ReflectionClass;
-use Webmozart\Assert\Assert;
 
 use function array_intersect;
 use function array_search;
