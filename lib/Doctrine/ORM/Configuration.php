@@ -26,6 +26,7 @@ use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache as CacheDriver;
+use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Deprecations\Deprecation;
@@ -326,6 +327,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
         );
 
         $this->_attributes['metadataCacheImpl'] = $cacheImpl;
+        $this->_attributes['metadataCache']     = CacheAdapter::wrap($cacheImpl);
     }
 
     public function getMetadataCache(): ?CacheItemPoolInterface
@@ -335,7 +337,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     public function setMetadataCache(CacheItemPoolInterface $cache): void
     {
-        $this->_attributes['metadataCache'] = $cache;
+        $this->_attributes['metadataCache']     = $cache;
+        $this->_attributes['metadataCacheImpl'] = DoctrineProvider::wrap($cache);
     }
 
     /**
@@ -430,15 +433,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
             throw ORMException::proxyClassesAlwaysRegenerating();
         }
 
-        if ($this->getMetadataCache()) {
-            return;
+        if (! $this->getMetadataCache()) {
+            throw ORMException::metadataCacheNotConfigured();
         }
 
         $metadataCacheImpl = $this->getMetadataCacheImpl();
-
-        if (! $metadataCacheImpl) {
-            throw ORMException::metadataCacheNotConfigured();
-        }
 
         if ($metadataCacheImpl instanceof ArrayCache) {
             throw ORMException::metadataCacheUsesNonPersistentCache($metadataCacheImpl);
