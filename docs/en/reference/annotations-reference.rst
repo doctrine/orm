@@ -350,7 +350,7 @@ in order to specify that it is an embedded class.
 
 Required attributes:
 
--  **class**: The embeddable class
+-  **class**: The embeddable class. You can omit this value if you use a PHP property type instead.
 
 
 .. code-block:: php

@@ -42,6 +42,7 @@ use Doctrine\Tests\Models\DDC889\DDC889Class;
 use Doctrine\Tests\Models\DDC889\DDC889Entity;
 use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
+use Doctrine\Tests\Models\TypedProperties\Contact;
 use Doctrine\Tests\Models\TypedProperties\UserTyped;
 use Doctrine\Tests\OrmTestCase;
 
@@ -281,6 +282,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $this->assertEquals(CmsEmail::class, $class->getAssociationMapping('email')['targetEntity']);
         $this->assertEquals(CmsEmail::class, $class->getAssociationMapping('mainEmail')['targetEntity']);
+        $this->assertEquals(Contact::class, $class->embeddedClasses['contact']['class']);
     }
 
     public function testFieldTypeFromReflection(): void
