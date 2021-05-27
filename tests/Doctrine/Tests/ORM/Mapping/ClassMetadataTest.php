@@ -36,7 +36,6 @@ use function strtolower;
 use function strtoupper;
 use function unserialize;
 
-use function var_dump;
 use const CASE_UPPER;
 
 use const PHP_VERSION_ID;

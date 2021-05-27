@@ -3605,7 +3605,7 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $this->assertFieldNotMapped($mapping['fieldName']);
 
-        if ($this->isTypedProperty($mapping['fieldName']) && !$mapping['class']) {
+        if ($this->isTypedProperty($mapping['fieldName']) && ! $mapping['class']) {
             $mapping = $this->validateAndCompleteEmbeddedMapping($mapping);
         }
 
