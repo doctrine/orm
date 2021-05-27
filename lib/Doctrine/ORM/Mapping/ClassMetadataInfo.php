@@ -3605,12 +3605,32 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $this->assertFieldNotMapped($mapping['fieldName']);
 
+        if ($this->isTypedProperty($mapping['fieldName']) && !$mapping['class']) {
+            $mapping = $this->validateAndCompleteEmbeddedMapping($mapping);
+        }
+
         $this->embeddedClasses[$mapping['fieldName']] = [
             'class' => $this->fullyQualifiedClassName($mapping['class']),
             'columnPrefix' => $mapping['columnPrefix'],
             'declaredField' => $mapping['declaredField'] ?? null,
             'originalField' => $mapping['originalField'] ?? null,
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $mapping
+     *
+     * @return array<string, mixed>
+     */
+    private function validateAndCompleteEmbeddedMapping(array $mapping): array
+    {
+        $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
+
+        if ($type instanceof ReflectionNamedType && class_exists($type->getName())) {
+            $mapping['class'] = $type->getName();
+        }
+
+        return $mapping;
     }
 
     /**
