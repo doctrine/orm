@@ -41,6 +41,8 @@ use function get_class;
 use function is_array;
 use function is_numeric;
 
+use const PHP_VERSION_ID;
+
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
  */
@@ -356,12 +358,12 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
             $joinColumnAnnot = $this->reader->getPropertyAnnotation($property, Mapping\JoinColumn::class);
             if ($joinColumnAnnot) {
-                $joinColumns[] = $this->joinColumnToArray($joinColumnAnnot);
+                $joinColumns[] = $this->joinColumnToArray($joinColumnAnnot, $property);
             } else {
                 $joinColumnsAnnot = $this->reader->getPropertyAnnotation($property, Mapping\JoinColumns::class);
                 if ($joinColumnsAnnot) {
                     foreach ($joinColumnsAnnot->value as $joinColumn) {
-                        $joinColumns[] = $this->joinColumnToArray($joinColumn);
+                        $joinColumns[] = $this->joinColumnToArray($joinColumn, $property);
                     }
                 }
             }
@@ -434,7 +436,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $joinColumns = [];
 
                     foreach ($associationOverride->joinColumns as $joinColumn) {
-                        $joinColumns[] = $this->joinColumnToArray($joinColumn);
+                        $joinColumns[] = $this->joinColumnToArray($joinColumn, $property);
                     }
 
                     $override['joinColumns'] = $joinColumns;
@@ -710,12 +712,22 @@ class AnnotationDriver extends AbstractAnnotationDriver
      *                   referencedColumnName: string
      *               }
      */
-    private function joinColumnToArray(Mapping\JoinColumn $joinColumn): array
+    private function joinColumnToArray(Mapping\JoinColumn $joinColumn, ?ReflectionProperty $property = null): array
     {
+        $nullable = $joinColumn->nullable;
+        if (
+            PHP_VERSION_ID >= 70400
+            && null !== $property
+            && $property->hasType()
+            && ! $joinColumn->isNullableSet()
+        ) {
+            $nullable = $property->getType()->allowsNull();
+        }
+
         return [
             'name' => $joinColumn->name,
             'unique' => $joinColumn->unique,
-            'nullable' => $joinColumn->nullable,
+            'nullable' => $nullable,
             'onDelete' => $joinColumn->onDelete,
             'columnDefinition' => $joinColumn->columnDefinition,
             'referencedColumnName' => $joinColumn->referencedColumnName,

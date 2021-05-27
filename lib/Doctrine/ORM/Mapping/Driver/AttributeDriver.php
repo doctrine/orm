@@ -18,8 +18,9 @@ use ReflectionProperty;
 use function assert;
 use function class_exists;
 use function constant;
-use function count;
 use function defined;
+
+use const PHP_VERSION_ID;
 
 class AttributeDriver extends AnnotationDriver
 {
@@ -246,7 +247,7 @@ class AttributeDriver extends AnnotationDriver
             $joinColumnAttributes = $this->reader->getPropertyAnnotation($property, Mapping\JoinColumn::class);
 
             foreach ($joinColumnAttributes as $joinColumnAttribute) {
-                $joinColumns[] = $this->joinColumnToArray($joinColumnAttribute);
+                $joinColumns[] = $this->joinColumnToArray($joinColumnAttribute, $property);
             }
 
             // Field can only be attributed with one of:
@@ -502,6 +503,7 @@ class AttributeDriver extends AnnotationDriver
      * Parse the given JoinColumn as array
      *
      * @param Mapping\JoinColumn|Mapping\InverseJoinColumn $joinColumn
+     * @param ReflectionProperty|null                      $property
      *
      * @return mixed[]
      * @psalm-return array{
@@ -513,12 +515,22 @@ class AttributeDriver extends AnnotationDriver
      *                   referencedColumnName: string
      *               }
      */
-    private function joinColumnToArray($joinColumn): array
+    private function joinColumnToArray($joinColumn, ?ReflectionProperty $property = null): array
     {
+        $nullable = $joinColumn->nullable;
+        if (
+            PHP_VERSION_ID >= 70400
+            && null !== $property
+            && $property->hasType()
+            && ! $joinColumn->isNullableSet()
+        ) {
+            $nullable = $property->getType()->allowsNull();
+        }
+
         return [
             'name' => $joinColumn->name,
             'unique' => $joinColumn->unique,
-            'nullable' => $joinColumn->nullable,
+            'nullable' => $nullable,
             'onDelete' => $joinColumn->onDelete,
             'columnDefinition' => $joinColumn->columnDefinition,
             'referencedColumnName' => $joinColumn->referencedColumnName,

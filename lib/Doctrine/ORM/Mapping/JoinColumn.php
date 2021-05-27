@@ -43,6 +43,9 @@ final class JoinColumn implements Annotation
     /** @var bool */
     public $nullable = true;
 
+    /** @var bool */
+    private $nullableSet;
+
     /** @var mixed */
     public $onDelete;
 
@@ -60,7 +63,7 @@ final class JoinColumn implements Annotation
         ?string $name = null,
         string $referencedColumnName = 'id',
         bool $unique = false,
-        bool $nullable = true,
+        ?bool $nullable = null,
         $onDelete = null,
         ?string $columnDefinition = null,
         ?string $fieldName = null
@@ -68,9 +71,18 @@ final class JoinColumn implements Annotation
         $this->name                 = $name;
         $this->referencedColumnName = $referencedColumnName;
         $this->unique               = $unique;
-        $this->nullable             = $nullable;
+        $this->nullable             = $nullable ?? true;
+        $this->nullableSet          = null !== $nullable;
         $this->onDelete             = $onDelete;
         $this->columnDefinition     = $columnDefinition;
         $this->fieldName            = $fieldName;
+    }
+
+    /**
+     * @return bool True if nullable was set on annotation, false otherwise
+     */
+    public function isNullableSet(): bool
+    {
+        return $this->nullableSet;
     }
 }

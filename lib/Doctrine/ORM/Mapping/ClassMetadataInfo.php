@@ -1527,14 +1527,6 @@ class ClassMetadataInfo implements ClassMetadata
             $mapping['targetEntity'] = $type->getName();
         }
 
-        if (isset($mapping['joinColumns'])) {
-            foreach ($mapping['joinColumns'] as &$joinColumn) {
-                if ($type->allowsNull() === false) {
-                    $joinColumn['nullable'] = false;
-                }
-            }
-        }
-
         return $mapping;
     }
 
