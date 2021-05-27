@@ -348,9 +348,9 @@ annotation to establish the relationship between the two classes.
 The embedded annotation is required on an entity's member variable,
 in order to specify that it is an embedded class.
 
-Required attributes:
+Optional attributes:
 
--  **class**: The embeddable class
+-  **class**: The embeddable class, will be resolved automatically when using typed properties
 
 
 .. code-block:: php
@@ -361,9 +361,9 @@ Required attributes:
     class User
     {
         /**
-         * @Embedded(class = "Address")
+         * @Embedded()
          */
-        private $address;
+        private Address $address;
 
     /**
      * @Embeddable
