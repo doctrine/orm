@@ -36,6 +36,7 @@ use function strtolower;
 use function strtoupper;
 use function unserialize;
 
+use function var_dump;
 use const CASE_UPPER;
 
 use const PHP_VERSION_ID;
@@ -133,6 +134,13 @@ class ClassMetadataTest extends OrmTestCase
 
         $cm->mapManyToOne(['fieldName' => 'mainEmail']);
         $this->assertEquals(CmsEmail::class, $cm->getAssociationMapping('mainEmail')['targetEntity']);
+
+        $cm->mapEmbedded([
+            'fieldName' => 'embeddableField',
+            'class' => null,
+            'columnPrefix' => null,
+        ]);
+        $this->assertEquals(TypedProperties\EmbeddableEntity::class, $cm->embeddedClasses['embeddableField']['class']);
     }
 
     public function testFieldTypeFromReflection(): void

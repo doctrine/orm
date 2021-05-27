@@ -70,7 +70,7 @@ class UserTyped
 
     /** @Embedded */
     #[ORM\Embedded]
-    public Embeddable $embeddable;
+    public EmbeddableEntity $embeddableField;
 
     public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
