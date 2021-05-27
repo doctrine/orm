@@ -19,6 +19,7 @@ use function assert;
 use function class_exists;
 use function constant;
 use function defined;
+use function is_bool;
 
 use const PHP_VERSION_ID;
 
@@ -503,7 +504,6 @@ class AttributeDriver extends AnnotationDriver
      * Parse the given JoinColumn as array
      *
      * @param Mapping\JoinColumn|Mapping\InverseJoinColumn $joinColumn
-     * @param ReflectionProperty|null                      $property
      *
      * @return mixed[]
      * @psalm-return array{
@@ -520,12 +520,14 @@ class AttributeDriver extends AnnotationDriver
         $nullable = $joinColumn->nullable;
         if (
             PHP_VERSION_ID >= 70400
-            && null !== $property
+            && $property !== null
             && $property->hasType()
             && ! $joinColumn->isNullableSet()
         ) {
             $nullable = $property->getType()->allowsNull();
         }
+
+        assert(is_bool($nullable));
 
         return [
             'name' => $joinColumn->name,

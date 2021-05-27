@@ -69,4 +69,8 @@ final class InverseJoinColumn implements Annotation
         $this->columnDefinition     = $columnDefinition;
         $this->fieldName            = $fieldName;
     }
+
+    public function isNullableSet(): bool {
+        return true;
+    }
 }

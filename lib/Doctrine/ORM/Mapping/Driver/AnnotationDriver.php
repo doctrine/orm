@@ -33,12 +33,14 @@ use ReflectionMethod;
 use ReflectionProperty;
 use UnexpectedValueException;
 
+use function assert;
 use function class_exists;
 use function constant;
 use function count;
 use function defined;
 use function get_class;
 use function is_array;
+use function is_bool;
 use function is_numeric;
 
 use const PHP_VERSION_ID;
@@ -436,7 +438,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $joinColumns = [];
 
                     foreach ($associationOverride->joinColumns as $joinColumn) {
-                        $joinColumns[] = $this->joinColumnToArray($joinColumn, $property);
+                        $joinColumns[] = $this->joinColumnToArray($joinColumn);
                     }
 
                     $override['joinColumns'] = $joinColumns;
@@ -717,12 +719,14 @@ class AnnotationDriver extends AbstractAnnotationDriver
         $nullable = $joinColumn->nullable;
         if (
             PHP_VERSION_ID >= 70400
-            && null !== $property
+            && $property !== null
             && $property->hasType()
             && ! $joinColumn->isNullableSet()
         ) {
             $nullable = $property->getType()->allowsNull();
         }
+
+        assert(is_bool($nullable));
 
         return [
             'name' => $joinColumn->name,

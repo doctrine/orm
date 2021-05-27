@@ -72,7 +72,7 @@ final class JoinColumn implements Annotation
         $this->referencedColumnName = $referencedColumnName;
         $this->unique               = $unique;
         $this->nullable             = $nullable ?? true;
-        $this->nullableSet          = null !== $nullable;
+        $this->nullableSet          = $nullable !== null;
         $this->onDelete             = $onDelete;
         $this->columnDefinition     = $columnDefinition;
         $this->fieldName            = $fieldName;
