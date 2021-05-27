@@ -555,7 +555,8 @@ preFlush
 ~~~~~~~~
 
 ``preFlush`` is called at ``EntityManager#flush()`` before
-anything else. ``EntityManager#flush()`` should not be called inside
+anything else – even before computing the changeset.
+``EntityManager#flush()`` should not be called inside
 its listeners, since `preFlush` event is dispatched in it, which would
 result in infinite loop.
 
