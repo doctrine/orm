@@ -281,6 +281,9 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertEquals('json', $class->getTypeOfField('array'));
         $this->assertEquals('boolean', $class->getTypeOfField('boolean'));
         $this->assertEquals('float', $class->getTypeOfField('float'));
+
+        $this->assertEquals(CmsEmail::class, $class->getAssociationMapping('email')['targetEntity']);
+        $this->assertEquals(CmsEmail::class, $class->getAssociationMapping('mainEmail')['targetEntity']);
     }
 
     /**
