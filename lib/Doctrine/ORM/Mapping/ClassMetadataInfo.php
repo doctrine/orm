@@ -1468,10 +1468,6 @@ class ClassMetadataInfo implements ClassMetadata
         $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
 
         if ($type) {
-            if (! isset($mapping['nullable'])) {
-                $mapping['nullable'] = $type->allowsNull();
-            }
-
             if (
                 ! isset($mapping['type'])
                 && ($type instanceof ReflectionNamedType)
@@ -1525,14 +1521,6 @@ class ClassMetadataInfo implements ClassMetadata
 
         if (! isset($mapping['targetEntity']) && $type instanceof ReflectionNamedType) {
             $mapping['targetEntity'] = $type->getName();
-        }
-
-        if (isset($mapping['joinColumns'])) {
-            foreach ($mapping['joinColumns'] as &$joinColumn) {
-                if ($type->allowsNull() === false) {
-                    $joinColumn['nullable'] = false;
-                }
-            }
         }
 
         return $mapping;
