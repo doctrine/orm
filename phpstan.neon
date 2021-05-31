@@ -5,6 +5,7 @@ parameters:
     level: 5
     paths:
         - %currentWorkingDirectory%/lib
+        - %currentWorkingDirectory%/tests/Doctrine/StaticAnalysis
     earlyTerminatingMethodCalls:
         Doctrine\ORM\Query\Parser:
             - syntaxError
