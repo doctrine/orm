@@ -120,14 +120,6 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(TypedProperties\UserTyped::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        // Explicit Nullable
-        $cm->mapField(['fieldName' => 'status', 'length' => 50]);
-        $this->assertTrue($cm->isNullable('status'));
-
-        // Explicit Not Nullable
-        $cm->mapField(['fieldName' => 'username', 'length' => 50]);
-        $this->assertFalse($cm->isNullable('username'));
-
         $cm->mapOneToOne(['fieldName' => 'email', 'joinColumns' => [[]]]);
         $this->assertEquals(CmsEmail::class, $cm->getAssociationMapping('email')['targetEntity']);
 
