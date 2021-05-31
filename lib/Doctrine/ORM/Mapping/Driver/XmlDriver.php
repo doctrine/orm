@@ -324,7 +324,7 @@ class XmlDriver extends FileDriver
 
                 $mapping = [
                     'fieldName' => (string) $embeddedMapping['name'],
-                    'class' => (string) $embeddedMapping['class'],
+                    'class' => isset($embeddedMapping['class']) ? (string) $embeddedMapping['class'] : null,
                     'columnPrefix' => $useColumnPrefix ? $columnPrefix : false,
                 ];
 

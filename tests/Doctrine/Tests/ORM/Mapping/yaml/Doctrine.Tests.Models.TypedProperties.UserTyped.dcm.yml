@@ -24,3 +24,5 @@ Doctrine\Tests\Models\TypedProperties\UserTyped:
             joinColumn: []
     manyToOne:
         mainEmail: []
+    embedded:
+        contact: ~
