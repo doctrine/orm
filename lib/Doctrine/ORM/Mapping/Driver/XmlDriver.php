@@ -322,11 +322,9 @@ class XmlDriver extends FileDriver
                     ? $this->evaluateBoolean($embeddedMapping['use-column-prefix'])
                     : true;
 
-                $class = isset($embeddedMapping['class']) ? (string) $embeddedMapping['class'] : null;
-
                 $mapping = [
                     'fieldName' => (string) $embeddedMapping['name'],
-                    'class' => $class,
+                    'class' => isset($embeddedMapping['class']) ? (string) $embeddedMapping['class'] : null,
                     'columnPrefix' => $useColumnPrefix ? $columnPrefix : false,
                 ];
 
