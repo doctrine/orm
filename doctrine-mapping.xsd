@@ -309,7 +309,7 @@
 
   <xs:complexType name="embedded">
     <xs:attribute name="name" type="xs:string" use="required" />
-    <xs:attribute name="class" type="orm:fqcn" use="required" />
+    <xs:attribute name="class" type="orm:fqcn" use="optional" />
     <xs:attribute name="column-prefix" type="xs:string" use="optional" />
     <xs:attribute name="use-column-prefix" type="xs:boolean" default="true" use="optional" />
   </xs:complexType>

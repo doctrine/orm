@@ -408,7 +408,7 @@ class YamlDriver extends FileDriver
             foreach ($element['embedded'] as $name => $embeddedMapping) {
                 $mapping = [
                     'fieldName' => $name,
-                    'class' => $embeddedMapping['class'],
+                    'class' => $embeddedMapping['class'] ?? null,
                     'columnPrefix' => $embeddedMapping['columnPrefix'] ?? null,
                 ];
                 $metadata->mapEmbedded($mapping);

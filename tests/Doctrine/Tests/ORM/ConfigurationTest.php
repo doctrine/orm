@@ -133,6 +133,7 @@ class ConfigurationTest extends DoctrineTestCase
         $queryCacheImpl = $this->createMock(Cache::class);
         $this->configuration->setMetadataCacheImpl($queryCacheImpl);
         $this->assertSame($queryCacheImpl, $this->configuration->getMetadataCacheImpl());
+        $this->assertNotNull($this->configuration->getMetadataCache());
     }
 
     public function testSetGetMetadataCache(): void
@@ -141,6 +142,7 @@ class ConfigurationTest extends DoctrineTestCase
         $cache = $this->createStub(CacheItemPoolInterface::class);
         $this->configuration->setMetadataCache($cache);
         $this->assertSame($cache, $this->configuration->getMetadataCache());
+        $this->assertNotNull($this->configuration->getMetadataCacheImpl());
     }
 
     public function testAddGetNamedQuery(): void

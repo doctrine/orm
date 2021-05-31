@@ -557,7 +557,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method ReflectionProperty\\:\\:getType\\(\\)\\.$#"
-			count: 2
+			count: 3
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
 
 		-

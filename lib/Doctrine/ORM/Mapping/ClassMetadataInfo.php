@@ -710,6 +710,7 @@ class ClassMetadataInfo implements ClassMetadata
      * metadata of the class with the given name.
      *
      * @param string $entityName The name of the entity class the new instance is used for.
+     * @psalm-param class-string<T> $entityName
      */
     public function __construct($entityName, ?NamingStrategy $namingStrategy = null)
     {
@@ -1467,10 +1468,6 @@ class ClassMetadataInfo implements ClassMetadata
         $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
 
         if ($type) {
-            if (! isset($mapping['nullable'])) {
-                $mapping['nullable'] = $type->allowsNull();
-            }
-
             if (
                 ! isset($mapping['type'])
                 && ($type instanceof ReflectionNamedType)
@@ -1524,14 +1521,6 @@ class ClassMetadataInfo implements ClassMetadata
 
         if (! isset($mapping['targetEntity']) && $type instanceof ReflectionNamedType) {
             $mapping['targetEntity'] = $type->getName();
-        }
-
-        if (isset($mapping['joinColumns'])) {
-            foreach ($mapping['joinColumns'] as &$joinColumn) {
-                if ($type->allowsNull() === false) {
-                    $joinColumn['nullable'] = false;
-                }
-            }
         }
 
         return $mapping;
@@ -3604,9 +3593,16 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $this->assertFieldNotMapped($mapping['fieldName']);
 
+        if (! isset($mapping['class']) && $this->isTypedProperty($mapping['fieldName'])) {
+            $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
+            if ($type instanceof ReflectionNamedType) {
+                $mapping['class'] = $type->getName();
+            }
+        }
+
         $this->embeddedClasses[$mapping['fieldName']] = [
             'class' => $this->fullyQualifiedClassName($mapping['class']),
-            'columnPrefix' => $mapping['columnPrefix'],
+            'columnPrefix' => $mapping['columnPrefix'] ?? null,
             'declaredField' => $mapping['declaredField'] ?? null,
             'originalField' => $mapping['originalField'] ?? null,
         ];

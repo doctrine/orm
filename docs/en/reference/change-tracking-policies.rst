@@ -61,7 +61,7 @@ This policy can be configured as follows:
 Notify
 ~~~~~~
 
-.. warning::
+.. note::
 
     The notify change tracking policy is deprecated and will be removed in ORM 3.0.
     (`Details <https://github.com/doctrine/orm/issues/8383>`_)

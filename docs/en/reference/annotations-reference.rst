@@ -113,7 +113,7 @@ Optional attributes:
 -  **unique**: Boolean value to determine if the value of the column
    should be unique across all rows of the underlying entities table.
 
--  **nullable**: Determines if NULL values allowed for this column. If not specified, default value is false. When using typed properties on entity class defaults to true when property is nullable.
+-  **nullable**: Determines if NULL values allowed for this column. If not specified, default value is false.
 
 -  **options**: Array of additional options:
 
@@ -350,7 +350,7 @@ in order to specify that it is an embedded class.
 
 Required attributes:
 
--  **class**: The embeddable class
+-  **class**: The embeddable class. You can omit this value if you use a PHP property type instead.
 
 
 .. code-block:: php
@@ -649,8 +649,6 @@ Optional attributes:
    constraint level. Defaults to false.
 -  **nullable**: Determine whether the related entity is required, or if
    null is an allowed state for the relation. Defaults to true.
-   When using typed properties on entity class defaults to false when
-   property is not nullable.
 -  **onDelete**: Cascade Action (Database-level)
 -  **columnDefinition**: DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.

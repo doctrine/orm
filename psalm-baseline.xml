@@ -1125,9 +1125,7 @@
       <code>$table</code>
       <code>$tableGeneratorDefinition</code>
     </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="13">
-      <code>$entityName</code>
-      <code>$entityName</code>
+    <PropertyTypeCoercion occurrences="11">
       <code>$this-&gt;entityListeners</code>
       <code>$this-&gt;fieldMappings</code>
       <code>$this-&gt;fullyQualifiedClassName($repositoryClassName)</code>
