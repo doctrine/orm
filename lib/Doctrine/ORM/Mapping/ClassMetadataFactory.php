@@ -41,7 +41,6 @@ use Doctrine\Persistence\Mapping\ReflectionService;
 use ReflectionClass;
 use ReflectionException;
 
-use function array_map;
 use function assert;
 use function class_exists;
 use function count;

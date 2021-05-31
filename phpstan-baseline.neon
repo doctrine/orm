@@ -262,7 +262,7 @@ parameters:
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$discriminatorMap\\.$#"
-			count: 2
+			count: 3
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
