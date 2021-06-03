@@ -81,7 +81,7 @@ use const PHP_VERSION_ID;
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
  *
- * @template T of object
+ * @template-covariant T of object
  * @template-implements ClassMetadata<T>
  */
 class ClassMetadataInfo implements ClassMetadata
