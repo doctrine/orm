@@ -9,6 +9,7 @@
 >
     <projectFiles>
         <directory name="lib/Doctrine/ORM" />
+        <directory name="tests/Doctrine/StaticAnalysis" />
         <ignoreFiles>
             <directory name="vendor" />
         </ignoreFiles>
