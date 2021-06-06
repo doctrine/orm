@@ -1003,7 +1003,7 @@ Basic example:
     use Doctrine\ORM\Mapping\UniqueConstraint;
 
     #[Entity]
-    #[UniqueConstraint(name: "ean", columns=["ean"])]
+    #[UniqueConstraint(name: "ean", columns: ["ean"])]
     class ECommerceProduct
     {
     }
