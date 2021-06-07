@@ -283,8 +283,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                         throw MappingException::invalidClassInDiscriminatorMap($subClass, $class->name);
                     }
                 }
-            } elseif ((! $class->reflClass || ! $class->reflClass->isAbstract()) && ! in_array($class->name, $parent->discriminatorMap)) {
-                throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
+            } else {
+                assert($parent instanceof ClassMetadataInfo); // make static code analysis happy, see https://github.com/doctrine/orm/pull/8402#issuecomment-855805708
+                if ((! $class->reflClass || ! $class->reflClass->isAbstract()) && ! in_array($class->name, $parent->discriminatorMap)) {
+                    throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
+                }
             }
         } elseif ($class->isMappedSuperclass && $class->name === $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierarchy
