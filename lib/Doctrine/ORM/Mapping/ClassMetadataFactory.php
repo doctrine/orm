@@ -284,7 +284,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     }
                 }
             } else {
-                assert($parent instanceof ClassMetadataInfo); // make static code analysis happy, see https://github.com/doctrine/orm/pull/8402#issuecomment-855805708
+                assert($parent instanceof ClassMetadataInfo); // https://github.com/doctrine/orm/issues/8746
                 if ((! $class->reflClass || ! $class->reflClass->isAbstract()) && ! in_array($class->name, $parent->discriminatorMap)) {
                     throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
                 }
