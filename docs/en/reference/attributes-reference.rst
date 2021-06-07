@@ -384,7 +384,7 @@ Example:
     use Doctrine\ORM\Mapping\GeneratedValue;
     use Doctrine\ORM\Mapping\Id;
 
-    #[Id, Column(type: "integer"), GeneratedValue(strategy="IDENTITY")]
+    #[Id, Column(type: "integer"), GeneratedValue(strategy: "IDENTITY")]
     protected $id = null;
 
 .. _attrref_haslifecyclecallbacks:
@@ -485,7 +485,7 @@ Example:
     use Doctrine\ORM\Mapping\Column;
     use Doctrine\ORM\Mapping\Id;
 
-    #[Id, Column(type="integer")]
+    #[Id, Column(type: "integer")]
     protected $id = null;
 
 .. _attrref_inheritancetype:
@@ -514,7 +514,7 @@ Examples:
 
     #[Entity]
     #[InheritanceType("SINGLE_TABLE")]
-    #[DiscriminatorColumn(name="discr", type="string")]
+    #[DiscriminatorColumn(name: "discr", type: "string")]
     #[DiscriminatorMap({"person" = "Person", "employee" = "Employee"})]
     class Person
     {
@@ -523,7 +523,7 @@ Examples:
 
     #[Entity]
     #[InheritanceType("JOINED")]
-    #[DiscriminatorColumn(name="discr", type="string")]
+    #[DiscriminatorColumn(name: "discr", type: "string")]
     #[DiscriminatorMap({"person" = "Person", "employee" = "Employee"})]
     class Person
     {
@@ -1003,7 +1003,7 @@ Basic example:
     use Doctrine\ORM\Mapping\UniqueConstraint;
 
     #[Entity]
-    #[UniqueConstraint(name: "ean", columns=["ean"])]
+    #[UniqueConstraint(name: "ean", columns: ["ean"])]
     class ECommerceProduct
     {
     }
