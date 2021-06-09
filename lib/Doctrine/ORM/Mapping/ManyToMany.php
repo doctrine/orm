@@ -31,7 +31,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class ManyToMany implements Annotation
 {
-    /** @var string */
+    /** @var string|null */
     public $targetEntity;
 
     /** @var string */
@@ -61,7 +61,7 @@ final class ManyToMany implements Annotation
      * @param array<string> $cascade
      */
     public function __construct(
-        string $targetEntity,
+        ?string $targetEntity = null,
         ?string $mappedBy = null,
         ?string $inversedBy = null,
         ?array $cascade = null,
