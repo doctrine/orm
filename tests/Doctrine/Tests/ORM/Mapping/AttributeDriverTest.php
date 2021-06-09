@@ -16,7 +16,7 @@ class AttributeDriverTest extends AbstractMappingDriverTest
     public function requiresPhp8Assertion(): void
     {
         if (PHP_VERSION_ID < 80000) {
-            $this->markTestSkipped('requies PHP 8.0');
+            $this->markTestSkipped('requires PHP 8.0');
         }
     }
 
@@ -78,6 +78,13 @@ class AttributeDriverTest extends AbstractMappingDriverTest
         );
         $this->assertEquals(['assoz_id', 'assoz_id'], $metadata->associationMappings['assoc']['joinTableColumns']);
     }
+
+    public function testIsTransientWithRepeatableAttributes(): void
+    {
+        $driver      = $this->loadDriver();
+        $isTransient = $driver->isTransient(AttributeEntityStartingWithRepeatableAttributes::class);
+        $this->assertFalse($isTransient);
+    }
 }
 
 #[ORM\Entity]
@@ -94,4 +101,11 @@ class AttributeEntityWithoutOriginalParents
     #[ORM\InverseJoinColumn(name: 'assoz_id', referencedColumnName: 'assoz_id')]
     /** @var AttributeEntityWithoutOriginalParents[] */
     public $assoc;
+}
+
+#[ORM\Index(name: 'bar', columns: ['id'])]
+#[ORM\Index(name: 'baz', columns: ['id'])]
+#[ORM\Entity]
+class AttributeEntityStartingWithRepeatableAttributes
+{
 }
