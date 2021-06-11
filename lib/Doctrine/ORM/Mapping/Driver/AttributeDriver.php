@@ -21,7 +21,6 @@ use function constant;
 use function count;
 use function defined;
 use function get_class;
-use function is_array;
 
 class AttributeDriver extends AnnotationDriver
 {
@@ -48,7 +47,7 @@ class AttributeDriver extends AnnotationDriver
         $classAnnotations = $this->reader->getClassAnnotations(new ReflectionClass($className));
 
         foreach ($classAnnotations as $a) {
-            $annot = is_array($a) ? $a[0] : $a;
+            $annot = $a instanceof RepeatableAttributeCollection ? $a[0] : $a;
             if (isset($this->entityAnnotationClasses[get_class($annot)])) {
                 return false;
             }

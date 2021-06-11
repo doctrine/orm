@@ -21,5 +21,11 @@
                 <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php"/>
             </errorLevel>
         </ParadoxicalCondition>
+        <NullArgument>
+            <errorLevel type="suppress">
+                <!-- See https://github.com/vimeo/psalm/issues/5920 -->
+                <file name="lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php"/>
+            </errorLevel>
+        </NullArgument>
     </issueHandlers>
 </psalm>
