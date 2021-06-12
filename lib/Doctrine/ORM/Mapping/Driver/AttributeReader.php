@@ -12,7 +12,6 @@ use ReflectionMethod;
 use ReflectionProperty;
 
 use function assert;
-use function count;
 use function is_string;
 use function is_subclass_of;
 
