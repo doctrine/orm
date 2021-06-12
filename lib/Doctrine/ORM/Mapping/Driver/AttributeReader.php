@@ -11,7 +11,9 @@ use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
 
+use function assert;
 use function count;
+use function is_string;
 use function is_subclass_of;
 
 /**
@@ -61,24 +63,33 @@ final class AttributeReader
     /**
      * @param array<object> $attributes
      *
-     * @return array<Annotation>
+     * @return array<Annotation|RepeatableAttributeCollection>
      */
     private function convertToAttributeInstances(array $attributes): array
     {
         $instances = [];
 
         foreach ($attributes as $attribute) {
+            $attributeName = $attribute->getName();
+            assert(is_string($attributeName));
             // Make sure we only get Doctrine Annotations
-            if (! is_subclass_of($attribute->getName(), Annotation::class)) {
+            if (! is_subclass_of($attributeName, Annotation::class)) {
                 continue;
             }
 
             $instance = $attribute->newInstance();
+            assert($instance instanceof Annotation);
 
-            if ($this->isRepeatable($attribute->getName())) {
-                $instances[$attribute->getName()][] = $instance;
+            if ($this->isRepeatable($attributeName)) {
+                if (! isset($instances[$attributeName])) {
+                    $instances[$attributeName] = new RepeatableAttributeCollection();
+                }
+
+                $collection = $instances[$attributeName];
+                assert($collection instanceof RepeatableAttributeCollection);
+                $collection[] = $instance;
             } else {
-                $instances[$attribute->getName()] = $instance;
+                $instances[$attributeName] = $instance;
             }
         }
 
