@@ -24,44 +24,47 @@ final class AttributeReader
     /** @var array<string,bool> */
     private array $isRepeatableAttribute = [];
 
-    /** @return array<object> */
+    /** @return array<Annotation|RepeatableAttributeCollection> */
     public function getClassAnnotations(ReflectionClass $class): array
     {
         return $this->convertToAttributeInstances($class->getAttributes());
     }
 
-    /** @return array<object>|object|null */
+    /** @return Annotation|RepeatableAttributeCollection|null */
     public function getClassAnnotation(ReflectionClass $class, $annotationName)
     {
-        return $this->getClassAnnotations($class)[$annotationName] ?? ($this->isRepeatable($annotationName) ? [] : null);
+        return $this->getClassAnnotations($class)[$annotationName]
+            ?? ($this->isRepeatable($annotationName) ? new RepeatableAttributeCollection() : null);
     }
 
-    /** @return array<object> */
+    /** @return array<Annotation|RepeatableAttributeCollection> */
     public function getMethodAnnotations(ReflectionMethod $method): array
     {
         return $this->convertToAttributeInstances($method->getAttributes());
     }
 
-    /** @return array<object>|object|null */
+    /** @return Annotation|RepeatableAttributeCollection|null */
     public function getMethodAnnotation(ReflectionMethod $method, $annotationName)
     {
-        return $this->getMethodAnnotations($method)[$annotationName] ?? ($this->isRepeatable($annotationName) ? [] : null);
+        return $this->getMethodAnnotations($method)[$annotationName]
+            ?? ($this->isRepeatable($annotationName) ? new RepeatableAttributeCollection() : null);
     }
 
-    /** @return array<object> */
+    /** @return array<Annotation|RepeatableAttributeCollection> */
     public function getPropertyAnnotations(ReflectionProperty $property): array
     {
         return $this->convertToAttributeInstances($property->getAttributes());
     }
 
-    /** @return array<object>|object|null */
+    /** @return Annotation|RepeatableAttributeCollection|null */
     public function getPropertyAnnotation(ReflectionProperty $property, $annotationName)
     {
-        return $this->getPropertyAnnotations($property)[$annotationName] ?? ($this->isRepeatable($annotationName) ? [] : null);
+        return $this->getPropertyAnnotations($property)[$annotationName]
+            ?? ($this->isRepeatable($annotationName) ? new RepeatableAttributeCollection() : null);
     }
 
     /**
-     * @param array<object> $attributes
+     * @param array<ReflectionAttribute> $attributes
      *
      * @return array<Annotation|RepeatableAttributeCollection>
      */
