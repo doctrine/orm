@@ -6,6 +6,8 @@ parameters:
     paths:
         - lib
         - tests/Doctrine/StaticAnalysis
+    excludePaths:
+        - lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php
     earlyTerminatingMethodCalls:
         Doctrine\ORM\Query\Parser:
             - syntaxError
