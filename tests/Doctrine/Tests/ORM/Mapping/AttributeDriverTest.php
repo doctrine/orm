@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Attribute;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Annotation;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use stdClass;
 
 use const PHP_VERSION_ID;
 
@@ -79,11 +82,17 @@ class AttributeDriverTest extends AbstractMappingDriverTest
         $this->assertEquals(['assoz_id', 'assoz_id'], $metadata->associationMappings['assoc']['joinTableColumns']);
     }
 
-    public function testIsTransientWithRepeatableAttributes(): void
+    public function testIsTransient(): void
     {
-        $driver      = $this->loadDriver();
-        $isTransient = $driver->isTransient(AttributeEntityStartingWithRepeatableAttributes::class);
-        $this->assertFalse($isTransient);
+        $driver = $this->loadDriver();
+
+        $this->assertTrue($driver->isTransient(stdClass::class));
+
+        $this->assertTrue($driver->isTransient(AttributeTransientClass::class));
+
+        $this->assertFalse($driver->isTransient(AttributeEntityWithoutOriginalParents::class));
+
+        $this->assertFalse($driver->isTransient(AttributeEntityStartingWithRepeatableAttributes::class));
     }
 }
 
@@ -107,5 +116,15 @@ class AttributeEntityWithoutOriginalParents
 #[ORM\Index(name: 'baz', columns: ['id'])]
 #[ORM\Entity]
 class AttributeEntityStartingWithRepeatableAttributes
+{
+}
+
+#[Attribute(Attribute::IS_REPEATABLE | Attribute::TARGET_ALL)]
+class AttributeTransientAnnotation implements Annotation
+{
+}
+
+#[AttributeTransientAnnotation]
+class AttributeTransientClass
 {
 }
