@@ -1218,10 +1218,6 @@
     <DocblockTypeContradiction occurrences="1">
       <code>$class</code>
     </DocblockTypeContradiction>
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$mapping</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1"/>
     <NoInterfaceProperties occurrences="5">
       <code>$metadata-&gt;inheritanceType</code>
       <code>$metadata-&gt;isEmbeddedClass</code>
@@ -1289,10 +1285,6 @@
       <code>$value[1]</code>
     </InvalidArrayAccess>
     <InvalidScalarArgument occurrences="1"/>
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$mapping</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1"/>
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$entityAnnotationClasses</code>
     </NonInvariantDocblockPropertyType>
@@ -1324,12 +1316,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$attributeClassName</code>
     </ArgumentTypeCoercion>
-    <InvalidReturnStatement occurrences="1">
-      <code>$instances</code>
-    </InvalidReturnStatement>
-    <InvalidReturnType occurrences="1">
-      <code>array&lt;Annotation&gt;</code>
-    </InvalidReturnType>
     <MissingParamType occurrences="3">
       <code>$annotationName</code>
       <code>$annotationName</code>

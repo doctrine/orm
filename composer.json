@@ -52,6 +52,7 @@
     "autoload-dev": {
         "psr-4": {
             "Doctrine\\Tests\\": "tests/Doctrine/Tests",
+            "Doctrine\\StaticAnalysis\\": "tests/Doctrine/StaticAnalysis",
             "Doctrine\\Performance\\": "tests/Doctrine/Performance"
         }
     },

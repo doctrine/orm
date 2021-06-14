@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Mapping;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\Deprecations\Deprecation;
 
 /**
  * @Annotation
@@ -31,7 +32,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class ManyToMany implements Annotation
 {
-    /** @var string */
+    /** @var string|null */
     public $targetEntity;
 
     /** @var string */
@@ -61,7 +62,7 @@ final class ManyToMany implements Annotation
      * @param array<string> $cascade
      */
     public function __construct(
-        string $targetEntity,
+        ?string $targetEntity = null,
         ?string $mappedBy = null,
         ?string $inversedBy = null,
         ?array $cascade = null,
@@ -69,6 +70,14 @@ final class ManyToMany implements Annotation
         bool $orphanRemoval = false,
         ?string $indexBy = null
     ) {
+        if ($targetEntity === null) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8753',
+                'Passing no target entity is deprecated.'
+            );
+        }
+
         $this->targetEntity  = $targetEntity;
         $this->mappedBy      = $mappedBy;
         $this->inversedBy    = $inversedBy;

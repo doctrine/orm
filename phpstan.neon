@@ -4,7 +4,10 @@ includes:
 parameters:
     level: 5
     paths:
-        - %currentWorkingDirectory%/lib
+        - lib
+        - tests/Doctrine/StaticAnalysis
+    excludePaths:
+        - lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php
     earlyTerminatingMethodCalls:
         Doctrine\ORM\Query\Parser:
             - syntaxError
