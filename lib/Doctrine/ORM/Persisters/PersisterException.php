@@ -20,7 +20,7 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Exception\ORMException;
 
 use function sprintf;
 

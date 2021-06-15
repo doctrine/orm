@@ -21,6 +21,10 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation;
+use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Id\TableGenerator;
 use Doctrine\ORM\Mapping;

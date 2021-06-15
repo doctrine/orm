@@ -10,6 +10,7 @@ use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\DefaultQueryCache;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Cache\QueryCache;
 use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\Cache\QueryCacheKey;
@@ -631,7 +632,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
     public function testScalarResultException(): void
     {
-        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectException(CacheException::class);
         $this->expectExceptionMessage('Second level cache does not support scalar results.');
         $result = [];
         $key    = new QueryCacheKey('query.key1', 0);
@@ -644,7 +645,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
     public function testSupportMultipleRootEntitiesException(): void
     {
-        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectException(CacheException::class);
         $this->expectExceptionMessage('Second level cache does not support multiple root entities.');
         $result = [];
         $key    = new QueryCacheKey('query.key1', 0);
@@ -658,7 +659,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
     public function testNotCacheableEntityException(): void
     {
-        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectException(CacheException::class);
         $this->expectExceptionMessage('Entity "Doctrine\Tests\Models\Generic\BooleanModel" not configured as part of the second-level cache.');
         $result = [];
         $key    = new QueryCacheKey('query.key1', 0);

@@ -20,6 +20,8 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Exception\ORMException;
+
 /**
  * Pessimistic Lock Exception
  *

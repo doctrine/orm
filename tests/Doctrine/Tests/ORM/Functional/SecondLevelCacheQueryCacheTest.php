@@ -8,6 +8,7 @@ use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
@@ -1090,7 +1091,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
     public function testCacheablePartialQueryException(): void
     {
-        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectException(CacheException::class);
         $this->expectExceptionMessage('Second level cache does not support partial entities.');
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -1102,7 +1103,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
     public function testCacheableForcePartialLoadHintQueryException(): void
     {
-        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectException(CacheException::class);
         $this->expectExceptionMessage('Second level cache does not support partial entities.');
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -1115,7 +1116,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
     public function testNonCacheableQueryDeleteStatementException(): void
     {
-        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectException(CacheException::class);
         $this->expectExceptionMessage('Second-level cache query supports only select statements.');
         $this->_em->createQuery('DELETE Doctrine\Tests\Models\Cache\Country u WHERE u.id = 4')
             ->setCacheable(true)
@@ -1124,7 +1125,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
     public function testNonCacheableQueryUpdateStatementException(): void
     {
-        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectException(CacheException::class);
         $this->expectExceptionMessage('Second-level cache query supports only select statements.');
         $this->_em->createQuery("UPDATE Doctrine\Tests\Models\Cache\Country u SET u.name = 'foo' WHERE u.id = 4")
             ->setCacheable(true)

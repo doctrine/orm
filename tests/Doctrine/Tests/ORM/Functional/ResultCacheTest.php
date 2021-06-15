@@ -3,6 +3,8 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;

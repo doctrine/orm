@@ -8,13 +8,21 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Cache\Exception\MetadataCacheNotConfigured;
+use Doctrine\ORM\Cache\Exception\MetadataCacheUsesNonPersistentCache;
+use Doctrine\ORM\Cache\Exception\QueryCacheNotConfigured;
+use Doctrine\ORM\Cache\Exception\QueryCacheUsesNonPersistentCache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Exception\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Mapping as AnnotationNamespace;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\DoctrineTestCase;
@@ -210,7 +218,7 @@ class ConfigurationTest extends DoctrineTestCase
     {
         $this->setProductionSettings('query');
 
-        $this->expectException(ORMException::class);
+        $this->expectException(QueryCacheNotConfigured::class);
         $this->expectExceptionMessage('Query Cache is not configured.');
 
         $this->configuration->ensureProductionSettings();
@@ -220,7 +228,7 @@ class ConfigurationTest extends DoctrineTestCase
     {
         $this->setProductionSettings('metadata');
 
-        $this->expectException(ORMException::class);
+        $this->expectException(MetadataCacheNotConfigured::class);
         $this->expectExceptionMessage('Metadata Cache is not configured.');
 
         $this->configuration->ensureProductionSettings();
@@ -235,7 +243,7 @@ class ConfigurationTest extends DoctrineTestCase
         $this->setProductionSettings();
         $this->configuration->setQueryCacheImpl(new ArrayCache());
 
-        $this->expectException(ORMException::class);
+        $this->expectException(QueryCacheUsesNonPersistentCache::class);
         $this->expectExceptionMessage('Query Cache uses a non-persistent cache driver, Doctrine\Common\Cache\ArrayCache.');
 
         $this->configuration->ensureProductionSettings();
@@ -250,7 +258,7 @@ class ConfigurationTest extends DoctrineTestCase
         $this->setProductionSettings();
         $this->configuration->setMetadataCacheImpl(new ArrayCache());
 
-        $this->expectException(ORMException::class);
+        $this->expectException(MetadataCacheUsesNonPersistentCache::class);
         $this->expectExceptionMessage('Metadata Cache uses a non-persistent cache driver, Doctrine\Common\Cache\ArrayCache.');
 
         $this->configuration->ensureProductionSettings();
@@ -261,7 +269,7 @@ class ConfigurationTest extends DoctrineTestCase
         $this->setProductionSettings();
         $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_ALWAYS);
 
-        $this->expectException(ORMException::class);
+        $this->expectException(ProxyClassesAlwaysRegenerating::class);
         $this->expectExceptionMessage('Proxy Classes are always regenerating.');
 
         $this->configuration->ensureProductionSettings();

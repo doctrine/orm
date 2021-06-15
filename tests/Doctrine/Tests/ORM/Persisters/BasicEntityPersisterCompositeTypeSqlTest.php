@@ -6,7 +6,10 @@ namespace Doctrine\Tests\ORM\Persisters;
 
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
+use Doctrine\ORM\Persisters\Exception\CantUseInOperatorOnCompositeKeys;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
 use Doctrine\Tests\OrmTestCase;
 
@@ -46,7 +49,7 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
 
     public function testSelectConditionStatementIn(): void
     {
-        $this->expectException('Doctrine\ORM\ORMException');
+        $this->expectException(CantUseInOperatorOnCompositeKeys::class);
         $this->persister->getSelectConditionStatementSQL('admin1', [], [], Comparison::IN);
     }
 }

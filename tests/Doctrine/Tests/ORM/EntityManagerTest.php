@@ -9,6 +9,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\ORMException;
@@ -200,7 +201,7 @@ class EntityManagerTest extends OrmTestCase
      */
     public function testAffectedByErrorIfClosedException(string $methodName): void
     {
-        $this->expectException(ORMException::class);
+        $this->expectException(EntityManagerClosed::class);
         $this->expectExceptionMessage('closed');
 
         $this->entityManager->close();

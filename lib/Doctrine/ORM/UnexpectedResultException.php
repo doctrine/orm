@@ -20,6 +20,9 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Exception\ORMException;
+use RuntimeException;
+
 /**
  * Exception for a unexpected query result.
  */
