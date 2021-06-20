@@ -412,9 +412,11 @@ abstract class AbstractHydrator
      * values according to their types. The resulting row has the same number
      * of elements as before.
      *
+     * @param mixed[] $data
      * @psalm-param array<string, mixed> $data
      *
-     * @psalm-return array<string, mixed> The processed row.
+     * @return mixed[] The processed row.
+     * @psalm-return array<string, mixed>
      */
     protected function gatherScalarRowData(&$data)
     {
@@ -448,6 +450,7 @@ abstract class AbstractHydrator
      *
      * @param string $key Column name
      *
+     * @return mixed[]|null
      * @psalm-return array<string, mixed>|null
      */
     protected function hydrateColumnInfo($key)

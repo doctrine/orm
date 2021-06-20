@@ -40,10 +40,6 @@ class DefaultCacheTest extends OrmTestCase
         $this->cache = new DefaultCache($this->em);
     }
 
-    /**
-     * @param array $identifier
-     * @param array $data
-     */
     private function putEntityCacheEntry(string $className, array $identifier, array $data): void
     {
         $metadata   = $this->em->getClassMetadata($className);
@@ -54,10 +50,6 @@ class DefaultCacheTest extends OrmTestCase
         $persister->getCacheRegion()->put($cacheKey, $cacheEntry);
     }
 
-    /**
-     * @param array $ownerIdentifier
-     * @param array $data
-     */
     private function putCollectionCacheEntry(string $className, string $association, array $ownerIdentifier, array $data): void
     {
         $metadata   = $this->em->getClassMetadata($className);

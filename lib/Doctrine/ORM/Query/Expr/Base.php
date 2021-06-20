@@ -60,7 +60,8 @@ abstract class Base
     }
 
     /**
-     * @psalm-param list<string|object> $args
+     * @param string[]|object[]|string|object $args
+     * @psalm-param list<string|object>|string|object $args
      *
      * @return static
      */

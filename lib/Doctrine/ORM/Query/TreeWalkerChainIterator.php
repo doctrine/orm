@@ -106,6 +106,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
     }
 
     /**
+     * @param mixed $offset
      * @psalm-param array-key|null $offset
      *
      * @return TreeWalker|null

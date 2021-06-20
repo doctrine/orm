@@ -200,9 +200,6 @@ class DDC1163Tag
         $this->name = $name;
     }
 
-    /**
-     * @param Product $product
-     */
     public function setProduct(DDC1163Product $product): void
     {
         $this->product = $product;

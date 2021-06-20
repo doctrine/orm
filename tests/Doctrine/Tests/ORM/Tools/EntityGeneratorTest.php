@@ -1049,7 +1049,8 @@ class EntityGeneratorTest extends OrmTestCase
     }
 
     /**
-     * @return list<array{
+     * @return mixed[]
+     * @psalm-return list<array{
      *     fieldName: string,
      *     phpType: string,
      *     dbType: string,
@@ -1215,9 +1216,6 @@ class
         $this->assertEquals($type, $matches[1]);
     }
 
-    /**
-     * @param ReflectionProperty $method
-     */
     private function assertPhpDocParamType(string $type, ReflectionMethod $method): void
     {
         $this->assertEquals(1, preg_match('/@param\s+([^\s]+)/', $method->getDocComment(), $matches));

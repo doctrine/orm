@@ -35,9 +35,9 @@ class HydratorMockStatement implements IteratorAggregate, Statement
     /**
      * Fetches all rows from the result set.
      *
+     * @param mixed      $fetchMode
+     * @param mixed      $fetchArgument
      * @param array|null $ctorArgs
-     *
-     * @return array
      */
     public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null): array
     {

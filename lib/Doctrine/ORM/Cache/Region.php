@@ -57,7 +57,7 @@ interface Region extends MultiGetRegion
      *
      * @param CacheKey   $key   The key under which to cache the item.
      * @param CacheEntry $entry The entry to cache.
-     * @param Lock       $lock  The lock previously obtained.
+     * @param Lock|null  $lock  The lock previously obtained.
      *
      * @throws CacheException Indicates a problem accessing the region.
      */

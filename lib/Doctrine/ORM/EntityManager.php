@@ -885,9 +885,10 @@ use function sprintf;
     /**
      * Factory method to create EntityManager instances.
      *
-     * @param array<string, mixed>|Connection $connection   An array with the connection parameters or an existing Connection instance.
-     * @param Configuration                   $config       The Configuration instance to use.
-     * @param EventManager                    $eventManager The EventManager instance to use.
+     * @param mixed[]|Connection $connection   An array with the connection parameters or an existing Connection instance.
+     * @param Configuration      $config       The Configuration instance to use.
+     * @param EventManager|null  $eventManager The EventManager instance to use.
+     * @psalm-param array<string, mixed>|Connection $connection
      *
      * @return EntityManager The created EntityManager.
      *
@@ -908,9 +909,10 @@ use function sprintf;
     /**
      * Factory method to create Connection instances.
      *
-     * @param array<string, mixed>|Connection $connection   An array with the connection parameters or an existing Connection instance.
-     * @param Configuration                   $config       The Configuration instance to use.
-     * @param EventManager                    $eventManager The EventManager instance to use.
+     * @param mixed[]|Connection $connection   An array with the connection parameters or an existing Connection instance.
+     * @param Configuration      $config       The Configuration instance to use.
+     * @param EventManager|null  $eventManager The EventManager instance to use.
+     * @psalm-param array<string, mixed>|Connection $connection
      *
      * @return Connection
      *

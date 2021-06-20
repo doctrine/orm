@@ -163,8 +163,6 @@ class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
 
     /**
      * Construct a UserFollowedUser entity
-     *
-     * @param bool $giveAgency
      */
     public function __construct(User $user, User $followedUser)
     {

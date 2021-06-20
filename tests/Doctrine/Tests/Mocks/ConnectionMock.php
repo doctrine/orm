@@ -43,9 +43,6 @@ class ConnectionMock extends Connection
     /** @var array */
     private $_deletes = [];
 
-    /**
-     * @param array $params
-     */
     public function __construct(array $params, Driver $driver, ?Configuration $config = null, ?EventManager $eventManager = null)
     {
         $this->_platformMock = new DatabasePlatformMock();

@@ -98,9 +98,6 @@ class EnsureProductionSettingsCommandTest extends DoctrineTestCase
         $this->assertSame(1, $this->executeCommand($em, ['--complete' => true]));
     }
 
-    /**
-     * @param mixed[] $options
-     */
     private function executeCommand(
         EntityManagerInterface $em,
         array $input = []

@@ -472,8 +472,7 @@
       <code>setCacheDriver</code>
       <code>setCacheDriver</code>
     </DeprecatedMethod>
-    <DocblockTypeContradiction occurrences="10">
-      <code>$connection instanceof Connection</code>
+    <DocblockTypeContradiction occurrences="9">
       <code>$entityName !== null &amp;&amp; ! is_string($entityName)</code>
       <code>$this-&gt;expressionBuilder === null</code>
       <code>$this-&gt;filterCollection === null</code>
@@ -534,7 +533,8 @@
       <code>$this-&gt;filterCollection !== null</code>
       <code>method_exists($this-&gt;metadataFactory, 'setCache')</code>
     </RedundantConditionGivenDocblockType>
-    <TypeDoesNotContainType occurrences="1">
+    <TypeDoesNotContainType occurrences="2">
+      <code>$connection instanceof Connection</code>
       <code>': "' . $connection . '"'</code>
     </TypeDoesNotContainType>
   </file>
@@ -927,8 +927,8 @@
       <code>fixSchemaElementName</code>
       <code>prefersSequences</code>
     </DeprecatedMethod>
-    <DocblockTypeContradiction occurrences="4">
-      <code>! $metadata-&gt;reflClass</code>
+    <DocblockTypeContradiction occurrences="3">
+      <code>! $class-&gt;reflClass</code>
       <code>$class-&gt;reflClass</code>
       <code>$definition</code>
     </DocblockTypeContradiction>
@@ -1138,9 +1138,8 @@
       <code>$this-&gt;table</code>
       <code>$this-&gt;table</code>
     </PropertyTypeCoercion>
-    <RedundantConditionGivenDocblockType occurrences="4">
+    <RedundantConditionGivenDocblockType occurrences="3">
       <code>$className !== null</code>
-      <code>$columnDef !== null</code>
       <code>$mapping !== false</code>
       <code>$mapping !== false</code>
     </RedundantConditionGivenDocblockType>
@@ -1311,22 +1310,6 @@
       <code>isset($column-&gt;columnDefinition)</code>
       <code>isset($column-&gt;name)</code>
     </RedundantConditionGivenDocblockType>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$attributeClassName</code>
-    </ArgumentTypeCoercion>
-    <MissingParamType occurrences="3">
-      <code>$annotationName</code>
-      <code>$annotationName</code>
-      <code>$annotationName</code>
-    </MissingParamType>
-    <UndefinedMethod occurrences="4">
-      <code>getAttributes</code>
-      <code>getAttributes</code>
-      <code>getAttributes</code>
-      <code>getAttributes</code>
-    </UndefinedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php">
     <ArgumentTypeCoercion occurrences="3">
@@ -1674,13 +1657,11 @@
     </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/MappingException.php">
-    <MissingParamType occurrences="6">
-      <code>$className</code>
+    <MissingParamType occurrences="4">
       <code>$className</code>
       <code>$className</code>
       <code>$indexName</code>
       <code>$indexName</code>
-      <code>$propertyName</code>
     </MissingParamType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/NamedNativeQuery.php">
@@ -1901,10 +1882,8 @@
       <code>$owner</code>
       <code>$owner</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess occurrences="35">
-      <code>$mapping[$sourceRelationMode]</code>
+    <PossiblyNullArrayAccess occurrences="32">
       <code>$mapping['indexBy']</code>
-      <code>$mapping['isOwningSide']</code>
       <code>$mapping['isOwningSide']</code>
       <code>$mapping['isOwningSide']</code>
       <code>$mapping['isOwningSide']</code>
@@ -1915,7 +1894,6 @@
       <code>$mapping['joinTable']</code>
       <code>$mapping['joinTable']</code>
       <code>$mapping['joinTableColumns']</code>
-      <code>$mapping['mappedBy']</code>
       <code>$mapping['mappedBy']</code>
       <code>$mapping['mappedBy']</code>
       <code>$mapping['mappedBy']</code>
@@ -1938,15 +1916,13 @@
       <code>$mapping['targetEntity']</code>
       <code>$mapping['targetEntity']</code>
     </PossiblyNullArrayAccess>
-    <PossiblyNullArrayOffset occurrences="4">
+    <PossiblyNullArrayOffset occurrences="3">
       <code>$associationSourceClass-&gt;associationMappings</code>
       <code>$sourceClass-&gt;associationMappings</code>
       <code>$targetClass-&gt;associationMappings</code>
-      <code>$targetClass-&gt;associationMappings</code>
     </PossiblyNullArrayOffset>
-    <PossiblyNullIterator occurrences="7">
+    <PossiblyNullIterator occurrences="6">
       <code>$joinColumns</code>
-      <code>$mapping[$sourceRelationMode]</code>
       <code>$mapping['joinTable']['joinColumns']</code>
       <code>$mapping['joinTable']['joinColumns']</code>
       <code>$mapping['joinTable']['joinColumns']</code>
@@ -2626,9 +2602,6 @@
     <PossiblyInvalidCast occurrences="1">
       <code>$this-&gt;parts[0]</code>
     </PossiblyInvalidCast>
-    <RedundantCastGivenDocblockType occurrences="1">
-      <code>(array) $args</code>
-    </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Composite.php">
     <PossiblyInvalidCast occurrences="2">
@@ -2640,11 +2613,6 @@
     <PossiblyNullPropertyAssignmentValue occurrences="1">
       <code>$indexBy</code>
     </PossiblyNullPropertyAssignmentValue>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Func.php">
-    <RedundantCastGivenDocblockType occurrences="1">
-      <code>(array) $arguments</code>
-    </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/GroupBy.php">
     <NonInvariantDocblockPropertyType occurrences="1">

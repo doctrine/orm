@@ -1722,6 +1722,7 @@ class BasicEntityPersister implements EntityPersister
      * Subclasses are supposed to override this method if they intend to change
      * or alter the criteria by which entities are selected.
      *
+     * @param mixed[]|null $assoc
      * @psalm-param array<string, mixed> $criteria
      * @psalm-param array<string, mixed>|null $assoc
      *
@@ -2009,7 +2010,8 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Generates the appropriate join SQL for the given join column.
      *
-     * @psalm-param array<array<string, mixed>> $joinColumns The join columns definition of an association.
+     * @param array[] $joinColumns The join columns definition of an association.
+     * @psalm-param array<array<string, mixed>> $joinColumns
      *
      * @return string LEFT JOIN if one of the columns is nullable, INNER JOIN otherwise.
      */
