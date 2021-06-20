@@ -801,26 +801,6 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
 
 		-
-			message: "#^Call to an undefined method ReflectionClass\\:\\:getAttributes\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php
-
-		-
-			message: "#^Call to an undefined method ReflectionClass\\<object\\>\\:\\:getAttributes\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php
-
-		-
-			message: "#^Call to an undefined method ReflectionMethod\\:\\:getAttributes\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php
-
-		-
-			message: "#^Call to an undefined method ReflectionProperty\\:\\:getAttributes\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<T of object\\>\\:\\:\\$name\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php

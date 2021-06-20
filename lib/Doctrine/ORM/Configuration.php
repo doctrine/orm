@@ -155,7 +155,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Adds a new default annotation driver with a correctly configured annotation reader. If $useSimpleAnnotationReader
      * is true, the notation `@Entity` will work, otherwise, the notation `@ORM\Entity` will be supported.
      *
-     * @param bool $useSimpleAnnotationReader
+     * @param string|string[] $paths
+     * @param bool            $useSimpleAnnotationReader
      * @psalm-param string|list<string> $paths
      *
      * @return AnnotationDriver
@@ -391,11 +392,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name The name of the query.
      *
-     * @psalm-return array{string, ResultSetMapping} A tuple with the first
-     *                                               element being the SQL
-     *                                               string and the second
-     *                                               element being the
-     *                                               ResultSetMapping.
+     * @return mixed[]
+     * @psalm-return array{string, ResultSetMapping} A tuple with the first element being the SQL string and the second
+     *                                               element being the ResultSetMapping.
      *
      * @throws ORMException
      */
@@ -634,7 +633,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Adds a custom hydration mode.
      *
      * @param string $modeName The hydration mode name.
-     * @psalm-param class-string $hydrator The hydrator class name.
+     * @param string $hydrator The hydrator class name.
+     * @psalm-param class-string $hydrator
      *
      * @return void
      */

@@ -131,7 +131,8 @@ class ParserResult
      *
      * @param string|int $dqlPosition The name or position of the DQL parameter.
      *
-     * @psalm-return list<int> The positions of the corresponding SQL parameters.
+     * @return int[] The positions of the corresponding SQL parameters.
+     * @psalm-return list<int>
      */
     public function getSqlParameterPositions($dqlPosition)
     {

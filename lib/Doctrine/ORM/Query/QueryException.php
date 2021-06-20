@@ -165,6 +165,7 @@ class QueryException extends ORMException
     }
 
     /**
+     * @param string[] $assoc
      * @psalm-param array<string, string> $assoc
      *
      * @return QueryException
@@ -190,6 +191,7 @@ class QueryException extends ORMException
     }
 
     /**
+     * @param string[] $assoc
      * @psalm-param array<string, string> $assoc
      *
      * @return QueryException
@@ -215,6 +217,7 @@ class QueryException extends ORMException
     }
 
     /**
+     * @param string[] $assoc
      * @psalm-param array<string, string> $assoc
      *
      * @return QueryException

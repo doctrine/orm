@@ -922,6 +922,9 @@ class MappingException extends ORMException
     }
 
     /**
+     * @param string $className
+     * @param string $propertyName
+     *
      * @return self
      */
     public static function illegalOverrideOfInheritedProperty($className, $propertyName)

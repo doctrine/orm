@@ -74,9 +74,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @param EntityManager $entityClassName
-     */
     protected function createClassMetadataFactory(?EntityManager $em = null): ClassMetadataFactory
     {
         $driver  = $this->loadDriver();

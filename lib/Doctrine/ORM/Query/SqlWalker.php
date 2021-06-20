@@ -240,14 +240,15 @@ class SqlWalker implements TreeWalker
      *
      * @param string $dqlAlias The DQL alias.
      *
+     * @return mixed[]
      * @psalm-return array{
-     *                   metadata: ClassMetadata,
-     *                   parent: string,
-     *                   relation: mixed[],
-     *                   map: mixed,
-     *                   nestingLevel: int,
-     *                   token: array
-     *               }
+     *     metadata: ClassMetadata,
+     *     parent: string,
+     *     relation: mixed[],
+     *     map: mixed,
+     *     nestingLevel: int,
+     *     token: array
+     * }
      */
     public function getQueryComponent($dqlAlias)
     {

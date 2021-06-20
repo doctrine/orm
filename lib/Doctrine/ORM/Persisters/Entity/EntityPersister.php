@@ -103,9 +103,10 @@ interface EntityPersister
     /**
      * Gets the SQL WHERE condition for matching a field with a given value.
      *
-     * @param string      $field
-     * @param mixed       $value
-     * @param string|null $comparison
+     * @param string       $field
+     * @param mixed        $value
+     * @param mixed[]|null $assoc
+     * @param string|null  $comparison
      * @psalm-param array<string, mixed>|null  $assoc
      *
      * @return string
@@ -186,19 +187,21 @@ interface EntityPersister
     /**
      * Loads an entity by a list of field criteria.
      *
-     * @param object|null $entity   The entity to load the data into. If not specified, a new entity is created.
-     * @param int|null    $lockMode One of the \Doctrine\DBAL\LockMode::* constants
-     *                              or NULL if no specific lock mode should be used
-     *                              for loading the entity.
-     * @param int|null    $limit    Limit number of results.
-     * @psalm-param array<string, mixed>       $hints    Hints for entity creation.
-     * @psalm-param array<string, mixed>       $criteria The criteria by which
-     *                                                   to load the entity.
-     * @psalm-param array<string, mixed>|null  $assoc    The association that
-     *                                                   connects the entity to
-     *                                                   load to another entity,
-     *                                                   if any.
-     * @psalm-param array<string, string>|null $orderBy  Criteria to order by.
+     * @param mixed[]       $criteria The criteria by which to load the entity.
+     * @param object|null   $entity   The entity to load the data into. If not specified,
+     *                                a new entity is created.
+     * @param mixed[]|null  $assoc    The association that connects the entity
+     *                                to load to another entity, if any.
+     * @param mixed[]       $hints    Hints for entity creation.
+     * @param int|null      $lockMode One of the \Doctrine\DBAL\LockMode::* constants
+     *                                or NULL if no specific lock mode should be used
+     *                                for loading the entity.
+     * @param int|null      $limit    Limit number of results.
+     * @param string[]|null $orderBy  Criteria to order by.
+     * @psalm-param array<string, mixed>       $criteria
+     * @psalm-param array<string, mixed>|null  $assoc
+     * @psalm-param array<string, mixed>       $hints
+     * @psalm-param array<string, string>|null $orderBy
      *
      * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
      *

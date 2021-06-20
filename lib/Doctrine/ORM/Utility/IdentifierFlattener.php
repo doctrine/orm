@@ -62,6 +62,7 @@ final class IdentifierFlattener
      *
      * @param mixed[] $id
      *
+     * @return mixed[]
      * @psalm-return array<string, mixed>
      */
     public function flattenIdentifier(ClassMetadata $class, array $id): array

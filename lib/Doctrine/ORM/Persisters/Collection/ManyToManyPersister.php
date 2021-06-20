@@ -298,7 +298,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * have to join in the actual entities table leading to additional
      * JOIN.
      *
-     * @psalm-param array<string, mixed> $mapping Array containing mapping information.
+     * @param mixed[] $mapping Array containing mapping information.
+     * @psalm-param array<string, mixed> $mapping
      *
      * @return string[] ordered tuple:
      *                   - JOIN condition to add to the SQL
@@ -350,6 +351,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * Generate ON condition
      *
+     * @param mixed[] $mapping
      * @psalm-param array<string, mixed> $mapping
      *
      * @return string[]
@@ -464,6 +466,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @param mixed $element
      *
+     * @return mixed[]
      * @psalm-return list<mixed>
      */
     protected function getDeleteRowSQLParameters(PersistentCollection $collection, $element)
@@ -513,6 +516,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @param mixed $element
      *
+     * @return mixed[]
      * @psalm-return list<mixed>
      */
     protected function getInsertRowSQLParameters(PersistentCollection $collection, $element)
