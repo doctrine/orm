@@ -355,7 +355,7 @@ Example:
         //...
     }
 
-.. _attrref_entity_result:
+.. _attrref_generatedvalue:
 
 #[GeneratedValue]
 ~~~~~~~~~~~~~~~~~
