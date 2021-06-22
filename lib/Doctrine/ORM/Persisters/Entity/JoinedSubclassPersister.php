@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\LockMode;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 
@@ -193,7 +193,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 $data       = $insertData[$tableName] ?? [];
 
                 foreach ((array) $id as $idName => $idVal) {
-                    $type = $this->columnTypes[$idName] ?? Type::STRING;
+                    $type = $this->columnTypes[$idName] ?? Types::STRING;
 
                     $stmt->bindValue($paramIndex++, $idVal, $type);
                 }

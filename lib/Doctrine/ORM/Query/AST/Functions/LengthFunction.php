@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\AST\TypedExpression;
 use Doctrine\ORM\Query\Lexer;
@@ -64,6 +65,6 @@ class LengthFunction extends FunctionNode implements TypedExpression
 
     public function getReturnType(): Type
     {
-        return Type::getType(Type::INTEGER);
+        return Type::getType(Types::INTEGER);
     }
 }
