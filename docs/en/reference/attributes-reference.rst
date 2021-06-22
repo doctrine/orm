@@ -736,7 +736,7 @@ Example:
         // ... fields and methods
     }
 
-    #[Entiy]
+    #[Entity]
     class EntitySubClassFoo extends BaseEntity
     {
         // ... fields and methods
