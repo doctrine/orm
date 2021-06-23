@@ -42,9 +42,6 @@ class SelectSqlGenerationTest extends OrmTestCase
 
     /**
      * Assert a valid SQL generation.
-     *
-     * @param array $queryHints
-     * @param array $queryParams
      */
     public function assertSqlGeneration(
         string $dqlToBeTested,
@@ -82,9 +79,6 @@ class SelectSqlGenerationTest extends OrmTestCase
 
     /**
      * Asser an invalid SQL generation.
-     *
-     * @param array $queryHints
-     * @param array $queryParams
      */
     public function assertInvalidSqlGeneration(
         string $dqlToBeTested,

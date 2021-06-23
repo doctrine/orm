@@ -595,6 +595,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * @param int      $offset
      * @param int|null $length
      *
+     * @return mixed[]
      * @psalm-return array<TKey,T>
      */
     public function slice($offset, $length = null): array
@@ -637,7 +638,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * Selects all elements from a selectable that match the expression and
      * return a new collection containing these elements.
      *
-     * @return Collection<TKey, T>
+     * @psalm-return Collection<TKey, T>
      *
      * @throws RuntimeException
      */

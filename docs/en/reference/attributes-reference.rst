@@ -355,7 +355,7 @@ Example:
         //...
     }
 
-.. _attrref_entity_result:
+.. _attrref_generatedvalue:
 
 #[GeneratedValue]
 ~~~~~~~~~~~~~~~~~
@@ -736,7 +736,7 @@ Example:
         // ... fields and methods
     }
 
-    #[Entiy]
+    #[Entity]
     class EntitySubClassFoo extends BaseEntity
     {
         // ... fields and methods

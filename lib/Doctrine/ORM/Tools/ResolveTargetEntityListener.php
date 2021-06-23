@@ -105,6 +105,12 @@ class ResolveTargetEntityListener implements EventSubscriber
                 $args->getEntityManager()->getMetadataFactory()->setMetadataFor($interface, $cm);
             }
         }
+
+        foreach ($cm->discriminatorMap as $value => $class) {
+            if (isset($this->resolveTargetEntities[$class])) {
+                $cm->addDiscriminatorMapClass($value, $this->resolveTargetEntities[$class]['targetEntity']);
+            }
+        }
     }
 
     /**

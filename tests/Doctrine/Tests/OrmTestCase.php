@@ -59,7 +59,6 @@ abstract class OrmTestCase extends DoctrineTestCase
     protected $secondLevelCacheDriverImpl = null;
 
     /**
-     * @param array $paths
      * @param mixed $alias
      */
     protected function createAnnotationDriver(array $paths = [], $alias = null): AnnotationDriver

@@ -262,6 +262,7 @@ class Parser
     /**
      * Adds a custom tree walker for modifying the AST.
      *
+     * @param string $className
      * @psalm-param class-string $className
      *
      * @return void
@@ -489,8 +490,9 @@ class Parser
     /**
      * Generates a new syntax error.
      *
-     * @param string $expected Expected string.
-     * @psalm-param array<string, mixed>|null $token    Got token.
+     * @param string       $expected Expected string.
+     * @param mixed[]|null $token    Got token.
+     * @psalm-param array<string, mixed>|null $token
      *
      * @return void
      * @psalm-return no-return
@@ -515,8 +517,9 @@ class Parser
     /**
      * Generates a new semantical error.
      *
-     * @param string $message Optional message.
-     * @psalm-param array<string, mixed>|null $token Optional token.
+     * @param string       $message Optional message.
+     * @param mixed[]|null $token   Optional token.
+     * @psalm-param array<string, mixed>|null $token
      *
      * @return void
      *

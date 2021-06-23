@@ -52,12 +52,12 @@ use Doctrine\Persistence\Mapping\ReflectionService;
 use ReflectionClass;
 use ReflectionException;
 
-use function array_map;
 use function assert;
 use function class_exists;
 use function count;
 use function end;
 use function explode;
+use function in_array;
 use function is_subclass_of;
 use function strpos;
 use function strtolower;
@@ -87,18 +87,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     /** @var mixed[] */
     private $embeddablesActiveNesting = [];
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function loadMetadata($name)
-    {
-        $loaded = parent::loadMetadata($name);
-
-        array_map([$this, 'resolveDiscriminatorValue'], array_map([$this, 'getMetadataFor'], $loaded));
-
-        return $loaded;
-    }
 
     /**
      * @return void
@@ -306,6 +294,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                         throw MappingException::invalidClassInDiscriminatorMap($subClass, $class->name);
                     }
                 }
+            } else {
+                assert($parent instanceof ClassMetadataInfo); // https://github.com/doctrine/orm/issues/8746
+                if ((! $class->reflClass || ! $class->reflClass->isAbstract()) && ! in_array($class->name, $parent->discriminatorMap)) {
+                    throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
+                }
             }
         } elseif ($class->isMappedSuperclass && $class->name === $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierarchy
@@ -319,45 +312,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function newClassMetadataInstance($className)
     {
         return new ClassMetadata($className, $this->em->getConfiguration()->getNamingStrategy());
-    }
-
-    /**
-     * Populates the discriminator value of the given metadata (if not set) by iterating over discriminator
-     * map classes and looking for a fitting one.
-     *
-     * @throws MappingException
-     */
-    private function resolveDiscriminatorValue(ClassMetadata $metadata): void
-    {
-        if (
-            $metadata->discriminatorValue
-            || ! $metadata->discriminatorMap
-            || $metadata->isMappedSuperclass
-            || ! $metadata->reflClass
-            || $metadata->reflClass->isAbstract()
-        ) {
-            return;
-        }
-
-        // minor optimization: avoid loading related metadata when not needed
-        foreach ($metadata->discriminatorMap as $discriminatorValue => $discriminatorClass) {
-            if ($discriminatorClass === $metadata->name) {
-                $metadata->discriminatorValue = $discriminatorValue;
-
-                return;
-            }
-        }
-
-        // iterate over discriminator mappings and resolve actual referenced classes according to existing metadata
-        foreach ($metadata->discriminatorMap as $discriminatorValue => $discriminatorClass) {
-            if ($metadata->name === $this->getMetadataFor($discriminatorClass)->getName()) {
-                $metadata->discriminatorValue = $discriminatorValue;
-
-                return;
-            }
-        }
-
-        throw MappingException::mappedClassNotPartOfDiscriminatorMap($metadata->name, $metadata->rootEntityName);
     }
 
     /**

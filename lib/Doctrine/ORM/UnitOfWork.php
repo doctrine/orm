@@ -590,6 +590,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      *
+     * @return mixed[][]
      * @psalm-return array<string, array{mixed, mixed}>
      */
     public function & getEntityChangeSet($entity)
@@ -2648,8 +2649,9 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param string  $className The name of the entity class.
      * @param mixed[] $data      The data for the entity.
+     * @param mixed[] $hints     Any hints to account for during reconstitution/lookup of the entity.
      * @psalm-param class-string $className
-     * @psalm-param array<string, mixed> $hints Any hints to account for during reconstitution/lookup of the entity.
+     * @psalm-param array<string, mixed> $hints
      *
      * @return object The managed entity instance.
      *
@@ -3012,6 +3014,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      *
+     * @return mixed[]
      * @psalm-return array<string, mixed>
      */
     public function getOriginalEntityData($entity)

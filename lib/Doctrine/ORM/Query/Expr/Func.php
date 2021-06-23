@@ -38,8 +38,9 @@ class Func
     /**
      * Creates a function, with the given argument.
      *
-     * @param string $name
-     * @psalm-param list<mixed> $arguments
+     * @param string        $name
+     * @param mixed[]|mixed $arguments
+     * @psalm-param list<mixed>|mixed $arguments
      */
     public function __construct($name, $arguments)
     {

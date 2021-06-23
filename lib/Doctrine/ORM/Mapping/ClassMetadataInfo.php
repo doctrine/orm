@@ -1315,7 +1315,8 @@ class ClassMetadataInfo implements ClassMetadata
      * @param string $fieldName The field name that represents the association in
      *                          the object model.
      *
-     * @psalm-return array<string, mixed> The mapping.
+     * @return mixed[] The mapping.
+     * @psalm-return array<string, mixed>
      *
      * @throws MappingException
      */
@@ -1389,6 +1390,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $queryName The query name.
      *
+     * @return mixed[]
      * @psalm-return array<string, mixed>
      *
      * @throws MappingException
@@ -2955,6 +2957,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $event
      *
+     * @return string[]
      * @psalm-return list<string>
      */
     public function getLifecycleCallbacks($event)
@@ -3042,7 +3045,8 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @see getDiscriminatorColumn()
      *
-     * @psalm-param array<string, mixed> $columnDef
+     * @param mixed[]|null $columnDef
+     * @psalm-param array<string, mixed>|null $columnDef
      *
      * @return void
      *
@@ -3094,6 +3098,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Adds one entry of the discriminator map with a new class and corresponding name.
      *
      * @param string $name
+     * @param string $className
      * @psalm-param class-string $className
      *
      * @return void
@@ -3434,6 +3439,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param AbstractPlatform $platform
      *
+     * @return string[]
      * @psalm-return list<string>
      */
     public function getQuotedIdentifierColumnNames($platform)
@@ -3536,6 +3542,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * @param string $targetClass
      *
+     * @return mixed[][]
      * @psalm-return array<string, array<string, mixed>>
      */
     public function getAssociationsByTargetClass($targetClass)

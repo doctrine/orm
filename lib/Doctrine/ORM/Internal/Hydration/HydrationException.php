@@ -99,7 +99,8 @@ class HydrationException extends ORMException
     }
 
     /**
-     * @param string $discrValue
+     * @param string   $discrValue
+     * @param string[] $discrMap
      * @psalm-param array<string, string> $discrMap
      *
      * @return HydrationException

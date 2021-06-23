@@ -55,9 +55,6 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         'loadCriteria',
     ];
 
-    /**
-     * @param array $mapping
-     */
     abstract protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister;
 
     protected function setUp(): void

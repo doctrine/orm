@@ -145,6 +145,8 @@ class DatabaseDriver implements MappingDriver
     /**
      * Sets tables manually instead of relying on the reverse engineering capabilities of SchemaManager.
      *
+     * @param Table[] $entityTables
+     * @param Table[] $manyToManyTables
      * @psalm-param list<Table> $entityTables
      * @psalm-param list<Table> $manyToManyTables
      *
@@ -380,21 +382,22 @@ class DatabaseDriver implements MappingDriver
     /**
      * Build field mapping from a schema column definition
      *
+     * @return mixed[]
      * @psalm-return array{
-     *                   fieldName: string,
-     *                   columnName: string,
-     *                   type: string,
-     *                   nullable: bool,
-     *                   options?: array{
-     *                       unsigned?: bool,
-     *                       fixed?: bool,
-     *                       comment?: string,
-     *                       default?: string
-     *                   },
-     *                   precision?: int,
-     *                   scale?: int,
-     *                   length?: int|null
-     *               }
+     *     fieldName: string,
+     *     columnName: string,
+     *     type: string,
+     *     nullable: bool,
+     *     options?: array{
+     *         unsigned?: bool,
+     *         fixed?: bool,
+     *         comment?: string,
+     *         default?: string
+     *     },
+     *     precision?: int,
+     *     scale?: int,
+     *     length?: int|null
+     * }
      */
     private function buildFieldMapping(string $tableName, Column $column): array
     {
