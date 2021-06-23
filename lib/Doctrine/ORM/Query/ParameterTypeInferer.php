@@ -24,7 +24,7 @@ use DateInterval;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use PDO;
 
 use function current;
@@ -51,23 +51,23 @@ class ParameterTypeInferer
     public static function inferType($value)
     {
         if (is_int($value)) {
-            return Type::INTEGER;
+            return Types::INTEGER;
         }
 
         if (is_bool($value)) {
-            return Type::BOOLEAN;
+            return Types::BOOLEAN;
         }
 
         if ($value instanceof DateTimeImmutable) {
-            return Type::DATETIME_IMMUTABLE;
+            return Types::DATETIME_IMMUTABLE;
         }
 
         if ($value instanceof DateTimeInterface) {
-            return Type::DATETIME;
+            return Types::DATETIME_MUTABLE;
         }
 
         if ($value instanceof DateInterval) {
-            return Type::DATEINTERVAL;
+            return Types::DATEINTERVAL;
         }
 
         if (is_array($value)) {

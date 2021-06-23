@@ -28,6 +28,7 @@ use Doctrine\DBAL\Driver\ResultStatement as DriverStatement;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -497,13 +498,13 @@ class BasicEntityPersister implements EntityPersister
             $params[] = $this->class->reflFields[$versionField]->getValue($entity);
 
             switch ($versionFieldType) {
-                case Type::SMALLINT:
-                case Type::INTEGER:
-                case Type::BIGINT:
+                case Types::SMALLINT:
+                case Types::INTEGER:
+                case Types::BIGINT:
                     $set[] = $versionColumn . ' = ' . $versionColumn . ' + 1';
                     break;
 
-                case Type::DATETIME:
+                case Types::DATETIME_MUTABLE:
                     $set[] = $versionColumn . ' = CURRENT_TIMESTAMP';
                     break;
             }
