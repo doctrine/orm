@@ -22,7 +22,6 @@ namespace Doctrine\ORM\Mapping;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-use Doctrine\Deprecations\Deprecation;
 
 /**
  * @Annotation
@@ -58,14 +57,6 @@ final class ManyToOne implements Annotation
         string $fetch = 'LAZY',
         ?string $inversedBy = null
     ) {
-        if ($targetEntity === null) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/issues/8753',
-                'Passing no target entity is deprecated.'
-            );
-        }
-
         $this->targetEntity = $targetEntity;
         $this->cascade      = $cascade;
         $this->fetch        = $fetch;
