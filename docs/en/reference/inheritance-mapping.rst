@@ -324,7 +324,7 @@ Example:
          */
         class User
         {
-            //other fields mapping
+            // other fields mapping
 
             /**
              * @ManyToMany(targetEntity="Group", inversedBy="users")
@@ -463,7 +463,7 @@ Things to note:
 -  This feature is available for all kind of associations. (OneToOne, OneToMany, ManyToOne, ManyToMany)
 -  The association type *CANNOT* be changed.
 -  The override could redefine the joinTables or joinColumns depending on the association type.
--  The override could redefine inversedBy to reference more than one extended entity.
+-  The override could redefine ``inversedBy`` to reference more than one extended entity.
 -  The override could redefine fetch to modify the fetch strategy of the extended entity.
 
 Attribute Override

@@ -1,5 +1,5 @@
 Doctrine Query Language
-===========================
+=======================
 
 DQL stands for Doctrine Query Language and is an Object
 Query Language derivative that is very similar to the Hibernate
@@ -487,6 +487,26 @@ where you can generate an arbitrary join with the following syntax:
     <?php
     $query = $em->createQuery('SELECT u FROM User u JOIN Banlist b WITH u.email = b.email');
 
+With an arbitrary join the result differs from the joins using a mapped property.
+The result of an arbitrary join is an one dimensional array with a mix of the entity from the ``SELECT``
+and the joined entity fitting to the filtering of the query. In case of the example with ``User``
+and ``Blacklist``, it can look like this:
+
+- User
+- Blacklist
+- Blacklist
+- User
+- Blacklist
+- User
+- Blacklist
+- Blacklist
+- Blacklist
+
+In this form of join, the ``Blacklist`` entities found by the filtering in the ``WITH`` part are not fetched by an accessor
+method on ``User``, but are already part of the result. In case the accessor method for Blacklists is invoked on a User instance,
+it loads all the related ``Blacklist`` objects corresponding to this ``User``. This change of behaviour needs to be considered
+when the DQL is switched to an arbitrary join.
+
 .. note::
     The differences between WHERE, WITH and HAVING clauses may be
     confusing.
@@ -680,29 +700,35 @@ The following functions are supported in SELECT, WHERE and HAVING
 clauses:
 
 
--  IDENTITY(single\_association\_path\_expression [, fieldMapping]) - Retrieve the foreign key column of association of the owning side
--  ABS(arithmetic\_expression)
--  CONCAT(str1, str2)
--  CURRENT\_DATE() - Return the current date
--  CURRENT\_TIME() - Returns the current time
--  CURRENT\_TIMESTAMP() - Returns a timestamp of the current date
+-  ``IDENTITY(single_association_path_expression [, fieldMapping])`` -
+   Retrieve the foreign key column of association of the owning side
+-  ``ABS(arithmetic_expression)``
+-  ``CONCAT(str1, str2)``
+-  ``CURRENT_DATE()`` - Return the current date
+-  ``CURRENT_TIME()`` - Returns the current time
+-  ``CURRENT_TIMESTAMP()`` - Returns a timestamp of the current date
    and time.
--  LENGTH(str) - Returns the length of the given string
--  LOCATE(needle, haystack [, offset]) - Locate the first
+-  ``LENGTH(str)`` - Returns the length of the given string
+-  ``LOCATE(needle, haystack [, offset])`` - Locate the first
    occurrence of the substring in the string.
--  LOWER(str) - returns the string lowercased.
--  MOD(a, b) - Return a MOD b.
--  SIZE(collection) - Return the number of elements in the
+-  ``LOWER(str)`` - returns the string lowercased.
+-  ``MOD(a, b)`` - Return a MOD b.
+-  ``SIZE(collection)`` - Return the number of elements in the
    specified collection
--  SQRT(q) - Return the square-root of q.
--  SUBSTRING(str, start [, length]) - Return substring of given
+-  ``SQRT(q)`` - Return the square-root of q.
+-  ``SUBSTRING(str, start [, length])`` - Return substring of given
    string.
--  TRIM([LEADING \| TRAILING \| BOTH] ['trchar' FROM] str) - Trim
+-  ``TRIM([LEADING \| TRAILING \| BOTH] ['trchar' FROM] str)`` - Trim
    the string by the given trim char, defaults to whitespaces.
--  UPPER(str) - Return the upper-case of the given string.
--  DATE_ADD(date, value, unit) - Add the given time to a given date. (Supported units are SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR)
--  DATE_SUB(date, value, unit) - Subtract the given time from a given date. (Supported units are SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR)
--  DATE_DIFF(date1, date2) - Calculate the difference in days between date1-date2.
+-  ``UPPER(str)`` - Return the upper-case of the given string.
+-  ``DATE_ADD(date, value, unit)`` - Add the given time to a given date.
+   (Supported units are ``SECOND``, ``MINUTE``, ``HOUR``, ``DAY``,
+   ``WEEK``, ``MONTH``, ``YEAR``)
+-  ``DATE_SUB(date, value, unit)`` - Subtract the given time from a
+   given date. (Supported units are ``SECOND``, ``MINUTE``, ``HOUR``,
+   ``DAY``, ``WEEK``, ``MONTH``, ``YEAR``)
+-  ``DATE_DIFF(date1, date2)`` - Calculate the difference in days
+   between date1-date2.
 
 Arithmetic operators
 ~~~~~~~~~~~~~~~~~~~~
@@ -1154,10 +1180,10 @@ make best use of the different result formats:
 The constants for the different hydration modes are:
 
 
--  Query::HYDRATE\_OBJECT
--  Query::HYDRATE\_ARRAY
--  Query::HYDRATE\_SCALAR
--  Query::HYDRATE\_SINGLE\_SCALAR
+-  ``Query::HYDRATE_OBJECT``
+-  ``Query::HYDRATE_ARRAY``
+-  ``Query::HYDRATE_SCALAR``
+-  ``Query::HYDRATE_SINGLE_SCALAR``
 
 Object Hydration
 ^^^^^^^^^^^^^^^^
@@ -1223,7 +1249,7 @@ Scalar Hydration:
 
 
 1. Fields from classes are prefixed by the DQL alias in the result.
-   A query of the kind 'SELECT u.name ..' returns a key 'u\_name' in
+   A query of the kind 'SELECT u.name ..' returns a key 'u_name' in
    the result rows.
 
 Single Scalar Hydration
@@ -1371,7 +1397,7 @@ userland. However the following few hints are to be used in
 userland:
 
 
--  Query::HINT\_FORCE\_PARTIAL\_LOAD - Allows to hydrate objects
+-  ``Query::HINT_FORCE_PARTIAL_LOAD`` - Allows to hydrate objects
    although not all their columns are fetched. This query hint can be
    used to handle memory consumption problems with large result-sets
    that contain char or binary data. Doctrine has no way of implicitly
@@ -1379,14 +1405,14 @@ userland:
    ``EntityManager::refresh()`` if they are to be reloaded fully from
    the database. This query hint is deprecated and will be removed
    in the future (`Details <https://github.com/doctrine/orm/issues/8471>`_)
--  Query::HINT\_REFRESH - This query is used internally by
+-  ``Query::HINT_REFRESH`` - This query is used internally by
    ``EntityManager::refresh()`` and can be used in userland as well.
    If you specify this hint and a query returns the data for an entity
    that is already managed by the UnitOfWork, the fields of the
    existing entity will be refreshed. In normal operation a result-set
    that loads data of an already existing entity is discarded in favor
    of the already existing entity.
--  Query::HINT\_CUSTOM\_TREE\_WALKERS - An array of additional
+-  ``Query::HINT_CUSTOM_TREE_WALKERS`` - An array of additional
    ``Doctrine\ORM\Query\TreeWalker`` instances that are attached to
    the DQL query parsing process.
 
@@ -1741,7 +1767,7 @@ QUANTIFIED/BETWEEN/COMPARISON/LIKE/NULL/EXISTS
     QuantifiedExpression     ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"
     BetweenExpression        ::= ArithmeticExpression ["NOT"] "BETWEEN" ArithmeticExpression "AND" ArithmeticExpression
     ComparisonExpression     ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression )
-    InExpression             ::= SingleValuedPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
+    InExpression             ::= ArithmeticExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
     InstanceOfExpression     ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (InstanceOfParameter | "(" InstanceOfParameter {"," InstanceOfParameter}* ")")
     InstanceOfParameter      ::= AbstractSchemaName | InputParameter
     LikeExpression           ::= StringExpression ["NOT"] "LIKE" StringPrimary ["ESCAPE" char]

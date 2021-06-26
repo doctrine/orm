@@ -23,7 +23,7 @@ implementation code in an identity check as follows:
     class MyEntity
     {
         private $id; // This is the identifier of the entity.
-        //...
+        // ...
     
         public function __wakeup()
         {
@@ -34,7 +34,7 @@ implementation code in an identity check as follows:
             // otherwise do nothing, do NOT throw an exception!
         }
     
-        //...
+        // ...
     }
 
 Safely implementing __clone
@@ -48,7 +48,7 @@ Safely implementing ``__clone`` is pretty much the same:
     class MyEntity
     {
         private $id; // This is the identifier of the entity.
-        //...
+        // ...
     
         public function __clone()
         {
@@ -59,7 +59,7 @@ Safely implementing ``__clone`` is pretty much the same:
             // otherwise do nothing, do NOT throw an exception!
         }
     
-        //...
+        // ...
     }
 
 Summary
