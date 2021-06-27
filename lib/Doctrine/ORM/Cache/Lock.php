@@ -41,7 +41,7 @@ class Lock
     public function __construct($value, $time = null)
     {
         $this->value = $value;
-        $this->time  = $time ? : time();
+        $this->time  = $time ?: time();
     }
 
     /**

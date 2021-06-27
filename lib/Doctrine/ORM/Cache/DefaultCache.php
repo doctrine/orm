@@ -275,10 +275,10 @@ class DefaultCache implements Cache
         return $this->queryCaches[$regionName];
     }
 
-     /**
-      * @param ClassMetadata $metadata   The entity metadata.
-      * @param mixed         $identifier The entity identifier.
-      */
+    /**
+     * @param ClassMetadata $metadata   The entity metadata.
+     * @param mixed         $identifier The entity identifier.
+     */
     private function buildEntityCacheKey(ClassMetadata $metadata, $identifier): EntityCacheKey
     {
         if (! is_array($identifier)) {

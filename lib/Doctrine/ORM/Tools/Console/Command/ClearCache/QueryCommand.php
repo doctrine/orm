@@ -51,7 +51,7 @@ class QueryCommand extends AbstractEntityManagerCommand
              ->setDescription('Clear all query cache of the various cache drivers')
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, cache entries will be flushed instead of deleted/invalidated.')
-             ->setHelp(<<<EOT
+             ->setHelp(<<<'EOT'
 The <info>%command.name%</info> command is meant to clear the query cache of associated Entity Manager.
 It is possible to invalidate all cache entries at once - called delete -, or flushes the cache provider
 instance completely.

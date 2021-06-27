@@ -42,7 +42,7 @@ use function is_array;
 
 abstract class AbstractCollectionPersister implements CachedCollectionPersister
 {
-     /** @var UnitOfWork */
+    /** @var UnitOfWork */
     protected $uow;
 
     /** @var ClassMetadataFactory */
@@ -60,7 +60,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     /** @var mixed[] */
     protected $association;
 
-     /** @var mixed[] */
+    /** @var mixed[] */
     protected $queuedCache = [];
 
     /** @var Region */
