@@ -199,7 +199,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $statement = 'DELETE FROM ' . $this->quoteStrategy->getTableName($targetClass, $this->platform)
             . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
 
-        return $this->conn->executeUpdate($statement, $parameters);
+        return $this->conn->executeStatement($statement, $parameters);
     }
 
     /**
@@ -233,7 +233,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $statement = $this->platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable
             . ' (' . $this->platform->getColumnDeclarationListSQL($columnDefinitions) . ')';
 
-        $this->conn->executeUpdate($statement);
+        $this->conn->executeStatement($statement);
 
         // 2) Build insert table records into temporary table
         $query = $this->em->createQuery(
@@ -243,7 +243,7 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         $statement  = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ') ' . $query->getSQL();
         $parameters = array_values($sourceClass->getIdentifierValues($collection->getOwner()));
-        $numDeleted = $this->conn->executeUpdate($statement, $parameters);
+        $numDeleted = $this->conn->executeStatement($statement, $parameters);
 
         // 3) Delete records on each table in the hierarchy
         $classNames = array_merge($targetClass->parentClasses, [$targetClass->name], $targetClass->subClasses);
@@ -253,13 +253,13 @@ class OneToManyPersister extends AbstractCollectionPersister
             $statement = 'DELETE FROM ' . $tableName . ' WHERE (' . $idColumnList . ')'
                 . ' IN (SELECT ' . $idColumnList . ' FROM ' . $tempTable . ')';
 
-            $this->conn->executeUpdate($statement);
+            $this->conn->executeStatement($statement);
         }
 
         // 4) Drop temporary table
         $statement = $this->platform->getDropTemporaryTableSQL($tempTable);
 
-        $this->conn->executeUpdate($statement);
+        $this->conn->executeStatement($statement);
 
         return $numDeleted;
     }
