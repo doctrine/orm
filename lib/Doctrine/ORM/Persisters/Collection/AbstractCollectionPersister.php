@@ -47,11 +47,7 @@ abstract class AbstractCollectionPersister implements CollectionPersister
      */
     protected $platform;
 
-    /**
-     * The quote strategy.
-     *
-     * @var QuoteStrategy
-     */
+    /** @var QuoteStrategy */
     protected $quoteStrategy;
 
     /**

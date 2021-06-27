@@ -24,9 +24,6 @@ use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\QueryCacheKey;
 
-/**
- * Cache logger chain
- */
 class CacheLoggerChain implements CacheLogger
 {
     /** @var array<CacheLogger> */

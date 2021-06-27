@@ -175,7 +175,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
             "mapped superclass 'Doctrine\Tests\ORM\Mapping\InvalidMappedSuperClass#users'"
         );
 
-        $usingInvalidMsc = $factory->getMetadataFor(UsingInvalidMappedSuperClass::class);
+        $factory->getMetadataFor(UsingInvalidMappedSuperClass::class);
     }
 
     /**
