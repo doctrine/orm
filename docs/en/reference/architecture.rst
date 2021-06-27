@@ -83,7 +83,7 @@ be any regular PHP class observing the following restrictions:
 -  An entity class must not implement ``__wakeup`` or
    :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
    Also consider implementing
-   `Serializable <http://php.net/manual/en/class.serializable.php>`_
+   `Serializable <https://php.net/manual/en/class.serializable.php>`_
    instead.
 -  Any two entity classes in a class hierarchy that inherit
    directly or indirectly from one another must not have a mapped
@@ -189,7 +189,7 @@ The Unit of Work
 
 Internally an ``EntityManager`` uses a ``UnitOfWork``, which is a
 typical implementation of the
-`Unit of Work pattern <http://martinfowler.com/eaaCatalog/unitOfWork.html>`_,
+`Unit of Work pattern <https://martinfowler.com/eaaCatalog/unitOfWork.html>`_,
 to keep track of all the things that need to be done the next time
 ``flush`` is invoked. You usually do not directly interact with a
 ``UnitOfWork`` but with the ``EntityManager`` instead.
