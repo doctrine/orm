@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\DbalTypes\GH8565EmployeePayloadType;
 use Doctrine\Tests\DbalTypes\GH8565ManagerPayloadType;
-use Doctrine\Tests\Mocks\HydratorMockResult;
+use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\GH8565\GH8565Employee;
@@ -26,7 +27,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
      */
     public function testMissingDiscriminatorColumnException(): void
     {
-        $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
+        $this->expectException(HydrationException::class);
         $this->expectExceptionMessage('The discriminator column "discr" is missing for "Doctrine\Tests\Models\Company\CompanyPerson" using the DQL alias "p".');
         $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CompanyPerson::class, 'p');
@@ -41,7 +42,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new SimpleObjectHydrator($this->entityManager);
         $hydrator->hydrateAll($stmt, $rsm);
     }
@@ -64,7 +65,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $expectedEntity->id   = 1;
         $expectedEntity->city = 'Cracow';
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new SimpleObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
         self::assertEquals($result[0], $expectedEntity);
@@ -94,7 +95,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new SimpleObjectHydrator($this->entityManager);
         $hydrator->hydrateAll($stmt, $rsm);
     }
@@ -123,7 +124,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $expectedEntity->id   = 1;
         $expectedEntity->tags = ['tag1', 'tag2'];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new SimpleObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
         self::assertEquals($result[0], $expectedEntity);
@@ -155,7 +156,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $expectedEntity->id   = 1;
         $expectedEntity->type = 'type field';
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new SimpleObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
         self::assertEquals($result[0], $expectedEntity);

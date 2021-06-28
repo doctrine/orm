@@ -5,18 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Mocks;
 
 use BadMethodCallException;
+use Doctrine\DBAL\Driver\Result as DriverResult;
 use Doctrine\DBAL\Result;
 use Traversable;
 
-use function count;
-use function current;
-use function next;
-use function reset;
-
-class HydratorMockResult implements Result
+class ResultMock implements Result
 {
-    /** @var list<array<string, mixed>> */
-    private $resultSet;
+    /** @var DriverResult */
+    private $result;
 
     /**
      * Creates a new mock statement that will serve the provided fake result set to clients.
@@ -25,7 +21,7 @@ class HydratorMockResult implements Result
      */
     public function __construct(array $resultSet)
     {
-        $this->resultSet = $resultSet;
+        $this->result = new DriverResultMock($resultSet);
     }
 
     /**
@@ -33,7 +29,7 @@ class HydratorMockResult implements Result
      */
     public function fetchNumeric()
     {
-        throw new BadMethodCallException('Not implemented');
+        return $this->result->fetchNumeric();
     }
 
     /**
@@ -41,10 +37,7 @@ class HydratorMockResult implements Result
      */
     public function fetchAssociative()
     {
-        $current = current($this->resultSet);
-        next($this->resultSet);
-
-        return $current;
+        return $this->result->fetchAssociative();
     }
 
     /**
@@ -52,7 +45,7 @@ class HydratorMockResult implements Result
      */
     public function fetchOne()
     {
-        throw new BadMethodCallException('Not implemented');
+        return $this->result->fetchOne();
     }
 
     /**
@@ -60,10 +53,7 @@ class HydratorMockResult implements Result
      */
     public function fetchAllAssociative(): array
     {
-        $resultSet = $this->resultSet;
-        reset($resultSet);
-
-        return $resultSet;
+        return $this->result->fetchAllAssociative();
     }
 
     /**
@@ -87,7 +77,7 @@ class HydratorMockResult implements Result
      */
     public function fetchAllNumeric(): array
     {
-        throw new BadMethodCallException('Not implemented');
+        return $this->result->fetchAllNumeric();
     }
 
     /**
@@ -95,7 +85,7 @@ class HydratorMockResult implements Result
      */
     public function fetchFirstColumn(): array
     {
-        throw new BadMethodCallException('Not implemented');
+        return $this->result->fetchFirstColumn();
     }
 
     public function iterateKeyValue(): Traversable
@@ -110,9 +100,7 @@ class HydratorMockResult implements Result
 
     public function columnCount(): int
     {
-        $resultSet = $this->resultSet;
-
-        return count(reset($resultSet) ?: []);
+        return $this->result->columnCount();
     }
 
     public function iterateNumeric(): Traversable
@@ -132,7 +120,7 @@ class HydratorMockResult implements Result
 
     public function rowCount(): int
     {
-        return count($this->resultSet);
+        return $this->result->rowCount();
     }
 
     public function free(): void

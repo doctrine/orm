@@ -7,8 +7,8 @@ namespace Doctrine\Tests\ORM\Id;
 use BadMethodCallException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Id\SequenceGenerator;
+use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Mocks\ConnectionMock;
-use Doctrine\Tests\Mocks\StatementArrayMock;
 use Doctrine\Tests\OrmTestCase;
 
 class SequenceGeneratorTest extends OrmTestCase
@@ -42,7 +42,7 @@ class SequenceGeneratorTest extends OrmTestCase
 
         for ($i = 0; $i < 42; ++$i) {
             if ($i % 10 === 0) {
-                $this->connection->setQueryResult(new StatementArrayMock([[(int) ($i / 10) * 10]]));
+                $this->connection->setQueryResult(ArrayResultFactory::createFromArray([[(int) ($i / 10) * 10]]));
             }
 
             $id = $this->sequenceGenerator->generate($this->entityManager, null);

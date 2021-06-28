@@ -16,8 +16,8 @@ use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use Doctrine\Tests\Mocks\DriverConnectionMock;
+use Doctrine\Tests\Mocks\DriverResultMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
-use Doctrine\Tests\Mocks\StatementArrayMock;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -328,10 +328,10 @@ class QueryTest extends OrmTestCase
         $this->entityManager->getConfiguration()->setQueryCacheImpl(DoctrineProvider::wrap(new ArrayAdapter()));
         $driverConnectionMock = $this->entityManager->getConnection()->getWrappedConnection();
         assert($driverConnectionMock instanceof DriverConnectionMock);
-        $stmt = new StatementArrayMock([
+        $result = new DriverResultMock([
             ['id_0' => 1],
         ]);
-        $driverConnectionMock->setStatementMock($stmt);
+        $driverConnectionMock->setResultMock($result);
         $res = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u')
             ->useQueryCache(true)
             ->enableResultCache(60)
@@ -340,7 +340,7 @@ class QueryTest extends OrmTestCase
 
         self::assertCount(1, $res);
 
-        $driverConnectionMock->setStatementMock(null);
+        $driverConnectionMock->setResultMock(null);
 
         $res = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u')
             ->useQueryCache(true)
@@ -373,12 +373,12 @@ class QueryTest extends OrmTestCase
                                           ->getWrappedConnection();
         assert($driverConnectionMock instanceof DriverConnectionMock);
 
-        $driverConnectionMock->setStatementMock(new StatementArrayMock([['id_0' => 1]]));
+        $driverConnectionMock->setResultMock(new DriverResultMock([['id_0' => 1]]));
 
         // Performs the query and sets up the initial cache
         self::assertCount(1, $query->getResult());
 
-        $driverConnectionMock->setStatementMock(new StatementArrayMock([['id_0' => 1], ['id_0' => 2]]));
+        $driverConnectionMock->setResultMock(new DriverResultMock([['id_0' => 1], ['id_0' => 2]]));
 
         // Retrieves cached data since expire flag is false and we have a cached result set
         self::assertCount(1, $query->getResult());
@@ -386,7 +386,7 @@ class QueryTest extends OrmTestCase
         // Performs the query and caches the result set since expire flag is true
         self::assertCount(2, $query->expireResultCache(true)->getResult());
 
-        $driverConnectionMock->setStatementMock(new StatementArrayMock([['id_0' => 1]]));
+        $driverConnectionMock->setResultMock(new DriverResultMock([['id_0' => 1]]));
 
         // Retrieves cached data since expire flag is false and we have a cached result set
         self::assertCount(2, $query->expireResultCache(false)->getResult());

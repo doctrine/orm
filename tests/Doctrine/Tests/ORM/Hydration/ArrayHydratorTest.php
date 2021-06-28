@@ -6,16 +6,13 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\ORM\Internal\Hydration\ArrayHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\Mocks\HydratorMockResult;
+use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Forum\ForumBoard;
 use Doctrine\Tests\Models\Forum\ForumCategory;
-
-use function count;
-use function is_array;
 
 class ArrayHydratorTest extends HydrationTestCase
 {
@@ -56,7 +53,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -100,7 +97,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -148,7 +145,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -195,7 +192,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -245,7 +242,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -299,7 +296,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -353,7 +350,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -408,7 +405,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -472,7 +469,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -545,7 +542,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -659,7 +656,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -798,7 +795,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -912,7 +909,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -975,7 +972,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -1024,7 +1021,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $iterator = $hydrator->iterate($stmt, $rsm);
         $rowNum   = 0;
@@ -1069,7 +1066,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $iterator = $hydrator->iterate($stmt, $rsm);
         $rowNum   = 0;
@@ -1114,7 +1111,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -1165,7 +1162,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -1215,7 +1212,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
