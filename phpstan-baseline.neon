@@ -226,7 +226,7 @@ parameters:
 			path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
 
 		-
-			message: "#^Property Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\AbstractHydrator\\:\\:\\$_stmt \\(Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement\\) does not accept null\\.$#"
+			message: "#^Property Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\AbstractHydrator\\:\\:\\$_stmt \\(Doctrine\\\\DBAL\\\\Result\\) does not accept null\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
 

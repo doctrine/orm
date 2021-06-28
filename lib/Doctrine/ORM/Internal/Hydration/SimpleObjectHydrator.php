@@ -23,7 +23,6 @@ namespace Doctrine\ORM\Internal\Hydration;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Exception;
-use PDO;
 use RuntimeException;
 
 use function array_keys;
@@ -73,7 +72,7 @@ class SimpleObjectHydrator extends AbstractHydrator
     {
         $result = [];
 
-        while ($row = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($row = $this->_stmt->fetchAssociative()) {
             $this->hydrateRowData($row, $result);
         }
 

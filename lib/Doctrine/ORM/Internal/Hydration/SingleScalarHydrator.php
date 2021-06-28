@@ -22,7 +22,6 @@ namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use PDO;
 
 use function array_shift;
 use function count;
@@ -38,7 +37,7 @@ class SingleScalarHydrator extends AbstractHydrator
      */
     protected function hydrateAllData()
     {
-        $data    = $this->_stmt->fetchAll(PDO::FETCH_ASSOC);
+        $data    = $this->_stmt->fetchAllAssociative();
         $numRows = count($data);
 
         if ($numRows === 0) {

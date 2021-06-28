@@ -24,9 +24,9 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement as DriverStatement;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
@@ -912,7 +912,7 @@ class BasicEntityPersister implements EntityPersister
 
         $stmt = $this->getManyToManyStatement($assoc, $sourceEntity, $offset, $limit);
 
-        return $this->loadArrayFromStatement($assoc, $stmt);
+        return $this->loadArrayFromResult($assoc, $stmt);
     }
 
     /**
@@ -922,7 +922,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return mixed[]
      */
-    private function loadArrayFromStatement(array $assoc, DriverStatement $stmt): array
+    private function loadArrayFromResult(array $assoc, Result $stmt): array
     {
         $rsm   = $this->currentPersisterContext->rsm;
         $hints = [UnitOfWork::HINT_DEFEREAGERLOAD => true];
@@ -944,7 +944,7 @@ class BasicEntityPersister implements EntityPersister
      */
     private function loadCollectionFromStatement(
         array $assoc,
-        DriverStatement $stmt,
+        Result $stmt,
         PersistentCollection $coll
     ): array {
         $rsm   = $this->currentPersisterContext->rsm;
@@ -975,7 +975,7 @@ class BasicEntityPersister implements EntityPersister
      * @param object $sourceEntity
      * @psalm-param array<string, mixed> $assoc
      *
-     * @return DriverStatement
+     * @return Result
      *
      * @throws MappingException
      */
@@ -1757,7 +1757,7 @@ class BasicEntityPersister implements EntityPersister
 
         $stmt = $this->getOneToManyStatement($assoc, $sourceEntity, $offset, $limit);
 
-        return $this->loadArrayFromStatement($assoc, $stmt);
+        return $this->loadArrayFromResult($assoc, $stmt);
     }
 
     /**
@@ -1781,7 +1781,7 @@ class BasicEntityPersister implements EntityPersister
         $sourceEntity,
         ?int $offset = null,
         ?int $limit = null
-    ): DriverStatement {
+    ): Result {
         $this->switchPersisterContext($offset, $limit);
 
         $criteria    = [];

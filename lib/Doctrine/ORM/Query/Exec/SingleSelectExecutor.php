@@ -21,7 +21,7 @@
 namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
+use Doctrine\DBAL\Result;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\SqlWalker;
 
@@ -40,7 +40,7 @@ class SingleSelectExecutor extends AbstractSqlExecutor
     /**
      * {@inheritDoc}
      *
-     * @return ResultStatement
+     * @return Result
      */
     public function execute(Connection $conn, array $params, array $types)
     {

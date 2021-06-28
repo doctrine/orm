@@ -21,7 +21,6 @@
 namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
-use PDO;
 
 use function count;
 use function end;
@@ -74,7 +73,7 @@ class ArrayHydrator extends AbstractHydrator
     {
         $result = [];
 
-        while ($data = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($data = $this->_stmt->fetchAssociative()) {
             $this->hydrateRowData($data, $result);
         }
 

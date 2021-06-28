@@ -7,7 +7,7 @@ namespace Doctrine\Performance\Hydration;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Performance\EntityManagerFactory;
-use Doctrine\Tests\Mocks\HydratorMockStatement;
+use Doctrine\Tests\Mocks\HydratorMockResult;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
@@ -23,8 +23,8 @@ final class SimpleQueryFullObjectHydrationPerformanceBench
     /** @var ResultSetMapping */
     private $rsm;
 
-    /** @var HydratorMockStatement */
-    private $stmt;
+    /** @var HydratorMockResult */
+    private $result;
 
     public function init(): void
     {
@@ -48,7 +48,7 @@ final class SimpleQueryFullObjectHydrationPerformanceBench
             ];
         }
 
-        $this->stmt     = new HydratorMockStatement($resultSet);
+        $this->result   = new HydratorMockResult($resultSet);
         $this->hydrator = new ObjectHydrator(EntityManagerFactory::getEntityManager([]));
         $this->rsm      = new ResultSetMapping();
 
@@ -63,6 +63,6 @@ final class SimpleQueryFullObjectHydrationPerformanceBench
 
     public function benchHydration(): void
     {
-        $this->hydrator->hydrateAll($this->stmt, $this->rsm);
+        $this->hydrator->hydrateAll($this->result, $this->rsm);
     }
 }
