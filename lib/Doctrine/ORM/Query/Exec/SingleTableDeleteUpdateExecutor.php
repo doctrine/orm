@@ -53,6 +53,6 @@ class SingleTableDeleteUpdateExecutor extends AbstractSqlExecutor
      */
     public function execute(Connection $conn, array $params, array $types)
     {
-        return $conn->executeUpdate($this->_sqlStatements, $params, $types);
+        return $conn->executeStatement($this->_sqlStatements, $params, $types);
     }
 }

@@ -164,11 +164,11 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
     public function execute(Connection $conn, array $params, array $types)
     {
         // Create temporary id table
-        $conn->executeUpdate($this->_createTempTableSql);
+        $conn->executeStatement($this->_createTempTableSql);
 
         try {
             // Insert identifiers. Parameters from the update clause are cut off.
-            $numUpdated = $conn->executeUpdate(
+            $numUpdated = $conn->executeStatement(
                 $this->_insertSql,
                 array_slice($params, $this->_numParametersInUpdateClause),
                 array_slice($types, $this->_numParametersInUpdateClause)
@@ -186,18 +186,12 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
                     }
                 }
 
-                $conn->executeUpdate($statement, $paramValues, $paramTypes);
+                $conn->executeStatement($statement, $paramValues, $paramTypes);
             }
-        } catch (Throwable $exception) {
-            // FAILURE! Drop temporary table to avoid possible collisions
-            $conn->executeUpdate($this->_dropTempTableSql);
-
-            // Re-throw exception
-            throw $exception;
+        } finally {
+            // Drop temporary table
+            $conn->executeStatement($this->_dropTempTableSql);
         }
-
-        // Drop temporary table
-        $conn->executeUpdate($this->_dropTempTableSql);
 
         return $numUpdated;
     }
