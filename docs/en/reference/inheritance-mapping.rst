@@ -31,30 +31,46 @@ Example:
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Mapping\Column;
+    use Doctrine\ORM\Mapping\JoinColumn;
+    use Doctrine\ORM\Mapping\OneToOne;
+    use Doctrine\ORM\Mapping\Id;
+    use Doctrine\ORM\Mapping\MappedSuperclass;
+    use Doctrine\ORM\Mapping\Entity;
+
     /** @MappedSuperclass */
-    class MappedSuperclassBase
+    class Person
     {
         /** @Column(type="integer") */
         protected $mapped1;
         /** @Column(type="string") */
         protected $mapped2;
         /**
-         * @OneToOne(targetEntity="MappedSuperclassRelated1")
-         * @JoinColumn(name="related1_id", referencedColumnName="id")
+         * @OneToOne(targetEntity="Toothbrush")
+         * @JoinColumn(name="toothbrush_id", referencedColumnName="id")
          */
-        protected $mappedRelated1;
-    
+        protected $toothbrush;
+
         // ... more fields and methods
     }
     
     /** @Entity */
-    class EntitySubClass extends MappedSuperclassBase
+    class Employee extends Person
     {
         /** @Id @Column(type="integer") */
         private $id;
         /** @Column(type="string") */
         private $name;
     
+        // ... more fields and methods
+    }
+
+    /** @Entity */
+    class Toothbrush
+    {
+        /** @Id @Column(type="integer") */
+        private $id;
+
         // ... more fields and methods
     }
 
