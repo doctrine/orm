@@ -59,8 +59,8 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $conn         = $entityManager->getConnection();
         $mockPlatform = $conn->getDatabasePlatform();
-        $mockPlatform->setPrefersSequences(true);
-        $mockPlatform->setPrefersIdentityColumns(false);
+        $mockPlatform->setSupportsSequences(true);
+        $mockPlatform->setSupportsIdentityColumns(false);
 
         $cm1 = $this->createValidClassMetadata();
 
