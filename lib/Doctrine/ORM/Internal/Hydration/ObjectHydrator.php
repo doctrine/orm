@@ -263,7 +263,7 @@ class ObjectHydrator extends AbstractHydrator
             unset($data[$discrColumn]);
         }
 
-        if (isset($this->_hints[Query::HINT_REFRESH_ENTITY]) && isset($this->rootAliases[$dqlAlias])) {
+        if (isset($this->_hints[Query::HINT_REFRESH_ENTITY], $this->rootAliases[$dqlAlias])) {
             $this->registerManaged($this->_metadataCache[$className], $this->_hints[Query::HINT_REFRESH_ENTITY], $data);
         }
 
