@@ -3056,12 +3056,15 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      *
-     * @return mixed The identifier values.
+     * @return mixed[] The identifier values.
      */
     public function getEntityIdentifier($entity)
     {
-        return $this->entityIdentifiers[spl_object_hash($entity)]
-            ?? EntityNotFoundException::noIdentifierFound(get_class($entity));
+        if (! isset($this->entityIdentifiers[spl_object_hash($entity)])) {
+            throw EntityNotFoundException::noIdentifierFound(get_class($entity));
+        }
+
+        return $this->entityIdentifiers[spl_object_hash($entity)];
     }
 
     /**
