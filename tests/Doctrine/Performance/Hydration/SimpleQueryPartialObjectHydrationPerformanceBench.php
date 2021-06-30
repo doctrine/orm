@@ -8,7 +8,7 @@ use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Performance\EntityManagerFactory;
-use Doctrine\Tests\Mocks\HydratorMockStatement;
+use Doctrine\Tests\Mocks\HydratorMockResult;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
@@ -23,8 +23,8 @@ final class SimpleQueryPartialObjectHydrationPerformanceBench
     /** @var ResultSetMapping */
     private $rsm;
 
-    /** @var HydratorMockStatement */
-    private $stmt;
+    /** @var HydratorMockResult */
+    private $result;
 
     public function init(): void
     {
@@ -58,7 +58,7 @@ final class SimpleQueryPartialObjectHydrationPerformanceBench
             ];
         }
 
-        $this->stmt     = new HydratorMockStatement($resultSet);
+        $this->result   = new HydratorMockResult($resultSet);
         $this->hydrator = new ObjectHydrator(EntityManagerFactory::getEntityManager([]));
         $this->rsm      = new ResultSetMapping();
 
@@ -71,6 +71,6 @@ final class SimpleQueryPartialObjectHydrationPerformanceBench
 
     public function benchHydration(): void
     {
-        $this->hydrator->hydrateAll($this->stmt, $this->rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $this->hydrator->hydrateAll($this->result, $this->rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
     }
 }

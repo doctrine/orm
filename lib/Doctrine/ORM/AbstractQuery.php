@@ -24,8 +24,7 @@ use Countable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
-use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Result;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
@@ -1204,9 +1203,9 @@ abstract class AbstractQuery
     /**
      * Executes the query and returns a the resulting Statement object.
      *
-     * @return ResultStatement|int The executed database statement that holds
-     *                             the results, or an integer indicating how
-     *                             many rows were affected.
+     * @return Result|int The executed database statement that holds
+     *                    the results, or an integer indicating how
+     *                    many rows were affected.
      */
     abstract protected function _doExecute();
 

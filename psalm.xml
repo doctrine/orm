@@ -16,6 +16,12 @@
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
+        <DocblockTypeContradiction>
+            <errorLevel type="suppress">
+                <!-- We're catching invalid input here. -->
+                <file name="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php"/>
+            </errorLevel>
+        </DocblockTypeContradiction>
         <ParadoxicalCondition>
             <errorLevel type="suppress">
                 <!-- See https://github.com/vimeo/psalm/issues/3381 -->

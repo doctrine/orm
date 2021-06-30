@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\ORM\Internal\Hydration\ScalarHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\Mocks\HydratorMockStatement;
+use Doctrine\Tests\Mocks\HydratorMockResult;
 use Doctrine\Tests\Models\CMS\CmsUser;
 
 class ScalarHydratorTest extends HydrationTestCase
@@ -33,7 +33,7 @@ class ScalarHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockStatement($resultSet);
+        $stmt     = new HydratorMockResult($resultSet);
         $hydrator = new ScalarHydrator($this->entityManager);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
@@ -64,7 +64,7 @@ class ScalarHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockStatement($resultSet);
+        $stmt     = new HydratorMockResult($resultSet);
         $hydrator = new ScalarHydrator($this->entityManager);
 
         self::assertCount(1, $hydrator->hydrateAll($stmt, $rsm));
@@ -94,7 +94,7 @@ class ScalarHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockStatement($resultSet);
+        $stmt     = new HydratorMockResult($resultSet);
         $hydrator = new ScalarHydrator($this->entityManager);
 
         self::assertCount(1, $hydrator->hydrateAll($stmt, $rsm));
