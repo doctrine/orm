@@ -7,7 +7,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 /**
  * @group DDC-6499
  */
-class DDC6499Test extends OrmFunctionalTestCase
+class DDC6499OneToOneRelationshipTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
@@ -59,7 +59,6 @@ class DDC6499A
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
-     *
      * @var int
      */
     public $id;
@@ -67,7 +66,6 @@ class DDC6499A
     /**
      * @OneToOne(targetEntity="DDC6499B", cascade={"persist"})
      * @JoinColumn(nullable=false)
-     *
      * @var DDC6499B
      */
     public $b;
@@ -85,7 +83,6 @@ class DDC6499B
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
-     *
      * @var int
      */
     public $id;
