@@ -17,6 +17,7 @@
     },
     "require": {
         "php": "^7.1|^8.0",
+        "ext-ctype": "*",
         "ext-pdo": "*",
         "composer/package-versions-deprecated": "^1.8",
         "doctrine/cache": "^1.11.3|^2.0.3",

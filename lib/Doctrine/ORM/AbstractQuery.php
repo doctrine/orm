@@ -623,9 +623,9 @@ abstract class AbstractQuery
      *
      * @deprecated 2.7 Use {@see enableResultCache} and {@see disableResultCache} instead.
      *
-     * @param bool   $useCache
-     * @param int    $lifetime
-     * @param string $resultCacheId
+     * @param bool   $useCache      Whether or not to cache the results of this query.
+     * @param int    $lifetime      How long the cache entry is valid, in seconds.
+     * @param string $resultCacheId ID to use for the cache entry.
      *
      * @return static This query instance.
      */
@@ -668,7 +668,7 @@ abstract class AbstractQuery
     /**
      * Defines how long the result cache will be active before expire.
      *
-     * @param int|null $lifetime How long the cache entry is valid.
+     * @param int|null $lifetime How long the cache entry is valid, in seconds.
      *
      * @return static This query instance.
      */
@@ -857,7 +857,7 @@ abstract class AbstractQuery
      * @return mixed
      *
      * @throws NonUniqueResultException If the query result is not unique.
-     * @throws NoResultException        If the query returned no result and hydration mode is not HYDRATE_SINGLE_SCALAR.
+     * @throws NoResultException        If the query returned no result.
      */
     public function getSingleResult($hydrationMode = null)
     {
@@ -887,6 +887,7 @@ abstract class AbstractQuery
      *
      * @throws NoResultException        If the query returned no result.
      * @throws NonUniqueResultException If the query result is not unique.
+     * @throws NoResultException        If the query returned no result.
      */
     public function getSingleScalarResult()
     {

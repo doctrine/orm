@@ -21,7 +21,7 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * InExpression ::= StateFieldPathExpression ["NOT"] "IN" "(" (Literal {"," Literal}* | Subselect) ")"
+ * InExpression ::= ArithmeticExpression ["NOT"] "IN" "(" (Literal {"," Literal}* | Subselect) ")"
  *
  * @link    www.doctrine-project.org
  */

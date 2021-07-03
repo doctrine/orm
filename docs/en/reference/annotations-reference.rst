@@ -406,11 +406,11 @@ Example:
 
     <?php
     /**
-     * @Entity(repositoryClass="MyProject\UserRepository")
+     * @Entity(repositoryClass="MyProject\UserRepository", readOnly=true)
      */
     class User
     {
-        //...
+        // ...
     }
 
 .. _annref_entity_result:
@@ -463,7 +463,8 @@ Optional attributes:
 
 
 -  **strategy**: Set the name of the identifier generation strategy.
-   Valid values are AUTO, SEQUENCE, TABLE, IDENTITY, UUID, CUSTOM and NONE.
+   Valid values are ``AUTO``, ``SEQUENCE``, ``TABLE``, ``IDENTITY``, ``UUID``, ``CUSTOM`` and ``NONE``, explained
+   in the :ref:`Identifier Generation Strategies <identifier-generation-strategies>` section.
    If not specified, default value is AUTO.
 
 Example:
