@@ -423,9 +423,7 @@
       <code>$className</code>
       <code>$className</code>
     </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="4">
-      <code>ArrayCache::class</code>
-      <code>new ArrayCache()</code>
+    <DeprecatedClass occurrences="2">
       <code>new CachedReader($reader, new ArrayCache())</code>
       <code>new SimpleAnnotationReader()</code>
     </DeprecatedClass>
@@ -3958,20 +3956,9 @@
     </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Setup.php">
-    <DeprecatedClass occurrences="14">
-      <code>ApcuCache::class</code>
-      <code>ArrayCache::class</code>
-      <code>ArrayCache::class</code>
-      <code>ArrayCache::class</code>
-      <code>MemcachedCache::class</code>
-      <code>RedisCache::class</code>
-      <code>new ApcuCache()</code>
-      <code>new ArrayCache()</code>
-      <code>new ArrayCache()</code>
+    <DeprecatedClass occurrences="3">
       <code>new ClassLoader('Doctrine', $directory)</code>
       <code>new ClassLoader('Symfony\Component', $directory . '/Doctrine')</code>
-      <code>new MemcachedCache()</code>
-      <code>new RedisCache()</code>
       <code>new YamlDriver($paths)</code>
     </DeprecatedClass>
     <DeprecatedMethod occurrences="1">
