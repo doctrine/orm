@@ -149,6 +149,8 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * UUID means that a UUID/GUID expression is used for id generation. Full
      * portability is currently not guaranteed.
+     *
+     * @deprecated use an application-side generator instead
      */
     public const GENERATOR_TYPE_UUID = 6;
 

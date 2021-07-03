@@ -372,7 +372,7 @@ Optional attributes:
 
 -  **strategy**: Set the name of the identifier generation strategy.
    Valid values are ``AUTO``, ``SEQUENCE``, ``TABLE``, ``IDENTITY``,
-   ``UUID``, ``CUSTOM`` and ``NONE``.
+   ``UUID`` (deprecated), ``CUSTOM`` and ``NONE``.
    If not specified, the default value is ``AUTO``.
 
 Example:

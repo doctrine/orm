@@ -1,5 +1,13 @@
 # Upgrade to 2.10
 
+## Deprecated: database-side UUID generation
+
+[DB-generated UUIDs are deprecated as of `doctrine/dbal` 2.8][DBAL deprecation].
+As a consequence, `Doctrine\ORM\Id\UuidGenerator` is deprecated, and using the
+`UUID` strategy for generating identifiers is deprecated as well.
+
+[DBAL deprecation]: https://github.com/doctrine/dbal/pull/3212
+
 ## Minor BC BREAK: Custom hydrators and `toIterable()`
 
 The type declaration of the `$stmt` parameter of `AbstractHydrator::toIterable()` has been removed. This change might
