@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function strlen;
@@ -13,23 +14,23 @@ use function strlen;
  */
 class UUIDGeneratorTest extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    use VerifyDeprecations;
+
+    public function testItIsDeprecated(): void
     {
-        parent::setUp();
-
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
-            $this->markTestSkipped('Currently restricted to MySQL platform.');
-        }
-
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(UUIDEntity::class),
-            ]
-        );
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/7312');
+        $this->_em->getClassMetadata(UUIDEntity::class);
     }
 
     public function testGenerateUUID(): void
     {
+        if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
+            $this->markTestSkipped('Currently restricted to MySQL platform.');
+        }
+
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(UUIDEntity::class),
+        ]);
         $entity = new UUIDEntity();
 
         $this->_em->persist($entity);

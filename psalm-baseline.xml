@@ -890,6 +890,12 @@
       <code>$parent</code>
       <code>new $definition['class']()</code>
     </ArgumentTypeCoercion>
+    <DeprecatedClass occurrences="1">
+      <code>new UuidGenerator()</code>
+    </DeprecatedClass>
+    <DeprecatedConstant occurrences="1">
+      <code>ClassMetadata::GENERATOR_TYPE_UUID</code>
+    </DeprecatedConstant>
     <DeprecatedMethod occurrences="5">
       <code>addNamedNativeQuery</code>
       <code>addNamedQuery</code>
@@ -996,6 +1002,9 @@
       <code>$class</code>
       <code>$subclass</code>
     </ArgumentTypeCoercion>
+    <DeprecatedConstant occurrences="1">
+      <code>self::GENERATOR_TYPE_UUID</code>
+    </DeprecatedConstant>
     <DeprecatedProperty occurrences="2">
       <code>$this-&gt;columnNames</code>
       <code>$this-&gt;columnNames</code>
@@ -3530,7 +3539,8 @@
       <code>$this-&gt;getClassToExtend() ?: $metadata-&gt;name</code>
       <code>array_map('strlen', $paramTypes)</code>
     </ArgumentTypeCoercion>
-    <DeprecatedConstant occurrences="15">
+    <DeprecatedConstant occurrences="16">
+      <code>ClassMetadataInfo::GENERATOR_TYPE_UUID</code>
       <code>Type::BIGINT</code>
       <code>Type::BLOB</code>
       <code>Type::BOOLEAN</code>
@@ -3631,6 +3641,9 @@
     <DeprecatedClass occurrences="1">
       <code>ExportException::attemptOverwriteExistingFile($path)</code>
     </DeprecatedClass>
+    <DeprecatedConstant occurrences="1">
+      <code>ClassMetadataInfo::GENERATOR_TYPE_UUID</code>
+    </DeprecatedConstant>
     <InvalidNullableReturnType occurrences="1">
       <code>string</code>
     </InvalidNullableReturnType>
