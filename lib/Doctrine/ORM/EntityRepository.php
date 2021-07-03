@@ -66,8 +66,6 @@ class EntityRepository implements ObjectRepository, Selectable
 
     /**
      * Initializes a new <tt>EntityRepository</tt>.
-     *
-     * @psalm-param Mapping\ClassMetadata $class
      */
     public function __construct(EntityManagerInterface $em, Mapping\ClassMetadata $class)
     {

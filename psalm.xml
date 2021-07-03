@@ -34,6 +34,12 @@
                 <file name="lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php"/>
             </errorLevel>
         </NullArgument>
+        <UndefinedAttributeClass>
+            <errorLevel type="suppress">
+                <!-- The class was added in PHP 8.1 -->
+                <referencedClass name="ReturnTypeWillChange"/>
+            </errorLevel>
+        </UndefinedAttributeClass>
         <UndefinedClass>
             <errorLevel type="suppress">
                 <referencedClass name="Doctrine\Common\Cache\ApcCache"/>

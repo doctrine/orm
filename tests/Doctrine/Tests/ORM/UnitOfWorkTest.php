@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\OptimisticLockException;
@@ -814,6 +815,12 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->expectException(OptimisticLockException::class);
         $this->_unitOfWork->commit();
+    }
+
+    public function testItThrowsWhenLookingUpIdentifierForUnknownEntity(): void
+    {
+        $this->expectException(EntityNotFoundException::class);
+        $this->_unitOfWork->getEntityIdentifier(new stdClass());
     }
 }
 

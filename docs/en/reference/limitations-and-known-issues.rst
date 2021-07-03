@@ -112,10 +112,10 @@ in the core library. We don't think behaviors add more value than
 they cost pain and debugging hell. Please see the many different
 blog posts we have written on this topics:
 
--  `Doctrine2 "Behaviors" in a Nutshell <http://www.doctrine-project.org/2010/02/17/doctrine2-behaviours-nutshell.html>`_
--  `A re-usable Versionable behavior for Doctrine2 <http://www.doctrine-project.org/2010/02/24/doctrine2-versionable.html>`_
--  `Write your own ORM on top of Doctrine2 <http://www.doctrine-project.org/2010/07/19/your-own-orm-doctrine2.html>`_
--  `Doctrine ORM Behavioral Extensions <http://www.doctrine-project.org/2010/11/18/doctrine2-behavioral-extensions.html>`_
+-  `Doctrine2 "Behaviors" in a Nutshell <https://www.doctrine-project.org/2010/02/17/doctrine2-behaviours-nutshell.html>`_
+-  `A re-usable Versionable behavior for Doctrine2 <https://www.doctrine-project.org/2010/02/24/doctrine2-versionable.html>`_
+-  `Write your own ORM on top of Doctrine2 <https://www.doctrine-project.org/2010/07/19/your-own-orm-doctrine2.html>`_
+-  `Doctrine ORM Behavioral Extensions <https://www.doctrine-project.org/2010/11/18/doctrine2-behavioral-extensions.html>`_
 
 Doctrine ORM has enough hooks and extension points so that **you** can
 add whatever you want on top of it. None of this will ever become
@@ -131,8 +131,8 @@ extensions out there that offer support for Nested Set with
 ORM:
 
 
--  `Doctrine2 Hierarchical-Structural Behavior <http://github.com/guilhermeblanco/Doctrine2-Hierarchical-Structural-Behavior>`_
--  `Doctrine2 NestedSet <http://github.com/blt04/doctrine2-nestedset>`_
+-  `Doctrine2 Hierarchical-Structural Behavior <https://github.com/guilhermeblanco/Doctrine2-Hierarchical-Structural-Behavior>`_
+-  `Doctrine2 NestedSet <https://github.com/blt04/doctrine2-nestedset>`_
 
 Known Issues
 ------------
