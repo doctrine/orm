@@ -626,17 +626,7 @@
       <code>$sequenceName</code>
     </PossiblyNullPropertyAssignmentValue>
   </file>
-  <file src="lib/Doctrine/ORM/Id/SequenceGenerator.php">
-    <DeprecatedMethod occurrences="2">
-      <code>fetchColumn</code>
-      <code>query</code>
-    </DeprecatedMethod>
-  </file>
   <file src="lib/Doctrine/ORM/Id/TableGenerator.php">
-    <DeprecatedMethod occurrences="2">
-      <code>executeUpdate</code>
-      <code>fetchColumn</code>
-    </DeprecatedMethod>
     <PossiblyFalseOperand occurrences="3">
       <code>$currentLevel</code>
       <code>$this-&gt;_nextValue</code>
@@ -648,10 +638,8 @@
     </UndefinedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Id/UuidGenerator.php">
-    <DeprecatedMethod occurrences="3">
-      <code>fetchColumn</code>
+    <DeprecatedMethod occurrences="1">
       <code>getGuidExpression</code>
-      <code>query</code>
     </DeprecatedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Internal/CommitOrderCalculator.php">
@@ -661,16 +649,10 @@
     </RedundantCondition>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php">
-    <DeprecatedClass occurrences="3">
-      <code>FetchMode::ASSOCIATIVE</code>
+    <DeprecatedClass occurrences="2">
       <code>IterableResult</code>
       <code>new IterableResult($this)</code>
     </DeprecatedClass>
-    <DeprecatedMethod occurrences="3">
-      <code>closeCursor</code>
-      <code>fetch</code>
-      <code>fetch</code>
-    </DeprecatedMethod>
     <PossiblyNullPropertyAssignmentValue occurrences="2">
       <code>null</code>
       <code>null</code>
@@ -680,20 +662,15 @@
       <code>$_rsm</code>
       <code>$_stmt</code>
     </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="4">
+    <PropertyTypeCoercion occurrences="2">
       <code>$resultSetMapping</code>
       <code>$resultSetMapping</code>
-      <code>$stmt</code>
-      <code>$stmt</code>
     </PropertyTypeCoercion>
     <ReferenceConstraintViolation occurrences="1">
       <code>return $rowData;</code>
     </ReferenceConstraintViolation>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/ArrayHydrator.php">
-    <DeprecatedMethod occurrences="1">
-      <code>fetch</code>
-    </DeprecatedMethod>
     <PossiblyInvalidArgument occurrences="1">
       <code>$index</code>
     </PossiblyInvalidArgument>
@@ -726,9 +703,6 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php">
-    <DeprecatedMethod occurrences="1">
-      <code>fetch</code>
-    </DeprecatedMethod>
     <InvalidScalarArgument occurrences="1">
       <code>array_keys($discrMap)</code>
     </InvalidScalarArgument>
@@ -768,9 +742,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/ScalarHydrator.php">
-    <DeprecatedMethod occurrences="1">
-      <code>fetch</code>
-    </DeprecatedMethod>
     <PropertyNotSetInConstructor occurrences="3">
       <code>ScalarHydrator</code>
       <code>ScalarHydrator</code>
@@ -778,8 +749,7 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/SimpleObjectHydrator.php">
-    <DeprecatedMethod occurrences="2">
-      <code>fetch</code>
+    <DeprecatedMethod occurrences="1">
       <code>getSQLResultCasing</code>
     </DeprecatedMethod>
     <InvalidScalarArgument occurrences="1">
@@ -796,9 +766,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/SingleScalarHydrator.php">
-    <DeprecatedMethod occurrences="1">
-      <code>fetchAll</code>
-    </DeprecatedMethod>
     <PropertyNotSetInConstructor occurrences="3">
       <code>SingleScalarHydrator</code>
       <code>SingleScalarHydrator</code>
@@ -1320,21 +1287,6 @@
       <code>$metadata</code>
       <code>$metadata</code>
     </ArgumentTypeCoercion>
-    <DeprecatedConstant occurrences="13">
-      <code>Type::BIGINT</code>
-      <code>Type::BLOB</code>
-      <code>Type::DECIMAL</code>
-      <code>Type::FLOAT</code>
-      <code>Type::GUID</code>
-      <code>Type::INTEGER</code>
-      <code>Type::JSON_ARRAY</code>
-      <code>Type::OBJECT</code>
-      <code>Type::SIMPLE_ARRAY</code>
-      <code>Type::SMALLINT</code>
-      <code>Type::STRING</code>
-      <code>Type::TARRAY</code>
-      <code>Type::TEXT</code>
-    </DeprecatedConstant>
     <LessSpecificReturnStatement occurrences="2">
       <code>$this-&gt;namespace . $this-&gt;classNamesForTables[$tableName]</code>
       <code>$this-&gt;namespace . $this-&gt;inflector-&gt;classify(strtolower($tableName))</code>
@@ -1834,16 +1786,9 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php">
-    <DeprecatedMethod occurrences="5">
-      <code>executeUpdate</code>
-      <code>executeUpdate</code>
-      <code>fetchColumn</code>
-      <code>fetchColumn</code>
+    <DeprecatedMethod occurrences="1">
       <code>fetchColumn</code>
     </DeprecatedMethod>
-    <FalsableReturnStatement occurrences="1">
-      <code>$this-&gt;conn-&gt;fetchColumn($sql, $params, 0, $types)</code>
-    </FalsableReturnStatement>
     <PossiblyNullArgument occurrences="39">
       <code>$association</code>
       <code>$collection-&gt;getOwner()</code>
@@ -1934,13 +1879,6 @@
     </PossiblyNullIterator>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php">
-    <DeprecatedMethod occurrences="5">
-      <code>executeUpdate</code>
-      <code>executeUpdate</code>
-      <code>executeUpdate</code>
-      <code>executeUpdate</code>
-      <code>executeUpdate</code>
-    </DeprecatedMethod>
     <ImplementedReturnTypeMismatch occurrences="1">
       <code>int|null</code>
     </ImplementedReturnTypeMismatch>
@@ -1988,20 +1926,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$this-&gt;em</code>
     </ArgumentTypeCoercion>
-    <DeprecatedConstant occurrences="4">
-      <code>Type::BIGINT</code>
-      <code>Type::DATETIME</code>
-      <code>Type::INTEGER</code>
-      <code>Type::SMALLINT</code>
-    </DeprecatedConstant>
-    <DeprecatedMethod occurrences="6">
-      <code>closeCursor</code>
-      <code>execute</code>
-      <code>executeUpdate</code>
-      <code>fetchColumn</code>
-      <code>fetchColumn</code>
-      <code>fetchColumn</code>
-    </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="1">
       <code>$value === null</code>
     </DocblockTypeContradiction>
@@ -2090,14 +2014,7 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$this-&gt;em</code>
     </ArgumentTypeCoercion>
-    <DeprecatedConstant occurrences="1">
-      <code>Type::STRING</code>
-    </DeprecatedConstant>
-    <DeprecatedMethod occurrences="5">
-      <code>closeCursor</code>
-      <code>closeCursor</code>
-      <code>execute</code>
-      <code>execute</code>
+    <DeprecatedMethod occurrences="1">
       <code>getSQLResultCasing</code>
     </DeprecatedMethod>
     <LessSpecificReturnStatement occurrences="1">
@@ -2258,9 +2175,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/CountFunction.php">
-    <DeprecatedConstant occurrences="1">
-      <code>Type::INTEGER</code>
-    </DeprecatedConstant>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$aggregateExpression</code>
     </PropertyNotSetInConstructor>
@@ -2334,9 +2248,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$this-&gt;stringPrimary</code>
     </ArgumentTypeCoercion>
-    <DeprecatedConstant occurrences="1">
-      <code>Type::INTEGER</code>
-    </DeprecatedConstant>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$stringPrimary</code>
     </PropertyNotSetInConstructor>
@@ -2404,12 +2315,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/TrimFunction.php">
-    <DeprecatedConstant occurrences="4">
-      <code>AbstractPlatform::TRIM_BOTH</code>
-      <code>AbstractPlatform::TRIM_LEADING</code>
-      <code>AbstractPlatform::TRIM_TRAILING</code>
-      <code>AbstractPlatform::TRIM_UNSPECIFIED</code>
-    </DeprecatedConstant>
     <PossiblyNullArgument occurrences="3">
       <code>$value</code>
       <code>$value</code>
@@ -2537,13 +2442,6 @@
     </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableDeleteExecutor.php">
-    <DeprecatedMethod occurrences="5">
-      <code>executeUpdate</code>
-      <code>executeUpdate</code>
-      <code>executeUpdate</code>
-      <code>executeUpdate</code>
-      <code>executeUpdate</code>
-    </DeprecatedMethod>
     <PossiblyInvalidIterator occurrences="1">
       <code>$this-&gt;_sqlStatements</code>
     </PossiblyInvalidIterator>
@@ -2556,13 +2454,6 @@
     </UninitializedProperty>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableUpdateExecutor.php">
-    <DeprecatedMethod occurrences="5">
-      <code>executeUpdate</code>
-      <code>executeUpdate</code>
-      <code>executeUpdate</code>
-      <code>executeUpdate</code>
-      <code>executeUpdate</code>
-    </DeprecatedMethod>
     <PossiblyInvalidIterator occurrences="1">
       <code>$this-&gt;_sqlStatements</code>
     </PossiblyInvalidIterator>
@@ -2579,9 +2470,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/SingleTableDeleteUpdateExecutor.php">
-    <DeprecatedMethod occurrences="1">
-      <code>executeUpdate</code>
-    </DeprecatedMethod>
     <PossiblyInvalidArgument occurrences="1">
       <code>$this-&gt;_sqlStatements</code>
     </PossiblyInvalidArgument>
@@ -2672,15 +2560,6 @@
       <code>$em</code>
       <code>$this-&gt;enabledFilters</code>
     </PropertyTypeCoercion>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/ParameterTypeInferer.php">
-    <DeprecatedConstant occurrences="5">
-      <code>Type::BOOLEAN</code>
-      <code>Type::DATEINTERVAL</code>
-      <code>Type::DATETIME</code>
-      <code>Type::DATETIME_IMMUTABLE</code>
-      <code>Type::INTEGER</code>
-    </DeprecatedConstant>
   </file>
   <file src="lib/Doctrine/ORM/Query/Parser.php">
     <ArgumentTypeCoercion occurrences="1">
@@ -3929,9 +3808,6 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/SchemaTool.php">
-    <DeprecatedMethod occurrences="1">
-      <code>addUnnamedForeignKeyConstraint</code>
-    </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="1">
       <code>$definingClass</code>
     </DocblockTypeContradiction>
