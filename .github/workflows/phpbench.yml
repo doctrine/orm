@@ -1,0 +1,49 @@
+
+name: "Performance benchmark"
+
+on:
+  pull_request:
+    branches:
+      - "*.x"
+  push:
+    branches:
+      - "*.x"
+
+env:
+  fail-fast: true
+
+jobs:
+  phpbench:
+    name: "PHPBench"
+    runs-on: "ubuntu-20.04"
+
+    strategy:
+      matrix:
+        php-version:
+          - "7.4"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+        with:
+          fetch-depth: 2
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          coverage: "pcov"
+          ini-values: "zend.assertions=1"
+
+      - name: "Cache dependencies installed with composer"
+        uses: "actions/cache@v2"
+        with:
+          path: "~/.composer/cache"
+          key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
+          restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
+
+      - name: "Install dependencies with composer"
+        run: "composer update --no-interaction --no-progress"
+
+      - name: "Run PHPBench"
+        run: "vendor/bin/phpbench run --report=default"

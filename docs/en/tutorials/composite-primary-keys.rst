@@ -302,7 +302,7 @@ of products purchased and maybe even the current price.
         private $items;
 
         /** @Column(type="boolean") */
-        private $payed = false;
+        private $paid = false;
         /** @Column(type="boolean") */
         private $shipped = false;
         /** @Column(type="datetime") */
