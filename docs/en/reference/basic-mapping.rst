@@ -51,6 +51,7 @@ Doctrine provides several different ways to specify object-relational
 mapping metadata:
 
 -  :doc:`Docblock Annotations <annotations-reference>`
+-  :doc:`Attributes <attributes-reference>`
 -  :doc:`XML <xml-mapping>`
 -  :doc:`YAML <yaml-mapping>`
 -  :doc:`PHP code <php-mapping>`
