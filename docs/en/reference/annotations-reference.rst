@@ -89,7 +89,7 @@ as part of the lifecycle of the instance variables entity-class.
 Required attributes:
 
 -  **type**: Name of the Doctrine Type which is converted between PHP
-   and Database representation. Default to ``string`` or :ref:`Type from PHP property type <reference-php-mapping-types>`
+   and Database representation. Defaults to ``string`` or :ref:`type from PHP property type <reference-php-mapping-types>`.
 
 Optional attributes:
 
