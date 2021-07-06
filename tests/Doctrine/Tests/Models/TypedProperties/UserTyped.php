@@ -24,6 +24,7 @@ class UserTyped
      */
     #[ORM\Id, ORM\Column, ORM\GeneratedValue]
     public int $id;
+
     /** @Column(length=50) */
     #[ORM\Column(length: 50)]
     public ?string $status;
@@ -66,6 +67,10 @@ class UserTyped
     /** @ManyToOne */
     #[ORM\ManyToOne]
     public ?CmsEmail $mainEmail;
+
+    /** @Embedded */
+    #[ORM\Embedded]
+    public ?Contact $contact = null;
 
     public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
@@ -131,5 +136,7 @@ class UserTyped
         $metadata->mapManyToOne(
             ['fieldName' => 'mainEmail']
         );
+
+        $metadata->mapEmbedded(['fieldName' => 'contact']);
     }
 }

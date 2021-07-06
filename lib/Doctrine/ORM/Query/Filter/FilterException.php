@@ -2,7 +2,7 @@
 
 namespace Doctrine\ORM\Query\Filter;
 
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Exception\ORMException;
 
 use function sprintf;
 

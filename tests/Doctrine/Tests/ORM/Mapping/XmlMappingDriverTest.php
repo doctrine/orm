@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
@@ -60,7 +61,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     public function testFailingSecondLevelCacheAssociation(): void
     {
-        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectException(CacheException::class);
         $this->expectExceptionMessage('Entity association field "Doctrine\Tests\ORM\Mapping\XMLSLC#foo" not configured as part of the second-level cache.');
         $mappingDriver = $this->loadDriver();
 

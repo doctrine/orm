@@ -76,7 +76,7 @@ Marking our ``Message`` class as an entity for Doctrine is straightforward:
         /** @Entity */
         class Message
         {
-            //...
+            // ...
         }
 
     .. code-block:: xml
@@ -108,7 +108,7 @@ You can change this by configuring information about the table:
          */
         class Message
         {
-            //...
+            // ...
         }
 
     .. code-block:: xml
@@ -289,7 +289,7 @@ A cookbook article shows how to define :doc:`your own custom mapping types
 .. warning::
 
     All Date types assume that you are exclusively using the default timezone
-    set by `date_default_timezone_set() <http://php.net/manual/en/function.date-default-timezone-set.php>`_
+    set by `date_default_timezone_set() <https://php.net/manual/en/function.date-default-timezone-set.php>`_
     or by the php.ini configuration ``date.timezone``. Working with
     different timezones will cause troubles and unexpected behavior.
 
@@ -319,7 +319,7 @@ annotation.
              * @GeneratedValue
              */
             private $id;
-            //...
+            // ...
         }
 
     .. code-block:: xml
@@ -350,6 +350,8 @@ what you want. It defaults to the identifier generation mechanism your current
 database vendor prefers: AUTO_INCREMENT with MySQL, sequences with PostgreSQL
 and Oracle and so on.
 
+.. _identifier-generation-strategies:
+
 Identifier Generation Strategies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -374,8 +376,8 @@ Here is the list of possible generation strategies:
    strategy does currently not provide full portability and is
    supported by the following platforms: MySQL/SQLite/SQL Anywhere
    (AUTO\_INCREMENT), MSSQL (IDENTITY) and PostgreSQL (SERIAL).
--  ``UUID``: Tells Doctrine to use the built-in Universally Unique Identifier
-   generator. This strategy provides full portability.
+-  ``UUID`` (deprecated): Tells Doctrine to use the built-in Universally
+   Unique Identifier generator. This strategy provides full portability.
 -  ``TABLE``: Tells Doctrine to use a separate table for ID
    generation. This strategy provides full portability.
    ***This strategy is not yet implemented!***
@@ -406,7 +408,7 @@ besides specifying the sequence's name:
              * @SequenceGenerator(sequenceName="message_seq", initialValue=1, allocationSize=100)
              */
             protected $id = null;
-            //...
+            // ...
         }
 
     .. code-block:: xml

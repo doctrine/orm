@@ -2,7 +2,7 @@ Partial Objects
 ===============
 
 
-.. warning::
+.. note::
 
     Creating Partial Objects through DQL is deprecated and
     will be removed in the future, use data transfer object

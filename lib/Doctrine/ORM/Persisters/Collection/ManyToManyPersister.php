@@ -1,23 +1,5 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
-
 namespace Doctrine\ORM\Persisters\Collection;
 
 use BadMethodCallException;
@@ -61,7 +43,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $types[] = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $class, $this->em);
         }
 
-        $this->conn->executeUpdate($this->getDeleteSQL($collection), $this->getDeleteSQLParameters($collection), $types);
+        $this->conn->executeStatement($this->getDeleteSQL($collection), $this->getDeleteSQLParameters($collection), $types);
     }
 
     /**
@@ -79,7 +61,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         [$insertSql, $insertTypes] = $this->getInsertRowSQL($collection);
 
         foreach ($collection->getDeleteDiff() as $element) {
-            $this->conn->executeUpdate(
+            $this->conn->executeStatement(
                 $deleteSql,
                 $this->getDeleteRowSQLParameters($collection, $element),
                 $deleteTypes
@@ -87,7 +69,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         foreach ($collection->getInsertDiff() as $element) {
-            $this->conn->executeUpdate(
+            $this->conn->executeStatement(
                 $insertSql,
                 $this->getInsertRowSQLParameters($collection, $element),
                 $insertTypes
@@ -170,7 +152,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             . $joinTargetEntitySQL
             . ' WHERE ' . implode(' AND ', $conditions);
 
-        return $this->conn->fetchColumn($sql, $params, 0, $types);
+        return (int) $this->conn->fetchOne($sql, $params, $types);
     }
 
     /**
@@ -223,7 +205,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
 
-        return (bool) $this->conn->fetchColumn($sql, $params, 0, $types);
+        return (bool) $this->conn->fetchOne($sql, $params, $types);
     }
 
     /**
@@ -298,7 +280,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * have to join in the actual entities table leading to additional
      * JOIN.
      *
-     * @psalm-param array<string, mixed> $mapping Array containing mapping information.
+     * @param mixed[] $mapping Array containing mapping information.
+     * @psalm-param array<string, mixed> $mapping
      *
      * @return string[] ordered tuple:
      *                   - JOIN condition to add to the SQL
@@ -350,6 +333,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * Generate ON condition
      *
+     * @param mixed[] $mapping
      * @psalm-param array<string, mixed> $mapping
      *
      * @return string[]
@@ -464,6 +448,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @param mixed $element
      *
+     * @return mixed[]
      * @psalm-return list<mixed>
      */
     protected function getDeleteRowSQLParameters(PersistentCollection $collection, $element)
@@ -513,6 +498,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @param mixed $element
      *
+     * @return mixed[]
      * @psalm-return list<mixed>
      */
     protected function getInsertRowSQLParameters(PersistentCollection $collection, $element)

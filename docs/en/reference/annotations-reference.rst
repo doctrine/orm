@@ -1,6 +1,11 @@
 Annotations Reference
 =====================
 
+.. note::
+
+    To be able to use annotations, you will have to install an extra
+    package called ``doctrine/annotations``.
+
 You've probably used docblock annotations in some form already,
 most likely to provide documentation metadata for a tool like
 ``PHPDocumentor`` (@author, @link, ...). Docblock annotations are a
@@ -13,12 +18,15 @@ chances of clashes with other docblock annotations, the Doctrine ORM
 docblock annotations feature an alternative syntax that is heavily
 inspired by the Annotation syntax introduced in Java 5.
 
-The implementation of these enhanced docblock annotations is
-located in the ``Doctrine\Common\Annotations`` namespace and
-therefore part of the Common package. Doctrine ORM docblock
-annotations support namespaces and nested annotations among other
-things. The Doctrine ORM ORM defines its own set of docblock
-annotations for supplying object-relational mapping metadata.
+The implementation of these enhanced docblock annotations is located in
+the ``doctrine/annotations`` package, but in the
+``Doctrine\Common\Annotations`` namespace for backwards compatibility
+reasons. Note that ``doctrine/annotations`` is not required by Doctrine
+ORM, and you will need to require that package if you want to use
+annotations. Doctrine ORM docblock annotations support namespaces and
+nested annotations among other things. The Doctrine ORM defines its
+own set of docblock annotations for supplying object-relational mapping
+metadata.
 
 .. note::
 
@@ -113,7 +121,7 @@ Optional attributes:
 -  **unique**: Boolean value to determine if the value of the column
    should be unique across all rows of the underlying entities table.
 
--  **nullable**: Determines if NULL values allowed for this column. If not specified, default value is false. When using typed properties on entity class defaults to true when property is nullable.
+-  **nullable**: Determines if NULL values allowed for this column. If not specified, default value is false.
 
 -  **options**: Array of additional options:
 
@@ -350,7 +358,7 @@ in order to specify that it is an embedded class.
 
 Required attributes:
 
--  **class**: The embeddable class
+-  **class**: The embeddable class. You can omit this value if you use a PHP property type instead.
 
 
 .. code-block:: php
@@ -398,11 +406,11 @@ Example:
 
     <?php
     /**
-     * @Entity(repositoryClass="MyProject\UserRepository")
+     * @Entity(repositoryClass="MyProject\UserRepository", readOnly=true)
      */
     class User
     {
-        //...
+        // ...
     }
 
 .. _annref_entity_result:
@@ -455,7 +463,8 @@ Optional attributes:
 
 
 -  **strategy**: Set the name of the identifier generation strategy.
-   Valid values are AUTO, SEQUENCE, TABLE, IDENTITY, UUID, CUSTOM and NONE.
+   Valid values are ``AUTO``, ``SEQUENCE``, ``TABLE``, ``IDENTITY``, ``UUID`` (deprecated), ``CUSTOM`` and ``NONE``, explained
+   in the :ref:`Identifier Generation Strategies <identifier-generation-strategies>` section.
    If not specified, default value is AUTO.
 
 Example:
@@ -649,8 +658,6 @@ Optional attributes:
    constraint level. Defaults to false.
 -  **nullable**: Determine whether the related entity is required, or if
    null is an allowed state for the relation. Defaults to true.
-   When using typed properties on entity class defaults to false when
-   property is not nullable.
 -  **onDelete**: Cascade Action (Database-level)
 -  **columnDefinition**: DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.

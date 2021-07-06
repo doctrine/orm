@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\OrmFunctionalTestCase;

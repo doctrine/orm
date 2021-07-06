@@ -7,7 +7,7 @@ namespace Doctrine\Performance\Hydration;
 use Doctrine\ORM\Internal\Hydration\ArrayHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Performance\EntityManagerFactory;
-use Doctrine\Tests\Mocks\HydratorMockStatement;
+use Doctrine\Tests\Mocks\HydratorMockResult;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
@@ -23,8 +23,8 @@ final class MixedQueryFetchJoinArrayHydrationPerformanceBench
     /** @var ResultSetMapping */
     private $rsm;
 
-    /** @var HydratorMockStatement */
-    private $stmt;
+    /** @var HydratorMockResult */
+    private $result;
 
     public function init(): void
     {
@@ -66,7 +66,7 @@ final class MixedQueryFetchJoinArrayHydrationPerformanceBench
             ];
         }
 
-        $this->stmt     = new HydratorMockStatement($resultSet);
+        $this->result   = new HydratorMockResult($resultSet);
         $this->hydrator = new ArrayHydrator(EntityManagerFactory::getEntityManager([]));
         $this->rsm      = new ResultSetMapping();
 
@@ -82,6 +82,6 @@ final class MixedQueryFetchJoinArrayHydrationPerformanceBench
 
     public function benchHydration(): void
     {
-        $this->hydrator->hydrateAll($this->stmt, $this->rsm);
+        $this->hydrator->hydrateAll($this->result, $this->rsm);
     }
 }

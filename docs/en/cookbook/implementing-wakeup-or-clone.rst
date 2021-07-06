@@ -4,7 +4,7 @@ Implementing Wakeup or Clone
 .. sectionauthor:: Roman Borschel (roman@code-factory.org)
 
 As explained in the
-`restrictions for entity classes in the manual <http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/architecture.html#entities>`_,
+`restrictions for entity classes in the manual <https://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/architecture.html#entities>`_,
 it is usually not allowed for an entity to implement ``__wakeup``
 or ``__clone``, because Doctrine makes special use of them.
 However, it is quite easy to make use of these methods in a safe
@@ -23,7 +23,7 @@ implementation code in an identity check as follows:
     class MyEntity
     {
         private $id; // This is the identifier of the entity.
-        //...
+        // ...
     
         public function __wakeup()
         {
@@ -34,7 +34,7 @@ implementation code in an identity check as follows:
             // otherwise do nothing, do NOT throw an exception!
         }
     
-        //...
+        // ...
     }
 
 Safely implementing __clone
@@ -48,7 +48,7 @@ Safely implementing ``__clone`` is pretty much the same:
     class MyEntity
     {
         private $id; // This is the identifier of the entity.
-        //...
+        // ...
     
         public function __clone()
         {
@@ -59,7 +59,7 @@ Safely implementing ``__clone`` is pretty much the same:
             // otherwise do nothing, do NOT throw an exception!
         }
     
-        //...
+        // ...
     }
 
 Summary

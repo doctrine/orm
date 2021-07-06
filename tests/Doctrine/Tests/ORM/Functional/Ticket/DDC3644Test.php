@@ -164,23 +164,19 @@ class DDC3644User
 
     public function setAddresses(Collection $addresses): void
     {
-        $self = $this;
-
         $this->addresses = $addresses;
 
-        $addresses->map(static function ($address) use ($self): void {
-            $address->user = $self;
+        $addresses->map(function ($address): void {
+            $address->user = $this;
         });
     }
 
     public function setPets(Collection $pets): void
     {
-        $self = $this;
-
         $this->pets = $pets;
 
-        $pets->map(static function ($pet) use ($self): void {
-            $pet->owner = $self;
+        $pets->map(function ($pet): void {
+            $pet->owner = $this;
         });
     }
 }

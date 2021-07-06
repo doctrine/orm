@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Result;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -25,8 +26,8 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
     /** @var EventManager|MockObject */
     private $mockEventManager;
 
-    /** @var Statement|MockObject */
-    private $mockStatement;
+    /** @var Result|MockObject */
+    private $mockResult;
 
     /** @var ResultSetMapping|MockObject */
     private $mockResultMapping;
@@ -41,7 +42,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
         $mockConnection             = $this->createMock(Connection::class);
         $mockEntityManagerInterface = $this->createMock(EntityManagerInterface::class);
         $this->mockEventManager     = $this->createMock(EventManager::class);
-        $this->mockStatement        = $this->createMock(Statement::class);
+        $this->mockResult           = $this->createMock(Result::class);
         $this->mockResultMapping    = $this->getMockBuilder(ResultSetMapping::class);
 
         $mockEntityManagerInterface
@@ -52,9 +53,9 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
             ->expects(self::any())
             ->method('getConnection')
             ->willReturn($mockConnection);
-        $this->mockStatement
+        $this->mockResult
             ->expects(self::any())
-            ->method('fetch')
+            ->method('fetchAssociative')
             ->willReturn(false);
 
         $this->hydrator = $this
@@ -94,7 +95,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
                 $this->assertTrue($eventListenerHasBeenRegistered);
             });
 
-        iterator_to_array($this->hydrator->iterate($this->mockStatement, $this->mockResultMapping));
+        iterator_to_array($this->hydrator->iterate($this->mockResult, $this->mockResultMapping));
     }
 
     /**
@@ -123,7 +124,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
                 $this->assertTrue($eventListenerHasBeenRegistered);
             });
 
-        $this->hydrator->hydrateAll($this->mockStatement, $this->mockResultMapping);
+        $this->hydrator->hydrateAll($this->mockResult, $this->mockResultMapping);
     }
 
     /**
@@ -159,6 +160,6 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
             ->willThrowException(new ORMException());
 
         $this->expectException(ORMException::class);
-        $this->hydrator->hydrateAll($this->mockStatement, $this->mockResultMapping);
+        $this->hydrator->hydrateAll($this->mockResult, $this->mockResultMapping);
     }
 }

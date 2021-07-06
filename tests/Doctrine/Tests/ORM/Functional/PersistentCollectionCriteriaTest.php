@@ -47,9 +47,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
 
         $this->_em->flush();
 
-        unset($author);
-        unset($tweet1);
-        unset($tweet2);
+        unset($author, $tweet1, $tweet2);
 
         $this->_em->clear();
     }

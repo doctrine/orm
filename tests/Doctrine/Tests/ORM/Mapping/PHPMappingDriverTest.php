@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\Driver\PHPDriver;
@@ -42,7 +43,7 @@ class PHPMappingDriverTest extends AbstractMappingDriverTest
 
     public function testFailingSecondLevelCacheAssociation(): void
     {
-        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectException(CacheException::class);
         $this->expectExceptionMessage('Entity association field "Doctrine\Tests\ORM\Mapping\PHPSLC#foo" not configured as part of the second-level cache.');
         $mappingDriver = $this->loadDriver();
 

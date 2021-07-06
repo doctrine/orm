@@ -42,6 +42,7 @@ use Doctrine\Tests\Models\DDC889\DDC889Class;
 use Doctrine\Tests\Models\DDC889\DDC889Entity;
 use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
+use Doctrine\Tests\Models\TypedProperties\Contact;
 use Doctrine\Tests\Models\TypedProperties\UserTyped;
 use Doctrine\Tests\OrmTestCase;
 
@@ -73,9 +74,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @param EntityManager $entityClassName
-     */
     protected function createClassMetadataFactory(?EntityManager $em = null): ClassMetadataFactory
     {
         $driver  = $this->loadDriver();
@@ -265,24 +263,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         return $class;
     }
 
-    public function testFieldIsNullableByType(): void
-    {
-        if (PHP_VERSION_ID < 70400) {
-            $this->markTestSkipped('requies PHP 7.4');
-        }
-
-        $class = $this->createClassMetadata(UserTyped::class);
-
-        // Explicit Nullable
-        $this->assertTrue($class->isNullable('status'));
-
-        // Explicit Not Nullable
-        $this->assertFalse($class->isNullable('username'));
-
-        $this->assertEquals(CmsEmail::class, $class->getAssociationMapping('email')['targetEntity']);
-        $this->assertEquals(CmsEmail::class, $class->getAssociationMapping('mainEmail')['targetEntity']);
-    }
-
     public function testFieldTypeFromReflection(): void
     {
         if (PHP_VERSION_ID < 70400) {
@@ -299,6 +279,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertEquals('json', $class->getTypeOfField('array'));
         $this->assertEquals('boolean', $class->getTypeOfField('boolean'));
         $this->assertEquals('float', $class->getTypeOfField('float'));
+
+        $this->assertEquals(CmsEmail::class, $class->getAssociationMapping('email')['targetEntity']);
+        $this->assertEquals(CmsEmail::class, $class->getAssociationMapping('mainEmail')['targetEntity']);
+        $this->assertEquals(Contact::class, $class->embeddedClasses['contact']['class']);
     }
 
     /**

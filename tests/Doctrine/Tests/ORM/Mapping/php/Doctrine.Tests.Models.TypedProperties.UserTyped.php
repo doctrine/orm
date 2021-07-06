@@ -61,3 +61,5 @@ $metadata->mapOneToOne(
 $metadata->mapManyToOne(
     ['fieldName' => 'mainEmail']
 );
+
+$metadata->mapEmbedded(['fieldName' => 'contact']);

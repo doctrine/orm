@@ -4,6 +4,28 @@
 
 Method `Doctrine\ORM\EntityManagerInterface#copy()` never got its implementation and is removed in 3.0.
 
+# Upgrade to 2.10
+
+## Deprecated: database-side UUID generation
+
+[DB-generated UUIDs are deprecated as of `doctrine/dbal` 2.8][DBAL deprecation].
+As a consequence, `Doctrine\ORM\Id\UuidGenerator` is deprecated, and using the
+`UUID` strategy for generating identifiers is deprecated as well.
+
+[DBAL deprecation]: https://github.com/doctrine/dbal/pull/3212
+
+## Minor BC BREAK: Custom hydrators and `toIterable()`
+
+The type declaration of the `$stmt` parameter of `AbstractHydrator::toIterable()` has been removed. This change might
+break custom hydrator implementations that override this very method.
+
+Overriding this method is not recommended, which is why the method is documented as `@final` now.
+
+```diff
+- public function toIterable(ResultStatement $stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
++ public function toIterable($stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
+```
+
 # Upgrade to 2.9
 
 ## Minor BC BREAK: Setup tool needs cache implementation

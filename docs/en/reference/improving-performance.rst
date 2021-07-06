@@ -97,4 +97,4 @@ See :doc:`Best Practices <reference/best-practices>`
 Change Tracking policies
 ------------------------
 
-See: :doc:`Change Tracking Policies <reference/change-tracking-policies>`
+See: :doc:`Change Tracking Policies <change-tracking-policies>`

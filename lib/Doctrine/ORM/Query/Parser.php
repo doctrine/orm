@@ -1,23 +1,5 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
-
 namespace Doctrine\ORM\Query;
 
 use Doctrine\Deprecations\Deprecation;
@@ -78,7 +60,6 @@ use Doctrine\ORM\Query\AST\UpdateStatement;
 use Doctrine\ORM\Query\AST\WhenClause;
 use Doctrine\ORM\Query\AST\WhereClause;
 use ReflectionClass;
-use Webmozart\Assert\Assert;
 
 use function array_intersect;
 use function array_search;
@@ -263,6 +244,7 @@ class Parser
     /**
      * Adds a custom tree walker for modifying the AST.
      *
+     * @param string $className
      * @psalm-param class-string $className
      *
      * @return void
@@ -490,8 +472,9 @@ class Parser
     /**
      * Generates a new syntax error.
      *
-     * @param string $expected Expected string.
-     * @psalm-param array<string, mixed>|null $token    Got token.
+     * @param string       $expected Expected string.
+     * @param mixed[]|null $token    Got token.
+     * @psalm-param array<string, mixed>|null $token
      *
      * @return void
      * @psalm-return no-return
@@ -516,8 +499,9 @@ class Parser
     /**
      * Generates a new semantical error.
      *
-     * @param string $message Optional message.
-     * @psalm-param array<string, mixed>|null $token Optional token.
+     * @param string       $message Optional message.
+     * @param mixed[]|null $token   Optional token.
+     * @psalm-param array<string, mixed>|null $token
      *
      * @return void
      *
@@ -3543,7 +3527,7 @@ class Parser
         $functionName  = strtolower($this->lexer->lookahead['value']);
         $functionClass = $this->em->getConfiguration()->getCustomNumericFunction($functionName);
 
-        Assert::notNull($functionClass);
+        assert($functionClass !== null);
 
         $function = is_string($functionClass)
             ? new $functionClass($functionName)
@@ -3584,7 +3568,7 @@ class Parser
         $functionName  = $this->lexer->lookahead['value'];
         $functionClass = $this->em->getConfiguration()->getCustomDatetimeFunction($functionName);
 
-        Assert::notNull($functionClass);
+        assert($functionClass !== null);
 
         $function = is_string($functionClass)
             ? new $functionClass($functionName)
@@ -3626,7 +3610,7 @@ class Parser
         $functionName  = $this->lexer->lookahead['value'];
         $functionClass = $this->em->getConfiguration()->getCustomStringFunction($functionName);
 
-        Assert::notNull($functionClass);
+        assert($functionClass !== null);
 
         $function = is_string($functionClass)
             ? new $functionClass($functionName)

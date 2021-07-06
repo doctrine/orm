@@ -1,23 +1,5 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
-
 namespace Doctrine\ORM\Mapping;
 
 use BadMethodCallException;
@@ -30,7 +12,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
-use Doctrine\ORM\Cache\CacheException;
+use Doctrine\ORM\Cache\Exception\CacheException;
+use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
 use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
@@ -81,7 +64,7 @@ use const PHP_VERSION_ID;
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
  *
- * @template T of object
+ * @template-covariant T of object
  * @template-implements ClassMetadata<T>
  */
 class ClassMetadataInfo implements ClassMetadata
@@ -148,6 +131,8 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * UUID means that a UUID/GUID expression is used for id generation. Full
      * portability is currently not guaranteed.
+     *
+     * @deprecated use an application-side generator instead
      */
     public const GENERATOR_TYPE_UUID = 6;
 
@@ -710,6 +695,7 @@ class ClassMetadataInfo implements ClassMetadata
      * metadata of the class with the given name.
      *
      * @param string $entityName The name of the entity class the new instance is used for.
+     * @psalm-param class-string<T> $entityName
      */
     public function __construct($entityName, ?NamingStrategy $namingStrategy = null)
     {
@@ -1313,7 +1299,8 @@ class ClassMetadataInfo implements ClassMetadata
      * @param string $fieldName The field name that represents the association in
      *                          the object model.
      *
-     * @psalm-return array<string, mixed> The mapping.
+     * @return mixed[] The mapping.
+     * @psalm-return array<string, mixed>
      *
      * @throws MappingException
      */
@@ -1387,6 +1374,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $queryName The query name.
      *
+     * @return mixed[]
      * @psalm-return array<string, mixed>
      *
      * @throws MappingException
@@ -1467,10 +1455,6 @@ class ClassMetadataInfo implements ClassMetadata
         $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
 
         if ($type) {
-            if (! isset($mapping['nullable'])) {
-                $mapping['nullable'] = $type->allowsNull();
-            }
-
             if (
                 ! isset($mapping['type'])
                 && ($type instanceof ReflectionNamedType)
@@ -1524,14 +1508,6 @@ class ClassMetadataInfo implements ClassMetadata
 
         if (! isset($mapping['targetEntity']) && $type instanceof ReflectionNamedType) {
             $mapping['targetEntity'] = $type->getName();
-        }
-
-        if (isset($mapping['joinColumns'])) {
-            foreach ($mapping['joinColumns'] as &$joinColumn) {
-                if ($type->allowsNull() === false) {
-                    $joinColumn['nullable'] = false;
-                }
-            }
         }
 
         return $mapping;
@@ -1694,7 +1670,10 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             if ($this->cache && ! isset($mapping['cache'])) {
-                throw CacheException::nonCacheableEntityAssociation($this->name, $mapping['fieldName']);
+                throw NonCacheableEntityAssociation::fromEntityAndField(
+                    $this->name,
+                    $mapping['fieldName']
+                );
             }
         }
 
@@ -2962,6 +2941,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $event
      *
+     * @return string[]
      * @psalm-return list<string>
      */
     public function getLifecycleCallbacks($event)
@@ -3049,7 +3029,8 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @see getDiscriminatorColumn()
      *
-     * @psalm-param array<string, mixed> $columnDef
+     * @param mixed[]|null $columnDef
+     * @psalm-param array<string, mixed>|null $columnDef
      *
      * @return void
      *
@@ -3101,6 +3082,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Adds one entry of the discriminator map with a new class and corresponding name.
      *
      * @param string $name
+     * @param string $className
      * @psalm-param class-string $className
      *
      * @return void
@@ -3441,6 +3423,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param AbstractPlatform $platform
      *
+     * @return string[]
      * @psalm-return list<string>
      */
     public function getQuotedIdentifierColumnNames($platform)
@@ -3543,6 +3526,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * @param string $targetClass
      *
+     * @return mixed[][]
      * @psalm-return array<string, array<string, mixed>>
      */
     public function getAssociationsByTargetClass($targetClass)
@@ -3604,9 +3588,16 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $this->assertFieldNotMapped($mapping['fieldName']);
 
+        if (! isset($mapping['class']) && $this->isTypedProperty($mapping['fieldName'])) {
+            $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
+            if ($type instanceof ReflectionNamedType) {
+                $mapping['class'] = $type->getName();
+            }
+        }
+
         $this->embeddedClasses[$mapping['fieldName']] = [
             'class' => $this->fullyQualifiedClassName($mapping['class']),
-            'columnPrefix' => $mapping['columnPrefix'],
+            'columnPrefix' => $mapping['columnPrefix'] ?? null,
             'declaredField' => $mapping['declaredField'] ?? null,
             'originalField' => $mapping['originalField'] ?? null,
         ];

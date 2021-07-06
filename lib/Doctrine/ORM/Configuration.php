@@ -1,23 +1,5 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
-
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -26,10 +8,22 @@ use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache as CacheDriver;
+use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Cache\Exception\CacheException;
+use Doctrine\ORM\Cache\Exception\MetadataCacheNotConfigured;
+use Doctrine\ORM\Cache\Exception\MetadataCacheUsesNonPersistentCache;
+use Doctrine\ORM\Cache\Exception\QueryCacheNotConfigured;
+use Doctrine\ORM\Cache\Exception\QueryCacheUsesNonPersistentCache;
+use Doctrine\ORM\Exception\InvalidEntityRepository;
+use Doctrine\ORM\Exception\NamedNativeQueryNotFound;
+use Doctrine\ORM\Exception\NamedQueryNotFound;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Exception\ProxyClassesAlwaysRegenerating;
+use Doctrine\ORM\Exception\UnknownEntityNamespace;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
@@ -154,7 +148,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Adds a new default annotation driver with a correctly configured annotation reader. If $useSimpleAnnotationReader
      * is true, the notation `@Entity` will work, otherwise, the notation `@ORM\Entity` will be supported.
      *
-     * @param bool $useSimpleAnnotationReader
+     * @param string|string[] $paths
+     * @param bool            $useSimpleAnnotationReader
      * @psalm-param string|list<string> $paths
      *
      * @return AnnotationDriver
@@ -201,12 +196,12 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return string
      *
-     * @throws ORMException
+     * @throws UnknownEntityNamespace
      */
     public function getEntityNamespace($entityNamespaceAlias)
     {
         if (! isset($this->_attributes['entityNamespaces'][$entityNamespaceAlias])) {
-            throw ORMException::unknownEntityNamespace($entityNamespaceAlias);
+            throw UnknownEntityNamespace::fromNamespaceAlias($entityNamespaceAlias);
         }
 
         return trim($this->_attributes['entityNamespaces'][$entityNamespaceAlias], '\\');
@@ -238,8 +233,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Gets the cache driver implementation that is used for the mapping metadata.
      *
      * @return MappingDriver|null
-     *
-     * @throws ORMException
      */
     public function getMetadataDriverImpl()
     {
@@ -326,6 +319,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
         );
 
         $this->_attributes['metadataCacheImpl'] = $cacheImpl;
+        $this->_attributes['metadataCache']     = CacheAdapter::wrap($cacheImpl);
     }
 
     public function getMetadataCache(): ?CacheItemPoolInterface
@@ -335,7 +329,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     public function setMetadataCache(CacheItemPoolInterface $cache): void
     {
-        $this->_attributes['metadataCache'] = $cache;
+        $this->_attributes['metadataCache']     = $cache;
+        $this->_attributes['metadataCacheImpl'] = DoctrineProvider::wrap($cache);
     }
 
     /**
@@ -358,12 +353,12 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return string The DQL query.
      *
-     * @throws ORMException
+     * @throws NamedQueryNotFound
      */
     public function getNamedQuery($name)
     {
         if (! isset($this->_attributes['namedQueries'][$name])) {
-            throw ORMException::namedQueryNotFound($name);
+            throw NamedQueryNotFound::fromName($name);
         }
 
         return $this->_attributes['namedQueries'][$name];
@@ -388,18 +383,16 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name The name of the query.
      *
-     * @psalm-return array{string, ResultSetMapping} A tuple with the first
-     *                                               element being the SQL
-     *                                               string and the second
-     *                                               element being the
-     *                                               ResultSetMapping.
+     * @return mixed[]
+     * @psalm-return array{string, ResultSetMapping} A tuple with the first element being the SQL string and the second
+     *                                               element being the ResultSetMapping.
      *
-     * @throws ORMException
+     * @throws NamedNativeQueryNotFound
      */
     public function getNamedNativeQuery($name)
     {
         if (! isset($this->_attributes['namedNativeQueries'][$name])) {
-            throw ORMException::namedNativeQueryNotFound($name);
+            throw NamedNativeQueryNotFound::fromName($name);
         }
 
         return $this->_attributes['namedNativeQueries'][$name];
@@ -411,37 +404,34 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return void
      *
-     * @throws ORMException If a configuration setting has a value that is not
-     *                      suitable for a production environment.
+     * @throws ProxyClassesAlwaysRegenerating
+     * @throws CacheException If a configuration setting has a value that is not
+     *                        suitable for a production environment.
      */
     public function ensureProductionSettings()
     {
         $queryCacheImpl = $this->getQueryCacheImpl();
 
         if (! $queryCacheImpl) {
-            throw ORMException::queryCacheNotConfigured();
+            throw QueryCacheNotConfigured::create();
         }
 
         if ($queryCacheImpl instanceof ArrayCache) {
-            throw ORMException::queryCacheUsesNonPersistentCache($queryCacheImpl);
+            throw QueryCacheUsesNonPersistentCache::fromDriver($queryCacheImpl);
         }
 
         if ($this->getAutoGenerateProxyClasses()) {
-            throw ORMException::proxyClassesAlwaysRegenerating();
+            throw ProxyClassesAlwaysRegenerating::create();
         }
 
-        if ($this->getMetadataCache()) {
-            return;
+        if (! $this->getMetadataCache()) {
+            throw MetadataCacheNotConfigured::create();
         }
 
         $metadataCacheImpl = $this->getMetadataCacheImpl();
 
-        if (! $metadataCacheImpl) {
-            throw ORMException::metadataCacheNotConfigured();
-        }
-
         if ($metadataCacheImpl instanceof ArrayCache) {
-            throw ORMException::metadataCacheUsesNonPersistentCache($metadataCacheImpl);
+            throw MetadataCacheUsesNonPersistentCache::fromDriver($metadataCacheImpl);
         }
     }
 
@@ -635,7 +625,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Adds a custom hydration mode.
      *
      * @param string $modeName The hydration mode name.
-     * @psalm-param class-string $hydrator The hydrator class name.
+     * @param string $hydrator The hydrator class name.
+     * @psalm-param class-string $hydrator
      *
      * @return void
      */
@@ -704,14 +695,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return void
      *
-     * @throws ORMException If $classname is not an ObjectRepository.
+     * @throws InvalidEntityRepository If $classname is not an ObjectRepository.
      */
     public function setDefaultRepositoryClassName($className)
     {
         $reflectionClass = new ReflectionClass($className);
 
         if (! $reflectionClass->implementsInterface(ObjectRepository::class)) {
-            throw ORMException::invalidEntityRepository($className);
+            throw InvalidEntityRepository::fromClassName($className);
         }
 
         $this->_attributes['defaultRepositoryClassName'] = $className;

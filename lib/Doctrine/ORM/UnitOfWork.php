@@ -1,23 +1,5 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
-
 namespace Doctrine\ORM;
 
 use DateTimeInterface;
@@ -34,6 +16,7 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Exception\UnexpectedAssociationValue;
 use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
@@ -589,6 +572,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      *
+     * @return mixed[][]
      * @psalm-return array<string, array{mixed, mixed}>
      */
     public function & getEntityChangeSet($entity)
@@ -630,8 +614,12 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param ClassMetadata $class  The class descriptor of the entity.
      * @param object        $entity The entity for which to compute the changes.
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $entity
      *
      * @return void
+     *
+     * @template T of object
      *
      * @ignore
      */
@@ -912,7 +900,12 @@ class UnitOfWork implements PropertyChangedListener
             $state = $this->getEntityState($entry, self::STATE_NEW);
 
             if (! ($entry instanceof $assoc['targetEntity'])) {
-                throw ORMException::unexpectedAssociationValue($assoc['sourceEntity'], $assoc['fieldName'], get_class($entry), $assoc['targetEntity']);
+                throw UnexpectedAssociationValue::create(
+                    $assoc['sourceEntity'],
+                    $assoc['fieldName'],
+                    get_class($entry),
+                    $assoc['targetEntity']
+                );
             }
 
             switch ($state) {
@@ -959,6 +952,10 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * @param object $entity
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $entity
+     *
+     * @template T of object
      */
     private function persistNew(ClassMetadata $class, $entity): void
     {
@@ -1017,11 +1014,14 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param ClassMetadata $class  The class descriptor of the entity.
      * @param object        $entity The entity for which to (re)calculate the change set.
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $entity
      *
      * @return void
      *
      * @throws ORMInvalidArgumentException If the passed entity is not MANAGED.
      *
+     * @template T of object
      * @ignore
      */
     public function recomputeSingleEntityChangeSet(ClassMetadata $class, $entity)
@@ -1144,6 +1144,10 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * @param object $entity
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $entity
+     *
+     * @template T of object
      */
     private function addToEntityIdentifiersAndEntityMap(
         ClassMetadata $class,
@@ -1652,8 +1656,7 @@ class UnitOfWork implements PropertyChangedListener
         $className = $classMetadata->rootEntityName;
 
         if (isset($this->identityMap[$className][$idHash])) {
-            unset($this->identityMap[$className][$idHash]);
-            unset($this->readOnlyObjects[$oid]);
+            unset($this->identityMap[$className][$idHash], $this->readOnlyObjects[$oid]);
 
             //$this->entityStates[$oid] = self::STATE_DETACHED;
 
@@ -2020,8 +2023,13 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * @param object $entity
      * @param object $managedCopy
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $entity
+     * @psalm-param T $managedCopy
      *
      * @throws OptimisticLockException
+     *
+     * @template T of object
      */
     private function ensureVersionMatch(
         ClassMetadata $class,
@@ -2622,8 +2630,9 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param string  $className The name of the entity class.
      * @param mixed[] $data      The data for the entity.
+     * @param mixed[] $hints     Any hints to account for during reconstitution/lookup of the entity.
      * @psalm-param class-string $className
-     * @psalm-param array<string, mixed> $hints Any hints to account for during reconstitution/lookup of the entity.
+     * @psalm-param array<string, mixed> $hints
      *
      * @return object The managed entity instance.
      *
@@ -2642,8 +2651,7 @@ class UnitOfWork implements PropertyChangedListener
             $oid    = spl_object_hash($entity);
 
             if (
-                isset($hints[Query::HINT_REFRESH])
-                && isset($hints[Query::HINT_REFRESH_ENTITY])
+                isset($hints[Query::HINT_REFRESH], $hints[Query::HINT_REFRESH_ENTITY])
             ) {
                 $unmanagedProxy = $hints[Query::HINT_REFRESH_ENTITY];
                 if (
@@ -2730,7 +2738,7 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($class->associationMappings as $field => $assoc) {
             // Check if the association is not among the fetch-joined associations already.
-            if (isset($hints['fetchAlias']) && isset($hints['fetched'][$hints['fetchAlias']][$field])) {
+            if (isset($hints['fetchAlias'], $hints['fetched'][$hints['fetchAlias']][$field])) {
                 continue;
             }
 
@@ -2986,6 +2994,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      *
+     * @return mixed[]
      * @psalm-return array<string, mixed>
      */
     public function getOriginalEntityData($entity)
@@ -3033,12 +3042,15 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      *
-     * @return mixed The identifier values.
+     * @return mixed[] The identifier values.
      */
     public function getEntityIdentifier($entity)
     {
-        return $this->entityIdentifiers[spl_object_hash($entity)]
-            ?? EntityNotFoundException::noIdentifierFound(get_class($entity));
+        if (! isset($this->entityIdentifiers[spl_object_hash($entity)])) {
+            throw EntityNotFoundException::noIdentifierFound(get_class($entity));
+        }
+
+        return $this->entityIdentifiers[spl_object_hash($entity)];
     }
 
     /**

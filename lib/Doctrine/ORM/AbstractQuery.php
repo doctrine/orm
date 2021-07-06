@@ -1,31 +1,14 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
-
 namespace Doctrine\ORM;
 
 use Countable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
-use Doctrine\DBAL\Driver\ResultStatement;
+use Doctrine\DBAL\Result;
 use Doctrine\Deprecations\Deprecation;
+use Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
@@ -584,13 +567,13 @@ abstract class AbstractQuery
      *
      * @return static This query instance.
      *
-     * @throws ORMException
+     * @throws InvalidResultCacheDriver
      */
     public function setResultCacheDriver($resultCacheDriver = null)
     {
         /** @phpstan-ignore-next-line */
         if ($resultCacheDriver !== null && ! ($resultCacheDriver instanceof \Doctrine\Common\Cache\Cache)) {
-            throw ORMException::invalidResultCacheDriver();
+            throw InvalidResultCacheDriver::create();
         }
 
         $this->_queryCacheProfile = $this->_queryCacheProfile
@@ -622,9 +605,9 @@ abstract class AbstractQuery
      *
      * @deprecated 2.7 Use {@see enableResultCache} and {@see disableResultCache} instead.
      *
-     * @param bool   $useCache
-     * @param int    $lifetime
-     * @param string $resultCacheId
+     * @param bool   $useCache      Whether or not to cache the results of this query.
+     * @param int    $lifetime      How long the cache entry is valid, in seconds.
+     * @param string $resultCacheId ID to use for the cache entry.
      *
      * @return static This query instance.
      */
@@ -667,7 +650,7 @@ abstract class AbstractQuery
     /**
      * Defines how long the result cache will be active before expire.
      *
-     * @param int|null $lifetime How long the cache entry is valid.
+     * @param int|null $lifetime How long the cache entry is valid, in seconds.
      *
      * @return static This query instance.
      */
@@ -856,7 +839,7 @@ abstract class AbstractQuery
      * @return mixed
      *
      * @throws NonUniqueResultException If the query result is not unique.
-     * @throws NoResultException        If the query returned no result and hydration mode is not HYDRATE_SINGLE_SCALAR.
+     * @throws NoResultException        If the query returned no result.
      */
     public function getSingleResult($hydrationMode = null)
     {
@@ -886,6 +869,7 @@ abstract class AbstractQuery
      *
      * @throws NoResultException        If the query returned no result.
      * @throws NonUniqueResultException If the query result is not unique.
+     * @throws NoResultException        If the query returned no result.
      */
     public function getSingleScalarResult()
     {
@@ -1202,9 +1186,9 @@ abstract class AbstractQuery
     /**
      * Executes the query and returns a the resulting Statement object.
      *
-     * @return ResultStatement|int The executed database statement that holds
-     *                             the results, or an integer indicating how
-     *                             many rows were affected.
+     * @return Result|int The executed database statement that holds
+     *                    the results, or an integer indicating how
+     *                    many rows were affected.
      */
     abstract protected function _doExecute();
 

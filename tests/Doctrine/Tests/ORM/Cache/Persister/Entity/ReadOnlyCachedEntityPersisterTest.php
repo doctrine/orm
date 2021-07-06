@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache\Persister\Entity;
 
+use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Cache\Persister\Entity\AbstractEntityPersister;
 use Doctrine\ORM\Cache\Persister\Entity\ReadOnlyCachedEntityPersister;
 use Doctrine\ORM\Cache\Region;
@@ -24,7 +25,7 @@ class ReadOnlyCachedEntityPersisterTest extends AbstractEntityPersisterTest
 
     public function testInvokeUpdate(): void
     {
-        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectException(CacheException::class);
         $this->expectExceptionMessage('Cannot update a readonly entity "Doctrine\Tests\Models\Cache\Country"');
         $persister = $this->createPersisterDefault();
         $entity    = new Country('Foo');

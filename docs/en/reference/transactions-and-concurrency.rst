@@ -68,7 +68,7 @@ looks like this:
     // $em instanceof EntityManager
     $em->getConnection()->beginTransaction(); // suspend auto-commit
     try {
-        //... do some work
+        // ... do some work
         $user = new User;
         $user->setName('George');
         $em->persist($user);
@@ -98,7 +98,7 @@ functionally equivalent to the previously shown code looks as follows:
     <?php
     // $em instanceof EntityManager
     $em->transactional(function($em) {
-        //... do some work
+        // ... do some work
         $user = new User;
         $user->setName('George');
         $em->persist($user);

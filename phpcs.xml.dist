@@ -136,6 +136,11 @@
         <exclude-pattern>lib/Doctrine/ORM/Cache/DefaultQueryCache.php</exclude-pattern>
     </rule>
 
+    <rule ref="SlevomatCodingStandard.Commenting.UselessInheritDocComment.UselessInheritDocComment">
+        <!-- Workaround for https://github.com/slevomat/coding-standard/issues/1233 -->
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/ReflectionEmbeddedProperty.php</exclude-pattern>
+    </rule>
+
     <rule ref="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming">
         <exclude-pattern>lib/Doctrine/ORM/EntityManagerInterface.php</exclude-pattern>
     </rule>

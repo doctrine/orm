@@ -1,8 +1,9 @@
 {
-    "bootstrap": "vendor/autoload.php",
-    "path": "tests/Doctrine/Performance",
+    "runner.bootstrap": "tests/Doctrine/Tests/TestInit.php",
+    "runner.path": "tests/Doctrine/Performance",
+    "runner.file_pattern": "*Bench.php",
 
-    "extensions": [
+    "core.extensions": [
         "PhpBench\\Extensions\\XDebug\\XDebugExtension"
     ]
 }

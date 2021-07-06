@@ -25,5 +25,7 @@
     </one-to-one>
 
     <many-to-one field="mainEmail"/>
+
+    <embedded name="contact" />
   </entity>
 </doctrine-mapping>

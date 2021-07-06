@@ -1,23 +1,5 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
-
 namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\Common\Collections\Criteria;
@@ -103,9 +85,10 @@ interface EntityPersister
     /**
      * Gets the SQL WHERE condition for matching a field with a given value.
      *
-     * @param string      $field
-     * @param mixed       $value
-     * @param string|null $comparison
+     * @param string       $field
+     * @param mixed        $value
+     * @param mixed[]|null $assoc
+     * @param string|null  $comparison
      * @psalm-param array<string, mixed>|null  $assoc
      *
      * @return string
@@ -186,19 +169,21 @@ interface EntityPersister
     /**
      * Loads an entity by a list of field criteria.
      *
-     * @param object|null $entity   The entity to load the data into. If not specified, a new entity is created.
-     * @param int|null    $lockMode One of the \Doctrine\DBAL\LockMode::* constants
-     *                              or NULL if no specific lock mode should be used
-     *                              for loading the entity.
-     * @param int|null    $limit    Limit number of results.
-     * @psalm-param array<string, mixed>       $hints    Hints for entity creation.
-     * @psalm-param array<string, mixed>       $criteria The criteria by which
-     *                                                   to load the entity.
-     * @psalm-param array<string, mixed>|null  $assoc    The association that
-     *                                                   connects the entity to
-     *                                                   load to another entity,
-     *                                                   if any.
-     * @psalm-param array<string, string>|null $orderBy  Criteria to order by.
+     * @param mixed[]       $criteria The criteria by which to load the entity.
+     * @param object|null   $entity   The entity to load the data into. If not specified,
+     *                                a new entity is created.
+     * @param mixed[]|null  $assoc    The association that connects the entity
+     *                                to load to another entity, if any.
+     * @param mixed[]       $hints    Hints for entity creation.
+     * @param int|null      $lockMode One of the \Doctrine\DBAL\LockMode::* constants
+     *                                or NULL if no specific lock mode should be used
+     *                                for loading the entity.
+     * @param int|null      $limit    Limit number of results.
+     * @param string[]|null $orderBy  Criteria to order by.
+     * @psalm-param array<string, mixed>       $criteria
+     * @psalm-param array<string, mixed>|null  $assoc
+     * @psalm-param array<string, mixed>       $hints
+     * @psalm-param array<string, string>|null $orderBy
      *
      * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
      *
