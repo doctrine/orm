@@ -448,6 +448,7 @@ Basic example:
 
     #[Entity]
     #[Index(name: "category_idx", columns: ["category"])]
+    #[Index(name: "brand_idx", fields: ["brand"])]
     class ECommerceProduct
     {
     }
