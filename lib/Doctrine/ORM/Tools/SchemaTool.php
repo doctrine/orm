@@ -1,23 +1,5 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
-
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -31,10 +13,14 @@ use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\QuoteStrategy;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
+use Doctrine\ORM\Tools\Exception\MissingColumnException;
+use Doctrine\ORM\Tools\Exception\NotSupported;
 use Throwable;
 
 use function array_diff;
@@ -49,6 +35,7 @@ use function implode;
 use function in_array;
 use function is_array;
 use function is_numeric;
+use function reset;
 use function strtolower;
 
 /**
@@ -188,7 +175,7 @@ class SchemaTool
      *
      * @return Schema
      *
-     * @throws ORMException
+     * @throws NotSupported
      */
     public function getSchemaFromMetadata(array $classes)
     {
@@ -311,7 +298,7 @@ class SchemaTool
                     }
                 }
             } elseif ($class->isInheritanceTypeTablePerClass()) {
-                throw ORMException::notSupported();
+                throw NotSupported::create();
             } else {
                 $this->gatherColumns($class, $table);
                 $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
@@ -546,7 +533,7 @@ class SchemaTool
      *              }>                               $addedFks
      * @psalm-param array<string, bool>              $blacklistedFks
      *
-     * @throws ORMException
+     * @throws NotSupported
      */
     private function gatherRelationsSql(
         ClassMetadata $class,
@@ -576,7 +563,7 @@ class SchemaTool
                 );
             } elseif ($mapping['type'] === ClassMetadata::ONE_TO_MANY && $mapping['isOwningSide']) {
                 //... create join table, one-many through join table supported later
-                throw ORMException::notSupported();
+                throw NotSupported::create();
             } elseif ($mapping['type'] === ClassMetadata::MANY_TO_MANY && $mapping['isOwningSide']) {
                 // create join table
                 $joinTable = $mapping['joinTable'];
@@ -663,7 +650,7 @@ class SchemaTool
      *              }>                               $addedFks
      * @psalm-param array<string,bool>               $blacklistedFks
      *
-     * @throws ORMException
+     * @throws MissingColumnException
      */
     private function gatherRelationJoinColumns(
         array $joinColumns,
@@ -687,9 +674,10 @@ class SchemaTool
             );
 
             if (! $definingClass) {
-                throw new ORMException(
-                    'Column name `' . $joinColumn['referencedColumnName'] . '` referenced for relation from '
-                    . $mapping['sourceEntity'] . ' towards ' . $mapping['targetEntity'] . ' does not exist.'
+                throw MissingColumnException::fromColumnSourceAndTarget(
+                    $joinColumn['referencedColumnName'],
+                    $mapping['sourceEntity'],
+                    $mapping['targetEntity']
                 );
             }
 
@@ -771,7 +759,7 @@ class SchemaTool
             $blacklistedFks[$compositeName] = true;
         } elseif (! isset($blacklistedFks[$compositeName])) {
             $addedFks[$compositeName] = ['foreignTableName' => $foreignTableName, 'foreignColumns' => $foreignColumns];
-            $theJoinTable->addUnnamedForeignKeyConstraint(
+            $theJoinTable->addForeignKeyConstraint(
                 $foreignTableName,
                 $localColumns,
                 $foreignColumns,

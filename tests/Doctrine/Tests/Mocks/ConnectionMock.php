@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
+use BadMethodCallException;
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\ForwardCompatibility\Result as ForwardCompatibilityResult;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Exception;
 
 use function is_string;
+use function sprintf;
 
 /**
  * Mock class for Connection.
@@ -25,7 +29,7 @@ class ConnectionMock extends Connection
     /** @var Exception|null */
     private $_fetchOneException;
 
-    /** @var Statement|null */
+    /** @var ForwardCompatibilityResult|null */
     private $_queryResult;
 
     /** @var DatabasePlatformMock */
@@ -38,14 +42,11 @@ class ConnectionMock extends Connection
     private $_inserts = [];
 
     /** @var array */
-    private $_executeUpdates = [];
+    private $_executeStatements = [];
 
     /** @var array */
     private $_deletes = [];
 
-    /**
-     * @param array $params
-     */
     public function __construct(array $params, Driver $driver, ?Configuration $config = null, ?EventManager $eventManager = null)
     {
         $this->_platformMock = new DatabasePlatformMock();
@@ -77,7 +78,17 @@ class ConnectionMock extends Connection
      */
     public function executeUpdate($query, array $params = [], array $types = [])
     {
-        $this->_executeUpdates[] = ['query' => $query, 'params' => $params, 'types' => $types];
+        throw new BadMethodCallException(sprintf('Call to deprecated method %s().', __METHOD__));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function executeStatement($sql, array $params = [], array $types = []): int
+    {
+        $this->_executeStatements[] = ['sql' => $sql, 'params' => $params, 'types' => $types];
+
+        return 1;
     }
 
     /**
@@ -99,7 +110,7 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function fetchColumn($statement, array $params = [], $colnum = 0, array $types = [])
+    public function fetchColumn($statement, array $params = [], $colunm = 0, array $types = [])
     {
         if ($this->_fetchOneException !== null) {
             throw $this->_fetchOneException;
@@ -111,6 +122,11 @@ class ConnectionMock extends Connection
     public function query(): Statement
     {
         return $this->_queryResult;
+    }
+
+    public function executeQuery($sql, array $params = [], $types = [], ?QueryCacheProfile $qcp = null): ForwardCompatibilityResult
+    {
+        return $this->_queryResult ?? parent::executeQuery($sql, $params, $types, $qcp);
     }
 
     /**
@@ -152,7 +168,7 @@ class ConnectionMock extends Connection
 
     public function setQueryResult(Statement $result): void
     {
-        $this->_queryResult = $result;
+        $this->_queryResult = ForwardCompatibilityResult::ensure($result);
     }
 
     /**
@@ -166,9 +182,9 @@ class ConnectionMock extends Connection
     /**
      * @return array
      */
-    public function getExecuteUpdates(): array
+    public function getExecuteStatements(): array
     {
-        return $this->_executeUpdates;
+        return $this->_executeStatements;
     }
 
     /**

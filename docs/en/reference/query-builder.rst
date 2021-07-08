@@ -543,7 +543,7 @@ using ``addCriteria``:
     // ...
 
     $criteria = Criteria::create()
-        ->orderBy(['firstName', 'ASC']);
+        ->orderBy(['firstName' => Criteria::ASC]);
 
     // $qb instanceof QueryBuilder
     $qb->addCriteria($criteria);

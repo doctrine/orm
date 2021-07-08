@@ -72,9 +72,9 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
         $this->persister->update($parent);
 
-        $executeUpdates = $this->entityManager->getConnection()->getExecuteUpdates();
+        $executeStatements = $this->entityManager->getConnection()->getExecuteStatements();
 
-        $this->assertEquals('UPDATE customtype_parents SET customInteger = ABS(?), child_id = ? WHERE id = ?', $executeUpdates[0]['query']);
+        $this->assertEquals('UPDATE customtype_parents SET customInteger = ABS(?), child_id = ? WHERE id = ?', $executeStatements[0]['sql']);
     }
 
     public function testGetSelectConditionSQLUsesTypeValuesSQL(): void

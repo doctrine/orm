@@ -74,7 +74,7 @@ Memcache
 
 In order to use the Memcache cache driver you must have it compiled
 and enabled in your php.ini. You can read about Memcache
-`on the PHP website <http://php.net/memcache>`_. It will
+`on the PHP website <https://php.net/memcache>`_. It will
 give you a little background information about what it is and how
 you can use it as well as how to install it.
 
@@ -99,7 +99,7 @@ Memcache.
 
 In order to use the Memcached cache driver you must have it compiled
 and enabled in your php.ini. You can read about Memcached
-`on the PHP website <http://php.net/memcached>`_. It will
+`on the PHP website <https://php.net/memcached>`_. It will
 give you a little background information about what it is and how
 you can use it as well as how to install it.
 
@@ -121,7 +121,7 @@ Redis
 
 In order to use the Redis cache driver you must have it compiled
 and enabled in your php.ini. You can read about what Redis is
-`from here <http://redis.io/>`_. Also check
+`from here <https://redis.io/>`_. Also check
 `A PHP extension for Redis <https://github.com/nicolasff/phpredis/>`_ for how you can use
 and install the Redis PHP extension.
 
@@ -286,9 +286,8 @@ Result Cache
 ~~~~~~~~~~~~
 
 The result cache can be used to cache the results of your queries
-so that we don't have to query the database or hydrate the data
-again after the first time. You just need to configure the result
-cache implementation.
+so that we don't have to query the database again after the first time.
+You just need to configure the result cache implementation.
 
 .. code-block:: php
 

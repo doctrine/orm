@@ -9,16 +9,43 @@
 >
     <projectFiles>
         <directory name="lib/Doctrine/ORM" />
+        <directory name="tests/Doctrine/StaticAnalysis" />
         <ignoreFiles>
             <directory name="vendor" />
+            <file name="lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php" />
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
+        <DocblockTypeContradiction>
+            <errorLevel type="suppress">
+                <!-- We're catching invalid input here. -->
+                <file name="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php"/>
+            </errorLevel>
+        </DocblockTypeContradiction>
         <ParadoxicalCondition>
             <errorLevel type="suppress">
                 <!-- See https://github.com/vimeo/psalm/issues/3381 -->
                 <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php"/>
             </errorLevel>
         </ParadoxicalCondition>
+        <NullArgument>
+            <errorLevel type="suppress">
+                <!-- See https://github.com/vimeo/psalm/issues/5920 -->
+                <file name="lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php"/>
+            </errorLevel>
+        </NullArgument>
+        <UndefinedAttributeClass>
+            <errorLevel type="suppress">
+                <!-- The class was added in PHP 8.1 -->
+                <referencedClass name="ReturnTypeWillChange"/>
+            </errorLevel>
+        </UndefinedAttributeClass>
+        <UndefinedClass>
+            <errorLevel type="suppress">
+                <referencedClass name="Doctrine\Common\Cache\ApcCache"/>
+                <referencedClass name="Doctrine\Common\Cache\ArrayCache"/>
+                <referencedClass name="Doctrine\Common\Cache\XcacheCache"/>
+            </errorLevel>
+        </UndefinedClass>
     </issueHandlers>
 </psalm>

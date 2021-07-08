@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
-use PDO;
 
 class CustomHydratorTest extends HydrationTestCase
 {
@@ -28,6 +27,6 @@ class CustomHydrator extends AbstractHydrator
      */
     protected function hydrateAllData()
     {
-        return $this->_stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $this->_stmt->fetchAllAssociative();
     }
 }

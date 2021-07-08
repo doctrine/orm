@@ -1,23 +1,5 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
-
 namespace Doctrine\ORM;
 
 use BadMethodCallException;
@@ -29,6 +11,8 @@ use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall;
+use Doctrine\ORM\Repository\InvalidFindByCall;
 use Doctrine\Persistence\ObjectRepository;
 
 use function array_slice;
@@ -64,8 +48,6 @@ class EntityRepository implements ObjectRepository, Selectable
 
     /**
      * Initializes a new <tt>EntityRepository</tt>.
-     *
-     * @psalm-param Mapping\ClassMetadata $class
      */
     public function __construct(EntityManagerInterface $em, Mapping\ClassMetadata $class)
     {
@@ -208,7 +190,8 @@ class EntityRepository implements ObjectRepository, Selectable
      * @psalm-param array<string, mixed> $criteria
      * @psalm-param array<string, string>|null $orderBy
      *
-     * @psalm-return list<T> The objects.
+     * @return object[] The objects.
+     * @psalm-return list<T>
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null)
     {
@@ -250,12 +233,12 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Adds support for magic method calls.
      *
-     * @param string $method
+     * @param string  $method
+     * @param mixed[] $arguments
      * @psalm-param list<mixed> $arguments
      *
      * @return mixed The returned value from the resolved method.
      *
-     * @throws ORMException
      * @throws BadMethodCallException If the method called is invalid.
      */
     public function __call($method, $arguments)
@@ -334,12 +317,13 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @return mixed
      *
-     * @throws ORMException If the method called is invalid or the requested field/association does not exist.
+     * @throws InvalidMagicMethodCall If the method called is invalid or the
+     *                                requested field/association does not exist.
      */
     private function resolveMagicCall(string $method, string $by, array $arguments)
     {
         if (! $arguments) {
-            throw ORMException::findByRequiresParameter($method . $by);
+            throw InvalidMagicMethodCall::onMissingParameter($method . $by);
         }
 
         if (self::$inflector === null) {
@@ -349,7 +333,11 @@ class EntityRepository implements ObjectRepository, Selectable
         $fieldName = lcfirst(self::$inflector->classify($by));
 
         if (! ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName))) {
-            throw ORMException::invalidMagicCall($this->_entityName, $fieldName, $method . $by);
+            throw InvalidMagicMethodCall::becauseFieldNotFoundIn(
+                $this->_entityName,
+                $fieldName,
+                $method . $by
+            );
         }
 
         return $this->$method([$fieldName => $arguments[0]], ...array_slice($arguments, 1));

@@ -48,11 +48,9 @@ class StatementMock implements IteratorAggregate, Statement
     {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rowCount()
+    public function rowCount(): int
     {
+        return 1;
     }
 
     /**
@@ -81,6 +79,7 @@ class StatementMock implements IteratorAggregate, Statement
      */
     public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
+        return false;
     }
 
     /**

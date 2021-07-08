@@ -1,23 +1,5 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
-
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
@@ -25,7 +7,7 @@ use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -51,6 +33,13 @@ use function strtolower;
  */
 class DatabaseDriver implements MappingDriver
 {
+    /**
+     * Replacement for {@see Types::JSON_ARRAY}.
+     *
+     * To be removed as soon as support for DBAL 2 is dropped.
+     */
+    private const JSON_ARRAY = 'json_array';
+
     /** @var AbstractSchemaManager */
     private $_sm;
 
@@ -145,6 +134,8 @@ class DatabaseDriver implements MappingDriver
     /**
      * Sets tables manually instead of relying on the reverse engineering capabilities of SchemaManager.
      *
+     * @param Table[] $entityTables
+     * @param Table[] $manyToManyTables
      * @psalm-param list<Table> $entityTables
      * @psalm-param list<Table> $manyToManyTables
      *
@@ -380,21 +371,22 @@ class DatabaseDriver implements MappingDriver
     /**
      * Build field mapping from a schema column definition
      *
+     * @return mixed[]
      * @psalm-return array{
-     *                   fieldName: string,
-     *                   columnName: string,
-     *                   type: string,
-     *                   nullable: bool,
-     *                   options?: array{
-     *                       unsigned?: bool,
-     *                       fixed?: bool,
-     *                       comment?: string,
-     *                       default?: string
-     *                   },
-     *                   precision?: int,
-     *                   scale?: int,
-     *                   length?: int|null
-     *               }
+     *     fieldName: string,
+     *     columnName: string,
+     *     type: string,
+     *     nullable: bool,
+     *     options?: array{
+     *         unsigned?: bool,
+     *         fixed?: bool,
+     *         comment?: string,
+     *         default?: string
+     *     },
+     *     precision?: int,
+     *     scale?: int,
+     *     length?: int|null
+     * }
      */
     private function buildFieldMapping(string $tableName, Column $column): array
     {
@@ -407,27 +399,27 @@ class DatabaseDriver implements MappingDriver
 
         // Type specific elements
         switch ($fieldMapping['type']) {
-            case Type::TARRAY:
-            case Type::BLOB:
-            case Type::GUID:
-            case Type::JSON_ARRAY:
-            case Type::OBJECT:
-            case Type::SIMPLE_ARRAY:
-            case Type::STRING:
-            case Type::TEXT:
+            case Types::ARRAY:
+            case Types::BLOB:
+            case Types::GUID:
+            case self::JSON_ARRAY:
+            case Types::OBJECT:
+            case Types::SIMPLE_ARRAY:
+            case Types::STRING:
+            case Types::TEXT:
                 $fieldMapping['length']           = $column->getLength();
                 $fieldMapping['options']['fixed'] = $column->getFixed();
                 break;
 
-            case Type::DECIMAL:
-            case Type::FLOAT:
+            case Types::DECIMAL:
+            case Types::FLOAT:
                 $fieldMapping['precision'] = $column->getPrecision();
                 $fieldMapping['scale']     = $column->getScale();
                 break;
 
-            case Type::INTEGER:
-            case Type::BIGINT:
-            case Type::SMALLINT:
+            case Types::INTEGER:
+            case Types::BIGINT:
+            case Types::SMALLINT:
                 $fieldMapping['options']['unsigned'] = $column->getUnsigned();
                 break;
         }
@@ -545,7 +537,7 @@ class DatabaseDriver implements MappingDriver
         string $columnName,
         bool $fk = false
     ): string {
-        if (isset($this->fieldNamesForColumns[$tableName]) && isset($this->fieldNamesForColumns[$tableName][$columnName])) {
+        if (isset($this->fieldNamesForColumns[$tableName], $this->fieldNamesForColumns[$tableName][$columnName])) {
             return $this->fieldNamesForColumns[$tableName][$columnName];
         }
 

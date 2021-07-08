@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -38,7 +39,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
     public function testFailingSecondLevelCacheAssociation(): void
     {
-        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectException(CacheException::class);
         $this->expectExceptionMessage('Entity association field "Doctrine\Tests\ORM\Mapping\AnnotationSLC#foo" not configured as part of the second-level cache.');
         $mappingDriver = $this->loadDriver();
 
@@ -174,7 +175,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
             "mapped superclass 'Doctrine\Tests\ORM\Mapping\InvalidMappedSuperClass#users'"
         );
 
-        $usingInvalidMsc = $factory->getMetadataFor(UsingInvalidMappedSuperClass::class);
+        $factory->getMetadataFor(UsingInvalidMappedSuperClass::class);
     }
 
     /**

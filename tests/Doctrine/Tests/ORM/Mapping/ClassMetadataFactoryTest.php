@@ -11,11 +11,13 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Id\AbstractIdGenerator;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Sequencing\Generator;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Mocks\ConnectionMock;
@@ -392,10 +394,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $listener
             ->expects($this->any())
             ->method('onClassMetadataNotFound')
-            ->will($this->returnCallback(static function (OnClassMetadataNotFoundEventArgs $args) use ($metadata, $em, $test): void {
-                $test->assertNull($args->getFoundMetadata());
-                $test->assertSame('Foo', $args->getClassName());
-                $test->assertSame($em, $args->getObjectManager());
+            ->will($this->returnCallback(static function (OnClassMetadataNotFoundEventArgs $args) use ($metadata, $em): void {
+                self::assertNull($args->getFoundMetadata());
+                self::assertSame('Foo', $args->getClassName());
+                self::assertSame($em, $args->getObjectManager());
 
                 $args->setFoundMetadata($metadata);
             }));
