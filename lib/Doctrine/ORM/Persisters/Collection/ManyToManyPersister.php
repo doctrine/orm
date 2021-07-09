@@ -179,7 +179,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         [$quotedJoinTable, $whereClauses, $params, $types] = $this->getJoinTableRestrictionsWithKey(
             $collection,
-            $key,
+            (string) $key,
             true
         );
 

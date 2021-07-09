@@ -187,7 +187,7 @@ class GH5887CustomIdObjectType extends StringType
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return new GH5887CustomIdObject($value);
+        return new GH5887CustomIdObject((int) $value);
     }
 
     /**

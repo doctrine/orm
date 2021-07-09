@@ -182,7 +182,7 @@ class XmlExporter extends AbstractExporter
                 }
 
                 if (isset($field['length'])) {
-                    $fieldXml->addAttribute('length', $field['length']);
+                    $fieldXml->addAttribute('length', (string) $field['length']);
                 }
 
                 if (isset($field['precision'])) {
@@ -200,7 +200,7 @@ class XmlExporter extends AbstractExporter
                 if (isset($field['options'])) {
                     $optionsXml = $fieldXml->addChild('options');
                     foreach ($field['options'] as $key => $value) {
-                        $optionXml = $optionsXml->addChild('option', $value);
+                        $optionXml = $optionsXml->addChild('option', (string) $value);
                         $optionXml->addAttribute('name', $key);
                     }
                 }
@@ -230,7 +230,7 @@ class XmlExporter extends AbstractExporter
             $a1 = array_search($m1['type'], $orderMap);
             $a2 = array_search($m2['type'], $orderMap);
 
-            return strcmp($a1, $a2);
+            return strcmp((string) $a1, (string) $a2);
         });
 
         foreach ($metadata->associationMappings as $associationMapping) {
