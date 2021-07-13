@@ -46,11 +46,6 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/DefaultQueryCache.php
 
 		-
-			message: "#^Parameter \\#1 \\$prefix of function uniqid expects string, int given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Lock.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Cache\\\\CacheEntry\\:\\:\\$identifiers\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
@@ -451,16 +446,6 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$definition of method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\<object\\>\\:\\:setSequenceGeneratorDefinition\\(\\) expects array\\<string, string\\>, array\\<string, int\\|string\\> given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
-
-		-
-			message: "#^Parameter \\#1 \\$definition of method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\<object\\>\\:\\:setSequenceGeneratorDefinition\\(\\) expects array\\<string, string\\>, array\\<string, int\\|string\\|true\\> given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
-
-		-
 			message: "#^Parameter \\#1 \\$subClass of method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\:\\:addInheritedEmbeddedClasses\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
@@ -587,11 +572,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#2 \\$type of static method Doctrine\\\\ORM\\\\Mapping\\\\MappingException\\:\\:invalidInheritanceType\\(\\) expects string, int given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
-
-		-
-			message: "#^Property Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\<T of object\\>\\:\\:\\$sequenceGeneratorDefinition \\(array\\('sequenceName' \\=\\> string, 'allocationSize' \\=\\> int, 'initialValue' \\=\\> int\\)\\) does not accept array\\<string, string\\|true\\>\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
 
@@ -793,11 +773,6 @@ parameters:
 		-
 			message: "#^Argument of an invalid type Doctrine\\\\ORM\\\\Mapping\\\\JoinColumn supplied for foreach, only iterables are supported\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
-
-		-
-			message: "#^Parameter \\#1 \\$definition of method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\<object\\>\\:\\:setSequenceGeneratorDefinition\\(\\) expects array\\<string, string\\>, array\\<string, int\\|string\\> given\\.$#"
-			count: 1
 			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
 
 		-
@@ -2162,23 +2137,13 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
 		-
-			message: "#^Parameter \\#1 \\$str1 of function strcmp expects string, int\\|false given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
-
-		-
 			message: "#^Parameter \\#1 \\$type of method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:_getIdGeneratorTypeString\\(\\) expects 1\\|2\\|3\\|4\\|5\\|6\\|7, int given\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
 		-
-			message: "#^Parameter \\#2 \\$str2 of function strcmp expects string, int\\|false given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
-
-		-
 			message: "#^Parameter \\#2 \\$value of method SimpleXMLElement\\:\\:addAttribute\\(\\) expects string, int given\\.$#"
-			count: 6
+			count: 3
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
 		-
@@ -2235,11 +2200,6 @@ parameters:
 			message: "#^Negated boolean expression is always false\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/SchemaTool.php
-
-		-
-			message: "#^Parameter \\#2 \\$code of class Doctrine\\\\ORM\\\\Tools\\\\ToolsException constructor expects int, string given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/ToolsException.php
 
 		-
 			message: "#^Binary operation \"&\" between string and 3 results in an error\\.$#"

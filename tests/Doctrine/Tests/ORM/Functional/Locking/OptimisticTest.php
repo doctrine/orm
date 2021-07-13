@@ -251,7 +251,10 @@ class OptimisticTest extends OrmFunctionalTestCase
         $caughtException = null;
 
         try {
-            $expectedVersionExpired = DateTime::createFromFormat('U', $test->version->getTimestamp() - 3600);
+            $expectedVersionExpired = DateTime::createFromFormat(
+                'U',
+                (string) ($test->version->getTimestamp() - 3600)
+            );
 
             $this->_em->lock($test, LockMode::OPTIMISTIC, $expectedVersionExpired);
         } catch (OptimisticLockException $e) {

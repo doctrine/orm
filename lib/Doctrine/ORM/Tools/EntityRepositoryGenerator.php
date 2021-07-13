@@ -82,7 +82,7 @@ class <className> extends <repositoryName>
      */
     private function getClassNamespace(string $fullClassName): string
     {
-        return substr($fullClassName, 0, strrpos($fullClassName, '\\'));
+        return substr($fullClassName, 0, (int) strrpos($fullClassName, '\\'));
     }
 
     /**

@@ -610,13 +610,13 @@ class ClassMetadataInfo implements ClassMetadata
      * <code>
      * array(
      *     'sequenceName' => 'name',
-     *     'allocationSize' => 20,
-     *     'initialValue' => 1
+     *     'allocationSize' => '20',
+     *     'initialValue' => '1'
      * )
      * </code>
      *
      * @var mixed[]
-     * @psalm-var array{sequenceName: string, allocationSize: int, initialValue: int}
+     * @psalm-var array{sequenceName: string, allocationSize: string, initialValue: string, quoted?: mixed}
      * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
      */
     public $sequenceGeneratorDefinition;
@@ -3289,7 +3289,7 @@ class ClassMetadataInfo implements ClassMetadata
      * )
      * </code>
      *
-     * @psalm-param array<string, string> $definition
+     * @psalm-param array{sequenceName?: string, allocationSize?: int|string, initialValue?: int|string, quoted?: mixed} $definition
      *
      * @return void
      *
@@ -3306,13 +3306,16 @@ class ClassMetadataInfo implements ClassMetadata
             $definition['quoted']       = true;
         }
 
-        if (! isset($definition['allocationSize']) || trim($definition['allocationSize']) === '') {
+        if (! isset($definition['allocationSize']) || trim((string) $definition['allocationSize']) === '') {
             $definition['allocationSize'] = '1';
         }
 
-        if (! isset($definition['initialValue']) || trim($definition['initialValue']) === '') {
+        if (! isset($definition['initialValue']) || trim((string) $definition['initialValue']) === '') {
             $definition['initialValue'] = '1';
         }
+
+        $definition['allocationSize'] = (string) $definition['allocationSize'];
+        $definition['initialValue']   = (string) $definition['initialValue'];
 
         $this->sequenceGeneratorDefinition = $definition;
     }
