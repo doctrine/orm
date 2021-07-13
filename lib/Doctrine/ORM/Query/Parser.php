@@ -2946,7 +2946,7 @@ class Parser
     /**
      * StringExpression ::= StringPrimary | ResultVariable | "(" Subselect ")"
      *
-     * @return Subselect|string
+     * @return Subselect|Node|string
      */
     public function StringExpression()
     {
