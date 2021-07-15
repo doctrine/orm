@@ -461,7 +461,7 @@ class Parser
             }
 
             $expr = $this->identVariableExpressions[$dqlAlias];
-            $key  = array_search($expr, $AST->selectClause->selectExpressions);
+            $key  = array_search($expr, $AST->selectClause->selectExpressions, true);
 
             unset($AST->selectClause->selectExpressions[$key]);
 
@@ -576,7 +576,7 @@ class Parser
      */
     private function isMathOperator(?array $token): bool
     {
-        return $token !== null && in_array($token['type'], [Lexer::T_PLUS, Lexer::T_MINUS, Lexer::T_DIVIDE, Lexer::T_MULTIPLY]);
+        return $token !== null && in_array($token['type'], [Lexer::T_PLUS, Lexer::T_MINUS, Lexer::T_DIVIDE, Lexer::T_MULTIPLY], true);
     }
 
     /**
@@ -605,7 +605,8 @@ class Parser
     {
         return in_array(
             $tokenType,
-            [Lexer::T_AVG, Lexer::T_MIN, Lexer::T_MAX, Lexer::T_SUM, Lexer::T_COUNT]
+            [Lexer::T_AVG, Lexer::T_MIN, Lexer::T_MAX, Lexer::T_SUM, Lexer::T_COUNT],
+            true
         );
     }
 
@@ -616,7 +617,8 @@ class Parser
     {
         return in_array(
             $this->lexer->lookahead['type'],
-            [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME]
+            [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME],
+            true
         );
     }
 
@@ -2539,8 +2541,8 @@ class Parser
 
         if (
             $peek !== null && (
-            in_array($peek['value'], ['=', '<', '<=', '<>', '>', '>=', '!=']) ||
-            in_array($peek['type'], [Lexer::T_NOT, Lexer::T_BETWEEN, Lexer::T_LIKE, Lexer::T_IN, Lexer::T_IS, Lexer::T_EXISTS]) ||
+            in_array($peek['value'], ['=', '<', '<=', '<>', '>', '>=', '!='], true) ||
+            in_array($peek['type'], [Lexer::T_NOT, Lexer::T_BETWEEN, Lexer::T_LIKE, Lexer::T_IN, Lexer::T_IS, Lexer::T_EXISTS], true) ||
             $this->isMathOperator($peek)
             )
         ) {
@@ -3060,7 +3062,7 @@ class Parser
         $lookaheadType = $this->lexer->lookahead['type'];
         $isDistinct    = false;
 
-        if (! in_array($lookaheadType, [Lexer::T_COUNT, Lexer::T_AVG, Lexer::T_MAX, Lexer::T_MIN, Lexer::T_SUM])) {
+        if (! in_array($lookaheadType, [Lexer::T_COUNT, Lexer::T_AVG, Lexer::T_MAX, Lexer::T_MIN, Lexer::T_SUM], true)) {
             $this->syntaxError('One of: MAX, MIN, AVG, SUM, COUNT');
         }
 
@@ -3090,7 +3092,7 @@ class Parser
         $lookaheadType = $this->lexer->lookahead['type'];
         $value         = $this->lexer->lookahead['value'];
 
-        if (! in_array($lookaheadType, [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME])) {
+        if (! in_array($lookaheadType, [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME], true)) {
             $this->syntaxError('ALL, ANY or SOME');
         }
 

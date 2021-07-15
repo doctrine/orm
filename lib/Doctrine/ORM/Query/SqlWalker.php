@@ -1432,7 +1432,7 @@ class SqlWalker implements TreeWalker
 
                 // Select all fields from the queried class
                 foreach ($class->fieldMappings as $fieldName => $mapping) {
-                    if ($partialFieldSet && ! in_array($fieldName, $partialFieldSet)) {
+                    if ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true)) {
                         continue;
                     }
 
@@ -1468,7 +1468,7 @@ class SqlWalker implements TreeWalker
                         $sqlTableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
 
                         foreach ($subClass->fieldMappings as $fieldName => $mapping) {
-                            if (isset($mapping['inherited']) || ($partialFieldSet && ! in_array($fieldName, $partialFieldSet))) {
+                            if (isset($mapping['inherited']) || ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true))) {
                                 continue;
                             }
 

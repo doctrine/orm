@@ -88,7 +88,7 @@ class EntityManagerDecoratorTest extends TestCase
      */
     public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters): void
     {
-        $return = ! in_array($method, self::VOID_METHODS) ? 'INNER VALUE FROM ' . $method : null;
+        $return = ! in_array($method, self::VOID_METHODS, true) ? 'INNER VALUE FROM ' . $method : null;
 
         $this->wrapped->expects($this->once())
             ->method($method)

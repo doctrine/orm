@@ -2627,7 +2627,7 @@
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PossiblyNullArgument occurrences="29">
+    <PossiblyNullArgument occurrences="27">
       <code>$aliasIdentVariable</code>
       <code>$dql</code>
       <code>$dql</code>

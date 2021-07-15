@@ -184,7 +184,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         assert(is_array($list));
 
         $list = array_filter($list, static function (string $item) use ($invalid): bool {
-            return ! in_array(pathinfo($item, PATHINFO_FILENAME), $invalid);
+            return ! in_array(pathinfo($item, PATHINFO_FILENAME), $invalid, true);
         });
 
         return array_map(static function (string $item) {
