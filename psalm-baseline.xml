@@ -2640,8 +2640,6 @@
       <code>$functionName</code>
       <code>$functionName</code>
       <code>$lookaheadType</code>
-      <code>$lookaheadType</code>
-      <code>$lookaheadType</code>
       <code>$resultVariable</code>
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
@@ -2653,7 +2651,6 @@
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;query-&gt;getDQL()</code>
       <code>$this-&gt;query-&gt;getDQL()</code>
       <code>$token['value']</code>
       <code>$token['value']</code>
@@ -3184,7 +3181,6 @@
       <code>$spacePos</code>
       <code>$spacePos</code>
       <code>strpos($join, '.')</code>
-      <code>strpos($join, '.')</code>
     </PossiblyFalseArgument>
     <PossiblyFalseOperand occurrences="2">
       <code>$spacePos</code>
@@ -3668,7 +3664,6 @@
       <code>AbstractExporter</code>
     </DeprecatedClass>
     <InvalidScalarArgument occurrences="3">
-      <code>$field['length']</code>
       <code>$field['length']</code>
       <code>$field['precision']</code>
       <code>$field['scale']</code>
