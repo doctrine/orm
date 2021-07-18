@@ -614,7 +614,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 $sequenceGenerator = new SequenceGenerator(
                     $this->em->getConfiguration()->getQuoteStrategy()->getSequenceName($definition, $class, $this->getTargetPlatform()),
-                    $definition['allocationSize']
+                    (int) $definition['allocationSize']
                 );
                 $class->setIdGenerator($sequenceGenerator);
                 break;

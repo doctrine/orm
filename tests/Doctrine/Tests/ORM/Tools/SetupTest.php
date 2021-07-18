@@ -143,7 +143,7 @@ class SetupTest extends OrmTestCase
         $this->assertSame($cache, $config->getQueryCacheImpl());
 
         if (method_exists(Configuration::class, 'getMetadataCache')) {
-            $this->assertSame($adapter, $config->getMetadataCache());
+            $this->assertSame($adapter, $config->getMetadataCache()->getCache()->getPool());
         } else {
             $this->assertSame($cache, $config->getMetadataCacheImpl());
         }

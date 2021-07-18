@@ -493,7 +493,7 @@ class Parser
         $message .= $expected !== '' ? sprintf('Expected %s, got ', $expected) : 'Unexpected ';
         $message .= $this->lexer->lookahead === null ? 'end of string.' : sprintf("'%s'", $token['value']);
 
-        throw QueryException::syntaxError($message, QueryException::dqlError($this->query->getDQL()));
+        throw QueryException::syntaxError($message, QueryException::dqlError($this->query->getDQL() ?? ''));
     }
 
     /**
@@ -524,7 +524,7 @@ class Parser
         $length = $pos !== false ? $pos - $token['position'] : $distance;
 
         $tokenPos = isset($token['position']) && $token['position'] > 0 ? $token['position'] : '-1';
-        $tokenStr = substr($dql, $token['position'], $length);
+        $tokenStr = substr($dql, (int) $token['position'], $length);
 
         // Building informative message
         $message = 'line 0, col ' . $tokenPos . " near '" . $tokenStr . "': Error: " . $message;

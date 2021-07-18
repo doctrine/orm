@@ -4,6 +4,14 @@ namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use DateTime;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
@@ -251,7 +259,10 @@ class OptimisticTest extends OrmFunctionalTestCase
         $caughtException = null;
 
         try {
-            $expectedVersionExpired = DateTime::createFromFormat('U', $test->version->getTimestamp() - 3600);
+            $expectedVersionExpired = DateTime::createFromFormat(
+                'U',
+                (string) ($test->version->getTimestamp() - 3600)
+            );
 
             $this->_em->lock($test, LockMode::OPTIMISTIC, $expectedVersionExpired);
         } catch (OptimisticLockException $e) {

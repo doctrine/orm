@@ -230,15 +230,15 @@ class ConvertDoctrine1Schema
             $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
 
             $definition = [
-                'sequenceName' => is_array($column['sequence']) ? $column['sequence']['name'] : $column['sequence'],
+                'sequenceName' => (string) (is_array($column['sequence']) ? $column['sequence']['name'] : $column['sequence']),
             ];
 
             if (isset($column['sequence']['size'])) {
-                $definition['allocationSize'] = $column['sequence']['size'];
+                $definition['allocationSize'] = (int) $column['sequence']['size'];
             }
 
             if (isset($column['sequence']['value'])) {
-                $definition['initialValue'] = $column['sequence']['value'];
+                $definition['initialValue'] = (int) $column['sequence']['value'];
             }
 
             $metadata->setSequenceGeneratorDefinition($definition);

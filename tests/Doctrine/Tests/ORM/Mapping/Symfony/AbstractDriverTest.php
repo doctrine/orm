@@ -84,9 +84,9 @@ abstract class AbstractDriverTest extends TestCase
 
         foreach ($iterator as $path) {
             if ($path->isDir()) {
-                @rmdir($path);
+                @rmdir((string) $path);
             } else {
-                @unlink($path);
+                @unlink((string) $path);
             }
         }
 

@@ -378,8 +378,8 @@ class SchemaTool
                 if (! $schema->hasSequence($quotedName)) {
                     $schema->createSequence(
                         $quotedName,
-                        $seqDef['allocationSize'],
-                        $seqDef['initialValue']
+                        (int) $seqDef['allocationSize'],
+                        (int) $seqDef['initialValue']
                     );
                 }
             }

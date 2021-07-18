@@ -516,7 +516,7 @@ class QueryTest extends OrmTestCase
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('[Syntax Error] line 0, col -1: Error: Expected SELECT, UPDATE or DELETE, got end of string.');
 
-        $query = $this->entityManager->createQuery('0')->execute();
+        $this->entityManager->createQuery('0')->execute();
     }
 
     /**
