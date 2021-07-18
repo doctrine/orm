@@ -51,6 +51,7 @@ Doctrine provides several different ways to specify object-relational
 mapping metadata:
 
 -  :doc:`Docblock Annotations <annotations-reference>`
+-  :doc:`Attributes <attributes-reference>`
 -  :doc:`XML <xml-mapping>`
 -  :doc:`YAML <yaml-mapping>`
 -  :doc:`PHP code <php-mapping>`
@@ -217,9 +218,11 @@ PHP Types Mapping
 _________________
 
 Since version 2.9 Doctrine can determine usable defaults from property types
-on entity classes. When property type is nullable the default for ``nullable``
-Column attribute is set to TRUE. Additionally, Doctrine will map PHP types
-to ``type`` attribute as follows:
+on entity classes. When property type is nullable this has no effect on
+``nullable`` Column attribute at the moment for backwards compatibility
+reasons.
+
+Additionally, Doctrine will map PHP types to ``type`` attribute as follows:
 
 - ``DateInterval``: ``dateinterval``
 - ``DateTime``: ``datetime``
