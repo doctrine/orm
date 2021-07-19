@@ -227,8 +227,8 @@ class XmlExporter extends AbstractExporter
         ];
 
         uasort($metadata->associationMappings, static function ($m1, $m2) use (&$orderMap) {
-            $a1 = array_search($m1['type'], $orderMap);
-            $a2 = array_search($m2['type'], $orderMap);
+            $a1 = array_search($m1['type'], $orderMap, true);
+            $a2 = array_search($m2['type'], $orderMap, true);
 
             return strcmp((string) $a1, (string) $a2);
         });

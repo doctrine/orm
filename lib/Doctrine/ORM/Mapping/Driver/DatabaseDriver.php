@@ -344,13 +344,13 @@ class DatabaseDriver implements MappingDriver
         $fieldMappings = [];
 
         foreach ($columns as $column) {
-            if (in_array($column->getName(), $allForeignKeys)) {
+            if (in_array($column->getName(), $allForeignKeys, true)) {
                 continue;
             }
 
             $fieldMapping = $this->buildFieldMapping($tableName, $column);
 
-            if ($primaryKeys && in_array($column->getName(), $primaryKeys)) {
+            if ($primaryKeys && in_array($column->getName(), $primaryKeys, true)) {
                 $fieldMapping['id'] = true;
                 $ids[]              = $fieldMapping;
             }
@@ -464,7 +464,7 @@ class DatabaseDriver implements MappingDriver
                 $associationMapping['fieldName'] .= '2'; // "foo" => "foo2"
             }
 
-            if ($primaryKeys && in_array($localColumn, $primaryKeys)) {
+            if ($primaryKeys && in_array($localColumn, $primaryKeys, true)) {
                 $associationMapping['id'] = true;
             }
 
