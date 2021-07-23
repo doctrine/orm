@@ -1,5 +1,22 @@
 # Upgrade to 3.0
 
+## Variadic methods now use native variadics
+The following methods were using `func_get_args()` to simulate a variadic argument:
+- `Doctrine\ORM\Query\Expr#andX()`
+- `Doctrine\ORM\Query\Expr#orX()`
+- `Doctrine\ORM\QueryBuilder#select()`
+- `Doctrine\ORM\QueryBuilder#addSelect()`
+- `Doctrine\ORM\QueryBuilder#where()`
+- `Doctrine\ORM\QueryBuilder#andWhere()`
+- `Doctrine\ORM\QueryBuilder#orWhere()`
+- `Doctrine\ORM\QueryBuilder#groupBy()`
+- `Doctrine\ORM\QueryBuilder#andGroupBy()`
+- `Doctrine\ORM\QueryBuilder#having()`
+- `Doctrine\ORM\QueryBuilder#andHaving()`
+- `Doctrine\ORM\QueryBuilder#orHaving()` 
+A variadic argument is now actually used in their signatures signature (`...$x`).
+Signatures of overridden methods should be changed accordingly
+
 ## Minor BC BREAK: removed `Doctrine\ORM\EntityManagerInterface#copy()`
 
 Method `Doctrine\ORM\EntityManagerInterface#copy()` never got its implementation and is removed in 3.0.

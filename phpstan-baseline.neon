@@ -1992,11 +1992,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/TreeWalkerChainIterator.php
 
 		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$where$#"
-			count: 2
-			path: lib/Doctrine/ORM/QueryBuilder.php
-
-		-
 			message: "#^Parameter \\#2 \\$dqlPart of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:add\\(\\) expects array\\<'join'\\|int, array\\<int\\|string, object\\>\\|string\\>\\|object\\|string, array\\<string, Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Join\\>&nonEmpty given\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/QueryBuilder.php
