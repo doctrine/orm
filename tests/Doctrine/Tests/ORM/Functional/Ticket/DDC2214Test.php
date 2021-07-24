@@ -62,7 +62,7 @@ class DDC2214Test extends OrmFunctionalTestCase
 
         $query = end($logger->queries);
 
-        $this->assertEquals(Connection::PARAM_INT_ARRAY, $query['types'][0]);
+        self::assertEquals(Connection::PARAM_INT_ARRAY, $query['types'][0]);
     }
 }
 

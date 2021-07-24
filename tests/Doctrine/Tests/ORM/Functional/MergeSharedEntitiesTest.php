@@ -43,7 +43,7 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
 
         $picture = $this->_em->merge($picture);
 
-        $this->assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
+        self::assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
 
     public function testMergeSharedManagedEntities(): void
@@ -61,7 +61,7 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
 
         $picture = $this->_em->merge($picture);
 
-        $this->assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
+        self::assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
 
     public function testMergeSharedDetachedSerializedEntities(): void
@@ -81,7 +81,7 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
 
         $picture = $this->_em->merge(unserialize($serializedPicture));
 
-        $this->assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
+        self::assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
 
     /**
@@ -99,8 +99,8 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
 
         $admin2->setSession('zeh current session data');
 
-        $this->assertSame($admin1, $this->_em->merge($admin2));
-        $this->assertSame('zeh current session data', $admin1->getSession());
+        self::assertSame($admin1, $this->_em->merge($admin2));
+        self::assertSame('zeh current session data', $admin1->getSession());
     }
 }
 

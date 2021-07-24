@@ -33,10 +33,10 @@ class CustomTreeWalkersJoinTest extends OrmTestCase
             $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CustomTreeWalkerJoin::class])
                   ->useQueryCache(false);
 
-            $this->assertEquals($sqlToBeConfirmed, $query->getSql());
+            self::assertEquals($sqlToBeConfirmed, $query->getSql());
             $query->free();
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . ' at "' . $e->getFile() . '" on line ' . $e->getLine());
+            self::fail($e->getMessage() . ' at "' . $e->getFile() . '" on line ' . $e->getLine());
         }
     }
 

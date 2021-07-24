@@ -55,10 +55,10 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 
         $poi = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
 
-        $this->assertInstanceOf(NavPointOfInterest::class, $poi);
-        $this->assertEquals(100, $poi->getLat());
-        $this->assertEquals(200, $poi->getLong());
-        $this->assertEquals('Brandenburger Tor', $poi->getName());
+        self::assertInstanceOf(NavPointOfInterest::class, $poi);
+        self::assertEquals(100, $poi->getLat());
+        self::assertEquals(200, $poi->getLong());
+        self::assertEquals('Brandenburger Tor', $poi->getName());
     }
 
     /**
@@ -96,9 +96,9 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $query  = $this->_em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(1, $result);
-        $this->assertEquals(200, $result[0]['long']);
-        $this->assertEquals(100, $result[0]['lat']);
+        self::assertCount(1, $result);
+        self::assertEquals(200, $result[0]['long']);
+        self::assertEquals(100, $result[0]['lat']);
 
         $this->_em->clear();
 
@@ -112,7 +112,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 
         $tour = $this->_em->find(NavTour::class, $tour->getId());
 
-        $this->assertEquals(1, count($tour->getPointOfInterests()));
+        self::assertEquals(1, count($tour->getPointOfInterests()));
     }
 
     public function testCompositeDqlEagerFetching(): void
@@ -131,13 +131,13 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 
         $pois = $tours[0]->getPointOfInterests();
 
-        $this->assertEquals(1, count($pois));
-        $this->assertEquals('Brandenburger Tor', $pois[0]->getName());
+        self::assertEquals(1, count($pois));
+        self::assertEquals('Brandenburger Tor', $pois[0]->getName());
     }
 
     public function testCompositeCollectionMemberExpression(): void
     {
-        $this->markTestSkipped('How to test this?');
+        self::markTestSkipped('How to test this?');
 
         $this->putGermanysBrandenburderTor();
         $this->putTripAroundEurope();
@@ -147,7 +147,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $tours = $this->_em->createQuery($dql)
                            ->getResult();
 
-        $this->assertEquals(1, count($tours));
+        self::assertEquals(1, count($tours));
 
         $this->_em->clear();
 
@@ -189,6 +189,6 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $poi = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
-        $this->assertEquals(0, count($poi->getVisitors()));
+        self::assertEquals(0, count($poi->getVisitors()));
     }
 }

@@ -45,7 +45,7 @@ class DDC1238Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $userId2 = $user->getId();
-        $this->assertEquals($userId, $userId2, 'This proxy can still be initialized.');
+        self::assertEquals($userId, $userId2, 'This proxy can still be initialized.');
     }
 
     public function testIssueProxyClear(): void
@@ -69,7 +69,7 @@ class DDC1238Test extends OrmFunctionalTestCase
 
         // force proxy load, getId() doesn't work anymore
         $user->getName();
-        $this->assertNull($user->getId(), 'Now this is null, we already have a user instance of that type');
+        self::assertNull($user->getId(), 'Now this is null, we already have a user instance of that type');
     }
 }
 

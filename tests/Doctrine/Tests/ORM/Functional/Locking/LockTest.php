@@ -159,7 +159,7 @@ class LockTest extends OrmFunctionalTestCase
         $writeLockSql = $this->_em->getConnection()->getDatabasePlatform()->getWriteLockSQL();
 
         if (! $writeLockSql) {
-            $this->markTestSkipped('Database Driver has no Write Lock support.');
+            self::markTestSkipped('Database Driver has no Write Lock support.');
         }
 
         $article        = new CmsArticle();
@@ -181,7 +181,7 @@ class LockTest extends OrmFunctionalTestCase
 
         $query = array_pop($this->_sqlLoggerStack->queries);
         $query = array_pop($this->_sqlLoggerStack->queries);
-        $this->assertStringContainsString($writeLockSql, $query['sql']);
+        self::assertStringContainsString($writeLockSql, $query['sql']);
     }
 
     /**
@@ -192,7 +192,7 @@ class LockTest extends OrmFunctionalTestCase
         $readLockSql = $this->_em->getConnection()->getDatabasePlatform()->getReadLockSQL();
 
         if (! $readLockSql) {
-            $this->markTestSkipped('Database Driver has no Write Lock support.');
+            self::markTestSkipped('Database Driver has no Write Lock support.');
         }
 
         $article        = new CmsArticle();
@@ -216,7 +216,7 @@ class LockTest extends OrmFunctionalTestCase
         array_pop($this->_sqlLoggerStack->queries);
         $query = array_pop($this->_sqlLoggerStack->queries);
 
-        $this->assertStringContainsString($readLockSql, $query['sql']);
+        self::assertStringContainsString($readLockSql, $query['sql']);
     }
 
     /**

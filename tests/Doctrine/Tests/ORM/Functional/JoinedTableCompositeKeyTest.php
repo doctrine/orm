@@ -25,7 +25,7 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $entity = $this->findEntity();
-        $this->assertEquals($childEntity, $entity);
+        self::assertEquals($childEntity, $entity);
     }
 
     /**
@@ -47,7 +47,7 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $persistedEntity = $this->findEntity();
-        $this->assertEquals($entity, $persistedEntity);
+        self::assertEquals($entity, $persistedEntity);
     }
 
     private function findEntity(): JoinedChildClass

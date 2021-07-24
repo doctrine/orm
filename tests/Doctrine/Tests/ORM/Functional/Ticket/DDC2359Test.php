@@ -47,23 +47,23 @@ class DDC2359Test extends TestCase
         $connection = $this->createMock(Connection::class);
 
         $configuration
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('getMetadataDriverImpl')
-            ->will($this->returnValue($mockDriver));
+            ->will(self::returnValue($mockDriver));
 
-        $entityManager->expects($this->any())->method('getConfiguration')->will($this->returnValue($configuration));
-        $entityManager->expects($this->any())->method('getConnection')->will($this->returnValue($connection));
+        $entityManager->expects(self::any())->method('getConfiguration')->will(self::returnValue($configuration));
+        $entityManager->expects(self::any())->method('getConnection')->will(self::returnValue($connection));
         $entityManager
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('getEventManager')
-            ->will($this->returnValue($this->createMock(EventManager::class)));
+            ->will(self::returnValue($this->createMock(EventManager::class)));
 
-        $metadataFactory->expects($this->any())->method('newClassMetadataInstance')->will($this->returnValue($mockMetadata));
-        $metadataFactory->expects($this->once())->method('wakeupReflection');
+        $metadataFactory->expects(self::any())->method('newClassMetadataInstance')->will(self::returnValue($mockMetadata));
+        $metadataFactory->expects(self::once())->method('wakeupReflection');
 
         $metadataFactory->setEntityManager($entityManager);
 
-        $this->assertSame($mockMetadata, $metadataFactory->getMetadataFor(DDC2359Foo::class));
+        self::assertSame($mockMetadata, $metadataFactory->getMetadataFor(DDC2359Foo::class));
     }
 }
 

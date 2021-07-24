@@ -31,7 +31,7 @@ class DDC742Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         if (! class_exists(FilesystemCache::class)) {
-            $this->markTestSkipped('Test only applies with doctrine/cache 1.x');
+            self::markTestSkipped('Test only applies with doctrine/cache 1.x');
         }
 
         parent::setUp();

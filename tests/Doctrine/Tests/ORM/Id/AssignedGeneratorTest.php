@@ -51,13 +51,13 @@ class AssignedGeneratorTest extends OrmTestCase
         $entity       = new AssignedSingleIdEntity();
         $entity->myId = 1;
         $id           = $this->assignedGen->generate($this->entityManager, $entity);
-        $this->assertEquals(['myId' => 1], $id);
+        self::assertEquals(['myId' => 1], $id);
 
         $entity        = new AssignedCompositeIdEntity();
         $entity->myId2 = 2;
         $entity->myId1 = 4;
         $id            = $this->assignedGen->generate($this->entityManager, $entity);
-        $this->assertEquals(['myId1' => 4, 'myId2' => 2], $id);
+        self::assertEquals(['myId1' => 4, 'myId2' => 2], $id);
     }
 }
 

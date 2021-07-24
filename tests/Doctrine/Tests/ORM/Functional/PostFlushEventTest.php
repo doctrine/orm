@@ -31,7 +31,7 @@ class PostFlushEventTest extends OrmFunctionalTestCase
     {
         $this->_em->persist($this->createNewValidUser());
         $this->_em->flush();
-        $this->assertTrue($this->listener->wasNotified);
+        self::assertTrue($this->listener->wasNotified);
     }
 
     public function testListenerShouldNotBeNotifiedWhenFlushThrowsException(): void
@@ -47,8 +47,8 @@ class PostFlushEventTest extends OrmFunctionalTestCase
             $exceptionRaised = true;
         }
 
-        $this->assertTrue($exceptionRaised);
-        $this->assertFalse($this->listener->wasNotified);
+        self::assertTrue($exceptionRaised);
+        self::assertFalse($this->listener->wasNotified);
     }
 
     public function testListenerShouldReceiveEntityManagerThroughArgs(): void
@@ -56,7 +56,7 @@ class PostFlushEventTest extends OrmFunctionalTestCase
         $this->_em->persist($this->createNewValidUser());
         $this->_em->flush();
         $receivedEm = $this->listener->receivedArgs->getEntityManager();
-        $this->assertSame($this->_em, $receivedEm);
+        self::assertSame($this->_em, $receivedEm);
     }
 
     private function createNewValidUser(): CmsUser

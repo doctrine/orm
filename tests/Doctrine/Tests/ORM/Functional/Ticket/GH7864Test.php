@@ -61,7 +61,7 @@ class GH7864Test extends OrmFunctionalTestCase
             return $tweet->content;
         });
 
-        $this->assertEquals(['Goodbye, and thanks for all the fish'], array_values($tweets->toArray()));
+        self::assertEquals(['Goodbye, and thanks for all the fish'], array_values($tweets->toArray()));
     }
 }
 

@@ -59,6 +59,6 @@ class DDC4003Test extends SecondLevelCacheAbstractTest
         $cached = $repository->findOneBy(['id' => $id]);
         assert($cached instanceof Bar);
 
-        $this->assertEquals($newName, $cached->getName());
+        self::assertEquals($newName, $cached->getName());
     }
 }

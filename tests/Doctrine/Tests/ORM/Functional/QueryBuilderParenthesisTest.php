@@ -46,11 +46,11 @@ class QueryBuilderParenthesisTest extends OrmFunctionalTestCase
 
         $query   = $queryBuilder->getQuery();
         $results = $query->getResult();
-        $this->assertCount(0, $results);
+        self::assertCount(0, $results);
 
         $dql = $query->getDQL();
 
-        $this->assertSame(
+        self::assertSame(
             'SELECT o FROM ' . QueryBuilderParenthesisEntity::class . ' o WHERE o.property3 = :value3 AND (o.property1 = :value1 OR o.property2 = :value2) AND (o.property1 = :value1 or o.property2 = :value2)',
             $dql
         );
@@ -71,11 +71,11 @@ OR o.property2 = :value2'
 
         $query   = $queryBuilder->getQuery();
         $results = $query->getResult();
-        $this->assertCount(0, $results);
+        self::assertCount(0, $results);
 
         $dql = $query->getDQL();
 
-        $this->assertSame(
+        self::assertSame(
             'SELECT o FROM ' . QueryBuilderParenthesisEntity::class . ' o WHERE o.property3 = :value3 AND (o.property1 = :value1
 OR o.property2 = :value2)',
             $dql

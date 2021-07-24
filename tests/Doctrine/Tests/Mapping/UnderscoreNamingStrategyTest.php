@@ -32,6 +32,6 @@ final class UnderscoreNamingStrategyTest extends TestCase
 
         $after = Deprecation::getTriggeredDeprecations()['https://github.com/doctrine/orm/pull/7908'] ?? 0;
 
-        $this->assertSame($before, $after);
+        self::assertSame($before, $after);
     }
 }

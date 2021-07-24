@@ -63,7 +63,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
         }
 
         if (count($metadatas) !== count($classNames)) {
-            $this->fail("Have not found all classes matching the names '" . implode(', ', $classNames) . "' only tables " . implode(', ', array_keys($metadatas)));
+            self::fail("Have not found all classes matching the names '" . implode(', ', $classNames) . "' only tables " . implode(', ', array_keys($metadatas)));
         }
 
         return $metadatas;

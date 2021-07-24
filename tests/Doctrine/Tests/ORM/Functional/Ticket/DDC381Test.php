@@ -47,7 +47,7 @@ class DDC381Test extends OrmFunctionalTestCase
         $data   = serialize($entity);
         $entity = unserialize($data);
 
-        $this->assertEquals($persistedId, $entity->getId());
+        self::assertEquals($persistedId, $entity->getId());
     }
 }
 
