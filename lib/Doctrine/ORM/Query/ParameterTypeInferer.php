@@ -8,8 +8,8 @@ use DateInterval;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Types;
-use PDO;
 
 use function current;
 use function is_array;
@@ -60,6 +60,6 @@ class ParameterTypeInferer
                 : Connection::PARAM_STR_ARRAY;
         }
 
-        return PDO::PARAM_STR;
+        return ParameterType::STRING;
     }
 }

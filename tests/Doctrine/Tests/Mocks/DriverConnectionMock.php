@@ -6,6 +6,7 @@ namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\ParameterType;
 use PDO;
 
 /**
@@ -45,7 +46,7 @@ class DriverConnectionMock implements Connection
     /**
      * {@inheritdoc}
      */
-    public function quote($input, $type = PDO::PARAM_STR)
+    public function quote($input, $type = ParameterType::STRING)
     {
     }
 

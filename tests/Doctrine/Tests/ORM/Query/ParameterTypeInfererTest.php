@@ -8,10 +8,10 @@ use DateInterval;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\Tests\OrmTestCase;
-use PDO;
 
 class ParameterTypeInfererTest extends OrmTestCase
 {
@@ -20,8 +20,8 @@ class ParameterTypeInfererTest extends OrmTestCase
     {
         return [
             [1,                 Type::INTEGER],
-            ['bar',             PDO::PARAM_STR],
-            ['1',               PDO::PARAM_STR],
+            ['bar',             ParameterType::STRING],
+            ['1',               ParameterType::STRING],
             [new DateTime(),     Type::DATETIME],
             [new DateTimeImmutable(), Type::DATETIME_IMMUTABLE],
             [new DateInterval('P1D'), Type::DATEINTERVAL],
