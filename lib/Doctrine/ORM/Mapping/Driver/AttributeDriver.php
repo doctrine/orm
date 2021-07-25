@@ -60,7 +60,11 @@ class AttributeDriver extends AnnotationDriver
         assert($metadata instanceof ClassMetadataInfo);
 
         $reflectionClass = $metadata->getReflectionClass();
-
+        
+        if ($reflectionClass === null) {
+            $reflectionClass = new ReflectionClass($className);
+        }
+        
         $classAttributes = $this->reader->getClassAnnotations($reflectionClass);
 
         // Evaluate Entity annotation
