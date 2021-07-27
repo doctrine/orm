@@ -13,7 +13,7 @@ class, converting the value on the database-level or a combination of both.
 This article describes the third way by implementing the MySQL specific column
 type `Point <https://dev.mysql.com/doc/refman/8.0/en/gis-class-point.html>`_.
 
-The ``Point`` type is part of the `Spatial extension <https://dev.mysql.com/doc/refman/8.0/en/spatial-extensions.html>`_
+The ``Point`` type is part of the `Spatial data types <https://dev.mysql.com/doc/refman/8.0/en/spatial-type-overview.html>`_
 of MySQL and enables you to store a single location in a coordinate space by
 using x and y coordinates. You can use the Point type to store a 
 longitude/latitude pair to represent a geographic location.
