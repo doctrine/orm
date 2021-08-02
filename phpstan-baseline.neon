@@ -2032,11 +2032,6 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertDoctrine1SchemaCommand.php
 
 		-
-			message: "#^Parameter \\#5 \\$default of method Symfony\\\\Component\\\\Console\\\\Command\\\\Command\\:\\:addOption\\(\\) expects array\\<string\\>\\|bool\\|string\\|null, int given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertDoctrine1SchemaCommand.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$name\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php
@@ -2052,22 +2047,12 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php
 
 		-
-			message: "#^Parameter \\#5 \\$default of method Symfony\\\\Component\\\\Console\\\\Command\\\\Command\\:\\:addOption\\(\\) expects array\\<string\\>\\|bool\\|string\\|null, int given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$name\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Console/Command/GenerateEntitiesCommand.php
 
 		-
 			message: "#^Parameter \\#1 \\$metadatas of method Doctrine\\\\ORM\\\\Tools\\\\EntityGenerator\\:\\:generate\\(\\) expects array\\<int, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\>, array\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\> given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/GenerateEntitiesCommand.php
-
-		-
-			message: "#^Parameter \\#5 \\$default of method Symfony\\\\Component\\\\Console\\\\Command\\\\Command\\:\\:addOption\\(\\) expects array\\<string\\>\\|bool\\|string\\|null, int given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Console/Command/GenerateEntitiesCommand.php
 
@@ -2085,11 +2070,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$entityListeners of method Doctrine\\\\ORM\\\\Tools\\\\Console\\\\Command\\\\MappingDescribeCommand\\:\\:formatEntityListeners\\(\\) expects array\\<int, object\\>, array\\<string, array\\<int, array\\<string, string\\>\\>\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Console/Command/MappingDescribeCommand.php
-
-		-
-			message: "#^Parameter \\#5 \\$default of method Symfony\\\\Component\\\\Console\\\\Command\\\\Command\\:\\:addOption\\(\\) expects array\\<string\\>\\|bool\\|string\\|null, int given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/RunDqlCommand.php
 
 		-
 			message: "#^If condition is always true\\.$#"

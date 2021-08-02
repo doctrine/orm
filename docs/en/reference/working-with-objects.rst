@@ -338,7 +338,7 @@ in multiple ways with very different performance impacts.
 
 .. note::
 
-    Calling ``remove`` on an entity will remove the object from the identiy
+    Calling ``remove`` on an entity will remove the object from the identity
     map and therefore detach it. Querying the same entity again, for example 
     via a lazy loaded relation, will return a new object. 
 
