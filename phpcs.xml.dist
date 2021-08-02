@@ -13,7 +13,6 @@
 
     <file>lib</file>
     <file>tests</file>
-    <file>tools</file>
 
     <exclude-pattern>*/lib/Doctrine/ORM/Mapping/InverseJoinColumn.php</exclude-pattern>
     <exclude-pattern>*/tests/Doctrine/Tests/Proxies/__CG__*</exclude-pattern>
