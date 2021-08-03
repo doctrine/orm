@@ -63,10 +63,10 @@ class ProxyFactoryTest extends OrmTestCase
         $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, $identifier);
 
         $persister
-            ->expects($this->atLeastOnce())
+            ->expects(self::atLeastOnce())
             ->method('load')
-            ->with($this->equalTo($identifier), $this->isInstanceOf($proxyClass))
-            ->will($this->returnValue(new stdClass()));
+            ->with(self::equalTo($identifier), self::isInstanceOf($proxyClass))
+            ->will(self::returnValue(new stdClass()));
 
         $proxy->getDescription();
     }
@@ -105,11 +105,11 @@ class ProxyFactoryTest extends OrmTestCase
     {
         $cm = new ClassMetadata(AbstractClass::class);
         $cm->initializeReflection(new RuntimeReflectionService());
-        $this->assertNotNull($cm->reflClass);
+        self::assertNotNull($cm->reflClass);
 
         $num = $this->proxyFactory->generateProxyClasses([$cm]);
 
-        $this->assertEquals(0, $num, 'No proxies generated.');
+        self::assertEquals(0, $num, 'No proxies generated.');
     }
 
     /**
@@ -124,19 +124,19 @@ class ProxyFactoryTest extends OrmTestCase
         assert($proxy instanceof Proxy);
 
         $persister
-            ->expects($this->atLeastOnce())
+            ->expects(self::atLeastOnce())
             ->method('load')
-            ->will($this->returnValue(null));
+            ->will(self::returnValue(null));
 
         try {
             $proxy->getDescription();
-            $this->fail('An exception was expected to be raised');
+            self::fail('An exception was expected to be raised');
         } catch (EntityNotFoundException $exception) {
         }
 
-        $this->assertFalse($proxy->__isInitialized());
-        $this->assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
-        $this->assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
+        self::assertFalse($proxy->__isInitialized());
+        self::assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
+        self::assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
     }
 
     /**
@@ -151,19 +151,19 @@ class ProxyFactoryTest extends OrmTestCase
         assert($proxy instanceof Proxy);
 
         $persister
-            ->expects($this->atLeastOnce())
+            ->expects(self::atLeastOnce())
             ->method('load')
-            ->will($this->returnValue(null));
+            ->will(self::returnValue(null));
 
         try {
             $cloned = clone $proxy;
-            $this->fail('An exception was expected to be raised');
+            self::fail('An exception was expected to be raised');
         } catch (EntityNotFoundException $exception) {
         }
 
-        $this->assertFalse($proxy->__isInitialized());
-        $this->assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
-        $this->assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
+        self::assertFalse($proxy->__isInitialized());
+        self::assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
+        self::assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
     }
 
     public function testProxyClonesParentFields(): void

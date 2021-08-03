@@ -60,9 +60,9 @@ class CustomTreeWalkersTest extends OrmTestCase
         ?string $outputWalker = null
     ): void {
         try {
-            $this->assertEquals($sqlToBeConfirmed, $this->generateSql($dqlToBeTested, $treeWalkers, $outputWalker));
+            self::assertEquals($sqlToBeConfirmed, $this->generateSql($dqlToBeTested, $treeWalkers, $outputWalker));
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . ' at "' . $e->getFile() . '" on line ' . $e->getLine());
+            self::fail($e->getMessage() . ' at "' . $e->getFile() . '" on line ' . $e->getLine());
         }
     }
 

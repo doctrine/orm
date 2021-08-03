@@ -54,19 +54,19 @@ class DDC1430Test extends OrmFunctionalTestCase
 
         $result = $query->getResult();
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertArrayHasKey('id', $result[0]);
-        $this->assertArrayHasKey('id', $result[1]);
+        self::assertArrayHasKey('id', $result[0]);
+        self::assertArrayHasKey('id', $result[1]);
 
-        $this->assertArrayHasKey('p_count', $result[0]);
-        $this->assertArrayHasKey('p_count', $result[1]);
+        self::assertArrayHasKey('p_count', $result[0]);
+        self::assertArrayHasKey('p_count', $result[1]);
 
-        $this->assertEquals(1, $result[0]['id']);
-        $this->assertEquals(2, $result[1]['id']);
+        self::assertEquals(1, $result[0]['id']);
+        self::assertEquals(2, $result[1]['id']);
 
-        $this->assertEquals(2, $result[0]['p_count']);
-        $this->assertEquals(3, $result[1]['p_count']);
+        self::assertEquals(2, $result[0]['p_count']);
+        self::assertEquals(3, $result[1]['p_count']);
     }
 
     public function testOrderByAllObjectFields(): void
@@ -84,16 +84,16 @@ class DDC1430Test extends OrmFunctionalTestCase
 
         $result = $query->getResult();
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertTrue($result[0][0] instanceof DDC1430Order);
-        $this->assertTrue($result[1][0] instanceof DDC1430Order);
+        self::assertTrue($result[0][0] instanceof DDC1430Order);
+        self::assertTrue($result[1][0] instanceof DDC1430Order);
 
-        $this->assertEquals($result[0][0]->getId(), 1);
-        $this->assertEquals($result[1][0]->getId(), 2);
+        self::assertEquals($result[0][0]->getId(), 1);
+        self::assertEquals($result[1][0]->getId(), 2);
 
-        $this->assertEquals($result[0]['p_count'], 2);
-        $this->assertEquals($result[1]['p_count'], 3);
+        self::assertEquals($result[0]['p_count'], 2);
+        self::assertEquals($result[1]['p_count'], 3);
     }
 
     public function testTicket(): void
@@ -111,16 +111,16 @@ class DDC1430Test extends OrmFunctionalTestCase
 
         $result = $query->getResult();
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertTrue($result[0][0] instanceof DDC1430Order);
-        $this->assertTrue($result[1][0] instanceof DDC1430Order);
+        self::assertTrue($result[0][0] instanceof DDC1430Order);
+        self::assertTrue($result[1][0] instanceof DDC1430Order);
 
-        $this->assertEquals($result[0][0]->getId(), 1);
-        $this->assertEquals($result[1][0]->getId(), 2);
+        self::assertEquals($result[0][0]->getId(), 1);
+        self::assertEquals($result[1][0]->getId(), 2);
 
-        $this->assertEquals($result[0]['p_count'], 2);
-        $this->assertEquals($result[1]['p_count'], 3);
+        self::assertEquals($result[0]['p_count'], 2);
+        self::assertEquals($result[1]['p_count'], 3);
     }
 
     public function loadFixtures(): void

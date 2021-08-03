@@ -38,7 +38,7 @@ class LanguageRecognitionTest extends OrmTestCase
                 echo $e->getTraceAsString() . PHP_EOL;
             }
 
-            $this->fail($e->getMessage());
+            self::fail($e->getMessage());
         }
     }
 
@@ -47,7 +47,7 @@ class LanguageRecognitionTest extends OrmTestCase
         try {
             $parserResult = $this->parseDql($dql);
 
-            $this->fail('No syntax errors were detected, when syntax errors were expected');
+            self::fail('No syntax errors were detected, when syntax errors were expected');
         } catch (QueryException $e) {
             if ($debug) {
                 echo $e->getMessage() . PHP_EOL;

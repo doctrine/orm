@@ -15,7 +15,7 @@ class DDC758Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
-        $this->markTestSkipped('Destroys testsuite');
+        self::markTestSkipped('Destroys testsuite');
         $this->useModelSet('cms');
 
         parent::setUp();
@@ -99,18 +99,18 @@ class DDC758Test extends OrmFunctionalTestCase
         $cmsGroups = $this->_em->getRepository(CmsGroup::class)->findAll();
 
         // Check the entities are in the database
-        $this->assertEquals(1, count($cmsUsers));
-        $this->assertEquals(2, count($cmsGroups));
+        self::assertEquals(1, count($cmsUsers));
+        self::assertEquals(2, count($cmsGroups));
 
         // Check the associations between the entities are now in the database
-        $this->assertEquals(2, count($cmsUsers[0]->groups));
-        $this->assertEquals(1, count($cmsGroups[0]->users));
-        $this->assertEquals(1, count($cmsGroups[1]->users));
+        self::assertEquals(2, count($cmsUsers[0]->groups));
+        self::assertEquals(1, count($cmsGroups[0]->users));
+        self::assertEquals(1, count($cmsGroups[1]->users));
 
-        $this->assertSame($cmsUsers[0]->groups[0], $cmsGroups[0]);
-        $this->assertSame($cmsUsers[0]->groups[1], $cmsGroups[1]);
-        $this->assertSame($cmsGroups[0]->users[0], $cmsUsers[0]);
-        $this->assertSame($cmsGroups[1]->users[0], $cmsUsers[0]);
+        self::assertSame($cmsUsers[0]->groups[0], $cmsGroups[0]);
+        self::assertSame($cmsUsers[0]->groups[1], $cmsGroups[1]);
+        self::assertSame($cmsGroups[0]->users[0], $cmsUsers[0]);
+        self::assertSame($cmsGroups[1]->users[0], $cmsUsers[0]);
     }
 
     /**
@@ -175,12 +175,12 @@ class DDC758Test extends OrmFunctionalTestCase
         $cmsGroups = $this->_em->getRepository(CmsGroup::class)->findAll();
 
         // Check the entities are in the database
-        $this->assertEquals(1, count($cmsUsers));
-        $this->assertEquals(2, count($cmsGroups));
+        self::assertEquals(1, count($cmsUsers));
+        self::assertEquals(2, count($cmsGroups));
 
         // Check the associations between the entities are now in the database
-        $this->assertEquals(0, count($cmsUsers[0]->groups));
-        $this->assertEquals(0, count($cmsGroups[0]->users));
-        $this->assertEquals(0, count($cmsGroups[1]->users));
+        self::assertEquals(0, count($cmsUsers[0]->groups));
+        self::assertEquals(0, count($cmsGroups[0]->users));
+        self::assertEquals(0, count($cmsGroups[1]->users));
     }
 }

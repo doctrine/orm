@@ -61,8 +61,8 @@ class DDC3699Test extends OrmFunctionalTestCase
         $mergedChild = $this->_em->merge($unManagedChild);
         assert($mergedChild instanceof DDC3699Child);
 
-        $this->assertSame($mergedChild->childField, 'modifiedChildValue');
-        $this->assertSame($mergedChild->parentField, 'modifiedParentValue');
+        self::assertSame($mergedChild->childField, 'modifiedChildValue');
+        self::assertSame($mergedChild->parentField, 'modifiedParentValue');
     }
 
     /**
@@ -102,7 +102,7 @@ class DDC3699Test extends OrmFunctionalTestCase
         $mergedChild = $this->_em->merge($unmanagedChild);
         assert($mergedChild instanceof DDC3699Child);
 
-        $this->assertSame($mergedChild->childField, 'modifiedChildValue');
-        $this->assertSame($mergedChild->parentField, 'modifiedParentValue');
+        self::assertSame($mergedChild->childField, 'modifiedChildValue');
+        self::assertSame($mergedChild->parentField, 'modifiedParentValue');
     }
 }

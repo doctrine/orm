@@ -59,8 +59,8 @@ class DDC1509Test extends OrmFunctionalTestCase
         $pic = $em->merge($picture);
         assert($pic instanceof DDC1509Picture);
 
-        $this->assertNotNull($pic->getThumbnail());
-        $this->assertNotNull($pic->getFile());
+        self::assertNotNull($pic->getThumbnail());
+        self::assertNotNull($pic->getFile());
     }
 }
 

@@ -48,7 +48,7 @@ class Issue5989Test extends OrmFunctionalTestCase
         $manager  = $repository->find($managerId);
         $employee = $repository->find($employeeId);
 
-        static::assertEquals($managerTags, $manager->tags);
-        static::assertEquals($employeeTags, $employee->tags);
+        self::assertEquals($managerTags, $manager->tags);
+        self::assertEquals($employeeTags, $employee->tags);
     }
 }

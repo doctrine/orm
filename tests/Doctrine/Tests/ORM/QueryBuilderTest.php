@@ -42,7 +42,7 @@ class QueryBuilderTest extends OrmTestCase
         $dql = $qb->getDQL();
         $q   = $qb->getQuery();
 
-        $this->assertEquals($expectedDql, $dql);
+        self::assertEquals($expectedDql, $dql);
     }
 
     public function testSelectSetsType(): void
@@ -51,7 +51,7 @@ class QueryBuilderTest extends OrmTestCase
             ->delete(CmsUser::class, 'u')
             ->select('u.id', 'u.username');
 
-        $this->assertEquals($qb->getType(), QueryBuilder::SELECT);
+        self::assertEquals($qb->getType(), QueryBuilder::SELECT);
     }
 
     public function testEmptySelectSetsType(): void
@@ -60,7 +60,7 @@ class QueryBuilderTest extends OrmTestCase
             ->delete(CmsUser::class, 'u')
             ->select();
 
-        $this->assertEquals($qb->getType(), QueryBuilder::SELECT);
+        self::assertEquals($qb->getType(), QueryBuilder::SELECT);
     }
 
     public function testDeleteSetsType(): void
@@ -69,7 +69,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u')
             ->delete();
 
-        $this->assertEquals($qb->getType(), QueryBuilder::DELETE);
+        self::assertEquals($qb->getType(), QueryBuilder::DELETE);
     }
 
     public function testUpdateSetsType(): void
@@ -78,7 +78,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u')
             ->update();
 
-        $this->assertEquals($qb->getType(), QueryBuilder::UPDATE);
+        self::assertEquals($qb->getType(), QueryBuilder::UPDATE);
     }
 
     public function testSimpleSelect(): void
@@ -428,8 +428,8 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->addCriteria($criteria);
 
-        $this->assertEquals('u.field = :field', (string) $qb->getDQLPart('where'));
-        $this->assertNotNull($qb->getParameter('field'));
+        self::assertEquals('u.field = :field', (string) $qb->getDQLPart('where'));
+        self::assertNotNull($qb->getParameter('field'));
     }
 
     public function testAddMultipleSameCriteriaWhere(): void
@@ -445,9 +445,9 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->addCriteria($criteria);
 
-        $this->assertEquals('alias1.field = :field AND alias1.field = :field_1', (string) $qb->getDQLPart('where'));
-        $this->assertNotNull($qb->getParameter('field'));
-        $this->assertNotNull($qb->getParameter('field_1'));
+        self::assertEquals('alias1.field = :field AND alias1.field = :field_1', (string) $qb->getDQLPart('where'));
+        self::assertNotNull($qb->getParameter('field'));
+        self::assertNotNull($qb->getParameter('field_1'));
     }
 
     /**
@@ -464,9 +464,9 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->addCriteria($criteria);
 
-        $this->assertEquals('alias1.field = :field AND alias1.field > :field_1', (string) $qb->getDQLPart('where'));
-        $this->assertSame('value1', $qb->getParameter('field')->getValue());
-        $this->assertSame('value2', $qb->getParameter('field_1')->getValue());
+        self::assertEquals('alias1.field = :field AND alias1.field > :field_1', (string) $qb->getDQLPart('where'));
+        self::assertSame('value1', $qb->getParameter('field')->getValue());
+        self::assertSame('value2', $qb->getParameter('field_1')->getValue());
     }
 
     /**
@@ -483,9 +483,9 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->addCriteria($criteria);
 
-        $this->assertEquals('alias1.field1 = :field1 AND alias1.field2 > :field2', (string) $qb->getDQLPart('where'));
-        $this->assertSame('value1', $qb->getParameter('field1')->getValue());
-        $this->assertSame('value2', $qb->getParameter('field2')->getValue());
+        self::assertEquals('alias1.field1 = :field1 AND alias1.field2 > :field2', (string) $qb->getDQLPart('where'));
+        self::assertSame('value1', $qb->getParameter('field1')->getValue());
+        self::assertSame('value2', $qb->getParameter('field2')->getValue());
     }
 
     /**
@@ -502,9 +502,9 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->addCriteria($criteria);
 
-        $this->assertEquals('alias1.field1 = :field1 AND alias1.field2 > :field2', (string) $qb->getDQLPart('where'));
-        $this->assertSame('value1', $qb->getParameter('field1')->getValue());
-        $this->assertSame('value2', $qb->getParameter('field2')->getValue());
+        self::assertEquals('alias1.field1 = :field1 AND alias1.field2 > :field2', (string) $qb->getDQLPart('where'));
+        self::assertSame('value1', $qb->getParameter('field1')->getValue());
+        self::assertSame('value2', $qb->getParameter('field2')->getValue());
     }
 
     /**
@@ -521,9 +521,9 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->addCriteria($criteria);
 
-        $this->assertEquals('alias1.field1 = :field1 AND alias1.field1 > :field1_1', (string) $qb->getDQLPart('where'));
-        $this->assertSame('value1', $qb->getParameter('field1')->getValue());
-        $this->assertSame('value2', $qb->getParameter('field1_1')->getValue());
+        self::assertEquals('alias1.field1 = :field1 AND alias1.field1 > :field1_1', (string) $qb->getDQLPart('where'));
+        self::assertSame('value1', $qb->getParameter('field1')->getValue());
+        self::assertSame('value2', $qb->getParameter('field1_1')->getValue());
     }
 
     public function testAddCriteriaOrder(): void
@@ -537,8 +537,8 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->addCriteria($criteria);
 
-        $this->assertCount(1, $orderBy = $qb->getDQLPart('orderBy'));
-        $this->assertEquals('u.field DESC', (string) $orderBy[0]);
+        self::assertCount(1, $orderBy = $qb->getDQLPart('orderBy'));
+        self::assertEquals('u.field DESC', (string) $orderBy[0]);
     }
 
     /**
@@ -556,8 +556,8 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->addCriteria($criteria);
 
-        $this->assertCount(1, $orderBy = $qb->getDQLPart('orderBy'));
-        $this->assertEquals('a.field DESC', (string) $orderBy[0]);
+        self::assertCount(1, $orderBy = $qb->getDQLPart('orderBy'));
+        self::assertEquals('a.field DESC', (string) $orderBy[0]);
     }
 
     public function testAddCriteriaLimit(): void
@@ -572,8 +572,8 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->addCriteria($criteria);
 
-        $this->assertEquals(2, $qb->getFirstResult());
-        $this->assertEquals(10, $qb->getMaxResults());
+        self::assertEquals(2, $qb->getFirstResult());
+        self::assertEquals(10, $qb->getMaxResults());
     }
 
     public function testAddCriteriaUndefinedLimit(): void
@@ -588,8 +588,8 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->addCriteria($criteria);
 
-        $this->assertEquals(2, $qb->getFirstResult());
-        $this->assertEquals(10, $qb->getMaxResults());
+        self::assertEquals(2, $qb->getFirstResult());
+        self::assertEquals(10, $qb->getMaxResults());
     }
 
     public function testGetQuery(): void
@@ -599,7 +599,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u');
         $q  = $qb->getQuery();
 
-        $this->assertEquals(Query::class, get_class($q));
+        self::assertEquals(Query::class, get_class($q));
     }
 
     public function testSetParameter(): void
@@ -631,7 +631,7 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->setParameters($parameters);
 
-        $this->assertEquals($parameters, $qb->getQuery()->getParameters());
+        self::assertEquals($parameters, $qb->getQuery()->getParameters());
     }
 
     public function testGetParameters(): void
@@ -646,7 +646,7 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->setParameters($parameters);
 
-        $this->assertEquals($parameters, $qb->getParameters());
+        self::assertEquals($parameters, $qb->getParameters());
     }
 
     public function testGetParameter(): void
@@ -661,7 +661,7 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->setParameters($parameters);
 
-        $this->assertEquals($parameters->first(), $qb->getParameter('id'));
+        self::assertEquals($parameters->first(), $qb->getParameter('id'));
     }
 
     public function testMultipleWhere(): void
@@ -775,8 +775,8 @@ class QueryBuilderTest extends OrmTestCase
 
         $q1 = $qb->getQuery();
 
-        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name', $q1->getDQL());
-        $this->assertEquals(1, count($q1->getParameters()));
+        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name', $q1->getDQL());
+        self::assertEquals(1, count($q1->getParameters()));
 
         // add another condition and construct a second query
         $qb->andWhere($expr->eq('u.id', ':id'));
@@ -784,22 +784,22 @@ class QueryBuilderTest extends OrmTestCase
 
         $q2 = $qb->getQuery();
 
-        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name AND u.id = :id', $q2->getDQL());
-        $this->assertTrue($q1 !== $q2); // two different, independent queries
-        $this->assertEquals(2, count($q2->getParameters()));
-        $this->assertEquals(1, count($q1->getParameters())); // $q1 unaffected
+        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name AND u.id = :id', $q2->getDQL());
+        self::assertTrue($q1 !== $q2); // two different, independent queries
+        self::assertEquals(2, count($q2->getParameters()));
+        self::assertEquals(1, count($q1->getParameters())); // $q1 unaffected
     }
 
     public function testGetEntityManager(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
-        $this->assertEquals($this->entityManager, $qb->getEntityManager());
+        self::assertEquals($this->entityManager, $qb->getEntityManager());
     }
 
     public function testInitialStateIsClean(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
-        $this->assertEquals(QueryBuilder::STATE_CLEAN, $qb->getState());
+        self::assertEquals(QueryBuilder::STATE_CLEAN, $qb->getState());
     }
 
     public function testAlteringQueryChangesStateToDirty(): void
@@ -808,7 +808,7 @@ class QueryBuilderTest extends OrmTestCase
             ->select('u')
             ->from(CmsUser::class, 'u');
 
-        $this->assertEquals(QueryBuilder::STATE_DIRTY, $qb->getState());
+        self::assertEquals(QueryBuilder::STATE_DIRTY, $qb->getState());
     }
 
     public function testSelectWithFuncExpression(): void
@@ -827,13 +827,13 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u')
             ->where('u.username = ?1')->orderBy('u.username');
 
-        $this->assertEquals('u.username = ?1', (string) $qb->getDQLPart('where'));
-        $this->assertEquals(1, count($qb->getDQLPart('orderBy')));
+        self::assertEquals('u.username = ?1', (string) $qb->getDQLPart('where'));
+        self::assertEquals(1, count($qb->getDQLPart('orderBy')));
 
         $qb->resetDQLPart('where')->resetDQLPart('orderBy');
 
-        $this->assertNull($qb->getDQLPart('where'));
-        $this->assertEquals(0, count($qb->getDQLPart('orderBy')));
+        self::assertNull($qb->getDQLPart('where'));
+        self::assertEquals(0, count($qb->getDQLPart('orderBy')));
     }
 
     public function testResetDQLParts(): void
@@ -845,9 +845,9 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->resetDQLParts(['where', 'orderBy']);
 
-        $this->assertEquals(1, count($qb->getDQLPart('select')));
-        $this->assertNull($qb->getDQLPart('where'));
-        $this->assertEquals(0, count($qb->getDQLPart('orderBy')));
+        self::assertEquals(1, count($qb->getDQLPart('select')));
+        self::assertNull($qb->getDQLPart('where'));
+        self::assertEquals(0, count($qb->getDQLPart('orderBy')));
     }
 
     public function testResetAllDQLParts(): void
@@ -859,9 +859,9 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->resetDQLParts();
 
-        $this->assertEquals(0, count($qb->getDQLPart('select')));
-        $this->assertNull($qb->getDQLPart('where'));
-        $this->assertEquals(0, count($qb->getDQLPart('orderBy')));
+        self::assertEquals(0, count($qb->getDQLPart('select')));
+        self::assertNull($qb->getDQLPart('where'));
+        self::assertEquals(0, count($qb->getDQLPart('orderBy')));
     }
 
     /**
@@ -876,12 +876,12 @@ class QueryBuilderTest extends OrmTestCase
             ->andWhere('u.status = ?2');
 
         $expr = $qb->getDQLPart('where');
-        $this->assertEquals(2, $expr->count(), 'Modifying the second query should affect the first one.');
+        self::assertEquals(2, $expr->count(), 'Modifying the second query should affect the first one.');
 
         $qb2 = clone $qb;
         $qb2->andWhere('u.name = ?3');
 
-        $this->assertEquals(2, $expr->count(), 'Modifying the second query should affect the first one.');
+        self::assertEquals(2, $expr->count(), 'Modifying the second query should affect the first one.');
     }
 
     /**
@@ -899,9 +899,9 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->addCriteria($criteria);
 
-        $this->assertEquals('alias1.field = :field AND alias2.field > :alias2_field', (string) $qb->getDQLPart('where'));
-        $this->assertSame('value1', $qb->getParameter('field')->getValue());
-        $this->assertSame('value2', $qb->getParameter('alias2_field')->getValue());
+        self::assertEquals('alias1.field = :field AND alias2.field > :alias2_field', (string) $qb->getDQLPart('where'));
+        self::assertSame('value1', $qb->getParameter('field')->getValue());
+        self::assertSame('value2', $qb->getParameter('alias2_field')->getValue());
     }
 
     /**
@@ -919,9 +919,9 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->addCriteria($criteria);
 
-        $this->assertEquals('alias1.field = :alias1_field AND alias2.field > :alias2_field', (string) $qb->getDQLPart('where'));
-        $this->assertSame('value1', $qb->getParameter('alias1_field')->getValue());
-        $this->assertSame('value2', $qb->getParameter('alias2_field')->getValue());
+        self::assertEquals('alias1.field = :alias1_field AND alias2.field > :alias2_field', (string) $qb->getDQLPart('where'));
+        self::assertSame('value1', $qb->getParameter('alias1_field')->getValue());
+        self::assertSame('value2', $qb->getParameter('alias2_field')->getValue());
     }
 
     /**
@@ -940,10 +940,10 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->addCriteria($criteria);
 
-        $this->assertEquals('(alias1.field = :alias1_field AND alias2.field > :alias2_field) AND alias2.field < :alias2_field_2', (string) $qb->getDQLPart('where'));
-        $this->assertSame('value1', $qb->getParameter('alias1_field')->getValue());
-        $this->assertSame('value2', $qb->getParameter('alias2_field')->getValue());
-        $this->assertSame('value3', $qb->getParameter('alias2_field_2')->getValue());
+        self::assertEquals('(alias1.field = :alias1_field AND alias2.field > :alias2_field) AND alias2.field < :alias2_field_2', (string) $qb->getDQLPart('where'));
+        self::assertSame('value1', $qb->getParameter('alias1_field')->getValue());
+        self::assertSame('value2', $qb->getParameter('alias2_field')->getValue());
+        self::assertSame('value3', $qb->getParameter('alias2_field_2')->getValue());
     }
 
     /**
@@ -958,9 +958,9 @@ class QueryBuilderTest extends OrmTestCase
         $copy = clone $originalQb;
         $copy->setParameter('parameter2', 'value2');
 
-        $this->assertCount(1, $originalQb->getParameters());
-        $this->assertSame('value1', $copy->getParameter('parameter1')->getValue());
-        $this->assertSame('value2', $copy->getParameter('parameter2')->getValue());
+        self::assertCount(1, $originalQb->getParameters());
+        self::assertSame('value1', $copy->getParameter('parameter1')->getValue());
+        self::assertSame('value2', $copy->getParameter('parameter2')->getValue());
     }
 
     public function testGetRootAlias(): void
@@ -969,7 +969,7 @@ class QueryBuilderTest extends OrmTestCase
             ->select('u')
             ->from(CmsUser::class, 'u');
 
-        $this->assertEquals('u', $qb->getRootAlias());
+        self::assertEquals('u', $qb->getRootAlias());
     }
 
     public function testGetRootAliases(): void
@@ -978,7 +978,7 @@ class QueryBuilderTest extends OrmTestCase
             ->select('u')
             ->from(CmsUser::class, 'u');
 
-        $this->assertEquals(['u'], $qb->getRootAliases());
+        self::assertEquals(['u'], $qb->getRootAliases());
     }
 
     public function testGetRootEntities(): void
@@ -987,7 +987,7 @@ class QueryBuilderTest extends OrmTestCase
             ->select('u')
             ->from(CmsUser::class, 'u');
 
-        $this->assertEquals([CmsUser::class], $qb->getRootEntities());
+        self::assertEquals([CmsUser::class], $qb->getRootEntities());
     }
 
     public function testGetSeveralRootAliases(): void
@@ -997,8 +997,8 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u')
             ->from(CmsUser::class, 'u2');
 
-        $this->assertEquals(['u', 'u2'], $qb->getRootAliases());
-        $this->assertEquals('u', $qb->getRootAlias());
+        self::assertEquals(['u', 'u2'], $qb->getRootAliases());
+        self::assertEquals('u', $qb->getRootAlias());
     }
 
     public function testBCAddJoinWithoutRootAlias(): void
@@ -1008,7 +1008,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u')
             ->add('join', ['INNER JOIN u.groups g'], true);
 
-        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.groups g', $qb->getDQL());
+        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.groups g', $qb->getDQL());
     }
 
     /**
@@ -1022,7 +1022,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u')
             ->where($expr->eq('u.username', $expr->literal('')));
 
-        $this->assertEquals("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ''", $qb->getDQL());
+        self::assertEquals("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ''", $qb->getDQL());
     }
 
     /**
@@ -1036,7 +1036,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u')
             ->where($expr->eq('u.username', $expr->literal(0)));
 
-        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 0', $qb->getDQL());
+        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 0', $qb->getDQL());
     }
 
     /**
@@ -1048,7 +1048,7 @@ class QueryBuilderTest extends OrmTestCase
             ->add('select', 'u')
             ->add('from', CmsUser::class . ' u');
 
-        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $qb->getDQL());
+        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $qb->getDQL());
     }
 
     /**
@@ -1061,7 +1061,7 @@ class QueryBuilderTest extends OrmTestCase
             ->distinct()
             ->from(CmsUser::class, 'u');
 
-        $this->assertEquals('SELECT DISTINCT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $qb->getDQL());
+        self::assertEquals('SELECT DISTINCT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $qb->getDQL());
     }
 
     /**
@@ -1083,17 +1083,17 @@ class QueryBuilderTest extends OrmTestCase
             ->select('s')
             ->from(State::class, 's');
 
-        $this->assertFalse($defaultQueryBuilder->isCacheable());
-        $this->assertEquals(0, $defaultQueryBuilder->getLifetime());
-        $this->assertNull($defaultQueryBuilder->getCacheRegion());
-        $this->assertNull($defaultQueryBuilder->getCacheMode());
+        self::assertFalse($defaultQueryBuilder->isCacheable());
+        self::assertEquals(0, $defaultQueryBuilder->getLifetime());
+        self::assertNull($defaultQueryBuilder->getCacheRegion());
+        self::assertNull($defaultQueryBuilder->getCacheMode());
 
         $defaultQuery = $defaultQueryBuilder->getQuery();
 
-        $this->assertFalse($defaultQuery->isCacheable());
-        $this->assertEquals(0, $defaultQuery->getLifetime());
-        $this->assertNull($defaultQuery->getCacheRegion());
-        $this->assertNull($defaultQuery->getCacheMode());
+        self::assertFalse($defaultQuery->isCacheable());
+        self::assertEquals(0, $defaultQuery->getLifetime());
+        self::assertNull($defaultQuery->getCacheRegion());
+        self::assertNull($defaultQuery->getCacheMode());
 
         $builder = $this->entityManager->createQueryBuilder()
             ->select('s')
@@ -1103,17 +1103,17 @@ class QueryBuilderTest extends OrmTestCase
             ->setCacheMode(Cache::MODE_REFRESH)
             ->from(State::class, 's');
 
-        $this->assertTrue($builder->isCacheable());
-        $this->assertEquals(123, $builder->getLifetime());
-        $this->assertEquals('foo_reg', $builder->getCacheRegion());
-        $this->assertEquals(Cache::MODE_REFRESH, $builder->getCacheMode());
+        self::assertTrue($builder->isCacheable());
+        self::assertEquals(123, $builder->getLifetime());
+        self::assertEquals('foo_reg', $builder->getCacheRegion());
+        self::assertEquals(Cache::MODE_REFRESH, $builder->getCacheMode());
 
         $query = $builder->getQuery();
 
-        $this->assertTrue($query->isCacheable());
-        $this->assertEquals(123, $query->getLifetime());
-        $this->assertEquals('foo_reg', $query->getCacheRegion());
-        $this->assertEquals(Cache::MODE_REFRESH, $query->getCacheMode());
+        self::assertTrue($query->isCacheable());
+        self::assertEquals(123, $query->getLifetime());
+        self::assertEquals('foo_reg', $query->getCacheRegion());
+        self::assertEquals(Cache::MODE_REFRESH, $query->getCacheMode());
     }
 
     /**
@@ -1136,7 +1136,7 @@ class QueryBuilderTest extends OrmTestCase
 
         $dql2 = $qb2->getDQL();
 
-        $this->assertEquals($dql, $dql2);
+        self::assertEquals($dql, $dql2);
     }
 
     public function testGetAllAliasesWithNoJoins(): void
@@ -1146,7 +1146,7 @@ class QueryBuilderTest extends OrmTestCase
 
         $aliases = $qb->getAllAliases();
 
-        $this->assertEquals(['u'], $aliases);
+        self::assertEquals(['u'], $aliases);
     }
 
     public function testGetAllAliasesWithJoins(): void
@@ -1158,7 +1158,7 @@ class QueryBuilderTest extends OrmTestCase
 
         $aliases = $qb->getAllAliases();
 
-        $this->assertEquals(['u', 'g'], $aliases);
+        self::assertEquals(['u', 'g'], $aliases);
     }
 
     /**

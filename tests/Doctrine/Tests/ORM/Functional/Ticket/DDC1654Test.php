@@ -54,7 +54,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
-        $this->assertEquals(0, count($comments));
+        self::assertEquals(0, count($comments));
     }
 
     public function testManyToManyRemoveElementFromCollectionOrphanRemoval(): void
@@ -73,7 +73,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
-        $this->assertEquals(0, count($comments));
+        self::assertEquals(0, count($comments));
     }
 
     /**
@@ -96,7 +96,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
-        $this->assertEquals(2, count($comments));
+        self::assertEquals(2, count($comments));
     }
 
     public function testManyToManyClearCollectionOrphanRemoval(): void
@@ -114,7 +114,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
-        $this->assertEquals(0, count($comments));
+        self::assertEquals(0, count($comments));
     }
 
     /**
@@ -137,7 +137,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
-        $this->assertEquals(1, count($comments));
+        self::assertEquals(1, count($comments));
     }
 }
 

@@ -31,7 +31,7 @@ class GH7869Test extends OrmTestCase
             ->setMethods(['getClassMetadata'])
             ->getMock();
 
-        $em->expects($this->exactly(2))
+        $em->expects(self::exactly(2))
             ->method('getClassMetadata')
             ->willReturnCallback([$decoratedEm, 'getClassMetadata']);
 

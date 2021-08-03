@@ -55,18 +55,18 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $classMetadata = $this->_em->getClassMetadata(DDC93Person::class);
 
         if (class_exists(CommonRuntimePublicReflectionProperty::class)) {
-            $this->assertInstanceOf(
+            self::assertInstanceOf(
                 CommonRuntimePublicReflectionProperty::class,
                 $classMetadata->getReflectionProperty('address')
             );
         } else {
-            $this->assertInstanceOf(
+            self::assertInstanceOf(
                 RuntimePublicReflectionProperty::class,
                 $classMetadata->getReflectionProperty('address')
             );
         }
 
-        $this->assertInstanceOf(ReflectionEmbeddedProperty::class, $classMetadata->getReflectionProperty('address.street'));
+        self::assertInstanceOf(ReflectionEmbeddedProperty::class, $classMetadata->getReflectionProperty('address.street'));
     }
 
     public function testCRUD(): void
@@ -88,12 +88,12 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         // 2. check loading value objects works
         $person = $this->_em->find(DDC93Person::class, $person->id);
 
-        $this->assertInstanceOf(DDC93Address::class, $person->address);
-        $this->assertEquals('United States of Tara Street', $person->address->street);
-        $this->assertEquals('12345', $person->address->zip);
-        $this->assertEquals('funkytown', $person->address->city);
-        $this->assertInstanceOf(DDC93Country::class, $person->address->country);
-        $this->assertEquals('Germany', $person->address->country->name);
+        self::assertInstanceOf(DDC93Address::class, $person->address);
+        self::assertEquals('United States of Tara Street', $person->address->street);
+        self::assertEquals('12345', $person->address->zip);
+        self::assertEquals('funkytown', $person->address->city);
+        self::assertInstanceOf(DDC93Country::class, $person->address->country);
+        self::assertEquals('Germany', $person->address->country->name);
 
         // 3. check changing value objects works
         $person->address->street        = 'Street';
@@ -106,10 +106,10 @@ class ValueObjectsTest extends OrmFunctionalTestCase
 
         $person = $this->_em->find(DDC93Person::class, $person->id);
 
-        $this->assertEquals('Street', $person->address->street);
-        $this->assertEquals('54321', $person->address->zip);
-        $this->assertEquals('another town', $person->address->city);
-        $this->assertEquals('United States of America', $person->address->country->name);
+        self::assertEquals('Street', $person->address->street);
+        self::assertEquals('54321', $person->address->zip);
+        self::assertEquals('another town', $person->address->city);
+        self::assertEquals('United States of America', $person->address->country->name);
 
         // 4. check deleting works
         $personId = $person->id;
@@ -117,7 +117,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $this->_em->remove($person);
         $this->_em->flush();
 
-        $this->assertNull($this->_em->find(DDC93Person::class, $personId));
+        self::assertNull($this->_em->find(DDC93Person::class, $personId));
     }
 
     public function testLoadDql(): void
@@ -140,24 +140,24 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $dql     = 'SELECT p FROM ' . __NAMESPACE__ . '\DDC93Person p';
         $persons = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertCount(3, $persons);
+        self::assertCount(3, $persons);
         foreach ($persons as $person) {
-            $this->assertInstanceOf(DDC93Address::class, $person->address);
-            $this->assertEquals('Tree', $person->address->street);
-            $this->assertEquals('12345', $person->address->zip);
-            $this->assertEquals('funkytown', $person->address->city);
-            $this->assertInstanceOf(DDC93Country::class, $person->address->country);
-            $this->assertEquals('United States of America', $person->address->country->name);
+            self::assertInstanceOf(DDC93Address::class, $person->address);
+            self::assertEquals('Tree', $person->address->street);
+            self::assertEquals('12345', $person->address->zip);
+            self::assertEquals('funkytown', $person->address->city);
+            self::assertInstanceOf(DDC93Country::class, $person->address->country);
+            self::assertEquals('United States of America', $person->address->country->name);
         }
 
         $dql     = 'SELECT p FROM ' . __NAMESPACE__ . '\DDC93Person p';
         $persons = $this->_em->createQuery($dql)->getArrayResult();
 
         foreach ($persons as $person) {
-            $this->assertEquals('Tree', $person['address.street']);
-            $this->assertEquals('12345', $person['address.zip']);
-            $this->assertEquals('funkytown', $person['address.city']);
-            $this->assertEquals('United States of America', $person['address.country.name']);
+            self::assertEquals('Tree', $person['address.street']);
+            self::assertEquals('12345', $person['address.zip']);
+            self::assertEquals('funkytown', $person['address.city']);
+            self::assertEquals('United States of America', $person['address.country.name']);
         }
     }
 
@@ -167,7 +167,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
     public function testDqlOnEmbeddedObjectsField(): void
     {
         if ($this->isSecondLevelCacheEnabled) {
-            $this->markTestSkipped('SLC does not work with UPDATE/DELETE queries through EM.');
+            self::markTestSkipped('SLC does not work with UPDATE/DELETE queries through EM.');
         }
 
         $person = new DDC93Person('Johannes', new DDC93Address('Moo', '12345', 'Karlsruhe', new DDC93Country('Germany')));
@@ -180,9 +180,9 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             ->setParameter('city', 'Karlsruhe')
             ->setParameter('country', 'Germany')
             ->getSingleResult();
-        $this->assertEquals($person, $loadedPerson);
+        self::assertEquals($person, $loadedPerson);
 
-        $this->assertNull(
+        self::assertNull(
             $this->_em->createQuery($selectDql)
                 ->setParameter('city', 'asdf')
                 ->setParameter('country', 'Germany')
@@ -198,8 +198,8 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             ->execute();
 
         $this->_em->refresh($person);
-        $this->assertEquals('Boo', $person->address->street);
-        $this->assertEquals('DE', $person->address->country->name);
+        self::assertEquals('Boo', $person->address->street);
+        self::assertEquals('DE', $person->address->country->name);
 
         // DELETE
         $this->_em->createQuery('DELETE ' . __NAMESPACE__ . '\\DDC93Person p WHERE p.address.city = :city AND p.address.country.name = :country')
@@ -208,7 +208,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             ->execute();
 
         $this->_em->clear();
-        $this->assertNull($this->_em->find(DDC93Person::class, $person->id));
+        self::assertNull($this->_em->find(DDC93Person::class, $person->id));
     }
 
     public function testPartialDqlOnEmbeddedObjectsField(): void
@@ -225,10 +225,10 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             ->setParameter('name', 'Karl')
             ->getSingleResult();
 
-        $this->assertEquals('Gosport', $person->address->city);
-        $this->assertEquals('Foo', $person->address->street);
-        $this->assertEquals('12345', $person->address->zip);
-        $this->assertEquals('England', $person->address->country->name);
+        self::assertEquals('Gosport', $person->address->city);
+        self::assertEquals('Foo', $person->address->street);
+        self::assertEquals('12345', $person->address->zip);
+        self::assertEquals('England', $person->address->country->name);
 
         // Clear the EM and prove that the embeddable can be the subject of a partial query.
         $this->_em->clear();
@@ -240,11 +240,11 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             ->getSingleResult();
 
         // Selected field must be equal, all other fields must be null.
-        $this->assertEquals('Gosport', $person->address->city);
-        $this->assertNull($person->address->street);
-        $this->assertNull($person->address->zip);
-        $this->assertNull($person->address->country);
-        $this->assertNull($person->name);
+        self::assertEquals('Gosport', $person->address->city);
+        self::assertNull($person->address->street);
+        self::assertNull($person->address->zip);
+        self::assertNull($person->address->country);
+        self::assertNull($person->name);
 
         // Clear the EM and prove that the embeddable can be the subject of a partial query regardless of attributes positions.
         $this->_em->clear();
@@ -256,11 +256,11 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             ->getSingleResult();
 
         // Selected field must be equal, all other fields must be null.
-        $this->assertEquals('Gosport', $person->address->city);
-        $this->assertNull($person->address->street);
-        $this->assertNull($person->address->zip);
-        $this->assertNull($person->address->country);
-        $this->assertNull($person->name);
+        self::assertEquals('Gosport', $person->address->city);
+        self::assertNull($person->address->street);
+        self::assertNull($person->address->zip);
+        self::assertNull($person->address->country);
+        self::assertNull($person->name);
     }
 
     public function testDqlWithNonExistentEmbeddableField(): void
@@ -288,27 +288,27 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $reloadedCar = $this->_em->find(DDC93Car::class, $car->id);
-        $this->assertEquals($car, $reloadedCar);
+        self::assertEquals($car, $reloadedCar);
     }
 
     public function testInlineEmbeddableWithPrefix(): void
     {
         $metadata = $this->_em->getClassMetadata(DDC3028PersonWithPrefix::class);
 
-        $this->assertEquals('foobar_id', $metadata->getColumnName('id.id'));
-        $this->assertEquals('bloo_foo_id', $metadata->getColumnName('nested.nestedWithPrefix.id'));
-        $this->assertEquals('bloo_nestedWithEmptyPrefix_id', $metadata->getColumnName('nested.nestedWithEmptyPrefix.id'));
-        $this->assertEquals('bloo_id', $metadata->getColumnName('nested.nestedWithPrefixFalse.id'));
+        self::assertEquals('foobar_id', $metadata->getColumnName('id.id'));
+        self::assertEquals('bloo_foo_id', $metadata->getColumnName('nested.nestedWithPrefix.id'));
+        self::assertEquals('bloo_nestedWithEmptyPrefix_id', $metadata->getColumnName('nested.nestedWithEmptyPrefix.id'));
+        self::assertEquals('bloo_id', $metadata->getColumnName('nested.nestedWithPrefixFalse.id'));
     }
 
     public function testInlineEmbeddableEmptyPrefix(): void
     {
         $metadata = $this->_em->getClassMetadata(DDC3028PersonEmptyPrefix::class);
 
-        $this->assertEquals('id_id', $metadata->getColumnName('id.id'));
-        $this->assertEquals('nested_foo_id', $metadata->getColumnName('nested.nestedWithPrefix.id'));
-        $this->assertEquals('nested_nestedWithEmptyPrefix_id', $metadata->getColumnName('nested.nestedWithEmptyPrefix.id'));
-        $this->assertEquals('nested_id', $metadata->getColumnName('nested.nestedWithPrefixFalse.id'));
+        self::assertEquals('id_id', $metadata->getColumnName('id.id'));
+        self::assertEquals('nested_foo_id', $metadata->getColumnName('nested.nestedWithPrefix.id'));
+        self::assertEquals('nested_nestedWithEmptyPrefix_id', $metadata->getColumnName('nested.nestedWithEmptyPrefix.id'));
+        self::assertEquals('nested_id', $metadata->getColumnName('nested.nestedWithPrefixFalse.id'));
     }
 
     public function testInlineEmbeddablePrefixFalse(): void
@@ -319,7 +319,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             ->getClassMetadata(DDC3028PersonPrefixFalse::class)
             ->getColumnName('id.id');
 
-        $this->assertEquals($expectedColumnName, $actualColumnName);
+        self::assertEquals($expectedColumnName, $actualColumnName);
     }
 
     public function testInlineEmbeddableInMappedSuperClass(): void
@@ -328,7 +328,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             ->getClassMetadata(DDC3027Dog::class)
             ->hasField('address.street');
 
-        $this->assertTrue($isFieldMapped);
+        self::assertTrue($isFieldMapped);
     }
 
     /**

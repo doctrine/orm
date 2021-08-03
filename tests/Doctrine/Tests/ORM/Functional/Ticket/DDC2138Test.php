@@ -43,22 +43,22 @@ class DDC2138Test extends OrmFunctionalTestCase
         ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
-        $this->assertTrue($schema->hasTable('users_followed_objects'), 'Table users_followed_objects should exist.');
+        self::assertTrue($schema->hasTable('users_followed_objects'), 'Table users_followed_objects should exist.');
 
         $table = $schema->getTable('users_followed_objects');
         assert($table instanceof DbalTable);
-        $this->assertTrue($table->columnsAreIndexed(['object_id']));
-        $this->assertTrue($table->columnsAreIndexed(['user_id']));
+        self::assertTrue($table->columnsAreIndexed(['object_id']));
+        self::assertTrue($table->columnsAreIndexed(['user_id']));
         $foreignKeys = $table->getForeignKeys();
-        $this->assertCount(1, $foreignKeys, 'user_id column has to have FK, but not object_id');
+        self::assertCount(1, $foreignKeys, 'user_id column has to have FK, but not object_id');
 
         $fk = reset($foreignKeys);
         assert($fk instanceof ForeignKeyConstraint);
-        $this->assertEquals('users', $fk->getForeignTableName());
+        self::assertEquals('users', $fk->getForeignTableName());
 
         $localColumns = $fk->getLocalColumns();
-        $this->assertContains('user_id', $localColumns);
-        $this->assertCount(1, $localColumns);
+        self::assertContains('user_id', $localColumns);
+        self::assertCount(1, $localColumns);
     }
 }
 

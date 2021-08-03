@@ -28,7 +28,7 @@ class DefaultQuoteStrategyTest extends OrmTestCase
         $platform = $this->getMockForAbstractClass(AbstractPlatform::class);
         assert($platform instanceof AbstractPlatform);
 
-        $this->assertSame(
+        self::assertSame(
             'readers.author_reader',
             $strategy->getJoinTableName($metadata->associationMappings['readers'], $metadata, $platform)
         );

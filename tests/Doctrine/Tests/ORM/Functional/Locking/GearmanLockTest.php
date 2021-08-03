@@ -30,7 +30,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         if (! class_exists('GearmanClient', false)) {
-            $this->markTestSkipped('pecl/gearman is required for this test to run.');
+            self::markTestSkipped('pecl/gearman is required for this test to run.');
         }
 
         $this->useModelSet('cms');
@@ -144,12 +144,12 @@ class GearmanLockTest extends OrmFunctionalTestCase
 
         $this->gearman->runTasks();
 
-        $this->assertTrue(
+        self::assertTrue(
             $this->maxRunTime > $forTime,
             'Because of locking this tests should have run at least ' . $forTime . ' seconds, ' .
             'but only did for ' . $this->maxRunTime . ' seconds.'
         );
-        $this->assertTrue(
+        self::assertTrue(
             $this->maxRunTime < $notLongerThan,
             'The longest task should not run longer than ' . $notLongerThan . ' seconds, ' .
             'but did for ' . $this->maxRunTime . ' seconds.'
@@ -192,6 +192,6 @@ class GearmanLockTest extends OrmFunctionalTestCase
             ]
         ));
 
-        $this->assertEquals(GEARMAN_SUCCESS, $this->gearman->returnCode());
+        self::assertEquals(GEARMAN_SUCCESS, $this->gearman->returnCode());
     }
 }

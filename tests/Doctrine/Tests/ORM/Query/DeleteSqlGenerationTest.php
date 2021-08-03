@@ -34,7 +34,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
             parent::assertEquals($sqlToBeConfirmed, $query->getSql());
             $query->free();
         } catch (Exception $e) {
-            $this->fail($e->getMessage());
+            self::fail($e->getMessage());
         }
     }
 

@@ -32,7 +32,7 @@ final class QueryIterableTest extends OrmFunctionalTestCase
         $users = $query->getResult();
         self::assertCount(1, $users);
 
-        $this->assertEquals('gblanco', $users[0]['user']->username);
+        self::assertEquals('gblanco', $users[0]['user']->username);
 
         $this->_em->clear();
 
@@ -62,7 +62,7 @@ final class QueryIterableTest extends OrmFunctionalTestCase
         $users = $query->getResult();
         self::assertCount(1, $users);
 
-        $this->assertEquals('gblanco', $users[0]['user']->username);
+        self::assertEquals('gblanco', $users[0]['user']->username);
 
         $this->_em->clear();
 

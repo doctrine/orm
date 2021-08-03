@@ -27,10 +27,10 @@ class ReflectionPropertiesGetterTest extends TestCase
         $properties = (new ReflectionPropertiesGetter(new RuntimeReflectionService()))
             ->getProperties(ClassWithMixedProperties::class);
 
-        $this->assertCount(5, $properties);
+        self::assertCount(5, $properties);
 
         foreach ($properties as $property) {
-            $this->assertInstanceOf('ReflectionProperty', $property);
+            self::assertInstanceOf('ReflectionProperty', $property);
         }
     }
 
@@ -40,7 +40,7 @@ class ReflectionPropertiesGetterTest extends TestCase
             ->getProperties(ClassWithMixedProperties::class);
 
         foreach ($properties as $property) {
-            $this->assertFalse($property->isStatic());
+            self::assertFalse($property->isStatic());
         }
     }
 
@@ -49,23 +49,23 @@ class ReflectionPropertiesGetterTest extends TestCase
         $properties = (new ReflectionPropertiesGetter(new RuntimeReflectionService()))
             ->getProperties(ClassWithMixedProperties::class);
 
-        $this->assertArrayHasKey(
+        self::assertArrayHasKey(
             "\0" . ClassWithMixedProperties::class . "\0" . 'privateProperty',
             $properties
         );
-        $this->assertArrayHasKey(
+        self::assertArrayHasKey(
             "\0" . ClassWithMixedProperties::class . "\0" . 'privatePropertyOverride',
             $properties
         );
-        $this->assertArrayHasKey(
+        self::assertArrayHasKey(
             "\0" . ParentClass::class . "\0" . 'privatePropertyOverride',
             $properties
         );
-        $this->assertArrayHasKey(
+        self::assertArrayHasKey(
             "\0*\0protectedProperty",
             $properties
         );
-        $this->assertArrayHasKey(
+        self::assertArrayHasKey(
             'publicProperty',
             $properties
         );
@@ -78,7 +78,7 @@ class ReflectionPropertiesGetterTest extends TestCase
             ->getProperties(ClassWithMixedProperties::class);
 
         foreach ($properties as $property) {
-            $this->assertSame($property->getName(), $property->getValue($object));
+            self::assertSame($property->getName(), $property->getValue($object));
         }
     }
 
@@ -86,7 +86,7 @@ class ReflectionPropertiesGetterTest extends TestCase
     {
         $getter = (new ReflectionPropertiesGetter(new RuntimeReflectionService()));
 
-        $this->assertSame(
+        self::assertSame(
             $getter->getProperties(ClassWithMixedProperties::class),
             $getter->getProperties(ClassWithMixedProperties::class)
         );
@@ -98,21 +98,21 @@ class ReflectionPropertiesGetterTest extends TestCase
         assert($reflectionService instanceof ReflectionService || $reflectionService instanceof MockObject);
 
         $reflectionService
-            ->expects($this->exactly(2))
+            ->expects(self::exactly(2))
             ->method('getClass')
-            ->with($this->logicalOr(ClassWithMixedProperties::class, ParentClass::class))
-            ->will($this->returnValueMap([
+            ->with(self::logicalOr(ClassWithMixedProperties::class, ParentClass::class))
+            ->will(self::returnValueMap([
                 [ClassWithMixedProperties::class, new ReflectionClass(ClassWithMixedProperties::class)],
                 [ParentClass::class, new ReflectionClass(ParentClass::class)],
             ]));
 
         $reflectionService
-            ->expects($this->atLeastOnce())
+            ->expects(self::atLeastOnce())
             ->method('getAccessibleProperty');
 
         $getter = (new ReflectionPropertiesGetter($reflectionService));
 
-        $this->assertEmpty($getter->getProperties(ClassWithMixedProperties::class));
+        self::assertEmpty($getter->getProperties(ClassWithMixedProperties::class));
     }
 
     public function testPropertyGetterWillSkipClassesNotRetrievedByTheRuntimeReflectionService(): void
@@ -121,14 +121,14 @@ class ReflectionPropertiesGetterTest extends TestCase
         assert($reflectionService instanceof ReflectionService || $reflectionService instanceof MockObject);
 
         $reflectionService
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getClass')
             ->with(ClassWithMixedProperties::class);
 
-        $reflectionService->expects($this->never())->method('getAccessibleProperty');
+        $reflectionService->expects(self::never())->method('getAccessibleProperty');
 
         $getter = (new ReflectionPropertiesGetter($reflectionService));
 
-        $this->assertEmpty($getter->getProperties(ClassWithMixedProperties::class));
+        self::assertEmpty($getter->getProperties(ClassWithMixedProperties::class));
     }
 }
