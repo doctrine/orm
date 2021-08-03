@@ -19,7 +19,7 @@ class AttributeDriverTest extends AbstractMappingDriverTest
     public function requiresPhp8Assertion(): void
     {
         if (PHP_VERSION_ID < 80000) {
-            $this->markTestSkipped('requires PHP 8.0');
+            self::markTestSkipped('requires PHP 8.0');
         }
     }
 
@@ -32,37 +32,37 @@ class AttributeDriverTest extends AbstractMappingDriverTest
 
     public function testNamedQuery(): void
     {
-        $this->markTestSkipped('AttributeDriver does not support named queries.');
+        self::markTestSkipped('AttributeDriver does not support named queries.');
     }
 
     public function testNamedNativeQuery(): void
     {
-        $this->markTestSkipped('AttributeDriver does not support named native queries.');
+        self::markTestSkipped('AttributeDriver does not support named native queries.');
     }
 
     public function testSqlResultSetMapping(): void
     {
-        $this->markTestSkipped('AttributeDriver does not support named sql resultset mapping.');
+        self::markTestSkipped('AttributeDriver does not support named sql resultset mapping.');
     }
 
     public function testAssociationOverridesMapping(): void
     {
-        $this->markTestSkipped('AttributeDriver does not support association overrides.');
+        self::markTestSkipped('AttributeDriver does not support association overrides.');
     }
 
     public function testInversedByOverrideMapping(): void
     {
-        $this->markTestSkipped('AttributeDriver does not support association overrides.');
+        self::markTestSkipped('AttributeDriver does not support association overrides.');
     }
 
     public function testFetchOverrideMapping(): void
     {
-        $this->markTestSkipped('AttributeDriver does not support association overrides.');
+        self::markTestSkipped('AttributeDriver does not support association overrides.');
     }
 
     public function testAttributeOverridesMapping(): void
     {
-        $this->markTestSkipped('AttributeDriver does not support association overrides.');
+        self::markTestSkipped('AttributeDriver does not support association overrides.');
     }
 
     public function testOriginallyNestedAttributesDeclaredWithoutOriginalParent(): void
@@ -71,7 +71,7 @@ class AttributeDriverTest extends AbstractMappingDriverTest
 
         $metadata = $factory->getMetadataFor(AttributeEntityWithoutOriginalParents::class);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'name' => 'AttributeEntityWithoutOriginalParents',
                 'uniqueConstraints' => ['foo' => ['columns' => ['id']]],
@@ -79,20 +79,20 @@ class AttributeDriverTest extends AbstractMappingDriverTest
             ],
             $metadata->table
         );
-        $this->assertEquals(['assoz_id', 'assoz_id'], $metadata->associationMappings['assoc']['joinTableColumns']);
+        self::assertEquals(['assoz_id', 'assoz_id'], $metadata->associationMappings['assoc']['joinTableColumns']);
     }
 
     public function testIsTransient(): void
     {
         $driver = $this->loadDriver();
 
-        $this->assertTrue($driver->isTransient(stdClass::class));
+        self::assertTrue($driver->isTransient(stdClass::class));
 
-        $this->assertTrue($driver->isTransient(AttributeTransientClass::class));
+        self::assertTrue($driver->isTransient(AttributeTransientClass::class));
 
-        $this->assertFalse($driver->isTransient(AttributeEntityWithoutOriginalParents::class));
+        self::assertFalse($driver->isTransient(AttributeEntityWithoutOriginalParents::class));
 
-        $this->assertFalse($driver->isTransient(AttributeEntityStartingWithRepeatableAttributes::class));
+        self::assertFalse($driver->isTransient(AttributeEntityStartingWithRepeatableAttributes::class));
     }
 }
 

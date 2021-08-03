@@ -38,7 +38,7 @@ class DDC1787Test extends OrmFunctionalTestCase
         $this->_em->persist($bar2);
         $this->_em->flush();
 
-        $this->assertSame(1, $bar->getVersion());
+        self::assertSame(1, $bar->getVersion());
     }
 }
 

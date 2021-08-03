@@ -38,19 +38,19 @@ class DefaultRepositoryFactoryTest extends TestCase
         $this->repositoryFactory = new DefaultRepositoryFactory();
 
         $this->configuration
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('getDefaultRepositoryClassName')
-            ->will($this->returnValue(DDC869PaymentRepository::class));
+            ->will(self::returnValue(DDC869PaymentRepository::class));
     }
 
     public function testCreatesRepositoryFromDefaultRepositoryClass(): void
     {
         $this->entityManager
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('getClassMetadata')
-            ->will($this->returnCallback([$this, 'buildClassMetadata']));
+            ->will(self::returnCallback([$this, 'buildClassMetadata']));
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             DDC869PaymentRepository::class,
             $this->repositoryFactory->getRepository($this->entityManager, self::class)
         );
@@ -59,11 +59,11 @@ class DefaultRepositoryFactoryTest extends TestCase
     public function testCreatedRepositoriesAreCached(): void
     {
         $this->entityManager
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('getClassMetadata')
-            ->will($this->returnCallback([$this, 'buildClassMetadata']));
+            ->will(self::returnCallback([$this, 'buildClassMetadata']));
 
-        $this->assertSame(
+        self::assertSame(
             $this->repositoryFactory->getRepository($this->entityManager, self::class),
             $this->repositoryFactory->getRepository($this->entityManager, self::class)
         );
@@ -75,11 +75,11 @@ class DefaultRepositoryFactoryTest extends TestCase
         $customMetadata->customRepositoryClassName = DDC753DefaultRepository::class;
 
         $this->entityManager
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('getClassMetadata')
-            ->will($this->returnValue($customMetadata));
+            ->will(self::returnValue($customMetadata));
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             DDC753DefaultRepository::class,
             $this->repositoryFactory->getRepository($this->entityManager, self::class)
         );
@@ -90,21 +90,21 @@ class DefaultRepositoryFactoryTest extends TestCase
         $em1 = $this->createEntityManager();
         $em2 = $this->createEntityManager();
 
-        $em1->expects($this->any())
+        $em1->expects(self::any())
             ->method('getClassMetadata')
-            ->will($this->returnCallback([$this, 'buildClassMetadata']));
+            ->will(self::returnCallback([$this, 'buildClassMetadata']));
 
-        $em2->expects($this->any())
+        $em2->expects(self::any())
             ->method('getClassMetadata')
-            ->will($this->returnCallback([$this, 'buildClassMetadata']));
+            ->will(self::returnCallback([$this, 'buildClassMetadata']));
 
         $repo1 = $this->repositoryFactory->getRepository($em1, self::class);
         $repo2 = $this->repositoryFactory->getRepository($em2, self::class);
 
-        $this->assertSame($repo1, $this->repositoryFactory->getRepository($em1, self::class));
-        $this->assertSame($repo2, $this->repositoryFactory->getRepository($em2, self::class));
+        self::assertSame($repo1, $this->repositoryFactory->getRepository($em1, self::class));
+        self::assertSame($repo2, $this->repositoryFactory->getRepository($em2, self::class));
 
-        $this->assertNotSame($repo1, $repo2);
+        self::assertNotSame($repo1, $repo2);
     }
 
     /**
@@ -117,7 +117,7 @@ class DefaultRepositoryFactoryTest extends TestCase
         $metadata = $this->createMock(ClassMetadata::class);
         assert($metadata instanceof ClassMetadata || $metadata instanceof MockObject);
 
-        $metadata->expects($this->any())->method('getName')->will($this->returnValue($className));
+        $metadata->expects(self::any())->method('getName')->will(self::returnValue($className));
 
         $metadata->customRepositoryClassName = null;
 
@@ -131,9 +131,9 @@ class DefaultRepositoryFactoryTest extends TestCase
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
 
-        $entityManager->expects($this->any())
+        $entityManager->expects(self::any())
             ->method('getConfiguration')
-            ->will($this->returnValue($this->configuration));
+            ->will(self::returnValue($this->configuration));
 
         return $entityManager;
     }

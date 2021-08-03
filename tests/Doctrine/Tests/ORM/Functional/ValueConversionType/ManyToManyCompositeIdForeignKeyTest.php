@@ -60,16 +60,16 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
     {
         $conn = $this->_em->getConnection();
 
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT id4 FROM vct_auxiliary LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchColumn('SELECT id4 FROM vct_auxiliary LIMIT 1'));
 
-        $this->assertEquals('qrs', $conn->fetchColumn('SELECT id1 FROM vct_inversed_manytomany_compositeid_foreignkey LIMIT 1'));
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT foreign_id FROM vct_inversed_manytomany_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchColumn('SELECT id1 FROM vct_inversed_manytomany_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchColumn('SELECT foreign_id FROM vct_inversed_manytomany_compositeid_foreignkey LIMIT 1'));
 
-        $this->assertEquals('tuv', $conn->fetchColumn('SELECT id2 FROM vct_owning_manytomany_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('tuv', $conn->fetchColumn('SELECT id2 FROM vct_owning_manytomany_compositeid_foreignkey LIMIT 1'));
 
-        $this->assertEquals('qrs', $conn->fetchColumn('SELECT associated_id FROM vct_xref_manytomany_compositeid_foreignkey LIMIT 1'));
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT associated_foreign_id FROM vct_xref_manytomany_compositeid_foreignkey LIMIT 1'));
-        $this->assertEquals('tuv', $conn->fetchColumn('SELECT owning_id FROM vct_xref_manytomany_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchColumn('SELECT associated_id FROM vct_xref_manytomany_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchColumn('SELECT associated_foreign_id FROM vct_xref_manytomany_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('tuv', $conn->fetchColumn('SELECT owning_id FROM vct_xref_manytomany_compositeid_foreignkey LIMIT 1'));
     }
 
     /**
@@ -92,9 +92,9 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
             'ghi'
         );
 
-        $this->assertInstanceOf(Models\ValueConversionType\AuxiliaryEntity::class, $auxiliary);
-        $this->assertInstanceOf(Models\ValueConversionType\InversedManyToManyCompositeIdForeignKeyEntity::class, $inversed);
-        $this->assertInstanceOf(Models\ValueConversionType\OwningManyToManyCompositeIdForeignKeyEntity::class, $owning);
+        self::assertInstanceOf(Models\ValueConversionType\AuxiliaryEntity::class, $auxiliary);
+        self::assertInstanceOf(Models\ValueConversionType\InversedManyToManyCompositeIdForeignKeyEntity::class, $inversed);
+        self::assertInstanceOf(Models\ValueConversionType\OwningManyToManyCompositeIdForeignKeyEntity::class, $owning);
     }
 
     /**
@@ -117,10 +117,10 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
             'ghi'
         );
 
-        $this->assertEquals('abc', $auxiliary->id4);
-        $this->assertEquals('def', $inversed->id1);
-        $this->assertEquals('abc', $inversed->foreignEntity->id4);
-        $this->assertEquals('ghi', $owning->id2);
+        self::assertEquals('abc', $auxiliary->id4);
+        self::assertEquals('def', $inversed->id1);
+        self::assertEquals('abc', $inversed->foreignEntity->id4);
+        self::assertEquals('ghi', $owning->id2);
     }
 
     /**
@@ -138,7 +138,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
             ['id1' => 'def', 'foreignEntity' => $auxiliary]
         );
 
-        $this->assertInstanceOf(Models\ValueConversionType\InversedManyToManyCompositeIdForeignKeyEntity::class, $inversed);
+        self::assertInstanceOf(Models\ValueConversionType\InversedManyToManyCompositeIdForeignKeyEntity::class, $inversed);
     }
 
     /**
@@ -151,7 +151,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
             'ghi'
         );
 
-        $this->assertCount(1, $owning->associatedEntities);
+        self::assertCount(1, $owning->associatedEntities);
     }
 
     /**
@@ -164,7 +164,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
             ['id1' => 'def', 'foreignEntity' => 'abc']
         );
 
-        $this->assertCount(1, $inversed->associatedEntities);
+        self::assertCount(1, $inversed->associatedEntities);
     }
 
     /**
@@ -192,6 +192,6 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
         // test association is removed
 
-        $this->assertEquals(0, $conn->fetchColumn('SELECT COUNT(*) FROM vct_xref_manytomany_compositeid_foreignkey'));
+        self::assertEquals(0, $conn->fetchColumn('SELECT COUNT(*) FROM vct_xref_manytomany_compositeid_foreignkey'));
     }
 }

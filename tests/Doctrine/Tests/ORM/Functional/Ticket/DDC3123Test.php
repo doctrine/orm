@@ -37,9 +37,9 @@ class DDC3123Test extends OrmFunctionalTestCase
                          ->getMock();
 
         $listener
-            ->expects($this->once())
+            ->expects(self::once())
             ->method(Events::postFlush)
-            ->will($this->returnCallback(function () use ($uow): void {
+            ->will(self::returnCallback(function () use ($uow): void {
                 $reflection = new ReflectionObject($uow);
                 $property   = $reflection->getProperty('extraUpdates');
 

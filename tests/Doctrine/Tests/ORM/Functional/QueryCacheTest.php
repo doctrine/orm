@@ -27,7 +27,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         if (! class_exists(ArrayCache::class)) {
-            $this->markTestSkipped('Test only applies with doctrine/cache 1.x');
+            self::markTestSkipped('Test only applies with doctrine/cache 1.x');
         }
 
         $this->cacheDataReflection = new ReflectionProperty(ArrayCache::class, 'data');
@@ -51,12 +51,12 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $query->setQueryCacheDriver($cache);
 
         $query->getResult();
-        $this->assertEquals(1, $this->getCacheSize($cache));
+        self::assertEquals(1, $this->getCacheSize($cache));
 
         $query->setHint('foo', 'bar');
 
         $query->getResult();
-        $this->assertEquals(2, $this->getCacheSize($cache));
+        self::assertEquals(2, $this->getCacheSize($cache));
 
         return $query;
     }
@@ -75,7 +75,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $query->setMaxResults(9999);
 
         $query->getResult();
-        $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
+        self::assertEquals($cacheCount + 1, $this->getCacheSize($cache));
     }
 
     /**
@@ -91,7 +91,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $query->setMaxResults(10);
 
         $query->getResult();
-        $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
+        self::assertEquals($cacheCount + 1, $this->getCacheSize($cache));
     }
 
     /**
@@ -105,7 +105,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $cacheCount = $this->getCacheSize($cache);
 
         $query->getArrayResult();
-        $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
+        self::assertEquals($cacheCount + 1, $this->getCacheSize($cache));
     }
 
     public function testQueryCacheNoHitSaveParserResult(): void
@@ -136,33 +136,33 @@ class QueryCacheTest extends OrmFunctionalTestCase
                             ->setMethods(['execute'])
                             ->getMock();
 
-        $sqlExecMock->expects($this->once())
+        $sqlExecMock->expects(self::once())
                     ->method('execute')
-                    ->will($this->returnValue(10));
+                    ->will(self::returnValue(10));
 
         $parserResultMock = $this->getMockBuilder(ParserResult::class)
                                  ->setMethods(['getSqlExecutor'])
                                  ->getMock();
-        $parserResultMock->expects($this->once())
+        $parserResultMock->expects(self::once())
                          ->method('getSqlExecutor')
-                         ->will($this->returnValue($sqlExecMock));
+                         ->will(self::returnValue($sqlExecMock));
 
         $cache = $this->getMockBuilder(CacheProvider::class)
                       ->setMethods(['doFetch', 'doContains', 'doSave', 'doDelete', 'doFlush', 'doGetStats'])
                       ->getMock();
 
-        $cache->expects($this->exactly(2))
+        $cache->expects(self::exactly(2))
             ->method('doFetch')
             ->withConsecutive(
-                [$this->isType('string')],
-                [$this->isType('string')]
+                [self::isType('string')],
+                [self::isType('string')]
             )
             ->willReturnOnConsecutiveCalls(
-                $this->returnValue(1),
-                $this->returnValue($parserResultMock)
+                self::returnValue(1),
+                self::returnValue($parserResultMock)
             );
 
-        $cache->expects($this->never())
+        $cache->expects(self::never())
               ->method('doSave');
 
         $query->setQueryCacheDriver($cache);

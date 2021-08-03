@@ -43,7 +43,7 @@ class DDC2692Test extends OrmFunctionalTestCase
                          ->setMethods(['preFlush'])
                          ->getMock();
 
-        $listener->expects($this->once())->method('preFlush');
+        $listener->expects(self::once())->method('preFlush');
 
         $this->_em->getEventManager()->addEventSubscriber($listener);
 

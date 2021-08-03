@@ -21,7 +21,7 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
         parent::setUp();
 
         if (! $this->_em->getConnection()->getDatabasePlatform()->supportsSequences()) {
-            $this->markTestSkipped('Only working for Databases that support sequences.');
+            self::markTestSkipped('Only working for Databases that support sequences.');
         }
 
         try {

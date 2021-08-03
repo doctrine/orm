@@ -35,7 +35,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
 
         $result = $this->_em->find(CustomIdObjectTypeParent::class, $parent->id);
 
-        $this->assertSame($parent, $result);
+        self::assertSame($parent, $result);
     }
 
     /**
@@ -60,8 +60,8 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
             )
             ->getResult();
 
-        $this->assertCount(1, $result);
-        $this->assertSame($parent, $result[0]);
+        self::assertCount(1, $result);
+        self::assertSame($parent, $result[0]);
     }
 
     /**
@@ -89,7 +89,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
             ->setParameter(1, $parent->children->first()->id)
             ->getResult();
 
-        $this->assertCount(1, $result);
-        $this->assertSame($parent, $result[0]);
+        self::assertCount(1, $result);
+        self::assertSame($parent, $result[0]);
     }
 }

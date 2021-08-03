@@ -29,7 +29,7 @@ class DDC3042Test extends OrmFunctionalTestCase
 
     public function testSQLGenerationDoesNotProvokeAliasCollisions(): void
     {
-        $this->assertStringNotMatchesFormat(
+        self::assertStringNotMatchesFormat(
             '%sfield11%sfield11%s',
             $this
                 ->_em

@@ -34,7 +34,7 @@ class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty(): void
     {
-        $this->markTestIncomplete();
+        self::markTestIncomplete();
     }
 
     /**
@@ -43,7 +43,7 @@ class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty(): void
     {
-        $this->markTestIncomplete();
+        self::markTestIncomplete();
     }
 
     public function testEntityIncorrectIndexes(): void

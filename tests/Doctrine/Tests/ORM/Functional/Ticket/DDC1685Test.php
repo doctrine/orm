@@ -44,20 +44,20 @@ class DDC1685Test extends OrmFunctionalTestCase
 
     public function testPaginateCount(): void
     {
-        $this->assertEquals(1, count($this->paginator));
+        self::assertEquals(1, count($this->paginator));
     }
 
     public function testPaginateIterate(): void
     {
         foreach ($this->paginator as $ad) {
-            $this->assertInstanceOf(DDC117ArticleDetails::class, $ad);
+            self::assertInstanceOf(DDC117ArticleDetails::class, $ad);
         }
     }
 
     public function testPaginateCountNoOutputWalkers(): void
     {
         $this->paginator->setUseOutputWalkers(false);
-        $this->assertEquals(1, count($this->paginator));
+        self::assertEquals(1, count($this->paginator));
     }
 
     public function testPaginateIterateNoOutputWalkers(): void
@@ -68,7 +68,7 @@ class DDC1685Test extends OrmFunctionalTestCase
         $this->expectExceptionMessage('Paginating an entity with foreign key as identifier only works when using the Output Walkers. Call Paginator#setUseOutputWalkers(true) before iterating the paginator.');
 
         foreach ($this->paginator as $ad) {
-            $this->assertInstanceOf(DDC117ArticleDetails::class, $ad);
+            self::assertInstanceOf(DDC117ArticleDetails::class, $ad);
         }
     }
 }

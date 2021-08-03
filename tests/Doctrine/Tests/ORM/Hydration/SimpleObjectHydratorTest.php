@@ -67,7 +67,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $stmt     = new HydratorMockResult($resultSet);
         $hydrator = new SimpleObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
-        $this->assertEquals($result[0], $expectedEntity);
+        self::assertEquals($result[0], $expectedEntity);
     }
 
     /**
@@ -126,7 +126,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $stmt     = new HydratorMockResult($resultSet);
         $hydrator = new SimpleObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
-        $this->assertEquals($result[0], $expectedEntity);
+        self::assertEquals($result[0], $expectedEntity);
     }
 
     public function testWrongValuesShouldNotBeConvertedToPhpValue(): void
@@ -158,6 +158,6 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $stmt     = new HydratorMockResult($resultSet);
         $hydrator = new SimpleObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
-        $this->assertEquals($result[0], $expectedEntity);
+        self::assertEquals($result[0], $expectedEntity);
     }
 }

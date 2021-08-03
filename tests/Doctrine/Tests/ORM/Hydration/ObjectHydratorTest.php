@@ -94,16 +94,16 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertInstanceOf(CmsUser::class, $result[0]);
-        $this->assertInstanceOf(CmsUser::class, $result[1]);
+        self::assertInstanceOf(CmsUser::class, $result[0]);
+        self::assertInstanceOf(CmsUser::class, $result[1]);
 
-        $this->assertEquals(1, $result[0]->id);
-        $this->assertEquals('romanb', $result[0]->name);
+        self::assertEquals(1, $result[0]->id);
+        self::assertEquals('romanb', $result[0]->name);
 
-        $this->assertEquals(2, $result[1]->id);
-        $this->assertEquals('jwage', $result[1]->name);
+        self::assertEquals(2, $result[1]->id);
+        self::assertEquals('jwage', $result[1]->name);
     }
 
     /**
@@ -133,19 +133,19 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertArrayHasKey('user', $result[0]);
-        $this->assertInstanceOf(CmsUser::class, $result[0]['user']);
+        self::assertArrayHasKey('user', $result[0]);
+        self::assertInstanceOf(CmsUser::class, $result[0]['user']);
 
-        $this->assertArrayHasKey('user', $result[1]);
-        $this->assertInstanceOf(CmsUser::class, $result[1]['user']);
+        self::assertArrayHasKey('user', $result[1]);
+        self::assertInstanceOf(CmsUser::class, $result[1]['user']);
 
-        $this->assertEquals(1, $result[0]['user']->id);
-        $this->assertEquals('romanb', $result[0]['user']->name);
+        self::assertEquals(1, $result[0]['user']->id);
+        self::assertEquals('romanb', $result[0]['user']->name);
 
-        $this->assertEquals(2, $result[1]['user']->id);
-        $this->assertEquals('jwage', $result[1]['user']->name);
+        self::assertEquals(2, $result[1]['user']->id);
+        self::assertEquals('jwage', $result[1]['user']->name);
     }
 
     /**
@@ -182,24 +182,24 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(4, count($result));
+        self::assertEquals(4, count($result));
 
-        $this->assertInstanceOf(CmsUser::class, $result[0]);
-        $this->assertInstanceOf(CmsArticle::class, $result[1]);
-        $this->assertInstanceOf(CmsUser::class, $result[2]);
-        $this->assertInstanceOf(CmsArticle::class, $result[3]);
+        self::assertInstanceOf(CmsUser::class, $result[0]);
+        self::assertInstanceOf(CmsArticle::class, $result[1]);
+        self::assertInstanceOf(CmsUser::class, $result[2]);
+        self::assertInstanceOf(CmsArticle::class, $result[3]);
 
-        $this->assertEquals(1, $result[0]->id);
-        $this->assertEquals('romanb', $result[0]->name);
+        self::assertEquals(1, $result[0]->id);
+        self::assertEquals('romanb', $result[0]->name);
 
-        $this->assertEquals(1, $result[1]->id);
-        $this->assertEquals('Cool things.', $result[1]->topic);
+        self::assertEquals(1, $result[1]->id);
+        self::assertEquals('Cool things.', $result[1]->topic);
 
-        $this->assertEquals(2, $result[2]->id);
-        $this->assertEquals('jwage', $result[2]->name);
+        self::assertEquals(2, $result[2]->id);
+        self::assertEquals('jwage', $result[2]->name);
 
-        $this->assertEquals(2, $result[3]->id);
-        $this->assertEquals('Cool things II.', $result[3]->topic);
+        self::assertEquals(2, $result[3]->id);
+        self::assertEquals('Cool things II.', $result[3]->topic);
     }
 
     /**
@@ -236,31 +236,31 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(4, count($result));
+        self::assertEquals(4, count($result));
 
-        $this->assertArrayHasKey('user', $result[0]);
-        $this->assertArrayNotHasKey(0, $result[0]);
-        $this->assertInstanceOf(CmsUser::class, $result[0]['user']);
-        $this->assertEquals(1, $result[0]['user']->id);
-        $this->assertEquals('romanb', $result[0]['user']->name);
+        self::assertArrayHasKey('user', $result[0]);
+        self::assertArrayNotHasKey(0, $result[0]);
+        self::assertInstanceOf(CmsUser::class, $result[0]['user']);
+        self::assertEquals(1, $result[0]['user']->id);
+        self::assertEquals('romanb', $result[0]['user']->name);
 
-        $this->assertArrayHasKey(0, $result[1]);
-        $this->assertArrayNotHasKey('user', $result[1]);
-        $this->assertInstanceOf(CmsArticle::class, $result[1][0]);
-        $this->assertEquals(1, $result[1][0]->id);
-        $this->assertEquals('Cool things.', $result[1][0]->topic);
+        self::assertArrayHasKey(0, $result[1]);
+        self::assertArrayNotHasKey('user', $result[1]);
+        self::assertInstanceOf(CmsArticle::class, $result[1][0]);
+        self::assertEquals(1, $result[1][0]->id);
+        self::assertEquals('Cool things.', $result[1][0]->topic);
 
-        $this->assertArrayHasKey('user', $result[2]);
-        $this->assertArrayNotHasKey(0, $result[2]);
-        $this->assertInstanceOf(CmsUser::class, $result[2]['user']);
-        $this->assertEquals(2, $result[2]['user']->id);
-        $this->assertEquals('jwage', $result[2]['user']->name);
+        self::assertArrayHasKey('user', $result[2]);
+        self::assertArrayNotHasKey(0, $result[2]);
+        self::assertInstanceOf(CmsUser::class, $result[2]['user']);
+        self::assertEquals(2, $result[2]['user']->id);
+        self::assertEquals('jwage', $result[2]['user']->name);
 
-        $this->assertArrayHasKey(0, $result[3]);
-        $this->assertArrayNotHasKey('user', $result[3]);
-        $this->assertInstanceOf(CmsArticle::class, $result[3][0]);
-        $this->assertEquals(2, $result[3][0]->id);
-        $this->assertEquals('Cool things II.', $result[3][0]->topic);
+        self::assertArrayHasKey(0, $result[3]);
+        self::assertArrayNotHasKey('user', $result[3]);
+        self::assertInstanceOf(CmsArticle::class, $result[3][0]);
+        self::assertEquals(2, $result[3][0]->id);
+        self::assertEquals('Cool things II.', $result[3][0]->topic);
     }
 
     /**
@@ -297,31 +297,31 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(4, count($result));
+        self::assertEquals(4, count($result));
 
-        $this->assertArrayHasKey(0, $result[0]);
-        $this->assertArrayNotHasKey('article', $result[0]);
-        $this->assertInstanceOf(CmsUser::class, $result[0][0]);
-        $this->assertEquals(1, $result[0][0]->id);
-        $this->assertEquals('romanb', $result[0][0]->name);
+        self::assertArrayHasKey(0, $result[0]);
+        self::assertArrayNotHasKey('article', $result[0]);
+        self::assertInstanceOf(CmsUser::class, $result[0][0]);
+        self::assertEquals(1, $result[0][0]->id);
+        self::assertEquals('romanb', $result[0][0]->name);
 
-        $this->assertArrayHasKey('article', $result[1]);
-        $this->assertArrayNotHasKey(0, $result[1]);
-        $this->assertInstanceOf(CmsArticle::class, $result[1]['article']);
-        $this->assertEquals(1, $result[1]['article']->id);
-        $this->assertEquals('Cool things.', $result[1]['article']->topic);
+        self::assertArrayHasKey('article', $result[1]);
+        self::assertArrayNotHasKey(0, $result[1]);
+        self::assertInstanceOf(CmsArticle::class, $result[1]['article']);
+        self::assertEquals(1, $result[1]['article']->id);
+        self::assertEquals('Cool things.', $result[1]['article']->topic);
 
-        $this->assertArrayHasKey(0, $result[2]);
-        $this->assertArrayNotHasKey('article', $result[2]);
-        $this->assertInstanceOf(CmsUser::class, $result[2][0]);
-        $this->assertEquals(2, $result[2][0]->id);
-        $this->assertEquals('jwage', $result[2][0]->name);
+        self::assertArrayHasKey(0, $result[2]);
+        self::assertArrayNotHasKey('article', $result[2]);
+        self::assertInstanceOf(CmsUser::class, $result[2][0]);
+        self::assertEquals(2, $result[2][0]->id);
+        self::assertEquals('jwage', $result[2][0]->name);
 
-        $this->assertArrayHasKey('article', $result[3]);
-        $this->assertArrayNotHasKey(0, $result[3]);
-        $this->assertInstanceOf(CmsArticle::class, $result[3]['article']);
-        $this->assertEquals(2, $result[3]['article']->id);
-        $this->assertEquals('Cool things II.', $result[3]['article']->topic);
+        self::assertArrayHasKey('article', $result[3]);
+        self::assertArrayNotHasKey(0, $result[3]);
+        self::assertInstanceOf(CmsArticle::class, $result[3]['article']);
+        self::assertEquals(2, $result[3]['article']->id);
+        self::assertEquals('Cool things II.', $result[3]['article']->topic);
     }
 
     /**
@@ -358,31 +358,31 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(4, count($result));
+        self::assertEquals(4, count($result));
 
-        $this->assertArrayHasKey('user', $result[0]);
-        $this->assertArrayNotHasKey('article', $result[0]);
-        $this->assertInstanceOf(CmsUser::class, $result[0]['user']);
-        $this->assertEquals(1, $result[0]['user']->id);
-        $this->assertEquals('romanb', $result[0]['user']->name);
+        self::assertArrayHasKey('user', $result[0]);
+        self::assertArrayNotHasKey('article', $result[0]);
+        self::assertInstanceOf(CmsUser::class, $result[0]['user']);
+        self::assertEquals(1, $result[0]['user']->id);
+        self::assertEquals('romanb', $result[0]['user']->name);
 
-        $this->assertArrayHasKey('article', $result[1]);
-        $this->assertArrayNotHasKey('user', $result[1]);
-        $this->assertInstanceOf(CmsArticle::class, $result[1]['article']);
-        $this->assertEquals(1, $result[1]['article']->id);
-        $this->assertEquals('Cool things.', $result[1]['article']->topic);
+        self::assertArrayHasKey('article', $result[1]);
+        self::assertArrayNotHasKey('user', $result[1]);
+        self::assertInstanceOf(CmsArticle::class, $result[1]['article']);
+        self::assertEquals(1, $result[1]['article']->id);
+        self::assertEquals('Cool things.', $result[1]['article']->topic);
 
-        $this->assertArrayHasKey('user', $result[2]);
-        $this->assertArrayNotHasKey('article', $result[2]);
-        $this->assertInstanceOf(CmsUser::class, $result[2]['user']);
-        $this->assertEquals(2, $result[2]['user']->id);
-        $this->assertEquals('jwage', $result[2]['user']->name);
+        self::assertArrayHasKey('user', $result[2]);
+        self::assertArrayNotHasKey('article', $result[2]);
+        self::assertInstanceOf(CmsUser::class, $result[2]['user']);
+        self::assertEquals(2, $result[2]['user']->id);
+        self::assertEquals('jwage', $result[2]['user']->name);
 
-        $this->assertArrayHasKey('article', $result[3]);
-        $this->assertArrayNotHasKey('user', $result[3]);
-        $this->assertInstanceOf(CmsArticle::class, $result[3]['article']);
-        $this->assertEquals(2, $result[3]['article']->id);
-        $this->assertEquals('Cool things II.', $result[3]['article']->topic);
+        self::assertArrayHasKey('article', $result[3]);
+        self::assertArrayNotHasKey('user', $result[3]);
+        self::assertInstanceOf(CmsArticle::class, $result[3]['article']);
+        self::assertEquals(2, $result[3]['article']->id);
+        self::assertEquals('Cool things II.', $result[3]['article']->topic);
     }
 
     /**
@@ -420,19 +420,19 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertIsArray($result);
-        $this->assertIsArray($result[0]);
-        $this->assertIsArray($result[1]);
+        self::assertIsArray($result);
+        self::assertIsArray($result[0]);
+        self::assertIsArray($result[1]);
 
         // first user => 2 phonenumbers
-        $this->assertEquals(2, $result[0]['numPhones']);
-        $this->assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
+        self::assertEquals(2, $result[0]['numPhones']);
+        self::assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
 
         // second user => 1 phonenumber
-        $this->assertEquals(1, $result[1]['numPhones']);
-        $this->assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
+        self::assertEquals(1, $result[1]['numPhones']);
+        self::assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
     }
 
     /**
@@ -484,31 +484,31 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertIsArray($result);
-        $this->assertIsArray($result[0]);
-        $this->assertIsArray($result[1]);
+        self::assertIsArray($result);
+        self::assertIsArray($result[0]);
+        self::assertIsArray($result[1]);
 
-        $this->assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
-        $this->assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->phonenumbers);
-        $this->assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[0]);
+        self::assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
+        self::assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->phonenumbers);
+        self::assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[0]);
 
-        $this->assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
-        $this->assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->phonenumbers);
-        $this->assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[1]);
+        self::assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
+        self::assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->phonenumbers);
+        self::assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[1]);
 
         // first user => 2 phonenumbers
-        $this->assertEquals(2, count($result[0][$userEntityKey]->phonenumbers));
-        $this->assertEquals('ROMANB', $result[0]['nameUpper']);
+        self::assertEquals(2, count($result[0][$userEntityKey]->phonenumbers));
+        self::assertEquals('ROMANB', $result[0]['nameUpper']);
 
         // second user => 1 phonenumber
-        $this->assertEquals(1, count($result[1][$userEntityKey]->phonenumbers));
-        $this->assertEquals('JWAGE', $result[1]['nameUpper']);
+        self::assertEquals(1, count($result[1][$userEntityKey]->phonenumbers));
+        self::assertEquals('JWAGE', $result[1]['nameUpper']);
 
-        $this->assertEquals(42, $result[0][$userEntityKey]->phonenumbers[0]->phonenumber);
-        $this->assertEquals(43, $result[0][$userEntityKey]->phonenumbers[1]->phonenumber);
-        $this->assertEquals(91, $result[1][$userEntityKey]->phonenumbers[0]->phonenumber);
+        self::assertEquals(42, $result[0][$userEntityKey]->phonenumbers[0]->phonenumber);
+        self::assertEquals(43, $result[0][$userEntityKey]->phonenumbers[1]->phonenumber);
+        self::assertEquals(91, $result[1][$userEntityKey]->phonenumbers[0]->phonenumber);
     }
 
     /**
@@ -564,30 +564,30 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertIsArray($result);
-        $this->assertIsArray($result[1]);
-        $this->assertIsArray($result[2]);
+        self::assertIsArray($result);
+        self::assertIsArray($result[1]);
+        self::assertIsArray($result[2]);
 
         // test the scalar values
-        $this->assertEquals('ROMANB', $result[1]['nameUpper']);
-        $this->assertEquals('JWAGE', $result[2]['nameUpper']);
+        self::assertEquals('ROMANB', $result[1]['nameUpper']);
+        self::assertEquals('JWAGE', $result[2]['nameUpper']);
 
-        $this->assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
-        $this->assertInstanceOf(CmsUser::class, $result[2][$userEntityKey]);
-        $this->assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->phonenumbers);
+        self::assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
+        self::assertInstanceOf(CmsUser::class, $result[2][$userEntityKey]);
+        self::assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->phonenumbers);
 
         // first user => 2 phonenumbers. notice the custom indexing by user id
-        $this->assertEquals(2, count($result[1][$userEntityKey]->phonenumbers));
+        self::assertEquals(2, count($result[1][$userEntityKey]->phonenumbers));
 
         // second user => 1 phonenumber. notice the custom indexing by user id
-        $this->assertEquals(1, count($result[2][$userEntityKey]->phonenumbers));
+        self::assertEquals(1, count($result[2][$userEntityKey]->phonenumbers));
 
         // test the custom indexing of the phonenumbers
-        $this->assertTrue(isset($result[1][$userEntityKey]->phonenumbers['42']));
-        $this->assertTrue(isset($result[1][$userEntityKey]->phonenumbers['43']));
-        $this->assertTrue(isset($result[2][$userEntityKey]->phonenumbers['91']));
+        self::assertTrue(isset($result[1][$userEntityKey]->phonenumbers['42']));
+        self::assertTrue(isset($result[1][$userEntityKey]->phonenumbers['43']));
+        self::assertTrue(isset($result[2][$userEntityKey]->phonenumbers['91']));
     }
 
     /**
@@ -678,25 +678,25 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertTrue(is_array($result));
-        $this->assertTrue(is_array($result[0]));
-        $this->assertTrue(is_array($result[1]));
+        self::assertTrue(is_array($result));
+        self::assertTrue(is_array($result[0]));
+        self::assertTrue(is_array($result[1]));
 
-        $this->assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
-        $this->assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->phonenumbers);
-        $this->assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[0]);
-        $this->assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[1]);
-        $this->assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->articles);
-        $this->assertInstanceOf(CmsArticle::class, $result[0][$userEntityKey]->articles[0]);
-        $this->assertInstanceOf(CmsArticle::class, $result[0][$userEntityKey]->articles[1]);
+        self::assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
+        self::assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->phonenumbers);
+        self::assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[0]);
+        self::assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[1]);
+        self::assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->articles);
+        self::assertInstanceOf(CmsArticle::class, $result[0][$userEntityKey]->articles[0]);
+        self::assertInstanceOf(CmsArticle::class, $result[0][$userEntityKey]->articles[1]);
 
-        $this->assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
-        $this->assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->phonenumbers);
-        $this->assertInstanceOf(CmsPhonenumber::class, $result[1][$userEntityKey]->phonenumbers[0]);
-        $this->assertInstanceOf(CmsArticle::class, $result[1][$userEntityKey]->articles[0]);
-        $this->assertInstanceOf(CmsArticle::class, $result[1][$userEntityKey]->articles[1]);
+        self::assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
+        self::assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->phonenumbers);
+        self::assertInstanceOf(CmsPhonenumber::class, $result[1][$userEntityKey]->phonenumbers[0]);
+        self::assertInstanceOf(CmsArticle::class, $result[1][$userEntityKey]->articles[0]);
+        self::assertInstanceOf(CmsArticle::class, $result[1][$userEntityKey]->articles[1]);
     }
 
     /**
@@ -808,43 +808,43 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertTrue(is_array($result));
-        $this->assertTrue(is_array($result[0]));
-        $this->assertTrue(is_array($result[1]));
+        self::assertTrue(is_array($result));
+        self::assertTrue(is_array($result[0]));
+        self::assertTrue(is_array($result[1]));
 
-        $this->assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
-        $this->assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
+        self::assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
+        self::assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
 
         // phonenumbers
-        $this->assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->phonenumbers);
-        $this->assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[0]);
-        $this->assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[1]);
+        self::assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->phonenumbers);
+        self::assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[0]);
+        self::assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[1]);
 
-        $this->assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->phonenumbers);
-        $this->assertInstanceOf(CmsPhonenumber::class, $result[1][$userEntityKey]->phonenumbers[0]);
+        self::assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->phonenumbers);
+        self::assertInstanceOf(CmsPhonenumber::class, $result[1][$userEntityKey]->phonenumbers[0]);
 
         // articles
-        $this->assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->articles);
-        $this->assertInstanceOf(CmsArticle::class, $result[0][$userEntityKey]->articles[0]);
-        $this->assertInstanceOf(CmsArticle::class, $result[0][$userEntityKey]->articles[1]);
+        self::assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->articles);
+        self::assertInstanceOf(CmsArticle::class, $result[0][$userEntityKey]->articles[0]);
+        self::assertInstanceOf(CmsArticle::class, $result[0][$userEntityKey]->articles[1]);
 
-        $this->assertInstanceOf(CmsArticle::class, $result[1][$userEntityKey]->articles[0]);
-        $this->assertInstanceOf(CmsArticle::class, $result[1][$userEntityKey]->articles[1]);
+        self::assertInstanceOf(CmsArticle::class, $result[1][$userEntityKey]->articles[0]);
+        self::assertInstanceOf(CmsArticle::class, $result[1][$userEntityKey]->articles[1]);
 
         // article comments
-        $this->assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->articles[0]->comments);
-        $this->assertInstanceOf(CmsComment::class, $result[0][$userEntityKey]->articles[0]->comments[0]);
+        self::assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->articles[0]->comments);
+        self::assertInstanceOf(CmsComment::class, $result[0][$userEntityKey]->articles[0]->comments[0]);
 
         // empty comment collections
-        $this->assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->articles[1]->comments);
-        $this->assertEquals(0, count($result[0][$userEntityKey]->articles[1]->comments));
+        self::assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->articles[1]->comments);
+        self::assertEquals(0, count($result[0][$userEntityKey]->articles[1]->comments));
 
-        $this->assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->articles[0]->comments);
-        $this->assertEquals(0, count($result[1][$userEntityKey]->articles[0]->comments));
-        $this->assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->articles[1]->comments);
-        $this->assertEquals(0, count($result[1][$userEntityKey]->articles[1]->comments));
+        self::assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->articles[0]->comments);
+        self::assertEquals(0, count($result[1][$userEntityKey]->articles[0]->comments));
+        self::assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->articles[1]->comments);
+        self::assertEquals(0, count($result[1][$userEntityKey]->articles[1]->comments));
     }
 
     /**
@@ -921,21 +921,21 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertInstanceOf(ForumCategory::class, $result[0]);
-        $this->assertInstanceOf(ForumCategory::class, $result[1]);
+        self::assertInstanceOf(ForumCategory::class, $result[0]);
+        self::assertInstanceOf(ForumCategory::class, $result[1]);
 
-        $this->assertTrue($result[0] !== $result[1]);
+        self::assertTrue($result[0] !== $result[1]);
 
-        $this->assertEquals(1, $result[0]->getId());
-        $this->assertEquals(2, $result[1]->getId());
+        self::assertEquals(1, $result[0]->getId());
+        self::assertEquals(2, $result[1]->getId());
 
-        $this->assertTrue(isset($result[0]->boards));
-        $this->assertEquals(3, count($result[0]->boards));
+        self::assertTrue(isset($result[0]->boards));
+        self::assertEquals(3, count($result[0]->boards));
 
-        $this->assertTrue(isset($result[1]->boards));
-        $this->assertEquals(1, count($result[1]->boards));
+        self::assertTrue(isset($result[1]->boards));
+        self::assertEquals(1, count($result[1]->boards));
     }
 
     /**
@@ -964,8 +964,8 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(1, count($result));
-        $this->assertInstanceOf(CmsUser::class, $result[0]);
+        self::assertEquals(1, count($result));
+        self::assertInstanceOf(CmsUser::class, $result[0]);
     }
 
     /**
@@ -997,16 +997,16 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertIsArray($result[0]);
-        $this->assertIsArray($result[1]);
+        self::assertIsArray($result[0]);
+        self::assertIsArray($result[1]);
 
-        $this->assertEquals(1, $result[0]['id']);
-        $this->assertEquals('romanb', $result[0]['name']);
+        self::assertEquals(1, $result[0]['id']);
+        self::assertEquals('romanb', $result[0]['name']);
 
-        $this->assertEquals(2, $result[1]['id']);
-        $this->assertEquals('jwage', $result[1]['name']);
+        self::assertEquals(2, $result[1]['id']);
+        self::assertEquals('jwage', $result[1]['name']);
     }
 
     /**
@@ -1038,10 +1038,10 @@ class ObjectHydratorTest extends HydrationTestCase
                              ->disableOriginalConstructor()
                              ->getMock();
 
-        $proxyFactory->expects($this->once())
+        $proxyFactory->expects(self::once())
                      ->method('getProxy')
-                     ->with($this->equalTo(ECommerceShipping::class), ['id' => 42])
-                     ->will($this->returnValue($proxyInstance));
+                     ->with(self::equalTo(ECommerceShipping::class), ['id' => 42])
+                     ->will(self::returnValue($proxyInstance));
 
         $this->entityManager->setProxyFactory($proxyFactory);
 
@@ -1053,9 +1053,9 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(1, count($result));
+        self::assertEquals(1, count($result));
 
-        $this->assertInstanceOf(ECommerceProduct::class, $result[0]);
+        self::assertInstanceOf(ECommerceProduct::class, $result[0]);
     }
 
     /**
@@ -1087,10 +1087,10 @@ class ObjectHydratorTest extends HydrationTestCase
                              ->disableOriginalConstructor()
                              ->getMock();
 
-        $proxyFactory->expects($this->once())
+        $proxyFactory->expects(self::once())
                      ->method('getProxy')
-                     ->with($this->equalTo(ECommerceShipping::class), ['id' => 42])
-                     ->will($this->returnValue($proxyInstance));
+                     ->with(self::equalTo(ECommerceShipping::class), ['id' => 42])
+                     ->will(self::returnValue($proxyInstance));
 
         $this->entityManager->setProxyFactory($proxyFactory);
 
@@ -1102,10 +1102,10 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(1, count($result));
+        self::assertEquals(1, count($result));
 
-        $this->assertIsArray($result[0]);
-        $this->assertInstanceOf(ECommerceProduct::class, $result[0]['product']);
+        self::assertIsArray($result[0]);
+        self::assertInstanceOf(ECommerceProduct::class, $result[0]['product']);
     }
 
     /**
@@ -1162,13 +1162,13 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertInstanceOf(CmsUser::class, $result[0]);
-        $this->assertInstanceOf(CmsUser::class, $result[1]);
+        self::assertInstanceOf(CmsUser::class, $result[0]);
+        self::assertInstanceOf(CmsUser::class, $result[1]);
 
-        $this->assertEquals(0, $result[0]->articles->count());
-        $this->assertEquals(0, $result[1]->articles->count());
+        self::assertEquals(0, $result[0]->articles->count());
+        self::assertEquals(0, $result[1]->articles->count());
     }
 
     /**
@@ -1225,16 +1225,16 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertIsArray($result[0]);
-        $this->assertInstanceOf(CmsUser::class, $result[0]['user']);
+        self::assertIsArray($result[0]);
+        self::assertInstanceOf(CmsUser::class, $result[0]['user']);
 
-        $this->assertIsArray($result[1]);
-        $this->assertInstanceOf(CmsUser::class, $result[1]['user']);
+        self::assertIsArray($result[1]);
+        self::assertInstanceOf(CmsUser::class, $result[1]['user']);
 
-        $this->assertEquals(0, $result[0]['user']->articles->count());
-        $this->assertEquals(0, $result[1]['user']->articles->count());
+        self::assertEquals(0, $result[0]['user']->articles->count());
+        self::assertEquals(0, $result[1]['user']->articles->count());
     }
 
     /**
@@ -1270,15 +1270,15 @@ class ObjectHydratorTest extends HydrationTestCase
         $rowNum         = 0;
 
         while (($row = $iterableResult->next()) !== false) {
-            $this->assertEquals(1, count($row));
-            $this->assertInstanceOf(CmsUser::class, $row[0]);
+            self::assertEquals(1, count($row));
+            self::assertInstanceOf(CmsUser::class, $row[0]);
 
             if ($rowNum === 0) {
-                $this->assertEquals(1, $row[0]->id);
-                $this->assertEquals('romanb', $row[0]->name);
+                self::assertEquals(1, $row[0]->id);
+                self::assertEquals('romanb', $row[0]->name);
             } elseif ($rowNum === 1) {
-                $this->assertEquals(2, $row[0]->id);
-                $this->assertEquals('jwage', $row[0]->name);
+                self::assertEquals(2, $row[0]->id);
+                self::assertEquals('jwage', $row[0]->name);
             }
 
             ++$rowNum;
@@ -1344,17 +1344,17 @@ class ObjectHydratorTest extends HydrationTestCase
         );
 
         while (($row = $iterableResult->next()) !== false) {
-            $this->assertEquals(1, count($row));
-            $this->assertArrayHasKey(0, $row);
-            $this->assertArrayHasKey('user', $row[0]);
-            $this->assertInstanceOf(CmsUser::class, $row[0]['user']);
+            self::assertEquals(1, count($row));
+            self::assertArrayHasKey(0, $row);
+            self::assertArrayHasKey('user', $row[0]);
+            self::assertInstanceOf(CmsUser::class, $row[0]['user']);
 
             if ($rowNum === 0) {
-                $this->assertEquals(1, $row[0]['user']->id);
-                $this->assertEquals('romanb', $row[0]['user']->name);
+                self::assertEquals(1, $row[0]['user']->id);
+                self::assertEquals('romanb', $row[0]['user']->name);
             } elseif ($rowNum === 1) {
-                $this->assertEquals(2, $row[0]['user']->id);
-                $this->assertEquals('jwage', $row[0]['user']->name);
+                self::assertEquals(2, $row[0]['user']->id);
+                self::assertEquals('jwage', $row[0]['user']->name);
             }
 
             ++$rowNum;
@@ -1502,15 +1502,15 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertContainsOnly(CmsUser::class, $result);
+        self::assertContainsOnly(CmsUser::class, $result);
 
-        $this->assertEquals(2, count($result[0]->groups));
-        $this->assertEquals(2, count($result[0]->phonenumbers));
+        self::assertEquals(2, count($result[0]->groups));
+        self::assertEquals(2, count($result[0]->phonenumbers));
 
-        $this->assertEquals(4, count($result[1]->groups));
-        $this->assertEquals(2, count($result[1]->phonenumbers));
+        self::assertEquals(4, count($result[1]->groups));
+        self::assertEquals(2, count($result[1]->phonenumbers));
     }
 
     /**
@@ -1625,18 +1625,18 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertIsArray($result[0]);
-        $this->assertInstanceOf(CmsUser::class, $result[0]['user']);
-        $this->assertIsArray($result[1]);
-        $this->assertInstanceOf(CmsUser::class, $result[1]['user']);
+        self::assertIsArray($result[0]);
+        self::assertInstanceOf(CmsUser::class, $result[0]['user']);
+        self::assertIsArray($result[1]);
+        self::assertInstanceOf(CmsUser::class, $result[1]['user']);
 
-        $this->assertEquals(2, count($result[0]['user']->groups));
-        $this->assertEquals(2, count($result[0]['user']->phonenumbers));
+        self::assertEquals(2, count($result[0]['user']->groups));
+        self::assertEquals(2, count($result[0]['user']->phonenumbers));
 
-        $this->assertEquals(4, count($result[1]['user']->groups));
-        $this->assertEquals(2, count($result[1]['user']->phonenumbers));
+        self::assertEquals(4, count($result[1]['user']->groups));
+        self::assertEquals(2, count($result[1]['user']->phonenumbers));
     }
 
     /**
@@ -1683,18 +1683,18 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(4, count($result), 'Should hydrate four results.');
+        self::assertEquals(4, count($result), 'Should hydrate four results.');
 
-        $this->assertEquals('ROMANB', $result[0]['nameUpper']);
-        $this->assertEquals('ROMANB', $result[1]['nameUpper']);
-        $this->assertEquals('JWAGE', $result[2]['nameUpper']);
-        $this->assertEquals('JWAGE', $result[3]['nameUpper']);
+        self::assertEquals('ROMANB', $result[0]['nameUpper']);
+        self::assertEquals('ROMANB', $result[1]['nameUpper']);
+        self::assertEquals('JWAGE', $result[2]['nameUpper']);
+        self::assertEquals('JWAGE', $result[3]['nameUpper']);
 
-        $this->assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
-        $this->assertNull($result[1][$userEntityKey]);
+        self::assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
+        self::assertNull($result[1][$userEntityKey]);
 
-        $this->assertInstanceOf(CmsUser::class, $result[2][$userEntityKey]);
-        $this->assertNull($result[3][$userEntityKey]);
+        self::assertInstanceOf(CmsUser::class, $result[2][$userEntityKey]);
+        self::assertNull($result[3][$userEntityKey]);
     }
 
     /**
@@ -1753,10 +1753,10 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertEquals(1, $result[0][$userEntityKey]->phonenumbers->count());
-        $this->assertEquals(1, $result[1][$userEntityKey]->phonenumbers->count());
+        self::assertEquals(1, $result[0][$userEntityKey]->phonenumbers->count());
+        self::assertEquals(1, $result[1][$userEntityKey]->phonenumbers->count());
     }
 
     /**
@@ -1807,10 +1807,10 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertInstanceOf(CmsAddress::class, $result[0][$userEntityKey]->address);
-        $this->assertNull($result[1][$userEntityKey]->address);
+        self::assertInstanceOf(CmsAddress::class, $result[0][$userEntityKey]->address);
+        self::assertNull($result[1][$userEntityKey]->address);
     }
 
     /**
@@ -1849,13 +1849,13 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(2, count($result));
+        self::assertEquals(2, count($result));
 
-        $this->assertTrue(isset($result[1]));
-        $this->assertEquals(1, $result[1][$userEntityKey]->id);
+        self::assertTrue(isset($result[1]));
+        self::assertEquals(1, $result[1][$userEntityKey]->id);
 
-        $this->assertTrue(isset($result[2]));
-        $this->assertEquals(2, $result[2][$userEntityKey]->id);
+        self::assertTrue(isset($result[2]));
+        self::assertEquals(2, $result[2][$userEntityKey]->id);
     }
 
     /**
@@ -1883,7 +1883,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'ROMANB' => ['nameUpper' => 'ROMANB'],
                 'JWAGE'  => ['nameUpper' => 'JWAGE'],
@@ -1999,10 +1999,10 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertCount(1, $result);
-        $this->assertInstanceOf(EntityWithArrayDefaultArrayValueM2M::class, $result[0]);
-        $this->assertInstanceOf(PersistentCollection::class, $result[0]->collection);
-        $this->assertCount(1, $result[0]->collection);
-        $this->assertInstanceOf(SimpleEntity::class, $result[0]->collection[0]);
+        self::assertCount(1, $result);
+        self::assertInstanceOf(EntityWithArrayDefaultArrayValueM2M::class, $result[0]);
+        self::assertInstanceOf(PersistentCollection::class, $result[0]->collection);
+        self::assertCount(1, $result[0]->collection);
+        self::assertInstanceOf(SimpleEntity::class, $result[0]->collection[0]);
     }
 }

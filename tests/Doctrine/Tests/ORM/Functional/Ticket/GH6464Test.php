@@ -43,14 +43,14 @@ class GH6464Test extends OrmFunctionalTestCase
             ->innerJoin(GH6464Author::class, 'a', 'WITH', 'p.authorId = a.id')
             ->getQuery();
 
-        $this->assertDoesNotMatchRegularExpression(
+        self::assertDoesNotMatchRegularExpression(
             '/INNER JOIN \w+ \w+ INNER JOIN/',
             $query->getSQL(),
             'As of GH-6464, every INNER JOIN should have an ON clause, which is missing here'
         );
 
         // Query shouldn't yield a result, yet it shouldn't crash (anymore)
-        $this->assertEquals([], $query->getResult());
+        self::assertEquals([], $query->getResult());
     }
 }
 

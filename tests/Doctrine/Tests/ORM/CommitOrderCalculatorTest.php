@@ -49,7 +49,7 @@ class CommitOrderCalculatorTest extends OrmTestCase
         // There is only 1 valid ordering for this constellation
         $correctOrder = [$class5, $class1, $class2, $class3, $class4];
 
-        $this->assertSame($correctOrder, $sorted);
+        self::assertSame($correctOrder, $sorted);
     }
 
     public function testCommitOrdering2(): void
@@ -68,7 +68,7 @@ class CommitOrderCalculatorTest extends OrmTestCase
         // There is only 1 valid ordering for this constellation
         $correctOrder = [$class2, $class1];
 
-        $this->assertSame($correctOrder, $sorted);
+        self::assertSame($correctOrder, $sorted);
     }
 
     public function testCommitOrdering3(): void
@@ -101,7 +101,7 @@ class CommitOrderCalculatorTest extends OrmTestCase
         ];
 
         // We want to perform a strict comparison of the array
-        $this->assertContains($sorted, $correctOrders, '', false, true);
+        self::assertContains($sorted, $correctOrders, '', false, true);
     }
 }
 

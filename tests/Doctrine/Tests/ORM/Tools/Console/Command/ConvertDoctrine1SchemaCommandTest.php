@@ -20,9 +20,9 @@ class ConvertDoctrine1SchemaCommandTest extends OrmTestCase
         $command->setEntityGenerator($entityGenerator);
 
         $output = $this->createMock(OutputInterface::class);
-        $output->expects($this->once())
+        $output->expects(self::once())
                ->method('writeln')
-               ->with($this->equalTo('No Metadata Classes to process.'));
+               ->with(self::equalTo('No Metadata Classes to process.'));
 
         $command->convertDoctrine1Schema([], sys_get_temp_dir(), 'annotation', 4, null, $output);
     }

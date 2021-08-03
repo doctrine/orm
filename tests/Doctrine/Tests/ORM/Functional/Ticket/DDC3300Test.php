@@ -52,8 +52,8 @@ class DDC3300Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertEquals($boss, $this->_em->find(DDC3300Boss::class, $boss->id));
-        $this->assertEquals($employee, $this->_em->find(DDC3300Employee::class, $employee->id));
+        self::assertEquals($boss, $this->_em->find(DDC3300Boss::class, $boss->id));
+        self::assertEquals($employee, $this->_em->find(DDC3300Employee::class, $employee->id));
     }
 }
 

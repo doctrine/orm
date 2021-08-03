@@ -34,14 +34,14 @@ class CacheLoggerChainTest extends DoctrineTestCase
 
     public function testGetAndSetLogger(): void
     {
-        $this->assertEmpty($this->logger->getLoggers());
+        self::assertEmpty($this->logger->getLoggers());
 
-        $this->assertNull($this->logger->getLogger('mock'));
+        self::assertNull($this->logger->getLogger('mock'));
 
         $this->logger->setLogger('mock', $this->mock);
 
-        $this->assertSame($this->mock, $this->logger->getLogger('mock'));
-        $this->assertEquals(['mock' => $this->mock], $this->logger->getLoggers());
+        self::assertSame($this->mock, $this->logger->getLogger('mock'));
+        self::assertEquals(['mock' => $this->mock], $this->logger->getLoggers());
     }
 
     public function testEntityCacheChain(): void
@@ -51,17 +51,17 @@ class CacheLoggerChainTest extends DoctrineTestCase
 
         $this->logger->setLogger('mock', $this->mock);
 
-        $this->mock->expects($this->once())
+        $this->mock->expects(self::once())
             ->method('entityCacheHit')
-            ->with($this->equalTo($name), $this->equalTo($key));
+            ->with(self::equalTo($name), self::equalTo($key));
 
-        $this->mock->expects($this->once())
+        $this->mock->expects(self::once())
             ->method('entityCachePut')
-            ->with($this->equalTo($name), $this->equalTo($key));
+            ->with(self::equalTo($name), self::equalTo($key));
 
-        $this->mock->expects($this->once())
+        $this->mock->expects(self::once())
             ->method('entityCacheMiss')
-            ->with($this->equalTo($name), $this->equalTo($key));
+            ->with(self::equalTo($name), self::equalTo($key));
 
         $this->logger->entityCacheHit($name, $key);
         $this->logger->entityCachePut($name, $key);
@@ -75,17 +75,17 @@ class CacheLoggerChainTest extends DoctrineTestCase
 
         $this->logger->setLogger('mock', $this->mock);
 
-        $this->mock->expects($this->once())
+        $this->mock->expects(self::once())
             ->method('collectionCacheHit')
-            ->with($this->equalTo($name), $this->equalTo($key));
+            ->with(self::equalTo($name), self::equalTo($key));
 
-        $this->mock->expects($this->once())
+        $this->mock->expects(self::once())
             ->method('collectionCachePut')
-            ->with($this->equalTo($name), $this->equalTo($key));
+            ->with(self::equalTo($name), self::equalTo($key));
 
-        $this->mock->expects($this->once())
+        $this->mock->expects(self::once())
             ->method('collectionCacheMiss')
-            ->with($this->equalTo($name), $this->equalTo($key));
+            ->with(self::equalTo($name), self::equalTo($key));
 
         $this->logger->collectionCacheHit($name, $key);
         $this->logger->collectionCachePut($name, $key);
@@ -99,17 +99,17 @@ class CacheLoggerChainTest extends DoctrineTestCase
 
         $this->logger->setLogger('mock', $this->mock);
 
-        $this->mock->expects($this->once())
+        $this->mock->expects(self::once())
             ->method('queryCacheHit')
-            ->with($this->equalTo($name), $this->equalTo($key));
+            ->with(self::equalTo($name), self::equalTo($key));
 
-        $this->mock->expects($this->once())
+        $this->mock->expects(self::once())
             ->method('queryCachePut')
-            ->with($this->equalTo($name), $this->equalTo($key));
+            ->with(self::equalTo($name), self::equalTo($key));
 
-        $this->mock->expects($this->once())
+        $this->mock->expects(self::once())
             ->method('queryCacheMiss')
-            ->with($this->equalTo($name), $this->equalTo($key));
+            ->with(self::equalTo($name), self::equalTo($key));
 
         $this->logger->queryCacheHit($name, $key);
         $this->logger->queryCachePut($name, $key);

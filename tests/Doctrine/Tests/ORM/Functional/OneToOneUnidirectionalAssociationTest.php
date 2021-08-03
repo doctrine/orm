@@ -62,8 +62,8 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $result  = $query->getResult();
         $product = $result[0];
 
-        $this->assertInstanceOf(ECommerceShipping::class, $product->getShipping());
-        $this->assertEquals(1, $product->getShipping()->getDays());
+        self::assertInstanceOf(ECommerceShipping::class, $product->getShipping());
+        self::assertEquals(1, $product->getShipping()->getDays());
     }
 
     public function testLazyLoadsObjects(): void
@@ -76,8 +76,8 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $result  = $query->getResult();
         $product = $result[0];
 
-        $this->assertInstanceOf(ECommerceShipping::class, $product->getShipping());
-        $this->assertEquals(1, $product->getShipping()->getDays());
+        self::assertInstanceOf(ECommerceShipping::class, $product->getShipping());
+        self::assertEquals(1, $product->getShipping()->getDays());
     }
 
     public function testDoesNotLazyLoadObjectsIfConfigurationDoesNotAllowIt(): void
@@ -90,7 +90,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $result  = $query->getResult();
         $product = $result[0];
 
-        $this->assertNull($product->getShipping());
+        self::assertNull($product->getShipping());
     }
 
     protected function createFixture(): void
@@ -113,7 +113,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
             'SELECT shipping_id FROM ecommerce_products WHERE id=?',
             [$this->product->getId()]
         )->fetchColumn();
-        $this->assertEquals($value, $foreignKey);
+        self::assertEquals($value, $foreignKey);
     }
 
     /**
@@ -129,6 +129,6 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
 
         $product = $this->_em->find(get_class($product), $product->getId());
 
-        $this->assertNull($product->getShipping());
+        self::assertNull($product->getShipping());
     }
 }

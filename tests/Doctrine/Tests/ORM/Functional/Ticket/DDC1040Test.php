@@ -51,7 +51,7 @@ class DDC1040Test extends OrmFunctionalTestCase
                   ->setParameter('topic', 'This is John Galt speaking!')
                   ->getSingleResult();
 
-        $this->assertSame($article, $farticle);
+        self::assertSame($article, $farticle);
     }
 
     public function testUseMultiplePositionalParameters(): void
@@ -77,6 +77,6 @@ class DDC1040Test extends OrmFunctionalTestCase
                   ->setParameter(3, $user)
                   ->getSingleResult();
 
-        $this->assertSame($article, $farticle);
+        self::assertSame($article, $farticle);
     }
 }

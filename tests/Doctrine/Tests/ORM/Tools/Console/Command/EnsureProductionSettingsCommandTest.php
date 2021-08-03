@@ -23,16 +23,16 @@ class EnsureProductionSettingsCommandTest extends DoctrineTestCase
         $em = $this->createMock(EntityManagerInterface::class);
 
         $configuration = $this->createMock(Configuration::class);
-        $configuration->expects($this->once())
+        $configuration->expects(self::once())
             ->method('ensureProductionSettings');
 
         $em->method('getConfiguration')
             ->willReturn($configuration);
 
-        $em->expects($this->never())
+        $em->expects(self::never())
             ->method('getConnection');
 
-        $this->assertSame(0, $this->executeCommand($em));
+        self::assertSame(0, $this->executeCommand($em));
     }
 
     public function testExecuteFailed(): void
@@ -40,17 +40,17 @@ class EnsureProductionSettingsCommandTest extends DoctrineTestCase
         $em = $this->createMock(EntityManagerInterface::class);
 
         $configuration = $this->createMock(Configuration::class);
-        $configuration->expects($this->once())
+        $configuration->expects(self::once())
             ->method('ensureProductionSettings')
             ->willThrowException(new RuntimeException());
 
         $em->method('getConfiguration')
             ->willReturn($configuration);
 
-        $em->expects($this->never())
+        $em->expects(self::never())
             ->method('getConnection');
 
-        $this->assertSame(1, $this->executeCommand($em));
+        self::assertSame(1, $this->executeCommand($em));
     }
 
     public function testExecuteWithComplete(): void
@@ -58,7 +58,7 @@ class EnsureProductionSettingsCommandTest extends DoctrineTestCase
         $em = $this->createMock(EntityManagerInterface::class);
 
         $configuration = $this->createMock(Configuration::class);
-        $configuration->expects($this->once())
+        $configuration->expects(self::once())
             ->method('ensureProductionSettings');
 
         $em->method('getConfiguration')
@@ -66,13 +66,13 @@ class EnsureProductionSettingsCommandTest extends DoctrineTestCase
 
         $connection = $this->createMock(Connection::class);
 
-        $connection->expects($this->once())
+        $connection->expects(self::once())
             ->method('connect');
 
         $em->method('getConnection')
             ->willReturn($connection);
 
-        $this->assertSame(0, $this->executeCommand($em, ['--complete' => true]));
+        self::assertSame(0, $this->executeCommand($em, ['--complete' => true]));
     }
 
     public function testExecuteWithCompleteFailed(): void
@@ -80,7 +80,7 @@ class EnsureProductionSettingsCommandTest extends DoctrineTestCase
         $em = $this->createMock(EntityManagerInterface::class);
 
         $configuration = $this->createMock(Configuration::class);
-        $configuration->expects($this->once())
+        $configuration->expects(self::once())
             ->method('ensureProductionSettings');
 
         $em->method('getConfiguration')
@@ -88,14 +88,14 @@ class EnsureProductionSettingsCommandTest extends DoctrineTestCase
 
         $connection = $this->createMock(Connection::class);
 
-        $connection->expects($this->once())
+        $connection->expects(self::once())
             ->method('connect')
             ->willThrowException(new RuntimeException());
 
         $em->method('getConnection')
             ->willReturn($connection);
 
-        $this->assertSame(1, $this->executeCommand($em, ['--complete' => true]));
+        self::assertSame(1, $this->executeCommand($em, ['--complete' => true]));
     }
 
     private function executeCommand(
