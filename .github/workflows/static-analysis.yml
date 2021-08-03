@@ -13,11 +13,21 @@ jobs:
   static-analysis-phpstan:
     name: "Static Analysis with PHPStan"
     runs-on: "ubuntu-20.04"
+    continue-on-error: "${{ matrix.status == 'experimental' }}"
 
     strategy:
+      fail-fast: false
       matrix:
         php-version:
           - "8.0"
+        dbal-version:
+          - "default"
+        status:
+          - "stable"
+        include:
+          - dbal-version: "^3.0"
+            php-version: "8.0"
+            status: "experimental"
 
     steps:
       - name: "Checkout code"
@@ -28,6 +38,10 @@ jobs:
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
+
+      - name: "Require DBAL 3"
+        run: "composer require doctrine/dbal ${{ matrix.dbal-version }} --no-update"
+        if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
@@ -35,16 +49,27 @@ jobs:
           dependency-versions: "highest"
 
       - name: "Run a static analysis with phpstan/phpstan"
+        continue-on-error: "${{ matrix.status == 'experimental' }}"
         run: "vendor/bin/phpstan analyse"
 
   static-analysis-psalm:
     name: "Static Analysis with Psalm"
     runs-on: "ubuntu-20.04"
+    continue-on-error: "${{ matrix.status == 'experimental' }}"
 
     strategy:
+      fail-fast: false
       matrix:
         php-version:
           - "8.0"
+        dbal-version:
+          - "default"
+        status:
+          - "stable"
+        include:
+          - dbal-version: "^3.0"
+            php-version: "8.0"
+            status: "experimental"
 
     steps:
       - name: "Checkout code"
@@ -56,10 +81,15 @@ jobs:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
 
+      - name: "Require DBAL 3"
+        run: "composer require doctrine/dbal ${{ matrix.dbal-version }} --no-update"
+        if: "${{ matrix.dbal-version != 'default' }}"
+
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
         with:
           dependency-versions: "highest"
 
       - name: "Run a static analysis with vimeo/psalm"
+        continue-on-error: "${{ matrix.status == 'experimental' }}"
         run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc)"
