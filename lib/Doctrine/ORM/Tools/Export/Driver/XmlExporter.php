@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Tools\Export\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -154,7 +156,7 @@ class XmlExporter extends AbstractExporter
                 }
 
                 if (isset($field['length'])) {
-                    $idXml->addAttribute('length', $field['length']);
+                    $idXml->addAttribute('length', (string) $field['length']);
                 }
 
                 if (isset($field['associationKey']) && $field['associationKey']) {
@@ -186,11 +188,11 @@ class XmlExporter extends AbstractExporter
                 }
 
                 if (isset($field['precision'])) {
-                    $fieldXml->addAttribute('precision', $field['precision']);
+                    $fieldXml->addAttribute('precision', (string) $field['precision']);
                 }
 
                 if (isset($field['scale'])) {
-                    $fieldXml->addAttribute('scale', $field['scale']);
+                    $fieldXml->addAttribute('scale', (string) $field['scale']);
                 }
 
                 if (isset($field['unique']) && $field['unique']) {
@@ -227,8 +229,8 @@ class XmlExporter extends AbstractExporter
         ];
 
         uasort($metadata->associationMappings, static function ($m1, $m2) use (&$orderMap) {
-            $a1 = array_search($m1['type'], $orderMap);
-            $a2 = array_search($m2['type'], $orderMap);
+            $a1 = array_search($m1['type'], $orderMap, true);
+            $a2 = array_search($m2['type'], $orderMap, true);
 
             return strcmp((string) $a1, (string) $a2);
         });

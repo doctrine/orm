@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -102,7 +104,7 @@ class CountOutputWalker extends SqlWalker
         $sqlIdentifier = [];
         foreach ($rootIdentifier as $property) {
             if (isset($rootClass->fieldMappings[$property])) {
-                foreach (array_keys($this->rsm->fieldMappings, $property) as $alias) {
+                foreach (array_keys($this->rsm->fieldMappings, $property, true) as $alias) {
                     if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {
                         $sqlIdentifier[$property] = $alias;
                     }
@@ -112,7 +114,7 @@ class CountOutputWalker extends SqlWalker
             if (isset($rootClass->associationMappings[$property])) {
                 $joinColumn = $rootClass->associationMappings[$property]['joinColumns'][0]['name'];
 
-                foreach (array_keys($this->rsm->metaMappings, $joinColumn) as $alias) {
+                foreach (array_keys($this->rsm->metaMappings, $joinColumn, true) as $alias) {
                     if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {
                         $sqlIdentifier[$property] = $alias;
                     }

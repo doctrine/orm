@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -77,7 +79,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             $discrColumnName = $this->_platform->getSQLResultCasing($this->class->discriminatorColumn['name']);
 
             // Find mapped discriminator column from the result set.
-            $metaMappingDiscrColumnName = array_search($discrColumnName, $this->_rsm->metaMappings);
+            $metaMappingDiscrColumnName = array_search($discrColumnName, $this->_rsm->metaMappings, true);
             if ($metaMappingDiscrColumnName) {
                 $discrColumnName = $metaMappingDiscrColumnName;
             }

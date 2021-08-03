@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\DBAL\Types\Type;
@@ -217,7 +219,7 @@ class ConvertDoctrine1Schema
         $allowed = ['precision', 'scale', 'unique', 'options', 'version'];
 
         foreach ($column as $key => $value) {
-            if (in_array($key, $allowed)) {
+            if (in_array($key, $allowed, true)) {
                 $fieldMapping[$key] = $value;
             }
         }

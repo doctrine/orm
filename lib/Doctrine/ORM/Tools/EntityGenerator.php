@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\Common\Collections\Collection;
@@ -1399,7 +1401,7 @@ public function __construct(<params>)
         $methodName   = $type . $this->inflector->classify($fieldName);
         $variableName = $this->inflector->camelize($fieldName);
 
-        if (in_array($type, ['add', 'remove'])) {
+        if (in_array($type, ['add', 'remove'], true)) {
             $methodName   = $this->inflector->singularize($methodName);
             $variableName = $this->inflector->singularize($variableName);
         }

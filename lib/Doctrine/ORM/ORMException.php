@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Cache\Cache as CacheDriver;
@@ -53,41 +55,6 @@ class ORMException extends Exception
     }
 
     /**
-     * @deprecated No replacement planned
-     *
-     * @param object $entity
-     * @param object $relatedEntity
-     *
-     * @return ORMException
-     */
-    public static function entityMissingForeignAssignedId($entity, $relatedEntity)
-    {
-        return new self(
-            'Entity of type ' . get_class($entity) . ' has identity through a foreign entity ' . get_class($relatedEntity) . ', ' .
-            'however this entity has no identity itself. You have to call EntityManager#persist() on the related entity ' .
-            "and make sure that an identifier was generated before trying to persist '" . get_class($entity) . "'. In case " .
-            'of Post Insert ID Generation (such as MySQL Auto-Increment) this means you have to call ' .
-            'EntityManager#flush() between both persist operations.'
-        );
-    }
-
-    /**
-     * @deprecated Use Doctrine\ORM\Exception\EntityMissingAssignedId
-     *
-     * @param object $entity
-     * @param string $field
-     *
-     * @return ORMException
-     */
-    public static function entityMissingAssignedIdForField($entity, $field)
-    {
-        return new self('Entity of type ' . get_class($entity) . " is missing an assigned ID for field  '" . $field . "'. " .
-            'The identifier generation strategy for this entity requires the ID field to be populated before ' .
-            'EntityManager#persist() is called. If you want automatically generated identifiers instead ' .
-            'you need to adjust the metadata mapping accordingly.');
-    }
-
-    /**
      * @deprecated Use Doctrine\ORM\Persisters\Exception\UnrecognizedField
      *
      * @param string $field
@@ -125,18 +92,6 @@ class ORMException extends Exception
     public static function invalidOrientation($className, $field)
     {
         return new self('Invalid order by orientation specified for ' . $className . '#' . $field);
-    }
-
-    /**
-     * @deprecated No replacement planned
-     *
-     * @param string $mode
-     *
-     * @return ORMException
-     */
-    public static function invalidFlushMode($mode)
-    {
-        return new self(sprintf("'%s' is an invalid flush mode.", $mode));
     }
 
     /**
@@ -185,23 +140,6 @@ class ORMException extends Exception
 
     /**
      * @deprecated Doctrine\ORM\Repository\Exception\InvalidFindByCall
-     *
-     * @param string $entityName
-     * @param string $fieldName
-     * @param string $method
-     *
-     * @return ORMException
-     */
-    public static function invalidFindByCall($entityName, $fieldName, $method)
-    {
-        return new self(
-            "Entity '" . $entityName . "' has no field '" . $fieldName . "'. " .
-            "You can therefore not call '" . $method . "' on the entities' repository"
-        );
-    }
-
-    /**
-     * @deprecated Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall
      *
      * @param string $entityName
      * @param string $fieldName

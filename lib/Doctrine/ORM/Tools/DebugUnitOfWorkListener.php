@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,7 +18,7 @@ use function fopen;
 use function fwrite;
 use function gettype;
 use function is_object;
-use function spl_object_hash;
+use function spl_object_id;
 
 /**
  * Use this logger to dump the identity map during the onFlush event. This is useful for debugging
@@ -74,7 +76,7 @@ class DebugUnitOfWorkListener
             fwrite($fh, 'Class: ' . $className . "\n");
 
             foreach ($map as $entity) {
-                fwrite($fh, ' Entity: ' . $this->getIdString($entity, $uow) . ' ' . spl_object_hash($entity) . "\n");
+                fwrite($fh, ' Entity: ' . $this->getIdString($entity, $uow) . ' ' . spl_object_id($entity) . "\n");
                 fwrite($fh, "  Associations:\n");
 
                 $cm = $em->getClassMetadata($className);
@@ -91,7 +93,7 @@ class DebugUnitOfWorkListener
                                 fwrite($fh, '[PROXY] ');
                             }
 
-                            fwrite($fh, $this->getIdString($value, $uow) . ' ' . spl_object_hash($value) . "\n");
+                            fwrite($fh, $this->getIdString($value, $uow) . ' ' . spl_object_id($value) . "\n");
                         }
                     } else {
                         $initialized = ! ($value instanceof PersistentCollection) || $value->isInitialized();
@@ -101,12 +103,12 @@ class DebugUnitOfWorkListener
                             fwrite($fh, '[INITIALIZED] ' . $this->getType($value) . ' ' . count($value) . " elements\n");
 
                             foreach ($value as $obj) {
-                                fwrite($fh, '    ' . $this->getIdString($obj, $uow) . ' ' . spl_object_hash($obj) . "\n");
+                                fwrite($fh, '    ' . $this->getIdString($obj, $uow) . ' ' . spl_object_id($obj) . "\n");
                             }
                         } else {
                             fwrite($fh, '[PROXY] ' . $this->getType($value) . " unknown element size\n");
                             foreach ($value->unwrap() as $obj) {
-                                fwrite($fh, '    ' . $this->getIdString($obj, $uow) . ' ' . spl_object_hash($obj) . "\n");
+                                fwrite($fh, '    ' . $this->getIdString($obj, $uow) . ' ' . spl_object_id($obj) . "\n");
                             }
                         }
                     }

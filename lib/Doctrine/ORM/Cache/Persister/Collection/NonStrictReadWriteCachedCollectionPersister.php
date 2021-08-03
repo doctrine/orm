@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Cache\Persister\Collection;
 
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\PersistentCollection;
 
-use function spl_object_hash;
+use function spl_object_id;
 
 class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 {
@@ -47,7 +49,7 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
 
         $this->persister->delete($collection);
 
-        $this->queuedCache['delete'][spl_object_hash($collection)] = $key;
+        $this->queuedCache['delete'][spl_object_id($collection)] = $key;
     }
 
     /**
@@ -69,14 +71,14 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
         if ($isDirty && ! $isInitialized || isset($this->association['orderBy'])) {
             $this->persister->update($collection);
 
-            $this->queuedCache['delete'][spl_object_hash($collection)] = $key;
+            $this->queuedCache['delete'][spl_object_id($collection)] = $key;
 
             return;
         }
 
         $this->persister->update($collection);
 
-        $this->queuedCache['update'][spl_object_hash($collection)] = [
+        $this->queuedCache['update'][spl_object_id($collection)] = [
             'key'   => $key,
             'list'  => $collection,
         ];

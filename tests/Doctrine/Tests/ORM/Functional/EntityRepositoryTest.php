@@ -1128,7 +1128,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $this->assertCount(2, $users);
 
         foreach ($users as $user) {
-            $this->assertTrue(in_array($user, [$user1, $user2]));
+            $this->assertTrue(in_array($user, [$user1, $user2], true));
         }
     }
 

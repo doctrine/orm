@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -170,7 +172,7 @@ class DefaultQueryCache implements QueryCache
                 $assocEntries = $assocRegion->getMultiple($assocKeys);
 
                 foreach ($assoc['list'] as $assocIndex => $assocId) {
-                    $assocEntry = is_array($assocEntries) && array_key_exists($assocIndex, $assocEntries) ? $assocEntries[$assocIndex] : null;
+                    $assocEntry = is_array($assocEntries) ? ($assocEntries[$assocIndex] ?? null) : null;
 
                     if ($assocEntry === null) {
                         if ($this->cacheLogger !== null) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Persisters;
 
 use Doctrine\Common\Collections\Expr\Comparison;
@@ -45,7 +47,7 @@ class SqlExpressionVisitor extends ExpressionVisitor
             isset($this->classMetadata->associationMappings[$field]) &&
             $value !== null &&
             ! is_object($value) &&
-            ! in_array($comparison->getOperator(), [Comparison::IN, Comparison::NIN])
+            ! in_array($comparison->getOperator(), [Comparison::IN, Comparison::NIN], true)
         ) {
             throw MatchingAssociationFieldRequiresObject::fromClassAndAssociation(
                 $this->classMetadata->name,

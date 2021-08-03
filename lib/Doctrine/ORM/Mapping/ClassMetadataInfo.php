@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Mapping;
 
 use BadMethodCallException;
@@ -31,6 +33,7 @@ use function array_map;
 use function array_merge;
 use function array_pop;
 use function array_values;
+use function assert;
 use function class_exists;
 use function count;
 use function explode;
@@ -41,7 +44,7 @@ use function is_array;
 use function is_subclass_of;
 use function ltrim;
 use function method_exists;
-use function spl_object_hash;
+use function spl_object_id;
 use function str_replace;
 use function strpos;
 use function strtolower;
@@ -833,7 +836,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function __toString()
     {
-        return self::class . '@' . spl_object_hash($this);
+        return self::class . '@' . spl_object_id($this);
     }
 
     /**
@@ -971,12 +974,14 @@ class ClassMetadataInfo implements ClassMetadata
 
         foreach ($this->embeddedClasses as $property => $embeddedClass) {
             if (isset($embeddedClass['declaredField'])) {
+                $childProperty = $reflService->getAccessibleProperty(
+                    $this->embeddedClasses[$embeddedClass['declaredField']]['class'],
+                    $embeddedClass['originalField']
+                );
+                assert($childProperty !== null);
                 $parentReflFields[$property] = new ReflectionEmbeddedProperty(
                     $parentReflFields[$embeddedClass['declaredField']],
-                    $reflService->getAccessibleProperty(
-                        $this->embeddedClasses[$embeddedClass['declaredField']]['class'],
-                        $embeddedClass['originalField']
-                    ),
+                    $childProperty,
                     $this->embeddedClasses[$embeddedClass['declaredField']]['class']
                 );
 
@@ -1562,7 +1567,7 @@ class ClassMetadataInfo implements ClassMetadata
                 throw MappingException::cannotVersionIdField($this->name, $mapping['fieldName']);
             }
 
-            if (! in_array($mapping['fieldName'], $this->identifier)) {
+            if (! in_array($mapping['fieldName'], $this->identifier, true)) {
                 $this->identifier[] = $mapping['fieldName'];
             }
 
@@ -1651,7 +1656,7 @@ class ClassMetadataInfo implements ClassMetadata
                 throw MappingException::illegalOrphanRemovalOnIdentifierAssociation($this->name, $mapping['fieldName']);
             }
 
-            if (! in_array($mapping['fieldName'], $this->identifier)) {
+            if (! in_array($mapping['fieldName'], $this->identifier, true)) {
                 if (isset($mapping['joinColumns']) && count($mapping['joinColumns']) >= 2) {
                     throw MappingException::cannotMapCompositePrimaryKeyEntitiesAsForeignId(
                         $mapping['targetEntity'],
@@ -1712,7 +1717,7 @@ class ClassMetadataInfo implements ClassMetadata
         $cascades = isset($mapping['cascade']) ? array_map('strtolower', $mapping['cascade']) : [];
 
         $allCascades = ['remove', 'persist', 'refresh', 'merge', 'detach'];
-        if (in_array('all', $cascades)) {
+        if (in_array('all', $cascades, true)) {
             $cascades = $allCascades;
         } elseif (count($cascades) !== count(array_intersect($cascades, $allCascades))) {
             throw MappingException::invalidCascadeOption(
@@ -1723,11 +1728,11 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         $mapping['cascade']          = $cascades;
-        $mapping['isCascadeRemove']  = in_array('remove', $cascades);
-        $mapping['isCascadePersist'] = in_array('persist', $cascades);
-        $mapping['isCascadeRefresh'] = in_array('refresh', $cascades);
-        $mapping['isCascadeMerge']   = in_array('merge', $cascades);
-        $mapping['isCascadeDetach']  = in_array('detach', $cascades);
+        $mapping['isCascadeRemove']  = in_array('remove', $cascades, true);
+        $mapping['isCascadePersist'] = in_array('persist', $cascades, true);
+        $mapping['isCascadeRefresh'] = in_array('refresh', $cascades, true);
+        $mapping['isCascadeMerge']   = in_array('merge', $cascades, true);
+        $mapping['isCascadeDetach']  = in_array('detach', $cascades, true);
 
         return $mapping;
     }
@@ -2969,7 +2974,7 @@ class ClassMetadataInfo implements ClassMetadata
             );
         }
 
-        if (isset($this->lifecycleCallbacks[$event]) && in_array($callback, $this->lifecycleCallbacks[$event])) {
+        if (isset($this->lifecycleCallbacks[$event]) && in_array($callback, $this->lifecycleCallbacks[$event], true)) {
             return;
         }
 
@@ -3017,7 +3022,7 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::entityListenerMethodNotFound($class, $method, $this->name);
         }
 
-        if (isset($this->entityListeners[$eventName]) && in_array($listener, $this->entityListeners[$eventName])) {
+        if (isset($this->entityListeners[$eventName]) && in_array($listener, $this->entityListeners[$eventName], true)) {
             throw MappingException::duplicateEntityListener($class, $method, $this->name);
         }
 
@@ -3055,7 +3060,7 @@ class ClassMetadataInfo implements ClassMetadata
                 $columnDef['type'] = 'string';
             }
 
-            if (in_array($columnDef['type'], ['boolean', 'array', 'object', 'datetime', 'time', 'date'])) {
+            if (in_array($columnDef['type'], ['boolean', 'array', 'object', 'datetime', 'time', 'date'], true)) {
                 throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']);
             }
 
@@ -3106,7 +3111,7 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::invalidClassInDiscriminatorMap($className, $this->name);
         }
 
-        if (is_subclass_of($className, $this->name) && ! in_array($className, $this->subClasses)) {
+        if (is_subclass_of($className, $this->name) && ! in_array($className, $this->subClasses, true)) {
             $this->subClasses[] = $className;
         }
     }
@@ -3336,7 +3341,7 @@ class ClassMetadataInfo implements ClassMetadata
         $this->versionField = $mapping['fieldName'];
 
         if (! isset($mapping['default'])) {
-            if (in_array($mapping['type'], ['integer', 'bigint', 'smallint'])) {
+            if (in_array($mapping['type'], ['integer', 'bigint', 'smallint'], true)) {
                 $mapping['default'] = 1;
             } elseif ($mapping['type'] === 'datetime') {
                 $mapping['default'] = 'CURRENT_TIMESTAMP';

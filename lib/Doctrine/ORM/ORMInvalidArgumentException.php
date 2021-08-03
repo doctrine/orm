@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -13,7 +15,7 @@ use function implode;
 use function is_object;
 use function method_exists;
 use function reset;
-use function spl_object_hash;
+use function spl_object_id;
 use function sprintf;
 
 /**
@@ -239,7 +241,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
      */
     private static function objToStr($obj): string
     {
-        return method_exists($obj, '__toString') ? (string) $obj : get_class($obj) . '@' . spl_object_hash($obj);
+        return method_exists($obj, '__toString') ? (string) $obj : get_class($obj) . '@' . spl_object_id($obj);
     }
 
     /**

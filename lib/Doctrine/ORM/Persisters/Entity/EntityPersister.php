@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\Common\Collections\Criteria;
@@ -29,7 +31,7 @@ interface EntityPersister
     /**
      * Get all queued inserts.
      *
-     * @psalm-return array<string, object>
+     * @psalm-return array<string|int, object>
      */
     public function getInserts();
 

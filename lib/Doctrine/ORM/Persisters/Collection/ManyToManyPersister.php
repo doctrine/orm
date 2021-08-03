@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Persisters\Collection;
 
 use BadMethodCallException;
@@ -593,7 +595,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $params          = [];
         $types           = [];
 
-        $joinNeeded = ! in_array($indexBy, $targetClass->identifier);
+        $joinNeeded = ! in_array($indexBy, $targetClass->identifier, true);
 
         if ($joinNeeded) { // extra join needed if indexBy is not a @id
             $joinConditions = [];

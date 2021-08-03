@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Cache\Persister\Collection;
 
 use Doctrine\ORM\Cache\CollectionCacheKey;
@@ -8,7 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 
-use function spl_object_hash;
+use function spl_object_id;
 
 class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 {
@@ -78,7 +80,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
             return;
         }
 
-        $this->queuedCache['delete'][spl_object_hash($collection)] = [
+        $this->queuedCache['delete'][spl_object_id($collection)] = [
             'key'   => $key,
             'lock'  => $lock,
         ];
@@ -106,7 +108,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
             return;
         }
 
-        $this->queuedCache['update'][spl_object_hash($collection)] = [
+        $this->queuedCache['update'][spl_object_id($collection)] = [
             'key'   => $key,
             'lock'  => $lock,
         ];

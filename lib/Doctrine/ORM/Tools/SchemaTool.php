@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -620,7 +622,7 @@ class SchemaTool
             return [$class, $referencedFieldName];
         }
 
-        if (in_array($referencedColumnName, $class->getIdentifierColumnNames())) {
+        if (in_array($referencedColumnName, $class->getIdentifierColumnNames(), true)) {
             // it seems to be an entity as foreign key
             foreach ($class->getIdentifierFieldNames() as $fieldName) {
                 if (

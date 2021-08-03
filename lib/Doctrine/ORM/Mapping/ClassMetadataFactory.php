@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\Common\EventManager;
@@ -278,7 +280,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 }
             } else {
                 assert($parent instanceof ClassMetadataInfo); // https://github.com/doctrine/orm/issues/8746
-                if ((! $class->reflClass || ! $class->reflClass->isAbstract()) && ! in_array($class->name, $parent->discriminatorMap)) {
+                if ((! $class->reflClass || ! $class->reflClass->isAbstract()) && ! in_array($class->name, $parent->discriminatorMap, true)) {
                     throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
                 }
             }

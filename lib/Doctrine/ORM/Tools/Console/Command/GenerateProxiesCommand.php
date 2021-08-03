@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Tools\Console\MetadataFilter;
@@ -54,6 +56,10 @@ class GenerateProxiesCommand extends AbstractEntityManagerCommand
         $destPath = $input->getArgument('dest-path');
         if ($destPath === null) {
             $destPath = $em->getConfiguration()->getProxyDir();
+
+            if ($destPath === null) {
+                throw new InvalidArgumentException('Proxy directory cannot be null');
+            }
         }
 
         if (! is_dir($destPath)) {

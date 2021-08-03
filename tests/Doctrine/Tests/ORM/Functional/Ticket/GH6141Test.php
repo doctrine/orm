@@ -133,7 +133,7 @@ class GH6141People
 
     private static function isValid(string $valid): bool
     {
-        return in_array($valid, [self::BOSS, self::EMPLOYEE]);
+        return in_array($valid, [self::BOSS, self::EMPLOYEE], true);
     }
 
     private function __construct(string $value)

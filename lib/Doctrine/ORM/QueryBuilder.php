@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -379,7 +381,7 @@ class QueryBuilder
     {
         $rootAlias = null;
 
-        if (in_array($parentAlias, $this->getRootAliases())) {
+        if (in_array($parentAlias, $this->getRootAliases(), true)) {
             $rootAlias = $parentAlias;
         } elseif (isset($this->joinRootAliases[$parentAlias])) {
             $rootAlias = $this->joinRootAliases[$parentAlias];
@@ -525,7 +527,7 @@ class QueryBuilder
      *
      * @param string|int      $key   The parameter position or name.
      * @param mixed           $value The parameter value.
-     * @param string|int|null $type  PDO::PARAM_* or \Doctrine\DBAL\Types\Type::* constant
+     * @param string|int|null $type  ParameterType::* or \Doctrine\DBAL\Types\Type::* constant
      *
      * @return static
      */
@@ -903,7 +905,7 @@ class QueryBuilder
     {
         $rootAliases = $this->getRootAliases();
 
-        if (! in_array($alias, $rootAliases)) {
+        if (! in_array($alias, $rootAliases, true)) {
             throw new Query\QueryException(
                 sprintf('Specified root alias %s must be set before invoking indexBy().', $alias)
             );
