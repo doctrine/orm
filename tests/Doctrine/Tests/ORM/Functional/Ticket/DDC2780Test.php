@@ -53,7 +53,7 @@ class DDC2780Test extends OrmFunctionalTestCase
             ->getQuery()
             ->getOneOrNullResult();
 
-        $this->assertInstanceOf(DDC2780User::class, $result);
+        self::assertInstanceOf(DDC2780User::class, $result);
     }
 }
 

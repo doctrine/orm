@@ -65,7 +65,7 @@ class DDC3033Test extends OrmFunctionalTestCase
             ],
         ];
 
-        $this->assertEquals($expect, $product->changeSet);
+        self::assertEquals($expect, $product->changeSet);
     }
 }
 

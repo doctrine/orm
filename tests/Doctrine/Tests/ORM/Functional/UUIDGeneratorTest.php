@@ -29,7 +29,7 @@ class UUIDGeneratorTest extends OrmFunctionalTestCase
     public function testGenerateUUID(): void
     {
         if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
-            $this->markTestSkipped('Currently restricted to MySQL platform.');
+            self::markTestSkipped('Currently restricted to MySQL platform.');
         }
 
         $this->_schemaTool->createSchema([
@@ -38,8 +38,8 @@ class UUIDGeneratorTest extends OrmFunctionalTestCase
         $entity = new UUIDEntity();
 
         $this->_em->persist($entity);
-        $this->assertNotNull($entity->getId());
-        $this->assertTrue(strlen($entity->getId()) > 0);
+        self::assertNotNull($entity->getId());
+        self::assertTrue(strlen($entity->getId()) > 0);
     }
 }
 

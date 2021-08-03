@@ -64,7 +64,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
     public function testImplementsCacheFactory(): void
     {
-        $this->assertInstanceOf(CacheFactory::class, $this->factory);
+        self::assertInstanceOf(CacheFactory::class, $this->factory);
     }
 
     public function testBuildCachedEntityPersisterReadOnly(): void
@@ -76,15 +76,15 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $metadata->cache['usage'] = ClassMetadata::CACHE_USAGE_READ_ONLY;
 
-        $this->factory->expects($this->once())
+        $this->factory->expects(self::once())
             ->method('getRegion')
-            ->with($this->equalTo($metadata->cache))
-            ->will($this->returnValue($region));
+            ->with(self::equalTo($metadata->cache))
+            ->will(self::returnValue($region));
 
         $cachedPersister = $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
 
-        $this->assertInstanceOf(CachedEntityPersister::class, $cachedPersister);
-        $this->assertInstanceOf(ReadOnlyCachedEntityPersister::class, $cachedPersister);
+        self::assertInstanceOf(CachedEntityPersister::class, $cachedPersister);
+        self::assertInstanceOf(ReadOnlyCachedEntityPersister::class, $cachedPersister);
     }
 
     public function testBuildCachedEntityPersisterReadWrite(): void
@@ -96,15 +96,15 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $metadata->cache['usage'] = ClassMetadata::CACHE_USAGE_READ_WRITE;
 
-        $this->factory->expects($this->once())
+        $this->factory->expects(self::once())
             ->method('getRegion')
-            ->with($this->equalTo($metadata->cache))
-            ->will($this->returnValue($region));
+            ->with(self::equalTo($metadata->cache))
+            ->will(self::returnValue($region));
 
         $cachedPersister = $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
 
-        $this->assertInstanceOf(CachedEntityPersister::class, $cachedPersister);
-        $this->assertInstanceOf(ReadWriteCachedEntityPersister::class, $cachedPersister);
+        self::assertInstanceOf(CachedEntityPersister::class, $cachedPersister);
+        self::assertInstanceOf(ReadWriteCachedEntityPersister::class, $cachedPersister);
     }
 
     public function testBuildCachedEntityPersisterNonStrictReadWrite(): void
@@ -116,15 +116,15 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $metadata->cache['usage'] = ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE;
 
-        $this->factory->expects($this->once())
+        $this->factory->expects(self::once())
             ->method('getRegion')
-            ->with($this->equalTo($metadata->cache))
-            ->will($this->returnValue($region));
+            ->with(self::equalTo($metadata->cache))
+            ->will(self::returnValue($region));
 
         $cachedPersister = $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
 
-        $this->assertInstanceOf(CachedEntityPersister::class, $cachedPersister);
-        $this->assertInstanceOf(NonStrictReadWriteCachedEntityPersister::class, $cachedPersister);
+        self::assertInstanceOf(CachedEntityPersister::class, $cachedPersister);
+        self::assertInstanceOf(NonStrictReadWriteCachedEntityPersister::class, $cachedPersister);
     }
 
     public function testBuildCachedCollectionPersisterReadOnly(): void
@@ -137,15 +137,15 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_READ_ONLY;
 
-        $this->factory->expects($this->once())
+        $this->factory->expects(self::once())
             ->method('getRegion')
-            ->with($this->equalTo($mapping['cache']))
-            ->will($this->returnValue($region));
+            ->with(self::equalTo($mapping['cache']))
+            ->will(self::returnValue($region));
 
         $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
 
-        $this->assertInstanceOf(CachedCollectionPersister::class, $cachedPersister);
-        $this->assertInstanceOf(ReadOnlyCachedCollectionPersister::class, $cachedPersister);
+        self::assertInstanceOf(CachedCollectionPersister::class, $cachedPersister);
+        self::assertInstanceOf(ReadOnlyCachedCollectionPersister::class, $cachedPersister);
     }
 
     public function testBuildCachedCollectionPersisterReadWrite(): void
@@ -158,15 +158,15 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_READ_WRITE;
 
-        $this->factory->expects($this->once())
+        $this->factory->expects(self::once())
             ->method('getRegion')
-            ->with($this->equalTo($mapping['cache']))
-            ->will($this->returnValue($region));
+            ->with(self::equalTo($mapping['cache']))
+            ->will(self::returnValue($region));
 
         $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
 
-        $this->assertInstanceOf(CachedCollectionPersister::class, $cachedPersister);
-        $this->assertInstanceOf(ReadWriteCachedCollectionPersister::class, $cachedPersister);
+        self::assertInstanceOf(CachedCollectionPersister::class, $cachedPersister);
+        self::assertInstanceOf(ReadWriteCachedCollectionPersister::class, $cachedPersister);
     }
 
     public function testBuildCachedCollectionPersisterNonStrictReadWrite(): void
@@ -179,15 +179,15 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE;
 
-        $this->factory->expects($this->once())
+        $this->factory->expects(self::once())
             ->method('getRegion')
-            ->with($this->equalTo($mapping['cache']))
-            ->will($this->returnValue($region));
+            ->with(self::equalTo($mapping['cache']))
+            ->will(self::returnValue($region));
 
         $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
 
-        $this->assertInstanceOf(CachedCollectionPersister::class, $cachedPersister);
-        $this->assertInstanceOf(NonStrictReadWriteCachedCollectionPersister::class, $cachedPersister);
+        self::assertInstanceOf(CachedCollectionPersister::class, $cachedPersister);
+        self::assertInstanceOf(NonStrictReadWriteCachedCollectionPersister::class, $cachedPersister);
     }
 
     public function testInheritedEntityCacheRegion(): void
@@ -202,11 +202,11 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $cachedPersister1 = $factory->buildCachedEntityPersister($em, $persister1, $metadata1);
         $cachedPersister2 = $factory->buildCachedEntityPersister($em, $persister2, $metadata2);
 
-        $this->assertInstanceOf(CachedEntityPersister::class, $cachedPersister1);
-        $this->assertInstanceOf(CachedEntityPersister::class, $cachedPersister2);
+        self::assertInstanceOf(CachedEntityPersister::class, $cachedPersister1);
+        self::assertInstanceOf(CachedEntityPersister::class, $cachedPersister2);
 
-        $this->assertNotSame($cachedPersister1, $cachedPersister2);
-        $this->assertSame($cachedPersister1->getCacheRegion(), $cachedPersister2->getCacheRegion());
+        self::assertNotSame($cachedPersister1, $cachedPersister2);
+        self::assertSame($cachedPersister1->getCacheRegion(), $cachedPersister2->getCacheRegion());
     }
 
     public function testCreateNewCacheDriver(): void
@@ -221,11 +221,11 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $cachedPersister1 = $factory->buildCachedEntityPersister($em, $persister1, $metadata1);
         $cachedPersister2 = $factory->buildCachedEntityPersister($em, $persister2, $metadata2);
 
-        $this->assertInstanceOf(CachedEntityPersister::class, $cachedPersister1);
-        $this->assertInstanceOf(CachedEntityPersister::class, $cachedPersister2);
+        self::assertInstanceOf(CachedEntityPersister::class, $cachedPersister1);
+        self::assertInstanceOf(CachedEntityPersister::class, $cachedPersister2);
 
-        $this->assertNotSame($cachedPersister1, $cachedPersister2);
-        $this->assertNotSame($cachedPersister1->getCacheRegion(), $cachedPersister2->getCacheRegion());
+        self::assertNotSame($cachedPersister1, $cachedPersister2);
+        self::assertNotSame($cachedPersister1->getCacheRegion(), $cachedPersister2->getCacheRegion());
     }
 
     public function testBuildCachedEntityPersisterNonStrictException(): void
@@ -314,8 +314,8 @@ class DefaultCacheFactoryTest extends OrmTestCase
             ]
         );
 
-        $this->assertSame('foo', $fooRegion->getCache()->getNamespace());
-        $this->assertSame('bar', $barRegion->getCache()->getNamespace());
+        self::assertSame('foo', $fooRegion->getCache()->getNamespace());
+        self::assertSame('bar', $barRegion->getCache()->getNamespace());
     }
 
     public function testAppendsNamespacedCacheInstancePerRegionInstanceWhenItsAlreadySet(): void
@@ -338,8 +338,8 @@ class DefaultCacheFactoryTest extends OrmTestCase
             ]
         );
 
-        $this->assertSame('testing:foo', $fooRegion->getCache()->getNamespace());
-        $this->assertSame('testing:bar', $barRegion->getCache()->getNamespace());
+        self::assertSame('testing:foo', $fooRegion->getCache()->getNamespace());
+        self::assertSame('testing:bar', $barRegion->getCache()->getNamespace());
     }
 
     public function testBuildsDefaultCacheRegionFromGenericCacheRegion(): void
@@ -349,7 +349,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             DefaultRegion::class,
             $factory->getRegion(
                 [
@@ -367,7 +367,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             DefaultMultiGetRegion::class,
             $factory->getRegion(
                 [

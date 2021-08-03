@@ -25,7 +25,7 @@ class DDC832Test extends OrmFunctionalTestCase
         $platform = $this->_em->getConnection()->getDatabasePlatform();
 
         if ($platform->getName() === 'oracle') {
-            $this->markTestSkipped('Doesnt run on Oracle.');
+            self::markTestSkipped('Doesnt run on Oracle.');
         }
 
         $this->_em->getConfiguration()->setSQLLogger(new EchoSQLLogger());

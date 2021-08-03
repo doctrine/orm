@@ -38,10 +38,10 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue($lock));
+            ->with(self::equalTo($key))
+            ->will(self::returnValue($lock));
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -55,10 +55,10 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue($lock));
+            ->with(self::equalTo($key))
+            ->will(self::returnValue($lock));
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -72,15 +72,15 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue($lock));
+            ->with(self::equalTo($key))
+            ->will(self::returnValue($lock));
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('evict')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue($lock));
+            ->with(self::equalTo($key))
+            ->will(self::returnValue($lock));
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -95,14 +95,14 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue($lock));
+            ->with(self::equalTo($key))
+            ->will(self::returnValue($lock));
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('evict')
-            ->with($this->equalTo($key));
+            ->with(self::equalTo($key));
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -120,25 +120,25 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
 
         $property->setAccessible(true);
 
-        $this->region->expects($this->exactly(2))
+        $this->region->expects(self::exactly(2))
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue($lock));
+            ->with(self::equalTo($key))
+            ->will(self::returnValue($lock));
 
-        $this->region->expects($this->exactly(2))
+        $this->region->expects(self::exactly(2))
             ->method('evict')
-            ->with($this->equalTo($key));
+            ->with(self::equalTo($key));
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($entity);
         $persister->delete($entity);
 
-        $this->assertCount(2, $property->getValue($persister));
+        self::assertCount(2, $property->getValue($persister));
 
         $persister->afterTransactionRolledBack();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testTransactionCommitShouldClearQueue(): void
@@ -151,25 +151,25 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
 
         $property->setAccessible(true);
 
-        $this->region->expects($this->exactly(2))
+        $this->region->expects(self::exactly(2))
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue($lock));
+            ->with(self::equalTo($key))
+            ->will(self::returnValue($lock));
 
-        $this->region->expects($this->exactly(2))
+        $this->region->expects(self::exactly(2))
             ->method('evict')
-            ->with($this->equalTo($key));
+            ->with(self::equalTo($key));
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($entity);
         $persister->delete($entity);
 
-        $this->assertCount(2, $property->getValue($persister));
+        self::assertCount(2, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testDeleteLockFailureShouldIgnoreQueue(): void
@@ -181,19 +181,19 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
 
         $property->setAccessible(true);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue(null));
+            ->with(self::equalTo($key))
+            ->will(self::returnValue(null));
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('delete')
-            ->with($this->equalTo($entity));
+            ->with(self::equalTo($entity));
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->delete($entity);
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testUpdateLockFailureShouldIgnoreQueue(): void
@@ -205,18 +205,18 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
 
         $property->setAccessible(true);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue(null));
+            ->with(self::equalTo($key))
+            ->will(self::returnValue(null));
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('update')
-            ->with($this->equalTo($entity));
+            ->with(self::equalTo($entity));
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($entity);
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 }

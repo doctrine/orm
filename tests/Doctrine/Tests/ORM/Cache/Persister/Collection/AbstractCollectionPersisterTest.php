@@ -101,9 +101,9 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     {
         $persister = $this->createPersisterDefault();
 
-        $this->assertInstanceOf(CollectionPersister::class, $persister);
-        $this->assertInstanceOf(CachedPersister::class, $persister);
-        $this->assertInstanceOf(CachedCollectionPersister::class, $persister);
+        self::assertInstanceOf(CollectionPersister::class, $persister);
+        self::assertInstanceOf(CachedPersister::class, $persister);
+        self::assertInstanceOf(CachedCollectionPersister::class, $persister);
     }
 
     public function testInvokeDelete(): void
@@ -114,11 +114,11 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
-        $this->collectionPersister->expects($this->once())
+        $this->collectionPersister->expects(self::once())
             ->method('delete')
-            ->with($this->equalTo($collection));
+            ->with(self::equalTo($collection));
 
-        $this->assertNull($persister->delete($collection));
+        self::assertNull($persister->delete($collection));
     }
 
     public function testInvokeUpdate(): void
@@ -131,11 +131,11 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
-        $this->collectionPersister->expects($this->once())
+        $this->collectionPersister->expects(self::once())
             ->method('update')
-            ->with($this->equalTo($collection));
+            ->with(self::equalTo($collection));
 
-        $this->assertNull($persister->update($collection));
+        self::assertNull($persister->update($collection));
     }
 
     public function testInvokeCount(): void
@@ -146,12 +146,12 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
-        $this->collectionPersister->expects($this->once())
+        $this->collectionPersister->expects(self::once())
             ->method('count')
-            ->with($this->equalTo($collection))
-            ->will($this->returnValue(0));
+            ->with(self::equalTo($collection))
+            ->will(self::returnValue(0));
 
-        $this->assertEquals(0, $persister->count($collection));
+        self::assertEquals(0, $persister->count($collection));
     }
 
     public function testInvokeSlice(): void
@@ -163,12 +163,12 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
-        $this->collectionPersister->expects($this->once())
+        $this->collectionPersister->expects(self::once())
             ->method('slice')
-            ->with($this->equalTo($collection), $this->equalTo(1), $this->equalTo(2))
-            ->will($this->returnValue($slice));
+            ->with(self::equalTo($collection), self::equalTo(1), self::equalTo(2))
+            ->will(self::returnValue($slice));
 
-        $this->assertEquals($slice, $persister->slice($collection, 1, 2));
+        self::assertEquals($slice, $persister->slice($collection, 1, 2));
     }
 
     public function testInvokeContains(): void
@@ -180,12 +180,12 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
-        $this->collectionPersister->expects($this->once())
+        $this->collectionPersister->expects(self::once())
             ->method('contains')
-            ->with($this->equalTo($collection), $this->equalTo($element))
-            ->will($this->returnValue(false));
+            ->with(self::equalTo($collection), self::equalTo($element))
+            ->will(self::returnValue(false));
 
-        $this->assertFalse($persister->contains($collection, $element));
+        self::assertFalse($persister->contains($collection, $element));
     }
 
     public function testInvokeContainsKey(): void
@@ -196,12 +196,12 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
-        $this->collectionPersister->expects($this->once())
+        $this->collectionPersister->expects(self::once())
             ->method('containsKey')
-            ->with($this->equalTo($collection), $this->equalTo(0))
-            ->will($this->returnValue(false));
+            ->with(self::equalTo($collection), self::equalTo(0))
+            ->will(self::returnValue(false));
 
-        $this->assertFalse($persister->containsKey($collection, 0));
+        self::assertFalse($persister->containsKey($collection, 0));
     }
 
     public function testInvokeGet(): void
@@ -213,11 +213,11 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
-        $this->collectionPersister->expects($this->once())
+        $this->collectionPersister->expects(self::once())
             ->method('get')
-            ->with($this->equalTo($collection), $this->equalTo(0))
-            ->will($this->returnValue($element));
+            ->with(self::equalTo($collection), self::equalTo(0))
+            ->will(self::returnValue($element));
 
-        $this->assertEquals($element, $persister->get($collection, 0));
+        self::assertEquals($element, $persister->get($collection, 0));
     }
 }

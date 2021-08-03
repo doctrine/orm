@@ -54,12 +54,12 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $cm   = $this->factory->getMetadataFor(ResolveTargetEntity::class);
         $meta = $cm->associationMappings;
 
-        $this->assertSame(TargetEntity::class, $meta['manyToMany']['targetEntity']);
-        $this->assertSame(ResolveTargetEntity::class, $meta['manyToOne']['targetEntity']);
-        $this->assertSame(ResolveTargetEntity::class, $meta['oneToMany']['targetEntity']);
-        $this->assertSame(TargetEntity::class, $meta['oneToOne']['targetEntity']);
+        self::assertSame(TargetEntity::class, $meta['manyToMany']['targetEntity']);
+        self::assertSame(ResolveTargetEntity::class, $meta['manyToOne']['targetEntity']);
+        self::assertSame(ResolveTargetEntity::class, $meta['oneToMany']['targetEntity']);
+        self::assertSame(TargetEntity::class, $meta['oneToOne']['targetEntity']);
 
-        $this->assertSame($cm, $this->factory->getMetadataFor(ResolveTarget::class));
+        self::assertSame($cm, $this->factory->getMetadataFor(ResolveTarget::class));
     }
 
     /**
@@ -75,7 +75,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
 
         $cm = $this->factory->getMetadataFor(ResolveTarget::class);
 
-        $this->assertSame($this->factory->getMetadataFor(ResolveTargetEntity::class), $cm);
+        self::assertSame($this->factory->getMetadataFor(ResolveTargetEntity::class), $cm);
     }
 
     /**
@@ -91,8 +91,8 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $cm   = $this->factory->getMetadataFor(ResolveTargetEntity::class);
         $meta = $cm->associationMappings['manyToMany'];
 
-        $this->assertSame(TargetEntity::class, $meta['targetEntity']);
-        $this->assertEquals(['resolvetargetentity_id', 'target_id'], $meta['joinTableColumns']);
+        self::assertSame(TargetEntity::class, $meta['targetEntity']);
+        self::assertEquals(['resolvetargetentity_id', 'target_id'], $meta['joinTableColumns']);
     }
 
     /**
@@ -107,7 +107,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
 
         $evm->addEventSubscriber($this->listener);
 
-        $this->assertStringMatchesFormat(
+        self::assertStringMatchesFormat(
             'SELECT%AFROM ResolveTargetEntity%A',
             $this
                 ->em

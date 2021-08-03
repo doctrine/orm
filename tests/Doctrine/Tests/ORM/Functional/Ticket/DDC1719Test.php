@@ -56,14 +56,14 @@ class DDC1719Test extends OrmFunctionalTestCase
         $e1 = $this->_em->find(DDC1719SimpleEntity::class, $e1Id);
         $e2 = $this->_em->find(DDC1719SimpleEntity::class, $e2Id);
 
-        $this->assertInstanceOf(DDC1719SimpleEntity::class, $e1);
-        $this->assertInstanceOf(DDC1719SimpleEntity::class, $e2);
+        self::assertInstanceOf(DDC1719SimpleEntity::class, $e1);
+        self::assertInstanceOf(DDC1719SimpleEntity::class, $e2);
 
-        $this->assertEquals($e1Id, $e1->id);
-        $this->assertEquals($e2Id, $e2->id);
+        self::assertEquals($e1Id, $e1->id);
+        self::assertEquals($e2Id, $e2->id);
 
-        $this->assertEquals('Bar 1', $e1->value);
-        $this->assertEquals('Foo 1', $e2->value);
+        self::assertEquals('Bar 1', $e1->value);
+        self::assertEquals('Foo 1', $e2->value);
 
         $e1->value = 'Bar 2';
         $e2->value = 'Foo 2';
@@ -73,17 +73,17 @@ class DDC1719Test extends OrmFunctionalTestCase
         $this->_em->persist($e2);
         $this->_em->flush();
 
-        $this->assertEquals('Bar 2', $e1->value);
-        $this->assertEquals('Foo 2', $e2->value);
+        self::assertEquals('Bar 2', $e1->value);
+        self::assertEquals('Foo 2', $e2->value);
 
-        $this->assertInstanceOf(DDC1719SimpleEntity::class, $e1);
-        $this->assertInstanceOf(DDC1719SimpleEntity::class, $e2);
+        self::assertInstanceOf(DDC1719SimpleEntity::class, $e1);
+        self::assertInstanceOf(DDC1719SimpleEntity::class, $e2);
 
-        $this->assertEquals($e1Id, $e1->id);
-        $this->assertEquals($e2Id, $e2->id);
+        self::assertEquals($e1Id, $e1->id);
+        self::assertEquals($e2Id, $e2->id);
 
-        $this->assertEquals('Bar 2', $e1->value);
-        $this->assertEquals('Foo 2', $e2->value);
+        self::assertEquals('Bar 2', $e1->value);
+        self::assertEquals('Foo 2', $e2->value);
 
         // Delete
         $this->_em->remove($e1);
@@ -93,8 +93,8 @@ class DDC1719Test extends OrmFunctionalTestCase
         $e1 = $this->_em->find(DDC1719SimpleEntity::class, $e1Id);
         $e2 = $this->_em->find(DDC1719SimpleEntity::class, $e2Id);
 
-        $this->assertNull($e1);
-        $this->assertNull($e2);
+        self::assertNull($e1);
+        self::assertNull($e2);
     }
 }
 

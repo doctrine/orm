@@ -66,8 +66,8 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
     {
         $poofy = $this->_em->createQuery("SELECT p FROM Doctrine\Tests\ORM\Functional\OJTICPet p WHERE p.name = 'Poofy'")->getSingleResult();
 
-        $this->assertEquals('Aari', $poofy->children[0]->getName());
-        $this->assertEquals('Zampa', $poofy->children[1]->getName());
+        self::assertEquals('Aari', $poofy->children[0]->getName());
+        self::assertEquals('Zampa', $poofy->children[1]->getName());
 
         $this->_em->clear();
 
@@ -76,11 +76,11 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
         )
                 ->getResult();
 
-        $this->assertEquals(1, count($result));
+        self::assertEquals(1, count($result));
         $poofy = $result[0];
 
-        $this->assertEquals('Aari', $poofy->children[0]->getName());
-        $this->assertEquals('Zampa', $poofy->children[1]->getName());
+        self::assertEquals('Aari', $poofy->children[0]->getName());
+        self::assertEquals('Zampa', $poofy->children[1]->getName());
     }
 }
 

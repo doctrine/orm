@@ -36,9 +36,9 @@ class DDC2415Test extends OrmFunctionalTestCase
         $parentMetadata = $this->_em->getClassMetadata(DDC2415ParentEntity::class);
         $childMetadata  = $this->_em->getClassMetadata(DDC2415ChildEntity::class);
 
-        $this->assertEquals($parentMetadata->generatorType, $childMetadata->generatorType);
-        $this->assertEquals($parentMetadata->customGeneratorDefinition, $childMetadata->customGeneratorDefinition);
-        $this->assertEquals(DDC2415Generator::class, $parentMetadata->customGeneratorDefinition['class']);
+        self::assertEquals($parentMetadata->generatorType, $childMetadata->generatorType);
+        self::assertEquals($parentMetadata->customGeneratorDefinition, $childMetadata->customGeneratorDefinition);
+        self::assertEquals(DDC2415Generator::class, $parentMetadata->customGeneratorDefinition['class']);
 
         $e1 = new DDC2415ChildEntity('ChildEntity 1');
         $e2 = new DDC2415ChildEntity('ChildEntity 2');
@@ -48,8 +48,8 @@ class DDC2415Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertEquals(md5($e1->getName()), $e1->getId());
-        $this->assertEquals(md5($e2->getName()), $e2->getId());
+        self::assertEquals(md5($e1->getName()), $e1->getId());
+        self::assertEquals(md5($e2->getName()), $e2->getId());
     }
 }
 

@@ -25,7 +25,7 @@ class OrmPerformanceTestCase extends OrmFunctionalTestCase
         $time = microtime(true) - $s;
 
         if ($this->maxRunningTime !== 0 && $time > $this->maxRunningTime) {
-            $this->fail(
+            self::fail(
                 sprintf(
                     'expected running time: <= %s but was: %s',
                     $this->maxRunningTime,

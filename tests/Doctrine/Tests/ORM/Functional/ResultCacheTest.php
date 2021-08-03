@@ -30,7 +30,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         if (! class_exists(ArrayCache::class)) {
-            $this->markTestSkipped('Test only applies with doctrine/cache 1.x');
+            self::markTestSkipped('Test only applies with doctrine/cache 1.x');
         }
 
         $this->cacheDataReflection = new ReflectionProperty(ArrayCache::class, 'data');
@@ -61,13 +61,13 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         $query->setResultCacheDriver($cache)->setResultCacheId('my_cache_id');
 
-        $this->assertFalse($cache->contains('my_cache_id'));
+        self::assertFalse($cache->contains('my_cache_id'));
 
         $users = $query->getResult();
 
-        $this->assertTrue($cache->contains('my_cache_id'));
-        $this->assertEquals(1, count($users));
-        $this->assertEquals('Roman', $users[0]->name);
+        self::assertTrue($cache->contains('my_cache_id'));
+        self::assertEquals(1, count($users));
+        self::assertEquals('Roman', $users[0]->name);
 
         $this->_em->clear();
 
@@ -76,9 +76,9 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         $users = $query2->getResult();
 
-        $this->assertTrue($cache->contains('my_cache_id'));
-        $this->assertEquals(1, count($users));
-        $this->assertEquals('Roman', $users[0]->name);
+        self::assertTrue($cache->contains('my_cache_id'));
+        self::assertEquals(1, count($users));
+        self::assertEquals('Roman', $users[0]->name);
     }
 
     public function testSetResultCacheId(): void
@@ -89,11 +89,11 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setResultCacheDriver($cache);
         $query->setResultCacheId('testing_result_cache_id');
 
-        $this->assertFalse($cache->contains('testing_result_cache_id'));
+        self::assertFalse($cache->contains('testing_result_cache_id'));
 
         $users = $query->getResult();
 
-        $this->assertTrue($cache->contains('testing_result_cache_id'));
+        self::assertTrue($cache->contains('testing_result_cache_id'));
     }
 
     public function testUseResultCacheTrue(): void
@@ -106,7 +106,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setResultCacheId('testing_result_cache_id');
         $users = $query->getResult();
 
-        $this->assertTrue($cache->contains('testing_result_cache_id'));
+        self::assertTrue($cache->contains('testing_result_cache_id'));
 
         $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
     }
@@ -121,7 +121,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->useResultCache(false);
         $query->getResult();
 
-        $this->assertFalse($cache->contains('testing_result_cache_id'));
+        self::assertFalse($cache->contains('testing_result_cache_id'));
 
         $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
     }
@@ -144,7 +144,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setParameter(1, 2);
         $query->getResult();
 
-        $this->assertCount(
+        self::assertCount(
             $sqlCount + 2,
             $this->_sqlLoggerStack->queries,
             'Two non-cached queries.'
@@ -156,7 +156,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setParameter(1, 2);
         $query->getResult();
 
-        $this->assertCount(
+        self::assertCount(
             $sqlCount + 2,
             $this->_sqlLoggerStack->queries,
             'The next two sql queries should have been cached, but were not.'
@@ -173,7 +173,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setResultCacheId('testing_result_cache_id');
         $query->getResult();
 
-        $this->assertTrue($cache->contains('testing_result_cache_id'));
+        self::assertTrue($cache->contains('testing_result_cache_id'));
 
         $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
     }
@@ -191,11 +191,11 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $this->assertCount(
+        self::assertCount(
             $expectedSQLCount,
             $this->_sqlLoggerStack->queries
         );
-        $this->assertTrue($cache->contains('testing_iterable_result_cache_id'));
+        self::assertTrue($cache->contains('testing_iterable_result_cache_id'));
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         $query->enableResultCache();
@@ -203,7 +203,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setResultCacheId('testing_iterable_result_cache_id');
         iterator_to_array($query->toIterable());
 
-        $this->assertCount(
+        self::assertCount(
             $expectedSQLCount,
             $this->_sqlLoggerStack->queries,
             'Expected query to be cached'
@@ -230,7 +230,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setParameter(1, 2);
         $query->getResult();
 
-        $this->assertCount(
+        self::assertCount(
             $sqlCount + 2,
             $this->_sqlLoggerStack->queries,
             'Two non-cached queries.'
@@ -242,7 +242,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setParameter(1, 2);
         $query->getResult();
 
-        $this->assertCount(
+        self::assertCount(
             $sqlCount + 2,
             $this->_sqlLoggerStack->queries,
             'The next two sql queries should have been cached, but were not.'
@@ -259,7 +259,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->disableResultCache();
         $query->getResult();
 
-        $this->assertFalse($cache->contains('testing_result_cache_id'));
+        self::assertFalse($cache->contains('testing_result_cache_id'));
 
         $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
     }
@@ -276,11 +276,11 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setParameter(1, 10);
         $query->setResultCacheDriver($cache)->enableResultCache();
 
-        $this->assertEquals(0, $this->getCacheSize($cache));
+        self::assertEquals(0, $this->getCacheSize($cache));
 
         $query->getResult();
 
-        $this->assertEquals(1, $this->getCacheSize($cache));
+        self::assertEquals(1, $this->getCacheSize($cache));
 
         return $query;
     }
@@ -296,7 +296,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setHint('foo', 'bar');
         $query->getResult();
 
-        $this->assertEquals($cacheCount, $this->getCacheSize($cache));
+        self::assertEquals($cacheCount, $this->getCacheSize($cache));
     }
 
     /**
@@ -310,7 +310,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setParameter(1, 50);
         $query->getResult();
 
-        $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
+        self::assertEquals($cacheCount + 1, $this->getCacheSize($cache));
     }
 
     /**
@@ -321,10 +321,10 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $cache      = $query->getResultCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
 
-        $this->assertNotEquals(Query::HYDRATE_ARRAY, $query->getHydrationMode());
+        self::assertNotEquals(Query::HYDRATE_ARRAY, $query->getHydrationMode());
         $query->getArrayResult();
 
-        $this->assertEquals($cacheCount, $this->getCacheSize($cache));
+        self::assertEquals($cacheCount, $this->getCacheSize($cache));
     }
 
     /**
@@ -361,8 +361,8 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         $articles = $query->getResult();
 
-        $this->assertEquals(1, count($articles));
-        $this->assertEquals('baz', $articles[0]->topic);
+        self::assertEquals(1, count($articles));
+        self::assertEquals('baz', $articles[0]->topic);
 
         $this->_em->clear();
 
@@ -373,8 +373,8 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         $articles = $query2->getResult();
 
-        $this->assertEquals(1, count($articles));
-        $this->assertEquals('baz', $articles[0]->topic);
+        self::assertEquals(1, count($articles));
+        self::assertEquals('baz', $articles[0]->topic);
 
         $query3 = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = ?1');
         $query3->setParameter(1, $user2);
@@ -383,6 +383,6 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         $articles = $query3->getResult();
 
-        $this->assertEquals(0, count($articles));
+        self::assertEquals(0, count($articles));
     }
 }

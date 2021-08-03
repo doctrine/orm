@@ -19,7 +19,7 @@ class DDC1360Test extends OrmFunctionalTestCase
     public function testSchemaDoubleQuotedCreate(): void
     {
         if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'postgresql') {
-            $this->markTestSkipped('PostgreSQL only test.');
+            self::markTestSkipped('PostgreSQL only test.');
         }
 
         $sql = $this->_schemaTool->getCreateSchemaSql(
@@ -28,7 +28,7 @@ class DDC1360Test extends OrmFunctionalTestCase
             ]
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'CREATE SCHEMA user',
                 'CREATE TABLE "user"."user" (id INT NOT NULL, PRIMARY KEY(id))',

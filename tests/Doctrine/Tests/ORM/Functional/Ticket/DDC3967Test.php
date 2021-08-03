@@ -34,6 +34,6 @@ class DDC3967Test extends SecondLevelCacheAbstractTest
         assert($country instanceof Country);
 
         // Identifier type should be integer
-        $this->assertSame($country->getId(), $id);
+        self::assertSame($country->getId(), $id);
     }
 }

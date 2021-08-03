@@ -63,12 +63,12 @@ class PaginatorTest extends OrmTestCase
         $paginator = (new Paginator($query, true))->setUseOutputWalkers(false);
 
         $this->connection
-            ->expects($this->exactly(3))
+            ->expects(self::exactly(3))
             ->method('executeQuery')
             ->withConsecutive(
-                [$this->anything(), [$paramInWhere]],
-                [$this->anything(), [$paramInWhere]],
-                [$this->anything(), [$paramInSubSelect, $paramInWhere, $returnedIds]]
+                [self::anything(), [$paramInWhere]],
+                [self::anything(), [$paramInWhere]],
+                [self::anything(), [$paramInSubSelect, $paramInWhere, $returnedIds]]
             );
 
         $paginator->count();
@@ -77,7 +77,7 @@ class PaginatorTest extends OrmTestCase
 
     public function testPaginatorNotCaringAboutExtraParametersWithoutOutputWalkers(): void
     {
-        $this->connection->expects($this->exactly(3))->method('executeQuery');
+        $this->connection->expects(self::exactly(3))->method('executeQuery');
 
         $this->createPaginatorWithExtraParametersWithoutOutputWalkers([])->count();
         $this->createPaginatorWithExtraParametersWithoutOutputWalkers([[10]])->count();
@@ -86,7 +86,7 @@ class PaginatorTest extends OrmTestCase
 
     public function testgetIteratorDoesCareAboutExtraParametersWithoutOutputWalkersWhenResultIsNotEmpty(): void
     {
-        $this->connection->expects($this->exactly(1))->method('executeQuery');
+        $this->connection->expects(self::exactly(1))->method('executeQuery');
         $this->expectException(Query\QueryException::class);
         $this->expectExceptionMessage('Too many parameters: the query defines 1 parameters and you bound 2');
 
@@ -99,7 +99,7 @@ class PaginatorTest extends OrmTestCase
     private function createPaginatorWithExtraParametersWithoutOutputWalkers(array $willReturnRows): Paginator
     {
         $this->hydrator->method('hydrateAll')->willReturn($willReturnRows);
-        $this->connection->method('executeQuery')->with($this->anything(), []);
+        $this->connection->method('executeQuery')->with(self::anything(), []);
 
         $query = new Query($this->em);
         $query->setDQL('SELECT u FROM Doctrine\\Tests\\Models\\CMS\\CmsUser u');

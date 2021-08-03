@@ -51,7 +51,7 @@ class DDC1300Test extends OrmFunctionalTestCase
         $query  = $this->_em->createQuery('SELECT f, fl FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1300Foo f JOIN f.fooLocaleRefFoo fl');
         $result =  $query->getResult();
 
-        $this->assertEquals(1, count($result));
+        self::assertEquals(1, count($result));
     }
 }
 
