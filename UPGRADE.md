@@ -29,6 +29,16 @@ Overriding this method is not recommended, which is why the method is documented
 + public function toIterable($stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
 ```
 
+## Deprecated: Entity Namespace Aliases
+
+Entity namespace aliases are deprecated, use the magic ::class constant to abbreviate full class names
+in EntityManager, EntityRepository and DQL.
+
+```diff
+-  $entityManager->find('MyBundle:User', $id);
++  $entityManager->find(User::class, $id);
+```
+
 # Upgrade to 2.9
 
 ## Minor BC BREAK: Setup tool needs cache implementation
