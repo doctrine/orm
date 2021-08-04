@@ -1,5 +1,9 @@
 # Upgrade to 2.10
 
+## BC Break: Removed possibility to extend the doctrine mapping xml schema with anything
+
+If you want to extend it now you have to provide your own validation schema.
+
 ## Minor BC BREAK: some exception methods have been removed
 
 The following methods were not in use and are very unlikely to be used by
