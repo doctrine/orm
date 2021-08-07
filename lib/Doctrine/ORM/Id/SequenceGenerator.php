@@ -103,27 +103,43 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
 
     /**
      * @return string
+     *
+     * @final
      */
     public function serialize()
     {
-        return serialize(
-            [
-                'allocationSize' => $this->_allocationSize,
-                'sequenceName'   => $this->_sequenceName,
-            ]
-        );
+        return serialize($this->__serialize());
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function __serialize(): array
+    {
+        return [
+            'allocationSize' => $this->_allocationSize,
+            'sequenceName' => $this->_sequenceName,
+        ];
     }
 
     /**
      * @param string $serialized
      *
      * @return void
+     *
+     * @final
      */
     public function unserialize($serialized)
     {
-        $array = unserialize($serialized);
+        $this->__unserialize(unserialize($serialized));
+    }
 
-        $this->_sequenceName   = $array['sequenceName'];
-        $this->_allocationSize = $array['allocationSize'];
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->_sequenceName   = $data['sequenceName'];
+        $this->_allocationSize = $data['allocationSize'];
     }
 }
