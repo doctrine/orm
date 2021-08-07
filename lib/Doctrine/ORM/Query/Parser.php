@@ -511,7 +511,7 @@ class Parser
         $message .= $expected !== '' ? sprintf('Expected %s, got ', $expected) : 'Unexpected ';
         $message .= $this->lexer->lookahead === null ? 'end of string.' : sprintf("'%s'", $token['value']);
 
-        throw QueryException::syntaxError($message, QueryException::dqlError($this->query->getDQL()));
+        throw QueryException::syntaxError($message, QueryException::dqlError($this->query->getDQL() ?? ''));
     }
 
     /**
@@ -528,7 +528,7 @@ class Parser
     public function semanticalError($message = '', $token = null)
     {
         if ($token === null) {
-            $token = $this->lexer->lookahead ?? ['position' => null];
+            $token = $this->lexer->lookahead ?? ['position' => 0];
         }
 
         // Minimum exposed chars ahead of token
@@ -541,7 +541,7 @@ class Parser
         $pos    = strpos($dql, ' ', $length > $pos ? $pos : $length);
         $length = $pos !== false ? $pos - $token['position'] : $distance;
 
-        $tokenPos = isset($token['position']) && $token['position'] > 0 ? $token['position'] : '-1';
+        $tokenPos = $token['position'] > 0 ? $token['position'] : '-1';
         $tokenStr = substr($dql, $token['position'], $length);
 
         // Building informative message
