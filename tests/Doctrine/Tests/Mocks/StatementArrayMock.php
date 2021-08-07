@@ -6,6 +6,7 @@ namespace Doctrine\Tests\Mocks;
 
 use ArrayIterator;
 use PDO;
+use Traversable;
 
 use function count;
 use function current;
@@ -32,7 +33,7 @@ class StatementArrayMock extends StatementMock
     /**
      * @psalm-return ArrayIterator<int, mixed>
      */
-    public function getIterator(): ArrayIterator
+    public function getIterator(): Traversable
     {
         return new ArrayIterator($this->_result);
     }

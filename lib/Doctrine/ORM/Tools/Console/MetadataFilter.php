@@ -24,6 +24,7 @@ use ArrayIterator;
 use Countable;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use FilterIterator;
+use ReturnTypeWillChange;
 use RuntimeException;
 
 use function assert;
@@ -70,6 +71,7 @@ class MetadataFilter extends FilterIterator implements Countable
     /**
      * @return bool
      */
+    #[ReturnTypeWillChange]
     public function accept()
     {
         if (count($this->filter) === 0) {
@@ -99,6 +101,7 @@ class MetadataFilter extends FilterIterator implements Countable
     /**
      * @return ArrayIterator<int, ClassMetadata>
      */
+    #[ReturnTypeWillChange]
     public function getInnerIterator()
     {
         $innerIterator = parent::getInnerIterator();
@@ -111,6 +114,7 @@ class MetadataFilter extends FilterIterator implements Countable
     /**
      * @return int
      */
+    #[ReturnTypeWillChange]
     public function count()
     {
         return count($this->getInnerIterator());

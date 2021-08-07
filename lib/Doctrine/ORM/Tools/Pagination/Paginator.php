@@ -30,6 +30,7 @@ use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use IteratorAggregate;
+use ReturnTypeWillChange;
 
 use function array_key_exists;
 use function array_map;
@@ -117,6 +118,7 @@ class Paginator implements Countable, IteratorAggregate
     /**
      * {@inheritdoc}
      */
+    #[ReturnTypeWillChange]
     public function count()
     {
         if ($this->count === null) {
@@ -135,6 +137,7 @@ class Paginator implements Countable, IteratorAggregate
      *
      * @psalm-return ArrayIterator<array-key, T>
      */
+    #[ReturnTypeWillChange]
     public function getIterator()
     {
         $offset = $this->query->getFirstResult();
