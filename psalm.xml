@@ -47,5 +47,11 @@
                 <referencedClass name="Doctrine\Common\Cache\XcacheCache"/>
             </errorLevel>
         </UndefinedClass>
+        <UndefinedMethod>
+            <errorLevel type="suppress">
+                <!-- See https://github.com/doctrine/orm/issues/8884 -->
+                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
+            </errorLevel>
+        </UndefinedMethod>
     </issueHandlers>
 </psalm>

@@ -1,21 +1,8 @@
 includes:
     - phpstan-baseline.neon
+    - phpstan-params.neon
 
 parameters:
-    level: 5
-    paths:
-        - lib
-        - tests/Doctrine/StaticAnalysis
-    excludePaths:
-        - lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php
-    earlyTerminatingMethodCalls:
-        Doctrine\ORM\Query\Parser:
-            - syntaxError
-    phpVersion: 70100
-
     ignoreErrors:
-        # The class was added in PHP 8.1
-        - '/^Attribute class ReturnTypeWillChange does not exist.$/'
-
         # https://github.com/doctrine/collections/pull/282
         - '/Variable \$offset in isset\(\) always exists and is not nullable\./'
