@@ -80,11 +80,29 @@ interface EntityManagerInterface extends ObjectManager
      * If an exception occurs during execution of the function or flushing or transaction commit,
      * the transaction is rolled back, the EntityManager closed and the exception re-thrown.
      *
+     * @deprecated 2.10 Use {@link wrapInTransaction} instead.
+     *
      * @param callable $func The function to execute transactionally.
      *
      * @return mixed The non-empty value returned from the closure or true instead.
      */
     public function transactional($func);
+
+    /**
+     * Executes a function in a transaction.
+     *
+     * The function gets passed this EntityManager instance as an (optional) parameter.
+     *
+     * {@link flush} is invoked prior to transaction commit.
+     *
+     * If an exception occurs during execution of the function or flushing or transaction commit,
+     * the transaction is rolled back, the EntityManager closed and the exception re-thrown.
+     *
+     * @param callable $func The function to execute transactionally.
+     *
+     * @return mixed The value returned from the closure.
+     */
+    // public function wrapInTransaction(callable $func);
 
     /**
      * Commits a transaction on the underlying database connection.
