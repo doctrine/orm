@@ -1414,9 +1414,6 @@
       <code>$indexXml-&gt;options</code>
       <code>$uniqueXml-&gt;options</code>
     </PossiblyInvalidPropertyFetch>
-    <PossiblyNullReference occurrences="1">
-      <code>getName</code>
-    </PossiblyNullReference>
     <RedundantCast occurrences="1">
       <code>(string) $attributes-&gt;name</code>
     </RedundantCast>
@@ -3342,44 +3339,15 @@
       <code>ObjectRepository</code>
     </MoreSpecificReturnType>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/AbstractEntityManagerCommand.php">
-    <PossiblyInvalidArgument occurrences="1">
-      <code>$input-&gt;getOption('em')</code>
-    </PossiblyInvalidArgument>
-  </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/CollectionRegionCommand.php">
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
-    <PossiblyInvalidArgument occurrences="13">
-      <code>$assoc</code>
-      <code>$assoc</code>
-      <code>$assoc</code>
-      <code>$assoc</code>
-      <code>$assoc</code>
-      <code>$assoc</code>
-      <code>$ownerClass</code>
-      <code>$ownerClass</code>
-      <code>$ownerClass</code>
-      <code>$ownerClass</code>
-      <code>$ownerClass</code>
-      <code>$ownerClass</code>
-      <code>$ownerId</code>
-    </PossiblyInvalidArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/EntityRegionCommand.php">
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
-    <PossiblyInvalidArgument occurrences="7">
-      <code>$entityClass</code>
-      <code>$entityClass</code>
-      <code>$entityClass</code>
-      <code>$entityClass</code>
-      <code>$entityClass</code>
-      <code>$entityClass</code>
-      <code>$entityId</code>
-    </PossiblyInvalidArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/MetadataCommand.php">
     <MissingReturnType occurrences="1">
@@ -3398,12 +3366,6 @@
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
-    <PossiblyInvalidArgument occurrences="4">
-      <code>$name</code>
-      <code>$name</code>
-      <code>$name</code>
-      <code>$name</code>
-    </PossiblyInvalidArgument>
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>is_object($queryRegion)</code>
     </RedundantConditionGivenDocblockType>
@@ -3429,18 +3391,9 @@
       <code>private $entityGenerator = null;</code>
       <code>private $metadataExporter = null;</code>
     </DeprecatedClass>
-    <InvalidScalarArgument occurrences="1">
-      <code>4</code>
-    </InvalidScalarArgument>
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
-    <PossiblyInvalidArgument occurrences="4">
-      <code>$extend</code>
-      <code>$input-&gt;getArgument('dest-path')</code>
-      <code>$input-&gt;getOption('from')</code>
-      <code>$toType</code>
-    </PossiblyInvalidArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php">
     <ArgumentTypeCoercion occurrences="1">
@@ -3454,26 +3407,12 @@
     <InvalidNullableReturnType occurrences="1">
       <code>execute</code>
     </InvalidNullableReturnType>
-    <InvalidScalarArgument occurrences="2">
-      <code>$input-&gt;getOption('filter')</code>
-      <code>4</code>
-    </InvalidScalarArgument>
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
     <NoInterfaceProperties occurrences="1">
       <code>$class-&gt;name</code>
     </NoInterfaceProperties>
-    <PossiblyInvalidArgument occurrences="8">
-      <code>$destPath</code>
-      <code>$destPath</code>
-      <code>$destPath</code>
-      <code>$extend</code>
-      <code>$input-&gt;getArgument('dest-path')</code>
-      <code>$input-&gt;getArgument('to-type')</code>
-      <code>$input-&gt;getOption('force')</code>
-      <code>$namespace</code>
-    </PossiblyInvalidArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/EnsureProductionSettingsCommand.php">
     <MissingReturnType occurrences="1">
@@ -3487,45 +3426,24 @@
     <DeprecatedClass occurrences="1">
       <code>new EntityGenerator()</code>
     </DeprecatedClass>
-    <InvalidScalarArgument occurrences="2">
-      <code>$input-&gt;getOption('filter')</code>
-      <code>4</code>
-    </InvalidScalarArgument>
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
     <NoInterfaceProperties occurrences="1">
       <code>$metadata-&gt;name</code>
     </NoInterfaceProperties>
-    <PossiblyInvalidArgument occurrences="7">
-      <code>$extend</code>
-      <code>$input-&gt;getArgument('dest-path')</code>
-      <code>$input-&gt;getArgument('dest-path')</code>
-      <code>$input-&gt;getOption('generate-annotations')</code>
-      <code>$input-&gt;getOption('generate-methods')</code>
-      <code>$input-&gt;getOption('regenerate-entities')</code>
-      <code>$input-&gt;getOption('update-entities')</code>
-    </PossiblyInvalidArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/GenerateProxiesCommand.php">
     <DeprecatedMethod occurrences="2">
       <code>getProxyDir</code>
       <code>getProxyDir</code>
     </DeprecatedMethod>
-    <InvalidScalarArgument occurrences="1">
-      <code>$input-&gt;getOption('filter')</code>
-    </InvalidScalarArgument>
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
     <NoInterfaceProperties occurrences="1">
       <code>$metadata-&gt;name</code>
     </NoInterfaceProperties>
-    <PossiblyInvalidArgument occurrences="3">
-      <code>$destPath</code>
-      <code>$destPath</code>
-      <code>$destPath</code>
-    </PossiblyInvalidArgument>
     <PossiblyNullArgument occurrences="1">
       <code>$em-&gt;getConfiguration()-&gt;getProxyDir()</code>
     </PossiblyNullArgument>
@@ -3534,19 +3452,12 @@
     <DeprecatedClass occurrences="1">
       <code>new EntityRepositoryGenerator()</code>
     </DeprecatedClass>
-    <InvalidScalarArgument occurrences="1">
-      <code>$input-&gt;getOption('filter')</code>
-    </InvalidScalarArgument>
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
     <NoInterfaceProperties occurrences="1">
       <code>$metadata-&gt;customRepositoryClassName</code>
     </NoInterfaceProperties>
-    <PossiblyInvalidArgument occurrences="2">
-      <code>$input-&gt;getArgument('dest-path')</code>
-      <code>$input-&gt;getArgument('dest-path')</code>
-    </PossiblyInvalidArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/InfoCommand.php">
     <MissingReturnType occurrences="1">
@@ -3563,9 +3474,6 @@
     <MissingPropertyType occurrences="1">
       <code>$metadata-&gt;inheritanceType</code>
     </MissingPropertyType>
-    <PossiblyInvalidArgument occurrences="1">
-      <code>$input-&gt;getArgument('entityName')</code>
-    </PossiblyInvalidArgument>
     <PossiblyNullReference occurrences="1">
       <code>getAllClassNames</code>
     </PossiblyNullReference>
@@ -3574,17 +3482,9 @@
     <DeprecatedClass occurrences="1">
       <code>Debug::dump($resultSet, (int) $input-&gt;getOption('depth'), true, false)</code>
     </DeprecatedClass>
-    <InvalidScalarArgument occurrences="2">
-      <code>$hydrationModeName</code>
-      <code>7</code>
-    </InvalidScalarArgument>
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
-    <PossiblyInvalidArgument occurrences="2">
-      <code>$dql</code>
-      <code>$hydrationModeName</code>
-    </PossiblyInvalidArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/AbstractCommand.php">
     <InvalidNullableReturnType occurrences="1">
