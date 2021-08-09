@@ -211,6 +211,46 @@ class SchemaValidatorTest extends OrmTestCase
             $ce
         );
     }
+
+    /**
+     * @group 8771
+     */
+    public function testMappedSuperclassNotPresentInDiscriminator(): void
+    {
+        $class1 = $this->em->getClassMetadata(MappedSuperclass::class);
+        $ce     = $this->validator->validateClass($class1);
+
+        $this->assertEquals([], $ce);
+    }
+}
+
+/**
+ * @MappedSuperClass
+ */
+abstract class MappedSuperclass extends ParentEntity
+{
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorMap({"child" = ChildEntity::class})
+ */
+abstract class ParentEntity
+{
+    /**
+     * @var mixed
+     * @Id
+     * @Column
+     */
+    protected $key;
+}
+
+/**
+ * @Entity
+ */
+class ChildEntity extends MappedSuperclass
+{
 }
 
 /**
