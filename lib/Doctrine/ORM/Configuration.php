@@ -54,6 +54,9 @@ use function trim;
  */
 class Configuration extends \Doctrine\DBAL\Configuration
 {
+    /** @var mixed[] */
+    protected $_attributes = [];
+
     /**
      * Sets the directory where Doctrine generates any necessary proxy class files.
      *
