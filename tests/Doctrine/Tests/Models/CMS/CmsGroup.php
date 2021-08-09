@@ -66,9 +66,9 @@ class CmsGroup implements IteratorAggregate
     }
 
     /**
-     * @return ArrayCollection|Traversable
+     * @return Collection<int, CmsUser>
      */
-    public function getIterator()
+    public function getIterator(): Collection
     {
         return $this->getUsers();
     }

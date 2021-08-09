@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
+use ArrayIterator;
 use Doctrine\DBAL\Driver\Statement;
 use IteratorAggregate;
 use PDO;
+use Traversable;
 
 use function array_shift;
 use function current;
@@ -127,12 +129,9 @@ class HydratorMockStatement implements IteratorAggregate, Statement
     {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
-        return $this->_resultSet;
+        return new ArrayIterator($this->_resultSet);
     }
 
     /**
