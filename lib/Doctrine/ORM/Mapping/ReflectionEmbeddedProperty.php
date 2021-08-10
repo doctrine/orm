@@ -61,6 +61,8 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
 
     /**
      * {@inheritDoc}
+     *
+     * @return mixed
      */
     #[ReturnTypeWillChange]
     public function getValue($object = null)
@@ -76,6 +78,8 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
 
     /**
      * {@inheritDoc}
+     *
+     * @return void
      */
     #[ReturnTypeWillChange]
     public function setValue($object, $value = null)
