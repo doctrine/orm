@@ -45,7 +45,17 @@
                 <referencedClass name="Doctrine\Common\Cache\ApcCache"/>
                 <referencedClass name="Doctrine\Common\Cache\ArrayCache"/>
                 <referencedClass name="Doctrine\Common\Cache\XcacheCache"/>
+                <referencedClass name="Doctrine\DBAL\Driver\ResultStatement"/>
+                <referencedClass name="Doctrine\DBAL\ForwardCompatibility\Result"/>
+                <referencedClass name="Doctrine\DBAL\Exception"/>
+                <referencedClass name="Doctrine\DBAL\DBALException"/>
+                <referencedClass name="Doctrine\DBAL\Platforms\PostgreSqlPlatform"/>
             </errorLevel>
         </UndefinedClass>
+        <DeprecatedMethod>
+            <errorLevel type="suppress">
+                <referencedMethod name="Doctrine\DBAL\Connection::getSchemaManager"/>
+            </errorLevel>
+        </DeprecatedMethod>
     </issueHandlers>
 </psalm>

@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Persisters\Collection;
 use BadMethodCallException;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -165,6 +166,7 @@ class OneToManyPersister extends AbstractCollectionPersister
 
     /**
      * @throws DBALException
+     * @throws Exception
      */
     private function deleteEntityCollection(PersistentCollection $collection): int
     {
@@ -193,6 +195,7 @@ class OneToManyPersister extends AbstractCollectionPersister
      * Thanks Steve Ebersole (Hibernate) for idea on how to tackle reliably this scenario, we owe him a beer! =)
      *
      * @throws DBALException
+     * @throws Exception
      */
     private function deleteJoinedEntityCollection(PersistentCollection $collection): int
     {
