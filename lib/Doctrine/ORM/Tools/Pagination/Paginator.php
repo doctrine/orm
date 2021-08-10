@@ -117,6 +117,8 @@ class Paginator implements Countable, IteratorAggregate
 
     /**
      * {@inheritdoc}
+     *
+     * @return int
      */
     #[ReturnTypeWillChange]
     public function count()
@@ -135,6 +137,7 @@ class Paginator implements Countable, IteratorAggregate
     /**
      * {@inheritdoc}
      *
+     * @return ArrayIterator
      * @psalm-return ArrayIterator<array-key, T>
      */
     #[ReturnTypeWillChange]

@@ -96,6 +96,8 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
 
     /**
      * {@inheritdoc}
+     *
+     * @return bool
      */
     #[ReturnTypeWillChange]
     public function valid()
@@ -104,12 +106,15 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $offset
+     * @psalm-param array-key|null $offset
+     *
+     * @return bool
      */
     #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
-        return isset($this->walkers[$offset]);
+        return isset($this->walkers[$offset ?? '']);
     }
 
     /**
@@ -137,6 +142,8 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
      *
      * @param string $value
      * @psalm-param array-key|null $offset
+     *
+     * @return void
      */
     #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
@@ -149,13 +156,16 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $offset
+     * @psalm-param array-key|null $offset
+     *
+     * @return void
      */
     #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         if ($this->offsetExists($offset)) {
-            unset($this->walkers[$offset]);
+            unset($this->walkers[$offset ?? '']);
         }
     }
 }
