@@ -54,6 +54,9 @@ use function trim;
  */
 class Configuration extends \Doctrine\DBAL\Configuration
 {
+    /** @var mixed[] */
+    protected $_attributes = [];
+
     /**
      * Sets the directory where Doctrine generates any necessary proxy class files.
      *
@@ -202,6 +205,13 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getEntityNamespace($entityNamespaceAlias)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8818',
+            'Entity short namespace aliases such as "%s" are deprecated, use ::class constant instead.',
+            $entityNamespaceAlias
+        );
+
         if (! isset($this->_attributes['entityNamespaces'][$entityNamespaceAlias])) {
             throw UnknownEntityNamespace::fromNamespaceAlias($entityNamespaceAlias);
         }

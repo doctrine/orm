@@ -332,7 +332,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $tableName  = $this->quoteStrategy->getTableName($this->class, $this->platform);
         $from       = ' FROM ' . $tableName . ' ' . $baseTableAlias;
         $where      = $conditionSql !== '' ? ' WHERE ' . $conditionSql : '';
-        $lock       = $this->platform->appendLockHint($from, $lockMode);
+        $lock       = $this->platform->appendLockHint($from, $lockMode ?? LockMode::NONE);
         $columnList = $this->getSelectColumnsSQL();
         $query      = 'SELECT ' . $columnList
                     . $lock
@@ -340,7 +340,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     . $where
                     . $orderBySql;
 
-        return $this->platform->modifyLimitQuery($query, $limit, $offset) . $lockSql;
+        return $this->platform->modifyLimitQuery($query, $limit, $offset ?? 0) . $lockSql;
     }
 
     /**

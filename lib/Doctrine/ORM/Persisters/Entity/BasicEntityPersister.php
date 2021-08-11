@@ -1083,14 +1083,14 @@ class BasicEntityPersister implements EntityPersister
         $from   = ' FROM ' . $tableName . ' ' . $tableAlias;
         $join   = $this->currentPersisterContext->selectJoinSql . $joinSql;
         $where  = ($conditionSql ? ' WHERE ' . $conditionSql : '');
-        $lock   = $this->platform->appendLockHint($from, $lockMode);
+        $lock   = $this->platform->appendLockHint($from, $lockMode ?? LockMode::NONE);
         $query  = $select
             . $lock
             . $join
             . $where
             . $orderBySql;
 
-        return $this->platform->modifyLimitQuery($query, $limit, $offset) . $lockSql;
+        return $this->platform->modifyLimitQuery($query, $limit, $offset ?? 0) . $lockSql;
     }
 
     /**
@@ -1548,7 +1548,7 @@ class BasicEntityPersister implements EntityPersister
             'FROM '
             . $this->quoteStrategy->getTableName($this->class, $this->platform) . ' '
             . $this->getSQLTableAlias($this->class->name),
-            $lockMode
+            $lockMode ?? LockMode::NONE
         );
     }
 

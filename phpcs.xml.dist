@@ -232,6 +232,7 @@
 
     <rule ref="Squiz.NamingConventions.ValidVariableName.PublicHasUnderscore">
         <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Configuration.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/EntityRepository.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php</exclude-pattern>
