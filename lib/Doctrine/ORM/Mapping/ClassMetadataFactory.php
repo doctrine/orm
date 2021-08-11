@@ -548,13 +548,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         $idGenType = $class->generatorType;
         if ($idGenType === ClassMetadata::GENERATOR_TYPE_AUTO) {
-            if ($this->getTargetPlatform()->prefersSequences()) {
-                $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
-            } elseif ($this->getTargetPlatform()->prefersIdentityColumns()) {
-                $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
-            } else {
-                $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_TABLE);
-            }
+            $class->setIdGeneratorType($this->determineIdGeneratorStrategy($this->getTargetPlatform()));
         }
 
         // Create & assign an appropriate ID generator instance
@@ -656,6 +650,23 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             default:
                 throw UnknownGeneratorType::create($class->generatorType);
         }
+    }
+
+    private function determineIdGeneratorStrategy(AbstractPlatform $platform): int
+    {
+        if ($platform->getName() === 'oracle' || $platform->getName() === 'postgresql') {
+            return ClassMetadata::GENERATOR_TYPE_SEQUENCE;
+        }
+
+        if ($platform->supportsIdentityColumns()) {
+            return ClassMetadata::GENERATOR_TYPE_IDENTITY;
+        }
+
+        if ($platform->supportsSequences()) {
+            return ClassMetadata::GENERATOR_TYPE_SEQUENCE;
+        }
+
+        return ClassMetadata::GENERATOR_TYPE_TABLE;
     }
 
     /**

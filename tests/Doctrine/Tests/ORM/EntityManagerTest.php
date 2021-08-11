@@ -9,6 +9,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\NativeQuery;
@@ -24,6 +25,7 @@ use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
+use Generator;
 use InvalidArgumentException;
 use stdClass;
 use TypeError;
@@ -208,6 +210,37 @@ class EntityManagerTest extends OrmTestCase
         $this->entityManager->$methodName(new stdClass());
     }
 
+    /** @return Generator<array{mixed}> */
+    public function dataToBeReturnedByWrapInTransaction(): Generator
+    {
+        yield [[]];
+        yield [[1]];
+        yield [0];
+        yield [100.5];
+        yield [null];
+        yield [true];
+        yield [false];
+        yield ['foo'];
+    }
+
+    /**
+     * @param mixed $expectedValue
+     *
+     * @dataProvider dataToBeReturnedByWrapInTransaction
+     * @group DDC-1125
+     */
+    public function testWrapInTransactionAcceptsReturn($expectedValue): void
+    {
+        $return = $this->entityManager->wrapInTransaction(
+            /** @return mixed */
+            static function (EntityManagerInterface $em) use ($expectedValue) {
+                return $expectedValue;
+            }
+        );
+
+        $this->assertSame($expectedValue, $return);
+    }
+
     /**
      * @group DDC-1125
      */
@@ -257,6 +290,24 @@ class EntityManagerTest extends OrmTestCase
     {
         try {
             $this->entityManager->transactional(static function (): void {
+                (static function (array $value): void {
+                    // this only serves as an IIFE that throws a `TypeError`
+                })(null);
+            });
+
+            self::fail('TypeError expected to be thrown');
+        } catch (TypeError $ignored) {
+            self::assertFalse($this->entityManager->isOpen());
+        }
+    }
+
+    /**
+     * @group #5796
+     */
+    public function testWrapInTransactionReThrowsThrowables(): void
+    {
+        try {
+            $this->entityManager->wrapInTransaction(static function (): void {
                 (static function (array $value): void {
                     // this only serves as an IIFE that throws a `TypeError`
                 })(null);

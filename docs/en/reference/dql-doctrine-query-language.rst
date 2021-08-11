@@ -1527,7 +1527,6 @@ Terminals
 
 -  identifier (name, email, ...) must match ``[a-z_][a-z0-9_]*``
 -  fully_qualified_name (Doctrine\Tests\Models\CMS\CmsUser) matches PHP's fully qualified class names
--  aliased_name (CMS:CmsUser) uses two identifiers, one for the namespace alias and one for the class inside it
 -  string ('foo', 'bar''s house', '%ninja%', ...)
 -  char ('/', '\\', ' ', ...)
 -  integer (-1, 0, 1, 34, ...)

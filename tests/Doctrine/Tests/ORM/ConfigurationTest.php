@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\Exception\MetadataCacheNotConfigured;
 use Doctrine\ORM\Cache\Exception\MetadataCacheUsesNonPersistentCache;
@@ -39,6 +40,8 @@ use function class_exists;
  */
 class ConfigurationTest extends DoctrineTestCase
 {
+    use VerifyDeprecations;
+
     /** @var Configuration */
     private $configuration;
 
@@ -111,6 +114,8 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testSetGetEntityNamespace(): void
     {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8818');
+
         $this->configuration->addEntityNamespace('TestNamespace', __NAMESPACE__);
         self::assertSame(__NAMESPACE__, $this->configuration->getEntityNamespace('TestNamespace'));
         $namespaces = ['OtherNamespace' => __NAMESPACE__];

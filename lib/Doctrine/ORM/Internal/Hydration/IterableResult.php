@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Internal\Hydration;
 
 use Iterator;
+use ReturnTypeWillChange;
 
 /**
  * Represents a result structure that can be iterated over, hydrating row-by-row
@@ -39,6 +40,7 @@ class IterableResult implements Iterator
      *
      * @throws HydrationException
      */
+    #[ReturnTypeWillChange]
     public function rewind()
     {
         if ($this->_rewinded === true) {
@@ -54,6 +56,7 @@ class IterableResult implements Iterator
      *
      * @return mixed[]|false
      */
+    #[ReturnTypeWillChange]
     public function next()
     {
         $this->_current = $this->_hydrator->hydrateRow();
@@ -65,6 +68,7 @@ class IterableResult implements Iterator
     /**
      * @return mixed
      */
+    #[ReturnTypeWillChange]
     public function current()
     {
         return $this->_current;
@@ -73,6 +77,7 @@ class IterableResult implements Iterator
     /**
      * @return int
      */
+    #[ReturnTypeWillChange]
     public function key()
     {
         return $this->_key;
@@ -81,6 +86,7 @@ class IterableResult implements Iterator
     /**
      * @return bool
      */
+    #[ReturnTypeWillChange]
     public function valid()
     {
         return $this->_current !== false;

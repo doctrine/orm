@@ -251,6 +251,28 @@ use function sprintf;
     /**
      * {@inheritDoc}
      */
+    public function wrapInTransaction(callable $func)
+    {
+        $this->conn->beginTransaction();
+
+        try {
+            $return = $func($this);
+
+            $this->flush();
+            $this->conn->commit();
+
+            return $return;
+        } catch (Throwable $e) {
+            $this->close();
+            $this->conn->rollBack();
+
+            throw $e;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function commit()
     {
         $this->conn->commit();

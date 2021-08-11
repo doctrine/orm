@@ -43,6 +43,8 @@ class GenerateRepositoriesCommand extends AbstractEntityManagerCommand
 
     /**
      * {@inheritdoc}
+     *
+     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

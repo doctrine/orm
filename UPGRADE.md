@@ -23,6 +23,28 @@ Method `Doctrine\ORM\EntityManagerInterface#copy()` never got its implementation
 
 # Upgrade to 2.10
 
+## BC Break: Removed possibility to extend the doctrine mapping xml schema with anything
+
+If you want to extend it now you have to provide your own validation schema.
+
+## New method `Doctrine\ORM\EntityManagerInterface#wrapInTransaction($func)`
+
+Works the same as `Doctrine\ORM\EntityManagerInterface#transactional()` but returns any value returned from `$func` closure rather than just _non-empty value returned from the closure or true_.
+
+Because of BC policy, the method does not exist on the interface yet. This is the example of safe usage:
+
+```php
+function foo(EntityManagerInterface $entityManager, callable $func) {
+    if (method_exists($entityManager, 'wrapInTransaction')) {
+        return $entityManager->wrapInTransaction($func);
+    }
+    
+    return $entityManager->transactional($func);
+}
+```
+
+`Doctrine\ORM\EntityManagerInterface#transactional()` has been deprecated.
+
 ## Minor BC BREAK: some exception methods have been removed
 
 The following methods were not in use and are very unlikely to be used by
@@ -50,6 +72,16 @@ Overriding this method is not recommended, which is why the method is documented
 ```diff
 - public function toIterable(ResultStatement $stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
 + public function toIterable($stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
+```
+
+## Deprecated: Entity Namespace Aliases
+
+Entity namespace aliases are deprecated, use the magic ::class constant to abbreviate full class names
+in EntityManager, EntityRepository and DQL.
+
+```diff
+-  $entityManager->find('MyBundle:User', $id);
++  $entityManager->find(User::class, $id);
 ```
 
 # Upgrade to 2.9
