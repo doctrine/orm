@@ -512,7 +512,7 @@ class Parser
     public function semanticalError($message = '', $token = null)
     {
         if ($token === null) {
-            $token = $this->lexer->lookahead ?? ['position' => null];
+            $token = $this->lexer->lookahead ?? ['position' => 0];
         }
 
         // Minimum exposed chars ahead of token
@@ -525,8 +525,8 @@ class Parser
         $pos    = strpos($dql, ' ', $length > $pos ? $pos : $length);
         $length = $pos !== false ? $pos - $token['position'] : $distance;
 
-        $tokenPos = isset($token['position']) && $token['position'] > 0 ? $token['position'] : '-1';
-        $tokenStr = substr($dql, (int) $token['position'], $length);
+        $tokenPos = $token['position'] > 0 ? $token['position'] : '-1';
+        $tokenStr = substr($dql, $token['position'], $length);
 
         // Building informative message
         $message = 'line 0, col ' . $tokenPos . " near '" . $tokenStr . "': Error: " . $message;

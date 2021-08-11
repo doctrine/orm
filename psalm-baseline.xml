@@ -3118,9 +3118,6 @@
       <code>TreeWalker|null</code>
       <code>class-string&lt;TreeWalker&gt;|false</code>
     </ImplementedReturnTypeMismatch>
-    <PossiblyNullArgument occurrences="1">
-      <code>$offset</code>
-    </PossiblyNullArgument>
     <PossiblyNullArrayOffset occurrences="1">
       <code>$this-&gt;walkers</code>
     </PossiblyNullArrayOffset>
@@ -3256,9 +3253,7 @@
       <code>new ClassMetadataExporter()</code>
       <code>new EntityGenerator()</code>
     </DeprecatedClass>
-    <InvalidNullableReturnType occurrences="1">
-      <code>execute</code>
-    </InvalidNullableReturnType>
+    <InvalidNullableReturnType occurrences="1"/>
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
@@ -3339,9 +3334,7 @@
     </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/AbstractCommand.php">
-    <InvalidNullableReturnType occurrences="1">
-      <code>execute</code>
-    </InvalidNullableReturnType>
+    <InvalidNullableReturnType occurrences="1"/>
     <NullableReturnStatement occurrences="1">
       <code>$this-&gt;executeSchemaCommand($input, $output, new SchemaTool($em), $metadatas, $ui)</code>
     </NullableReturnStatement>

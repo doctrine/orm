@@ -38,6 +38,8 @@ class EntityManagerHelper extends Helper
 
     /**
      * {@inheritdoc}
+     *
+     * @return string
      */
     public function getName()
     {
