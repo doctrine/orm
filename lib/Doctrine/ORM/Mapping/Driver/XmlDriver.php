@@ -893,7 +893,6 @@ class XmlDriver extends FileDriver
     {
         $cascades = [];
         foreach ($cascadeElement->children() as $action) {
-            assert($action instanceof SimpleXMLElement);
             // According to the JPA specifications, XML uses "cascade-persist"
             // instead of "persist". Here, both variations
             // are supported because both YAML and Annotation use "persist"
