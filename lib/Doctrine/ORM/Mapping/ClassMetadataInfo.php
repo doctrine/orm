@@ -3409,6 +3409,9 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * {@inheritDoc}
      *
+     * @return string
+     * @psalm-return class-string
+     *
      * @throws InvalidArgumentException
      */
     public function getAssociationTargetClass($assocName)
