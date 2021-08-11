@@ -1176,7 +1176,7 @@ parameters:
 			path: lib/Doctrine/ORM/PersistentCollection.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\PersistentCollection\\:\\:slice\\(\\) should return array\\<TKey, T\\> but returns array\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\PersistentCollection\\:\\:slice\\(\\) should return array\\<TKey of \\(int\\|string\\), T\\> but returns array\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/PersistentCollection.php
 
