@@ -129,7 +129,7 @@ class UnitOfWorkTest extends OrmTestCase
 
         // should have an id
         self::assertIsNumeric($user->id);
-}
+    }
 
     /**
      * Tests a scenario where a save() operation is cascaded from a ForumUser

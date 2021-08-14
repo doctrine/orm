@@ -58,7 +58,7 @@ class DDC992Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $child   = $this->_em->getRepository(get_class($role))->find($child->roleID);
+        $child = $this->_em->getRepository(get_class($role))->find($child->roleID);
         self::assertCount(1, $child->extends);
         foreach ($child->extends as $parent) {
             self::assertEquals($role->getRoleID(), $parent->getRoleID());

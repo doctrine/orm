@@ -47,8 +47,8 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
             $this->_em->getClassMetadata(Models\CMS\CmsPhonenumber::class),
         ];
 
-        $tool     = new SchemaTool($this->_em);
-        $sql      = $tool->getCreateSchemaSql($classes);
+        $tool = new SchemaTool($this->_em);
+        $sql  = $tool->getCreateSchemaSql($classes);
 
         self::assertEquals('CREATE TABLE cms_addresses (id INT NOT NULL, user_id INT DEFAULT NULL, country VARCHAR(50) NOT NULL, zip VARCHAR(50) NOT NULL, city VARCHAR(50) NOT NULL, PRIMARY KEY(id))', array_shift($sql));
         self::assertEquals('CREATE UNIQUE INDEX UNIQ_ACAC157BA76ED395 ON cms_addresses (user_id)', array_shift($sql));

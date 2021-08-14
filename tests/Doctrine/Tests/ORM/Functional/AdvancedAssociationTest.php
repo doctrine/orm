@@ -111,7 +111,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         // test3 - lazy-loading one-to-many after find()
-        $phrase3 = $this->_em->find(Phrase::class, $phrase->getId());
+        $phrase3     = $this->_em->find(Phrase::class, $phrase->getId());
         $definitions = $phrase3->getDefinitions();
         self::assertInstanceOf(PersistentCollection::class, $definitions);
         self::assertInstanceOf(Definition::class, $definitions[0]);

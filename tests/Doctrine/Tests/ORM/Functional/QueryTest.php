@@ -274,7 +274,7 @@ class QueryTest extends OrmFunctionalTestCase
 
             $identityMap      = $this->_em->getUnitOfWork()->getIdentityMap();
             $identityMapCount = count($identityMap[CmsArticle::class]);
-            self::assertGreaterThan( $iteratedCount, $identityMapCount);
+            self::assertGreaterThan($iteratedCount, $identityMapCount);
 
             $iteratedCount++;
         }
