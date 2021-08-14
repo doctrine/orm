@@ -680,9 +680,9 @@ class ObjectHydratorTest extends HydrationTestCase
 
         self::assertEquals(2, count($result));
 
-        self::assertInternalType('array', $result);
-        self::assertInternalType('array', $result[0]);
-        self::assertInternalType('array', $result[1]);
+        self::assertIsArray($result);
+        self::assertIsArray($result[0]);
+        self::assertIsArray($result[1]);
 
         self::assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
         self::assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->phonenumbers);
@@ -810,9 +810,9 @@ class ObjectHydratorTest extends HydrationTestCase
 
         self::assertEquals(2, count($result));
 
-        self::assertInternalType('array', $result);
-        self::assertInternalType('array', $result[0]);
-        self::assertInternalType('array', $result[1]);
+        self::assertIsArray($result);
+        self::assertIsArray($result[0]);
+        self::assertIsArray($result[1]);
 
         self::assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
         self::assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);

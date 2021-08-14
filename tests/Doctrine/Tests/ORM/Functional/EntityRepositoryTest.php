@@ -1128,7 +1128,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         self::assertCount(2, $users);
 
         foreach ($users as $user) {
-            self::assertContains($user, [$user1, $user2], true);
+            self::assertContains($user, [$user1, $user2]);
         }
     }
 

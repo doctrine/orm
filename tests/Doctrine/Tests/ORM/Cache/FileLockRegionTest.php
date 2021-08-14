@@ -185,7 +185,7 @@ class FileLockRegionTest extends AbstractRegionTest
         self::assertFalse($this->region->contains($key));
         self::assertTrue($this->region->evict($key));
         self::assertFalse($this->region->contains($key));
-        self::assertFileNotExists($file);
+        self::assertFileDoesNotExist($file);
     }
 
     public function testLockedEvictAll(): void

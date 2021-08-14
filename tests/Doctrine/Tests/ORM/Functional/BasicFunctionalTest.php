@@ -45,7 +45,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->_em->flush();
 
-        self::assertInternalType('numeric', $user->id);
+        self::assertIsNumeric($user->id);
         self::assertTrue($this->_em->contains($user));
 
         // Read
@@ -138,7 +138,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
             'SELECT user_id FROM cms_addresses WHERE id=?',
             [$address->id]
         )->fetchColumn();
-        self::assertInternalType('numeric', $userId);
+        self::assertIsNumeric($userId);
 
         $this->_em->clear();
 
@@ -243,7 +243,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $usersArray = $query->getArrayResult();
 
-        self::assertInternalType('array', $usersArray);
+        self::assertIsArray($usersArray);
         self::assertCount(1, $usersArray);
         self::assertEquals('Guilherme', $usersArray[0]['name']);
         self::assertEquals('gblanco', $usersArray[0]['username']);
@@ -251,7 +251,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $usersScalar = $query->getScalarResult();
 
-        self::assertInternalType('array', $usersScalar);
+        self::assertIsArray($usersScalar);
         self::assertCount(1, $usersScalar);
         self::assertEquals('Guilherme', $usersScalar[0]['u_name']);
         self::assertEquals('gblanco', $usersScalar[0]['u_username']);

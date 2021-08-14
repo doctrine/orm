@@ -59,7 +59,7 @@ class QueryTest extends OrmFunctionalTestCase
 
         $resultArray = $query->getArrayResult();
         self::assertCount(1, $resultArray);
-        self::assertInternalType('array', $resultArray[0][0]);
+        self::assertIsArray($resultArray[0][0]);
         self::assertEquals('Guilherme', $resultArray[0][0]['name']);
         self::assertEquals('gblanco', $resultArray[0][0]['username']);
         self::assertEquals('developer', $resultArray[0][0]['status']);

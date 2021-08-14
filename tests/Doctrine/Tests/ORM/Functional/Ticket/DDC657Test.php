@@ -73,7 +73,7 @@ class DDC657Test extends OrmFunctionalTestCase
         $query    = $this->_em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $datetime = $query->setMaxResults(1)->getSingleResult();
 
-        self::assertInternalType('array', $datetime);
+        self::assertIsArray($datetime);
 
         self::assertInstanceOf('DateTime', $datetime['datetime']);
         self::assertInstanceOf('DateTime', $datetime['time']);

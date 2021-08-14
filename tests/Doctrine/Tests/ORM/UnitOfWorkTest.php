@@ -128,7 +128,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertCount(0, $userPersister->getDeletes());
 
         // should have an id
-        self::assertInternalType('numeric', $user->id);
+        self::assertIsNumeric($user->id);
 }
 
     /**
@@ -156,8 +156,8 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->_unitOfWork->commit();
 
-        self::assertInternalType('numeric', $user->id);
-        self::assertInternalType('numeric', $avatar->id);
+        self::assertIsNumeric($user->id);
+        self::assertIsNumeric($avatar->id);
 
         self::assertCount(1, $userPersister->getInserts());
         self::assertCount(0, $userPersister->getUpdates());

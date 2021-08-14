@@ -566,8 +566,8 @@ class NativeQueryTest extends OrmFunctionalTestCase
                         ->setParameter(1, ['test', 'FabioBatSilva'])->getResult();
 
         self::assertCount(2, $result);
-        self::assertInternalType('array', $result[0]);
-        self::assertInternalType('array', $result[1]);
+        self::assertIsArray($result[0]);
+        self::assertIsArray($result[1]);
 
         // first user => 2 phonenumbers
         self::assertInstanceOf(CmsUser::class, $result[0][0]);
@@ -607,8 +607,8 @@ class NativeQueryTest extends OrmFunctionalTestCase
         self::assertCount(2, $result);
         self::assertInstanceOf(CompanyPerson::class, $result[0]);
         self::assertInstanceOf(CompanyEmployee::class, $result[1]);
-        self::assertInternalType('numeric', $result[0]->getId());
-        self::assertInternalType('numeric', $result[1]->getId());
+        self::assertIsNumeric($result[0]->getId());
+        self::assertIsNumeric($result[1]->getId());
         self::assertEquals('Fabio B. Silva', $result[0]->getName());
         self::assertEquals('Fabio Silva', $result[1]->getName());
 
@@ -620,8 +620,8 @@ class NativeQueryTest extends OrmFunctionalTestCase
         self::assertCount(2, $result);
         self::assertInstanceOf(CompanyPerson::class, $result[0]);
         self::assertInstanceOf(CompanyEmployee::class, $result[1]);
-        self::assertInternalType('numeric', $result[0]->getId());
-        self::assertInternalType('numeric', $result[1]->getId());
+        self::assertIsNumeric($result[0]->getId());
+        self::assertIsNumeric($result[1]->getId());
         self::assertEquals('Fabio B. Silva', $result[0]->getName());
         self::assertEquals('Fabio Silva', $result[1]->getName());
     }
@@ -659,7 +659,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $result     = $query->getResult();
 
         self::assertCount(1, $result);
-        self::assertInternalType('array', $result[0]);
+        self::assertIsArray($result[0]);
         self::assertInstanceOf(CmsUser::class, $result[0][0]);
         self::assertEquals('Fabio B. Silva', $result[0][0]->name);
         self::assertInstanceOf(CmsAddress::class, $result[0][0]->getAddress());

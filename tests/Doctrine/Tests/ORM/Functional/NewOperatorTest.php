@@ -307,9 +307,10 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals('fabio.bat.silva@gmail.com', $result[1]->email);
         self::assertEquals('fabio.bat.silva@gmail.com', $result[2]->email);
 
-        self::assertFalse($result[0]->address);
-        self::assertFalse($result[1]->address);
-        self::assertFalse($result[2]->address);
+        // Note that the type hints on the DTO model convert false -> ''
+        self::assertEquals('', $result[0]->address);
+        self::assertEquals('', $result[1]->address);
+        self::assertEquals('', $result[2]->address);
 
         self::assertEquals(123, $result[0]->phonenumbers);
         self::assertEquals(123, $result[1]->phonenumbers);
