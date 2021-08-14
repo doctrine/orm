@@ -50,6 +50,8 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         $tool = new SchemaTool($this->_em);
         $sql  = $tool->getCreateSchemaSql($classes);
 
+        self::assertCount(22, $sql, 'Total of 22 queries should be executed');
+
         self::assertEquals('CREATE TABLE cms_addresses (id INT NOT NULL, user_id INT DEFAULT NULL, country VARCHAR(50) NOT NULL, zip VARCHAR(50) NOT NULL, city VARCHAR(50) NOT NULL, PRIMARY KEY(id))', array_shift($sql));
         self::assertEquals('CREATE UNIQUE INDEX UNIQ_ACAC157BA76ED395 ON cms_addresses (user_id)', array_shift($sql));
         self::assertEquals('CREATE TABLE cms_users (id INT NOT NULL, email_id INT DEFAULT NULL, status VARCHAR(50) DEFAULT NULL, username VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id))', array_shift($sql));
@@ -74,7 +76,6 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         self::assertEquals('ALTER TABLE cms_phonenumbers ADD CONSTRAINT FK_F21F790FA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE', array_shift($sql));
 
         self::assertEquals([], $sql, 'SQL Array should be empty now.');
-        self::assertCount(22, $sql, 'Total of 22 queries should be executed');
     }
 
     public function testGetCreateSchemaSql2(): void
