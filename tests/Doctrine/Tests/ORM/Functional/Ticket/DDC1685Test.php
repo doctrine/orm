@@ -44,7 +44,7 @@ class DDC1685Test extends OrmFunctionalTestCase
 
     public function testPaginateCount(): void
     {
-        self::assertEquals(1, count($this->paginator));
+        self::assertCount(1, $this->paginator);
     }
 
     public function testPaginateIterate(): void
@@ -57,7 +57,7 @@ class DDC1685Test extends OrmFunctionalTestCase
     public function testPaginateCountNoOutputWalkers(): void
     {
         $this->paginator->setUseOutputWalkers(false);
-        self::assertEquals(1, count($this->paginator));
+        self::assertCount(1, $this->paginator);
     }
 
     public function testPaginateIterateNoOutputWalkers(): void

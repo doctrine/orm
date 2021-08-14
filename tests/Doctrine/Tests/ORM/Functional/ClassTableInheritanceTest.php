@@ -61,8 +61,8 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         self::assertCount(2, $entities);
         self::assertInstanceOf(CompanyPerson::class, $entities[0]);
         self::assertInstanceOf(CompanyEmployee::class, $entities[1]);
-        self::assertTrue(is_numeric($entities[0]->getId()));
-        self::assertTrue(is_numeric($entities[1]->getId()));
+        self::assertIsNumeric($entities[0]->getId());
+        self::assertIsNumeric($entities[1]->getId());
         self::assertEquals('Roman S. Borschel', $entities[0]->getName());
         self::assertEquals('Guilherme Blanco', $entities[1]->getName());
         self::assertEquals(100000, $entities[1]->getSalary());
@@ -79,7 +79,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         self::assertCount(1, $entities);
         self::assertInstanceOf(CompanyEmployee::class, $entities[0]);
-        self::assertTrue(is_numeric($entities[0]->getId()));
+        self::assertIsNumeric($entities[0]->getId());
         self::assertEquals('Guilherme Blanco', $entities[0]->getName());
         self::assertEquals(100000, $entities[0]->getSalary());
 
@@ -132,7 +132,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals('Roman B.', $manager->getName());
         self::assertEquals(119000, $manager->getSalary());
         self::assertEquals('CEO', $manager->getTitle());
-        self::assertTrue(is_numeric($manager->getId()));
+        self::assertIsNumeric($manager->getId());
     }
 
     public function testFindOnBaseClass(): void
@@ -153,7 +153,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals('Roman S. Borschel', $person->getName());
         self::assertEquals(100000, $person->getSalary());
         self::assertEquals('CTO', $person->getTitle());
-        self::assertTrue(is_numeric($person->getId()));
+        self::assertIsNumeric($person->getId());
     }
 
     public function testSelfReferencingOneToOne(): void
@@ -319,7 +319,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $query  = $this->_em->createQuery('SELECT count(p.id) FROM ' . CompanyEmployee::class . ' p WHERE p.salary = 1');
         $result = $query->getResult();
 
-        self::assertGreaterThan(0, count($result));
+        self::assertGreaterThan(0, $result);
 
         $this->_em->clear();
 

@@ -74,7 +74,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery('select u, g from Doctrine\Tests\Models\CMS\CmsUser u join u.groups g');
-        self::assertEquals(0, count($query->getResult()));
+        self::assertCount(0, $query->getResult());
     }
 
     public function testManyToManyAddRemove(): void
@@ -161,7 +161,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertInstanceOf(PersistentCollection::class, $user->groups);
         self::assertTrue($user->groups->isDirty());
 
-        self::assertEquals($groupCount, count($user->groups), 'There should be 10 groups in the collection.');
+        self::assertCount($groupCount, $user->groups, 'There should be 10 groups in the collection.');
 
         $this->_em->flush();
 
@@ -200,13 +200,13 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         self::assertFalse($freshUser->groups->isInitialized(), 'CmsUser::groups Collection has to be uninitialized for this test.');
-        self::assertEquals(3, count($freshUser->getGroups()));
-        self::assertEquals(3, count($freshUser->getGroups()->getSnapshot()), 'Snapshot of CmsUser::groups should contain 3 entries.');
+        self::assertCount(3, $freshUser->getGroups());
+        self::assertCount(3, $freshUser->getGroups()->getSnapshot(), 'Snapshot of CmsUser::groups should contain 3 entries.');
 
         $this->_em->clear();
 
         $freshUser = $this->_em->find(CmsUser::class, $user->getId());
-        self::assertEquals(3, count($freshUser->getGroups()));
+        self::assertCount(3, $freshUser->getGroups());
     }
 
     /**
@@ -239,7 +239,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $newUser = $this->_em->find(get_class($user), $user->getId());
-        self::assertEquals(0, count($newUser->getGroups()));
+        self::assertCount(0, $newUser->getGroups());
     }
 
     public function testDereferenceCollectionDelete(): void
@@ -251,7 +251,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $newUser = $this->_em->find(get_class($user), $user->getId());
-        self::assertEquals(0, count($newUser->getGroups()));
+        self::assertCount(0, $newUser->getGroups());
     }
 
     /**
@@ -270,7 +270,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $newUser = $this->_em->createQuery('SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.groups g WHERE u.id = ?1')
                              ->setParameter(1, $user->getId())
                              ->getSingleResult();
-        self::assertEquals(0, count($newUser->groups));
+        self::assertCount(0, $newUser->groups);
         self::assertIsArray($newUser->groups->getMapping());
 
         $newUser->addGroup($group);
@@ -279,7 +279,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $newUser = $this->_em->find(get_class($user), $user->getId());
-        self::assertEquals(1, count($newUser->groups));
+        self::assertCount(1, $newUser->groups);
     }
 
     public function addCmsUserGblancoWithGroups(int $groupCount = 1): CmsUser
@@ -334,7 +334,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $user = $this->_em->find(get_class($user), $user->id);
-        self::assertEquals(2, count($user->groups));
+        self::assertCount(2, $user->groups);
         self::assertEquals('Developers_New1', $user->groups[0]->name);
         self::assertEquals('Developers_New2', $user->groups[1]->name);
     }
@@ -366,12 +366,12 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 
         $user = $this->_em->find(get_class($user), $user->id);
         $user->groups->clear();
-        self::assertEquals(0, count($user->groups));
+        self::assertCount(0, $user->groups);
 
         $this->_em->flush();
 
         $user = $this->_em->find(get_class($user), $user->id);
-        self::assertEquals(0, count($user->groups));
+        self::assertCount(0, $user->groups);
     }
 
     /**

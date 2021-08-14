@@ -46,7 +46,7 @@ class DDC812Test extends OrmFunctionalTestCase
             ->setParameter(1, $article->id)
             ->getSingleResult();
 
-        self::assertTrue($article2Again === $article2);
+        self::assertSame($article2Again, $article2);
         self::assertTrue($article2Again->comments->isInitialized());
     }
 }

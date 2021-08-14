@@ -54,7 +54,7 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->_em->persist($this->parent);
         $this->_em->flush();
 
-        self::assertEquals(0, count($this->parent->getChildren()));
+        self::assertCount(0, $this->parent->getChildren());
     }
 
     public function testDoesNotSaveAnInverseSideSet(): void
@@ -85,7 +85,7 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
 
         $query  = $this->_em->createQuery('select c1, c2 from Doctrine\Tests\Models\ECommerce\ECommerceCategory c1 join c1.children c2');
         $result = $query->getResult();
-        self::assertEquals(1, count($result));
+        self::assertCount(1, $result);
         $parent   = $result[0];
         $children = $parent->getChildren();
 

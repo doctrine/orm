@@ -36,7 +36,7 @@ class DDC1129Test extends OrmFunctionalTestCase
 
         $uow->computeChangeSet($class, $article);
         $changeSet = $uow->getEntityChangeSet($article);
-        self::assertEquals(0, count($changeSet), 'No changesets should be computed.');
+        self::assertCount(0, $changeSet, 'No changesets should be computed.');
 
         $article->text = 'This is John Galt speaking.';
         $this->_em->flush();
@@ -45,6 +45,6 @@ class DDC1129Test extends OrmFunctionalTestCase
 
         $uow->computeChangeSet($class, $article);
         $changeSet = $uow->getEntityChangeSet($article);
-        self::assertEquals(0, count($changeSet), 'No changesets should be computed.');
+        self::assertCount(0, $changeSet, 'No changesets should be computed.');
     }
 }

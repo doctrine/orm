@@ -64,7 +64,7 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
 
         $this->_em->flush();
 
-        self::assertEquals(2, count($p->getFeatures()));
+        self::assertCount(2, $p->getFeatures());
         self::assertInstanceOf(PersistentCollection::class, $p->getFeatures());
 
         $q = $this->_em->createQuery(
@@ -75,15 +75,15 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
 
         $res = $q->getResult();
 
-        self::assertEquals(2, count($p->getFeatures()));
+        self::assertCount(2, $p->getFeatures());
         self::assertInstanceOf(PersistentCollection::class, $p->getFeatures());
 
         // Check that the features are the same instances still
         foreach ($p->getFeatures() as $feature) {
             if ($feature->getDescription() === 'AC-3') {
-                self::assertTrue($feature === $f1);
+                self::assertSame($feature, $f1);
             } else {
-                self::assertTrue($feature === $f2);
+                self::assertSame($feature, $f2);
             }
         }
 
@@ -106,6 +106,6 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
         $res = $q->getResult();
 
         // Persisted Product now must have 3 Feature items
-        self::assertEquals(3, count($res[0]->getFeatures()));
+        self::assertCount(3, $res[0]->getFeatures());
     }
 }

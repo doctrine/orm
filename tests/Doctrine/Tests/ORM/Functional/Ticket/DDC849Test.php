@@ -67,12 +67,12 @@ class DDC849Test extends OrmFunctionalTestCase
     public function testClearCount(): void
     {
         $this->user->addGroup(new CmsGroup());
-        self::assertEquals(3, count($this->user->groups));
+        self::assertCount(3, $this->user->groups);
 
         $this->user->groups->clear();
 
         self::assertEquals(0, $this->user->groups->count());
-        self::assertEquals(0, count($this->user->groups));
+        self::assertCount(0, $this->user->groups);
     }
 
     public function testClearContains(): void

@@ -680,9 +680,9 @@ class ObjectHydratorTest extends HydrationTestCase
 
         self::assertEquals(2, count($result));
 
-        self::assertTrue(is_array($result));
-        self::assertTrue(is_array($result[0]));
-        self::assertTrue(is_array($result[1]));
+        self::assertIsArray($result);
+        self::assertIsArray($result[0]);
+        self::assertIsArray($result[1]);
 
         self::assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
         self::assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->phonenumbers);
@@ -810,9 +810,9 @@ class ObjectHydratorTest extends HydrationTestCase
 
         self::assertEquals(2, count($result));
 
-        self::assertTrue(is_array($result));
-        self::assertTrue(is_array($result[0]));
-        self::assertTrue(is_array($result[1]));
+        self::assertIsArray($result);
+        self::assertIsArray($result[0]);
+        self::assertIsArray($result[1]);
 
         self::assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
         self::assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
@@ -931,10 +931,10 @@ class ObjectHydratorTest extends HydrationTestCase
         self::assertEquals(1, $result[0]->getId());
         self::assertEquals(2, $result[1]->getId());
 
-        self::assertTrue(isset($result[0]->boards));
+        self::assertObjectHasAttribute('boards', $result[0]);
         self::assertEquals(3, count($result[0]->boards));
 
-        self::assertTrue(isset($result[1]->boards));
+        self::assertObjectHasAttribute('boards', $result[1]);
         self::assertEquals(1, count($result[1]->boards));
     }
 
@@ -1851,10 +1851,10 @@ class ObjectHydratorTest extends HydrationTestCase
 
         self::assertEquals(2, count($result));
 
-        self::assertTrue(isset($result[1]));
+        self::assertArrayHasKey(1, $result);
         self::assertEquals(1, $result[1][$userEntityKey]->id);
 
-        self::assertTrue(isset($result[2]));
+        self::assertArrayHasKey(2, $result);
         self::assertEquals(2, $result[2][$userEntityKey]->id);
     }
 

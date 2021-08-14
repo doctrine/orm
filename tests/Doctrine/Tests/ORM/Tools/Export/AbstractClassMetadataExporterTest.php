@@ -123,9 +123,9 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         $exporter->export();
 
         if ($type === 'annotation') {
-            self::assertTrue(file_exists(__DIR__ . '/export/' . $type . '/' . str_replace('\\', '/', ExportedUser::class) . $this->extension));
+            self::assertFileExists(__DIR__ . '/export/' . $type . '/' . str_replace('\\', '/', ExportedUser::class) . $this->extension);
         } else {
-            self::assertTrue(file_exists(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.ExportedUser' . $this->extension));
+            self::assertFileExists(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.ExportedUser' . $this->extension);
         }
     }
 
@@ -141,7 +141,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         $cmf            = $this->createClassMetadataFactory($em, $type);
         $metadata       = $cmf->getAllMetadata();
 
-        self::assertEquals(1, count($metadata));
+        self::assertCount(1, $metadata);
 
         $class = current($metadata);
 
@@ -206,7 +206,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertEquals('user_email', $class->fieldMappings['email']['columnName']);
         self::assertEquals('CHAR(32) NOT NULL', $class->fieldMappings['email']['columnDefinition']);
 
-        self::assertEquals(true, $class->fieldMappings['age']['options']['unsigned']);
+        self::assertTrue($class->fieldMappings['age']['options']['unsigned']);
 
         return $class;
     }
@@ -316,12 +316,12 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     public function testLifecycleCallbacksAreExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
         self::assertTrue(isset($class->lifecycleCallbacks['prePersist']));
-        self::assertEquals(2, count($class->lifecycleCallbacks['prePersist']));
+        self::assertCount(2, $class->lifecycleCallbacks['prePersist']);
         self::assertEquals('doStuffOnPrePersist', $class->lifecycleCallbacks['prePersist'][0]);
         self::assertEquals('doOtherStuffOnPrePersistToo', $class->lifecycleCallbacks['prePersist'][1]);
 
         self::assertTrue(isset($class->lifecycleCallbacks['postPersist']));
-        self::assertEquals(1, count($class->lifecycleCallbacks['postPersist']));
+        self::assertCount(1, $class->lifecycleCallbacks['postPersist']);
         self::assertEquals('doStuffOnPostPersist', $class->lifecycleCallbacks['postPersist'][0]);
 
         return $class;

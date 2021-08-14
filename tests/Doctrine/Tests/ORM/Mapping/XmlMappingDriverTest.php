@@ -55,7 +55,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
             'baz' => CTIBaz::class,
         ];
 
-        self::assertEquals(3, count($class->discriminatorMap));
+        self::assertCount(3, $class->discriminatorMap);
         self::assertEquals($expectedMap, $class->discriminatorMap);
     }
 
@@ -91,7 +91,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     {
         $class = $this->createClassMetadata(Name::class);
 
-        self::assertEquals(true, $class->isEmbeddedClass);
+        self::assertTrue($class->isEmbeddedClass);
     }
 
     /**

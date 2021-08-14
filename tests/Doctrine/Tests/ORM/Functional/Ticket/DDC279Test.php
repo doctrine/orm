@@ -65,7 +65,7 @@ class DDC279Test extends OrmFunctionalTestCase
         $expected1 = 'Y';
         $expected2 = 'Z';
 
-        self::assertEquals(1, count($result));
+        self::assertCount(1, $result);
 
         self::assertEquals($expected1, $result[0]->y->data);
         self::assertEquals($expected2, $result[0]->y->z->data);

@@ -77,7 +77,7 @@ class DDC1080Test extends OrmFunctionalTestCase
         $foo     = $this->_em->find(DDC1080Foo::class, $foo1->getFooID());
         $fooBars = $foo->getFooBars();
 
-        self::assertEquals(3, count($fooBars), 'Should return three foobars.');
+        self::assertCount(3, $fooBars, 'Should return three foobars.');
     }
 }
 
