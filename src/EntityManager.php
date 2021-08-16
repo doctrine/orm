@@ -10,6 +10,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Exception\EntityManagerClosed;
+use Doctrine\ORM\Exception\InstanceOfTheWrongTypeEncountered;
 use Doctrine\ORM\Exception\InvalidHydrationMode;
 use Doctrine\ORM\Exception\MissingIdentifierField;
 use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
@@ -363,7 +364,7 @@ class EntityManager implements EntityManagerInterface
         }
     }
 
-    public function getReference(string $entityName, mixed $id): object|null
+    public function getReference(string $entityName, mixed $id): object
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
@@ -390,7 +391,11 @@ class EntityManager implements EntityManagerInterface
 
         // Check identity map first, if its already in there just return it.
         if ($entity !== false) {
-            return $entity instanceof $class->name ? $entity : null;
+            if (! $entity instanceof $class->name) {
+                throw InstanceOfTheWrongTypeEncountered::forInstance($entity);
+            }
+
+            return $entity;
         }
 
         if ($class->subClasses) {
