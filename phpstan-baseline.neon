@@ -161,12 +161,22 @@ parameters:
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getReference\\(\\) should return T\\|null but returns Doctrine\\\\Common\\\\Proxy\\\\Proxy\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getPartialReference\\(\\) should return \\(Doctrine\\\\Common\\\\Proxy\\\\Proxy&T\\)\\|null but returns object\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getReference\\(\\) should return T\\|null but returns object\\|null\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getPartialReference\\(\\) should return \\(Doctrine\\\\Common\\\\Proxy\\\\Proxy&T\\)\\|null but returns object\\|null\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/EntityManager.php
+
+		-
+			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getReference\\(\\) should return \\(Doctrine\\\\Common\\\\Proxy\\\\Proxy&T\\)\\|null but returns Doctrine\\\\Common\\\\Proxy\\\\Proxy\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/EntityManager.php
+
+		-
+			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getReference\\(\\) should return \\(Doctrine\\\\Common\\\\Proxy\\\\Proxy&T\\)\\|null but returns object\\|null\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
 
