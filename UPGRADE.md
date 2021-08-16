@@ -601,6 +601,10 @@ following classes and methods:
 
 Use `toIterable()` instead.
 
+## BC BREAK: `Doctrine\ORM\EntityManagerInterface#getReference()` and `getPartialReference()` does not return `null` anymore
+
+Method `Doctrine\ORM\EntityManagerInterface#getReference()` and `getPartialReference()` throws `InstanceOfTheWrongTypeEncountered` in 3.0 when different entity type is found in inheritance hierachy.
+
 # Upgrade to 2.16
 
 ## Changing the way how reflection-based mapping drivers report fields, deprecated the "old" mode
