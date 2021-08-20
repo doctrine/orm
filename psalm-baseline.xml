@@ -537,6 +537,7 @@
       <code>$class</code>
       <code>$class</code>
       <code><![CDATA[new $definition['class']()]]></code>
+      <code>$platformFamily</code>
     </ArgumentTypeCoercion>
     <DeprecatedClass>
       <code>new UuidGenerator()</code>

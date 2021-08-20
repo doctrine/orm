@@ -422,9 +422,25 @@ the field that serves as the identifier with the ``#[Id]`` attribute.
             # fields here
 
 In most cases using the automatic generator strategy (``#[GeneratedValue]``) is
-what you want. It defaults to the identifier generation mechanism your current
-database vendor prefers: AUTO_INCREMENT with MySQL, sequences with PostgreSQL
-and Oracle and so on.
+what you want, but for backwards-compatibility reasons it might not. It
+defaults to the identifier generation mechanism your current database
+vendor preferred at the time that strategy was introduced:
+``AUTO_INCREMENT`` with MySQL, sequences with PostgreSQL and Oracle and
+so on.
+We now recommend using ``IDENTITY`` for PostgreSQL, and you can achieve
+that while still using the ``AUTO`` strategy, by configuring what it
+defaults to.
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+    use Doctrine\ORM\Configuration;
+
+    $config = new Configuration();
+    $config->setIdentityGenerationPreferences([
+        PostgreSQLPlatform::class => ClassMetadata::GENERATOR_TYPE_IDENTITY,
+    ]);
 
 .. _identifier-generation-strategies:
 
@@ -441,17 +457,18 @@ Here is the list of possible generation strategies:
 
 -  ``AUTO`` (default): Tells Doctrine to pick the strategy that is
    preferred by the used database platform. The preferred strategies
-   are IDENTITY for MySQL, SQLite, MsSQL and SQL Anywhere and SEQUENCE
-   for Oracle and PostgreSQL. This strategy provides full portability.
--  ``SEQUENCE``: Tells Doctrine to use a database sequence for ID
-   generation. This strategy does currently not provide full
-   portability. Sequences are supported by Oracle, PostgreSql and
-   SQL Anywhere.
+   are ``IDENTITY`` for MySQL, SQLite, MsSQL and SQL Anywhere and, for
+   historical reasons, ``SEQUENCE`` for Oracle and PostgreSQL. This
+   strategy provides full portability.
 -  ``IDENTITY``: Tells Doctrine to use special identity columns in
    the database that generate a value on insertion of a row. This
    strategy does currently not provide full portability and is
    supported by the following platforms: MySQL/SQLite/SQL Anywhere
-   (AUTO\_INCREMENT), MSSQL (IDENTITY) and PostgreSQL (SERIAL).
+   (``AUTO_INCREMENT``), MSSQL (``IDENTITY``) and PostgreSQL (``SERIAL``).
+-  ``SEQUENCE``: Tells Doctrine to use a database sequence for ID
+   generation. This strategy does currently not provide full
+   portability. Sequences are supported by Oracle, PostgreSql and
+   SQL Anywhere.
 -  ``UUID`` (deprecated): Tells Doctrine to use the built-in Universally
    Unique Identifier generator. This strategy provides full portability.
 -  ``NONE``: Tells Doctrine that the identifiers are assigned (and

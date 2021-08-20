@@ -54,6 +54,11 @@ parameters:
             count: 1
             path: lib/Doctrine/ORM/Query/AST/Functions/SubstringFunction.php
 
+        -
+            message: '#^Class Doctrine\\DBAL\\Platforms\\MySQLPlatform not found\.$#'
+            count: 2
+            path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
+
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'
 
