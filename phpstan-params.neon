@@ -9,6 +9,3 @@ parameters:
         Doctrine\ORM\Query\Parser:
             - syntaxError
     phpVersion: 70100
-    ignoreErrors:
-        # The class was added in PHP 8.1
-        - '/^Attribute class ReturnTypeWillChange does not exist.$/'
