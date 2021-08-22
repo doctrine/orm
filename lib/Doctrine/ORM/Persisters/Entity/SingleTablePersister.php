@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 
@@ -19,6 +20,8 @@ use function implode;
  */
 class SingleTablePersister extends AbstractEntityInheritancePersister
 {
+    use SQLResultCasing;
+
     /**
      * {@inheritdoc}
      */
@@ -47,7 +50,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
         $columnList[] = $tableAlias . '.' . $discrColumn;
 
-        $resultColumnName = $this->platform->getSQLResultCasing($discrColumn);
+        $resultColumnName = $this->getSQLResultCasing($this->platform, $discrColumn);
 
         $this->currentPersisterContext->rsm->setDiscriminatorColumn('r', $resultColumnName);
         $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumn, false, $discrColumnType);

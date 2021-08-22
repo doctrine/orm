@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\Internal\SQLResultCasing;
 
 /**
  * ANSI compliant quote strategy, this strategy does not apply any quote.
@@ -12,6 +13,8 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  */
 class AnsiQuoteStrategy implements QuoteStrategy
 {
+    use SQLResultCasing;
+
     /**
      * {@inheritdoc}
      */
@@ -73,6 +76,6 @@ class AnsiQuoteStrategy implements QuoteStrategy
      */
     public function getColumnAlias($columnName, $counter, AbstractPlatform $platform, ?ClassMetadata $class = null)
     {
-        return $platform->getSQLResultCasing($columnName . '_' . $counter);
+        return $this->getSQLResultCasing($platform, $columnName . '_' . $counter);
     }
 }

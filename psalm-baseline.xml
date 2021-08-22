@@ -724,9 +724,6 @@
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/SimpleObjectHydrator.php">
-    <DeprecatedMethod occurrences="1">
-      <code>getSQLResultCasing</code>
-    </DeprecatedMethod>
     <InvalidScalarArgument occurrences="1">
       <code>array_keys($discrMap)</code>
     </InvalidScalarArgument>
@@ -749,9 +746,6 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/AnsiQuoteStrategy.php">
-    <DeprecatedMethod occurrences="1">
-      <code>getSQLResultCasing</code>
-    </DeprecatedMethod>
     <PossiblyUndefinedArrayOffset occurrences="1">
       <code>$class-&gt;fieldMappings[$fieldName]['columnName']</code>
     </PossiblyUndefinedArrayOffset>
@@ -1129,9 +1123,6 @@
     </PossiblyFalseOperand>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DefaultQuoteStrategy.php">
-    <DeprecatedMethod occurrences="1">
-      <code>getSQLResultCasing</code>
-    </DeprecatedMethod>
     <MissingClosureParamType occurrences="1">
       <code>$joinColumn</code>
     </MissingClosureParamType>
@@ -1987,9 +1978,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$this-&gt;em</code>
     </ArgumentTypeCoercion>
-    <DeprecatedMethod occurrences="1">
-      <code>getSQLResultCasing</code>
-    </DeprecatedMethod>
     <LessSpecificReturnStatement occurrences="1">
       <code>$postInsertIds</code>
     </LessSpecificReturnStatement>
@@ -2002,9 +1990,6 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/SingleTablePersister.php">
-    <DeprecatedMethod occurrences="1">
-      <code>getSQLResultCasing</code>
-    </DeprecatedMethod>
     <PossiblyUndefinedVariable occurrences="1">
       <code>$columnList</code>
     </PossiblyUndefinedVariable>
@@ -2969,10 +2954,6 @@
       <code>$renameMode</code>
       <code>$renameMode</code>
     </ArgumentTypeCoercion>
-    <DeprecatedMethod occurrences="2">
-      <code>getSQLResultCasing</code>
-      <code>getSQLResultCasing</code>
-    </DeprecatedMethod>
     <PossiblyUndefinedArrayOffset occurrences="1">
       <code>$class-&gt;fieldMappings[$this-&gt;fieldMappings[$columnName]]['columnName']</code>
     </PossiblyUndefinedArrayOffset>
@@ -3829,9 +3810,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$parameters</code>
     </ArgumentTypeCoercion>
-    <DeprecatedMethod occurrences="1">
-      <code>getSQLResultCasing</code>
-    </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="1">
       <code>$this-&gt;count === null</code>
     </DocblockTypeContradiction>
