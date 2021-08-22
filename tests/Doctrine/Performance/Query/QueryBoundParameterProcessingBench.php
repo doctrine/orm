@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Performance\Query;
 
 use DateTime;
-use Doctrine\DBAL\Types\DateTimeType;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query;
 use Doctrine\Performance\EntityManagerFactory;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
@@ -59,7 +59,7 @@ DQL;
 
         foreach (range(1, 10) as $index) {
             $this->parsedQueryWithInferredParameterType->setParameter('parameter' . $index, new DateTime());
-            $this->parsedQueryWithDeclaredParameterType->setParameter('parameter' . $index, new DateTime(), DateTimeType::DATETIME);
+            $this->parsedQueryWithDeclaredParameterType->setParameter('parameter' . $index, new DateTime(), Types::DATETIME_MUTABLE);
         }
 
         // Force parsing upfront - we don't benchmark that bit in this scenario

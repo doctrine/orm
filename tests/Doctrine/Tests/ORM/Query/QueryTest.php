@@ -9,7 +9,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\ParameterType;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
@@ -505,7 +505,7 @@ class QueryTest extends OrmTestCase
 
         $query = $this->entityManager->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d WHERE d.datetime = :value');
 
-        $query->setParameter('value', new DateTime(), Type::DATETIME);
+        $query->setParameter('value', new DateTime(), Types::DATETIME_MUTABLE);
 
         self::assertEmpty($query->getResult());
     }
