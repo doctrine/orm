@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
+use BadMethodCallException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -70,7 +71,7 @@ class DriverMock implements Driver
      */
     public function getName()
     {
-        return 'mock';
+        throw new BadMethodCallException('Call to deprecated method.');
     }
 
     /**
