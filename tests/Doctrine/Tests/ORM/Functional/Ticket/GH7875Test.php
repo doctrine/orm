@@ -28,12 +28,12 @@ final class GH7875Test extends OrmFunctionalTestCase
     {
         $connection = $this->_em->getConnection();
 
-        $connection->exec('DROP TABLE IF EXISTS gh7875_my_entity');
-        $connection->exec('DROP TABLE IF EXISTS gh7875_my_other_entity');
+        $connection->executeStatement('DROP TABLE IF EXISTS gh7875_my_entity');
+        $connection->executeStatement('DROP TABLE IF EXISTS gh7875_my_other_entity');
 
         if ($connection->getDatabasePlatform() instanceof PostgreSqlPlatform) {
-            $connection->exec('DROP SEQUENCE IF EXISTS gh7875_my_entity_id_seq');
-            $connection->exec('DROP SEQUENCE IF EXISTS gh7875_my_other_entity_id_seq');
+            $connection->executeStatement('DROP SEQUENCE IF EXISTS gh7875_my_entity_id_seq');
+            $connection->executeStatement('DROP SEQUENCE IF EXISTS gh7875_my_other_entity_id_seq');
         }
     }
 
@@ -58,7 +58,7 @@ final class GH7875Test extends OrmFunctionalTestCase
 
         self::assertCount(1, $sqls);
 
-        $this->_em->getConnection()->exec(current($sqls));
+        $this->_em->getConnection()->executeStatement(current($sqls));
 
         $sqls = array_filter($tool->getUpdateSchemaSql($classes), static function (string $sql): bool {
             return strpos($sql, ' gh7875_my_entity ') !== false;

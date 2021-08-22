@@ -128,7 +128,7 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
 
     public function assertForeignKeyIs($value, ECommerceCategory $child): void
     {
-        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT parent_id FROM ecommerce_categories WHERE id=?', [$child->getId()])->fetchColumn();
+        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT parent_id FROM ecommerce_categories WHERE id=?', [$child->getId()])->fetchOne();
         self::assertEquals($value, $foreignKey);
     }
 }

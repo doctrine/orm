@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use BadMethodCallException;
 use Closure;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
@@ -357,6 +358,12 @@ class DDC3634LastInsertIdMockingConnection extends Connection
 
     /** {@inheritDoc} */
     public function executeUpdate($query, array $params = [], array $types = []): int
+    {
+        throw new BadMethodCallException('Call to deprecated method.');
+    }
+
+    /** {@inheritDoc} */
+    public function executeStatement($query, array $params = [], array $types = []): int
     {
         return $this->forwardCall();
     }

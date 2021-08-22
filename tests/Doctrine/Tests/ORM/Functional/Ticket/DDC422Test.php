@@ -57,7 +57,7 @@ class DDC422Test extends OrmFunctionalTestCase
         self::assertFalse($customer->contacts->isInitialized());
         $this->_em->flush();
 
-        self::assertEquals(1, $this->_em->getConnection()->fetchColumn('select count(*) from ddc422_customers_contacts'));
+        self::assertEquals(1, $this->_em->getConnection()->fetchOne('select count(*) from ddc422_customers_contacts'));
     }
 }
 

@@ -44,21 +44,21 @@ class ManyToManyTest extends OrmFunctionalTestCase
     {
         $conn = static::$sharedConn;
 
-        $conn->executeUpdate('DROP TABLE vct_xref_manytomany');
-        $conn->executeUpdate('DROP TABLE vct_owning_manytomany');
-        $conn->executeUpdate('DROP TABLE vct_inversed_manytomany');
+        $conn->executeStatement('DROP TABLE vct_xref_manytomany');
+        $conn->executeStatement('DROP TABLE vct_owning_manytomany');
+        $conn->executeStatement('DROP TABLE vct_inversed_manytomany');
     }
 
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase(): void
     {
         $conn = $this->_em->getConnection();
 
-        self::assertEquals('nop', $conn->fetchColumn('SELECT id1 FROM vct_inversed_manytomany LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchOne('SELECT id1 FROM vct_inversed_manytomany LIMIT 1'));
 
-        self::assertEquals('qrs', $conn->fetchColumn('SELECT id2 FROM vct_owning_manytomany LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchOne('SELECT id2 FROM vct_owning_manytomany LIMIT 1'));
 
-        self::assertEquals('nop', $conn->fetchColumn('SELECT inversed_id FROM vct_xref_manytomany LIMIT 1'));
-        self::assertEquals('qrs', $conn->fetchColumn('SELECT owning_id FROM vct_xref_manytomany LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchOne('SELECT inversed_id FROM vct_xref_manytomany LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchOne('SELECT owning_id FROM vct_xref_manytomany LIMIT 1'));
     }
 
     /**
@@ -150,6 +150,6 @@ class ManyToManyTest extends OrmFunctionalTestCase
 
         // test association is removed
 
-        self::assertEquals(0, $conn->fetchColumn('SELECT COUNT(*) FROM vct_xref_manytomany'));
+        self::assertEquals(0, $conn->fetchOne('SELECT COUNT(*) FROM vct_xref_manytomany'));
     }
 }

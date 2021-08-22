@@ -114,13 +114,21 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function fetchColumn($statement, array $params = [], $colunm = 0, array $types = [])
+    public function fetchOne(string $sql, array $params = [], array $types = [])
     {
         if ($this->_fetchOneException !== null) {
             throw $this->_fetchOneException;
         }
 
         return $this->_fetchOneResult;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function fetchColumn($statement, array $params = [], $colunm = 0, array $types = [])
+    {
+        throw new BadMethodCallException('Call to deprecated method.');
     }
 
     public function query(?string $sql = null): Result

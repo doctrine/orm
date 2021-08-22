@@ -85,7 +85,7 @@ class IdentityMapTest extends OrmFunctionalTestCase
         self::assertSame($user1, $address->user);
 
         //external update to CmsAddress
-        $this->_em->getConnection()->executeUpdate('update cms_addresses set user_id = ?', [$user2->getId()]);
+        $this->_em->getConnection()->executeStatement('update cms_addresses set user_id = ?', [$user2->getId()]);
 
         // But we want to have this external change!
         // Solution 1: refresh(), broken atm!
@@ -127,7 +127,7 @@ class IdentityMapTest extends OrmFunctionalTestCase
         self::assertSame($user1, $address->user);
 
         //external update to CmsAddress
-        $this->_em->getConnection()->executeUpdate('update cms_addresses set user_id = ?', [$user2->getId()]);
+        $this->_em->getConnection()->executeStatement('update cms_addresses set user_id = ?', [$user2->getId()]);
 
         //select
         $q        = $this->_em->createQuery('select a, u from Doctrine\Tests\Models\CMS\CmsAddress a join a.user u');
@@ -183,7 +183,7 @@ class IdentityMapTest extends OrmFunctionalTestCase
         self::assertFalse($user->getPhonenumbers()->isDirty());
 
         //external update to CmsAddress
-        $this->_em->getConnection()->executeUpdate('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', [999, $user->getId()]);
+        $this->_em->getConnection()->executeStatement('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', [999, $user->getId()]);
 
         //select
         $q     = $this->_em->createQuery('select u, p from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p');
@@ -237,7 +237,7 @@ class IdentityMapTest extends OrmFunctionalTestCase
         self::assertCount(3, $user->getPhonenumbers());
 
         //external update to CmsAddress
-        $this->_em->getConnection()->executeUpdate('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', [999, $user->getId()]);
+        $this->_em->getConnection()->executeStatement('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', [999, $user->getId()]);
 
         //select
         $q     = $this->_em->createQuery('select u, p from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p');
