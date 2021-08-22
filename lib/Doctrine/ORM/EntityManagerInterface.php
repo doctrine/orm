@@ -98,7 +98,7 @@ interface EntityManagerInterface extends ObjectManager
      * If an exception occurs during execution of the function or flushing or transaction commit,
      * the transaction is rolled back, the EntityManager closed and the exception re-thrown.
      *
-     * @param callable(): T $func The function to execute transactionally.
+     * @param callable(self): T $func The function to execute transactionally.
      *
      * @return T The value returned from the closure.
      *
