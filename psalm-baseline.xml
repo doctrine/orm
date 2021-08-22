@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.7.0@d4377c0baf3ffbf0b1ec6998e8d1be2a40971005">
+<files psalm-version="4.9.3@4c262932602b9bbab5020863d1eb22d49de0dbf4">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass occurrences="1">
       <code>IterableResult</code>
@@ -103,6 +103,9 @@
     <NullableReturnStatement occurrences="1">
       <code>$this-&gt;fileLockRegionDirectory</code>
     </NullableReturnStatement>
+    <ParamNameMismatch occurrences="1">
+      <code>$em</code>
+    </ParamNameMismatch>
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(string) $fileLockRegionDirectory</code>
     </RedundantCastGivenDocblockType>
@@ -505,6 +508,16 @@
       <code>EntityRepository&lt;T&gt;</code>
       <code>newHydrator</code>
     </MoreSpecificReturnType>
+    <ParamNameMismatch occurrences="8">
+      <code>$entity</code>
+      <code>$entity</code>
+      <code>$entity</code>
+      <code>$entity</code>
+      <code>$entity</code>
+      <code>$entity</code>
+      <code>$entityName</code>
+      <code>$entityName</code>
+    </ParamNameMismatch>
     <PossiblyNullArgument occurrences="3">
       <code>$config-&gt;getProxyDir()</code>
       <code>$config-&gt;getProxyNamespace()</code>
@@ -987,7 +1000,9 @@
     <DeprecatedConstant occurrences="1">
       <code>self::GENERATOR_TYPE_UUID</code>
     </DeprecatedConstant>
-    <DeprecatedProperty occurrences="2">
+    <DeprecatedProperty occurrences="4">
+      <code>$this-&gt;columnNames</code>
+      <code>$this-&gt;columnNames</code>
       <code>$this-&gt;columnNames</code>
       <code>$this-&gt;columnNames</code>
     </DeprecatedProperty>
@@ -1032,6 +1047,11 @@
       <code>$this-&gt;reflFields[$name]</code>
       <code>$this-&gt;reflFields[$this-&gt;identifier[0]]</code>
     </NullableReturnStatement>
+    <ParamNameMismatch occurrences="3">
+      <code>$entity</code>
+      <code>$fieldName</code>
+      <code>$fieldName</code>
+    </ParamNameMismatch>
     <PossiblyNullArgument occurrences="9">
       <code>$class</code>
       <code>$className</code>
@@ -1248,11 +1268,6 @@
       <code>$this-&gt;reader-&gt;getPropertyAnnotation($property, Mapping\InverseJoinColumn::class)</code>
       <code>$this-&gt;reader-&gt;getPropertyAnnotation($property, Mapping\JoinColumn::class)</code>
     </PossiblyNullIterator>
-    <RawObjectIteration occurrences="3">
-      <code>$joinColumnAttributes</code>
-      <code>$this-&gt;reader-&gt;getPropertyAnnotation($property, Mapping\InverseJoinColumn::class)</code>
-      <code>$this-&gt;reader-&gt;getPropertyAnnotation($property, Mapping\JoinColumn::class)</code>
-    </RawObjectIteration>
     <RedundantCondition occurrences="3">
       <code>assert($method instanceof ReflectionMethod)</code>
       <code>assert($method instanceof ReflectionMethod)</code>
@@ -1325,6 +1340,11 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$metadata</code>
     </ArgumentTypeCoercion>
+    <DocblockTypeContradiction occurrences="3">
+      <code>$xmlRoot-&gt;getName() === 'embeddable'</code>
+      <code>$xmlRoot-&gt;getName() === 'entity'</code>
+      <code>$xmlRoot-&gt;getName() === 'mapped-superclass'</code>
+    </DocblockTypeContradiction>
     <LessSpecificReturnStatement occurrences="1"/>
     <MissingParamType occurrences="2">
       <code>$fileExtension</code>
@@ -1717,6 +1737,9 @@
       <code>$key</code>
       <code>$offset</code>
     </MissingParamType>
+    <ParamNameMismatch occurrences="1">
+      <code>$value</code>
+    </ParamNameMismatch>
     <PossiblyNullArgument occurrences="4">
       <code>$this-&gt;association</code>
       <code>$this-&gt;association</code>
@@ -1760,7 +1783,7 @@
     <DeprecatedMethod occurrences="1">
       <code>fetchColumn</code>
     </DeprecatedMethod>
-    <PossiblyNullArgument occurrences="38">
+    <PossiblyNullArgument occurrences="44">
       <code>$association</code>
       <code>$collection-&gt;getOwner()</code>
       <code>$collection-&gt;getOwner()</code>
@@ -1772,6 +1795,10 @@
       <code>$collection-&gt;getOwner()</code>
       <code>$collection-&gt;getOwner()</code>
       <code>$filterMapping</code>
+      <code>$filterMapping</code>
+      <code>$indexBy</code>
+      <code>$mapping</code>
+      <code>$mapping</code>
       <code>$mapping</code>
       <code>$mapping</code>
       <code>$mapping</code>
@@ -1780,6 +1807,8 @@
       <code>$mapping</code>
       <code>$mapping['joinTableColumns']</code>
       <code>$mapping['relationToSourceKeyColumns']</code>
+      <code>$mapping['relationToSourceKeyColumns'][$joinTableColumn]</code>
+      <code>$mapping['relationToTargetKeyColumns'][$joinTableColumn]</code>
       <code>$mapping['sourceEntity']</code>
       <code>$mapping['sourceEntity']</code>
       <code>$mapping['sourceEntity']</code>
@@ -1800,7 +1829,7 @@
       <code>$mapping['targetEntity']</code>
       <code>$owner</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess occurrences="32">
+    <PossiblyNullArrayAccess occurrences="36">
       <code>$mapping['indexBy']</code>
       <code>$mapping['isOwningSide']</code>
       <code>$mapping['isOwningSide']</code>
@@ -1811,12 +1840,16 @@
       <code>$mapping['joinTable']</code>
       <code>$mapping['joinTable']</code>
       <code>$mapping['joinTable']</code>
+      <code>$mapping['joinTable']['inverseJoinColumns']</code>
+      <code>$mapping['joinTable']['inverseJoinColumns']</code>
       <code>$mapping['joinTableColumns']</code>
       <code>$mapping['mappedBy']</code>
       <code>$mapping['mappedBy']</code>
       <code>$mapping['mappedBy']</code>
       <code>$mapping['relationToSourceKeyColumns']</code>
       <code>$mapping['relationToSourceKeyColumns']</code>
+      <code>$mapping['relationToSourceKeyColumns']</code>
+      <code>$mapping['relationToTargetKeyColumns']</code>
       <code>$mapping['sourceEntity']</code>
       <code>$mapping['sourceEntity']</code>
       <code>$mapping['sourceEntity']</code>
@@ -1839,14 +1872,20 @@
       <code>$sourceClass-&gt;associationMappings</code>
       <code>$targetClass-&gt;associationMappings</code>
     </PossiblyNullArrayOffset>
-    <PossiblyNullIterator occurrences="6">
+    <PossiblyNullIterator occurrences="8">
       <code>$joinColumns</code>
+      <code>$mapping['joinTable']['inverseJoinColumns']</code>
+      <code>$mapping['joinTable']['inverseJoinColumns']</code>
       <code>$mapping['joinTable']['joinColumns']</code>
       <code>$mapping['joinTable']['joinColumns']</code>
       <code>$mapping['joinTable']['joinColumns']</code>
       <code>$mapping['joinTableColumns']</code>
       <code>$mapping['relationToSourceKeyColumns']</code>
     </PossiblyNullIterator>
+    <PossiblyNullReference occurrences="2">
+      <code>getFieldForColumn</code>
+      <code>getFieldForColumn</code>
+    </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php">
     <ImplementedReturnTypeMismatch occurrences="1">
@@ -2053,10 +2092,18 @@
     <LessSpecificImplementedReturnType occurrences="1">
       <code>mixed</code>
     </LessSpecificImplementedReturnType>
+    <LessSpecificReturnStatement occurrences="2">
+      <code>parent::setHint($name, $value)</code>
+      <code>parent::setHydrationMode($hydrationMode)</code>
+    </LessSpecificReturnStatement>
     <MoreSpecificImplementedParamType occurrences="2">
       <code>$hydrationMode</code>
       <code>$parameters</code>
     </MoreSpecificImplementedParamType>
+    <MoreSpecificReturnType occurrences="2">
+      <code>self</code>
+      <code>self</code>
+    </MoreSpecificReturnType>
     <PossiblyNullArgument occurrences="1">
       <code>$this-&gt;getDQL()</code>
     </PossiblyNullArgument>
@@ -2083,30 +2130,92 @@
       <code>assert($rsm !== null)</code>
     </RedundantConditionGivenDocblockType>
   </file>
+  <file src="lib/Doctrine/ORM/Query/AST/ArithmeticFactor.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/ArithmeticTerm.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
   <file src="lib/Doctrine/ORM/Query/AST/BetweenExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$not</code>
     </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/CoalesceExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/CollectionMemberExpression.php">
     <PropertyNotSetInConstructor occurrences="1">
       <code>$not</code>
     </PropertyNotSetInConstructor>
   </file>
+  <file src="lib/Doctrine/ORM/Query/AST/ComparisonExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/ConditionalExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/ConditionalFactor.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/ConditionalPrimary.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/ConditionalTerm.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
   <file src="lib/Doctrine/ORM/Query/AST/DeleteClause.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$aliasIdentificationVariable</code>
     </PropertyNotSetInConstructor>
   </file>
+  <file src="lib/Doctrine/ORM/Query/AST/DeleteStatement.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
   <file src="lib/Doctrine/ORM/Query/AST/EmptyCollectionComparisonExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$not</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/ExistsExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$not</code>
     </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/FromClause.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/AbsFunction.php">
     <PropertyNotSetInConstructor occurrences="1">
@@ -2195,6 +2304,11 @@
     <UndefinedPropertyFetch occurrences="1">
       <code>$this-&gt;unit-&gt;value</code>
     </UndefinedPropertyFetch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/Functions/FunctionNode.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/IdentityFunction.php">
     <PossiblyNullArrayAccess occurrences="1">
@@ -2307,7 +2421,30 @@
       <code>$stringPrimary</code>
     </PropertyNotSetInConstructor>
   </file>
+  <file src="lib/Doctrine/ORM/Query/AST/GeneralCaseExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/GroupByClause.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/HavingClause.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/IdentificationVariableDeclaration.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
   <file src="lib/Doctrine/ORM/Query/AST/InExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$not</code>
     </PropertyNotSetInConstructor>
@@ -2322,16 +2459,37 @@
     <NullableReturnStatement occurrences="1">
       <code>$sqlWalker-&gt;walkIndexBy($this)</code>
     </NullableReturnStatement>
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
     <PossiblyNullPropertyAssignmentValue occurrences="2">
       <code>null</code>
       <code>null</code>
     </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/InstanceOfExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="2">
       <code>$not</code>
       <code>$value</code>
     </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/Join.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/JoinAssociationDeclaration.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/JoinAssociationPathExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/JoinClassPathExpression.php">
     <UndefinedMethod occurrences="1">
@@ -2344,9 +2502,17 @@
     </UndefinedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/LikeExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$not</code>
     </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/NewObjectExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Node.php">
     <DocblockTypeContradiction occurrences="1">
@@ -2357,11 +2523,27 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/NullComparisonExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$not</code>
     </PropertyNotSetInConstructor>
   </file>
+  <file src="lib/Doctrine/ORM/Query/AST/NullIfExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/OrderByClause.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
   <file src="lib/Doctrine/ORM/Query/AST/OrderByItem.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$type</code>
     </PropertyNotSetInConstructor>
@@ -2372,37 +2554,105 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/QuantifiedExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$type</code>
     </PropertyNotSetInConstructor>
   </file>
+  <file src="lib/Doctrine/ORM/Query/AST/SelectClause.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/SelectExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/SelectStatement.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/SimpleArithmeticExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
   <file src="lib/Doctrine/ORM/Query/AST/SimpleCaseExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
     <PossiblyNullPropertyAssignmentValue occurrences="1">
       <code>null</code>
     </PossiblyNullPropertyAssignmentValue>
   </file>
+  <file src="lib/Doctrine/ORM/Query/AST/SimpleSelectClause.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
   <file src="lib/Doctrine/ORM/Query/AST/SimpleSelectExpression.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$fieldIdentificationVariable</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/SimpleWhenClause.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
     <UndefinedMethod occurrences="1">
       <code>walkWhenClauseExpression</code>
     </UndefinedMethod>
   </file>
+  <file src="lib/Doctrine/ORM/Query/AST/Subselect.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/SubselectFromClause.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
   <file src="lib/Doctrine/ORM/Query/AST/UpdateClause.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$aliasIdentificationVariable</code>
     </PropertyNotSetInConstructor>
   </file>
+  <file src="lib/Doctrine/ORM/Query/AST/UpdateItem.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/UpdateStatement.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
+  </file>
   <file src="lib/Doctrine/ORM/Query/AST/WhenClause.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
     <PossiblyNullPropertyAssignmentValue occurrences="1">
       <code>null</code>
     </PossiblyNullPropertyAssignmentValue>
     <UndefinedMethod occurrences="1">
       <code>walkWhenClauseExpression</code>
     </UndefinedMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/AST/WhereClause.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$sqlWalker</code>
+    </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php">
     <PossiblyNullPropertyAssignmentValue occurrences="1">
@@ -2458,6 +2708,9 @@
     </NonInvariantDocblockPropertyType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Base.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$this-&gt;parts</code>
+    </ArgumentTypeCoercion>
     <PossiblyInvalidCast occurrences="1">
       <code>$this-&gt;parts[0]</code>
     </PossiblyInvalidCast>
@@ -3053,6 +3306,9 @@
       <code>$updateItem</code>
       <code>$whereClause</code>
     </MissingParamType>
+    <ParamNameMismatch occurrences="1">
+      <code>$condPrimary</code>
+    </ParamNameMismatch>
     <PossiblyNullReference occurrences="46">
       <code>walkAggregateExpression</code>
       <code>walkArithmeticExpression</code>
@@ -3245,7 +3501,9 @@
       <code>new ClassMetadataExporter()</code>
       <code>new EntityGenerator()</code>
     </DeprecatedClass>
-    <InvalidNullableReturnType occurrences="1"/>
+    <InvalidNullableReturnType occurrences="1">
+      <code>int</code>
+    </InvalidNullableReturnType>
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
@@ -3326,7 +3584,9 @@
     </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/AbstractCommand.php">
-    <InvalidNullableReturnType occurrences="1"/>
+    <InvalidNullableReturnType occurrences="1">
+      <code>int</code>
+    </InvalidNullableReturnType>
     <NullableReturnStatement occurrences="1">
       <code>$this-&gt;executeSchemaCommand($input, $output, new SchemaTool($em), $metadatas, $ui)</code>
     </NullableReturnStatement>
@@ -3535,7 +3795,8 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php">
-    <ArgumentTypeCoercion occurrences="2">
+    <ArgumentTypeCoercion occurrences="3">
+      <code>$array</code>
       <code>$metadata-&gt;changeTrackingPolicy</code>
       <code>$metadata-&gt;generatorType</code>
     </ArgumentTypeCoercion>
@@ -3585,7 +3846,8 @@
     <PossiblyNullIterator occurrences="1">
       <code>$orderByClause-&gt;orderByItems</code>
     </PossiblyNullIterator>
-    <PossiblyNullPropertyAssignmentValue occurrences="2">
+    <PossiblyNullPropertyAssignmentValue occurrences="3">
+      <code>$AST-&gt;orderByClause</code>
       <code>$query-&gt;getFirstResult()</code>
       <code>$query-&gt;getMaxResults()</code>
     </PossiblyNullPropertyAssignmentValue>
