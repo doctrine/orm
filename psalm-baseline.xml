@@ -559,10 +559,6 @@
       <code>?T</code>
       <code>Collection&lt;int, T&gt;</code>
     </InvalidReturnType>
-    <MoreSpecificImplementedParamType occurrences="2">
-      <code>$criteria</code>
-      <code>$criteria</code>
-    </MoreSpecificImplementedParamType>
     <PropertyTypeCoercion occurrences="1">
       <code>$em</code>
     </PropertyTypeCoercion>
@@ -887,12 +883,11 @@
     <DeprecatedConstant occurrences="1">
       <code>ClassMetadata::GENERATOR_TYPE_UUID</code>
     </DeprecatedConstant>
-    <DeprecatedMethod occurrences="5">
+    <DeprecatedMethod occurrences="4">
       <code>addNamedNativeQuery</code>
       <code>addNamedQuery</code>
       <code>fixSchemaElementName</code>
       <code>fixSchemaElementName</code>
-      <code>prefersSequences</code>
     </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="3">
       <code>! $class-&gt;reflClass</code>
@@ -999,9 +994,6 @@
     <DocblockTypeContradiction occurrences="1">
       <code>$this-&gt;table</code>
     </DocblockTypeContradiction>
-    <ImplementedReturnTypeMismatch occurrences="1">
-      <code>string|null</code>
-    </ImplementedReturnTypeMismatch>
     <InvalidDocblock occurrences="4">
       <code>protected function _validateAndCompleteAssociationMapping(array $mapping)</code>
       <code>protected function _validateAndCompleteManyToManyMapping(array $mapping)</code>
@@ -3390,23 +3382,9 @@
       <code>$this-&gt;getClassToExtend() ?: $metadata-&gt;name</code>
       <code>array_map('strlen', $paramTypes)</code>
     </ArgumentTypeCoercion>
-    <DeprecatedConstant occurrences="16">
+    <DeprecatedConstant occurrences="2">
       <code>ClassMetadataInfo::GENERATOR_TYPE_UUID</code>
-      <code>Type::BIGINT</code>
-      <code>Type::BLOB</code>
-      <code>Type::BOOLEAN</code>
-      <code>Type::DATE</code>
-      <code>Type::DATETIME</code>
-      <code>Type::DATETIMETZ</code>
-      <code>Type::DECIMAL</code>
-      <code>Type::GUID</code>
-      <code>Type::INTEGER</code>
       <code>Type::JSON_ARRAY</code>
-      <code>Type::OBJECT</code>
-      <code>Type::SIMPLE_ARRAY</code>
-      <code>Type::SMALLINT</code>
-      <code>Type::TEXT</code>
-      <code>Type::TIME</code>
     </DeprecatedConstant>
     <DocblockTypeContradiction occurrences="3">
       <code>$metadata-&gt;reflClass !== null</code>
