@@ -51,6 +51,12 @@ jobs:
       - name: "Run a static analysis with phpstan/phpstan"
         continue-on-error: "${{ matrix.status == 'experimental' }}"
         run: "vendor/bin/phpstan analyse"
+        if: "${{ matrix.dbal-version == 'default' }}"
+
+      - name: "Run a static analysis with phpstan/phpstan"
+        continue-on-error: "${{ matrix.status == 'experimental' }}"
+        run: "vendor/bin/phpstan analyse -c phpstan-dbal3.neon"
+        if: "${{ matrix.dbal-version != 'default' }}"
 
   static-analysis-psalm:
     name: "Static Analysis with Psalm"
