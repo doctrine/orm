@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\DBAL\LockMode;
-use Doctrine\DBAL\Platforms\MySqlPlatform;
+use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
-use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
-use Doctrine\DBAL\Platforms\SQLServerPlatform;
+use Doctrine\DBAL\Platforms\SQLServer2012Platform;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Column;
@@ -31,8 +31,12 @@ use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmTestCase;
 use Exception;
 
+use function class_exists;
 use function get_class;
 use function sprintf;
+
+// DBAL 2 compatibility
+class_exists('Doctrine\DBAL\Platforms\MySqlPlatform');
 
 class SelectSqlGenerationTest extends OrmTestCase
 {
@@ -341,7 +345,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $connMock    = $this->entityManager->getConnection();
         $orgPlatform = $connMock->getDatabasePlatform();
 
-        $connMock->setDatabasePlatform(new MySqlPlatform());
+        $connMock->setDatabasePlatform(new MySQLPlatform());
 
         $this->assertSqlGeneration(
             'SELECT COUNT(CONCAT(u.id, u.name)) FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY u.id',
@@ -644,7 +648,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $connMock    = $this->entityManager->getConnection();
         $orgPlatform = $connMock->getDatabasePlatform();
 
-        $connMock->setDatabasePlatform(new MySqlPlatform());
+        $connMock->setDatabasePlatform(new MySQLPlatform());
         $this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, 's') = ?1",
             "SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE CONCAT(c0_.name, 's') = ?"
@@ -654,7 +658,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT CONCAT(c0_.id, c0_.name) AS sclr_0 FROM cms_users c0_ WHERE c0_.id = ?'
         );
 
-        $connMock->setDatabasePlatform(new PostgreSqlPlatform());
+        $connMock->setDatabasePlatform(new PostgreSQL94Platform());
         $this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, 's') = ?1",
             "SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE c0_.name || 's' = ?"
@@ -950,7 +954,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testBooleanLiteralInWhereOnPostgres(): void
     {
         $oldPlat = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQL94Platform());
 
         $this->assertSqlGeneration(
             'SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true',
@@ -1092,7 +1096,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testPessimisticReadLockQueryHintPostgreSql(): void
     {
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQL94Platform());
 
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
@@ -1133,7 +1137,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testPessimisticReadLockQueryHintMySql(): void
     {
-        $this->entityManager->getConnection()->setDatabasePlatform(new MySqlPlatform());
+        $this->entityManager->getConnection()->setDatabasePlatform(new MySQLPlatform());
 
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
@@ -2102,7 +2106,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $connMock    = $this->entityManager->getConnection();
         $orgPlatform = $connMock->getDatabasePlatform();
 
-        $connMock->setDatabasePlatform(new MySqlPlatform());
+        $connMock->setDatabasePlatform(new MySQLPlatform());
         $this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
             "SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE CONCAT(c0_.name, c0_.status, 's') = ?"
@@ -2112,7 +2116,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT CONCAT(c0_.id, c0_.name, c0_.status) AS sclr_0 FROM cms_users c0_ WHERE c0_.id = ?'
         );
 
-        $connMock->setDatabasePlatform(new PostgreSqlPlatform());
+        $connMock->setDatabasePlatform(new PostgreSQL94Platform());
         $this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
             "SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE c0_.name || c0_.status || 's' = ?"
@@ -2122,7 +2126,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT c0_.id || c0_.name || c0_.status AS sclr_0 FROM cms_users c0_ WHERE c0_.id = ?'
         );
 
-        $connMock->setDatabasePlatform(new SQLServerPlatform());
+        $connMock->setDatabasePlatform(new SQLServer2012Platform());
         $this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
             "SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE (c0_.name + c0_.status + 's') = ?"
