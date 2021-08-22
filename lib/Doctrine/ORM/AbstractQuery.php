@@ -71,6 +71,11 @@ abstract class AbstractQuery
     public const HYDRATE_SIMPLEOBJECT = 5;
 
     /**
+     * Hydrates scalar column value.
+     */
+    public const HYDRATE_SCALAR_COLUMN = 6;
+
+    /**
      * The parameter map of this query.
      *
      * @var ArrayCollection|Parameter[]
@@ -782,6 +787,18 @@ abstract class AbstractQuery
     public function getArrayResult()
     {
         return $this->execute(null, self::HYDRATE_ARRAY);
+    }
+
+    /**
+     * Gets one-dimensional array of results for the query.
+     *
+     * Alias for execute(null, HYDRATE_SCALAR_COLUMN).
+     *
+     * @return mixed[]
+     */
+    public function getSingleColumnResult()
+    {
+        return $this->execute(null, self::HYDRATE_SCALAR_COLUMN);
     }
 
     /**
