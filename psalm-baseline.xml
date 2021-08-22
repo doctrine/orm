@@ -3620,7 +3620,8 @@
     </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php">
-    <DeprecatedClass occurrences="6">
+    <DeprecatedClass occurrences="7">
+      <code>DBALConsole\Command\ImportCommand::class</code>
       <code>Versions::getVersion('doctrine/orm')</code>
       <code>new Command\ConvertDoctrine1SchemaCommand()</code>
       <code>new Command\GenerateEntitiesCommand($entityManagerProvider)</code>
