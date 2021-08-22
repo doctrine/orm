@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\DBAL\Logging\EchoSQLLogger;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
@@ -27,8 +26,6 @@ class DDC832Test extends OrmFunctionalTestCase
         if ($platform->getName() === 'oracle') {
             self::markTestSkipped('Doesnt run on Oracle.');
         }
-
-        $this->_em->getConfiguration()->setSQLLogger(new EchoSQLLogger());
 
         try {
             $this->_schemaTool->createSchema(
