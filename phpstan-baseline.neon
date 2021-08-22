@@ -216,16 +216,6 @@ parameters:
 			path: lib/Doctrine/ORM/Id/TableGenerator.php
 
 		-
-			message: "#^Property Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\AbstractHydrator\\:\\:\\$_rsm \\(Doctrine\\\\ORM\\\\Query\\\\ResultSetMapping\\) does not accept null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
-
-		-
-			message: "#^Property Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\AbstractHydrator\\:\\:\\$_stmt \\(Doctrine\\\\DBAL\\\\Result\\) does not accept null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
-
-		-
 			message: "#^Parameter \\#2 \\$discrMap of static method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\HydrationException\\:\\:invalidDiscriminatorValue\\(\\) expects array\\<string, string\\>, array\\<int, int\\|string\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php
