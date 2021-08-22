@@ -860,11 +860,9 @@
     <DeprecatedConstant occurrences="1">
       <code>ClassMetadata::GENERATOR_TYPE_UUID</code>
     </DeprecatedConstant>
-    <DeprecatedMethod occurrences="4">
+    <DeprecatedMethod occurrences="2">
       <code>addNamedNativeQuery</code>
       <code>addNamedQuery</code>
-      <code>fixSchemaElementName</code>
-      <code>fixSchemaElementName</code>
     </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="3">
       <code>! $class-&gt;reflClass</code>

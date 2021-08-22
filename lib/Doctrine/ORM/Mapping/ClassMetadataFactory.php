@@ -21,14 +21,6 @@ use Doctrine\ORM\Id\UuidGenerator;
 use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
 use Doctrine\ORM\Mapping\Exception\TableGeneratorNotImplementedYet;
 use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
-use Doctrine\ORM\NotImplementedYet;
-use Doctrine\ORM\Sequencing;
-use Doctrine\ORM\Sequencing\Planning\AssociationValueGeneratorExecutor;
-use Doctrine\ORM\Sequencing\Planning\ColumnValueGeneratorExecutor;
-use Doctrine\ORM\Sequencing\Planning\CompositeValueGenerationPlan;
-use Doctrine\ORM\Sequencing\Planning\NoopValueGenerationPlan;
-use Doctrine\ORM\Sequencing\Planning\SingleValueGenerationPlan;
-use Doctrine\ORM\Sequencing\Planning\ValueGenerationExecutor;
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -43,8 +35,10 @@ use function end;
 use function explode;
 use function in_array;
 use function is_subclass_of;
+use function strlen;
 use function strpos;
 use function strtolower;
+use function substr;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -567,7 +561,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $sequencePrefix = $class->getSequencePrefix($this->getTargetPlatform());
                     $sequenceName   = $this->getTargetPlatform()->getIdentitySequenceName($sequencePrefix, $columnName);
                     $definition     = [
-                        'sequenceName' => $this->getTargetPlatform()->fixSchemaElementName($sequenceName),
+                        'sequenceName' => $this->truncateSequenceName($sequenceName),
                     ];
 
                     if ($quoted) {
@@ -599,7 +593,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $quoted       = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
 
                     $definition = [
-                        'sequenceName'      => $this->getTargetPlatform()->fixSchemaElementName($sequenceName),
+                        'sequenceName'      => $this->truncateSequenceName($sequenceName),
                         'allocationSize'    => 1,
                         'initialValue'      => 1,
                     ];
@@ -670,6 +664,22 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         return ClassMetadata::GENERATOR_TYPE_TABLE;
+    }
+
+    private function truncateSequenceName(string $schemaElementName): string
+    {
+        $platform = $this->getTargetPlatform();
+        if (! in_array($platform->getName(), ['oracle', 'sqlanywhere'], true)) {
+            return $schemaElementName;
+        }
+
+        $maxIdentifierLength = $platform->getMaxIdentifierLength();
+
+        if (strlen($schemaElementName) > $maxIdentifierLength) {
+            return substr($schemaElementName, 0, $maxIdentifierLength);
+        }
+
+        return $schemaElementName;
     }
 
     /**
