@@ -44,7 +44,7 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
         $platform   = $connection->getDatabasePlatform();
 
         // drop sequence manually due to dependency
-        $connection->exec(
+        $connection->executeStatement(
             $platform->getDropSequenceSQL(
                 new Sequence($platform->getIdentitySequenceName('seq_identity', 'id'))
             )

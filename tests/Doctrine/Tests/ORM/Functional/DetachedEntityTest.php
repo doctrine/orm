@@ -222,7 +222,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->_em->detach($article);
 
         $sql = 'UPDATE cms_articles SET version = version + 1 WHERE id = ' . $article->id;
-        $this->_em->getConnection()->executeUpdate($sql);
+        $this->_em->getConnection()->executeStatement($sql);
 
         $this->expectException(OptimisticLockException::class);
         $this->expectExceptionMessage('The optimistic lock failed, version 1 was expected, but is actually 2');

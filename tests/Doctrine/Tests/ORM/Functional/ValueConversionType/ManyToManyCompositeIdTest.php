@@ -45,23 +45,23 @@ class ManyToManyCompositeIdTest extends OrmFunctionalTestCase
     {
         $conn = static::$sharedConn;
 
-        $conn->executeUpdate('DROP TABLE vct_xref_manytomany_compositeid');
-        $conn->executeUpdate('DROP TABLE vct_owning_manytomany_compositeid');
-        $conn->executeUpdate('DROP TABLE vct_inversed_manytomany_compositeid');
+        $conn->executeStatement('DROP TABLE vct_xref_manytomany_compositeid');
+        $conn->executeStatement('DROP TABLE vct_owning_manytomany_compositeid');
+        $conn->executeStatement('DROP TABLE vct_inversed_manytomany_compositeid');
     }
 
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase(): void
     {
         $conn = $this->_em->getConnection();
 
-        self::assertEquals('nop', $conn->fetchColumn('SELECT id1 FROM vct_inversed_manytomany_compositeid LIMIT 1'));
-        self::assertEquals('qrs', $conn->fetchColumn('SELECT id2 FROM vct_inversed_manytomany_compositeid LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchOne('SELECT id1 FROM vct_inversed_manytomany_compositeid LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchOne('SELECT id2 FROM vct_inversed_manytomany_compositeid LIMIT 1'));
 
-        self::assertEquals('tuv', $conn->fetchColumn('SELECT id3 FROM vct_owning_manytomany_compositeid LIMIT 1'));
+        self::assertEquals('tuv', $conn->fetchOne('SELECT id3 FROM vct_owning_manytomany_compositeid LIMIT 1'));
 
-        self::assertEquals('nop', $conn->fetchColumn('SELECT inversed_id1 FROM vct_xref_manytomany_compositeid LIMIT 1'));
-        self::assertEquals('qrs', $conn->fetchColumn('SELECT inversed_id2 FROM vct_xref_manytomany_compositeid LIMIT 1'));
-        self::assertEquals('tuv', $conn->fetchColumn('SELECT owning_id FROM vct_xref_manytomany_compositeid LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchOne('SELECT inversed_id1 FROM vct_xref_manytomany_compositeid LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchOne('SELECT inversed_id2 FROM vct_xref_manytomany_compositeid LIMIT 1'));
+        self::assertEquals('tuv', $conn->fetchOne('SELECT owning_id FROM vct_xref_manytomany_compositeid LIMIT 1'));
     }
 
     /**
@@ -154,6 +154,6 @@ class ManyToManyCompositeIdTest extends OrmFunctionalTestCase
 
         // test association is removed
 
-        self::assertEquals(0, $conn->fetchColumn('SELECT COUNT(*) FROM vct_xref_manytomany_compositeid'));
+        self::assertEquals(0, $conn->fetchOne('SELECT COUNT(*) FROM vct_xref_manytomany_compositeid'));
     }
 }

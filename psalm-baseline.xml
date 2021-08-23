@@ -1744,9 +1744,6 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php">
-    <DeprecatedMethod occurrences="1">
-      <code>fetchColumn</code>
-    </DeprecatedMethod>
     <PossiblyNullArgument occurrences="44">
       <code>$association</code>
       <code>$collection-&gt;getOwner()</code>

@@ -234,7 +234,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->persist($order);
         $this->_em->flush();
 
-        $this->_em->getConnection()->exec('UPDATE TrainOrder SET train_id = NULL');
+        $this->_em->getConnection()->executeStatement('UPDATE TrainOrder SET train_id = NULL');
 
         self::assertSame($train, $order->train);
         $this->_em->refresh($order);

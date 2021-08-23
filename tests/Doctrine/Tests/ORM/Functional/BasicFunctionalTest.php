@@ -137,7 +137,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $userId = $this->_em->getConnection()->executeQuery(
             'SELECT user_id FROM cms_addresses WHERE id=?',
             [$address->id]
-        )->fetchColumn();
+        )->fetchOne();
         self::assertIsNumeric($userId);
 
         $this->_em->clear();
@@ -208,13 +208,13 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         // Check that there are just 2 phonenumbers left
-        $count = $this->_em->getConnection()->fetchColumn('SELECT COUNT(*) FROM cms_phonenumbers');
+        $count = $this->_em->getConnection()->fetchOne('SELECT COUNT(*) FROM cms_phonenumbers');
         self::assertEquals(2, $count); // only 2 remaining
 
         // check that clear() removes the others via orphan removal
         $user->getPhonenumbers()->clear();
         $this->_em->flush();
-        self::assertEquals(0, $this->_em->getConnection()->fetchColumn('select count(*) from cms_phonenumbers'));
+        self::assertEquals(0, $this->_em->getConnection()->fetchOne('select count(*) from cms_phonenumbers'));
     }
 
     public function testBasicQuery(): void
@@ -671,7 +671,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        self::assertEquals(0, $this->_em->getConnection()->fetchColumn('select count(*) from cms_users'));
+        self::assertEquals(0, $this->_em->getConnection()->fetchOne('select count(*) from cms_users'));
 
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(null);
     }
@@ -728,12 +728,12 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
 
-        self::assertEquals(1, $this->_em->getConnection()->fetchColumn('select 1 from cms_addresses where user_id = ' . $user->id));
+        self::assertEquals(1, $this->_em->getConnection()->fetchOne('select 1 from cms_addresses where user_id = ' . $user->id));
 
         $address->user = null;
         $this->_em->flush();
 
-        self::assertNotEquals(1, $this->_em->getConnection()->fetchColumn('select 1 from cms_addresses where user_id = ' . $user->id));
+        self::assertNotEquals(1, $this->_em->getConnection()->fetchOne('select 1 from cms_addresses where user_id = ' . $user->id));
     }
 
     /**
@@ -840,14 +840,14 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->_em->flush();
 
-        self::assertEquals(0, $this->_em->getConnection()->fetchColumn('select count(*) from cms_addresses'));
+        self::assertEquals(0, $this->_em->getConnection()->fetchOne('select count(*) from cms_addresses'));
 
         // check orphan removal through replacement
         $user->address = $address;
         $address->user = $user;
 
         $this->_em->flush();
-        self::assertEquals(1, $this->_em->getConnection()->fetchColumn('select count(*) from cms_addresses'));
+        self::assertEquals(1, $this->_em->getConnection()->fetchOne('select count(*) from cms_addresses'));
 
         // remove $address to free up unique key id
         $this->_em->remove($address);
@@ -862,7 +862,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $user->address       = $newAddress;
 
         $this->_em->flush();
-        self::assertEquals(1, $this->_em->getConnection()->fetchColumn('select count(*) from cms_addresses'));
+        self::assertEquals(1, $this->_em->getConnection()->fetchOne('select count(*) from cms_addresses'));
     }
 
     public function testGetPartialReferenceToUpdateObjectWithoutLoadingIt(): void

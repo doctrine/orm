@@ -50,23 +50,23 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
     {
         $conn = static::$sharedConn;
 
-        $conn->executeUpdate('DROP TABLE vct_owning_onetoone_compositeid_foreignkey');
-        $conn->executeUpdate('DROP TABLE vct_inversed_onetoone_compositeid_foreignkey');
-        $conn->executeUpdate('DROP TABLE vct_auxiliary');
+        $conn->executeStatement('DROP TABLE vct_owning_onetoone_compositeid_foreignkey');
+        $conn->executeStatement('DROP TABLE vct_inversed_onetoone_compositeid_foreignkey');
+        $conn->executeStatement('DROP TABLE vct_auxiliary');
     }
 
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase(): void
     {
         $conn = $this->_em->getConnection();
 
-        self::assertEquals('nop', $conn->fetchColumn('SELECT id4 FROM vct_auxiliary LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchOne('SELECT id4 FROM vct_auxiliary LIMIT 1'));
 
-        self::assertEquals('qrs', $conn->fetchColumn('SELECT id1 FROM vct_inversed_onetoone_compositeid_foreignkey LIMIT 1'));
-        self::assertEquals('nop', $conn->fetchColumn('SELECT foreign_id FROM vct_inversed_onetoone_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchOne('SELECT id1 FROM vct_inversed_onetoone_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchOne('SELECT foreign_id FROM vct_inversed_onetoone_compositeid_foreignkey LIMIT 1'));
 
-        self::assertEquals('tuv', $conn->fetchColumn('SELECT id2 FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
-        self::assertEquals('qrs', $conn->fetchColumn('SELECT associated_id FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
-        self::assertEquals('nop', $conn->fetchColumn('SELECT associated_foreign_id FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('tuv', $conn->fetchOne('SELECT id2 FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchOne('SELECT associated_id FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchOne('SELECT associated_foreign_id FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
     }
 
     /**
