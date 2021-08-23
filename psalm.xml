@@ -16,6 +16,12 @@
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
+        <DeprecatedMethod>
+            <errorLevel type="suppress">
+                <!-- We're calling the deprecated method for BC here. -->
+                <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
+            </errorLevel>
+        </DeprecatedMethod>
         <DocblockTypeContradiction>
             <errorLevel type="suppress">
                 <!-- We're catching invalid input here. -->

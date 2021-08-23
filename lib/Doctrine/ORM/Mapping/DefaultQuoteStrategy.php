@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\Internal\SQLResultCasing;
 
 use function array_map;
 use function array_merge;
@@ -17,6 +18,8 @@ use function substr;
  */
 class DefaultQuoteStrategy implements QuoteStrategy
 {
+    use SQLResultCasing;
+
     /**
      * {@inheritdoc}
      */
@@ -146,6 +149,6 @@ class DefaultQuoteStrategy implements QuoteStrategy
         $columnName  = preg_replace('/[^A-Za-z0-9_]/', '', $columnName);
         $columnName  = is_numeric($columnName) ? '_' . $columnName : $columnName;
 
-        return $platform->getSQLResultCasing($columnName);
+        return $this->getSQLResultCasing($platform, $columnName);
     }
 }
