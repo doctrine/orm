@@ -287,10 +287,6 @@ class DDC117Test extends OrmFunctionalTestCase
      */
     public function testOneToOneCascadePersist(): void
     {
-        if (! $this->_em->getConnection()->getDatabasePlatform()->prefersSequences()) {
-            self::markTestSkipped('Test only works with databases that prefer sequences as ID strategy.');
-        }
-
         $this->article1       = new DDC117Article('Foo');
         $this->articleDetails = new DDC117ArticleDetails($this->article1, 'Very long text');
 
