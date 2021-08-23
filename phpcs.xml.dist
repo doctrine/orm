@@ -202,7 +202,6 @@
         <!-- https://github.com/squizlabs/PHP_CodeSniffer/issues/1961 -->
         <exclude-pattern>tests/Doctrine/Tests/Mocks/DatabasePlatformMock.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/Mocks/DriverMock.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/Mocks/SequenceMock.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/UnitOfWorkTest.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Query/DeleteSqlGenerationTest.php</exclude-pattern>
     </rule>
