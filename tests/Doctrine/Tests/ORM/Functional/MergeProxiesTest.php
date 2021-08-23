@@ -241,7 +241,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
             [realpath(__DIR__ . '/../../Models/Cache')],
-            true
+            false
         ));
         $config->setSQLLogger($logger);
 
