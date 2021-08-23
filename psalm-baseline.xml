@@ -657,16 +657,7 @@
       <code>IterableResult</code>
       <code>new IterableResult($this)</code>
     </DeprecatedClass>
-    <PossiblyNullPropertyAssignmentValue occurrences="2">
-      <code>null</code>
-      <code>null</code>
-    </PossiblyNullPropertyAssignmentValue>
-    <PropertyNotSetInConstructor occurrences="3">
-      <code>$_hints</code>
-      <code>$_rsm</code>
-      <code>$_stmt</code>
-    </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="2">
+    <PropertyTypeCoercion occurrences="1">
       <code>$resultSetMapping</code>
       <code>$resultSetMapping</code>
     </PropertyTypeCoercion>
@@ -685,11 +676,6 @@
     <PossiblyUndefinedArrayOffset occurrences="1">
       <code>$newObject['args']</code>
     </PossiblyUndefinedArrayOffset>
-    <PropertyNotSetInConstructor occurrences="3">
-      <code>ArrayHydrator</code>
-      <code>ArrayHydrator</code>
-      <code>ArrayHydrator</code>
-    </PropertyNotSetInConstructor>
     <ReferenceConstraintViolation occurrences="1">
       <code>$result</code>
     </ReferenceConstraintViolation>
@@ -736,18 +722,6 @@
     <PossiblyUndefinedArrayOffset occurrences="1">
       <code>$newObject['args']</code>
     </PossiblyUndefinedArrayOffset>
-    <PropertyNotSetInConstructor occurrences="3">
-      <code>ObjectHydrator</code>
-      <code>ObjectHydrator</code>
-      <code>ObjectHydrator</code>
-    </PropertyNotSetInConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Internal/Hydration/ScalarHydrator.php">
-    <PropertyNotSetInConstructor occurrences="3">
-      <code>ScalarHydrator</code>
-      <code>ScalarHydrator</code>
-      <code>ScalarHydrator</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/SimpleObjectHydrator.php">
     <DeprecatedMethod occurrences="1">
@@ -759,18 +733,8 @@
     <MissingPropertyType occurrences="1">
       <code>$this-&gt;class-&gt;inheritanceType</code>
     </MissingPropertyType>
-    <PropertyNotSetInConstructor occurrences="4">
+    <PropertyNotSetInConstructor occurrences="1">
       <code>$class</code>
-      <code>SimpleObjectHydrator</code>
-      <code>SimpleObjectHydrator</code>
-      <code>SimpleObjectHydrator</code>
-    </PropertyNotSetInConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Internal/Hydration/SingleScalarHydrator.php">
-    <PropertyNotSetInConstructor occurrences="3">
-      <code>SingleScalarHydrator</code>
-      <code>SingleScalarHydrator</code>
-      <code>SingleScalarHydrator</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/LazyCriteriaCollection.php">
