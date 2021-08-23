@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping\Table;
 /**
  * Logo
  *
- * @Author Bill Schaller
  * @Entity
  * @Table(name="pagination_logo")
  */

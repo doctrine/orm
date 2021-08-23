@@ -764,7 +764,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
                     realpath(__DIR__ . '/Models/Cache'),
                     realpath(__DIR__ . '/Models/GeoNames'),
                 ],
-                true
+                false
             )
         );
 

@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinColumns;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC1181Test extends OrmFunctionalTestCase
@@ -75,7 +76,7 @@ class DDC1181Hotel
     public $id;
 
     /**
-     * @oneToMany(targetEntity="DDC1181Booking", mappedBy="hotel", cascade={"remove"})
+     * @OneToMany(targetEntity="DDC1181Booking", mappedBy="hotel", cascade={"remove"})
      * @var Booking[]
      */
     public $bookings;
