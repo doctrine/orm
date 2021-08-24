@@ -26,7 +26,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $this->useModelSet('cms');
         parent::setUp();
 
-        $this->schemaManager = $this->_em->getConnection()->getSchemaManager();
+        $this->schemaManager = $this->createSchemaManager();
     }
 
     /**

@@ -7,11 +7,13 @@ namespace Doctrine\Tests;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use UnexpectedValueException;
 
 use function explode;
 use function fwrite;
 use function get_class;
+use function method_exists;
 use function sprintf;
 use function strlen;
 use function strpos;
@@ -87,19 +89,24 @@ class TestUtil
             $dbname = $testConn->getDatabase();
             $testConn->close();
 
-            $privConn->getSchemaManager()->dropAndCreateDatabase($dbname);
+            self::createSchemaManager($privConn)->dropAndCreateDatabase($dbname);
 
             $privConn->close();
         } else {
-            $sm = $testConn->getSchemaManager();
-
-            $schema = $sm->createSchema();
+            $schema = self::createSchemaManager($testConn)->createSchema();
             $stmts  = $schema->toDropSql($testConn->getDatabasePlatform());
 
             foreach ($stmts as $stmt) {
                 $testConn->executeStatement($stmt);
             }
         }
+    }
+
+    private static function createSchemaManager(Connection $connection): AbstractSchemaManager
+    {
+        return method_exists(Connection::class, 'createSchemaManager')
+            ? $connection->createSchemaManager()
+            : $connection->getSchemaManager();
     }
 
     private static function addDbEventSubscribers(Connection $conn): void

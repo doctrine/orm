@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractAsset;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
@@ -15,10 +17,7 @@ use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\QuoteStrategy;
-use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\Exception\MissingColumnException;
@@ -37,7 +36,7 @@ use function implode;
 use function in_array;
 use function is_array;
 use function is_numeric;
-use function reset;
+use function method_exists;
 use function strtolower;
 
 /**
@@ -63,6 +62,9 @@ class SchemaTool
      */
     private $quoteStrategy;
 
+    /** @var AbstractSchemaManager */
+    private $schemaManager;
+
     /**
      * Initializes a new SchemaTool instance that uses the connection of the
      * provided EntityManager.
@@ -72,6 +74,9 @@ class SchemaTool
         $this->em            = $em;
         $this->platform      = $em->getConnection()->getDatabasePlatform();
         $this->quoteStrategy = $em->getConfiguration()->getQuoteStrategy();
+        $this->schemaManager = method_exists(Connection::class, 'createSchemaManager')
+            ? $em->getConnection()->createSchemaManager()
+            : $em->getConnection()->getSchemaManager();
     }
 
     /**
@@ -184,8 +189,7 @@ class SchemaTool
         // Reminder for processed classes, used for hierarchies
         $processedClasses     = [];
         $eventManager         = $this->em->getEventManager();
-        $schemaManager        = $this->em->getConnection()->getSchemaManager();
-        $metadataSchemaConfig = $schemaManager->createSchemaConfig();
+        $metadataSchemaConfig = $this->schemaManager->createSchemaConfig();
 
         $metadataSchemaConfig->setExplicitForeignKeyIndexes(false);
         $schema = new Schema([], [], $metadataSchemaConfig);
@@ -833,8 +837,7 @@ class SchemaTool
      */
     public function getDropDatabaseSQL()
     {
-        $sm     = $this->em->getConnection()->getSchemaManager();
-        $schema = $sm->createSchema();
+        $schema = $this->schemaManager->createSchema();
 
         $visitor = new DropSchemaSqlCollector($this->platform);
         $schema->visit($visitor);
@@ -854,8 +857,7 @@ class SchemaTool
         $visitor = new DropSchemaSqlCollector($this->platform);
         $schema  = $this->getSchemaFromMetadata($classes);
 
-        $sm         = $this->em->getConnection()->getSchemaManager();
-        $fullSchema = $sm->createSchema();
+        $fullSchema = $this->schemaManager->createSchema();
 
         foreach ($fullSchema->getTables() as $table) {
             if (! $schema->hasTable($table->getName())) {
@@ -943,15 +945,14 @@ class SchemaTool
      */
     private function createSchemaForComparison(Schema $toSchema): Schema
     {
-        $connection    = $this->em->getConnection();
-        $schemaManager = $connection->getSchemaManager();
+        $connection = $this->em->getConnection();
 
         // backup schema assets filter
         $config         = $connection->getConfiguration();
         $previousFilter = $config->getSchemaAssetsFilter();
 
         if ($previousFilter === null) {
-            return $schemaManager->createSchema();
+            return $this->schemaManager->createSchema();
         }
 
         // whitelist assets we already know about in $toSchema, use the existing filter otherwise
@@ -962,7 +963,7 @@ class SchemaTool
         });
 
         try {
-            return $schemaManager->createSchema();
+            return $this->schemaManager->createSchema();
         } finally {
             // restore schema assets filter
             $config->setSchemaAssetsFilter($previousFilter);

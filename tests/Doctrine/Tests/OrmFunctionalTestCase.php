@@ -6,17 +6,16 @@ namespace Doctrine\Tests;
 
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
-use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\DebugStack;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -40,6 +39,7 @@ use function getenv;
 use function implode;
 use function in_array;
 use function is_object;
+use function method_exists;
 use function realpath;
 use function sprintf;
 use function strpos;
@@ -70,7 +70,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * Shared connection when a TestCase is run alone (outside of its functional suite).
      *
-     * @var \Doctrine\DBAL\Connection|null
+     * @var Connection|null
      */
     protected static $sharedConn;
 
@@ -795,6 +795,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         return EntityManager::create($conn, $config);
+    }
+
+    final protected function createSchemaManager(): AbstractSchemaManager
+    {
+        return method_exists(Connection::class, 'createSchemaManager')
+            ? $this->_em->getConnection()->createSchemaManager()
+            : $this->_em->getConnection()->getSchemaManager();
     }
 
     /**

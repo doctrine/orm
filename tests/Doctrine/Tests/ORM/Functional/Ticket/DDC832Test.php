@@ -44,7 +44,7 @@ class DDC832Test extends OrmFunctionalTestCase
     {
         $platform = $this->_em->getConnection()->getDatabasePlatform();
 
-        $sm = $this->_em->getConnection()->getSchemaManager();
+        $sm = $this->createSchemaManager();
         $sm->dropTable($platform->quoteIdentifier('TREE_INDEX'));
         $sm->dropTable($platform->quoteIdentifier('INDEX'));
         $sm->dropTable($platform->quoteIdentifier('LIKE'));

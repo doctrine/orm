@@ -90,7 +90,7 @@ class DDC214Test extends OrmFunctionalTestCase
             // was already created
         }
 
-        $sm = $this->_em->getConnection()->getSchemaManager();
+        $sm = $this->createSchemaManager();
 
         $fromSchema = $sm->createSchema();
         $toSchema   = $this->schemaTool->getSchemaFromMetadata($classMetadata);

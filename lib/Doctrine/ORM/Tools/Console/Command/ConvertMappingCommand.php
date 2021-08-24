@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
@@ -21,6 +22,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use function file_exists;
 use function is_dir;
 use function is_writable;
+use function method_exists;
 use function mkdir;
 use function realpath;
 use function sprintf;
@@ -89,7 +91,9 @@ EOT
 
         if ($input->getOption('from-database') === true) {
             $databaseDriver = new DatabaseDriver(
-                $em->getConnection()->getSchemaManager()
+                method_exists(Connection::class, 'createSchemaManager')
+                    ? $em->getConnection()->createSchemaManager()
+                    : $em->getConnection()->getSchemaManager()
             );
 
             $em->getConfiguration()->setMetadataDriverImpl(

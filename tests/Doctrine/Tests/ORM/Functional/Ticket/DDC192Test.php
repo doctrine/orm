@@ -30,9 +30,7 @@ class DDC192Test extends OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema($classes);
 
-        $tables = $this->_em->getConnection()
-                            ->getSchemaManager()
-                            ->listTableNames();
+        $tables = $this->createSchemaManager()->listTableNames();
 
         foreach ($classes as $class) {
             assert($class instanceof ClassMetadata);
