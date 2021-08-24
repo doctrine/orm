@@ -57,7 +57,7 @@ jobs:
   phpunit-oracle:
     name: "PHPUnit with Oracle"
     runs-on: "ubuntu-20.04"
-    needs: "phpunit-smoke-check"
+    # needs: "phpunit-smoke-check"
 
     strategy:
       matrix:
@@ -88,7 +88,7 @@ jobs:
         uses: "ramsey/composer-install@v1"
 
       - name: "Run PHPUnit"
-        run: "vendor/bin/phpunit -c ci/github/phpunit/pdo_oci.xml --coverage-clover=coverage.xml"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/pdo_oci.xml --coverage-clover=coverage.xml --stop-on-error"
 
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v2"
