@@ -27,12 +27,13 @@ final class ConsoleRunner
      */
     public static function createHelperSet(EntityManagerInterface $entityManager): HelperSet
     {
-        return new HelperSet(
-            [
-                'db' => new DBALConsole\Helper\ConnectionHelper($entityManager->getConnection()),
-                'em' => new EntityManagerHelper($entityManager),
-            ]
-        );
+        $helpers = ['em' => new EntityManagerHelper($entityManager)];
+
+        if (class_exists(DBALConsole\Helper\ConnectionHelper::class)) {
+            $helpers['db'] = new DBALConsole\Helper\ConnectionHelper($entityManager->getConnection());
+        }
+
+        return new HelperSet($helpers);
     }
 
     /**
