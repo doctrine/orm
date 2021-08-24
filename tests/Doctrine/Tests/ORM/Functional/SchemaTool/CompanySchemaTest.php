@@ -26,7 +26,7 @@ class CompanySchemaTest extends OrmFunctionalTestCase
      */
     public function testGeneratedSchema(): Schema
     {
-        $schema = $this->_em->getConnection()->getSchemaManager()->createSchema();
+        $schema = $this->createSchemaManager()->createSchema();
 
         self::assertTrue($schema->hasTable('company_contracts'));
 
