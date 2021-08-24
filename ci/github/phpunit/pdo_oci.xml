@@ -14,6 +14,12 @@
         <var name="db_dbname" value="XE"/>
         <var name="db_event_subscribers" value="Doctrine\DBAL\Event\Listeners\OracleSessionInit"/>
 
+        <var name="privileged_db_driver" value="pdo_oci"/>
+        <var name="privileged_db_host" value="localhost"/>
+        <var name="privileged_db_user" value="system"/>
+        <var name="privileged_db_password" value="oracle"/>
+        <var name="privileged_db_dbname" value="XE"/>
+
         <!-- necessary change for some CLI/console output test assertions -->
         <env name="COLUMNS" value="120"/>
     </php>
