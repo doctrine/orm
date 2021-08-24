@@ -53,7 +53,7 @@ final class SimpleInsertPerformanceBench
         // Yes, this is a lot of overhead, but I have no better solution other than
         // completely mocking out the DB, which would be silly (query impact is
         // necessarily part of our benchmarks)
-        $this->entityManager->getConnection()->executeQuery('DELETE FROM ' . $this->tableName)->execute();
+        $this->entityManager->getConnection()->executeStatement('DELETE FROM ' . $this->tableName);
 
         foreach ($this->users as $key => $user) {
             $this->entityManager->persist($user);

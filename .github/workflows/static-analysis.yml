@@ -13,7 +13,6 @@ jobs:
   static-analysis-phpstan:
     name: "Static Analysis with PHPStan"
     runs-on: "ubuntu-20.04"
-    continue-on-error: "${{ matrix.status == 'experimental' }}"
 
     strategy:
       fail-fast: false
@@ -22,12 +21,7 @@ jobs:
           - "8.0"
         dbal-version:
           - "default"
-        status:
-          - "stable"
-        include:
-          - dbal-version: "^3.0"
-            php-version: "8.0"
-            status: "experimental"
+          - "2.13"
 
     steps:
       - name: "Checkout code"
@@ -39,8 +33,8 @@ jobs:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
 
-      - name: "Require DBAL 3"
-        run: "composer require doctrine/dbal ${{ matrix.dbal-version }} --no-update"
+      - name: "Require specific DBAL version"
+        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
         if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Install dependencies with Composer"
@@ -49,19 +43,16 @@ jobs:
           dependency-versions: "highest"
 
       - name: "Run a static analysis with phpstan/phpstan"
-        continue-on-error: "${{ matrix.status == 'experimental' }}"
         run: "vendor/bin/phpstan analyse"
         if: "${{ matrix.dbal-version == 'default' }}"
 
       - name: "Run a static analysis with phpstan/phpstan"
-        continue-on-error: "${{ matrix.status == 'experimental' }}"
-        run: "vendor/bin/phpstan analyse -c phpstan-dbal3.neon"
-        if: "${{ matrix.dbal-version != 'default' }}"
+        run: "vendor/bin/phpstan analyse -c phpstan-dbal2.neon"
+        if: "${{ matrix.dbal-version == '2.13' }}"
 
   static-analysis-psalm:
     name: "Static Analysis with Psalm"
     runs-on: "ubuntu-20.04"
-    continue-on-error: "${{ matrix.status == 'experimental' }}"
 
     strategy:
       fail-fast: false
@@ -70,12 +61,7 @@ jobs:
           - "8.0"
         dbal-version:
           - "default"
-        status:
-          - "stable"
-        include:
-          - dbal-version: "^3.0"
-            php-version: "8.0"
-            status: "experimental"
+          - "2.13"
 
     steps:
       - name: "Checkout code"
@@ -87,8 +73,8 @@ jobs:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
 
-      - name: "Require DBAL 3"
-        run: "composer require doctrine/dbal ${{ matrix.dbal-version }} --no-update"
+      - name: "Require specific DBAL version"
+        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
         if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Install dependencies with Composer"
@@ -97,5 +83,4 @@ jobs:
           dependency-versions: "highest"
 
       - name: "Run a static analysis with vimeo/psalm"
-        continue-on-error: "${{ matrix.status == 'experimental' }}"
         run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc)"
