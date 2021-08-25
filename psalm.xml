@@ -16,6 +16,13 @@
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
+        <DeprecatedClass>
+            <errorLevel type="suppress">
+                <!-- DBAL 2 compatibility -->
+                <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ImportCommand"/>
+                <referencedClass name="Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper"/>
+            </errorLevel>
+        </DeprecatedClass>
         <DeprecatedMethod>
             <errorLevel type="suppress">
                 <!-- We're calling the deprecated method for BC here. -->

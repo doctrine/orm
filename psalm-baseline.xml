@@ -659,7 +659,6 @@
     </DeprecatedClass>
     <PropertyTypeCoercion occurrences="1">
       <code>$resultSetMapping</code>
-      <code>$resultSetMapping</code>
     </PropertyTypeCoercion>
     <ReferenceConstraintViolation occurrences="1">
       <code>return $rowData;</code>
@@ -3560,14 +3559,11 @@
     </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php">
-    <DeprecatedClass occurrences="7">
-      <code>DBALConsole\Command\ImportCommand::class</code>
+    <DeprecatedClass occurrences="4">
       <code>Versions::getVersion('doctrine/orm')</code>
       <code>new Command\ConvertDoctrine1SchemaCommand()</code>
       <code>new Command\GenerateEntitiesCommand($entityManagerProvider)</code>
       <code>new Command\GenerateRepositoriesCommand($entityManagerProvider)</code>
-      <code>new DBALConsole\Command\ImportCommand()</code>
-      <code>new DBALConsole\Helper\ConnectionHelper($entityManager-&gt;getConnection())</code>
     </DeprecatedClass>
   </file>
   <file src="lib/Doctrine/ORM/Tools/DebugUnitOfWorkListener.php">
