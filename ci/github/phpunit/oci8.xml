@@ -7,14 +7,14 @@
          failOnRisky="true"
 >
     <php>
-        <var name="db_driver" value="pdo_oci"/>
+        <var name="db_driver" value="oci8"/>
         <var name="db_host" value="localhost"/>
         <var name="db_user" value="doctrine"/>
         <var name="db_password" value="oracle"/>
         <var name="db_dbname" value="XE"/>
         <var name="db_event_subscribers" value="Doctrine\DBAL\Event\Listeners\OracleSessionInit"/>
 
-        <var name="privileged_db_driver" value="pdo_oci"/>
+        <var name="privileged_db_driver" value="oci8"/>
         <var name="privileged_db_host" value="localhost"/>
         <var name="privileged_db_user" value="system"/>
         <var name="privileged_db_password" value="oracle"/>

@@ -80,7 +80,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
-          extensions: "pdo_oci"
+          extensions: "oci8"
           coverage: "pcov"
           ini-values: "zend.assertions=1"
 
@@ -88,7 +88,7 @@ jobs:
         uses: "ramsey/composer-install@v1"
 
       - name: "Run PHPUnit"
-        run: "vendor/bin/phpunit -c ci/github/phpunit/pdo_oci.xml --coverage-clover=coverage.xml --stop-on-error"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/oci8.xml --coverage-clover=coverage.xml"
 
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v2"
