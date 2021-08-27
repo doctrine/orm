@@ -386,8 +386,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                             'initialValue' => $seqGeneratorAnnot->initialValue,
                         ]
                     );
-                } elseif ($this->reader->getPropertyAnnotation($property, TableGenerator::class)) {
-                    throw MappingException::tableIdGeneratorNotImplemented($className);
                 } else {
                     $customGeneratorAnnot = $this->reader->getPropertyAnnotation($property, Mapping\CustomIdGenerator::class);
                     if ($customGeneratorAnnot) {

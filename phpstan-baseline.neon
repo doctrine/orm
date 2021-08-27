@@ -521,11 +521,6 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
-
-		-
 			message: "#^Array \\(array\\('name' \\=\\> string, 'schema' \\=\\> string, 'indexes' \\=\\> array, 'uniqueConstraints' \\=\\> array\\)\\) does not accept key 'options'\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php

@@ -250,9 +250,6 @@ abstract class AbstractExporter
             case ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE:
                 return 'SEQUENCE';
 
-            case ClassMetadataInfo::GENERATOR_TYPE_TABLE:
-                return 'TABLE';
-
             case ClassMetadataInfo::GENERATOR_TYPE_IDENTITY:
                 return 'IDENTITY';
 

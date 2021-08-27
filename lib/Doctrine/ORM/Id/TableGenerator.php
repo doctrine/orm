@@ -8,6 +8,8 @@ use Doctrine\ORM\EntityManager;
 
 /**
  * Id generator that uses a single-row database table and a hi/lo algorithm.
+ *
+ * @deprecated no replacement planned
  */
 class TableGenerator extends AbstractIdGenerator
 {

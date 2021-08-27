@@ -381,9 +381,6 @@ Here is the list of possible generation strategies:
    (AUTO\_INCREMENT), MSSQL (IDENTITY) and PostgreSQL (SERIAL).
 -  ``UUID`` (deprecated): Tells Doctrine to use the built-in Universally
    Unique Identifier generator. This strategy provides full portability.
--  ``TABLE``: Tells Doctrine to use a separate table for ID
-   generation. This strategy provides full portability.
-   ***This strategy is not yet implemented!***
 -  ``NONE``: Tells Doctrine that the identifiers are assigned (and
    thus generated) by your code. The assignment must take place before
    a new entity is passed to ``EntityManager#persist``. NONE is the
