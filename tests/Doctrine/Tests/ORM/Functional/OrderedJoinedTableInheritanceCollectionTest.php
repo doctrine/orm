@@ -30,17 +30,11 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(OJTICPet::class),
-                    $this->_em->getClassMetadata(OJTICCat::class),
-                    $this->_em->getClassMetadata(OJTICDog::class),
-                ]
-            );
-        } catch (Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(OJTICPet::class),
+            $this->_em->getClassMetadata(OJTICCat::class),
+            $this->_em->getClassMetadata(OJTICDog::class),
+        ]);
 
         $dog       = new OJTICDog();
         $dog->name = 'Poofy';
