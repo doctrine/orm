@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
@@ -22,9 +23,7 @@ class DDC832Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $platform = $this->_em->getConnection()->getDatabasePlatform();
-
-        if ($platform->getName() === 'oracle') {
+        if ($this->_em->getConnection()->getDatabasePlatform() instanceof OraclePlatform) {
             self::markTestSkipped('Doesnt run on Oracle.');
         }
 

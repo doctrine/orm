@@ -651,7 +651,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     private function determineIdGeneratorStrategy(AbstractPlatform $platform): int
     {
-        if ($platform->getName() === 'oracle' || $platform->getName() === 'postgresql') {
+        if (
+            $platform instanceof Platforms\OraclePlatform
+            || $platform instanceof Platforms\PostgreSQL94Platform
+            || $platform instanceof Platforms\PostgreSQLPlatform
+        ) {
             return ClassMetadata::GENERATOR_TYPE_SEQUENCE;
         }
 

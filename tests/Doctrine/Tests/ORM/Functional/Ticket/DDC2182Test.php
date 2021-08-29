@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
@@ -19,7 +20,7 @@ class DDC2182Test extends OrmFunctionalTestCase
 {
     public function testPassColumnOptionsToJoinColumns(): void
     {
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
+        if (! $this->_em->getConnection()->getDatabasePlatform() instanceof MySQLPlatform) {
             self::markTestSkipped('This test is useful for all databases, but designed only for mysql.');
         }
 

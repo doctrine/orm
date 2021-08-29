@@ -8,6 +8,10 @@ use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\DebugStack;
+use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Doctrine\DBAL\Platforms\OraclePlatform;
+use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Cache\CacheConfiguration;
@@ -662,9 +666,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($GLOBALS['DOCTRINE_MARK_SQL_LOGS'])) {
-            if (in_array(static::$sharedConn->getDatabasePlatform()->getName(), ['mysql', 'postgresql'], true)) {
+            $platform = static::$sharedConn->getDatabasePlatform();
+            if (
+                $platform instanceof MySQLPlatform
+                || $platform instanceof PostgreSQL94Platform
+                || $platform instanceof PostgreSQLPlatform
+            ) {
                 static::$sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/');
-            } elseif (static::$sharedConn->getDatabasePlatform()->getName() === 'oracle') {
+            } elseif ($platform instanceof OraclePlatform) {
                 static::$sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/ FROM dual');
             }
         }

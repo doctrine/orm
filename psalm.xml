@@ -37,6 +37,12 @@
                 <file name="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php"/>
             </errorLevel>
         </DocblockTypeContradiction>
+        <InvalidClass>
+            <errorLevel type="suppress">
+                <!-- Class name changes in DBAL 3. -->
+                <referencedClass name="Doctrine\DBAL\Platforms\PostgreSQLPlatform" />
+            </errorLevel>
+        </InvalidClass>
         <ParadoxicalCondition>
             <errorLevel type="suppress">
                 <!-- See https://github.com/vimeo/psalm/issues/3381 -->

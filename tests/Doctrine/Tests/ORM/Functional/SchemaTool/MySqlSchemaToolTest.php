@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
+use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -13,7 +14,6 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
 use function method_exists;
 use function sprintf;
 
@@ -22,7 +22,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
+        if (! $this->_em->getConnection()->getDatabasePlatform() instanceof MySQLPlatform) {
             self::markTestSkipped('The ' . self::class . ' requires the use of mysql.');
         }
     }

@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Configuration;
-use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -31,7 +32,8 @@ final class GH7875Test extends OrmFunctionalTestCase
         $connection->executeStatement('DROP TABLE IF EXISTS gh7875_my_entity');
         $connection->executeStatement('DROP TABLE IF EXISTS gh7875_my_other_entity');
 
-        if ($connection->getDatabasePlatform() instanceof PostgreSqlPlatform) {
+        $platform = $connection->getDatabasePlatform();
+        if ($platform instanceof PostgreSQL94Platform || $platform instanceof PostgreSQLPlatform) {
             $connection->executeStatement('DROP SEQUENCE IF EXISTS gh7875_my_entity_id_seq');
             $connection->executeStatement('DROP SEQUENCE IF EXISTS gh7875_my_other_entity_id_seq');
         }

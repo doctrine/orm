@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Exception\NotSupported;
@@ -36,12 +35,12 @@ class UUIDGeneratorTest extends OrmFunctionalTestCase
 
     public function testGenerateUUID(): void
     {
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
-            self::markTestSkipped('Currently restricted to MySQL platform.');
-        }
-
         if (! method_exists(AbstractPlatform::class, 'getGuidExpression')) {
             self::markTestSkipped('Test valid for doctrine/dbal:2.x only.');
+        }
+
+        if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
+            self::markTestSkipped('Currently restricted to MySQL platform.');
         }
 
         $this->_schemaTool->createSchema([

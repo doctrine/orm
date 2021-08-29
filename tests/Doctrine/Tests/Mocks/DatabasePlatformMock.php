@@ -108,12 +108,9 @@ class DatabasePlatformMock extends AbstractPlatform
         $this->supportsSequences = $bool;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): string
     {
-        return 'mock';
+        throw new BadMethodCallException('Call to deprecated method.');
     }
 
     /**

@@ -733,6 +733,11 @@
       <code>$class</code>
     </PropertyNotSetInConstructor>
   </file>
+  <file src="lib/Doctrine/ORM/Internal/SQLResultCasing.php">
+    <MissingDependency occurrences="1">
+      <code>PostgreSQL94Platform</code>
+    </MissingDependency>
+  </file>
   <file src="lib/Doctrine/ORM/LazyCriteriaCollection.php">
     <MoreSpecificImplementedParamType occurrences="1">
       <code>$element</code>
@@ -869,6 +874,9 @@
       <code>$driver</code>
       <code>$evm</code>
     </MissingConstructor>
+    <MissingDependency occurrences="1">
+      <code>Platforms\PostgreSQL94Platform</code>
+    </MissingDependency>
     <NoInterfaceProperties occurrences="31">
       <code>$class-&gt;cache</code>
       <code>$class-&gt;changeTrackingPolicy</code>
@@ -3773,6 +3781,9 @@
     </ImplementedReturnTypeMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php">
+    <MissingDependency occurrences="1">
+      <code>PostgreSQL94Platform</code>
+    </MissingDependency>
     <MoreSpecificImplementedParamType occurrences="1">
       <code>$query</code>
     </MoreSpecificImplementedParamType>

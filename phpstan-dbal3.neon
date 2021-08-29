@@ -14,3 +14,5 @@ parameters:
         -
             message: '/Application::add\(\) expects Symfony\\Component\\Console\\Command\\Command/'
             path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
+
+        - '/^Class Doctrine\\DBAL\\Platforms\\(PostgreSQL|SQLServer|SQLAnywhere)Platform not found\.$/'
