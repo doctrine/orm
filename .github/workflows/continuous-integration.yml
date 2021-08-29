@@ -19,6 +19,8 @@ jobs:
           - "7.3"
           - "7.4"
           - "8.0"
+        dbal-version:
+          - "default"
 
     steps:
       - name: "Checkout"
@@ -63,6 +65,8 @@ jobs:
       matrix:
         php-version:
           - "7.4"
+        dbal-version:
+          - "default"
         postgres-version:
           - "9.6"
           - "13"
@@ -114,6 +118,8 @@ jobs:
       matrix:
         php-version:
           - "7.4"
+        dbal-version:
+          - "default"
         mariadb-version:
           - "10.5"
         extension:
@@ -169,6 +175,8 @@ jobs:
       matrix:
         php-version:
           - "7.4"
+        dbal-version:
+          - "default"
         mysql-version:
           - "5.7"
           - "8.0"
@@ -221,6 +229,7 @@ jobs:
           name: "${{ github.job }}-${{ matrix.mysql-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-coverage"
           path: "coverage*.xml"
 
+
   phpunit-lower-php-versions:
     name: "PHPUnit with SQLite"
     runs-on: "ubuntu-20.04"
@@ -252,6 +261,7 @@ jobs:
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit -c ci/github/phpunit/sqlite.xml"
+
 
   upload_coverage:
     name: "Upload coverage to Codecov"
