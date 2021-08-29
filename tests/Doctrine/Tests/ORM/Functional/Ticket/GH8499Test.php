@@ -29,16 +29,21 @@ class GH8499Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        try {
-            $this->_schemaTool->createSchema(
-                [$this->_em->getClassMetadata(GH8499VersionableEntity::class)]
-            );
-        } catch (Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
-
         $this->conn = $this->_em->getConnection();
+    }
+
+    protected function createSchema(): void
+    {
+        $this->_schemaTool->createSchema(
+            [$this->_em->getClassMetadata(GH8499VersionableEntity::class)]
+        );
+    }
+
+    protected function dropSchema(): void
+    {
+        $this->_schemaTool->dropSchema(
+            [$this->_em->getClassMetadata(GH8499VersionableEntity::class)]
+        );
     }
 
     /**
@@ -46,6 +51,7 @@ class GH8499Test extends OrmFunctionalTestCase
      */
     public function testOptimisticTimestampSetsDefaultValue(): GH8499VersionableEntity
     {
+        $this->createSchema();
         $entity = new GH8499VersionableEntity();
         $entity->setName('Test Entity');
         $entity->setDescription('Entity to test optimistic lock fix with DateTimeInterface objects');
@@ -70,9 +76,15 @@ class GH8499Test extends OrmFunctionalTestCase
         $test = $q->getSingleResult();
 
         $format       = $this->_em->getConnection()->getDatabasePlatform()->getDateTimeFormatString();
-        $modifiedDate = new DateTime(date($format, strtotime($test->getRevision()->format($format)) - 3600));
+        $modifiedDate = new DateTime(date(
+            $format,
+            strtotime($test->getRevision()->format($format)) - 3600
+        ));
 
-        $this->conn->executeQuery('UPDATE GH8499VersionableEntity SET revision = ? WHERE id = ?', [$modifiedDate->format($format), $test->id]);
+        $this->conn->executeQuery(
+            'UPDATE GH8499VersionableEntity SET revision = ? WHERE id = ?',
+            [$modifiedDate->format($format), $test->id]
+        );
 
         $this->_em->refresh($test);
         $this->_em->lock($test, LockMode::OPTIMISTIC, $modifiedDate);
@@ -81,8 +93,17 @@ class GH8499Test extends OrmFunctionalTestCase
         $this->_em->persist($test);
         $this->_em->flush();
 
-        self::assertEquals('Test Entity Locked', $test->getName(), 'Entity not modified after persist/flush,');
-        self::assertGreaterThan($modifiedDate->getTimestamp(), $test->getRevision()->getTimestamp(), 'Current version timestamp is not greater than previous one.');
+        self::assertEquals(
+            'Test Entity Locked',
+            $test->getName(),
+            'Entity not modified after persist/flush,'
+        );
+        self::assertGreaterThan(
+            $modifiedDate->getTimestamp(),
+            $test->getRevision()->getTimestamp(),
+            'Current version timestamp is not greater than previous one.'
+        );
+        $this->dropSchema();
     }
 
     /**
@@ -90,6 +111,7 @@ class GH8499Test extends OrmFunctionalTestCase
      */
     public function testOptimisticLockWithDateTimeForVersionThrowsException(): void
     {
+        $this->createSchema();
         $entity = new GH8499VersionableEntity();
         $entity->setName('Test Entity');
         $entity->setDescription('Entity to test optimistic lock fix with DateTimeInterface objects');
@@ -98,6 +120,7 @@ class GH8499Test extends OrmFunctionalTestCase
 
         $this->expectException(OptimisticLockException::class);
         $this->_em->lock($entity, LockMode::OPTIMISTIC, new DateTime('2020-07-15 18:04:00'));
+        $this->dropSchema();
     }
 }
 

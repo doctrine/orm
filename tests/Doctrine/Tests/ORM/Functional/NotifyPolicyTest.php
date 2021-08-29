@@ -33,16 +33,10 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
 
         $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8383');
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(NotifyUser::class),
-                    $this->_em->getClassMetadata(NotifyGroup::class),
-                ]
-            );
-        } catch (Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(NotifyUser::class),
+            $this->_em->getClassMetadata(NotifyGroup::class),
+        ]);
     }
 
     public function testChangeTracking(): void

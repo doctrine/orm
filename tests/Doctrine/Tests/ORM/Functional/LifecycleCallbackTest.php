@@ -34,6 +34,7 @@ use Exception;
 use function count;
 use function current;
 use function get_class;
+use function iterator_to_array;
 use function sprintf;
 
 class LifecycleCallbackTest extends OrmFunctionalTestCase
@@ -41,18 +42,23 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(LifecycleCallbackEventArgEntity::class),
-                    $this->_em->getClassMetadata(LifecycleCallbackTestEntity::class),
-                    $this->_em->getClassMetadata(LifecycleCallbackTestUser::class),
-                    $this->_em->getClassMetadata(LifecycleCallbackCascader::class),
-                ]
-            );
-        } catch (Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(LifecycleCallbackEventArgEntity::class),
+            $this->_em->getClassMetadata(LifecycleCallbackTestEntity::class),
+            $this->_em->getClassMetadata(LifecycleCallbackTestUser::class),
+            $this->_em->getClassMetadata(LifecycleCallbackCascader::class),
+        ]);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->_schemaTool->dropSchema([
+            $this->_em->getClassMetadata(LifecycleCallbackEventArgEntity::class),
+            $this->_em->getClassMetadata(LifecycleCallbackTestEntity::class),
+            $this->_em->getClassMetadata(LifecycleCallbackTestUser::class),
+            $this->_em->getClassMetadata(LifecycleCallbackCascader::class),
+        ]);
+        parent::tearDown();
     }
 
     public function testPreSavePostSaveCallbacksAreInvoked(): void
@@ -261,7 +267,7 @@ DQL;
 
         $query = $this->_em->createQuery(sprintf($dql, $e1->getId(), $e2->getId()));
 
-        $result = $query->iterate();
+        $result = iterator_to_array($query->iterate());
 
         foreach ($result as $entity) {
             self::assertTrue($entity[0]->postLoadCallbackInvoked);
@@ -270,7 +276,7 @@ DQL;
             break;
         }
 
-        $iterableResult = $query->toIterable();
+        $iterableResult = iterator_to_array($query->toIterable());
 
         foreach ($iterableResult as $entity) {
             self::assertTrue($entity->postLoadCallbackInvoked);
@@ -296,7 +302,7 @@ DQL;
             'SELECT e FROM Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity AS e'
         );
 
-        $result = $query->iterate(null, Query::HYDRATE_SIMPLEOBJECT);
+        $result = iterator_to_array($query->iterate(null, Query::HYDRATE_SIMPLEOBJECT));
 
         foreach ($result as $entity) {
             self::assertTrue($entity[0]->postLoadCallbackInvoked);
@@ -305,7 +311,7 @@ DQL;
             break;
         }
 
-        $result = $query->toIterable([], Query::HYDRATE_SIMPLEOBJECT);
+        $result = iterator_to_array($query->toIterable([], Query::HYDRATE_SIMPLEOBJECT));
 
         foreach ($result as $entity) {
             self::assertTrue($entity->postLoadCallbackInvoked);
