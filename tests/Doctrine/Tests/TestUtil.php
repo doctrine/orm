@@ -86,7 +86,7 @@ class TestUtil
         $platform = $privConn->getDatabasePlatform();
 
         if ($platform->supportsCreateDropDatabase()) {
-            $dbname = $testConn->getDatabase();
+            $dbname = $testConnParams['dbname'] ?? $testConn->getDatabase();
             $testConn->close();
 
             self::createSchemaManager($privConn)->dropAndCreateDatabase($dbname);
