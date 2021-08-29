@@ -383,8 +383,6 @@ class XmlDriver extends FileDriver
                         'class' => (string) $customGenerator['class'],
                     ]
                 );
-            } elseif (isset($idElement->{'table-generator'})) {
-                throw MappingException::tableIdGeneratorNotImplemented($className);
             }
         }
 

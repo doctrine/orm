@@ -240,7 +240,6 @@
   <xs:simpleType name="generator-strategy">
     <xs:restriction base="xs:token">
       <xs:enumeration value="NONE"/>
-      <xs:enumeration value="TABLE"/>
       <xs:enumeration value="SEQUENCE"/>
       <xs:enumeration value="IDENTITY"/>
       <xs:enumeration value="AUTO"/>

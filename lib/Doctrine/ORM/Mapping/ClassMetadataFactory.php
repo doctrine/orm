@@ -18,6 +18,7 @@ use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
 use Doctrine\ORM\Id\IdentityGenerator;
 use Doctrine\ORM\Id\SequenceGenerator;
 use Doctrine\ORM\Id\UuidGenerator;
+use Doctrine\ORM\Mapping\Exception\CannotGenerateIds;
 use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
 use Doctrine\ORM\Mapping\Exception\TableGeneratorNotImplementedYet;
 use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
@@ -626,11 +627,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $class->setIdGenerator(new UuidGenerator());
                 break;
 
-            case ClassMetadata::GENERATOR_TYPE_TABLE:
-                throw TableGeneratorNotImplementedYet::create();
-
-                break;
-
             case ClassMetadata::GENERATOR_TYPE_CUSTOM:
                 $definition = $class->customGeneratorDefinition;
                 if ($definition === null) {
@@ -667,7 +663,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             return ClassMetadata::GENERATOR_TYPE_SEQUENCE;
         }
 
-        return ClassMetadata::GENERATOR_TYPE_TABLE;
+        throw CannotGenerateIds::withPlatform($platform);
     }
 
     private function truncateSequenceName(string $schemaElementName): string
@@ -693,8 +689,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         if ($parent->isIdGeneratorSequence()) {
             $class->setSequenceGeneratorDefinition($parent->sequenceGeneratorDefinition);
-        } elseif ($parent->isIdGeneratorTable()) {
-            $class->tableGeneratorDefinition = $parent->tableGeneratorDefinition;
         }
 
         if ($parent->generatorType) {
