@@ -3579,9 +3579,8 @@
       <code>$this-&gt;getClassToExtend() ?: $metadata-&gt;name</code>
       <code>array_map('strlen', $paramTypes)</code>
     </ArgumentTypeCoercion>
-    <DeprecatedConstant occurrences="2">
+    <DeprecatedConstant occurrences="1">
       <code>ClassMetadataInfo::GENERATOR_TYPE_UUID</code>
-      <code>Type::JSON_ARRAY</code>
     </DeprecatedConstant>
     <DocblockTypeContradiction occurrences="3">
       <code>$metadata-&gt;reflClass !== null</code>

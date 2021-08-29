@@ -190,7 +190,7 @@ class EntityGenerator
     /**
      * Hash-map for handle types.
      *
-     * @psalm-var array<Types::*|Type::*, string>
+     * @psalm-var array<Types::*|'json_array', string>
      */
     protected $typeAlias = [
         Types::DATETIMETZ_MUTABLE => '\DateTime',
@@ -205,7 +205,8 @@ class EntityGenerator
         Types::BLOB               => 'string',
         Types::DECIMAL            => 'string',
         Types::GUID               => 'string',
-        Type::JSON_ARRAY          => 'array',
+        'json_array'              => 'array',
+        Types::JSON               => 'array',
         Types::SIMPLE_ARRAY       => 'array',
         Types::BOOLEAN            => 'bool',
     ];
