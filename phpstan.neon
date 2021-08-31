@@ -4,9 +4,33 @@ includes:
 
 parameters:
     ignoreErrors:
-        # https://github.com/doctrine/collections/pull/282
-        - '/Variable \$offset in isset\(\) always exists and is not nullable\./'
-        # PHPStan doesn't understand our method_exists() safeguards.
-        - '/Call to an undefined method Doctrine\\DBAL\\Connection::createSchemaManager\(\)\./'
-        # Class name will change in DBAL 3.
-        - '/Class Doctrine\\DBAL\\Platforms\\PostgreSqlPlatform referenced with incorrect case: Doctrine\\DBAL\\Platforms\\PostgreSQLPlatform\./'
+        # deprecations from doctrine/dbal:3.x
+        - '/^Call to an undefined method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getGuidExpression\(\).$/'
+
+        # Fallback logic for DBAL 2
+        -
+            message: '/HelperSet constructor expects/'
+            path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
+        -
+            message: '/Application::add\(\) expects Symfony\\Component\\Console\\Command\\Command/'
+            path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
+
+        - '/^Class Doctrine\\DBAL\\Platforms\\(PostgreSQL|SQLServer|SQLAnywhere)Platform not found\.$/'
+
+        -
+        	message: '/^Call to an undefined method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getSQLResultCasing\(\)\.$/'
+        	path: lib/Doctrine/ORM/Internal/SQLResultCasing.php
+        -
+        	message: '/^Parameter \$stmt of method .* has invalid typehint type Doctrine\\DBAL\\Driver\\ResultStatement\.$/'
+        	path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
+        -
+        	message: '/^Class Doctrine\\DBAL\\Driver\\ResultStatement not found\.$/'
+        	path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
+        -
+        	message: '/^Call to static method ensure\(\) on an unknown class Doctrine\\DBAL\\ForwardCompatibility\\Result\.$/'
+        	path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
+
+        # False positive
+        -
+            message: '/^Variable \$offset in isset\(\) always exists and is not nullable\.$/'
+            path: lib/Doctrine/ORM/PersistentCollection.php
