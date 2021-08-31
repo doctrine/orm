@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Performance\Hydration;
 
+use Doctrine\DBAL\Result;
 use Doctrine\ORM\Internal\Hydration\ScalarHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Performance\EntityManagerFactory;
-use Doctrine\Tests\Mocks\HydratorMockResult;
+use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
@@ -22,7 +23,7 @@ final class SimpleQueryScalarHydrationPerformanceBench
     /** @var ResultSetMapping */
     private $rsm;
 
-    /** @var HydratorMockResult */
+    /** @var Result */
     private $result;
 
     public function init(): void
@@ -57,7 +58,7 @@ final class SimpleQueryScalarHydrationPerformanceBench
             ];
         }
 
-        $this->result   = new HydratorMockResult($resultSet);
+        $this->result   = ArrayResultFactory::createFromArray($resultSet);
         $this->hydrator = new ScalarHydrator(EntityManagerFactory::getEntityManager([]));
         $this->rsm      = new ResultSetMapping();
 

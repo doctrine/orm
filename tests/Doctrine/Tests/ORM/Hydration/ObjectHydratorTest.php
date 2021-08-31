@@ -10,7 +10,7 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\Mocks\HydratorMockResult;
+use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
@@ -90,7 +90,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -129,7 +129,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -178,7 +178,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -232,7 +232,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -293,7 +293,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -354,7 +354,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -416,7 +416,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -480,7 +480,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -560,7 +560,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -674,15 +674,15 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         self::assertEquals(2, count($result));
 
-        self::assertTrue(is_array($result));
-        self::assertTrue(is_array($result[0]));
-        self::assertTrue(is_array($result[1]));
+        self::assertIsArray($result);
+        self::assertIsArray($result[0]);
+        self::assertIsArray($result[1]);
 
         self::assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
         self::assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->phonenumbers);
@@ -804,15 +804,15 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         self::assertEquals(2, count($result));
 
-        self::assertTrue(is_array($result));
-        self::assertTrue(is_array($result[0]));
-        self::assertTrue(is_array($result[1]));
+        self::assertIsArray($result);
+        self::assertIsArray($result[0]);
+        self::assertIsArray($result[1]);
 
         self::assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
         self::assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
@@ -917,7 +917,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -931,10 +931,10 @@ class ObjectHydratorTest extends HydrationTestCase
         self::assertEquals(1, $result[0]->getId());
         self::assertEquals(2, $result[1]->getId());
 
-        self::assertTrue(isset($result[0]->boards));
+        self::assertObjectHasAttribute('boards', $result[0]);
         self::assertEquals(3, count($result[0]->boards));
 
-        self::assertTrue(isset($result[1]->boards));
+        self::assertObjectHasAttribute('boards', $result[1]);
         self::assertEquals(1, count($result[1]->boards));
     }
 
@@ -960,7 +960,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -993,7 +993,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -1049,7 +1049,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $metadata                                           = $this->entityManager->getClassMetadata(ECommerceProduct::class);
         $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -1098,7 +1098,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $metadata                                           = $this->entityManager->getClassMetadata(ECommerceProduct::class);
         $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -1158,7 +1158,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -1221,7 +1221,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -1263,7 +1263,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->entityManager);
 
         $iterableResult = $hydrator->iterate(
-            new HydratorMockResult($resultSet),
+            ArrayResultFactory::createFromArray($resultSet),
             $rsm,
             [Query::HINT_FORCE_PARTIAL_LOAD => true]
         );
@@ -1287,7 +1287,7 @@ class ObjectHydratorTest extends HydrationTestCase
         self::assertSame(2, $rowNum);
 
         $iterableResult = $hydrator->toIterable(
-            new HydratorMockResult($resultSet),
+            ArrayResultFactory::createFromArray($resultSet),
             $rsm,
             [Query::HINT_FORCE_PARTIAL_LOAD => true]
         );
@@ -1338,7 +1338,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator       = new ObjectHydrator($this->entityManager);
         $rowNum         = 0;
         $iterableResult = $hydrator->iterate(
-            new HydratorMockResult($resultSet),
+            ArrayResultFactory::createFromArray($resultSet),
             $rsm,
             [Query::HINT_FORCE_PARTIAL_LOAD => true]
         );
@@ -1364,7 +1364,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $rowNum         = 0;
         $iterableResult = $hydrator->toIterable(
-            new HydratorMockResult($resultSet),
+            ArrayResultFactory::createFromArray($resultSet),
             $rsm,
             [Query::HINT_FORCE_PARTIAL_LOAD => true]
         );
@@ -1498,7 +1498,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -1621,7 +1621,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -1679,7 +1679,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -1749,7 +1749,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -1803,7 +1803,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -1845,16 +1845,16 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         self::assertEquals(2, count($result));
 
-        self::assertTrue(isset($result[1]));
+        self::assertArrayHasKey(1, $result);
         self::assertEquals(1, $result[1][$userEntityKey]->id);
 
-        self::assertTrue(isset($result[2]));
+        self::assertArrayHasKey(2, $result);
         self::assertEquals(2, $result[2][$userEntityKey]->id);
     }
 
@@ -1879,7 +1879,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ['sclr0' => 'JWAGE'],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
@@ -1913,7 +1913,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $hydrator->hydrateAll($stmt, $rsm);
     }
@@ -1946,7 +1946,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $hydrator->hydrateAll($stmt, $rsm);
     }
@@ -1974,7 +1974,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $hydrator->hydrateAll($stmt, $rsm);
     }
@@ -1995,7 +1995,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 

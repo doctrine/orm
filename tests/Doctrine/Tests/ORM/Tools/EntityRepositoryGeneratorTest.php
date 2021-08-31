@@ -50,7 +50,6 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
         mkdir($this->tmpDir);
 
         $this->generator = new EntityGenerator();
-        $this->generator->setAnnotationPrefix('');
         $this->generator->setGenerateAnnotations(true);
         $this->generator->setGenerateStubMethods(true);
         $this->generator->setRegenerateEntityIfExists(false);

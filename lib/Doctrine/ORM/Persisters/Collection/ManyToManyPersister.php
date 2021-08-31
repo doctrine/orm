@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Persisters\Collection;
 
 use BadMethodCallException;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
@@ -187,7 +187,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
 
-        return (bool) $this->conn->fetchColumn($sql, $params, 0, $types);
+        return (bool) $this->conn->fetchOne($sql, $params, $types);
     }
 
     /**

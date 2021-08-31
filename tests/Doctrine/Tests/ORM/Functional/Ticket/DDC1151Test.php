@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -20,7 +22,8 @@ class DDC1151Test extends OrmFunctionalTestCase
 {
     public function testQuoteForeignKey(): void
     {
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'postgresql') {
+        $platform = $this->_em->getConnection()->getDatabasePlatform();
+        if (! $platform instanceof PostgreSQL94Platform && ! $platform instanceof PostgreSQLPlatform) {
             self::markTestSkipped('This test is useful for all databases, but designed only for postgresql.');
         }
 

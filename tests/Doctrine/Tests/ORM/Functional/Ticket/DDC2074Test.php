@@ -35,7 +35,7 @@ class DDC2074Test extends OrmFunctionalTestCase
         $clonedCollection = clone $collection;
         $clonedCollection->clear();
 
-        self::assertEquals(0, count($uow->getScheduledCollectionDeletions()));
+        self::assertCount(0, $uow->getScheduledCollectionDeletions());
     }
 
     public function testSavingClonedPersistentCollection(): void

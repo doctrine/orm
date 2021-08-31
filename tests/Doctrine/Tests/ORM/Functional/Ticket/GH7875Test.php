@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Configuration;
-use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -28,12 +29,13 @@ final class GH7875Test extends OrmFunctionalTestCase
     {
         $connection = $this->_em->getConnection();
 
-        $connection->exec('DROP TABLE IF EXISTS gh7875_my_entity');
-        $connection->exec('DROP TABLE IF EXISTS gh7875_my_other_entity');
+        $connection->executeStatement('DROP TABLE IF EXISTS gh7875_my_entity');
+        $connection->executeStatement('DROP TABLE IF EXISTS gh7875_my_other_entity');
 
-        if ($connection->getDatabasePlatform() instanceof PostgreSqlPlatform) {
-            $connection->exec('DROP SEQUENCE IF EXISTS gh7875_my_entity_id_seq');
-            $connection->exec('DROP SEQUENCE IF EXISTS gh7875_my_other_entity_id_seq');
+        $platform = $connection->getDatabasePlatform();
+        if ($platform instanceof PostgreSQL94Platform || $platform instanceof PostgreSQLPlatform) {
+            $connection->executeStatement('DROP SEQUENCE IF EXISTS gh7875_my_entity_id_seq');
+            $connection->executeStatement('DROP SEQUENCE IF EXISTS gh7875_my_other_entity_id_seq');
         }
     }
 
@@ -58,7 +60,7 @@ final class GH7875Test extends OrmFunctionalTestCase
 
         self::assertCount(1, $sqls);
 
-        $this->_em->getConnection()->exec(current($sqls));
+        $this->_em->getConnection()->executeStatement(current($sqls));
 
         $sqls = array_filter($tool->getUpdateSchemaSql($classes), static function (string $sql): bool {
             return strpos($sql, ' gh7875_my_entity ') !== false;

@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Tools\Pagination;
 use ArrayIterator;
 use Countable;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
@@ -28,6 +29,8 @@ use function count;
  */
 class Paginator implements Countable, IteratorAggregate
 {
+    use SQLResultCasing;
+
     /** @var Query */
     private $query;
 
@@ -229,7 +232,7 @@ class Paginator implements Countable, IteratorAggregate
             $platform = $countQuery->getEntityManager()->getConnection()->getDatabasePlatform(); // law of demeter win
 
             $rsm = new ResultSetMapping();
-            $rsm->addScalarResult($platform->getSQLResultCasing('dctrn_count'), 'count');
+            $rsm->addScalarResult($this->getSQLResultCasing($platform, 'dctrn_count'), 'count');
 
             $countQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, CountOutputWalker::class);
             $countQuery->setResultSetMapping($rsm);

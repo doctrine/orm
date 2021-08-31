@@ -384,16 +384,6 @@ class MappingException extends ORMException
     }
 
     /**
-     * @param string $className
-     *
-     * @return MappingException
-     */
-    public static function tableIdGeneratorNotImplemented($className)
-    {
-        return new self(sprintf('TableIdGenerator is not yet implemented for use with class %s', $className));
-    }
-
-    /**
      * @param string $entity    The entity's name.
      * @param string $fieldName The name of the field that was already declared.
      *

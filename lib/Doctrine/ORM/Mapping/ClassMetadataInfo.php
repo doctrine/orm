@@ -113,7 +113,10 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * TABLE means a separate table is used for id generation.
-     * Offers full portability.
+     * Offers full portability (in that it results in an exception being thrown
+     * no matter the platform).
+     *
+     * @deprecated no replacement planned
      */
     public const GENERATOR_TYPE_TABLE = 3;
 
@@ -628,8 +631,9 @@ class ClassMetadataInfo implements ClassMetadata
      * READ-ONLY: The definition of the table generator of this class. Only used for the
      * TABLE generation strategy.
      *
+     * @deprecated
+     *
      * @var array<string, mixed>
-     * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
      */
     public $tableGeneratorDefinition;
 
@@ -2230,11 +2234,13 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Checks whether the class uses a table for id generation.
      *
-     * @return bool TRUE if the class uses the TABLE generator, FALSE otherwise.
+     * @deprecated
+     *
+     * @return false
      */
     public function isIdGeneratorTable()
     {
-        return $this->generatorType === self::GENERATOR_TYPE_TABLE;
+        return false;
     }
 
     /**
@@ -3404,6 +3410,11 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * {@inheritDoc}
+     *
+     * @param string $assocName
+     *
+     * @return string
+     * @psalm-return class-string
      *
      * @throws InvalidArgumentException
      */

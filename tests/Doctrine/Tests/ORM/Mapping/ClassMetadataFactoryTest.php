@@ -13,21 +13,21 @@ use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Id\AbstractIdGenerator;
-use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Exception\CannotGenerateIds;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Sequencing\Generator;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Mocks\ConnectionMock;
+use Doctrine\Tests\Mocks\DatabasePlatformMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\MetadataDriverMock;
@@ -85,6 +85,24 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertTrue($cmMap1->table['quoted']);
         self::assertEquals([], $cmMap1->parentClasses);
         self::assertTrue($cmMap1->hasField('name'));
+    }
+
+    public function testItThrowsWhenUsingAutoWithIncompatiblePlatform(): void
+    {
+        $cm1 = $this->createValidClassMetadata();
+        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+        $entityManager = $this->createEntityManager(new MetadataDriverMock());
+        $connection    = $entityManager->getConnection();
+        assert($connection instanceof ConnectionMock);
+        $platform = $connection->getDatabasePlatform();
+        assert($platform instanceof DatabasePlatformMock);
+        $platform->setSupportsIdentityColumns(false);
+        $cmf = new ClassMetadataFactoryTestSubject();
+        $cmf->setEntityManager($entityManager);
+        $cmf->setMetadataForClass($cm1->name, $cm1);
+        $this->expectException(CannotGenerateIds::class);
+
+        $actual = $cmf->getMetadataFor($cm1->name);
     }
 
     public function testGetMetadataForReturnsLoadedCustomIdGenerator(): void

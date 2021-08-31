@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
+use Doctrine\DBAL\Platforms\SQLServer2012Platform;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\CountOutputWalker;
 
@@ -67,7 +69,8 @@ class CountOutputWalkerTest extends PaginationTestCase
 
     public function testCountQueryOrderBySqlServer(): void
     {
-        if ($this->entityManager->getConnection()->getDatabasePlatform()->getName() !== 'mssql') {
+        $platform = $this->entityManager->getConnection()->getDatabasePlatform();
+        if (! $platform instanceof SQLServer2012Platform && ! $platform instanceof SQLServerPlatform) {
             self::markTestSkipped('SQLServer only test.');
         }
 

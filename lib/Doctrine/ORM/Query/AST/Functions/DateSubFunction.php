@@ -10,7 +10,7 @@ use Doctrine\ORM\Query\SqlWalker;
 use function strtolower;
 
 /**
- * "DATE_ADD(date1, interval, unit)"
+ * "DATE_SUB(date1, interval, unit)"
  *
  * @link    www.doctrine-project.org
  */

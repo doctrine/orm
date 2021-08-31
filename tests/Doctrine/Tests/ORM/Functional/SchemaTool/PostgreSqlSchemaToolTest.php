@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
+use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -17,7 +19,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_filter;
 use function array_shift;
-use function count;
 use function implode;
 use function strpos;
 
@@ -27,7 +28,8 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'postgresql') {
+        $platform = $this->_em->getConnection()->getDatabasePlatform();
+        if (! $platform instanceof PostgreSQL94Platform && ! $platform instanceof PostgreSQLPlatform) {
             self::markTestSkipped('The ' . self::class . ' requires the use of postgresql.');
         }
     }
@@ -47,9 +49,10 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
             $this->_em->getClassMetadata(Models\CMS\CmsPhonenumber::class),
         ];
 
-        $tool     = new SchemaTool($this->_em);
-        $sql      = $tool->getCreateSchemaSql($classes);
-        $sqlCount = count($sql);
+        $tool = new SchemaTool($this->_em);
+        $sql  = $tool->getCreateSchemaSql($classes);
+
+        self::assertCount(22, $sql, 'Total of 22 queries should be executed');
 
         self::assertEquals('CREATE TABLE cms_addresses (id INT NOT NULL, user_id INT DEFAULT NULL, country VARCHAR(50) NOT NULL, zip VARCHAR(50) NOT NULL, city VARCHAR(50) NOT NULL, PRIMARY KEY(id))', array_shift($sql));
         self::assertEquals('CREATE UNIQUE INDEX UNIQ_ACAC157BA76ED395 ON cms_addresses (user_id)', array_shift($sql));
@@ -75,7 +78,6 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         self::assertEquals('ALTER TABLE cms_phonenumbers ADD CONSTRAINT FK_F21F790FA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE', array_shift($sql));
 
         self::assertEquals([], $sql, 'SQL Array should be empty now.');
-        self::assertEquals(22, $sqlCount, 'Total of 22 queries should be executed');
     }
 
     public function testGetCreateSchemaSql2(): void
@@ -85,7 +87,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         $tool = new SchemaTool($this->_em);
         $sql  = $tool->getCreateSchemaSql($classes);
 
-        self::assertEquals(2, count($sql));
+        self::assertCount(2, $sql);
 
         self::assertEquals('CREATE TABLE decimal_model (id INT NOT NULL, "decimal" NUMERIC(5, 2) NOT NULL, "high_scale" NUMERIC(14, 4) NOT NULL, PRIMARY KEY(id))', $sql[0]);
         self::assertEquals('CREATE SEQUENCE decimal_model_id_seq INCREMENT BY 1 MINVALUE 1 START 1', $sql[1]);
@@ -98,7 +100,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         $tool = new SchemaTool($this->_em);
         $sql  = $tool->getCreateSchemaSql($classes);
 
-        self::assertEquals(2, count($sql));
+        self::assertCount(2, $sql);
         self::assertEquals('CREATE TABLE boolean_model (id INT NOT NULL, booleanField BOOLEAN NOT NULL, PRIMARY KEY(id))', $sql[0]);
         self::assertEquals('CREATE SEQUENCE boolean_model_id_seq INCREMENT BY 1 MINVALUE 1 START 1', $sql[1]);
     }
@@ -114,7 +116,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         $tool = new SchemaTool($this->_em);
         $sql  = $tool->getDropSchemaSQL($classes);
 
-        self::assertEquals(17, count($sql));
+        self::assertCount(17, $sql);
 
         $dropSequenceSQLs = 0;
 

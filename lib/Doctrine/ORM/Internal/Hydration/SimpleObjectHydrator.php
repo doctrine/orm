@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Exception;
@@ -19,6 +20,8 @@ use function sprintf;
 
 class SimpleObjectHydrator extends AbstractHydrator
 {
+    use SQLResultCasing;
+
     /** @var ClassMetadata */
     private $class;
 
@@ -27,15 +30,15 @@ class SimpleObjectHydrator extends AbstractHydrator
      */
     protected function prepare()
     {
-        if (count($this->_rsm->aliasMap) !== 1) {
+        if (count($this->resultSetMapping()->aliasMap) !== 1) {
             throw new RuntimeException('Cannot use SimpleObjectHydrator with a ResultSetMapping that contains more than one object result.');
         }
 
-        if ($this->_rsm->scalarMappings) {
+        if ($this->resultSetMapping()->scalarMappings) {
             throw new RuntimeException('Cannot use SimpleObjectHydrator with a ResultSetMapping that contains scalar mappings.');
         }
 
-        $this->class = $this->getClassMetadata(reset($this->_rsm->aliasMap));
+        $this->class = $this->getClassMetadata(reset($this->resultSetMapping()->aliasMap));
     }
 
     /**
@@ -56,7 +59,7 @@ class SimpleObjectHydrator extends AbstractHydrator
     {
         $result = [];
 
-        while ($row = $this->_stmt->fetchAssociative()) {
+        while ($row = $this->statement()->fetchAssociative()) {
             $this->hydrateRowData($row, $result);
         }
 
@@ -76,20 +79,26 @@ class SimpleObjectHydrator extends AbstractHydrator
 
         // We need to find the correct entity class name if we have inheritance in resultset
         if ($this->class->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
-            $discrColumnName = $this->_platform->getSQLResultCasing($this->class->discriminatorColumn['name']);
+            $discrColumnName = $this->getSQLResultCasing($this->_platform, $this->class->discriminatorColumn['name']);
 
             // Find mapped discriminator column from the result set.
-            $metaMappingDiscrColumnName = array_search($discrColumnName, $this->_rsm->metaMappings, true);
+            $metaMappingDiscrColumnName = array_search($discrColumnName, $this->resultSetMapping()->metaMappings, true);
             if ($metaMappingDiscrColumnName) {
                 $discrColumnName = $metaMappingDiscrColumnName;
             }
 
             if (! isset($row[$discrColumnName])) {
-                throw HydrationException::missingDiscriminatorColumn($entityName, $discrColumnName, key($this->_rsm->aliasMap));
+                throw HydrationException::missingDiscriminatorColumn(
+                    $entityName,
+                    $discrColumnName,
+                    key($this->resultSetMapping()->aliasMap)
+                );
             }
 
             if ($row[$discrColumnName] === '') {
-                throw HydrationException::emptyDiscriminatorValue(key($this->_rsm->aliasMap));
+                throw HydrationException::emptyDiscriminatorValue(key(
+                    $this->resultSetMapping()->aliasMap
+                ));
             }
 
             $discrMap = $this->class->discriminatorMap;
@@ -106,7 +115,7 @@ class SimpleObjectHydrator extends AbstractHydrator
 
         foreach ($row as $column => $value) {
             // An ObjectHydrator should be used instead of SimpleObjectHydrator
-            if (isset($this->_rsm->relationMap[$column])) {
+            if (isset($this->resultSetMapping()->relationMap[$column])) {
                 throw new Exception(sprintf('Unable to retrieve association information for column "%s"', $column));
             }
 

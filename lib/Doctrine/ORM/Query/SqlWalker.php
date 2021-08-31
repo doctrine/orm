@@ -528,7 +528,7 @@ class SqlWalker implements TreeWalker
     {
         $limit    = $this->query->getMaxResults();
         $offset   = $this->query->getFirstResult();
-        $lockMode = $this->query->getHint(Query::HINT_LOCK_MODE);
+        $lockMode = $this->query->getHint(Query::HINT_LOCK_MODE) ?: LockMode::NONE;
         $sql      = $this->walkSelectClause($AST->selectClause)
             . $this->walkFromClause($AST->fromClause)
             . $this->walkWhereClause($AST->whereClause);
@@ -554,7 +554,7 @@ class SqlWalker implements TreeWalker
             $sql = $this->platform->modifyLimitQuery($sql, $limit, $offset ?? 0);
         }
 
-        if ($lockMode === null || $lockMode === false || $lockMode === LockMode::NONE) {
+        if ($lockMode === LockMode::NONE) {
             return $sql;
         }
 
@@ -934,7 +934,7 @@ class SqlWalker implements TreeWalker
         $sql = $this->platform->appendLockHint(
             $this->quoteStrategy->getTableName($class, $this->platform) . ' ' .
             $this->getSQLTableAlias($class->getTableName(), $dqlAlias),
-            $this->query->getHint(Query::HINT_LOCK_MODE)
+            $this->query->getHint(Query::HINT_LOCK_MODE) ?: LockMode::NONE
         );
 
         if (! $class->isInheritanceTypeJoined()) {

@@ -41,7 +41,7 @@ class FlushEventTest extends OrmFunctionalTestCase
 
         self::assertEquals(1, $user->phonenumbers->count());
         self::assertTrue($this->_em->contains($user->phonenumbers->get(0)));
-        self::assertTrue($user->phonenumbers->get(0)->getUser() === $user);
+        self::assertSame($user->phonenumbers->get(0)->getUser(), $user);
 
         self::assertFalse($user->phonenumbers->isDirty());
 

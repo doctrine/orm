@@ -17,6 +17,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker;
 use Doctrine\ORM\UnitOfWork;
 use Generator;
+use LogicException;
 use ReflectionClass;
 use TypeError;
 
@@ -37,7 +38,7 @@ abstract class AbstractHydrator
     /**
      * The ResultSetMapping.
      *
-     * @var ResultSetMapping
+     * @var ResultSetMapping|null
      */
     protected $_rsm;
 
@@ -65,7 +66,7 @@ abstract class AbstractHydrator
     /**
      * Local ClassMetadata cache to avoid going to the EntityManager all the time.
      *
-     * @var array<string, ClassMetadata>
+     * @var array<string, ClassMetadata<object>>
      */
     protected $_metadataCache = [];
 
@@ -79,7 +80,7 @@ abstract class AbstractHydrator
     /**
      * The statement that provides the data to hydrate.
      *
-     * @var Result
+     * @var Result|null
      */
     protected $_stmt;
 
@@ -88,7 +89,7 @@ abstract class AbstractHydrator
      *
      * @var array<string, mixed>
      */
-    protected $_hints;
+    protected $_hints = [];
 
     /**
      * Initializes a new instance of a class derived from <tt>AbstractHydrator</tt>.
@@ -108,7 +109,7 @@ abstract class AbstractHydrator
      * @deprecated
      *
      * @param Result|ResultStatement $stmt
-     * @param object                 $resultSetMapping
+     * @param ResultSetMapping       $resultSetMapping
      * @psalm-param array<string, mixed> $hints
      *
      * @return IterableResult
@@ -180,7 +181,7 @@ abstract class AbstractHydrator
         $this->prepare();
 
         while (true) {
-            $row = $this->_stmt->fetchAssociative();
+            $row = $this->statement()->fetchAssociative();
 
             if ($row === false) {
                 $this->cleanup();
@@ -200,6 +201,24 @@ abstract class AbstractHydrator
                 yield $result;
             }
         }
+    }
+
+    final protected function statement(): Result
+    {
+        if ($this->_stmt === null) {
+            throw new LogicException('Uninitialized _stmt property');
+        }
+
+        return $this->_stmt;
+    }
+
+    final protected function resultSetMapping(): ResultSetMapping
+    {
+        if ($this->_rsm === null) {
+            throw new LogicException('Uninitialized _rsm property');
+        }
+
+        return $this->_rsm;
     }
 
     /**
@@ -259,7 +278,7 @@ abstract class AbstractHydrator
      */
     public function hydrateRow()
     {
-        $row = $this->_stmt->fetchAssociative();
+        $row = $this->statement()->fetchAssociative();
 
         if ($row === false) {
             $this->cleanup();
@@ -304,7 +323,7 @@ abstract class AbstractHydrator
      */
     protected function cleanup()
     {
-        $this->_stmt->free();
+        $this->statement()->free();
 
         $this->_stmt          = null;
         $this->_rsm           = null;

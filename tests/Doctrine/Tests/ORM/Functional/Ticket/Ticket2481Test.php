@@ -18,15 +18,9 @@ class Ticket2481Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(Ticket2481Product::class),
-                ]
-            );
-        } catch (Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(Ticket2481Product::class),
+        ]);
 
         $this->_conn = $this->_em->getConnection();
     }
@@ -37,7 +31,7 @@ class Ticket2481Test extends OrmFunctionalTestCase
         $this->_em->persist($test);
         $this->_em->flush();
 
-        self::assertTrue($test->id > 0);
+        self::assertGreaterThan(0, $test->id);
     }
 }
 

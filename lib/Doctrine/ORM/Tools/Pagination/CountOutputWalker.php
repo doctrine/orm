@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\SQLServer2012Platform;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\ParserResult;
@@ -70,7 +72,7 @@ class CountOutputWalker extends SqlWalker
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
-        if ($this->platform->getName() === 'mssql') {
+        if ($this->platform instanceof SQLServer2012Platform || $this->platform instanceof SQLServerPlatform) {
             $AST->orderByClause = null;
         }
 

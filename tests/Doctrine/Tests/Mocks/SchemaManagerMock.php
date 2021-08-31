@@ -13,11 +13,6 @@ use Exception;
  */
 class SchemaManagerMock extends AbstractSchemaManager
 {
-    public function __construct(Connection $conn)
-    {
-        parent::__construct($conn);
-    }
-
     /**
      * {@inheritdoc}
      */

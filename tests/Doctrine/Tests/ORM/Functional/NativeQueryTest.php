@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Internal\Hydration\HydrationException;
+use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -25,15 +27,9 @@ use Doctrine\Tests\Models\DDC3899\DDC3899User;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
 
-use function count;
-use function is_array;
-use function is_numeric;
-
-/**
- * NativeQueryTest
- */
 class NativeQueryTest extends OrmFunctionalTestCase
 {
+    use SQLResultCasing;
     use VerifyDeprecations;
 
     /** @var AbstractPlatform */
@@ -61,15 +57,15 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
-        $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('id'), 'id');
-        $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('name'), 'name');
+        $rsm->addFieldResult('u', $this->getSQLResultCasing($this->platform, 'id'), 'id');
+        $rsm->addFieldResult('u', $this->getSQLResultCasing($this->platform, 'name'), 'name');
 
         $query = $this->_em->createNativeQuery('SELECT id, name FROM cms_users WHERE username = ?', $rsm);
         $query->setParameter(1, 'romanb');
 
         $users = $query->getResult();
 
-        self::assertEquals(1, count($users));
+        self::assertCount(1, $users);
         self::assertInstanceOf(CmsUser::class, $users[0]);
         self::assertEquals('Roman', $users[0]->name);
     }
@@ -95,24 +91,24 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsAddress::class, 'a');
-        $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('id'), 'id');
-        $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('country'), 'country');
-        $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('zip'), 'zip');
-        $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('city'), 'city');
-        $rsm->addMetaResult('a', $this->platform->getSQLResultCasing('user_id'), 'user_id', false, 'integer');
+        $rsm->addFieldResult('a', $this->getSQLResultCasing($this->platform, 'id'), 'id');
+        $rsm->addFieldResult('a', $this->getSQLResultCasing($this->platform, 'country'), 'country');
+        $rsm->addFieldResult('a', $this->getSQLResultCasing($this->platform, 'zip'), 'zip');
+        $rsm->addFieldResult('a', $this->getSQLResultCasing($this->platform, 'city'), 'city');
+        $rsm->addMetaResult('a', $this->getSQLResultCasing($this->platform, 'user_id'), 'user_id', false, 'integer');
 
         $query = $this->_em->createNativeQuery('SELECT a.id, a.country, a.zip, a.city, a.user_id FROM cms_addresses a WHERE a.id = ?', $rsm);
         $query->setParameter(1, $addr->id);
 
         $addresses = $query->getResult();
 
-        self::assertEquals(1, count($addresses));
-        self::assertTrue($addresses[0] instanceof CmsAddress);
+        self::assertCount(1, $addresses);
+        self::assertInstanceOf(CmsAddress::class, $addresses[0]);
         self::assertEquals($addr->country, $addresses[0]->country);
         self::assertEquals($addr->zip, $addresses[0]->zip);
         self::assertEquals($addr->city, $addresses[0]->city);
         self::assertEquals($addr->street, $addresses[0]->street);
-        self::assertTrue($addresses[0]->user instanceof CmsUser);
+        self::assertInstanceOf(CmsUser::class, $addresses[0]->user);
     }
 
     public function testJoinedOneToManyNativeQuery(): void
@@ -134,25 +130,25 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
-        $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('id'), 'id');
-        $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('name'), 'name');
-        $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('status'), 'status');
+        $rsm->addFieldResult('u', $this->getSQLResultCasing($this->platform, 'id'), 'id');
+        $rsm->addFieldResult('u', $this->getSQLResultCasing($this->platform, 'name'), 'name');
+        $rsm->addFieldResult('u', $this->getSQLResultCasing($this->platform, 'status'), 'status');
         $rsm->addJoinedEntityResult(CmsPhonenumber::class, 'p', 'u', 'phonenumbers');
-        $rsm->addFieldResult('p', $this->platform->getSQLResultCasing('phonenumber'), 'phonenumber');
+        $rsm->addFieldResult('p', $this->getSQLResultCasing($this->platform, 'phonenumber'), 'phonenumber');
 
         $query = $this->_em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
         $query->setParameter(1, 'romanb');
 
         $users = $query->getResult();
-        self::assertEquals(1, count($users));
+        self::assertCount(1, $users);
         self::assertInstanceOf(CmsUser::class, $users[0]);
         self::assertEquals('Roman', $users[0]->name);
         self::assertInstanceOf(PersistentCollection::class, $users[0]->getPhonenumbers());
         self::assertTrue($users[0]->getPhonenumbers()->isInitialized());
-        self::assertEquals(1, count($users[0]->getPhonenumbers()));
+        self::assertCount(1, $users[0]->getPhonenumbers());
         $phones = $users[0]->getPhonenumbers();
         self::assertEquals(424242, $phones[0]->phonenumber);
-        self::assertTrue($phones[0]->getUser() === $users[0]);
+        self::assertSame($phones[0]->getUser(), $users[0]);
     }
 
     public function testJoinedOneToOneNativeQuery(): void
@@ -176,27 +172,27 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
-        $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('id'), 'id');
-        $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('name'), 'name');
-        $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('status'), 'status');
+        $rsm->addFieldResult('u', $this->getSQLResultCasing($this->platform, 'id'), 'id');
+        $rsm->addFieldResult('u', $this->getSQLResultCasing($this->platform, 'name'), 'name');
+        $rsm->addFieldResult('u', $this->getSQLResultCasing($this->platform, 'status'), 'status');
         $rsm->addJoinedEntityResult(CmsAddress::class, 'a', 'u', 'address');
-        $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('a_id'), 'id');
-        $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('country'), 'country');
-        $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('zip'), 'zip');
-        $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('city'), 'city');
+        $rsm->addFieldResult('a', $this->getSQLResultCasing($this->platform, 'a_id'), 'id');
+        $rsm->addFieldResult('a', $this->getSQLResultCasing($this->platform, 'country'), 'country');
+        $rsm->addFieldResult('a', $this->getSQLResultCasing($this->platform, 'zip'), 'zip');
+        $rsm->addFieldResult('a', $this->getSQLResultCasing($this->platform, 'city'), 'city');
 
         $query = $this->_em->createNativeQuery('SELECT u.id, u.name, u.status, a.id AS a_id, a.country, a.zip, a.city FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
         $query->setParameter(1, 'romanb');
 
         $users = $query->getResult();
 
-        self::assertEquals(1, count($users));
+        self::assertCount(1, $users);
         self::assertInstanceOf(CmsUser::class, $users[0]);
         self::assertEquals('Roman', $users[0]->name);
         self::assertInstanceOf(PersistentCollection::class, $users[0]->getPhonenumbers());
         self::assertFalse($users[0]->getPhonenumbers()->isInitialized());
         self::assertInstanceOf(CmsAddress::class, $users[0]->getAddress());
-        self::assertTrue($users[0]->getAddress()->getUser() === $users[0]);
+        self::assertEquals($users[0]->getAddress()->getUser(), $users[0]);
         self::assertEquals('germany', $users[0]->getAddress()->getCountry());
         self::assertEquals(10827, $users[0]->getAddress()->getZipCode());
         self::assertEquals('Berlin', $users[0]->getAddress()->getCity());
@@ -247,15 +243,15 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $query->setParameter(1, 'romanb');
 
         $users = $query->getResult();
-        self::assertEquals(1, count($users));
+        self::assertCount(1, $users);
         self::assertInstanceOf(CmsUser::class, $users[0]);
         self::assertEquals('Roman', $users[0]->name);
         self::assertInstanceOf(PersistentCollection::class, $users[0]->getPhonenumbers());
         self::assertTrue($users[0]->getPhonenumbers()->isInitialized());
-        self::assertEquals(1, count($users[0]->getPhonenumbers()));
+        self::assertCount(1, $users[0]->getPhonenumbers());
         $phones = $users[0]->getPhonenumbers();
         self::assertEquals(424242, $phones[0]->phonenumber);
-        self::assertTrue($phones[0]->getUser() === $users[0]);
+        self::assertSame($phones[0]->getUser(), $users[0]);
 
         $this->_em->clear();
 
@@ -297,13 +293,13 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $users = $query->getResult();
 
-        self::assertEquals(1, count($users));
+        self::assertCount(1, $users);
         self::assertInstanceOf(CmsUser::class, $users[0]);
         self::assertEquals('Roman', $users[0]->name);
         self::assertInstanceOf(PersistentCollection::class, $users[0]->getPhonenumbers());
         self::assertFalse($users[0]->getPhonenumbers()->isInitialized());
         self::assertInstanceOf(CmsAddress::class, $users[0]->getAddress());
-        self::assertTrue($users[0]->getAddress()->getUser() === $users[0]);
+        self::assertEquals($users[0]->getAddress()->getUser(), $users[0]);
         self::assertEquals('germany', $users[0]->getAddress()->getCountry());
         self::assertEquals(10827, $users[0]->getAddress()->getZipCode());
         self::assertEquals('Berlin', $users[0]->getAddress()->getCity());
@@ -432,7 +428,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
                             ->setParameter(1, 'FabioBatSilva')
                             ->getResult();
 
-        self::assertEquals(1, count($result));
+        self::assertCount(1, $result);
         self::assertInstanceOf(CmsUser::class, $result[0]);
         self::assertNull($result[0]->name);
         self::assertNull($result[0]->email);
@@ -445,7 +441,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
                             ->setParameter(1, 'FabioBatSilva')
                             ->getResult();
 
-        self::assertEquals(1, count($result));
+        self::assertCount(1, $result);
         self::assertInstanceOf(CmsUser::class, $result[0]);
         self::assertEquals($user->id, $result[0]->id);
         self::assertEquals('Fabio B. Silva', $result[0]->name);
@@ -480,13 +476,13 @@ class NativeQueryTest extends OrmFunctionalTestCase
                             ->setParameter(1, 'FabioBatSilva')
                             ->getResult();
 
-        self::assertEquals(1, count($result));
+        self::assertCount(1, $result);
         self::assertInstanceOf(CmsUser::class, $result[0]);
         self::assertEquals('Fabio B. Silva', $result[0]->name);
         self::assertInstanceOf(PersistentCollection::class, $result[0]->getPhonenumbers());
         self::assertFalse($result[0]->getPhonenumbers()->isInitialized());
         self::assertInstanceOf(CmsAddress::class, $result[0]->getAddress());
-        self::assertTrue($result[0]->getAddress()->getUser() === $result[0]);
+        self::assertEquals($result[0]->getAddress()->getUser(), $result[0]);
         self::assertEquals('Brazil', $result[0]->getAddress()->getCountry());
         self::assertEquals(10827, $result[0]->getAddress()->getZipCode());
         self::assertEquals('São Paulo', $result[0]->getAddress()->getCity());
@@ -517,15 +513,15 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $result = $repository->createNativeNamedQuery('fetchJoinedPhonenumber')
                         ->setParameter(1, 'FabioBatSilva')->getResult();
 
-        self::assertEquals(1, count($result));
+        self::assertCount(1, $result);
         self::assertInstanceOf(CmsUser::class, $result[0]);
         self::assertEquals('Fabio B. Silva', $result[0]->name);
         self::assertInstanceOf(PersistentCollection::class, $result[0]->getPhonenumbers());
         self::assertTrue($result[0]->getPhonenumbers()->isInitialized());
-        self::assertEquals(1, count($result[0]->getPhonenumbers()));
+        self::assertCount(1, $result[0]->getPhonenumbers());
         $phones = $result[0]->getPhonenumbers();
         self::assertEquals(424242, $phones[0]->phonenumber);
-        self::assertTrue($phones[0]->getUser() === $result[0]);
+        self::assertSame($phones[0]->getUser(), $result[0]);
     }
 
     /**
@@ -565,9 +561,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $result = $repository->createNativeNamedQuery('fetchUserPhonenumberCount')
                         ->setParameter(1, ['test', 'FabioBatSilva'])->getResult();
 
-        self::assertEquals(2, count($result));
-        self::assertTrue(is_array($result[0]));
-        self::assertTrue(is_array($result[1]));
+        self::assertCount(2, $result);
+        self::assertIsArray($result[0]);
+        self::assertIsArray($result[1]);
 
         // first user => 2 phonenumbers
         self::assertInstanceOf(CmsUser::class, $result[0][0]);
@@ -604,11 +600,11 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $result = $repository->createNativeNamedQuery('fetchAllWithSqlResultSetMapping')
                         ->getResult();
 
-        self::assertEquals(2, count($result));
+        self::assertCount(2, $result);
         self::assertInstanceOf(CompanyPerson::class, $result[0]);
         self::assertInstanceOf(CompanyEmployee::class, $result[1]);
-        self::assertTrue(is_numeric($result[0]->getId()));
-        self::assertTrue(is_numeric($result[1]->getId()));
+        self::assertIsNumeric($result[0]->getId());
+        self::assertIsNumeric($result[1]->getId());
         self::assertEquals('Fabio B. Silva', $result[0]->getName());
         self::assertEquals('Fabio Silva', $result[1]->getName());
 
@@ -617,11 +613,11 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $result = $repository->createNativeNamedQuery('fetchAllWithResultClass')
                         ->getResult();
 
-        self::assertEquals(2, count($result));
+        self::assertCount(2, $result);
         self::assertInstanceOf(CompanyPerson::class, $result[0]);
         self::assertInstanceOf(CompanyEmployee::class, $result[1]);
-        self::assertTrue(is_numeric($result[0]->getId()));
-        self::assertTrue(is_numeric($result[1]->getId()));
+        self::assertIsNumeric($result[0]->getId());
+        self::assertIsNumeric($result[1]->getId());
         self::assertEquals('Fabio B. Silva', $result[0]->getName());
         self::assertEquals('Fabio Silva', $result[1]->getName());
     }
@@ -658,13 +654,12 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $query      = $repository->createNativeNamedQuery('fetchMultipleJoinsEntityResults');
         $result     = $query->getResult();
 
-        self::assertEquals(1, count($result));
-        self::assertTrue(is_array($result[0]));
-
+        self::assertCount(1, $result);
+        self::assertIsArray($result[0]);
         self::assertInstanceOf(CmsUser::class, $result[0][0]);
         self::assertEquals('Fabio B. Silva', $result[0][0]->name);
         self::assertInstanceOf(CmsAddress::class, $result[0][0]->getAddress());
-        self::assertTrue($result[0][0]->getAddress()->getUser() === $result[0][0]);
+        self::assertEquals($result[0][0]->getAddress()->getUser(), $result[0][0]);
         self::assertEquals('Brazil', $result[0][0]->getAddress()->getCountry());
         self::assertEquals(10827, $result[0][0]->getAddress()->getZipCode());
 
@@ -794,8 +789,8 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm = new ResultSetMappingBuilder($this->_em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
         $rsm->addEntityResult(DDC3899User::class, 'u');
         $rsm->addJoinedEntityResult(DDC3899FixContract::class, 'c', 'u', 'contracts');
-        $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('id'), 'id');
-        $rsm->setDiscriminatorColumn('c', $this->platform->getSQLResultCasing('discr'));
+        $rsm->addFieldResult('u', $this->getSQLResultCasing($this->platform, 'id'), 'id');
+        $rsm->setDiscriminatorColumn('c', $this->getSQLResultCasing($this->platform, 'discr'));
 
         $selectClause = $rsm->generateSelectClause(['u' => 'u1', 'c' => 'c1']);
 

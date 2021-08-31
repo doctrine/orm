@@ -350,7 +350,7 @@ class YamlDriver extends FileDriver
                         . strtoupper($idElement['generator']['strategy'])));
                 }
 
-                // Check for SequenceGenerator/TableGenerator definition
+                // Check for SequenceGenerator definition
                 if (isset($idElement['sequenceGenerator'])) {
                     $metadata->setSequenceGeneratorDefinition($idElement['sequenceGenerator']);
                 } elseif (isset($idElement['customIdGenerator'])) {
@@ -360,8 +360,6 @@ class YamlDriver extends FileDriver
                             'class' => (string) $customGenerator['class'],
                         ]
                     );
-                } elseif (isset($idElement['tableGenerator'])) {
-                    throw MappingException::tableIdGeneratorNotImplemented($className);
                 }
             }
         }

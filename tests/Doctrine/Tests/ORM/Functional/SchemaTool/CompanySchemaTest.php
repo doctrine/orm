@@ -26,7 +26,7 @@ class CompanySchemaTest extends OrmFunctionalTestCase
      */
     public function testGeneratedSchema(): Schema
     {
-        $schema = $this->_em->getConnection()->getSchemaManager()->createSchema();
+        $schema = $this->createSchemaManager()->createSchema();
 
         self::assertTrue($schema->hasTable('company_contracts'));
 
@@ -66,6 +66,6 @@ class CompanySchemaTest extends OrmFunctionalTestCase
                 $this->_em->getClassMetadata(CompanyManager::class),
             ]
         );
-        self::assertEquals(4, count($sql));
+        self::assertCount(4, $sql);
     }
 }

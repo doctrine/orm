@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Result;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
@@ -17,7 +18,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\Mocks\HydratorMockResult;
+use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH6362Test extends OrmFunctionalTestCase
@@ -79,7 +80,7 @@ final class GH6362Test extends OrmFunctionalTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 

@@ -216,16 +216,6 @@ parameters:
 			path: lib/Doctrine/ORM/Id/TableGenerator.php
 
 		-
-			message: "#^Property Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\AbstractHydrator\\:\\:\\$_rsm \\(Doctrine\\\\ORM\\\\Query\\\\ResultSetMapping\\) does not accept null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
-
-		-
-			message: "#^Property Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\AbstractHydrator\\:\\:\\$_stmt \\(Doctrine\\\\DBAL\\\\Result\\) does not accept null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
-
-		-
 			message: "#^Parameter \\#2 \\$discrMap of static method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\HydrationException\\:\\:invalidDiscriminatorValue\\(\\) expects array\\<string, string\\>, array\\<int, int\\|string\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php
@@ -531,17 +521,12 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
-
-		-
-			message: "#^Array \\(array\\<string, array\\|string\\>\\) does not accept key 'options'\\.$#"
+			message: "#^Array \\(array\\('name' \\=\\> string, 'schema' \\=\\> string, 'indexes' \\=\\> array, 'uniqueConstraints' \\=\\> array\\)\\) does not accept key 'options'\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
 
 		-
-			message: "#^Array \\(array\\<string, array\\|string\\>\\) does not accept key 'quoted'\\.$#"
+			message: "#^Array \\(array\\('name' \\=\\> string, 'schema' \\=\\> string, 'indexes' \\=\\> array, 'uniqueConstraints' \\=\\> array\\)\\) does not accept key 'quoted'\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
 
@@ -1396,7 +1381,7 @@ parameters:
 			path: lib/Doctrine/ORM/Query/FilterCollection.php
 
 		-
-			message: "#^Array \\(array\\<int, Doctrine\\\\ORM\\\\Query\\\\AST\\\\SelectExpression\\>\\) does not accept key string\\.$#"
+			message: "#^Array \\(array\\<int, Doctrine\\\\ORM\\\\Query\\\\AST\\\\SelectExpression\\>\\) does not accept key non\\-empty\\-string\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/Parser.php
 
@@ -1444,11 +1429,6 @@ parameters:
 		-
 			message: "#^Parameter \\#2 \\$class of static method Doctrine\\\\ORM\\\\Utility\\\\PersisterHelper\\:\\:getTypeOfColumn\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php
-
-		-
-			message: "#^Parameter \\#2 \\$mode of method Doctrine\\\\ORM\\\\Query\\\\ResultSetMappingBuilder\\:\\:getColumnAliasMap\\(\\) expects 1\\|2\\|3, int given\\.$#"
-			count: 2
 			path: lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php
 
 		-

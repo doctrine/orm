@@ -101,7 +101,7 @@ abstract class OrmTestCase extends DoctrineTestCase
         $config = new Configuration();
 
         $config->setMetadataCache($metadataCache);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], true));
+        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], false));
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
@@ -109,7 +109,7 @@ abstract class OrmTestCase extends DoctrineTestCase
             [
                 realpath(__DIR__ . '/Models/Cache'),
             ],
-            true
+            false
         ));
 
         if ($this->isSecondLevelCacheEnabled) {

@@ -24,16 +24,19 @@ class DefaultValuesTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DefaultValueUser::class),
-                    $this->_em->getClassMetadata(DefaultValueAddress::class),
-                ]
-            );
-        } catch (Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(DefaultValueUser::class),
+            $this->_em->getClassMetadata(DefaultValueAddress::class),
+        ]);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->_schemaTool->dropSchema([
+            $this->_em->getClassMetadata(DefaultValueUser::class),
+            $this->_em->getClassMetadata(DefaultValueAddress::class),
+        ]);
+        parent::tearDown();
     }
 
     /**

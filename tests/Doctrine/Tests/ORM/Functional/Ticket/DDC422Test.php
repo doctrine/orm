@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OrderBy;
@@ -56,7 +57,7 @@ class DDC422Test extends OrmFunctionalTestCase
         self::assertFalse($customer->contacts->isInitialized());
         $this->_em->flush();
 
-        self::assertEquals(1, $this->_em->getConnection()->fetchColumn('select count(*) from ddc422_customers_contacts'));
+        self::assertEquals(1, $this->_em->getConnection()->fetchOne('select count(*) from ddc422_customers_contacts'));
     }
 }
 

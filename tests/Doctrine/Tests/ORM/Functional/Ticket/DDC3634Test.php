@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use BadMethodCallException;
 use Closure;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Result;
+use Doctrine\DBAL\Statement;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
@@ -324,19 +327,19 @@ class DDC3634LastInsertIdMockingConnection extends Connection
     }
 
     /** {@inheritDoc} */
-    public function prepare($statement)
+    public function prepare($statement): Statement
     {
         return $this->forwardCall();
     }
 
     /** {@inheritDoc} */
-    public function executeQuery($query, array $params = [], $types = [], ?QueryCacheProfile $qcp = null)
+    public function executeQuery($query, array $params = [], $types = [], ?QueryCacheProfile $qcp = null): Result
     {
         return $this->forwardCall();
     }
 
     /** {@inheritDoc} */
-    public function executeCacheQuery($query, $params, $types, QueryCacheProfile $qcp)
+    public function executeCacheQuery($query, $params, $types, QueryCacheProfile $qcp): Result
     {
         return $this->forwardCall();
     }
@@ -348,19 +351,25 @@ class DDC3634LastInsertIdMockingConnection extends Connection
     }
 
     /** {@inheritDoc} */
-    public function query()
+    public function query($sql = null): Result
     {
         return $this->forwardCall();
     }
 
     /** {@inheritDoc} */
-    public function executeUpdate($query, array $params = [], array $types = [])
+    public function executeUpdate($query, array $params = [], array $types = []): int
+    {
+        throw new BadMethodCallException('Call to deprecated method.');
+    }
+
+    /** {@inheritDoc} */
+    public function executeStatement($query, array $params = [], array $types = []): int
     {
         return $this->forwardCall();
     }
 
     /** {@inheritDoc} */
-    public function exec($statement)
+    public function exec($statement): int
     {
         return $this->forwardCall();
     }

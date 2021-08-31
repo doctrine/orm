@@ -89,7 +89,7 @@ class DDC837Test extends OrmFunctionalTestCase
                 self::assertEquals('Foo', $obj->title);
                 self::assertEquals('Foo', $obj->description);
             } elseif ($obj instanceof DDC837Class2) {
-                self::assertTrue($e2 === $obj);
+                self::assertSame($e2, $obj);
                 self::assertEquals('Bar', $obj->title);
                 self::assertEquals('Bar', $obj->description);
                 self::assertEquals('Bar', $obj->text);

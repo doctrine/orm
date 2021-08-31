@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -21,6 +22,8 @@ use function strtolower;
  */
 class ResultSetMappingBuilder extends ResultSetMapping
 {
+    use SQLResultCasing;
+
     /**
      * Picking this rename mode will register entity columns as is,
      * as they are in the database. This can cause clashes when multiple
@@ -131,7 +134,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
         foreach ($classMetadata->getColumnNames() as $columnName) {
             $propertyName = $classMetadata->getFieldName($columnName);
-            $columnAlias  = $platform->getSQLResultCasing($columnAliasMap[$columnName]);
+            $columnAlias  = $this->getSQLResultCasing($platform, $columnAliasMap[$columnName]);
 
             if (isset($this->fieldMappings[$columnAlias])) {
                 throw new InvalidArgumentException(sprintf(
@@ -150,7 +153,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
                 foreach ($associationMapping['joinColumns'] as $joinColumn) {
                     $columnName  = $joinColumn['name'];
-                    $columnAlias = $platform->getSQLResultCasing($columnAliasMap[$columnName]);
+                    $columnAlias = $this->getSQLResultCasing($platform, $columnAliasMap[$columnName]);
                     $columnType  = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
                     if (isset($this->metaMappings[$columnAlias])) {

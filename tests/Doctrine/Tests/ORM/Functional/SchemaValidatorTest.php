@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Tools\SchemaValidator;
 use Doctrine\Tests\DbalTypes\CustomIdObjectType;

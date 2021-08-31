@@ -23,6 +23,15 @@ Method `Doctrine\ORM\EntityManagerInterface#copy()` never got its implementation
 
 # Upgrade to 2.10
 
+## BC Break: Removed `TABLE` id generator strategy
+
+The implementation was unfinished for 14 years.
+It is now deprecated to rely on:
+- `Doctrine\ORM\Id\TableGenerator`;
+- `Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_TABLE`;
+- `Doctrine\ORM\Mapping\ClassMetadata::$tableGeneratorDefinition`;
+- or `Doctrine\ORM\Mapping\ClassMetadata::isIdGeneratorTable()`.
+
 ## BC Break: Removed possibility to extend the doctrine mapping xml schema with anything
 
 If you want to extend it now you have to provide your own validation schema.

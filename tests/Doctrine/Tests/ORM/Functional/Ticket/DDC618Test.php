@@ -89,7 +89,7 @@ class DDC618Test extends OrmFunctionalTestCase
                'INNER JOIN A.books B INDEX BY B.title ORDER BY A.name ASC';
         $result = $this->_em->createQuery($dql)->getResult(Query::HYDRATE_OBJECT);
 
-        self::assertEquals(3, count($result[0]->books)); // Alice, Joe doesn't appear because he has no books.
+        self::assertCount(3, $result[0]->books); // Alice, Joe doesn't appear because he has no books.
         self::assertEquals('Alice', $result[0]->name);
         self::assertTrue(isset($result[0]->books['In Wonderland']), 'Indexing by title should have books by title.');
         self::assertTrue(isset($result[0]->books['Reloaded']), 'Indexing by title should have books by title.');
@@ -97,7 +97,7 @@ class DDC618Test extends OrmFunctionalTestCase
 
         $result = $this->_em->createQuery($dql)->getResult(Query::HYDRATE_ARRAY);
 
-        self::assertEquals(3, count($result[0]['books'])); // Alice, Joe doesn't appear because he has no books.
+        self::assertCount(3, $result[0]['books']); // Alice, Joe doesn't appear because he has no books.
         self::assertEquals('Alice', $result[0]['name']);
         self::assertTrue(isset($result[0]['books']['In Wonderland']), 'Indexing by title should have books by title.');
         self::assertTrue(isset($result[0]['books']['Reloaded']), 'Indexing by title should have books by title.');
@@ -134,7 +134,7 @@ class DDC618Test extends OrmFunctionalTestCase
 
         self::assertArrayHasKey(11, $result); // Alice
 
-        self::assertEquals(3, count($result[11]->books)); // Alice, Joe doesn't appear because he has no books.
+        self::assertCount(3, $result[11]->books); // Alice, Joe doesn't appear because he has no books.
         self::assertEquals('Alice', $result[11]->name);
         self::assertTrue(isset($result[11]->books['In Wonderland']), 'Indexing by title should have books by title.');
         self::assertTrue(isset($result[11]->books['Reloaded']), 'Indexing by title should have books by title.');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
+use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -13,7 +14,6 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
 use function method_exists;
 use function sprintf;
 
@@ -22,7 +22,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
+        if (! $this->_em->getConnection()->getDatabasePlatform() instanceof MySQLPlatform) {
             self::markTestSkipped('The ' . self::class . ' requires the use of mysql.');
         }
     }
@@ -58,7 +58,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
         self::assertEquals('ALTER TABLE cms_addresses ADD CONSTRAINT FK_ACAC157BA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id)', $sql[13]);
         self::assertEquals('ALTER TABLE cms_phonenumbers ADD CONSTRAINT FK_F21F790FA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id)', $sql[14]);
 
-        self::assertEquals(15, count($sql));
+        self::assertCount(15, $sql);
     }
 
     private function getColumnCollationDeclarationSQL(string $collation): string
@@ -78,7 +78,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
         $sql       = $tool->getCreateSchemaSql($classes);
         $collation = $this->getColumnCollationDeclarationSQL('utf8_unicode_ci');
 
-        self::assertEquals(1, count($sql));
+        self::assertCount(1, $sql);
         self::assertEquals('CREATE TABLE decimal_model (id INT AUTO_INCREMENT NOT NULL, `decimal` NUMERIC(5, 2) NOT NULL, `high_scale` NUMERIC(14, 4) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 ' . $collation . ' ENGINE = InnoDB', $sql[0]);
     }
 
@@ -90,7 +90,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
         $sql       = $tool->getCreateSchemaSql($classes);
         $collation = $this->getColumnCollationDeclarationSQL('utf8_unicode_ci');
 
-        self::assertEquals(1, count($sql));
+        self::assertCount(1, $sql);
         self::assertEquals('CREATE TABLE boolean_model (id INT AUTO_INCREMENT NOT NULL, booleanField TINYINT(1) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 ' . $collation . ' ENGINE = InnoDB', $sql[0]);
     }
 
@@ -104,7 +104,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
         $tool = new SchemaTool($this->_em);
         $sql  = $tool->getCreateSchemaSql($classes);
 
-        self::assertEquals(0, count($sql));
+        self::assertCount(0, $sql);
     }
 }
 

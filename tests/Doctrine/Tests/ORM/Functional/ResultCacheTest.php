@@ -66,7 +66,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $users = $query->getResult();
 
         self::assertTrue($cache->contains('my_cache_id'));
-        self::assertEquals(1, count($users));
+        self::assertCount(1, $users);
         self::assertEquals('Roman', $users[0]->name);
 
         $this->_em->clear();
@@ -77,7 +77,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $users = $query2->getResult();
 
         self::assertTrue($cache->contains('my_cache_id'));
-        self::assertEquals(1, count($users));
+        self::assertCount(1, $users);
         self::assertEquals('Roman', $users[0]->name);
     }
 
@@ -361,7 +361,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         $articles = $query->getResult();
 
-        self::assertEquals(1, count($articles));
+        self::assertCount(1, $articles);
         self::assertEquals('baz', $articles[0]->topic);
 
         $this->_em->clear();
@@ -373,7 +373,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         $articles = $query2->getResult();
 
-        self::assertEquals(1, count($articles));
+        self::assertCount(1, $articles);
         self::assertEquals('baz', $articles[0]->topic);
 
         $query3 = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = ?1');
@@ -383,6 +383,6 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         $articles = $query3->getResult();
 
-        self::assertEquals(0, count($articles));
+        self::assertCount(0, $articles);
     }
 }

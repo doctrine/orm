@@ -18,17 +18,10 @@ use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
 use Doctrine\ORM\Id\IdentityGenerator;
 use Doctrine\ORM\Id\SequenceGenerator;
 use Doctrine\ORM\Id\UuidGenerator;
+use Doctrine\ORM\Mapping\Exception\CannotGenerateIds;
 use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
 use Doctrine\ORM\Mapping\Exception\TableGeneratorNotImplementedYet;
 use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
-use Doctrine\ORM\NotImplementedYet;
-use Doctrine\ORM\Sequencing;
-use Doctrine\ORM\Sequencing\Planning\AssociationValueGeneratorExecutor;
-use Doctrine\ORM\Sequencing\Planning\ColumnValueGeneratorExecutor;
-use Doctrine\ORM\Sequencing\Planning\CompositeValueGenerationPlan;
-use Doctrine\ORM\Sequencing\Planning\NoopValueGenerationPlan;
-use Doctrine\ORM\Sequencing\Planning\SingleValueGenerationPlan;
-use Doctrine\ORM\Sequencing\Planning\ValueGenerationExecutor;
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -43,8 +36,10 @@ use function end;
 use function explode;
 use function in_array;
 use function is_subclass_of;
+use function strlen;
 use function strpos;
 use function strtolower;
+use function substr;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -280,7 +275,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 }
             } else {
                 assert($parent instanceof ClassMetadataInfo); // https://github.com/doctrine/orm/issues/8746
-                if ((! $class->reflClass || ! $class->reflClass->isAbstract()) && ! in_array($class->name, $parent->discriminatorMap, true)) {
+                if (
+                    (! $class->reflClass || ! $class->reflClass->isAbstract())
+                    && ! in_array($class->name, $class->discriminatorMap, true)
+                ) {
                     throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
                 }
             }
@@ -564,7 +562,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $sequencePrefix = $class->getSequencePrefix($this->getTargetPlatform());
                     $sequenceName   = $this->getTargetPlatform()->getIdentitySequenceName($sequencePrefix, $columnName);
                     $definition     = [
-                        'sequenceName' => $this->getTargetPlatform()->fixSchemaElementName($sequenceName),
+                        'sequenceName' => $this->truncateSequenceName($sequenceName),
                     ];
 
                     if ($quoted) {
@@ -596,7 +594,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $quoted       = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
 
                     $definition = [
-                        'sequenceName'      => $this->getTargetPlatform()->fixSchemaElementName($sequenceName),
+                        'sequenceName'      => $this->truncateSequenceName($sequenceName),
                         'allocationSize'    => 1,
                         'initialValue'      => 1,
                     ];
@@ -629,11 +627,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $class->setIdGenerator(new UuidGenerator());
                 break;
 
-            case ClassMetadata::GENERATOR_TYPE_TABLE:
-                throw TableGeneratorNotImplementedYet::create();
-
-                break;
-
             case ClassMetadata::GENERATOR_TYPE_CUSTOM:
                 $definition = $class->customGeneratorDefinition;
                 if ($definition === null) {
@@ -654,7 +647,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     private function determineIdGeneratorStrategy(AbstractPlatform $platform): int
     {
-        if ($platform->getName() === 'oracle' || $platform->getName() === 'postgresql') {
+        if (
+            $platform instanceof Platforms\OraclePlatform
+            || $platform instanceof Platforms\PostgreSQL94Platform
+            || $platform instanceof Platforms\PostgreSQLPlatform
+        ) {
             return ClassMetadata::GENERATOR_TYPE_SEQUENCE;
         }
 
@@ -666,7 +663,23 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             return ClassMetadata::GENERATOR_TYPE_SEQUENCE;
         }
 
-        return ClassMetadata::GENERATOR_TYPE_TABLE;
+        throw CannotGenerateIds::withPlatform($platform);
+    }
+
+    private function truncateSequenceName(string $schemaElementName): string
+    {
+        $platform = $this->getTargetPlatform();
+        if (! in_array($platform->getName(), ['oracle', 'sqlanywhere'], true)) {
+            return $schemaElementName;
+        }
+
+        $maxIdentifierLength = $platform->getMaxIdentifierLength();
+
+        if (strlen($schemaElementName) > $maxIdentifierLength) {
+            return substr($schemaElementName, 0, $maxIdentifierLength);
+        }
+
+        return $schemaElementName;
     }
 
     /**
@@ -676,8 +689,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         if ($parent->isIdGeneratorSequence()) {
             $class->setSequenceGeneratorDefinition($parent->sequenceGeneratorDefinition);
-        } elseif ($parent->isIdGeneratorTable()) {
-            $class->tableGeneratorDefinition = $parent->tableGeneratorDefinition;
         }
 
         if ($parent->generatorType) {

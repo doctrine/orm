@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Persisters\Collection;
 
 use BadMethodCallException;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Utility\PersisterHelper;

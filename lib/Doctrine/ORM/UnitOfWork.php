@@ -575,7 +575,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param object $entity
      *
      * @return mixed[][]
-     * @psalm-return array<string, array{mixed, mixed}>
+     * @psalm-return array<string, array{mixed, mixed}|PersistentCollection>
      */
     public function & getEntityChangeSet($entity)
     {

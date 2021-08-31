@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Persisters\Entity;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 
@@ -22,6 +23,8 @@ use function is_array;
  */
 class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 {
+    use SQLResultCasing;
+
     /**
      * Map that maps column names to the table names that own them.
      * This is mainly a temporary cache, used during a single request.
@@ -412,7 +415,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $discrColumn      = $this->class->discriminatorColumn['name'];
         $discrColumnType  = $this->class->discriminatorColumn['type'];
         $baseTableAlias   = $this->getSQLTableAlias($this->class->name);
-        $resultColumnName = $this->platform->getSQLResultCasing($discrColumn);
+        $resultColumnName = $this->getSQLResultCasing($this->platform, $discrColumn);
 
         $this->currentPersisterContext->rsm->addEntityResult($this->class->name, 'r');
         $this->currentPersisterContext->rsm->setDiscriminatorColumn('r', $resultColumnName);

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\DBAL\Platforms\SQLServer2012Platform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Table;
@@ -26,7 +29,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $this->useModelSet('cms');
         parent::setUp();
 
-        $this->schemaManager = $this->_em->getConnection()->getSchemaManager();
+        $this->schemaManager = $this->createSchemaManager();
     }
 
     /**
@@ -195,12 +198,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         self::assertEquals('id', strtolower($metadata->fieldMappings['id']['columnName']));
         self::assertEquals('integer', (string) $metadata->fieldMappings['id']['type']);
 
-        // FIXME: Condition here is fugly.
-        // NOTE: PostgreSQL and SQL SERVER do not support UNSIGNED integer
-        if (
-            ! $this->_em->getConnection()->getDatabasePlatform() instanceof PostgreSqlPlatform &&
-             ! $this->_em->getConnection()->getDatabasePlatform() instanceof SQLServerPlatform
-        ) {
+        if (self::supportsUnsignedInteger($this->_em->getConnection()->getDatabasePlatform())) {
             self::assertArrayHasKey('columnUnsigned', $metadata->fieldMappings);
             self::assertTrue($metadata->fieldMappings['columnUnsigned']['options']['unsigned']);
         }
@@ -215,16 +213,27 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         self::assertEquals(4, $metadata->fieldMappings['columnDecimal']['precision']);
         self::assertEquals(3, $metadata->fieldMappings['columnDecimal']['scale']);
 
-        self::assertTrue(! empty($metadata->table['indexes']['index1']['columns']));
+        self::assertNotEmpty($metadata->table['indexes']['index1']['columns']);
         self::assertEquals(
             ['column_index1', 'column_index2'],
             $metadata->table['indexes']['index1']['columns']
         );
 
-        self::assertTrue(! empty($metadata->table['uniqueConstraints']['unique_index1']['columns']));
+        self::assertNotEmpty($metadata->table['uniqueConstraints']['unique_index1']['columns']);
         self::assertEquals(
             ['column_unique_index1', 'column_unique_index2'],
             $metadata->table['uniqueConstraints']['unique_index1']['columns']
         );
+    }
+
+    private static function supportsUnsignedInteger(AbstractPlatform $platform): bool
+    {
+        // FIXME: Condition here is fugly.
+        // NOTE: PostgreSQL and SQL SERVER do not support UNSIGNED integer
+
+        return ! $platform instanceof SQLServer2012Platform
+            && ! $platform instanceof SQLServerPlatform
+            && ! $platform instanceof PostgreSQL94Platform
+            && ! $platform instanceof PostgreSQLPlatform;
     }
 }

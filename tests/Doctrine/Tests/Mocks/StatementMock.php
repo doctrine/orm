@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Driver\Statement;
 use EmptyIterator;
 use IteratorAggregate;
@@ -46,8 +47,9 @@ class StatementMock implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function execute($params = null)
+    public function execute($params = null): Result
     {
+        return new DriverResultMock();
     }
 
     public function rowCount(): int

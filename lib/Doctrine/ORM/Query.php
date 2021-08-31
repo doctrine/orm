@@ -6,7 +6,6 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
@@ -26,6 +25,7 @@ use function array_keys;
 use function array_values;
 use function assert;
 use function count;
+use function get_debug_type;
 use function in_array;
 use function ksort;
 use function md5;
@@ -739,14 +739,9 @@ final class Query extends AbstractQuery
     {
         ksort($this->_hints);
 
-        $platform = $this->getEntityManager()
-            ->getConnection()
-            ->getDatabasePlatform()
-            ->getName();
-
         return md5(
             $this->getDQL() . serialize($this->_hints) .
-            '&platform=' . $platform .
+            '&platform=' . get_debug_type($this->getEntityManager()->getConnection()->getDatabasePlatform()) .
             ($this->_em->hasFilters() ? $this->_em->getFilters()->getHash() : '') .
             '&firstResult=' . $this->firstResult . '&maxResult=' . $this->maxResults .
             '&hydrationMode=' . $this->_hydrationMode . '&types=' . serialize($this->parsedTypes) . 'DOCTRINE_QUERY_CACHE_SALT'

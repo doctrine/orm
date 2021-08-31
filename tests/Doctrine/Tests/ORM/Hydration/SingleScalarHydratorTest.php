@@ -7,7 +7,7 @@ namespace Doctrine\Tests\ORM\Hydration;
 use Doctrine\ORM\Internal\Hydration\SingleScalarHydrator;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\Mocks\HydratorMockResult;
+use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsUser;
 
 use function in_array;
@@ -65,7 +65,7 @@ class SingleScalarHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
-        $stmt     = new HydratorMockResult($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new SingleScalarHydrator($this->entityManager);
 
         if ($name === 'result1') {

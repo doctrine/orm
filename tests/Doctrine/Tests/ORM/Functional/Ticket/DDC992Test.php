@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
@@ -58,9 +59,8 @@ class DDC992Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $child   = $this->_em->getRepository(get_class($role))->find($child->roleID);
-        $parents = count($child->extends);
-        self::assertEquals(1, $parents);
+        $child = $this->_em->getRepository(get_class($role))->find($child->roleID);
+        self::assertCount(1, $child->extends);
         foreach ($child->extends as $parent) {
             self::assertEquals($role->getRoleID(), $parent->getRoleID());
         }
@@ -82,8 +82,8 @@ class DDC992Test extends OrmFunctionalTestCase
         $childRepository  = $this->_em->getRepository(get_class($child));
 
         $parent = $parentRepository->find($parent->id);
-        self::assertEquals(1, count($parent->childs));
-        self::assertEquals(0, count($parent->childs[0]->childs()));
+        self::assertCount(1, $parent->childs);
+        self::assertCount(0, $parent->childs[0]->childs());
 
         $child = $parentRepository->findOneBy(['id' => $child->id]);
         self::assertSame($parent->childs[0], $child);
@@ -91,12 +91,12 @@ class DDC992Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $child = $parentRepository->find($child->id);
-        self::assertEquals(0, count($child->childs));
+        self::assertCount(0, $child->childs);
 
         $this->_em->clear();
 
         $child = $childRepository->find($child->id);
-        self::assertEquals(0, count($child->childs));
+        self::assertCount(0, $child->childs);
     }
 }
 

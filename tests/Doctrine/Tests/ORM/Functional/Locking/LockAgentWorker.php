@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Functional\Locking;
 use Closure;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Logging\EchoSQLLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -120,13 +119,12 @@ class LockAgentWorker
         $config->setProxyNamespace('MyProject\Proxies');
         $config->setAutoGenerateProxyClasses(true);
 
-        $annotDriver = $config->newDefaultAnnotationDriver([__DIR__ . '/../../../Models/'], true);
+        $annotDriver = $config->newDefaultAnnotationDriver([__DIR__ . '/../../../Models/'], false);
         $config->setMetadataDriverImpl($annotDriver);
         $config->setMetadataCache(new ArrayAdapter());
 
         $cache = DoctrineProvider::wrap(new ArrayAdapter());
         $config->setQueryCacheImpl($cache);
-        $config->setSQLLogger(new EchoSQLLogger());
 
         return EntityManager::create($conn, $config);
     }

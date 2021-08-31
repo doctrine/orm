@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
+use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\ORM\Tools;
 use Doctrine\Tests\Models;
@@ -34,7 +35,7 @@ class DDC214Test extends OrmFunctionalTestCase
 
         $conn = $this->_em->getConnection();
 
-        if (strpos($conn->getDriver()->getName(), 'sqlite') !== false) {
+        if ($conn->getDriver()->getDatabasePlatform() instanceof SqlitePlatform) {
             self::markTestSkipped('SQLite does not support ALTER TABLE statements.');
         }
 
@@ -90,7 +91,7 @@ class DDC214Test extends OrmFunctionalTestCase
             // was already created
         }
 
-        $sm = $this->_em->getConnection()->getSchemaManager();
+        $sm = $this->createSchemaManager();
 
         $fromSchema = $sm->createSchema();
         $toSchema   = $this->schemaTool->getSchemaFromMetadata($classMetadata);
@@ -103,6 +104,6 @@ class DDC214Test extends OrmFunctionalTestCase
             return strpos($sql, 'DROP') === false;
         });
 
-        self::assertEquals(0, count($sql), 'SQL: ' . implode(PHP_EOL, $sql));
+        self::assertCount(0, $sql, 'SQL: ' . implode(PHP_EOL, $sql));
     }
 }

@@ -26,13 +26,9 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
                 'This test is special to platforms emulating IDENTITY key generation strategy through sequences.'
             );
         } else {
-            try {
-                $this->_schemaTool->createSchema(
-                    [$this->_em->getClassMetadata(SequenceEmulatedIdentityEntity::class)]
-                );
-            } catch (Exception $e) {
-                // Swallow all exceptions. We do not test the schema tool here.
-            }
+            $this->_schemaTool->createSchema(
+                [$this->_em->getClassMetadata(SequenceEmulatedIdentityEntity::class)]
+            );
         }
     }
 
@@ -44,7 +40,7 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
         $platform   = $connection->getDatabasePlatform();
 
         // drop sequence manually due to dependency
-        $connection->exec(
+        $connection->executeStatement(
             $platform->getDropSequenceSQL(
                 new Sequence($platform->getIdentitySequenceName('seq_identity', 'id'))
             )
@@ -57,8 +53,8 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
         $entity->setValue('hello');
         $this->_em->persist($entity);
         $this->_em->flush();
-        self::assertTrue(is_numeric($entity->getId()));
-        self::assertTrue($entity->getId() > 0);
+        self::assertIsNumeric($entity->getId());
+        self::assertGreaterThan(0, $entity->getId());
         self::assertTrue($this->_em->contains($entity));
     }
 }

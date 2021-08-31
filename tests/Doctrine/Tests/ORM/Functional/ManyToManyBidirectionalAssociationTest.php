@@ -116,7 +116,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $query = $this->_em->createQuery('SELECT p, c FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p LEFT JOIN p.categories c ORDER BY p.id, c.id');
         //$query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result = $query->getResult();
-        self::assertEquals(2, count($result));
+        self::assertCount(2, $result);
         $cats1 = $result[0]->getCategories();
         $cats2 = $result[1]->getCategories();
         self::assertTrue($cats1->isInitialized());
@@ -135,7 +135,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $query = $this->_em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\ECommerce\ECommerceCategory c LEFT JOIN c.products p ORDER BY c.id, p.id');
         //$query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result = $query->getResult();
-        self::assertEquals(2, count($result));
+        self::assertCount(2, $result);
         self::assertInstanceOf(ECommerceCategory::class, $result[0]);
         self::assertInstanceOf(ECommerceCategory::class, $result[1]);
         $prods1 = $result[0]->getProducts();
@@ -159,11 +159,11 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $firstProductCategories  = $firstProduct->getCategories();
         $secondProductCategories = $secondProduct->getCategories();
 
-        self::assertEquals(2, count($firstProductCategories));
-        self::assertEquals(2, count($secondProductCategories));
+        self::assertCount(2, $firstProductCategories);
+        self::assertCount(2, $secondProductCategories);
 
-        self::assertTrue($firstProductCategories[0] === $secondProductCategories[0]);
-        self::assertTrue($firstProductCategories[1] === $secondProductCategories[1]);
+        self::assertSame($firstProductCategories[0], $secondProductCategories[0]);
+        self::assertSame($firstProductCategories[1], $secondProductCategories[1]);
 
         $firstCategoryProducts  = $firstProductCategories[0]->getProducts();
         $secondCategoryProducts = $firstProductCategories[1]->getProducts();
@@ -173,10 +173,10 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         self::assertEquals(0, $firstCategoryProducts->unwrap()->count());
         self::assertEquals(0, $secondCategoryProducts->unwrap()->count());
 
-        self::assertEquals(2, count($firstCategoryProducts)); // lazy-load
+        self::assertCount(2, $firstCategoryProducts); // lazy-load
         self::assertTrue($firstCategoryProducts->isInitialized());
         self::assertFalse($secondCategoryProducts->isInitialized());
-        self::assertEquals(2, count($secondCategoryProducts)); // lazy-load
+        self::assertCount(2, $secondCategoryProducts); // lazy-load
         self::assertTrue($secondCategoryProducts->isInitialized());
 
         self::assertInstanceOf(ECommerceProduct::class, $firstCategoryProducts[0]);
@@ -197,11 +197,11 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $firstCategoryProducts  = $firstCategory->getProducts();
         $secondCategoryProducts = $secondCategory->getProducts();
 
-        self::assertEquals(2, count($firstCategoryProducts));
-        self::assertEquals(2, count($secondCategoryProducts));
+        self::assertCount(2, $firstCategoryProducts);
+        self::assertCount(2, $secondCategoryProducts);
 
-        self::assertTrue($firstCategoryProducts[0] === $secondCategoryProducts[0]);
-        self::assertTrue($firstCategoryProducts[1] === $secondCategoryProducts[1]);
+        self::assertSame($firstCategoryProducts[0], $secondCategoryProducts[0]);
+        self::assertSame($firstCategoryProducts[1], $secondCategoryProducts[1]);
 
         $firstProductCategories  = $firstCategoryProducts[0]->getCategories();
         $secondProductCategories = $firstCategoryProducts[1]->getCategories();
@@ -211,10 +211,10 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         self::assertEquals(0, $firstProductCategories->unwrap()->count());
         self::assertEquals(0, $secondProductCategories->unwrap()->count());
 
-        self::assertEquals(2, count($firstProductCategories)); // lazy-load
+        self::assertCount(2, $firstProductCategories); // lazy-load
         self::assertTrue($firstProductCategories->isInitialized());
         self::assertFalse($secondProductCategories->isInitialized());
-        self::assertEquals(2, count($secondProductCategories)); // lazy-load
+        self::assertCount(2, $secondProductCategories); // lazy-load
         self::assertTrue($secondProductCategories->isInitialized());
 
         self::assertInstanceOf(ECommerceCategory::class, $firstProductCategories[0]);

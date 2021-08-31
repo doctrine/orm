@@ -99,15 +99,9 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 
     public function testMultiSelfReference(): void
     {
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(MultiSelfReference::class),
-                ]
-            );
-        } catch (Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(MultiSelfReference::class),
+        ]);
 
         $entity1 = new MultiSelfReference();
         $this->_em->persist($entity1);
@@ -135,7 +129,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 
     public function assertForeignKeyIs($value): void
     {
-        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT mentor_id FROM ecommerce_customers WHERE id=?', [$this->customer->getId()])->fetchColumn();
+        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT mentor_id FROM ecommerce_customers WHERE id=?', [$this->customer->getId()])->fetchOne();
         self::assertEquals($value, $foreignKey);
     }
 

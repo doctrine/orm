@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
@@ -29,17 +30,11 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(OJTICPet::class),
-                    $this->_em->getClassMetadata(OJTICCat::class),
-                    $this->_em->getClassMetadata(OJTICDog::class),
-                ]
-            );
-        } catch (Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(OJTICPet::class),
+            $this->_em->getClassMetadata(OJTICCat::class),
+            $this->_em->getClassMetadata(OJTICDog::class),
+        ]);
 
         $dog       = new OJTICDog();
         $dog->name = 'Poofy';
@@ -76,7 +71,7 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
         )
                 ->getResult();
 
-        self::assertEquals(1, count($result));
+        self::assertCount(1, $result);
         $poofy = $result[0];
 
         self::assertEquals('Aari', $poofy->children[0]->getName());
