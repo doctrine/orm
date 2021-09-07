@@ -19,7 +19,6 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use function class_exists;
 use function count;
 use function get_include_path;
-use function method_exists;
 use function set_include_path;
 use function spl_autoload_functions;
 use function spl_autoload_unregister;
@@ -142,11 +141,7 @@ class SetupTest extends OrmTestCase
         self::assertSame($cache, $config->getResultCacheImpl());
         self::assertSame($cache, $config->getQueryCacheImpl());
 
-        if (method_exists(Configuration::class, 'getMetadataCache')) {
-            self::assertSame($adapter, $config->getMetadataCache()->getCache()->getPool());
-        } else {
-            self::assertSame($cache, $config->getMetadataCacheImpl());
-        }
+        self::assertSame($adapter, $config->getMetadataCache()->getCache()->getPool());
     }
 
     /**
@@ -160,11 +155,7 @@ class SetupTest extends OrmTestCase
         self::assertSame($cache, $config->getResultCacheImpl());
         self::assertSame($cache, $config->getQueryCacheImpl());
 
-        if (method_exists(Configuration::class, 'getMetadataCache')) {
-            self::assertInstanceOf(CacheAdapter::class, $config->getMetadataCache());
-            self::assertSame($cache, $config->getMetadataCache()->getCache());
-        } else {
-            self::assertSame($cache, $config->getMetadataCacheImpl());
-        }
+        self::assertInstanceOf(CacheAdapter::class, $config->getMetadataCache());
+        self::assertSame($cache, $config->getMetadataCache()->getCache());
     }
 }

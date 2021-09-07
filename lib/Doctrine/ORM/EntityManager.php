@@ -6,7 +6,6 @@ namespace Doctrine\ORM;
 
 use BadMethodCallException;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
@@ -40,7 +39,6 @@ use function is_callable;
 use function is_object;
 use function is_string;
 use function ltrim;
-use function method_exists;
 use function sprintf;
 
 /**
@@ -1012,28 +1010,13 @@ use function sprintf;
             return;
         }
 
-        // We have a PSR-6 compatible metadata factory. Use cache directly
-        if (method_exists($this->metadataFactory, 'setCache')) {
-            $this->metadataFactory->setCache($metadataCache);
-
-            return;
-        }
-
-        // Wrap PSR-6 cache to provide doctrine/cache interface
-        $this->metadataFactory->setCacheDriver(DoctrineProvider::wrap($metadataCache));
+        $this->metadataFactory->setCache($metadataCache);
     }
 
     private function configureLegacyMetadataCache(): void
     {
         $metadataCache = $this->config->getMetadataCacheImpl();
         if (! $metadataCache) {
-            return;
-        }
-
-        // Metadata factory is not PSR-6 compatible. Use cache directly
-        if (! method_exists($this->metadataFactory, 'setCache')) {
-            $this->metadataFactory->setCacheDriver($metadataCache);
-
             return;
         }
 
