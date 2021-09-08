@@ -865,6 +865,9 @@ use function sprintf;
             case Query::HYDRATE_SIMPLEOBJECT:
                 return new Internal\Hydration\SimpleObjectHydrator($this);
 
+            case Query::HYDRATE_SCALAR_COLUMN:
+                return new Internal\Hydration\ScalarColumnHydrator($this);
+
             default:
                 $class = $this->config->getCustomHydrationMode($hydrationMode);
 
