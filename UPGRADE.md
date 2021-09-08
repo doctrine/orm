@@ -179,24 +179,16 @@ The `Doctrine\ORM\Version` class is now deprecated and will be removed in Doctri
 please refrain from checking the ORM version at runtime or use
 [ocramius/package-versions](https://github.com/Ocramius/PackageVersions/).
 
-## Deprecated `EntityManager#merge()` and `EntityManager#detach()` methods
+## Deprecated `EntityManager#merge()` method
 
-Merge and detach semantics were a poor fit for the PHP "share-nothing" architecture.
-In addition to that, merging/detaching caused multiple issues with data integrity
+Merge semantics was a poor fit for the PHP "share-nothing" architecture.
+In addition to that, merging caused multiple issues with data integrity
 in the managed entity graph, which was constantly spawning more edge-case bugs/scenarios.
 
 The following API methods were therefore deprecated:
 
 * `EntityManager#merge()`
-* `EntityManager#detach()`
 * `UnitOfWork#merge()`
-* `UnitOfWork#detach()`
-
-Users are encouraged to migrate `EntityManager#detach()` calls to `EntityManager#clear()`.
-
-In order to maintain performance on batch processing jobs, it is endorsed to enable
-the second level cache (http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/second-level-cache.html)
-on entities that are frequently reused across multiple `EntityManager#clear()` calls.
 
 An alternative to `EntityManager#merge()` will not be provided by ORM 3.0, since the merging
 semantics should be part of the business domain rather than the persistence domain of an

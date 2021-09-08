@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
+use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\Tests\Mocks\CacheEntryMock;
@@ -19,7 +20,7 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
     /** @var Region */
     protected $region;
 
-    /** @var ArrayCache */
+    /** @var Cache */
     protected $cache;
 
     protected function setUp(): void

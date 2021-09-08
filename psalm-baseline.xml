@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.9.3@4c262932602b9bbab5020863d1eb22d49de0dbf4">
+<files psalm-version="4.10.0@916b098b008f6de4543892b1e0651c1c3b92cbfa">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass occurrences="1">
       <code>IterableResult</code>
@@ -460,14 +460,12 @@
     <DeprecatedClass occurrences="2">
       <code>ProxyFactory</code>
     </DeprecatedClass>
-    <DeprecatedMethod occurrences="7">
+    <DeprecatedMethod occurrences="5">
       <code>getAutoGenerateProxyClasses</code>
       <code>getMetadataCacheImpl</code>
       <code>getProxyDir</code>
       <code>getProxyNamespace</code>
       <code>merge</code>
-      <code>setCacheDriver</code>
-      <code>setCacheDriver</code>
     </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="9">
       <code>$entityName !== null &amp;&amp; ! is_string($entityName)</code>
@@ -3862,9 +3860,6 @@
       <code>new ClassLoader('Symfony\Component', $directory . '/Doctrine')</code>
       <code>new YamlDriver($paths)</code>
     </DeprecatedClass>
-    <DeprecatedMethod occurrences="1">
-      <code>setMetadataCacheImpl</code>
-    </DeprecatedMethod>
     <UnresolvableInclude occurrences="1">
       <code>require_once $directory . '/Doctrine/Common/ClassLoader.php'</code>
     </UnresolvableInclude>
