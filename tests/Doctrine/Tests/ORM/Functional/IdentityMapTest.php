@@ -6,11 +6,13 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
+use function gc_collect_cycles;
 use function get_class;
 
 /**
@@ -256,5 +258,54 @@ class IdentityMapTest extends OrmFunctionalTestCase
 
         // Now the collection should be refreshed with correct count
         self::assertCount(4, $user2->getPhonenumbers());
+    }
+
+    /**
+     * @group HashCollision
+     */
+    public function testObjectIdCollision(): void
+    {
+        $user           = new CmsUser();
+        $user->username = 'Test';
+        $user->name     = 'Test';
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        // Store a bunch of Articles
+        $articles = [];
+        for ($i = 0; $i < 100; ++$i) {
+            $articles[$i]   = $article = new CmsArticle();
+            $article->topic = 'Test';
+            $article->text  = 'Test';
+            $article->setAuthor($this->_em->merge($user));
+            $this->_em->persist($article);
+        }
+
+        // Clean EM
+        $this->_em->flush();
+        $this->_em->clear();
+
+        // Keep trace on object changes after EM reset
+        $user = $this->_em->merge($user);
+        foreach ($articles as $article) {
+            $article = $this->_em->merge($article);
+            $article->setAuthor($user);
+        }
+
+        // Release memory
+        unset($article);
+        gc_collect_cycles();
+
+        // Store more Articles and assert that no object Id is reused internally by php
+        $keepInRam = [];
+        for ($x = 0; $x < 1000; ++$x) {
+            $keepInRam[$x]  = $article = new CmsArticle();
+            $article->topic = 'Test';
+            $article->text  = 'Test';
+            $article->setAuthor($this->_em->merge($user));
+            $this->_em->persist($article);
+            $this->_em->flush();
+            $this->assertNotNull($article->id, 'Article wasn\'t persisted on iteration ' . $x);
+        }
     }
 }
