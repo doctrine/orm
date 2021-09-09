@@ -21,6 +21,8 @@
                 <!-- DBAL 2 compatibility -->
                 <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ImportCommand"/>
                 <referencedClass name="Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper"/>
+                <!-- The exception is thrown by a deprecated method. -->
+                <referencedClass name="Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver"/>
             </errorLevel>
         </DeprecatedClass>
         <DeprecatedMethod>
@@ -42,6 +44,12 @@
                 <file name="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php"/>
             </errorLevel>
         </DocblockTypeContradiction>
+        <InvalidArgument>
+            <errorLevel type="suppress">
+                <!-- Argument type changes in DBAL 3.2 -->
+                <referencedFunction name="Doctrine\DBAL\Cache\QueryCacheProfile::__construct"/>
+            </errorLevel>
+        </InvalidArgument>
         <InvalidClass>
             <errorLevel type="suppress">
                 <!-- Class name changes in DBAL 3. -->

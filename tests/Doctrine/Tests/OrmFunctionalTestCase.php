@@ -41,7 +41,6 @@ use function explode;
 use function get_class;
 use function getenv;
 use function implode;
-use function in_array;
 use function is_object;
 use function method_exists;
 use function realpath;
@@ -97,9 +96,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * To be configured by the test that uses result set cache
      *
-     * @var Cache|null
+     * @var CacheItemPoolInterface|null
      */
-    protected $resultCacheImpl;
+    protected $resultCache;
 
     /**
      * Whether the database schema has already been created.
@@ -742,8 +741,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
 
-        if ($this->resultCacheImpl !== null) {
-            $config->setResultCacheImpl($this->resultCacheImpl);
+        if ($this->resultCache !== null) {
+            if (method_exists($config, 'setResultCache')) {
+                $config->setResultCache($this->resultCache);
+            } else {
+                $config->setResultCacheImpl(DoctrineProvider::wrap($this->resultCache));
+            }
         }
 
         $enableSecondLevelCache = getenv('ENABLE_SECOND_LEVEL_CACHE');

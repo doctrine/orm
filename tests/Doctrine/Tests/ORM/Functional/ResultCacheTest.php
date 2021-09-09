@@ -4,21 +4,24 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
-use Doctrine\DBAL\Types\Type as DBALType;
-use Doctrine\ORM\Exception\ORMException;
+use Doctrine\DBAL\Cache\QueryCacheProfile;
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function assert;
 use function count;
 use function iterator_to_array;
+use function method_exists;
+use function sprintf;
 
 class ResultCacheTest extends OrmFunctionalTestCase
 {
@@ -42,73 +45,75 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
-        $cache = DoctrineProvider::wrap(new ArrayAdapter());
+        $cache = new ArrayAdapter();
 
-        $query->setResultCacheDriver($cache)->setResultCacheId('my_cache_id');
+        $this->setResultCache($query, $cache);
+        $query->setResultCacheId('my_cache_id');
 
-        self::assertFalse($cache->contains('my_cache_id'));
+        self::assertCacheDoesNotHaveItem('my_cache_id', $cache);
 
         $users = $query->getResult();
 
-        self::assertTrue($cache->contains('my_cache_id'));
+        self::assertCacheHasItem('my_cache_id', $cache);
         self::assertCount(1, $users);
         self::assertEquals('Roman', $users[0]->name);
 
         $this->_em->clear();
 
         $query2 = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
-        $query2->setResultCacheDriver($cache)->setResultCacheId('my_cache_id');
+        $this->setResultCache($query2, $cache);
+        $query2->setResultCacheId('my_cache_id');
 
         $users = $query2->getResult();
 
-        self::assertTrue($cache->contains('my_cache_id'));
+        self::assertCacheHasItem('my_cache_id', $cache);
         self::assertCount(1, $users);
         self::assertEquals('Roman', $users[0]->name);
     }
 
     public function testSetResultCacheId(): void
     {
-        $cache = DoctrineProvider::wrap(new ArrayAdapter());
+        $cache = new ArrayAdapter();
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
-        $query->setResultCacheDriver($cache);
+        $this->setResultCache($query, $cache);
         $query->setResultCacheId('testing_result_cache_id');
 
-        self::assertFalse($cache->contains('testing_result_cache_id'));
+        self::assertCacheDoesNotHaveItem('testing_result_cache_id', $cache);
 
         $query->getResult();
 
-        self::assertTrue($cache->contains('testing_result_cache_id'));
+        self::assertCacheHasItem('testing_result_cache_id', $cache);
     }
 
     public function testUseResultCacheTrue(): void
     {
-        $cache = DoctrineProvider::wrap(new ArrayAdapter());
+        $cache = new ArrayAdapter();
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $query->useResultCache(true);
-        $query->setResultCacheDriver($cache);
+        $this->setResultCache($query, $cache);
         $query->setResultCacheId('testing_result_cache_id');
         $query->getResult();
 
-        self::assertTrue($cache->contains('testing_result_cache_id'));
+        self::assertCacheHasItem('testing_result_cache_id', $cache);
 
-        $this->_em->getConfiguration()->setResultCacheImpl($this->createMock(Cache::class));
+        $this->resetCache();
     }
 
     public function testUseResultCacheFalse(): void
     {
-        $cache = DoctrineProvider::wrap(new ArrayAdapter());
+        $cache = new ArrayAdapter();
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
-        $query->setResultCacheDriver($cache);
+        $this->setResultCache($query, $cache);
         $query->setResultCacheId('testing_result_cache_id');
         $query->useResultCache(false);
         $query->getResult();
 
-        self::assertFalse($cache->contains('testing_result_cache_id'));
+        self::assertFalse($cache->hasItem('testing_result_cache_id'));
 
-        $this->_em->getConfiguration()->setResultCacheImpl($this->createMock(Cache::class));
+        $this->resetCache();
     }
 
     /**
@@ -116,11 +121,11 @@ class ResultCacheTest extends OrmFunctionalTestCase
      */
     public function testUseResultCacheParams(): void
     {
-        $cache    = DoctrineProvider::wrap(new ArrayAdapter());
+        $cache    = new ArrayAdapter();
         $sqlCount = count($this->_sqlLoggerStack->queries);
         $query    = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux WHERE ux.id = ?1');
 
-        $query->setResultCacheDriver($cache);
+        $this->setResultCache($query, $cache);
         $query->useResultCache(true);
 
         // these queries should result in cache miss:
@@ -150,27 +155,27 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
     public function testEnableResultCache(): void
     {
-        $cache = DoctrineProvider::wrap(new ArrayAdapter());
+        $cache = new ArrayAdapter();
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $query->enableResultCache();
-        $query->setResultCacheDriver($cache);
+        $this->setResultCache($query, $cache);
         $query->setResultCacheId('testing_result_cache_id');
         $query->getResult();
 
-        self::assertTrue($cache->contains('testing_result_cache_id'));
+        self::assertCacheHasItem('testing_result_cache_id', $cache);
 
-        $this->_em->getConfiguration()->setResultCacheImpl($this->createMock(Cache::class));
+        $this->resetCache();
     }
 
     public function testEnableResultCacheWithIterable(): void
     {
-        $cache            = DoctrineProvider::wrap(new ArrayAdapter());
+        $cache            = new ArrayAdapter();
         $expectedSQLCount = count($this->_sqlLoggerStack->queries) + 1;
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         $query->enableResultCache();
-        $query->setResultCacheDriver($cache);
+        $this->setResultCache($query, $cache);
         $query->setResultCacheId('testing_iterable_result_cache_id');
         iterator_to_array($query->toIterable());
 
@@ -180,11 +185,11 @@ class ResultCacheTest extends OrmFunctionalTestCase
             $expectedSQLCount,
             $this->_sqlLoggerStack->queries
         );
-        self::assertTrue($cache->contains('testing_iterable_result_cache_id'));
+        self::assertCacheHasItem('testing_iterable_result_cache_id', $cache);
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         $query->enableResultCache();
-        $query->setResultCacheDriver($cache);
+        $this->setResultCache($query, $cache);
         $query->setResultCacheId('testing_iterable_result_cache_id');
         iterator_to_array($query->toIterable());
 
@@ -194,7 +199,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
             'Expected query to be cached'
         );
 
-        $this->_em->getConfiguration()->setResultCacheImpl($this->createMock(Cache::class));
+        $this->resetCache();
     }
 
     /**
@@ -202,11 +207,11 @@ class ResultCacheTest extends OrmFunctionalTestCase
      */
     public function testEnableResultCacheParams(): void
     {
-        $cache    = DoctrineProvider::wrap(new ArrayAdapter());
+        $cache    = new ArrayAdapter();
         $sqlCount = count($this->_sqlLoggerStack->queries);
         $query    = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux WHERE ux.id = ?1');
 
-        $query->setResultCacheDriver($cache);
+        $this->setResultCache($query, $cache);
         $query->enableResultCache();
 
         // these queries should result in cache miss:
@@ -236,39 +241,39 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
     public function testDisableResultCache(): void
     {
-        $cache = DoctrineProvider::wrap(new ArrayAdapter());
+        $cache = new ArrayAdapter();
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
-        $query->setResultCacheDriver($cache);
+        $this->setResultCache($query, $cache);
         $query->setResultCacheId('testing_result_cache_id');
         $query->disableResultCache();
         $query->getResult();
 
-        self::assertFalse($cache->contains('testing_result_cache_id'));
+        self::assertFalse($cache->hasItem('testing_result_cache_id'));
 
-        $this->_em->getConfiguration()->setResultCacheImpl($this->createMock(Cache::class));
+        $this->resetCache();
     }
 
     public function testNativeQueryResultCaching(): array
     {
-        $adapter = new ArrayAdapter();
-        $cache   = DoctrineProvider::wrap($adapter);
-        $rsm     = new ResultSetMapping();
+        $cache = new ArrayAdapter();
+        $rsm   = new ResultSetMapping();
 
         $rsm->addScalarResult('id', 'u', 'integer');
 
         $query = $this->_em->createNativeQuery('select u.id FROM cms_users u WHERE u.id = ?', $rsm);
 
         $query->setParameter(1, 10);
-        $query->setResultCacheDriver($cache)->enableResultCache();
+        $this->setResultCache($query, $cache);
+        $query->enableResultCache();
 
-        self::assertCount(0, $adapter->getValues());
+        self::assertEmpty($cache->getValues());
 
         $query->getResult();
 
-        self::assertCount(2, $adapter->getValues());
+        self::assertNotEmpty($cache->getValues());
 
-        return [$query, $adapter];
+        return [$query, $cache];
     }
 
     /**
@@ -276,16 +281,16 @@ class ResultCacheTest extends OrmFunctionalTestCase
      */
     public function testResultCacheNotDependsOnQueryHints(array $previous): void
     {
-        [$query, $adapter] = $previous;
+        [$query, $cache] = $previous;
         assert($query instanceof NativeQuery);
-        assert($adapter instanceof ArrayAdapter);
+        assert($cache instanceof ArrayAdapter);
 
-        $cacheCount = count($adapter->getValues());
+        $cacheCount = count($cache->getValues());
 
         $query->setHint('foo', 'bar');
         $query->getResult();
 
-        self::assertCount($cacheCount, $adapter->getValues());
+        self::assertCount($cacheCount, $cache->getValues());
     }
 
     /**
@@ -293,16 +298,16 @@ class ResultCacheTest extends OrmFunctionalTestCase
      */
     public function testResultCacheDependsOnParameters(array $previous): void
     {
-        [$query, $adapter] = $previous;
+        [$query, $cache] = $previous;
         assert($query instanceof NativeQuery);
-        assert($adapter instanceof ArrayAdapter);
+        assert($cache instanceof ArrayAdapter);
 
-        $cacheCount = count($adapter->getValues());
+        $cacheCount = count($cache->getValues());
 
         $query->setParameter(1, 50);
         $query->getResult();
 
-        self::assertCount($cacheCount + 1, $adapter->getValues());
+        self::assertCount($cacheCount + 1, $cache->getValues());
     }
 
     /**
@@ -310,16 +315,16 @@ class ResultCacheTest extends OrmFunctionalTestCase
      */
     public function testResultCacheNotDependsOnHydrationMode(array $previous): void
     {
-        [$query, $adapter] = $previous;
+        [$query, $cache] = $previous;
         assert($query instanceof NativeQuery);
-        assert($adapter instanceof ArrayAdapter);
+        assert($cache instanceof ArrayAdapter);
 
-        $cacheCount = count($adapter->getValues());
+        $cacheCount = count($cache->getValues());
 
         self::assertNotEquals(Query::HYDRATE_ARRAY, $query->getHydrationMode());
         $query->getArrayResult();
 
-        self::assertCount($cacheCount, $adapter->getValues());
+        self::assertCount($cacheCount, $cache->getValues());
     }
 
     /**
@@ -352,7 +357,8 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         $cache = new ArrayAdapter();
 
-        $query->setResultCacheDriver(DoctrineProvider::wrap($cache))->enableResultCache();
+        $this->setResultCache($query, $cache);
+        $query->enableResultCache();
 
         $articles = $query->getResult();
 
@@ -364,7 +370,8 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query2 = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = ?1');
         $query2->setParameter(1, $user1);
 
-        $query2->setResultCacheDriver(DoctrineProvider::wrap($cache))->enableResultCache();
+        $this->setResultCache($query2, $cache);
+        $query2->enableResultCache();
 
         $articles = $query2->getResult();
 
@@ -374,10 +381,49 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query3 = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = ?1');
         $query3->setParameter(1, $user2);
 
-        $query3->setResultCacheDriver(DoctrineProvider::wrap($cache))->enableResultCache();
+        $this->setResultCache($query3, $cache);
+        $query3->enableResultCache();
 
         $articles = $query3->getResult();
 
         self::assertCount(0, $articles);
+    }
+
+    private function setResultCache(AbstractQuery $query, CacheItemPoolInterface $cache): void
+    {
+        $profile = new QueryCacheProfile();
+
+        if (method_exists($profile, 'setResultCache')) {
+            $profile = $profile->setResultCache($cache);
+        } else {
+            $profile = $profile->setResultCacheDriver(DoctrineProvider::wrap($cache));
+        }
+
+        $query->setResultCacheProfile($profile);
+    }
+
+    private static function assertCacheHasItem(string $key, CacheItemPoolInterface $cache): void
+    {
+        self::assertTrue(
+            $cache->hasItem($key) || DoctrineProvider::wrap($cache)->contains($key),
+            sprintf('Failed asserting that a given cache contains the key "%s".', $key)
+        );
+    }
+
+    private function resetCache(): void
+    {
+        if (method_exists(Configuration::class, 'setResultCache')) {
+            $this->_em->getConfiguration()->setResultCache(new ArrayAdapter());
+        } else {
+            $this->_em->getConfiguration()->setResultCacheImpl(DoctrineProvider::wrap(new ArrayAdapter()));
+        }
+    }
+
+    private static function assertCacheDoesNotHaveItem(string $key, CacheItemPoolInterface $cache): void
+    {
+        self::assertFalse(
+            $cache->hasItem($key) || DoctrineProvider::wrap($cache)->contains($key),
+            sprintf('Failed asserting that a given cache does not contain the key "%s".', $key)
+        );
     }
 }

@@ -10,3 +10,15 @@ parameters:
         - '/Call to an undefined method Doctrine\\DBAL\\Connection::createSchemaManager\(\)\./'
         # Class name will change in DBAL 3.
         - '/Class Doctrine\\DBAL\\Platforms\\PostgreSqlPlatform referenced with incorrect case: Doctrine\\DBAL\\Platforms\\PostgreSQLPlatform\./'
+
+        # Forward compatibility for DBAL 3.2
+        - '/^Call to an undefined method Doctrine\\.*::[gs]etResultCache\(\)\.$/'
+        -
+        	message: '/^Parameter #3 \$resultCache of class Doctrine\\DBAL\\Cache\\QueryCacheProfile constructor/'
+        	path: lib/Doctrine/ORM/AbstractQuery.php
+
+        # False positive
+        -
+            message: '/^Call to an undefined method Doctrine\\Common\\Cache\\Cache::deleteAll\(\)\.$/'
+            count: 1
+            path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php
