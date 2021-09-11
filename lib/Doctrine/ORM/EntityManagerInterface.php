@@ -173,7 +173,7 @@ interface EntityManagerInterface extends ObjectManager
      * @psalm-param class-string<T> $entityName
      *
      * @return object|null The entity reference.
-     * @psalm-return ?T
+     * @psalm-return T|null
      *
      * @throws ORMException
      *
@@ -198,8 +198,12 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param string $entityName The name of the entity type.
      * @param mixed  $identifier The entity identifier.
+     * @psalm-param class-string<T> $entityName
      *
-     * @return object|null The (partial) entity reference.
+     * @return object|null The (partial) entity reference
+     * @psalm-return T|null
+     *
+     * @template T
      */
     public function getPartialReference($entityName, $identifier);
 
