@@ -308,6 +308,9 @@
   </xs:complexType>
 
   <xs:complexType name="embedded">
+    <xs:sequence>
+      <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
+    </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="class" type="orm:fqcn" use="optional" />
     <xs:attribute name="column-prefix" type="xs:string" use="optional" />
