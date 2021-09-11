@@ -1184,6 +1184,7 @@ The constants for the different hydration modes are:
 -  ``Query::HYDRATE_ARRAY``
 -  ``Query::HYDRATE_SCALAR``
 -  ``Query::HYDRATE_SINGLE_SCALAR``
+-  ``Query::HYDRATE_SCALAR_COLUMN``
 
 Object Hydration
 ^^^^^^^^^^^^^^^^
@@ -1271,6 +1272,25 @@ You can use the ``getSingleScalarResult()`` shortcut as well:
 
     <?php
     $numArticles = $query->getSingleScalarResult();
+
+Scalar Column Hydration
+^^^^^^^^^^^^^^^^^^^^^^^
+
+If you have a query which returns a one-dimensional array of scalar values
+you can use scalar column hydration:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT a.id FROM CmsUser u');
+    $ids = $query->getResult(Query::HYDRATE_SCALAR_COLUMN);
+
+You can use the ``getSingleColumnResult()`` shortcut as well:
+
+.. code-block:: php
+
+    <?php
+    $ids = $query->getSingleColumnResult();
 
 Custom Hydration Modes
 ^^^^^^^^^^^^^^^^^^^^^^

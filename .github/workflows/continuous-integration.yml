@@ -24,6 +24,8 @@ jobs:
         include:
           - php-version: "8.0"
             dbal-version: "2.13"
+          - php-version: "8.0"
+            dbal-version: "3.2@dev"
 
     steps:
       - name: "Checkout"
@@ -59,7 +61,7 @@ jobs:
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v2"
         with:
-          name: "phpunit-sqlite-${{ matrix.php-version }}-coverage"
+          name: "phpunit-sqlite-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage*.xml"
 
 
@@ -120,7 +122,7 @@ jobs:
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v2"
         with:
-          name: "${{ github.job }}-${{ matrix.postgres-version }}-${{ matrix.php-version }}-coverage"
+          name: "${{ github.job }}-${{ matrix.postgres-version }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage.xml"
 
 
@@ -186,7 +188,7 @@ jobs:
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v2"
         with:
-          name: "${{ github.job }}-${{ matrix.mariadb-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-coverage"
+          name: "${{ github.job }}-${{ matrix.mariadb-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage.xml"
 
 
@@ -259,7 +261,7 @@ jobs:
       - name: "Upload coverage files"
         uses: "actions/upload-artifact@v2"
         with:
-          name: "${{ github.job }}-${{ matrix.mysql-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-coverage"
+          name: "${{ github.job }}-${{ matrix.mysql-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage*.xml"
 
 

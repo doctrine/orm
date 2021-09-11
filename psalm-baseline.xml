@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.9.3@4c262932602b9bbab5020863d1eb22d49de0dbf4">
+<files psalm-version="4.10.0@916b098b008f6de4543892b1e0651c1c3b92cbfa">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass occurrences="1">
       <code>IterableResult</code>
@@ -16,10 +16,9 @@
     <InvalidFalsableReturnType occurrences="1">
       <code>Parameter|null</code>
     </InvalidFalsableReturnType>
-    <InvalidNullableReturnType occurrences="3">
+    <InvalidNullableReturnType occurrences="2">
       <code>\Doctrine\Common\Cache\Cache</code>
       <code>int</code>
-      <code>string</code>
     </InvalidNullableReturnType>
     <InvalidScalarArgument occurrences="1">
       <code>$key</code>
@@ -29,9 +28,8 @@
       <code>$data</code>
       <code>$data</code>
     </MissingClosureParamType>
-    <NullableReturnStatement occurrences="4">
+    <NullableReturnStatement occurrences="3">
       <code>$this-&gt;_em-&gt;getConfiguration()-&gt;getResultCacheImpl()</code>
-      <code>$this-&gt;_queryCacheProfile ? $this-&gt;_queryCacheProfile-&gt;getCacheKey() : null</code>
       <code>$this-&gt;_queryCacheProfile-&gt;getResultCacheDriver()</code>
       <code>$this-&gt;cacheMode</code>
     </NullableReturnStatement>
@@ -39,34 +37,19 @@
       <code>$stmt</code>
       <code>$stmt</code>
     </PossiblyInvalidArgument>
-    <PossiblyNullArgument occurrences="4">
-      <code>$resultCacheDriver</code>
-      <code>$resultCacheDriver</code>
-      <code>$resultCacheDriver</code>
-      <code>$resultCacheId</code>
-    </PossiblyNullArgument>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$profile</code>
-    </PossiblyNullPropertyAssignmentValue>
-    <PossiblyNullReference occurrences="3">
-      <code>fetch</code>
+    <PossiblyNullReference occurrences="2">
       <code>getCacheLogger</code>
       <code>getQueryCache</code>
     </PossiblyNullReference>
-    <PropertyNotSetInConstructor occurrences="2">
-      <code>$_hydrationCacheProfile</code>
+    <PropertyNotSetInConstructor occurrences="1">
       <code>$_resultSetMapping</code>
     </PropertyNotSetInConstructor>
-    <RedundantCastGivenDocblockType occurrences="5">
+    <RedundantCastGivenDocblockType occurrences="4">
       <code>(bool) $cacheable</code>
       <code>(int) $cacheMode</code>
       <code>(int) $lifetime</code>
-      <code>(int) $lifetime</code>
       <code>(string) $cacheRegion</code>
     </RedundantCastGivenDocblockType>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>$this-&gt;_hydrationCacheProfile !== null</code>
-    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Cache.php">
     <MissingReturnType occurrences="1">
@@ -421,10 +404,11 @@
       <code>new CachedReader($reader, new ArrayCache())</code>
       <code>new SimpleAnnotationReader()</code>
     </DeprecatedClass>
-    <DeprecatedMethod occurrences="3">
+    <DeprecatedMethod occurrences="4">
       <code>AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php')</code>
       <code>getAutoGenerateProxyClasses</code>
       <code>getMetadataCacheImpl</code>
+      <code>getQueryCacheImpl</code>
     </DeprecatedMethod>
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(bool) $flag</code>
@@ -460,14 +444,12 @@
     <DeprecatedClass occurrences="2">
       <code>ProxyFactory</code>
     </DeprecatedClass>
-    <DeprecatedMethod occurrences="7">
+    <DeprecatedMethod occurrences="5">
       <code>getAutoGenerateProxyClasses</code>
       <code>getMetadataCacheImpl</code>
       <code>getProxyDir</code>
       <code>getProxyNamespace</code>
       <code>merge</code>
-      <code>setCacheDriver</code>
-      <code>setCacheDriver</code>
     </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="9">
       <code>$entityName !== null &amp;&amp; ! is_string($entityName)</code>
@@ -480,18 +462,21 @@
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
     </DocblockTypeContradiction>
-    <InvalidReturnStatement occurrences="7">
+    <InvalidReturnStatement occurrences="9">
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity</code>
+      <code>$entity</code>
+      <code>$entity instanceof $class-&gt;name ? $entity : null</code>
       <code>$entity instanceof $class-&gt;name ? $entity : null</code>
       <code>$persister-&gt;load($sortedId, null, null, [], $lockMode)</code>
       <code>$persister-&gt;loadById($sortedId)</code>
       <code>$this-&gt;metadataFactory-&gt;getMetadataFor($className)</code>
     </InvalidReturnStatement>
-    <InvalidReturnType occurrences="3">
+    <InvalidReturnType occurrences="4">
       <code>?T</code>
       <code>getClassMetadata</code>
+      <code>getPartialReference</code>
       <code>getReference</code>
     </InvalidReturnType>
     <InvalidScalarArgument occurrences="1">
@@ -1649,9 +1634,8 @@
     <LessSpecificImplementedReturnType occurrences="1">
       <code>mixed</code>
     </LessSpecificImplementedReturnType>
-    <PropertyNotSetInConstructor occurrences="3">
+    <PropertyNotSetInConstructor occurrences="2">
       <code>$sql</code>
-      <code>NativeQuery</code>
       <code>NativeQuery</code>
     </PropertyNotSetInConstructor>
   </file>
@@ -2048,14 +2032,12 @@
     <PossiblyNullPropertyAssignmentValue occurrences="1">
       <code>$timeToLive</code>
     </PossiblyNullPropertyAssignmentValue>
-    <PossiblyNullReference occurrences="2">
-      <code>delete</code>
+    <PossiblyNullReference occurrences="1">
       <code>evictEntityRegion</code>
     </PossiblyNullReference>
-    <PropertyNotSetInConstructor occurrences="4">
+    <PropertyNotSetInConstructor occurrences="3">
       <code>$parserResult</code>
       <code>$queryCacheTTL</code>
-      <code>Query</code>
       <code>Query</code>
     </PropertyNotSetInConstructor>
     <RedundantCastGivenDocblockType occurrences="1">
@@ -3386,6 +3368,9 @@
     </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryCommand.php">
+    <DeprecatedMethod occurrences="1">
+      <code>getQueryCacheImpl</code>
+    </DeprecatedMethod>
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
@@ -3405,6 +3390,13 @@
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
+    <PossiblyNullArgument occurrences="2">
+      <code>$cacheDriver</code>
+      <code>$cacheDriver</code>
+    </PossiblyNullArgument>
+    <PossiblyNullReference occurrences="1">
+      <code>deleteAll</code>
+    </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ConvertDoctrine1SchemaCommand.php">
     <ArgumentTypeCoercion occurrences="1">
@@ -3862,9 +3854,6 @@
       <code>new ClassLoader('Symfony\Component', $directory . '/Doctrine')</code>
       <code>new YamlDriver($paths)</code>
     </DeprecatedClass>
-    <DeprecatedMethod occurrences="1">
-      <code>setMetadataCacheImpl</code>
-    </DeprecatedMethod>
     <UnresolvableInclude occurrences="1">
       <code>require_once $directory . '/Doctrine/Common/ClassLoader.php'</code>
     </UnresolvableInclude>

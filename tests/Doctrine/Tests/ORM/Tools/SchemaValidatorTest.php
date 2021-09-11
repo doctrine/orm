@@ -7,14 +7,17 @@ namespace Doctrine\Tests\ORM\Tools;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Embeddable;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\OrderBy;
@@ -211,6 +214,46 @@ class SchemaValidatorTest extends OrmTestCase
             $ce
         );
     }
+
+    /**
+     * @group 8771
+     */
+    public function testMappedSuperclassNotPresentInDiscriminator(): void
+    {
+        $class1 = $this->em->getClassMetadata(MappedSuperclassEntity::class);
+        $ce     = $this->validator->validateClass($class1);
+
+        $this->assertEquals([], $ce);
+    }
+}
+
+/**
+ * @MappedSuperclass
+ */
+abstract class MappedSuperclassEntity extends ParentEntity
+{
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorMap({"child" = ChildEntity::class})
+ */
+abstract class ParentEntity
+{
+    /**
+     * @var mixed
+     * @Id
+     * @Column
+     */
+    protected $key;
+}
+
+/**
+ * @Entity
+ */
+class ChildEntity extends MappedSuperclassEntity
+{
 }
 
 /**

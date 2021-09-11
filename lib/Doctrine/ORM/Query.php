@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
@@ -20,6 +22,7 @@ use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
+use Psr\Cache\CacheItemPoolInterface;
 
 use function array_keys;
 use function array_values;
@@ -29,6 +32,7 @@ use function get_debug_type;
 use function in_array;
 use function ksort;
 use function md5;
+use function method_exists;
 use function reset;
 use function serialize;
 use function sha1;
@@ -329,13 +333,20 @@ final class Query extends AbstractQuery
             return;
         }
 
-        $cacheDriver = $this->_queryCacheProfile->getResultCacheDriver();
-        $statements  = (array) $executor->getSqlStatements(); // Type casted since it can either be a string or an array
+        $cache = method_exists(QueryCacheProfile::class, 'getResultCache')
+            ? $this->_queryCacheProfile->getResultCache()
+            : $this->_queryCacheProfile->getResultCacheDriver();
+
+        assert($cache !== null);
+
+        $statements = (array) $executor->getSqlStatements(); // Type casted since it can either be a string or an array
 
         foreach ($statements as $statement) {
             $cacheKeys = $this->_queryCacheProfile->generateCacheKeys($statement, $sqlParams, $types, $connectionParams);
 
-            $cacheDriver->delete(reset($cacheKeys));
+            $cache instanceof CacheItemPoolInterface
+                ? $cache->deleteItem(reset($cacheKeys))
+                : $cache->delete(reset($cacheKeys));
         }
     }
 
@@ -487,7 +498,9 @@ final class Query extends AbstractQuery
             return $this->queryCache;
         }
 
-        return $this->_em->getConfiguration()->getQueryCacheImpl();
+        $queryCache = $this->_em->getConfiguration()->getQueryCache();
+
+        return $queryCache ? DoctrineProvider::wrap($queryCache) : null;
     }
 
     /**

@@ -21,10 +21,8 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
 
-use function count;
 use function get_class;
-use function is_array;
-use function is_numeric;
+use function in_array;
 
 class BasicFunctionalTest extends OrmFunctionalTestCase
 {
@@ -256,6 +254,35 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertEquals('Guilherme', $usersScalar[0]['u_name']);
         self::assertEquals('gblanco', $usersScalar[0]['u_username']);
         self::assertEquals('developer', $usersScalar[0]['u_status']);
+    }
+
+    public function testSingleColumnQuery(): void
+    {
+        $gregoire           = new CmsUser();
+        $gregoire->name     = 'Gregoire';
+        $gregoire->username = 'greg0ire';
+        $gregoire->status   = 'developer';
+        $this->_em->persist($gregoire);
+
+        $bhushan           = new CmsUser();
+        $bhushan->name     = 'Bhushan';
+        $bhushan->username = 'bhushan';
+        $bhushan->status   = 'developer';
+        $this->_em->persist($bhushan);
+
+        $this->_em->flush();
+
+        $query = $this->_em->createQuery('select u.username from Doctrine\Tests\Models\CMS\CmsUser u order by u.username DESC');
+
+        $users = $query->getSingleColumnResult();
+
+        $expected = [
+            'greg0ire',
+            'bhushan',
+        ];
+
+        self::assertCount(2, $users);
+        self::assertSame($expected, $users);
     }
 
     public function testBasicOneToManyInnerJoin(): void

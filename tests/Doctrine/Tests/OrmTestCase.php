@@ -39,9 +39,9 @@ abstract class OrmTestCase extends DoctrineTestCase
     /**
      * The query cache that is shared between all ORM tests (except functional tests).
      *
-     * @var Cache|null
+     * @var CacheItemPoolInterface|null
      */
-    private static $_queryCacheImpl = null;
+    private static $queryCache = null;
 
     /** @var bool */
     protected $isSecondLevelCacheEnabled = false;
@@ -102,7 +102,7 @@ abstract class OrmTestCase extends DoctrineTestCase
 
         $config->setMetadataCache($metadataCache);
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], false));
-        $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
+        $config->setQueryCache(self::getSharedQueryCache());
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
@@ -155,13 +155,13 @@ abstract class OrmTestCase extends DoctrineTestCase
         return self::$_metadataCache;
     }
 
-    private static function getSharedQueryCacheImpl(): Cache
+    private static function getSharedQueryCache(): CacheItemPoolInterface
     {
-        if (self::$_queryCacheImpl === null) {
-            self::$_queryCacheImpl = DoctrineProvider::wrap(new ArrayAdapter());
+        if (self::$queryCache === null) {
+            self::$queryCache = new ArrayAdapter();
         }
 
-        return self::$_queryCacheImpl;
+        return self::$queryCache;
     }
 
     protected function getSharedSecondLevelCacheDriverImpl(): Cache

@@ -6,17 +6,17 @@ namespace Doctrine\Tests\ORM\Cache;
 
 use BadMethodCallException;
 use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
+use Psr\Cache\CacheItemInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function assert;
-use function class_exists;
 
 /**
  * @group DDC-2183
@@ -36,15 +36,11 @@ class DefaultRegionTest extends AbstractRegionTest
 
     public function testSharedRegion(): void
     {
-        if (! class_exists(ArrayCache::class)) {
-            self::markTestSkipped('Test only applies with doctrine/cache 1.x');
-        }
-
         $cache   = new SharedArrayCache();
         $key     = new CacheKeyMock('key');
         $entry   = new CacheEntryMock(['value' => 'foo']);
-        $region1 = new DefaultRegion('region1', $cache->createChild());
-        $region2 = new DefaultRegion('region2', $cache->createChild());
+        $region1 = new DefaultRegion('region1', DoctrineProvider::wrap($cache->createChild()));
+        $region2 = new DefaultRegion('region2', DoctrineProvider::wrap($cache->createChild()));
 
         self::assertFalse($region1->contains($key));
         self::assertFalse($region2->contains($key));
@@ -135,76 +131,71 @@ class DefaultRegionTest extends AbstractRegionTest
     }
 }
 
-if (class_exists(ArrayCache::class)) {
-    /**
-     * Cache provider that offers child cache items (sharing the same array)
-     *
-     * Declared as a different class for readability purposes and kept in this file
-     * to keep its monstrosity contained.
-     *
-     * @internal
-     */
-    final class SharedArrayCache extends ArrayCache
+/**
+ * Cache provider that offers child cache items (sharing the same array)
+ *
+ * Declared as a different class for readability purposes and kept in this file
+ * to keep its monstrosity contained.
+ *
+ * @internal
+ */
+final class SharedArrayCache extends ArrayAdapter
+{
+    public function createChild(): CacheItemPoolInterface
     {
-        public function createChild(): Cache
-        {
-            return new class ($this) extends CacheProvider {
-                /** @var ArrayCache */
-                private $parent;
+        return new class ($this) implements CacheItemPoolInterface {
+            /** @var CacheItemPoolInterface */
+            private $parent;
 
-                public function __construct(ArrayCache $parent)
-                {
-                    $this->parent = $parent;
-                }
+            public function __construct(CacheItemPoolInterface $parent)
+            {
+                $this->parent = $parent;
+            }
 
-                /**
-                 * {@inheritDoc}
-                 */
-                protected function doFetch($id)
-                {
-                    return $this->parent->doFetch($id);
-                }
+            public function getItem($key): CacheItemInterface
+            {
+                return $this->parent->getItem($key);
+            }
 
-                /**
-                 * {@inheritDoc}
-                 */
-                protected function doContains($id)
-                {
-                    return $this->parent->doContains($id);
-                }
+            public function getItems(array $keys = []): iterable
+            {
+                return $this->parent->getItems($keys);
+            }
 
-                /**
-                 * {@inheritDoc}
-                 */
-                protected function doSave($id, $data, $lifeTime = 0)
-                {
-                    return $this->parent->doSave($id, $data, $lifeTime);
-                }
+            public function hasItem($key): bool
+            {
+                return $this->parent->hasItem($key);
+            }
 
-                /**
-                 * {@inheritDoc}
-                 */
-                protected function doDelete($id)
-                {
-                    return $this->parent->doDelete($id);
-                }
+            public function clear(): bool
+            {
+                return $this->parent->clear();
+            }
 
-                /**
-                 * {@inheritDoc}
-                 */
-                protected function doFlush()
-                {
-                    return $this->parent->doFlush();
-                }
+            public function deleteItem($key): bool
+            {
+                return $this->parent->deleteItem($key);
+            }
 
-                /**
-                 * {@inheritDoc}
-                 */
-                protected function doGetStats()
-                {
-                    return $this->parent->doGetStats();
-                }
-            };
-        }
+            public function deleteItems(array $keys): bool
+            {
+                return $this->parent->deleteItems($keys);
+            }
+
+            public function save(CacheItemInterface $item): bool
+            {
+                return $this->parent->save($item);
+            }
+
+            public function saveDeferred(CacheItemInterface $item): bool
+            {
+                return $this->parent->saveDeferred($item);
+            }
+
+            public function commit(): bool
+            {
+                return $this->parent->commit();
+            }
+        };
     }
 }
