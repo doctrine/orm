@@ -23,6 +23,7 @@ namespace Doctrine\ORM;
 use BadMethodCallException;
 use DateTimeInterface;
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Proxy\ProxyFactory;
@@ -169,7 +170,7 @@ interface EntityManagerInterface extends ObjectManager
      * @psalm-param class-string<T> $entityName
      *
      * @return object|null The entity reference.
-     * @psalm-return ?T
+     * @psalm-return (T&Proxy)|null
      *
      * @throws ORMException
      *
@@ -194,8 +195,12 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param string $entityName The name of the entity type.
      * @param mixed  $identifier The entity identifier.
+     * @psalm-param class-string<T> $entityName
      *
-     * @return object|null The (partial) entity reference.
+     * @return object|null The (partial) entity reference
+     * @psalm-return (T&Proxy)|null
+     *
+     * @template T
      */
     public function getPartialReference($entityName, $identifier);
 
