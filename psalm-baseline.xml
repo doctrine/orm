@@ -487,7 +487,7 @@
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
     </DocblockTypeContradiction>
-    <InvalidReturnStatement occurrences="10">
+    <InvalidReturnStatement occurrences="9">
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity</code>
@@ -496,7 +496,6 @@
       <code>$entity instanceof $class-&gt;name ? $entity : null</code>
       <code>$persister-&gt;load($sortedId, null, null, [], $lockMode)</code>
       <code>$persister-&gt;loadById($sortedId)</code>
-      <code>$this-&gt;find($entityName, $sortedId)</code>
       <code>$this-&gt;metadataFactory-&gt;getMetadataFor($className)</code>
     </InvalidReturnStatement>
     <InvalidReturnType occurrences="4">
