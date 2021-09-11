@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use Closure;
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
@@ -123,8 +122,7 @@ class LockAgentWorker
         $config->setMetadataDriverImpl($annotDriver);
         $config->setMetadataCache(new ArrayAdapter());
 
-        $cache = DoctrineProvider::wrap(new ArrayAdapter());
-        $config->setQueryCacheImpl($cache);
+        $config->setQueryCache(new ArrayAdapter());
 
         return EntityManager::create($conn, $config);
     }

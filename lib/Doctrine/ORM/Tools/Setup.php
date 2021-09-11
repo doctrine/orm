@@ -124,8 +124,8 @@ class Setup
         $config = new Configuration();
 
         $config->setMetadataCache(CacheAdapter::wrap($cache));
-        $config->setQueryCacheImpl($cache);
-        $config->setResultCacheImpl($cache);
+        $config->setQueryCache(CacheAdapter::wrap($cache));
+        $config->setResultCache(CacheAdapter::wrap($cache));
         $config->setProxyDir($proxyDir);
         $config->setProxyNamespace('DoctrineProxies');
         $config->setAutoGenerateProxyClasses($isDevMode);

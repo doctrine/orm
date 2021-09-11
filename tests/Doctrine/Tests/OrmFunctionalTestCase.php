@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests;
 
 use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
@@ -66,9 +65,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * The query cache shared between all functional tests.
      *
-     * @var Cache|null
+     * @var CacheItemPoolInterface|null
      */
-    private static $_queryCacheImpl = null;
+    private static $queryCache = null;
 
     /**
      * Shared connection when a TestCase is run alone (outside of its functional suite).
@@ -721,8 +720,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             }
         }
 
-        if (self::$_queryCacheImpl === null) {
-            self::$_queryCacheImpl = DoctrineProvider::wrap(new ArrayAdapter());
+        if (self::$queryCache === null) {
+            self::$queryCache = new ArrayAdapter();
         }
 
         $this->_sqlLoggerStack          = new DebugStack();
@@ -737,16 +736,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $config->setMetadataCacheImpl(self::$_metadataCache);
         }
 
-        $config->setQueryCacheImpl(self::$_queryCacheImpl);
+        $config->setQueryCache(self::$queryCache);
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
 
         if ($this->resultCache !== null) {
-            if (method_exists($config, 'setResultCache')) {
-                $config->setResultCache($this->resultCache);
-            } else {
-                $config->setResultCacheImpl(DoctrineProvider::wrap($this->resultCache));
-            }
+            $config->setResultCache($this->resultCache);
         }
 
         $enableSecondLevelCache = getenv('ENABLE_SECOND_LEVEL_CACHE');

@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\ORM\AbstractQuery;
-use Doctrine\ORM\Configuration;
 use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -412,11 +411,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
     private function resetCache(): void
     {
-        if (method_exists(Configuration::class, 'setResultCache')) {
-            $this->_em->getConfiguration()->setResultCache(new ArrayAdapter());
-        } else {
-            $this->_em->getConfiguration()->setResultCacheImpl(DoctrineProvider::wrap(new ArrayAdapter()));
-        }
+        $this->_em->getConfiguration()->setResultCache(new ArrayAdapter());
     }
 
     private static function assertCacheDoesNotHaveItem(string $key, CacheItemPoolInterface $cache): void

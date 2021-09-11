@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\LockMode;
@@ -497,7 +498,9 @@ final class Query extends AbstractQuery
             return $this->queryCache;
         }
 
-        return $this->_em->getConfiguration()->getQueryCacheImpl();
+        $queryCache = $this->_em->getConfiguration()->getQueryCache();
+
+        return $queryCache ? DoctrineProvider::wrap($queryCache) : null;
     }
 
     /**

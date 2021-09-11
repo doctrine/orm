@@ -68,7 +68,7 @@ EOT
         $ui = new SymfonyStyle($input, $output);
 
         $em          = $this->getEntityManager($input);
-        $cache       = method_exists(Configuration::class, 'getResultCache') ? $em->getConfiguration()->getResultCache() : null;
+        $cache       = $em->getConfiguration()->getResultCache();
         $cacheDriver = method_exists(Configuration::class, 'getResultCacheImpl') ? $em->getConfiguration()->getResultCacheImpl() : null;
 
         if (! $cacheDriver && ! $cache) {

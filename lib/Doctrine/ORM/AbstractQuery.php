@@ -543,15 +543,15 @@ abstract class AbstractQuery
         // DBAL < 3.2
         if (! method_exists(QueryCacheProfile::class, 'setResultCache')) {
             if (! $profile->getResultCacheDriver()) {
-                $defaultHydrationCacheImpl = $this->_em->getConfiguration()->getHydrationCacheImpl();
+                $defaultHydrationCacheImpl = $this->_em->getConfiguration()->getHydrationCache();
                 if ($defaultHydrationCacheImpl) {
-                    $profile = $profile->setResultCacheDriver($defaultHydrationCacheImpl);
+                    $profile = $profile->setResultCacheDriver(DoctrineProvider::wrap($defaultHydrationCacheImpl));
                 }
             }
         } elseif (! $profile->getResultCache()) {
-            $defaultHydrationCacheImpl = $this->_em->getConfiguration()->getHydrationCacheImpl();
+            $defaultHydrationCacheImpl = $this->_em->getConfiguration()->getHydrationCache();
             if ($defaultHydrationCacheImpl) {
-                $profile = $profile->setResultCache(CacheAdapter::wrap($defaultHydrationCacheImpl));
+                $profile = $profile->setResultCache($defaultHydrationCacheImpl);
             }
         }
 
@@ -587,9 +587,9 @@ abstract class AbstractQuery
         // DBAL < 3.2
         if (! method_exists(QueryCacheProfile::class, 'setResultCache')) {
             if (! $profile->getResultCacheDriver()) {
-                $defaultResultCacheDriver = $this->_em->getConfiguration()->getResultCacheImpl();
+                $defaultResultCacheDriver = $this->_em->getConfiguration()->getResultCache();
                 if ($defaultResultCacheDriver) {
-                    $profile = $profile->setResultCacheDriver($defaultResultCacheDriver);
+                    $profile = $profile->setResultCacheDriver(DoctrineProvider::wrap($defaultResultCacheDriver));
                 }
             }
         } elseif (! $profile->getResultCache()) {
@@ -727,15 +727,33 @@ abstract class AbstractQuery
      *
      * @param int|null $lifetime How long the cache entry is valid, in seconds.
      *
-     * @return static This query instance.
+     * @return $this
      */
     public function setResultCacheLifetime($lifetime)
     {
-        $lifetime = $lifetime !== null ? (int) $lifetime : 0;
+        $lifetime = (int) $lifetime;
 
-        $this->_queryCacheProfile = $this->_queryCacheProfile
-            ? $this->_queryCacheProfile->setLifetime($lifetime)
-            : new QueryCacheProfile($lifetime, null, $this->_em->getConfiguration()->getResultCacheImpl());
+        if ($this->_queryCacheProfile) {
+            $this->_queryCacheProfile = $this->_queryCacheProfile->setLifetime($lifetime);
+
+            return $this;
+        }
+
+        $this->_queryCacheProfile = new QueryCacheProfile($lifetime);
+
+        $cache = $this->_em->getConfiguration()->getResultCache();
+        if (! $cache) {
+            return $this;
+        }
+
+        // Compatibility for DBAL < 3.2
+        if (! method_exists($this->_queryCacheProfile, 'setResultCache')) {
+            $this->_queryCacheProfile = $this->_queryCacheProfile->setResultCacheDriver(DoctrineProvider::wrap($cache));
+
+            return $this;
+        }
+
+        $this->_queryCacheProfile = $this->_queryCacheProfile->setResultCache($cache);
 
         return $this;
     }
