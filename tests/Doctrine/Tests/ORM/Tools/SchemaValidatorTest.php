@@ -205,7 +205,7 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testMappedSuperclassNotPresentInDiscriminator(): void
     {
-        $class1 = $this->em->getClassMetadata(MappedSuperclass::class);
+        $class1 = $this->em->getClassMetadata(MappedSuperclassEntity::class);
         $ce     = $this->validator->validateClass($class1);
 
         $this->assertEquals([], $ce);
@@ -213,9 +213,9 @@ class SchemaValidatorTest extends OrmTestCase
 }
 
 /**
- * @MappedSuperClass
+ * @MappedSuperclass
  */
-abstract class MappedSuperclass extends ParentEntity
+abstract class MappedSuperclassEntity extends ParentEntity
 {
 }
 
@@ -237,7 +237,7 @@ abstract class ParentEntity
 /**
  * @Entity
  */
-class ChildEntity extends MappedSuperclass
+class ChildEntity extends MappedSuperclassEntity
 {
 }
 
