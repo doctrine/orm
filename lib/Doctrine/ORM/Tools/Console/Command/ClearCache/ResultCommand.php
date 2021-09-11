@@ -8,15 +8,18 @@ use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\ClearableCache;
 use Doctrine\Common\Cache\FlushableCache;
 use Doctrine\Common\Cache\XcacheCache;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Tools\Console\Command\AbstractEntityManagerCommand;
 use InvalidArgumentException;
 use LogicException;
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 use function get_class;
+use function method_exists;
 use function sprintf;
 
 /**
@@ -65,21 +68,22 @@ EOT
         $ui = new SymfonyStyle($input, $output);
 
         $em          = $this->getEntityManager($input);
-        $cacheDriver = $em->getConfiguration()->getResultCacheImpl();
+        $cache       = method_exists(Configuration::class, 'getResultCache') ? $em->getConfiguration()->getResultCache() : null;
+        $cacheDriver = method_exists(Configuration::class, 'getResultCacheImpl') ? $em->getConfiguration()->getResultCacheImpl() : null;
 
-        if (! $cacheDriver) {
+        if (! $cacheDriver && ! $cache) {
             throw new InvalidArgumentException('No Result cache driver is configured on given EntityManager.');
         }
 
-        if ($cacheDriver instanceof ApcCache) {
-            throw new LogicException('Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.');
+        if ($cacheDriver instanceof ApcCache || $cache instanceof ApcuAdapter) {
+            throw new LogicException('Cannot clear APCu Cache from Console, it\'s shared in the Webserver memory and not accessible from the CLI.');
         }
 
         if ($cacheDriver instanceof XcacheCache) {
-            throw new LogicException('Cannot clear XCache Cache from Console, its shared in the Webserver memory and not accessible from the CLI.');
+            throw new LogicException('Cannot clear XCache Cache from Console, it\'s shared in the Webserver memory and not accessible from the CLI.');
         }
 
-        if (! ($cacheDriver instanceof ClearableCache)) {
+        if (! $cache && ! ($cacheDriver instanceof ClearableCache)) {
             throw new LogicException(sprintf(
                 'Can only clear cache when ClearableCache interface is implemented, %s does not implement.',
                 get_class($cacheDriver)
@@ -88,10 +92,10 @@ EOT
 
         $ui->comment('Clearing <info>all</info> Result cache entries');
 
-        $result  = $cacheDriver->deleteAll();
+        $result  = $cache ? $cache->clear() : $cacheDriver->deleteAll();
         $message = $result ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
 
-        if ($input->getOption('flush') === true) {
+        if ($input->getOption('flush') === true && ! $cache) {
             if (! ($cacheDriver instanceof FlushableCache)) {
                 throw new LogicException(sprintf(
                     'Can only clear cache when FlushableCache interface is implemented, %s does not implement.',

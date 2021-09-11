@@ -10,6 +10,7 @@ use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
@@ -27,7 +28,7 @@ use Generator;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function assert;
-use function count;
+use function method_exists;
 
 class QueryTest extends OrmTestCase
 {
@@ -137,6 +138,25 @@ class QueryTest extends OrmTestCase
      */
     public function testQueryDefaultResultCache(): void
     {
+        if (! method_exists(Configuration::class, 'setResultCache')) {
+            self::markTestSkipped('This test requires DBAL 3.2 or newer.');
+        }
+
+        $this->entityManager->getConfiguration()->setResultCache(new ArrayAdapter());
+        $q = $this->entityManager->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
+        $q->enableResultCache();
+        self::assertSame($this->entityManager->getConfiguration()->getResultCache(), $q->getQueryCacheProfile()->getResultCache());
+    }
+
+    /**
+     * @group DDC-1588
+     */
+    public function testQueryDefaultResultCacheLegacy(): void
+    {
+        if (method_exists(Configuration::class, 'setResultCache')) {
+            self::markTestSkipped('This test requires DBAL 3.1 or lower.');
+        }
+
         $this->entityManager->getConfiguration()->setResultCacheImpl(DoctrineProvider::wrap(new ArrayAdapter()));
         $q = $this->entityManager->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
         $q->enableResultCache();
@@ -364,7 +384,11 @@ class QueryTest extends OrmTestCase
      */
     public function testResultCacheEviction(): void
     {
-        $this->entityManager->getConfiguration()->setResultCacheImpl(DoctrineProvider::wrap(new ArrayAdapter()));
+        if (method_exists(Configuration::class, 'setResultCache')) {
+            $this->entityManager->getConfiguration()->setResultCache(new ArrayAdapter());
+        } else {
+            $this->entityManager->getConfiguration()->setResultCacheImpl(DoctrineProvider::wrap(new ArrayAdapter()));
+        }
 
         $query = $this->entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
                            ->enableResultCache();

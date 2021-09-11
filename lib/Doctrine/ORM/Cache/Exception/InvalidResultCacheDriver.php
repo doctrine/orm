@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Exception;
 
+/**
+ * @deprecated
+ */
 final class InvalidResultCacheDriver extends CacheException
 {
     public static function create(): self

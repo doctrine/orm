@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -21,7 +20,7 @@ class GH2947Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
-        $this->resultCacheImpl = DoctrineProvider::wrap(new ArrayAdapter());
+        $this->resultCache = new ArrayAdapter();
 
         parent::setUp();
 

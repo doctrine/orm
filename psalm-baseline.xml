@@ -16,10 +16,9 @@
     <InvalidFalsableReturnType occurrences="1">
       <code>Parameter|null</code>
     </InvalidFalsableReturnType>
-    <InvalidNullableReturnType occurrences="3">
+    <InvalidNullableReturnType occurrences="2">
       <code>\Doctrine\Common\Cache\Cache</code>
       <code>int</code>
-      <code>string</code>
     </InvalidNullableReturnType>
     <InvalidScalarArgument occurrences="1">
       <code>$key</code>
@@ -29,9 +28,8 @@
       <code>$data</code>
       <code>$data</code>
     </MissingClosureParamType>
-    <NullableReturnStatement occurrences="4">
+    <NullableReturnStatement occurrences="3">
       <code>$this-&gt;_em-&gt;getConfiguration()-&gt;getResultCacheImpl()</code>
-      <code>$this-&gt;_queryCacheProfile ? $this-&gt;_queryCacheProfile-&gt;getCacheKey() : null</code>
       <code>$this-&gt;_queryCacheProfile-&gt;getResultCacheDriver()</code>
       <code>$this-&gt;cacheMode</code>
     </NullableReturnStatement>
@@ -39,22 +37,11 @@
       <code>$stmt</code>
       <code>$stmt</code>
     </PossiblyInvalidArgument>
-    <PossiblyNullArgument occurrences="4">
-      <code>$resultCacheDriver</code>
-      <code>$resultCacheDriver</code>
-      <code>$resultCacheDriver</code>
-      <code>$resultCacheId</code>
-    </PossiblyNullArgument>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$profile</code>
-    </PossiblyNullPropertyAssignmentValue>
-    <PossiblyNullReference occurrences="3">
-      <code>fetch</code>
+    <PossiblyNullReference occurrences="2">
       <code>getCacheLogger</code>
       <code>getQueryCache</code>
     </PossiblyNullReference>
-    <PropertyNotSetInConstructor occurrences="2">
-      <code>$_hydrationCacheProfile</code>
+    <PropertyNotSetInConstructor occurrences="1">
       <code>$_resultSetMapping</code>
     </PropertyNotSetInConstructor>
     <RedundantCastGivenDocblockType occurrences="5">
@@ -64,9 +51,6 @@
       <code>(int) $lifetime</code>
       <code>(string) $cacheRegion</code>
     </RedundantCastGivenDocblockType>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>$this-&gt;_hydrationCacheProfile !== null</code>
-    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Cache.php">
     <MissingReturnType occurrences="1">
@@ -1647,7 +1631,7 @@
     <LessSpecificImplementedReturnType occurrences="1">
       <code>mixed</code>
     </LessSpecificImplementedReturnType>
-    <PropertyNotSetInConstructor occurrences="3">
+    <PropertyNotSetInConstructor occurrences="2">
       <code>$sql</code>
       <code>NativeQuery</code>
       <code>NativeQuery</code>
@@ -2046,11 +2030,10 @@
     <PossiblyNullPropertyAssignmentValue occurrences="1">
       <code>$timeToLive</code>
     </PossiblyNullPropertyAssignmentValue>
-    <PossiblyNullReference occurrences="2">
-      <code>delete</code>
+    <PossiblyNullReference occurrences="1">
       <code>evictEntityRegion</code>
     </PossiblyNullReference>
-    <PropertyNotSetInConstructor occurrences="4">
+    <PropertyNotSetInConstructor occurrences="3">
       <code>$parserResult</code>
       <code>$queryCacheTTL</code>
       <code>Query</code>

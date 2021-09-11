@@ -10,6 +10,8 @@ use Doctrine\Tests\Models\Cms\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
+use function method_exists;
+
 /**
  * @group DDC-1766
  */
@@ -33,52 +35,57 @@ class HydrationCacheTest extends OrmFunctionalTestCase
 
     public function testHydrationCache(): void
     {
-        $cache = DoctrineProvider::wrap(new ArrayAdapter());
-        $dql   = 'SELECT u FROM Doctrine\Tests\Models\Cms\CmsUser u';
+        $arrayAdapter = new ArrayAdapter();
+        $cache        = method_exists(QueryCacheProfile::class, 'getResultCache') ? $arrayAdapter : DoctrineProvider::wrap($arrayAdapter);
 
-        $users = $this->_em->createQuery($dql)
-                      ->setHydrationCacheProfile(new QueryCacheProfile(null, null, $cache))
-                      ->getResult();
+        $dql = 'SELECT u FROM Doctrine\Tests\Models\Cms\CmsUser u';
 
-        $c     = $this->getCurrentQueryCount();
-        $users = $this->_em->createQuery($dql)
-                      ->setHydrationCacheProfile(new QueryCacheProfile(null, null, $cache))
-                      ->getResult();
+        $this->_em->createQuery($dql)
+                  ->setHydrationCacheProfile(new QueryCacheProfile(0, null, $cache))
+                  ->getResult();
+
+        $c = $this->getCurrentQueryCount();
+        $this->_em->createQuery($dql)
+                  ->setHydrationCacheProfile(new QueryCacheProfile(0, null, $cache))
+                  ->getResult();
 
         self::assertEquals($c, $this->getCurrentQueryCount(), 'Should not execute query. Its cached!');
 
-        $users = $this->_em->createQuery($dql)
-                      ->setHydrationCacheProfile(new QueryCacheProfile(null, null, $cache))
-                      ->getArrayResult();
+        $this->_em->createQuery($dql)
+                  ->setHydrationCacheProfile(new QueryCacheProfile(0, null, $cache))
+                  ->getArrayResult();
 
         self::assertEquals($c + 1, $this->getCurrentQueryCount(), 'Hydration is part of cache key.');
 
-        $users = $this->_em->createQuery($dql)
-                      ->setHydrationCacheProfile(new QueryCacheProfile(null, null, $cache))
-                      ->getArrayResult();
+        $this->_em->createQuery($dql)
+                  ->setHydrationCacheProfile(new QueryCacheProfile(0, null, $cache))
+                  ->getArrayResult();
 
         self::assertEquals($c + 1, $this->getCurrentQueryCount(), 'Hydration now cached');
 
-        $users = $this->_em->createQuery($dql)
-                      ->setHydrationCacheProfile(new QueryCacheProfile(null, 'cachekey', $cache))
-                      ->getArrayResult();
+        $this->_em->createQuery($dql)
+                  ->setHydrationCacheProfile(new QueryCacheProfile(0, 'cachekey', $cache))
+                  ->getArrayResult();
 
-        self::assertTrue($cache->contains('cachekey'), 'Explicit cache key');
+        self::assertTrue($arrayAdapter->hasItem('cachekey'), 'Explicit cache key');
 
-        $users = $this->_em->createQuery($dql)
-                      ->setHydrationCacheProfile(new QueryCacheProfile(null, 'cachekey', $cache))
+        $this->_em->createQuery($dql)
+                      ->setHydrationCacheProfile(new QueryCacheProfile(0, 'cachekey', $cache))
                       ->getArrayResult();
         self::assertEquals($c + 2, $this->getCurrentQueryCount(), 'Hydration now cached');
     }
 
     public function testHydrationParametersSerialization(): void
     {
-        $cache = DoctrineProvider::wrap(new ArrayAdapter());
+        $cache = new ArrayAdapter();
+        if (! method_exists(QueryCacheProfile::class, 'getResultCache')) {
+            $cache = DoctrineProvider::wrap($cache);
+        }
 
         $dql   = 'SELECT u FROM Doctrine\Tests\Models\Cms\CmsUser u WHERE u.id = ?1';
         $query = $this->_em->createQuery($dql)
             ->setParameter(1, $userId = 1)
-            ->setHydrationCacheProfile(new QueryCacheProfile(null, null, $cache));
+            ->setHydrationCacheProfile(new QueryCacheProfile(0, null, $cache));
 
         $query->getResult();
 

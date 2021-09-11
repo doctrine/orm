@@ -30,7 +30,17 @@ parameters:
         	message: '/^Call to static method ensure\(\) on an unknown class Doctrine\\DBAL\\ForwardCompatibility\\Result\.$/'
         	path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
 
+        # Forward compatibility for DBAL 3.2
+        - '/^Call to an undefined method Doctrine\\.*::[gs]etResultCache\(\)\.$/'
+        -
+        	message: '/^Parameter #3 \$resultCache of class Doctrine\\DBAL\\Cache\\QueryCacheProfile constructor/'
+        	path: lib/Doctrine/ORM/AbstractQuery.php
+
         # False positive
         -
             message: '/^Variable \$offset in isset\(\) always exists and is not nullable\.$/'
             path: lib/Doctrine/ORM/PersistentCollection.php
+        -
+            message: '/^Call to an undefined method Doctrine\\Common\\Cache\\Cache::deleteAll\(\)\.$/'
+            count: 1
+            path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php
