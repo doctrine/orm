@@ -11,6 +11,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function assert;
@@ -95,7 +96,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     public function testQueryCacheNoHitSaveParserResult(): void
     {
-        $this->_em->getConfiguration()->setQueryCacheImpl($this->createMock(Cache::class));
+        $this->_em->getConfiguration()->setQueryCache($this->createMock(CacheItemPoolInterface::class));
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
@@ -113,7 +114,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     public function testQueryCacheHitDoesNotSaveParserResult(): void
     {
-        $this->_em->getConfiguration()->setQueryCacheImpl($this->createMock(Cache::class));
+        $this->_em->getConfiguration()->setQueryCache($this->createMock(CacheItemPoolInterface::class));
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 

@@ -44,10 +44,9 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>$_resultSetMapping</code>
     </PropertyNotSetInConstructor>
-    <RedundantCastGivenDocblockType occurrences="5">
+    <RedundantCastGivenDocblockType occurrences="4">
       <code>(bool) $cacheable</code>
       <code>(int) $cacheMode</code>
-      <code>(int) $lifetime</code>
       <code>(int) $lifetime</code>
       <code>(string) $cacheRegion</code>
     </RedundantCastGivenDocblockType>
@@ -405,10 +404,11 @@
       <code>new CachedReader($reader, new ArrayCache())</code>
       <code>new SimpleAnnotationReader()</code>
     </DeprecatedClass>
-    <DeprecatedMethod occurrences="3">
+    <DeprecatedMethod occurrences="4">
       <code>AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php')</code>
       <code>getAutoGenerateProxyClasses</code>
       <code>getMetadataCacheImpl</code>
+      <code>getQueryCacheImpl</code>
     </DeprecatedMethod>
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(bool) $flag</code>
@@ -1637,7 +1637,6 @@
     <PropertyNotSetInConstructor occurrences="2">
       <code>$sql</code>
       <code>NativeQuery</code>
-      <code>NativeQuery</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/ORMInvalidArgumentException.php">
@@ -2039,7 +2038,6 @@
     <PropertyNotSetInConstructor occurrences="3">
       <code>$parserResult</code>
       <code>$queryCacheTTL</code>
-      <code>Query</code>
       <code>Query</code>
     </PropertyNotSetInConstructor>
     <RedundantCastGivenDocblockType occurrences="1">
@@ -3370,6 +3368,9 @@
     </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryCommand.php">
+    <DeprecatedMethod occurrences="1">
+      <code>getQueryCacheImpl</code>
+    </DeprecatedMethod>
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
@@ -3389,6 +3390,13 @@
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
+    <PossiblyNullArgument occurrences="2">
+      <code>$cacheDriver</code>
+      <code>$cacheDriver</code>
+    </PossiblyNullArgument>
+    <PossiblyNullReference occurrences="1">
+      <code>deleteAll</code>
+    </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ConvertDoctrine1SchemaCommand.php">
     <ArgumentTypeCoercion occurrences="1">

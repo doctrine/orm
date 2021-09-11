@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools;
 
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
@@ -128,7 +126,9 @@ class SetupTest extends OrmTestCase
         $cache   = DoctrineProvider::wrap($adapter);
         $config  = Setup::createAnnotationMetadataConfiguration([], true, null, $cache);
 
+        self::assertSame($adapter, $config->getResultCache()->getCache()->getPool());
         self::assertSame($cache, $config->getResultCacheImpl());
+        self::assertSame($adapter, $config->getQueryCache()->getCache()->getPool());
         self::assertSame($cache, $config->getQueryCacheImpl());
 
         self::assertSame($adapter, $config->getMetadataCache()->getCache()->getPool());
@@ -139,13 +139,15 @@ class SetupTest extends OrmTestCase
      */
     public function testConfigureCacheCustomInstance(): void
     {
-        $cache  = $this->createMock(Cache::class);
-        $config = Setup::createConfiguration(true, null, $cache);
+        $adapter = new ArrayAdapter();
+        $cache   = DoctrineProvider::wrap($adapter);
+        $config  = Setup::createConfiguration(true, null, $cache);
 
+        self::assertSame($adapter, $config->getResultCache()->getCache()->getPool());
         self::assertSame($cache, $config->getResultCacheImpl());
+        self::assertSame($adapter, $config->getQueryCache()->getCache()->getPool());
         self::assertSame($cache, $config->getQueryCacheImpl());
 
-        self::assertInstanceOf(CacheAdapter::class, $config->getMetadataCache());
-        self::assertSame($cache, $config->getMetadataCache()->getCache());
+        self::assertSame($adapter, $config->getMetadataCache()->getCache()->getPool());
     }
 }

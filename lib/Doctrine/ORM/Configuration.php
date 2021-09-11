@@ -23,7 +23,6 @@ use Doctrine\ORM\Cache\Exception\QueryCacheUsesNonPersistentCache;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Exception\NamedNativeQueryNotFound;
 use Doctrine\ORM\Exception\NamedQueryNotFound;
-use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Exception\UnknownEntityNamespace;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -43,6 +42,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
 
 use function class_exists;
+use function method_exists;
 use function strtolower;
 use function trim;
 
@@ -252,43 +252,139 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
+     * Gets the cache driver implementation that is used for query result caching.
+     */
+    public function getResultCache(): ?CacheItemPoolInterface
+    {
+        // Compatibility with DBAL < 3.2
+        if (! method_exists(parent::class, 'getResultCache')) {
+            $cacheImpl = $this->getResultCacheImpl();
+
+            return $cacheImpl ? CacheAdapter::wrap($cacheImpl) : null;
+        }
+
+        return parent::getResultCache();
+    }
+
+    /**
+     * Sets the cache driver implementation that is used for query result caching.
+     */
+    public function setResultCache(CacheItemPoolInterface $cache): void
+    {
+        // Compatibility with DBAL < 3.2
+        if (! method_exists(parent::class, 'setResultCache')) {
+            $this->setResultCacheImpl(DoctrineProvider::wrap($cache));
+
+            return;
+        }
+
+        parent::setResultCache($cache);
+    }
+
+    /**
      * Gets the cache driver implementation that is used for the query cache (SQL cache).
+     *
+     * @deprecated Call {@see getQueryCache()} instead.
      *
      * @return CacheDriver|null
      */
     public function getQueryCacheImpl()
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9002',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use getQueryCache() instead.',
+            __METHOD__
+        );
+
         return $this->_attributes['queryCacheImpl'] ?? null;
     }
 
     /**
      * Sets the cache driver implementation that is used for the query cache (SQL cache).
      *
+     * @deprecated Call {@see setQueryCache()} instead.
+     *
      * @return void
      */
     public function setQueryCacheImpl(CacheDriver $cacheImpl)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9002',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use setQueryCache() instead.',
+            __METHOD__
+        );
+
+        $this->_attributes['queryCache']     = CacheAdapter::wrap($cacheImpl);
         $this->_attributes['queryCacheImpl'] = $cacheImpl;
+    }
+
+    /**
+     * Gets the cache driver implementation that is used for the query cache (SQL cache).
+     */
+    public function getQueryCache(): ?CacheItemPoolInterface
+    {
+        return $this->_attributes['queryCache'] ?? null;
+    }
+
+    /**
+     * Sets the cache driver implementation that is used for the query cache (SQL cache).
+     */
+    public function setQueryCache(CacheItemPoolInterface $cache): void
+    {
+        $this->_attributes['queryCache']     = $cache;
+        $this->_attributes['queryCacheImpl'] = DoctrineProvider::wrap($cache);
     }
 
     /**
      * Gets the cache driver implementation that is used for the hydration cache (SQL cache).
      *
+     * @deprecated Call {@see getHydrationCache()} instead.
+     *
      * @return CacheDriver|null
      */
     public function getHydrationCacheImpl()
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9002',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use getHydrationCache() instead.',
+            __METHOD__
+        );
+
         return $this->_attributes['hydrationCacheImpl'] ?? null;
     }
 
     /**
      * Sets the cache driver implementation that is used for the hydration cache (SQL cache).
      *
+     * @deprecated Call {@see setHydrationCache()} instead.
+     *
      * @return void
      */
     public function setHydrationCacheImpl(CacheDriver $cacheImpl)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9002',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use setHydrationCache() instead.',
+            __METHOD__
+        );
+
+        $this->_attributes['hydrationCache']     = CacheAdapter::wrap($cacheImpl);
         $this->_attributes['hydrationCacheImpl'] = $cacheImpl;
+    }
+
+    public function getHydrationCache(): ?CacheItemPoolInterface
+    {
+        return $this->_attributes['hydrationCache'] ?? null;
+    }
+
+    public function setHydrationCache(CacheItemPoolInterface $cache): void
+    {
+        $this->_attributes['hydrationCache']     = $cache;
+        $this->_attributes['hydrationCacheImpl'] = DoctrineProvider::wrap($cache);
     }
 
     /**
