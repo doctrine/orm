@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\Column;
@@ -31,7 +30,7 @@ class DDC2224Test extends OrmFunctionalTestCase
     {
         $dql   = 'SELECT e FROM ' . __NAMESPACE__ . '\DDC2224Entity e WHERE e.field = :field';
         $query = $this->_em->createQuery($dql);
-        $query->setQueryCacheDriver(DoctrineProvider::wrap(new ArrayAdapter()));
+        $query->setQueryCache(new ArrayAdapter());
 
         $query->setParameter('field', 'test', 'DDC2224Type');
         self::assertStringEndsWith('.field = FUNCTION(?)', $query->getSQL());
