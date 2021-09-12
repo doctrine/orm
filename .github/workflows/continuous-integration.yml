@@ -19,6 +19,7 @@ jobs:
           - "7.3"
           - "7.4"
           - "8.0"
+          - "8.1"
 
     steps:
       - name: "Checkout"
@@ -33,6 +34,11 @@ jobs:
           extensions: "pdo, pdo_sqlite"
           coverage: "pcov"
           ini-values: "zend.assertions=1"
+
+      # To be removed as soon as https://github.com/doctrine/dbal/pull/4818 is released.
+      - name: "Switch to dev dependencies"
+        if: "${{ matrix.php-version == '8.1' }}"
+        run: "composer config minimum-stability dev"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
