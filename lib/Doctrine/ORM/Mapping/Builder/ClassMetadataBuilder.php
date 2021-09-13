@@ -33,7 +33,7 @@ class ClassMetadataBuilder
     /**
      * Marks the class as mapped superclass.
      *
-     * @return static
+     * @return $this
      */
     public function setMappedSuperClass()
     {
@@ -46,7 +46,7 @@ class ClassMetadataBuilder
     /**
      * Marks the class as embeddable.
      *
-     * @return static
+     * @return $this
      */
     public function setEmbeddable()
     {
@@ -83,7 +83,7 @@ class ClassMetadataBuilder
      *
      * @param string $repositoryClassName
      *
-     * @return static
+     * @return $this
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
@@ -95,7 +95,7 @@ class ClassMetadataBuilder
     /**
      * Marks class read only.
      *
-     * @return static
+     * @return $this
      */
     public function setReadOnly()
     {
@@ -109,7 +109,7 @@ class ClassMetadataBuilder
      *
      * @param string $name
      *
-     * @return static
+     * @return $this
      */
     public function setTable($name)
     {
@@ -124,7 +124,7 @@ class ClassMetadataBuilder
      * @param string $name
      * @psalm-param list<string> $columns
      *
-     * @return static
+     * @return $this
      */
     public function addIndex(array $columns, $name)
     {
@@ -143,7 +143,7 @@ class ClassMetadataBuilder
      * @param string $name
      * @psalm-param list<string> $columns
      *
-     * @return static
+     * @return $this
      */
     public function addUniqueConstraint(array $columns, $name)
     {
@@ -162,7 +162,7 @@ class ClassMetadataBuilder
      * @param string $name
      * @param string $dqlQuery
      *
-     * @return static
+     * @return $this
      */
     public function addNamedQuery($name, $dqlQuery)
     {
@@ -179,7 +179,7 @@ class ClassMetadataBuilder
     /**
      * Sets class as root of a joined table inheritance hierarchy.
      *
-     * @return static
+     * @return $this
      */
     public function setJoinedTableInheritance()
     {
@@ -191,7 +191,7 @@ class ClassMetadataBuilder
     /**
      * Sets class as root of a single table inheritance hierarchy.
      *
-     * @return static
+     * @return $this
      */
     public function setSingleTableInheritance()
     {
@@ -207,7 +207,7 @@ class ClassMetadataBuilder
      * @param string $type
      * @param int    $length
      *
-     * @return static
+     * @return $this
      */
     public function setDiscriminatorColumn($name, $type = 'string', $length = 255)
     {
@@ -228,7 +228,7 @@ class ClassMetadataBuilder
      * @param string $name
      * @param string $class
      *
-     * @return static
+     * @return $this
      */
     public function addDiscriminatorMapClass($name, $class)
     {
@@ -240,7 +240,7 @@ class ClassMetadataBuilder
     /**
      * Sets deferred explicit change tracking policy.
      *
-     * @return static
+     * @return $this
      */
     public function setChangeTrackingPolicyDeferredExplicit()
     {
@@ -252,7 +252,7 @@ class ClassMetadataBuilder
     /**
      * Sets notify change tracking policy.
      *
-     * @return static
+     * @return $this
      */
     public function setChangeTrackingPolicyNotify()
     {
@@ -267,7 +267,7 @@ class ClassMetadataBuilder
      * @param string $methodName
      * @param string $event
      *
-     * @return static
+     * @return $this
      */
     public function addLifecycleEvent($methodName, $event)
     {
@@ -283,7 +283,7 @@ class ClassMetadataBuilder
      * @param string $type
      * @psalm-param array<string, mixed> $mapping
      *
-     * @return static
+     * @return $this
      */
     public function addField($name, $type, array $mapping = [])
     {

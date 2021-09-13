@@ -157,7 +157,7 @@ class <className> extends <repositoryName>
     /**
      * @param string $repositoryName
      *
-     * @return static
+     * @return $this
      */
     public function setDefaultRepositoryName($repositoryName)
     {

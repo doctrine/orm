@@ -14,7 +14,7 @@ class OneToManyAssociationBuilder extends AssociationBuilder
     /**
      * @psalm-param array<string, string> $fieldNames
      *
-     * @return static
+     * @return $this
      */
     public function setOrderBy(array $fieldNames)
     {
@@ -26,7 +26,7 @@ class OneToManyAssociationBuilder extends AssociationBuilder
     /**
      * @param string $fieldName
      *
-     * @return static
+     * @return $this
      */
     public function setIndexBy($fieldName)
     {

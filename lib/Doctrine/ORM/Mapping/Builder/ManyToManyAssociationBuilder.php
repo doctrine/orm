@@ -20,7 +20,7 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
     /**
      * @param string $name
      *
-     * @return static
+     * @return $this
      */
     public function setJoinTable($name)
     {
@@ -39,7 +39,7 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
      * @param string|null $onDelete
      * @param string|null $columnDef
      *
-     * @return static
+     * @return $this
      */
     public function addInverseJoinColumn($columnName, $referencedColumnName, $nullable = true, $unique = false, $onDelete = null, $columnDef = null)
     {

@@ -181,7 +181,7 @@ abstract class AbstractQuery
      *
      * @param bool $cacheable
      *
-     * @return static This query instance.
+     * @return $this
      */
     public function setCacheable($cacheable)
     {
@@ -201,7 +201,7 @@ abstract class AbstractQuery
     /**
      * @param string $cacheRegion
      *
-     * @return static This query instance.
+     * @return $this
      */
     public function setCacheRegion($cacheRegion)
     {
@@ -241,7 +241,7 @@ abstract class AbstractQuery
      *
      * @param int $lifetime
      *
-     * @return static This query instance.
+     * @return $this
      */
     public function setLifetime($lifetime)
     {
@@ -261,7 +261,7 @@ abstract class AbstractQuery
     /**
      * @param int $cacheMode
      *
-     * @return static This query instance.
+     * @return $this
      */
     public function setCacheMode($cacheMode)
     {
@@ -342,7 +342,7 @@ abstract class AbstractQuery
      * @param ArrayCollection|mixed[] $parameters
      * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
      *
-     * @return static This query instance.
+     * @return $this
      */
     public function setParameters($parameters)
     {
@@ -372,7 +372,7 @@ abstract class AbstractQuery
      *                           the type conversion of this type. This is usually not needed for
      *                           strings and numeric types.
      *
-     * @return static This query instance.
+     * @return $this
      */
     public function setParameter($key, $value, $type = null)
     {
@@ -479,7 +479,7 @@ abstract class AbstractQuery
     /**
      * Sets the ResultSetMapping that should be used for hydration.
      *
-     * @return static This query instance.
+     * @return $this
      */
     public function setResultSetMapping(Query\ResultSetMapping $rsm)
     {
@@ -524,7 +524,7 @@ abstract class AbstractQuery
      * some form of caching with UnitOfWork registration you should use
      * {@see AbstractQuery::setResultCacheProfile()}.
      *
-     * @return static This query instance.
+     * @return $this
      *
      * @example
      * $lifetime = 100;
@@ -684,7 +684,7 @@ abstract class AbstractQuery
      * @param int    $lifetime      How long the cache entry is valid, in seconds.
      * @param string $resultCacheId ID to use for the cache entry.
      *
-     * @return static This query instance.
+     * @return $this
      */
     public function useResultCache($useCache, $lifetime = null, $resultCacheId = null)
     {
@@ -700,7 +700,7 @@ abstract class AbstractQuery
      * @param int|null    $lifetime      How long the cache entry is valid, in seconds.
      * @param string|null $resultCacheId ID to use for the cache entry.
      *
-     * @return static This query instance.
+     * @return $this
      */
     public function enableResultCache(?int $lifetime = null, ?string $resultCacheId = null): self
     {
@@ -713,7 +713,7 @@ abstract class AbstractQuery
     /**
      * Disables caching of the results of this query.
      *
-     * @return static This query instance.
+     * @return $this
      */
     public function disableResultCache(): self
     {
@@ -775,7 +775,7 @@ abstract class AbstractQuery
      *
      * @param bool $expire Whether or not to force resultset cache expiration.
      *
-     * @return static This query instance.
+     * @return $this
      */
     public function expireResultCache($expire = true)
     {
@@ -811,7 +811,7 @@ abstract class AbstractQuery
      * @param string $assocName
      * @param int    $fetchMode
      *
-     * @return static This query instance.
+     * @return $this
      */
     public function setFetchMode($class, $assocName, $fetchMode)
     {
@@ -830,7 +830,7 @@ abstract class AbstractQuery
      * @param string|int $hydrationMode Doctrine processing mode to be used during hydration process.
      *                                  One of the Query::HYDRATE_* constants.
      *
-     * @return static This query instance.
+     * @return $this
      */
     public function setHydrationMode($hydrationMode)
     {
@@ -987,7 +987,7 @@ abstract class AbstractQuery
      * @param string $name  The name of the hint.
      * @param mixed  $value The value of the hint.
      *
-     * @return static This query instance.
+     * @return $this
      */
     public function setHint($name, $value)
     {
