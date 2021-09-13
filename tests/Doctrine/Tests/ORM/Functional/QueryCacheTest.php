@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\CacheProvider;
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
@@ -31,15 +29,15 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $cache = new ArrayAdapter();
-        $query->setQueryCacheDriver(DoctrineProvider::wrap($cache));
+        $query->setQueryCache($cache);
 
         $query->getResult();
-        self::assertCount(2, $cache->getValues());
+        self::assertCount(1, $cache->getValues());
 
         $query->setHint('foo', 'bar');
 
         $query->getResult();
-        self::assertCount(3, $cache->getValues());
+        self::assertCount(2, $cache->getValues());
 
         return [$query, $cache];
     }
@@ -100,14 +98,25 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
-        $cache = $this->createMock(Cache::class);
+        $cache = $this->createMock(CacheItemPoolInterface::class);
+        $query->setQueryCache($cache);
 
-        $query->setQueryCacheDriver($cache);
+        $cacheItem = $this->createMock(CacheItemInterface::class);
+        $cacheItem->method('isHit')->willReturn(false);
+        $cacheItem->expects(self::never())->method('get');
+        $cacheItem->expects(self::once())->method('set')->with(self::isInstanceOf(ParserResult::class))->willReturnSelf();
+        $cacheItem->method('expiresAfter')->willReturnSelf();
+
+        $cache->expects(self::once())
+            ->method('getItem')
+            ->with(self::isType('string'))
+            ->willReturn($cacheItem);
 
         $cache
             ->expects(self::once())
             ->method('save')
-            ->with(self::isType('string'), self::isInstanceOf(ParserResult::class));
+            ->with(self::identicalTo($cacheItem))
+            ->willReturn(true);
 
         $query->getResult();
     }
@@ -124,34 +133,31 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
         $sqlExecMock->expects(self::once())
                     ->method('execute')
-                    ->will(self::returnValue(10));
+                    ->willReturn(10);
 
         $parserResultMock = $this->getMockBuilder(ParserResult::class)
                                  ->setMethods(['getSqlExecutor'])
                                  ->getMock();
         $parserResultMock->expects(self::once())
                          ->method('getSqlExecutor')
-                         ->will(self::returnValue($sqlExecMock));
+                         ->willReturn($sqlExecMock);
 
-        $cache = $this->getMockBuilder(CacheProvider::class)
-                      ->setMethods(['doFetch', 'doContains', 'doSave', 'doDelete', 'doFlush', 'doGetStats'])
-                      ->getMock();
+        $cache = $this->createMock(CacheItemPoolInterface::class);
 
-        $cache->expects(self::exactly(2))
-            ->method('doFetch')
-            ->withConsecutive(
-                [self::isType('string')],
-                [self::isType('string')]
-            )
-            ->willReturnOnConsecutiveCalls(
-                self::returnValue(1),
-                self::returnValue($parserResultMock)
-            );
+        $cacheItem = $this->createMock(CacheItemInterface::class);
+        $cacheItem->method('isHit')->willReturn(true);
+        $cacheItem->method('get')->willReturn($parserResultMock);
+        $cacheItem->expects(self::never())->method('set');
+
+        $cache->expects(self::once())
+            ->method('getItem')
+            ->with(self::isType('string'))
+            ->willReturn($cacheItem);
 
         $cache->expects(self::never())
-              ->method('doSave');
+              ->method('save');
 
-        $query->setQueryCacheDriver($cache);
+        $query->setQueryCache($cache);
 
         $query->getResult();
     }

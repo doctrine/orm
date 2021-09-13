@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Configuration;
@@ -399,21 +398,21 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $cache = new ArrayAdapter();
-        $query->setQueryCacheDriver(DoctrineProvider::wrap($cache));
+        $query->setQueryCache($cache);
 
         $query->getResult();
-        self::assertCount(2, $cache->getValues());
+        self::assertCount(1, $cache->getValues());
 
         $conf = $this->_em->getConfiguration();
         $conf->addFilter('locale', MyLocaleFilter::class);
         $this->_em->getFilters()->enable('locale');
 
         $query->getResult();
-        self::assertCount(3, $cache->getValues());
+        self::assertCount(2, $cache->getValues());
 
         // Another time doesn't add another cache entry
         $query->getResult();
-        self::assertCount(3, $cache->getValues());
+        self::assertCount(2, $cache->getValues());
     }
 
     public function testQueryGenerationDependsOnFilters(): void

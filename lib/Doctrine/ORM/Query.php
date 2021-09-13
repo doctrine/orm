@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\AST\DeleteStatement;
@@ -157,7 +159,7 @@ final class Query extends AbstractQuery
     /**
      * The cache driver used for caching queries.
      *
-     * @var Cache|null
+     * @var CacheItemPoolInterface|null
      */
     private $queryCache;
 
@@ -241,7 +243,7 @@ final class Query extends AbstractQuery
         $this->_state      = self::STATE_CLEAN;
         $this->parsedTypes = $types;
 
-        $queryCache = $this->getQueryCacheDriver();
+        $queryCache = $this->queryCache ?? $this->_em->getConfiguration()->getQueryCache();
         // Check query cache.
         if (! ($this->useQueryCache && $queryCache)) {
             $parser = new Parser($this);
@@ -251,14 +253,16 @@ final class Query extends AbstractQuery
             return $this->parserResult;
         }
 
-        $hash   = $this->getQueryCacheId();
-        $cached = $this->expireQueryCache ? false : $queryCache->fetch($hash);
+        $cacheItem = $queryCache->getItem($this->getQueryCacheId());
 
-        if ($cached instanceof ParserResult) {
-            // Cache hit.
-            $this->parserResult = $cached;
+        if (! $this->expireQueryCache && $cacheItem->isHit()) {
+            $cached = $cacheItem->get();
+            if ($cached instanceof ParserResult) {
+                // Cache hit.
+                $this->parserResult = $cached;
 
-            return $this->parserResult;
+                return $this->parserResult;
+            }
         }
 
         // Cache miss.
@@ -266,7 +270,7 @@ final class Query extends AbstractQuery
 
         $this->parserResult = $parser->parse();
 
-        $queryCache->save($hash, $this->parserResult, $this->queryCacheTTL);
+        $queryCache->save($cacheItem->set($this->parserResult)->expiresAfter($this->queryCacheTTL));
 
         return $this->parserResult;
     }
@@ -461,11 +465,32 @@ final class Query extends AbstractQuery
     /**
      * Defines a cache driver to be used for caching queries.
      *
+     * @deprecated Call {@see setQueryCache()} instead.
+     *
      * @param Cache|null $queryCache Cache driver.
      *
-     * @return self This query instance.
+     * @return $this
      */
     public function setQueryCacheDriver($queryCache): self
+    {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9004',
+            '%s is deprecated and will be removed in Doctrine 3.0. Use setQueryCache() instead.',
+            __METHOD__
+        );
+
+        $this->queryCache = $queryCache ? CacheAdapter::wrap($queryCache) : null;
+
+        return $this;
+    }
+
+    /**
+     * Defines a cache driver to be used for caching queries.
+     *
+     * @return $this
+     */
+    public function setQueryCache(?CacheItemPoolInterface $queryCache): self
     {
         $this->queryCache = $queryCache;
 
@@ -477,7 +502,7 @@ final class Query extends AbstractQuery
      *
      * @param bool $bool
      *
-     * @return self This query instance.
+     * @return $this
      */
     public function useQueryCache($bool): self
     {
@@ -489,16 +514,21 @@ final class Query extends AbstractQuery
     /**
      * Returns the cache driver used for query caching.
      *
+     * @deprecated
+     *
      * @return Cache|null The cache driver used for query caching or NULL, if
      * this Query does not use query caching.
      */
     public function getQueryCacheDriver(): ?Cache
     {
-        if ($this->queryCache) {
-            return $this->queryCache;
-        }
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9004',
+            '%s is deprecated and will be removed in Doctrine 3.0 without replacement.',
+            __METHOD__
+        );
 
-        $queryCache = $this->_em->getConfiguration()->getQueryCache();
+        $queryCache = $this->queryCache ?? $this->_em->getConfiguration()->getQueryCache();
 
         return $queryCache ? DoctrineProvider::wrap($queryCache) : null;
     }
@@ -508,7 +538,7 @@ final class Query extends AbstractQuery
      *
      * @param int $timeToLive How long the cache entry is valid.
      *
-     * @return self This query instance.
+     * @return $this
      */
     public function setQueryCacheLifetime($timeToLive): self
     {
@@ -534,7 +564,7 @@ final class Query extends AbstractQuery
      *
      * @param bool $expire Whether or not to force query cache expiration.
      *
-     * @return self This query instance.
+     * @return $this
      */
     public function expireQueryCache($expire = true): self
     {
@@ -615,7 +645,7 @@ final class Query extends AbstractQuery
      *
      * @param int|null $firstResult The first result to return.
      *
-     * @return self This query object.
+     * @return $this
      */
     public function setFirstResult($firstResult): self
     {
@@ -641,7 +671,7 @@ final class Query extends AbstractQuery
      *
      * @param int|null $maxResults
      *
-     * @return self This query object.
+     * @return $this
      */
     public function setMaxResults($maxResults): self
     {
