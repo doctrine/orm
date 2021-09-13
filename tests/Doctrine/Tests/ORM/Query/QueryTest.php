@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Query;
 
 use DateTime;
 use DateTimeImmutable;
+use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Type;
@@ -532,5 +533,26 @@ class QueryTest extends OrmTestCase
         self::assertCount(1, $query->getParameters());
         self::assertSame('Benjamin', $query->getParameter(':name')->getValue());
         self::assertSame('Benjamin', $query->getParameter('name')->getValue());
+    }
+
+    public function testGetQueryCacheDriverWithDefaults(): void
+    {
+        $cache = $this->createMock(Cache::class);
+
+        $this->entityManager->getConfiguration()->setQueryCacheImpl($cache);
+        $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u');
+
+        self::assertSame($cache, $query->getQueryCacheDriver());
+    }
+
+    public function testGetQueryCacheDriverWithCacheExplicitlySet(): void
+    {
+        $cache = $this->createMock(Cache::class);
+
+        $query = $this->entityManager
+            ->createQuery('select u from ' . CmsUser::class . ' u')
+            ->setQueryCacheDriver($cache);
+
+        self::assertSame($cache, $query->getQueryCacheDriver());
     }
 }
