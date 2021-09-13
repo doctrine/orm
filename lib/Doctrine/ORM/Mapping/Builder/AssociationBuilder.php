@@ -35,7 +35,7 @@ class AssociationBuilder
     /**
      * @param string $fieldName
      *
-     * @return static
+     * @return $this
      */
     public function mappedBy($fieldName)
     {
@@ -47,7 +47,7 @@ class AssociationBuilder
     /**
      * @param string $fieldName
      *
-     * @return static
+     * @return $this
      */
     public function inversedBy($fieldName)
     {
@@ -57,7 +57,7 @@ class AssociationBuilder
     }
 
     /**
-     * @return static
+     * @return $this
      */
     public function cascadeAll()
     {
@@ -67,7 +67,7 @@ class AssociationBuilder
     }
 
     /**
-     * @return static
+     * @return $this
      */
     public function cascadePersist()
     {
@@ -77,7 +77,7 @@ class AssociationBuilder
     }
 
     /**
-     * @return static
+     * @return $this
      */
     public function cascadeRemove()
     {
@@ -87,7 +87,7 @@ class AssociationBuilder
     }
 
     /**
-     * @return static
+     * @return $this
      */
     public function cascadeMerge()
     {
@@ -97,7 +97,7 @@ class AssociationBuilder
     }
 
     /**
-     * @return static
+     * @return $this
      */
     public function cascadeDetach()
     {
@@ -107,7 +107,7 @@ class AssociationBuilder
     }
 
     /**
-     * @return static
+     * @return $this
      */
     public function cascadeRefresh()
     {
@@ -117,7 +117,7 @@ class AssociationBuilder
     }
 
     /**
-     * @return static
+     * @return $this
      */
     public function fetchExtraLazy()
     {
@@ -127,7 +127,7 @@ class AssociationBuilder
     }
 
     /**
-     * @return static
+     * @return $this
      */
     public function fetchEager()
     {
@@ -137,7 +137,7 @@ class AssociationBuilder
     }
 
     /**
-     * @return static
+     * @return $this
      */
     public function fetchLazy()
     {
@@ -156,7 +156,7 @@ class AssociationBuilder
      * @param string|null $onDelete
      * @param string|null $columnDef
      *
-     * @return static
+     * @return $this
      */
     public function addJoinColumn($columnName, $referencedColumnName, $nullable = true, $unique = false, $onDelete = null, $columnDef = null)
     {
@@ -175,7 +175,7 @@ class AssociationBuilder
     /**
      * Sets field as primary key.
      *
-     * @return static
+     * @return $this
      */
     public function makePrimaryKey()
     {
@@ -187,7 +187,7 @@ class AssociationBuilder
     /**
      * Removes orphan entities when detached from their parent.
      *
-     * @return static
+     * @return $this
      */
     public function orphanRemoval()
     {
