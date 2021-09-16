@@ -396,8 +396,6 @@ class QueryBuilder
      */
     private function findRootAlias(string $alias, string $parentAlias): string
     {
-        $rootAlias = null;
-
         if (in_array($parentAlias, $this->getRootAliases())) {
             $rootAlias = $parentAlias;
         } elseif (isset($this->joinRootAliases[$parentAlias])) {
@@ -454,8 +452,8 @@ class QueryBuilder
      *     $qb->getRootAliases(); // array('u')
      * </code>
      *
-     * @return mixed[]
-     * @psalm-return list<mixed>
+     * @return string[]
+     * @psalm-return list<string>
      */
     public function getRootAliases()
     {
@@ -489,8 +487,8 @@ class QueryBuilder
      *     $qb->getAllAliases(); // array('u','a')
      * </code>
      *
-     * @return mixed[]
-     * @psalm-return list<mixed>
+     * @return string[]
+     * @psalm-return list<string>
      */
     public function getAllAliases()
     {
@@ -509,8 +507,8 @@ class QueryBuilder
      *     $qb->getRootEntities(); // array('User')
      * </code>
      *
-     * @return mixed[]
-     * @psalm-return list<mixed>
+     * @return string[]
+     * @psalm-return list<string>
      */
     public function getRootEntities()
     {
