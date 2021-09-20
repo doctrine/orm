@@ -47,19 +47,19 @@ class Join
     /** @var string */
     protected $conditionType;
 
-    /** @var string */
+    /** @var string|Comparison|Composite */
     protected $condition;
 
     /** @var string */
     protected $indexBy;
 
     /**
-     * @param string      $joinType      The condition type constant. Either INNER_JOIN or LEFT_JOIN.
-     * @param string      $join          The relationship to join.
-     * @param string|null $alias         The alias of the join.
-     * @param string|null $conditionType The condition type constant. Either ON or WITH.
-     * @param string|null $condition     The condition for the join.
-     * @param string|null $indexBy       The index for the join.
+     * @param string                           $joinType      The condition type constant. Either INNER_JOIN or LEFT_JOIN.
+     * @param string                           $join          The relationship to join.
+     * @param string|null                      $alias         The alias of the join.
+     * @param string|null                      $conditionType The condition type constant. Either ON or WITH.
+     * @param string|Comparison|Composite|null $condition     The condition for the join.
+     * @param string|null                      $indexBy       The index for the join.
      */
     public function __construct($joinType, $join, $alias = null, $conditionType = null, $condition = null, $indexBy = null)
     {
@@ -104,7 +104,7 @@ class Join
     }
 
     /**
-     * @return string
+     * @return string|Comparison|Composite
      */
     public function getCondition()
     {

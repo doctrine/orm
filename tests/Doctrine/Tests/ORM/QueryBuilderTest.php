@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\QueryBuilder;
@@ -146,6 +147,37 @@ class QueryBuilderTest extends OrmTestCase
         $this->assertValidQueryBuilder(
             $qb,
             'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id'
+        );
+    }
+
+    public function testComplexInnerJoinWithComparisonCondition(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb
+            ->select('u', 'a')
+            ->from(CmsUser::class, 'u')
+            ->innerJoin('u.articles', 'a', Join::ON, $qb->expr()->eq('u.id', 'a.author_id'));
+
+        $this->assertValidQueryBuilder(
+            $qb,
+            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id'
+        );
+    }
+
+    public function testComplexInnerJoinWithCompositeCondition(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb
+            ->select('u', 'a')
+            ->from(CmsUser::class, 'u')
+            ->innerJoin('u.articles', 'a', Join::ON, $qb->expr()->andX(
+                $qb->expr()->eq('u.id', 'a.author_id'),
+                $qb->expr()->isNotNull('u.name')
+            ));
+
+        $this->assertValidQueryBuilder(
+            $qb,
+            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id AND u.name IS NOT NULL'
         );
     }
 
