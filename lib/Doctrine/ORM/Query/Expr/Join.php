@@ -41,16 +41,16 @@ class Join
     /** @var string */
     protected $join;
 
-    /** @var string */
+    /** @var string|null */
     protected $alias;
 
-    /** @var string */
+    /** @var string|null */
     protected $conditionType;
 
-    /** @var string|Comparison|Composite */
+    /** @var string|Comparison|Composite|null */
     protected $condition;
 
-    /** @var string */
+    /** @var string|null */
     protected $indexBy;
 
     /**
@@ -88,7 +88,7 @@ class Join
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getAlias()
     {
@@ -96,7 +96,7 @@ class Join
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getConditionType()
     {
@@ -104,7 +104,7 @@ class Join
     }
 
     /**
-     * @return string|Comparison|Composite
+     * @return string|Comparison|Composite|null
      */
     public function getCondition()
     {
@@ -112,7 +112,7 @@ class Join
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getIndexBy()
     {
