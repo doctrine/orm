@@ -84,7 +84,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * Associations configured as FETCH_EAGER, as well as all inverse one-to-one associations.
      *
-     * @var array<string>|null
+     * @var string[]|null
      */
     protected $joinedAssociations;
 

@@ -63,7 +63,7 @@ final class AttributeReader
     }
 
     /**
-     * @param array<ReflectionAttribute> $attributes
+     * @param ReflectionAttribute[] $attributes
      *
      * @return array<Annotation|RepeatableAttributeCollection>
      */

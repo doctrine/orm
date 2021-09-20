@@ -34,23 +34,23 @@ final class Index implements Annotation
     /** @var string */
     public $name;
 
-    /** @var array<string> */
+    /** @var string[] */
     public $columns;
 
-    /** @var array<string> */
+    /** @var string[] */
     public $fields;
 
-    /** @var array<string> */
+    /** @var string[] */
     public $flags;
 
     /** @var array<string,mixed> */
     public $options;
 
     /**
-     * @param array<string> $columns
-     * @param array<string> $fields
-     * @param array<string> $flags
-     * @param array<string> $options
+     * @param string[] $columns
+     * @param string[] $fields
+     * @param string[] $flags
+     * @param string[] $options
      */
     public function __construct(
         ?array $columns = null,

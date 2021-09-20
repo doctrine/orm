@@ -399,7 +399,7 @@ class DefaultQueryCache implements QueryCache
     /**
      * @param object $entity
      *
-     * @return array<object>|object
+     * @return object[]|object
      */
     private function getAssociationValue(
         ResultSetMapping $rsm,
@@ -426,8 +426,8 @@ class DefaultQueryCache implements QueryCache
     }
 
     /**
-     * @param mixed        $value
-     * @param array<mixed> $path
+     * @param mixed   $value
+     * @param mixed[] $path
      *
      * @return mixed
      */
