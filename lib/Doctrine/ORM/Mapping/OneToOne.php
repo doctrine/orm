@@ -40,7 +40,7 @@ final class OneToOne implements Annotation
     /** @var string */
     public $inversedBy;
 
-    /** @var array<string> */
+    /** @var string[] */
     public $cascade;
 
     /**
@@ -55,7 +55,7 @@ final class OneToOne implements Annotation
     public $orphanRemoval = false;
 
     /**
-     * @param array<string> $cascade
+     * @param string[] $cascade
      */
     public function __construct(
         ?string $mappedBy = null,

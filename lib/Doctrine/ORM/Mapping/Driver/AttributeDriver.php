@@ -31,7 +31,7 @@ class AttributeDriver extends AnnotationDriver
     ];
 
     /**
-     * @param array<string> $paths
+     * @param string[] $paths
      */
     public function __construct(array $paths)
     {

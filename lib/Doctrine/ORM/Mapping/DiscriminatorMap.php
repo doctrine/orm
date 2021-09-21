@@ -31,10 +31,10 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class DiscriminatorMap implements Annotation
 {
-    /** @var array<string> */
+    /** @var string[] */
     public $value;
 
-    /** @param array<string> $value */
+    /** @param string[] $value */
     public function __construct(array $value)
     {
         $this->value = $value;

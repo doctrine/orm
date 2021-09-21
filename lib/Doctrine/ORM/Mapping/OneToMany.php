@@ -37,7 +37,7 @@ final class OneToMany implements Annotation
     /** @var string */
     public $targetEntity;
 
-    /** @var array<string> */
+    /** @var string[] */
     public $cascade;
 
     /**

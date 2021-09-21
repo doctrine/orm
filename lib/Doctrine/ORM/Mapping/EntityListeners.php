@@ -37,12 +37,12 @@ final class EntityListeners implements Annotation
     /**
      * Specifies the names of the entity listeners.
      *
-     * @var array<string>
+     * @var string[]
      */
     public $value = [];
 
     /**
-     * @param array<string> $value
+     * @param string[] $value
      */
     public function __construct(array $value = [])
     {

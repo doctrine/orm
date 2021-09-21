@@ -34,18 +34,18 @@ final class UniqueConstraint implements Annotation
     /** @var string */
     public $name;
 
-    /** @var array<string> */
+    /** @var string[] */
     public $columns;
 
-    /** @var array<string> */
+    /** @var string[] */
     public $fields;
 
     /** @var array<string,mixed> */
     public $options;
 
     /**
-     * @param array<string>       $columns
-     * @param array<string>       $fields
+     * @param string[]            $columns
+     * @param string[]            $fields
      * @param array<string,mixed> $options
      */
     public function __construct(

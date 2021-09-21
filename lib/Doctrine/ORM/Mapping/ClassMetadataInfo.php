@@ -452,7 +452,7 @@ class ClassMetadataInfo implements ClassMetadata
      *      quoted?: bool,
      *      requireSQLConversion?: bool,
      *      declaredField?: string,
-     *      options: array<mixed>
+     *      options: mixed[]
      * }>
      */
     public $fieldMappings = [];
@@ -1760,7 +1760,7 @@ class ClassMetadataInfo implements ClassMetadata
      *      targetEntity: string,
      *      fieldName: mixed,
      *      fetch: mixed,
-     *      cascade: array<string>,
+     *      cascade: string[],
      *      isCascadeRemove: bool,
      *      isCascadePersist: bool,
      *      isCascadeRefresh: bool,
@@ -1917,7 +1917,7 @@ class ClassMetadataInfo implements ClassMetadata
      *      targetEntity: string,
      *      fieldName: mixed,
      *      fetch: mixed,
-     *      cascade: array<string>,
+     *      cascade: string[],
      *      isCascadeRemove: bool,
      *      isCascadePersist: bool,
      *      isCascadeRefresh: bool,

@@ -71,9 +71,9 @@ abstract class SQLFilter
     /**
      * Sets a parameter list that can be used by the filter.
      *
-     * @param string       $name   Name of the parameter.
-     * @param array<mixed> $values List of parameter values.
-     * @param string       $type   The parameter type. If specified, the given value will be run through
+     * @param string  $name   Name of the parameter.
+     * @param mixed[] $values List of parameter values.
+     * @param string  $type   The parameter type. If specified, the given value will be run through
      *                             the type conversion of this type.
      *
      * @return self The current SQL filter.
