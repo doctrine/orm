@@ -31,26 +31,26 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 final class Index implements Annotation
 {
-    /** @var string */
+    /** @var string|null */
     public $name;
 
-    /** @var array<string> */
+    /** @var array<string>|null */
     public $columns;
 
-    /** @var array<string> */
+    /** @var array<string>|null */
     public $fields;
 
-    /** @var array<string> */
+    /** @var array<string>|null */
     public $flags;
 
-    /** @var array<string,mixed> */
+    /** @var array<string,mixed>|null */
     public $options;
 
     /**
-     * @param array<string> $columns
-     * @param array<string> $fields
-     * @param array<string> $flags
-     * @param array<string> $options
+     * @param array<string>|null $columns
+     * @param array<string>|null $fields
+     * @param array<string>|null $flags
+     * @param array<string>|null $options
      */
     public function __construct(
         ?array $columns = null,

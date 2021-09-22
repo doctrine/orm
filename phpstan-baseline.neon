@@ -461,11 +461,6 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$definition of method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\<object\\>\\:\\:setSequenceGeneratorDefinition\\(\\) expects array\\<string, string\\>, array\\<string, int\\|string\\> given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
-
-		-
 			message: "#^Parameter \\#1 \\$definition of method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\<object\\>\\:\\:setSequenceGeneratorDefinition\\(\\) expects array\\<string, string\\>, array\\<string, int\\|string\\|true\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
@@ -502,6 +497,11 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$subClass of method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\:\\:addInheritedSqlResultSetMappings\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
+
+		-
+			message: "#^Parameter \\#2 \\$allocationSize of class Doctrine\\\\ORM\\\\Id\\\\SequenceGenerator constructor expects int, string given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
@@ -597,11 +597,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#2 \\$type of static method Doctrine\\\\ORM\\\\Mapping\\\\MappingException\\:\\:invalidInheritanceType\\(\\) expects string, int given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
-
-		-
-			message: "#^Property Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\<T of object\\>\\:\\:\\$sequenceGeneratorDefinition \\(array\\('sequenceName' \\=\\> string, 'allocationSize' \\=\\> int, 'initialValue' \\=\\> int\\)\\) does not accept array\\<string, string\\|true\\>\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
 
@@ -2163,7 +2158,7 @@ parameters:
 
 		-
 			message: "#^Parameter \\#2 \\$value of method SimpleXMLElement\\:\\:addAttribute\\(\\) expects string, int given\\.$#"
-			count: 6
+			count: 4
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
 		-
@@ -2218,6 +2213,16 @@ parameters:
 
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Tools/SchemaTool.php
+
+		-
+			message: "#^Parameter \\#2 \\$allocationSize of method Doctrine\\\\DBAL\\\\Schema\\\\Schema\\:\\:createSequence\\(\\) expects int, string given\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Tools/SchemaTool.php
+
+		-
+			message: "#^Parameter \\#3 \\$initialValue of method Doctrine\\\\DBAL\\\\Schema\\\\Schema\\:\\:createSequence\\(\\) expects int, string given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/SchemaTool.php
 

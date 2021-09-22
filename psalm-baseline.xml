@@ -631,11 +631,6 @@
       <code>(string) $em-&gt;getConnection()-&gt;lastInsertId($this-&gt;sequenceName)</code>
     </RedundantCastGivenDocblockType>
   </file>
-  <file src="lib/Doctrine/ORM/Id/IdentityGenerator.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$sequenceName</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
   <file src="lib/Doctrine/ORM/Id/SequenceGenerator.php">
     <DeprecatedMethod occurrences="2">
       <code>fetchColumn</code>
@@ -889,11 +884,6 @@
       <code>(string) $customIdGenerator</code>
     </RedundantCastGivenDocblockType>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/Cache.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$region</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadata.php">
     <PropertyNotSetInConstructor occurrences="8">
       <code>ClassMetadata</code>
@@ -950,7 +940,7 @@
     </InvalidArrayOffset>
     <InvalidScalarArgument occurrences="2">
       <code>$definition</code>
-      <code>$parent-&gt;sequenceGeneratorDefinition</code>
+      <code>$definition['allocationSize']</code>
     </InvalidScalarArgument>
     <MissingConstructor occurrences="2">
       <code>$driver</code>
@@ -1179,11 +1169,6 @@
     <MissingConstructor occurrences="1">
       <code>$name</code>
     </MissingConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/CustomIdGenerator.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$class</code>
-    </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DefaultEntityListenerResolver.php">
     <DocblockTypeContradiction occurrences="1">
@@ -1585,11 +1570,6 @@
       <code>$columnPrefix</code>
     </MissingParamType>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/Entity.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$repositoryClass</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/EntityListenerResolver.php">
     <MissingReturnType occurrences="1">
       <code>register</code>
@@ -1607,33 +1587,15 @@
       <code>$name</code>
     </MissingConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/Index.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="4">
-      <code>$columns</code>
-      <code>$fields</code>
-      <code>$flags</code>
-      <code>$name</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/InverseJoinColumn.php">
     <MissingParamType occurrences="1">
       <code>$onDelete</code>
     </MissingParamType>
-    <PossiblyNullPropertyAssignmentValue occurrences="3">
-      <code>$columnDefinition</code>
-      <code>$fieldName</code>
-      <code>$name</code>
-    </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/JoinColumn.php">
     <MissingParamType occurrences="1">
       <code>$onDelete</code>
     </MissingParamType>
-    <PossiblyNullPropertyAssignmentValue occurrences="3">
-      <code>$columnDefinition</code>
-      <code>$fieldName</code>
-      <code>$name</code>
-    </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/JoinColumns.php">
     <MissingConstructor occurrences="1">
@@ -1645,30 +1607,6 @@
       <code>$inverseJoinColumns</code>
       <code>$joinColumns</code>
     </MissingParamType>
-    <PossiblyNullPropertyAssignmentValue occurrences="2">
-      <code>$name</code>
-      <code>$schema</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/ManyToMany.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="4">
-      <code>$cascade</code>
-      <code>$indexBy</code>
-      <code>$inversedBy</code>
-      <code>$mappedBy</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/ManyToOne.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="3">
-      <code>$cascade</code>
-      <code>$inversedBy</code>
-      <code>$targetEntity</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/MappedSuperclass.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$repositoryClass</code>
-    </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/MappingException.php">
     <MissingParamType occurrences="4">
@@ -1701,14 +1639,6 @@
     <PossiblyNullPropertyAssignmentValue occurrences="4">
       <code>$cascade</code>
       <code>$indexBy</code>
-      <code>$mappedBy</code>
-      <code>$targetEntity</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/OneToOne.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="4">
-      <code>$cascade</code>
-      <code>$inversedBy</code>
       <code>$mappedBy</code>
       <code>$targetEntity</code>
     </PossiblyNullPropertyAssignmentValue>
@@ -2857,23 +2787,15 @@
       <code>$this-&gt;parts[0]</code>
     </PossiblyInvalidCast>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/From.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$indexBy</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
   <file src="lib/Doctrine/ORM/Query/Expr/GroupBy.php">
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$parts</code>
     </NonInvariantDocblockPropertyType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Join.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="4">
-      <code>$alias</code>
-      <code>$condition</code>
-      <code>$conditionType</code>
-      <code>$indexBy</code>
-    </PossiblyNullPropertyAssignmentValue>
+    <PossiblyNullArgument occurrences="1">
+      <code>$this-&gt;conditionType</code>
+    </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Literal.php">
     <NonInvariantDocblockPropertyType occurrences="1">
@@ -3941,13 +3863,11 @@
     <DeprecatedClass occurrences="1">
       <code>AbstractExporter</code>
     </DeprecatedClass>
-    <InvalidScalarArgument occurrences="6">
+    <InvalidScalarArgument occurrences="4">
       <code>$field['length']</code>
       <code>$field['length']</code>
       <code>$field['precision']</code>
       <code>$field['scale']</code>
-      <code>$sequenceDefinition['allocationSize']</code>
-      <code>$sequenceDefinition['initialValue']</code>
     </InvalidScalarArgument>
     <MissingClosureParamType occurrences="2">
       <code>$m1</code>
@@ -4084,6 +4004,10 @@
     <DocblockTypeContradiction occurrences="1">
       <code>$definingClass</code>
     </DocblockTypeContradiction>
+    <InvalidScalarArgument occurrences="2">
+      <code>$seqDef['allocationSize']</code>
+      <code>$seqDef['initialValue']</code>
+    </InvalidScalarArgument>
     <MissingClosureParamType occurrences="1">
       <code>$asset</code>
     </MissingClosureParamType>
