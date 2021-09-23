@@ -435,7 +435,13 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             && isset($this->association['indexBy'])
         ) {
             if (! $this->typeClass->isIdentifierComposite && $this->typeClass->isIdentifier($this->association['indexBy'])) {
-                return $this->em->find($this->typeClass->name, $key);
+                $entity = $this->em->find($this->typeClass->name, $key);
+
+                if ($entity === null || ! $this->isOwned($entity)) {
+                    return null;
+                }
+
+                return $entity;
             }
 
             return $this->em->getUnitOfWork()->getCollectionPersister($this->association)->get($this, $key);
@@ -699,6 +705,20 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         if ($newlyAddedDirtyObjects) {
             $this->restoreNewObjectsInDirtyCollection($newlyAddedDirtyObjects);
         }
+    }
+
+    /**
+     * @param object $entity
+     */
+    private function isOwned($entity): bool
+    {
+        if (! isset($this->association['mappedBy'])) {
+            return false;
+        }
+
+        $owner = $this->typeClass->getFieldValue($entity, $this->association['mappedBy']);
+
+        return $owner === $this->getOwner();
     }
 
     /**

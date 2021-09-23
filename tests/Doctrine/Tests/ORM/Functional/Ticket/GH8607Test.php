@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -22,11 +23,11 @@ class GH8607Test extends OrmFunctionalTestCase
 
         try {
             $this->_schemaTool->createSchema([
-                    $this->_em->getClassMetadata(GH8607ParentEntity::class),
-                    $this->_em->getClassMetadata(GH8607ChildEntity::class),
-                ]);
+                $this->_em->getClassMetadata(GH8607ParentEntity::class),
+                $this->_em->getClassMetadata(GH8607ChildEntity::class),
+            ]);
         } catch (Exception $e) {
-            //
+            // skip errors
         }
     }
 
@@ -45,11 +46,13 @@ class GH8607Test extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $parentId = $parent1->getId();
-        $childId = $child->getId();
+        $childId  = $child->getId();
 
         $this->_em->clear();
 
         $parent = $this->_em->find(GH8607ParentEntity::class, $parentId);
+
+        $this->assertNotNull($parent);
 
         $return = $parent->getChildren()->get($childId);
 
@@ -66,6 +69,7 @@ class GH8607ParentEntity
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
+     * @var int
      */
     protected $id;
 
@@ -85,7 +89,7 @@ class GH8607ParentEntity
         return $this->id;
     }
 
-    public function getChildren()
+    public function getChildren(): Collection
     {
         return $this->children;
     }
@@ -100,20 +104,22 @@ class GH8607ChildEntity
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
+     * @var int
      */
     protected $id;
 
     /**
      * @ManyToOne(targetEntity="GH8607ParentEntity", inversedBy="childs")
+     * @var GH8607ParentEntity
      */
     protected $parent;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getParent()
+    public function getParent(): GH8607ParentEntity
     {
         return $this->parent;
     }
