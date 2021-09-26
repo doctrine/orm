@@ -80,7 +80,9 @@ Wait: **What? Shall we convert to UTC or not?**
 
 That depends on what kind of DateTimes you are handling! When you are handling current dates like log-entries or
 datetimes that are within one or two days of the current date, you can - and even should - convert them to UTC.
-But as soon as you are handling datetimes that are more than a few days in advance (or back) you should **not** convert them to UTC but instead keep them in their local timezone. Why? You might want to read up on `why not to convert a datetime to a timestamp<https://andreas.heigl.org/2016/12/22/why-not-to-convert-a-datetime-to-timestamp/>`_
+But as soon as you are handling datetimes that are more than a few days in advance (or back) you should **not**
+convert them to UTC but instead keep them in their local timezone. Why? You might want to read up on
+`why not to convert a datetime to a timestamp<https://andreas.heigl.org/2016/12/22/why-not-to-convert-a-datetime-to-timestamp/>`_
 
 Handling DateTimes with timezone-informations
 _____________________________________________
@@ -136,14 +138,24 @@ field of the entity requiring timezoned datetimes:
             $this->timezone = $eventDateTime->getTimeZone()->getName();
         }
 
+        /**
+         * During hydration $this->eventDateTime will set with a new DateTimeImmutable instance with the servers
+         * default timezone. So when getting the eventDateTime for the first time after hydration we need to
+         * make sure that the correct timezone is set. Therefore we reset the property with a correctly created
+         * DateTimeImmutable object.
+         *
+         * DBALTypes sadly currently can not take care of this during hydration due to the fact that they are not
+         * allowing to access multiple fields.
+         */
         public function getEventDateTime()
         {
-            if (!$this->localized) {
+            if ($this->localized === false) {
 
                 $this->eventDateTime = new DateTimeImmutable(
                     $this->eventDateTime->format('Y-m-d H:i:s'),
-                    new \DateTimeZone($this->timezone)
+                    new DateTimeZone($this->timezone)
                 );
+                $this->localized = true;
             }
             return $this->eventDateTime;
         }
