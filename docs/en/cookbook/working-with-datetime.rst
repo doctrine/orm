@@ -68,7 +68,7 @@ The problem is simple. Not a single database vendor saves the timezone, only the
 However with frequent daylight saving and political timezone changes you can have a UTC offset that moves
 in different offset directions depending on the real location.
 
-The solution for this dilemma seems simple: don't use timezones with DateTime(Immutable) and Doctrine 2. However there are some
+The solution for this dilemma seems simple: don't use timezones with DateTime(Immutable) and Doctrine ORM. However there are some
 workarounds that allow correct date-time handling with timezones depending on your use case:
 
 1a. Don't convert DateTimes to UTC
@@ -126,43 +126,82 @@ field of the entity requiring timezoned datetimes:
         /** @ORM\Column(type="string") */
         private string $timezone;
 
-        /**
-         * @var bool
-         */
-        private $localized = false;
-
         public function __construct(DateTimeInterface $eventDateTime)
         {
-            $this->localized = true;
             $this->eventDateTime = $eventDateTime;
             $this->timezone = $eventDateTime->getTimeZone()->getName();
         }
 
-        /**
-         * During hydration $this->eventDateTime will set with a new DateTimeImmutable instance with the servers
-         * default timezone. So when getting the eventDateTime for the first time after hydration we need to
-         * make sure that the correct timezone is set. Therefore we reset the property with a correctly created
-         * DateTimeImmutable object.
-         *
-         * DBALTypes sadly currently can not take care of this during hydration due to the fact that they are not
-         * allowing to access multiple fields.
-         */
         public function getEventDateTime()
         {
-            if ($this->localized === false) {
+            return new DateTimeImmutable(
+                $this->eventDateTime->format('Y-m-d H:i:s'),
+                new DateTimeZone($this->timezone)
+            );
+        }
+    }
 
-                $this->eventDateTime = new DateTimeImmutable(
-                    $this->eventDateTime->format('Y-m-d H:i:s'),
-                    new DateTimeZone($this->timezone)
-                );
-                $this->localized = true;
-            }
+During hydration $this->eventDateTime will set with a new DateTimeImmutable instance with the servers
+default timezone. So when getting the eventDateTime we need to make sure that the correct timezone is set.
+Therefore we return a correctly created DateTimeImmutable object in the `getEventDateTime()`-method
+
+DBALTypes sadly currently can not take care of this during hydration due to the fact that they are not
+allowing to access multiple fields.
+
+An alternative would be to use a post-processing lifecycle event to recreate the object in the right way like this:
+
+.. code-block:: php
+
+    <?php
+    namespace Calendaring;
+
+    use DateTimeImmutable;
+    use DateTimeInterface;
+    use DateTimezone;
+    use Doctrine\ORM\Mapping as ORM;
+
+    /**
+     * @ORM\Entity
+     * @ORM\HasLifecycleCallbacks
+     */
+    class Event
+    {
+        /**
+         * @ORM\Id
+         * @ORM\GeneratedValue
+         * @ORM\Column(type="integer")
+         */
+        private ?int $id;
+
+        /** @ORM\Column(type="datetime") */
+        private DateTimeInterface $eventDateTime;
+
+        /** @ORM\Column(type="string") */
+        private string $timezone;
+
+        public function __construct(DateTimeInterface $eventDateTime)
+        {
+            $this->eventDateTime = $eventDateTime;
+            $this->timezone = $eventDateTime->getTimeZone()->getName();
+        }
+
+        /** @PostLoad */
+        public function correctTimezone(): void
+        {
+            $this->eventDateTime = new DateTimeImmutable(
+                $this->eventDateTime->format('Y-m-d H:i:s'),
+                new DateTimeZone($this->timezone)
+            );
+        }
+
+        public function getEventDateTime(): DateTimeImmutable
+        {
             return $this->eventDateTime;
         }
     }
 
-Using this way of handling timezones allows you also to use the database-specific ways of
-doing DateTime-arithmetics with the appropriate timezones. Make sure though that the database
+Using these ways of handling timezones allow you also to use the database-specific ways of
+doing DateTime-arithmetics in SQL with the appropriate timezones. Make sure though that the database
 always has the latest version of the timezone-database when you use these features.
 
 Handling log-like DateTimes that shall be converted to UTC
