@@ -221,7 +221,6 @@ class EntityGenerator
         ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE  => 'SEQUENCE',
         ClassMetadataInfo::GENERATOR_TYPE_IDENTITY  => 'IDENTITY',
         ClassMetadataInfo::GENERATOR_TYPE_NONE      => 'NONE',
-        ClassMetadataInfo::GENERATOR_TYPE_UUID      => 'UUID',
         ClassMetadataInfo::GENERATOR_TYPE_CUSTOM    => 'CUSTOM',
     ];
 

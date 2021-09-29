@@ -14,7 +14,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
-use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
 use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\Persistence\Mapping\ClassMetadata;
@@ -112,15 +111,6 @@ class ClassMetadataInfo implements ClassMetadata
     public const GENERATOR_TYPE_SEQUENCE = 2;
 
     /**
-     * TABLE means a separate table is used for id generation.
-     * Offers full portability (in that it results in an exception being thrown
-     * no matter the platform).
-     *
-     * @deprecated no replacement planned
-     */
-    public const GENERATOR_TYPE_TABLE = 3;
-
-    /**
      * IDENTITY means an identity column is used for id generation. The database
      * will fill in the id column on insertion. Platforms that do not support
      * native identity columns may emulate them. Full portability is currently
@@ -133,14 +123,6 @@ class ClassMetadataInfo implements ClassMetadata
      * must have a natural, manually assigned id.
      */
     public const GENERATOR_TYPE_NONE = 5;
-
-    /**
-     * UUID means that a UUID/GUID expression is used for id generation. Full
-     * portability is currently not guaranteed.
-     *
-     * @deprecated use an application-side generator instead
-     */
-    public const GENERATOR_TYPE_UUID = 6;
 
     /**
      * CUSTOM means that customer will use own ID generator that supposedly work
@@ -2232,18 +2214,6 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Checks whether the class uses a table for id generation.
-     *
-     * @deprecated
-     *
-     * @return false
-     */
-    public function isIdGeneratorTable()
-    {
-        return false;
-    }
-
-    /**
      * Checks whether the class has a natural identifier/pk (which means it does
      * not use any Id generator.
      *
@@ -2252,16 +2222,6 @@ class ClassMetadataInfo implements ClassMetadata
     public function isIdentifierNatural()
     {
         return $this->generatorType === self::GENERATOR_TYPE_NONE;
-    }
-
-    /**
-     * Checks whether the class use a UUID for id generation.
-     *
-     * @return bool
-     */
-    public function isIdentifierUuid()
-    {
-        return $this->generatorType === self::GENERATOR_TYPE_UUID;
     }
 
     /**

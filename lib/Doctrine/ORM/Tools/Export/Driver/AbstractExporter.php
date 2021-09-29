@@ -253,9 +253,6 @@ abstract class AbstractExporter
             case ClassMetadataInfo::GENERATOR_TYPE_IDENTITY:
                 return 'IDENTITY';
 
-            case ClassMetadataInfo::GENERATOR_TYPE_UUID:
-                return 'UUID';
-
             case ClassMetadataInfo::GENERATOR_TYPE_CUSTOM:
                 return 'CUSTOM';
         }

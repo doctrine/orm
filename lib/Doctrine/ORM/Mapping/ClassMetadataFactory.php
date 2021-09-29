@@ -17,10 +17,8 @@ use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
 use Doctrine\ORM\Id\IdentityGenerator;
 use Doctrine\ORM\Id\SequenceGenerator;
-use Doctrine\ORM\Id\UuidGenerator;
 use Doctrine\ORM\Mapping\Exception\CannotGenerateIds;
 use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
-use Doctrine\ORM\Mapping\Exception\TableGeneratorNotImplementedYet;
 use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
@@ -615,16 +613,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             case ClassMetadata::GENERATOR_TYPE_NONE:
                 $class->setIdGenerator(new AssignedGenerator());
-                break;
-
-            case ClassMetadata::GENERATOR_TYPE_UUID:
-                Deprecation::trigger(
-                    'doctrine/orm',
-                    'https://github.com/doctrine/orm/issues/7312',
-                    'Mapping for %s: the "UUID" id generator strategy is deprecated with no replacement',
-                    $class->name
-                );
-                $class->setIdGenerator(new UuidGenerator());
                 break;
 
             case ClassMetadata::GENERATOR_TYPE_CUSTOM:

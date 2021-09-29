@@ -754,10 +754,6 @@ class EntityGeneratorTest extends OrmTestCase
                 continue;
             }
 
-            if ($name === 'GENERATOR_TYPE_TABLE') {
-                continue;
-            }
-
             $expected = preg_replace($pattern, '', $name);
             $actual   = $method->invoke($this->generator, $value);
 
