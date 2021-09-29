@@ -192,6 +192,7 @@ class Paginator implements Countable, IteratorAggregate
         $cloneQuery = clone $query;
 
         $cloneQuery->setParameters(clone $query->getParameters());
+        $cloneQuery->setIdentifiers(clone $query->getIdentifiers());
         $cloneQuery->setCacheable(false);
 
         foreach ($query->getHints() as $name => $value) {

@@ -23,6 +23,7 @@ namespace Doctrine\ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Query\Identifier;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
 use InvalidArgumentException;
@@ -116,6 +117,14 @@ class QueryBuilder
     private $parameters;
 
     /**
+     * The query identifiers.
+     *
+     * @var ArrayCollection
+     * @psalm-var ArrayCollection<int, Identifier>
+     */
+    private $identifiers;
+
+    /**
      * The index of the first result to retrieve.
      *
      * @var int|null
@@ -167,8 +176,9 @@ class QueryBuilder
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->_em        = $em;
-        $this->parameters = new ArrayCollection();
+        $this->_em         = $em;
+        $this->parameters  = new ArrayCollection();
+        $this->identifiers = new ArrayCollection();
     }
 
     /**
@@ -363,9 +373,11 @@ class QueryBuilder
      */
     public function getQuery()
     {
-        $parameters = clone $this->parameters;
-        $query      = $this->_em->createQuery($this->getDQL())
+        $parameters  = clone $this->parameters;
+        $identifiers = clone $this->identifiers;
+        $query       = $this->_em->createQuery($this->getDQL())
             ->setParameters($parameters)
+            ->setIdentifiers($identifiers)
             ->setFirstResult($this->_firstResult)
             ->setMaxResults($this->_maxResults);
 
@@ -632,6 +644,110 @@ class QueryBuilder
         );
 
         return ! $filteredParameters->isEmpty() ? $filteredParameters->first() : null;
+    }
+
+    /**
+     * Sets a query identifier for the query being constructed.
+     *
+     * <code>
+     *     $qb = $em->createQueryBuilder()
+     *         ->select('u')
+     *         ->from('User', 'u')
+     *         ->where('{field} = 1')
+     *         ->setIdentifier('field', 'id');
+     * </code>
+     *
+     * @param string|int $key   The identifier position or name.
+     * @param mixed      $value The identifier value.
+     *
+     * @return static
+     */
+    public function setIdentifier($key, $value)
+    {
+        $existingIdentifier = $this->getIdentifier($key);
+
+        if ($existingIdentifier !== null) {
+            $existingIdentifier->setValue($value);
+
+            return $this;
+        }
+
+        $this->identifiers->add(new Identifier($key, $value));
+
+        return $this;
+    }
+
+    /**
+     * Sets a collection of query identifiers for the query being constructed.
+     *
+     * <code>
+     *     $qb = $em->createQueryBuilder()
+     *         ->select('u')
+     *         ->from('User', 'u')
+     *         ->where('{field1} = 1 OR {field2} = 1')
+     *         ->setIdentifiers(new ArrayCollection(array(
+     *             new Identifier('field1', 'id'),
+     *             new Identifier('field2', 'parent_id')
+     *        )));
+     * </code>
+     *
+     * @param ArrayCollection|mixed[] $identifiers The query identifiers to set.
+     * @psalm-param ArrayCollection<int, Identifier>|mixed[] $identifiers
+     *
+     * @return static
+     */
+    public function setIdentifiers($identifiers)
+    {
+        // BC compatibility with 2.3-
+        if (is_array($identifiers)) {
+            /** @psalm-var ArrayCollection<int, Identifier> $identifierCollection */
+            $identifierCollection = new ArrayCollection();
+
+            foreach ($identifiers as $key => $value) {
+                $identifier = new Identifier($key, $value);
+
+                $identifierCollection->add($identifier);
+            }
+
+            $identifiers = $identifierCollection;
+        }
+
+        $this->identifiers = $identifiers;
+
+        return $this;
+    }
+
+    /**
+     * Gets all defined query identifiers for the query being constructed.
+     *
+     * @return ArrayCollection The currently defined query identifiers.
+     * @psalm-return ArrayCollection<int, Identifier>
+     */
+    public function getIdentifiers()
+    {
+        return $this->identifiers;
+    }
+
+    /**
+     * Gets a (previously set) query identifier of the query being constructed.
+     *
+     * @param mixed $key The key (index or name) of the bound identifier.
+     *
+     * @return Identifier|null The value of the bound identifier.
+     */
+    public function getIdentifier($key)
+    {
+        $key = Identifier::normalizeName($key);
+
+        $filteredIdentifiers = $this->identifiers->filter(
+            static function (Identifier $identifier) use ($key): bool {
+                $identifierName = $identifier->getName();
+
+                return $key === $identifierName;
+            }
+        );
+
+        return ! $filteredIdentifiers->isEmpty() ? $filteredIdentifiers->first() : null;
     }
 
     /**
@@ -1329,6 +1445,10 @@ class QueryBuilder
             foreach ($visitor->getParameters() as $parameter) {
                 $this->parameters->add($parameter);
             }
+
+            foreach ($visitor->getIdentifiers() as $identifier) {
+                $this->identifiers->add($identifier);
+            }
         }
 
         if ($criteria->getOrderings()) {
@@ -1521,11 +1641,17 @@ class QueryBuilder
         }
 
         $parameters = [];
-
         foreach ($this->parameters as $parameter) {
             $parameters[] = clone $parameter;
         }
 
         $this->parameters = new ArrayCollection($parameters);
+
+        $identifiers = [];
+        foreach ($this->identifiers as $identifier) {
+            $identifiers[] = clone $identifier;
+        }
+
+        $this->identifiers = new ArrayCollection($identifiers);
     }
 }

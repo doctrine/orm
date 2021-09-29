@@ -10,18 +10,20 @@
     <DocblockTypeContradiction occurrences="1">
       <code>$resultCacheDriver !== null &amp;&amp; ! ($resultCacheDriver instanceof \Doctrine\Common\Cache\Cache)</code>
     </DocblockTypeContradiction>
-    <FalsableReturnStatement occurrences="1">
+    <FalsableReturnStatement occurrences="2">
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
+      <code>! $filteredIdentifiers-&gt;isEmpty() ? $filteredIdentifiers-&gt;first() : null</code>
     </FalsableReturnStatement>
-    <InvalidFalsableReturnType occurrences="1">
+    <InvalidFalsableReturnType occurrences="2">
       <code>Parameter|null</code>
+      <code>Identifier|null</code>
     </InvalidFalsableReturnType>
     <InvalidNullableReturnType occurrences="3">
       <code>\Doctrine\Common\Cache\Cache</code>
       <code>int</code>
       <code>string</code>
     </InvalidNullableReturnType>
-    <InvalidScalarArgument occurrences="1">
+    <InvalidScalarArgument occurrences="2">
       <code>$key</code>
     </InvalidScalarArgument>
     <MissingClosureParamType occurrences="3">
@@ -3459,16 +3461,18 @@
       <code>getRootAlias</code>
       <code>getRootAlias</code>
     </DeprecatedMethod>
-    <FalsableReturnStatement occurrences="1">
+    <FalsableReturnStatement occurrences="2">
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
+      <code>! $filteredIdentifiers-&gt;isEmpty() ? $filteredIdentifiers-&gt;first() : null</code>
     </FalsableReturnStatement>
-    <InvalidFalsableReturnType occurrences="1">
+    <InvalidFalsableReturnType occurrences="2">
       <code>Parameter|null</code>
+      <code>Identifier|null</code>
     </InvalidFalsableReturnType>
     <InvalidNullableReturnType occurrences="1">
       <code>int</code>
     </InvalidNullableReturnType>
-    <InvalidScalarArgument occurrences="1">
+    <InvalidScalarArgument occurrences="2">
       <code>$key</code>
     </InvalidScalarArgument>
     <NullableReturnStatement occurrences="1">

@@ -53,6 +53,9 @@ class QueryExpressionVisitor extends ExpressionVisitor
     /** @var list<mixed> */
     private $parameters = [];
 
+    /** @var list<mixed> */
+    private $identifiers = [];
+
     /**
      * Constructor
      *
@@ -83,6 +86,27 @@ class QueryExpressionVisitor extends ExpressionVisitor
     public function clearParameters()
     {
         $this->parameters = [];
+    }
+
+    /**
+     * Gets bound identifiers.
+     * Filled after {@link dispach()}.
+     *
+     * @return ArrayCollection<int, mixed>
+     */
+    public function getIdentifiers()
+    {
+        return new ArrayCollection($this->identifiers);
+    }
+
+    /**
+     * Clears identifiers.
+     *
+     * @return void
+     */
+    public function clearIdentifiers()
+    {
+        $this->identifiers = [];
     }
 
     /**
