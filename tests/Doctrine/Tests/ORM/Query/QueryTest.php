@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Query;
 
 use DateTime;
 use DateTimeImmutable;
+use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -26,6 +27,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function assert;
@@ -105,12 +107,14 @@ class QueryTest extends OrmTestCase
         $q2 = $q->expireQueryCache(true)
           ->setQueryCacheLifetime(3600)
           ->setQueryCacheDriver(null)
+          ->setQueryCache(null)
           ->expireResultCache(true)
           ->setHint('foo', 'bar')
           ->setHint('bar', 'baz')
           ->setParameter(1, 'bar')
           ->setParameters(new ArrayCollection([new Parameter(2, 'baz')]))
           ->setResultCacheDriver(null)
+          ->setResultCache(null)
           ->setResultCacheId('foo')
           ->setDQL('foo')
           ->setFirstResult(10)
@@ -549,5 +553,37 @@ class QueryTest extends OrmTestCase
         self::assertCount(1, $query->getParameters());
         self::assertSame('Benjamin', $query->getParameter(':name')->getValue());
         self::assertSame('Benjamin', $query->getParameter('name')->getValue());
+    }
+
+    public function testGetQueryCacheDriverWithDefaults(): void
+    {
+        $cache = $this->createMock(CacheItemPoolInterface::class);
+
+        $this->entityManager->getConfiguration()->setQueryCache($cache);
+        $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u');
+
+        self::assertSame($cache, CacheAdapter::wrap($query->getQueryCacheDriver()));
+    }
+
+    public function testGetQueryCacheDriverWithCacheExplicitlySetLegacy(): void
+    {
+        $cache = $this->createMock(Cache::class);
+
+        $query = $this->entityManager
+            ->createQuery('select u from ' . CmsUser::class . ' u')
+            ->setQueryCacheDriver($cache);
+
+        self::assertSame($cache, $query->getQueryCacheDriver());
+    }
+
+    public function testGetQueryCacheDriverWithCacheExplicitlySet(): void
+    {
+        $cache = $this->createMock(CacheItemPoolInterface::class);
+
+        $query = $this->entityManager
+            ->createQuery('select u from ' . CmsUser::class . ' u')
+            ->setQueryCache($cache);
+
+        self::assertSame($cache, CacheAdapter::wrap($query->getQueryCacheDriver()));
     }
 }

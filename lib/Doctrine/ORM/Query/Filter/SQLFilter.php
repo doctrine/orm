@@ -58,7 +58,7 @@ abstract class SQLFilter
      * @param string       $type   The parameter type. If specified, the given value will be run through
      *                             the type conversion of this type.
      *
-     * @return self The current SQL filter.
+     * @return $this
      */
     final public function setParameterList(string $name, array $values, string $type = Types::STRING): self
     {
@@ -82,7 +82,7 @@ abstract class SQLFilter
      *                           the type conversion of this type. This is usually not needed for
      *                           strings and numeric types.
      *
-     * @return self The current SQL filter.
+     * @return $this
      */
     final public function setParameter($name, $value, $type = null): self
     {

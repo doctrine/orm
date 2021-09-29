@@ -47,7 +47,7 @@ abstract class Base
      * @param string[]|object[]|string|object $args
      * @psalm-param list<string|object>|string|object $args
      *
-     * @return static
+     * @return $this
      */
     public function addMultiple($args = [])
     {
@@ -61,7 +61,7 @@ abstract class Base
     /**
      * @param mixed $arg
      *
-     * @return static
+     * @return $this
      *
      * @throws InvalidArgumentException
      */

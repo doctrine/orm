@@ -22,7 +22,7 @@ final class NativeQuery extends AbstractQuery
      *
      * @param string $sql
      *
-     * @return self This query instance.
+     * @return $this
      */
     public function setSQL($sql): self
     {
