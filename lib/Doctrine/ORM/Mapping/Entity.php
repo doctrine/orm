@@ -15,7 +15,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class Entity implements Annotation
 {
-    /** @var string */
+    /** @var string|null */
     public $repositoryClass;
 
     /** @var bool */

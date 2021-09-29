@@ -15,16 +15,16 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class OneToOne implements Annotation
 {
-    /** @var string */
+    /** @var string|null */
     public $targetEntity;
 
-    /** @var string */
+    /** @var string|null */
     public $mappedBy;
 
-    /** @var string */
+    /** @var string|null */
     public $inversedBy;
 
-    /** @var array<string> */
+    /** @var array<string>|null */
     public $cascade;
 
     /**
@@ -39,7 +39,7 @@ final class OneToOne implements Annotation
     public $orphanRemoval = false;
 
     /**
-     * @param array<string> $cascade
+     * @param array<string>|null $cascade
      */
     public function __construct(
         ?string $mappedBy = null,

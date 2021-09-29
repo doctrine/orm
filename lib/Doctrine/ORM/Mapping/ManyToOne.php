@@ -15,10 +15,10 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class ManyToOne implements Annotation
 {
-    /** @var string */
+    /** @var string|null */
     public $targetEntity;
 
-    /** @var array<string> */
+    /** @var string[]|null */
     public $cascade;
 
     /**
@@ -29,11 +29,11 @@ final class ManyToOne implements Annotation
      */
     public $fetch = 'LAZY';
 
-    /** @var string */
+    /** @var string|null */
     public $inversedBy;
 
     /**
-     * @param array<string> $cascade
+     * @param string[]|null $cascade
      */
     public function __construct(
         ?string $targetEntity = null,

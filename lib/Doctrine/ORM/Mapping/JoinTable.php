@@ -15,10 +15,10 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class JoinTable implements Annotation
 {
-    /** @var string */
+    /** @var string|null */
     public $name;
 
-    /** @var string */
+    /** @var string|null */
     public $schema;
 
     /** @var array<\Doctrine\ORM\Mapping\JoinColumn> */
