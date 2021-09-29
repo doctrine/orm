@@ -5,18 +5,32 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Generator;
 
 class DDC309Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->_schemaTool->createSchema(
             [
                 $this->_em->getClassMetadata(DDC309Country::class),
                 $this->_em->getClassMetadata(DDC309User::class),
             ]
         );
+    }
+
+    protected function tearDown(): void
+    {
+        $this->_schemaTool->dropSchema(
+            [
+                $this->_em->getClassMetadata(DDC309Country::class),
+                $this->_em->getClassMetadata(DDC309User::class),
+            ]
+        );
+
+        parent::tearDown();
     }
 
     public function testTwoIterateHydrations(): void
@@ -48,6 +62,57 @@ class DDC309Test extends OrmFunctionalTestCase
 
         $this->assertEquals(2, $c[0]->id);
         $this->assertEquals(2, $u[0]->id);
+
+        do {
+            $q->next();
+        } while ($q->valid());
+
+        do {
+            $r->next();
+        } while ($r->valid());
+    }
+
+    public function testTwoToIterableHydrations(): void
+    {
+        $c1 = new DDC309Country();
+        $c2 = new DDC309Country();
+        $u1 = new DDC309User();
+        $u2 = new DDC309User();
+
+        $this->_em->persist($c1);
+        $this->_em->persist($c2);
+        $this->_em->persist($u1);
+        $this->_em->persist($u2);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        /** @var Generator<int, DDC309Country> $q */
+        $q = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\ORM\Functional\Ticket\DDC309Country c')->toIterable();
+        $c = $q->current();
+
+        $this->assertEquals(1, $c->id);
+
+        /** @var Generator<int, DDC309User> $r */
+        $r = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\ORM\Functional\Ticket\DDC309User u')->toIterable();
+        $u = $r->current();
+
+        $this->assertEquals(1, $u->id);
+
+        $q->next();
+        $r->next();
+        $c = $q->current();
+        $u = $r->current();
+
+        $this->assertEquals(2, $c->id);
+        $this->assertEquals(2, $u->id);
+
+        do {
+            $q->next();
+        } while ($q->valid());
+
+        do {
+            $r->next();
+        } while ($r->valid());
     }
 }
 
