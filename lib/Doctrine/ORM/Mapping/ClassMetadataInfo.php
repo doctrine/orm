@@ -2240,6 +2240,13 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function isIdGeneratorTable()
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9046',
+            '%s is deprecated',
+            __METHOD__
+        );
+
         return false;
     }
 
@@ -2257,10 +2264,19 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Checks whether the class use a UUID for id generation.
      *
+     * @deprecated
+     *
      * @return bool
      */
     public function isIdentifierUuid()
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9046',
+            '%s is deprecated',
+            __METHOD__
+        );
+
         return $this->generatorType === self::GENERATOR_TYPE_UUID;
     }
 
