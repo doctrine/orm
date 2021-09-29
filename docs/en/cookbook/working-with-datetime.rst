@@ -185,7 +185,7 @@ An alternative would be to use a post-processing lifecycle event to recreate the
             $this->timezone = $eventDateTime->getTimeZone()->getName();
         }
 
-        /** @PostLoad */
+        /** @ORM\PostLoad */
         public function correctTimezone(): void
         {
             $this->eventDateTime = new DateTimeImmutable(
