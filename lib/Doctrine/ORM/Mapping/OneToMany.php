@@ -39,7 +39,7 @@ final class OneToMany implements Annotation
     public $indexBy;
 
     /**
-     * @param array<string> $cascade
+     * @param string[]|null $cascade
      */
     public function __construct(
         ?string $mappedBy = null,

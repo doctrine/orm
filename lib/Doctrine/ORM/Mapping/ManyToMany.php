@@ -19,13 +19,13 @@ final class ManyToMany implements Annotation
     /** @var string|null */
     public $targetEntity;
 
-    /** @var string */
+    /** @var string|null */
     public $mappedBy;
 
-    /** @var string */
+    /** @var string|null */
     public $inversedBy;
 
-    /** @var array<string> */
+    /** @var string[]|null */
     public $cascade;
 
     /**
@@ -39,11 +39,11 @@ final class ManyToMany implements Annotation
     /** @var bool */
     public $orphanRemoval = false;
 
-    /** @var string */
+    /** @var string|null */
     public $indexBy;
 
     /**
-     * @param array<string> $cascade
+     * @param string[]|null $cascade
      */
     public function __construct(
         ?string $targetEntity = null,

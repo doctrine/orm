@@ -579,7 +579,7 @@ The Cache Mode controls how a particular query interacts with the second-level c
 
 .. note::
 
-    The the default query cache mode is ```Cache::MODE_NORMAL```
+    The default query cache mode is ```Cache::MODE_NORMAL```
 
 DELETE / UPDATE queries
 ~~~~~~~~~~~~~~~~~~~~~~~

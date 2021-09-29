@@ -15,7 +15,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 final class JoinColumn implements Annotation
 {
-    /** @var string */
+    /** @var string|null */
     public $name;
 
     /** @var string */
@@ -30,13 +30,13 @@ final class JoinColumn implements Annotation
     /** @var mixed */
     public $onDelete;
 
-    /** @var string */
+    /** @var string|null */
     public $columnDefinition;
 
     /**
      * Field name used in non-object hydration (array/scalar).
      *
-     * @var string
+     * @var string|null
      */
     public $fieldName;
 

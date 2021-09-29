@@ -10,7 +10,7 @@ use Attribute;
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 final class InverseJoinColumn implements Annotation
 {
-    /** @var string */
+    /** @var string|null */
     public $name;
 
     /** @var string */
@@ -25,13 +25,13 @@ final class InverseJoinColumn implements Annotation
     /** @var mixed */
     public $onDelete;
 
-    /** @var string */
+    /** @var string|null */
     public $columnDefinition;
 
     /**
      * Field name used in non-object hydration (array/scalar).
      *
-     * @var string
+     * @var string|null
      */
     public $fieldName;
 
