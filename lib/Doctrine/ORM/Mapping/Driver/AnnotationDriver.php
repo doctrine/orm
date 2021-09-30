@@ -688,11 +688,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
      *
      * @return mixed[]
      * @psalm-return array{
-     *                   name: string,
+     *                   name: string|null,
      *                   unique: bool,
      *                   nullable: bool,
      *                   onDelete: mixed,
-     *                   columnDefinition: string,
+     *                   columnDefinition: string|null,
      *                   referencedColumnName: string
      *               }
      */

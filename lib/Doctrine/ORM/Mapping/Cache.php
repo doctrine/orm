@@ -23,7 +23,7 @@ final class Cache implements Annotation
      */
     public $usage = 'READ_ONLY';
 
-    /** @var string Cache region name. */
+    /** @var string|null Cache region name. */
     public $region;
 
     public function __construct(string $usage = 'READ_ONLY', ?string $region = null)

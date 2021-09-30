@@ -17,7 +17,7 @@ class From
     /** @var string */
     protected $alias;
 
-    /** @var string */
+    /** @var string|null */
     protected $indexBy;
 
     /**
@@ -49,7 +49,7 @@ class From
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getIndexBy()
     {

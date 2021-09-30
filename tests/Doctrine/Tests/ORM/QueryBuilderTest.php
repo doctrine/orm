@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\QueryBuilder;
@@ -146,6 +147,37 @@ class QueryBuilderTest extends OrmTestCase
         $this->assertValidQueryBuilder(
             $qb,
             'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id'
+        );
+    }
+
+    public function testComplexInnerJoinWithComparisonCondition(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb
+            ->select('u', 'a')
+            ->from(CmsUser::class, 'u')
+            ->innerJoin('u.articles', 'a', Join::ON, $qb->expr()->eq('u.id', 'a.author_id'));
+
+        $this->assertValidQueryBuilder(
+            $qb,
+            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id'
+        );
+    }
+
+    public function testComplexInnerJoinWithCompositeCondition(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb
+            ->select('u', 'a')
+            ->from(CmsUser::class, 'u')
+            ->innerJoin('u.articles', 'a', Join::ON, $qb->expr()->andX(
+                $qb->expr()->eq('u.id', 'a.author_id'),
+                $qb->expr()->isNotNull('u.name')
+            ));
+
+        $this->assertValidQueryBuilder(
+            $qb,
+            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id AND u.name IS NOT NULL'
         );
     }
 
@@ -1236,5 +1268,16 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame(3, $builder->getParameter(0)->getValue());
         self::assertSame(3, $builder->getParameter('0')->getValue());
         self::assertSame('Doctrine', $builder->getParameter('name')->getValue());
+    }
+
+    public function testJoin(): void
+    {
+        $builder = $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(CmsUser::class, 'u')
+            ->leftJoin(CmsArticle::class, 'a0')
+            ->innerJoin(CmsArticle::class, 'a1');
+
+        self::assertSame('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN Doctrine\Tests\Models\CMS\CmsArticle a0 INNER JOIN Doctrine\Tests\Models\CMS\CmsArticle a1', $builder->getDQL());
     }
 }

@@ -2859,6 +2859,10 @@ class UnitOfWork implements PropertyChangedListener
                                     break;
                             }
 
+                            if ($newValue === null) {
+                                break;
+                            }
+
                             // PERF: Inlined & optimized code from UnitOfWork#registerManaged()
                             $newValueOid                                                     = spl_object_id($newValue);
                             $this->entityIdentifiers[$newValueOid]                           = $associatedId;
@@ -2879,7 +2883,7 @@ class UnitOfWork implements PropertyChangedListener
                     $this->originalEntityData[$oid][$field] = $newValue;
                     $class->reflFields[$field]->setValue($entity, $newValue);
 
-                    if ($assoc['inversedBy'] && $assoc['type'] & ClassMetadata::ONE_TO_ONE) {
+                    if ($assoc['inversedBy'] && $assoc['type'] & ClassMetadata::ONE_TO_ONE && $newValue !== null) {
                         $inverseAssoc = $targetClass->associationMappings[$assoc['inversedBy']];
                         $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($newValue, $entity);
                     }

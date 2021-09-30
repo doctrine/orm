@@ -15,7 +15,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class MappedSuperclass implements Annotation
 {
-    /** @var string */
+    /** @var string|null */
     public $repositoryClass;
 
     public function __construct(?string $repositoryClass = null)

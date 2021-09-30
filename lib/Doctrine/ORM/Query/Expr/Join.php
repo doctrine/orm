@@ -25,25 +25,25 @@ class Join
     /** @var string */
     protected $join;
 
-    /** @var string */
+    /** @var string|null */
     protected $alias;
 
-    /** @var string */
+    /** @var string|null */
     protected $conditionType;
 
-    /** @var string */
+    /** @var string|Comparison|Composite|null */
     protected $condition;
 
-    /** @var string */
+    /** @var string|null */
     protected $indexBy;
 
     /**
-     * @param string      $joinType      The condition type constant. Either INNER_JOIN or LEFT_JOIN.
-     * @param string      $join          The relationship to join.
-     * @param string|null $alias         The alias of the join.
-     * @param string|null $conditionType The condition type constant. Either ON or WITH.
-     * @param string|null $condition     The condition for the join.
-     * @param string|null $indexBy       The index for the join.
+     * @param string                           $joinType      The condition type constant. Either INNER_JOIN or LEFT_JOIN.
+     * @param string                           $join          The relationship to join.
+     * @param string|null                      $alias         The alias of the join.
+     * @param string|null                      $conditionType The condition type constant. Either ON or WITH.
+     * @param string|Comparison|Composite|null $condition     The condition for the join.
+     * @param string|null                      $indexBy       The index for the join.
      */
     public function __construct($joinType, $join, $alias = null, $conditionType = null, $condition = null, $indexBy = null)
     {
@@ -72,7 +72,7 @@ class Join
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getAlias()
     {
@@ -80,7 +80,7 @@ class Join
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getConditionType()
     {
@@ -88,7 +88,7 @@ class Join
     }
 
     /**
-     * @return string
+     * @return string|Comparison|Composite|null
      */
     public function getCondition()
     {
@@ -96,7 +96,7 @@ class Join
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getIndexBy()
     {

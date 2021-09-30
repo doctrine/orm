@@ -379,8 +379,6 @@ class QueryBuilder
      */
     private function findRootAlias(string $alias, string $parentAlias): string
     {
-        $rootAlias = null;
-
         if (in_array($parentAlias, $this->getRootAliases(), true)) {
             $rootAlias = $parentAlias;
         } elseif (isset($this->joinRootAliases[$parentAlias])) {
@@ -437,8 +435,8 @@ class QueryBuilder
      *     $qb->getRootAliases(); // array('u')
      * </code>
      *
-     * @return mixed[]
-     * @psalm-return list<mixed>
+     * @return string[]
+     * @psalm-return list<string>
      */
     public function getRootAliases()
     {
@@ -472,8 +470,8 @@ class QueryBuilder
      *     $qb->getAllAliases(); // array('u','a')
      * </code>
      *
-     * @return mixed[]
-     * @psalm-return list<mixed>
+     * @return string[]
+     * @psalm-return list<string>
      */
     public function getAllAliases()
     {
@@ -492,8 +490,8 @@ class QueryBuilder
      *     $qb->getRootEntities(); // array('User')
      * </code>
      *
-     * @return mixed[]
-     * @psalm-return list<mixed>
+     * @return string[]
+     * @psalm-return list<string>
      */
     public function getRootEntities()
     {
@@ -937,11 +935,11 @@ class QueryBuilder
      *         ->join('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');
      * </code>
      *
-     * @param string      $join          The relationship to join.
-     * @param string      $alias         The alias of the join.
-     * @param string|null $conditionType The condition type constant. Either ON or WITH.
-     * @param string|null $condition     The condition for the join.
-     * @param string|null $indexBy       The index for the join.
+     * @param string                                     $join          The relationship to join.
+     * @param string                                     $alias         The alias of the join.
+     * @param string|null                                $conditionType The condition type constant. Either ON or WITH.
+     * @param string|Expr\Comparison|Expr\Composite|null $condition     The condition for the join.
+     * @param string|null                                $indexBy       The index for the join.
      *
      * @return $this
      */
@@ -963,11 +961,11 @@ class QueryBuilder
      *         ->from('User', 'u')
      *         ->innerJoin('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');
      *
-     * @param string      $join          The relationship to join.
-     * @param string      $alias         The alias of the join.
-     * @param string|null $conditionType The condition type constant. Either ON or WITH.
-     * @param string|null $condition     The condition for the join.
-     * @param string|null $indexBy       The index for the join.
+     * @param string                                     $join          The relationship to join.
+     * @param string                                     $alias         The alias of the join.
+     * @param string|null                                $conditionType The condition type constant. Either ON or WITH.
+     * @param string|Expr\Comparison|Expr\Composite|null $condition     The condition for the join.
+     * @param string|null                                $indexBy       The index for the join.
      *
      * @return $this
      */
@@ -1003,17 +1001,17 @@ class QueryBuilder
      *         ->leftJoin('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');
      * </code>
      *
-     * @param string      $join          The relationship to join.
-     * @param string      $alias         The alias of the join.
-     * @param string|null $conditionType The condition type constant. Either ON or WITH.
-     * @param string|null $condition     The condition for the join.
-     * @param string|null $indexBy       The index for the join.
+     * @param string                                     $join          The relationship to join.
+     * @param string                                     $alias         The alias of the join.
+     * @param string|null                                $conditionType The condition type constant. Either ON or WITH.
+     * @param string|Expr\Comparison|Expr\Composite|null $condition     The condition for the join.
+     * @param string|null                                $indexBy       The index for the join.
      *
      * @return $this
      */
     public function leftJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
-        $parentAlias = substr($join, 0, strpos($join, '.'));
+        $parentAlias = substr($join, 0, (int) strpos($join, '.'));
 
         $rootAlias = $this->findRootAlias($alias, $parentAlias);
 

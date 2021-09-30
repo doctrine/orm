@@ -11,6 +11,8 @@ use Doctrine\Tests\Models\Quote\User as QuoteUser;
 use Doctrine\Tests\Models\Tweet\Tweet;
 use Doctrine\Tests\Models\Tweet\User;
 use Doctrine\Tests\Models\Tweet\User as TweetUser;
+use Doctrine\Tests\Models\ValueConversionType\InversedManyToManyExtraLazyEntity;
+use Doctrine\Tests\Models\ValueConversionType\OwningManyToManyExtraLazyEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
@@ -19,6 +21,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
     {
         $this->useModelSet('tweet');
         $this->useModelSet('quote');
+        $this->useModelSet('vct_manytomany_extralazy');
         parent::setUp();
     }
 
@@ -92,5 +95,32 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
         self::assertFalse($tweets->isInitialized());
         self::assertCount(1, $tweets);
         self::assertFalse($tweets->isInitialized());
+    }
+
+    public function testCanHandleComplexTypesOnAssociation(): void
+    {
+        $parent      = new OwningManyToManyExtraLazyEntity();
+        $parent->id2 = 'Alice';
+
+        $this->_em->persist($parent);
+
+        $child      = new InversedManyToManyExtraLazyEntity();
+        $child->id1 = 'Bob';
+
+        $this->_em->persist($child);
+
+        $parent->associatedEntities->add($child);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $parent = $this->_em->find(OwningManyToManyExtraLazyEntity::class, $parent->id2);
+
+        $criteria = Criteria::create()->where(Criteria::expr()->eq('id1', 'Bob'));
+
+        $result = $parent->associatedEntities->matching($criteria);
+
+        $this->assertCount(1, $result);
+        $this->assertEquals('Bob', $result[0]->id1);
     }
 }

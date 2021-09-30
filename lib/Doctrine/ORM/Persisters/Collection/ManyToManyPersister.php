@@ -222,6 +222,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $targetClass   = $this->em->getClassMetadata($mapping['targetEntity']);
         $onConditions  = $this->getOnConditionSQL($mapping);
         $whereClauses  = $params = [];
+        $paramTypes    = [];
 
         if (! $mapping['isOwningSide']) {
             $associationSourceClass = $targetClass;
@@ -237,6 +238,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $params[]       = $ownerMetadata->containsForeignIdentifier
                 ? $id[$ownerMetadata->getFieldForColumn($value)]
                 : $id[$ownerMetadata->fieldNames[$value]];
+            $paramTypes[]   = PersisterHelper::getTypeOfColumn($value, $ownerMetadata, $this->em);
         }
 
         $parameters = $this->expandCriteriaParameters($criteria);
@@ -247,6 +249,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $field          = $this->quoteStrategy->getColumnName($name, $targetClass, $this->platform);
             $whereClauses[] = sprintf('te.%s %s ?', $field, $operator);
             $params[]       = $value;
+            $paramTypes[]   = PersisterHelper::getTypeOfColumn($field, $targetClass, $this->em);
         }
 
         $tableName = $this->quoteStrategy->getTableName($targetClass, $this->platform);
@@ -265,7 +268,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         $sql .= $this->getLimitSql($criteria);
 
-        $stmt = $this->conn->executeQuery($sql, $params);
+        $stmt = $this->conn->executeQuery($sql, $params, $paramTypes);
 
         return $this
             ->em
