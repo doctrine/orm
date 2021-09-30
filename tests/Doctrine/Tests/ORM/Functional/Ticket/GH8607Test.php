@@ -13,7 +13,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 class GH8607Test extends OrmFunctionalTestCase
 {
@@ -21,14 +20,20 @@ class GH8607Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema([
-                $this->_em->getClassMetadata(GH8607ParentEntity::class),
-                $this->_em->getClassMetadata(GH8607ChildEntity::class),
-            ]);
-        } catch (Exception $e) {
-            // skip errors
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(GH8607ParentEntity::class),
+            $this->_em->getClassMetadata(GH8607ChildEntity::class),
+        ]);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->_schemaTool->dropSchema([
+            $this->_em->getClassMetadata(GH8607ParentEntity::class),
+            $this->_em->getClassMetadata(GH8607ChildEntity::class),
+        ]);
+
+        parent::tearDown();
     }
 
     public function testInvalidCollectionReturn(): void
