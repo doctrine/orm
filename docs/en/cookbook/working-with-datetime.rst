@@ -188,11 +188,15 @@ An alternative would be to use a post-processing lifecycle event to recreate the
         /** @ORM\PostLoad */
         public function correctTimezone(): void
         {
-            $this->eventDateTime = new DateTimeImmutable(
+            $correctEntity = new DateTimeImmutable(
                 $this->eventDateTime->format('Y-m-d H:i:s'),
                 new DateTimeZone($this->timezone)
             );
+
+            $this->eventDateTime->setTimezone(new DateTimezone($this->timezone))
+                                ->modify($correctEntity->format('Y-m-d H:i:s'));
         }
+
 
         public function getEventDateTime(): DateTimeImmutable
         {

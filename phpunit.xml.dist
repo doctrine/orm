@@ -21,6 +21,7 @@
     <testsuites>
         <testsuite name="Doctrine ORM Test Suite">
             <directory>./tests/Doctrine/Tests/ORM</directory>
+            <directory>./tests/Doctrine/Tests/Examples</directory>
         </testsuite>
     </testsuites>
 
