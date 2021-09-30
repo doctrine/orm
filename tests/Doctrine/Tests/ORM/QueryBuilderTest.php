@@ -1269,4 +1269,15 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame(3, $builder->getParameter('0')->getValue());
         self::assertSame('Doctrine', $builder->getParameter('name')->getValue());
     }
+
+    public function testJoin(): void
+    {
+        $builder = $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(CmsUser::class, 'u')
+            ->leftJoin(CmsArticle::class, 'a0')
+            ->innerJoin(CmsArticle::class, 'a1');
+
+        self::assertSame('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN Doctrine\Tests\Models\CMS\CmsArticle a0 INNER JOIN Doctrine\Tests\Models\CMS\CmsArticle a1', $builder->getDQL());
+    }
 }
