@@ -19,14 +19,12 @@ jobs:
           - "7.3"
           - "7.4"
           - "8.0"
+          - "8.1"
         dbal-version:
           - "default"
         include:
           - php-version: "8.0"
             dbal-version: "2.13"
-          # To be merged with the previous job as soon as https://github.com/doctrine/dbal/pull/4818 is released.
-          - php-version: "8.1"
-            dbal-version: "2.13.4@dev"
           - php-version: "8.1"
             dbal-version: "3.2@dev"
 
