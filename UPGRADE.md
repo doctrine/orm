@@ -21,6 +21,14 @@ Signatures of overridden methods should be changed accordingly
 
 Method `Doctrine\ORM\EntityManagerInterface#copy()` never got its implementation and is removed in 3.0.
 
+## BC BREAK: Removed classes related to UUID and TABLE generator strategies
+
+The following classes have been removed:
+- `Doctrine\ORM\Id\TableGenerator`
+- `Doctrine\ORM\Id\UuidGenerator`
+
+Using the `UUID` strategy for generating identifiers is not supported anymore.
+
 # Upgrade to 2.10
 
 ## BC Break: Removed `TABLE` id generator strategy

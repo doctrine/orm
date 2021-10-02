@@ -31,7 +31,6 @@
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
                 <!-- We need to keep the calls for DBAL 2.13 compatibility. -->
                 <referencedMethod name="Doctrine\DBAL\Connection::getSchemaManager"/>
-                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
             </errorLevel>
         </DeprecatedMethod>
         <DocblockTypeContradiction>
@@ -110,11 +109,5 @@
                 <referencedClass name="Doctrine\DBAL\Driver\ResultStatement"/>
             </errorLevel>
         </UndefinedDocblockClass>
-        <UndefinedMethod>
-            <errorLevel type="suppress">
-                <!-- See https://github.com/doctrine/orm/issues/8884 -->
-                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
-            </errorLevel>
-        </UndefinedMethod>
     </issueHandlers>
 </psalm>

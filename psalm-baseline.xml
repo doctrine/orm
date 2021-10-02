@@ -415,8 +415,7 @@
     </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php">
-    <DeprecatedMethod occurrences="4">
-      <code>copy</code>
+    <DeprecatedMethod occurrences="3">
       <code>getHydrator</code>
       <code>transactional</code>
       <code>transactional</code>
@@ -609,17 +608,6 @@
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(string) $em-&gt;getConnection()-&gt;lastInsertId($this-&gt;sequenceName)</code>
     </RedundantCastGivenDocblockType>
-  </file>
-  <file src="lib/Doctrine/ORM/Id/TableGenerator.php">
-    <PossiblyFalseOperand occurrences="3">
-      <code>$currentLevel</code>
-      <code>$this-&gt;_nextValue</code>
-      <code>$this-&gt;_nextValue</code>
-    </PossiblyFalseOperand>
-    <UndefinedMethod occurrences="2">
-      <code>getTableHiLoCurrentValSql</code>
-      <code>getTableHiLoUpdateNextValSql</code>
-    </UndefinedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Internal/CommitOrderCalculator.php">
     <RedundantCondition occurrences="2">
@@ -817,12 +805,6 @@
       <code>$parent</code>
       <code>new $definition['class']()</code>
     </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="1">
-      <code>new UuidGenerator()</code>
-    </DeprecatedClass>
-    <DeprecatedConstant occurrences="1">
-      <code>ClassMetadata::GENERATOR_TYPE_UUID</code>
-    </DeprecatedConstant>
     <DeprecatedMethod occurrences="2">
       <code>addNamedNativeQuery</code>
       <code>addNamedQuery</code>
@@ -922,9 +904,6 @@
       <code>$class</code>
       <code>$subclass</code>
     </ArgumentTypeCoercion>
-    <DeprecatedConstant occurrences="1">
-      <code>self::GENERATOR_TYPE_UUID</code>
-    </DeprecatedConstant>
     <DeprecatedProperty occurrences="4">
       <code>$this-&gt;columnNames</code>
       <code>$this-&gt;columnNames</code>
@@ -3491,9 +3470,6 @@
       <code>$this-&gt;getClassToExtend() ?: $metadata-&gt;name</code>
       <code>array_map('strlen', $paramTypes)</code>
     </ArgumentTypeCoercion>
-    <DeprecatedConstant occurrences="1">
-      <code>ClassMetadataInfo::GENERATOR_TYPE_UUID</code>
-    </DeprecatedConstant>
     <DocblockTypeContradiction occurrences="3">
       <code>$metadata-&gt;reflClass !== null</code>
       <code>class_exists($metadata-&gt;name)</code>
@@ -3575,9 +3551,6 @@
     <DeprecatedClass occurrences="1">
       <code>ExportException::attemptOverwriteExistingFile($path)</code>
     </DeprecatedClass>
-    <DeprecatedConstant occurrences="1">
-      <code>ClassMetadataInfo::GENERATOR_TYPE_UUID</code>
-    </DeprecatedConstant>
     <InvalidNullableReturnType occurrences="1">
       <code>string</code>
     </InvalidNullableReturnType>

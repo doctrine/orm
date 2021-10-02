@@ -216,16 +216,6 @@ parameters:
 			path: lib/Doctrine/ORM/Event/PreFlushEventArgs.php
 
 		-
-			message: "#^Call to an undefined method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getTableHiLoCurrentValSql\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Id/TableGenerator.php
-
-		-
-			message: "#^Call to an undefined method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getTableHiLoUpdateNextValSql\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Id/TableGenerator.php
-
-		-
 			message: "#^Parameter \\#2 \\$discrMap of static method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\HydrationException\\:\\:invalidDiscriminatorValue\\(\\) expects array\\<string, string\\>, array\\<int, int\\|string\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php
@@ -2092,7 +2082,7 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php
 
 		-
-			message: "#^Parameter \\#1 \\$type of method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:_getIdGeneratorTypeString\\(\\) expects 1\\|2\\|3\\|4\\|5\\|6\\|7, int given\\.$#"
+			message: "#^Parameter \\#1 \\$type of method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:_getIdGeneratorTypeString\\(\\) expects 1\\|2\\|4\\|5\\|7, int given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php
 
@@ -2102,7 +2092,7 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
 		-
-			message: "#^Parameter \\#1 \\$type of method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:_getIdGeneratorTypeString\\(\\) expects 1\\|2\\|3\\|4\\|5\\|6\\|7, int given\\.$#"
+			message: "#^Parameter \\#1 \\$type of method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:_getIdGeneratorTypeString\\(\\) expects 1\\|2\\|4\\|5\\|7, int given\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
@@ -2112,7 +2102,7 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
 		-
-			message: "#^Parameter \\#1 \\$type of method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:_getIdGeneratorTypeString\\(\\) expects 1\\|2\\|3\\|4\\|5\\|6\\|7, int given\\.$#"
+			message: "#^Parameter \\#1 \\$type of method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:_getIdGeneratorTypeString\\(\\) expects 1\\|2\\|4\\|5\\|7, int given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php
 
