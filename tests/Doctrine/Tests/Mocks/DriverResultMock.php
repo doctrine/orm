@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
-use ArrayIterator;
 use BadMethodCallException;
 use Doctrine\DBAL\Driver\Result;
-use PDO;
-use Traversable;
 
 use function array_values;
 use function count;
@@ -16,7 +13,7 @@ use function current;
 use function next;
 use function reset;
 
-class DriverResultMock implements Result, ResultStatement
+class DriverResultMock implements Result
 {
     /** @var list<array<string, mixed>> */
     private $resultSet;
@@ -94,45 +91,5 @@ class DriverResultMock implements Result, ResultStatement
 
     public function free(): void
     {
-    }
-
-    public function closeCursor(): bool
-    {
-        $this->free();
-
-        return true;
-    }
-
-    public function setFetchMode($fetchMode, $arg2 = null, $arg3 = null): void
-    {
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
-    {
-        return $this->fetchAssociative();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null): array
-    {
-        return $this->fetchAllAssociative();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function fetchColumn($columnIndex = 0)
-    {
-        return $this->fetchOne();
-    }
-
-    public function getIterator(): Traversable
-    {
-        return new ArrayIterator($this->fetchAllAssociative());
     }
 }

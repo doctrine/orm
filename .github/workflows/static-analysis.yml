@@ -21,7 +21,6 @@ jobs:
           - "8.0"
         dbal-version:
           - "default"
-          - "2.13"
 
     steps:
       - name: "Checkout code"
@@ -46,10 +45,6 @@ jobs:
         run: "vendor/bin/phpstan analyse"
         if: "${{ matrix.dbal-version == 'default' }}"
 
-      - name: "Run a static analysis with phpstan/phpstan"
-        run: "vendor/bin/phpstan analyse -c phpstan-dbal2.neon"
-        if: "${{ matrix.dbal-version == '2.13' }}"
-
   static-analysis-psalm:
     name: "Static Analysis with Psalm"
     runs-on: "ubuntu-20.04"
@@ -61,7 +56,6 @@ jobs:
           - "8.0"
         dbal-version:
           - "default"
-          - "2.13"
 
     steps:
       - name: "Checkout code"

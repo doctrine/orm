@@ -9,7 +9,6 @@ use Doctrine\DBAL\Platforms\DB2Platform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
-use Doctrine\DBAL\Platforms\SQLAnywherePlatform;
 use Doctrine\DBAL\Platforms\SQLServer2012Platform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\ORM\EntityManagerInterface;
@@ -122,7 +121,6 @@ class LimitSubqueryOutputWalker extends SqlWalker
             || $this->platform instanceof SQLServer2012Platform // DBAL 3.1 compatibility
             || $this->platform instanceof SQLServerPlatform
             || $this->platform instanceof OraclePlatform
-            || $this->platform instanceof SQLAnywherePlatform
             || $this->platform instanceof DB2Platform
             || (method_exists($this->platform, 'supportsRowNumberFunction')
                 && $this->platform->supportsRowNumberFunction());

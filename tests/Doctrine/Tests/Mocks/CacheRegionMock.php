@@ -24,7 +24,7 @@ class CacheRegionMock implements Region
     public $returns = [];
 
     /** @var string */
-    public $name;
+    public $name = 'mock';
 
     /**
      * Queue a return value for a specific method invocation

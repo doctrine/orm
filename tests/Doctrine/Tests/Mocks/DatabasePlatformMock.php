@@ -29,11 +29,6 @@ class DatabasePlatformMock extends AbstractPlatform
         return $this->supportsIdentityColumns;
     }
 
-    public function prefersSequences(): bool
-    {
-        throw new BadMethodCallException('Call to deprecated method.');
-    }
-
     public function supportsSequences(): bool
     {
         return $this->supportsSequences;
