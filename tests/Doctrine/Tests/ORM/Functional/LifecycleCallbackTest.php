@@ -29,7 +29,6 @@ use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function count;
 use function current;
@@ -267,15 +266,6 @@ DQL;
 
         $query = $this->_em->createQuery(sprintf($dql, $e1->getId(), $e2->getId()));
 
-        $result = iterator_to_array($query->iterate());
-
-        foreach ($result as $entity) {
-            self::assertTrue($entity[0]->postLoadCallbackInvoked);
-            self::assertFalse($entity[0]->postLoadCascaderNotNull);
-
-            break;
-        }
-
         $iterableResult = iterator_to_array($query->toIterable());
 
         foreach ($iterableResult as $entity) {
@@ -301,15 +291,6 @@ DQL;
         $query = $this->_em->createQuery(
             'SELECT e FROM Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity AS e'
         );
-
-        $result = iterator_to_array($query->iterate(null, Query::HYDRATE_SIMPLEOBJECT));
-
-        foreach ($result as $entity) {
-            self::assertTrue($entity[0]->postLoadCallbackInvoked);
-            self::assertFalse($entity[0]->postLoadCascaderNotNull);
-
-            break;
-        }
 
         $result = iterator_to_array($query->toIterable([], Query::HYDRATE_SIMPLEOBJECT));
 

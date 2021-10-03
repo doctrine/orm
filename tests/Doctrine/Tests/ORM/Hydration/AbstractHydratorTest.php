@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Result;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
@@ -43,7 +42,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
         $mockEntityManagerInterface = $this->createMock(EntityManagerInterface::class);
         $this->mockEventManager     = $this->createMock(EventManager::class);
         $this->mockResult           = $this->createMock(Result::class);
-        $this->mockResultMapping    = $this->getMockBuilder(ResultSetMapping::class);
+        $this->mockResultMapping    = $this->createMock(ResultSetMapping::class);
 
         $mockEntityManagerInterface
             ->expects(self::any())
@@ -95,7 +94,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
                 $this->assertTrue($eventListenerHasBeenRegistered);
             });
 
-        iterator_to_array($this->hydrator->iterate($this->mockResult, $this->mockResultMapping));
+        iterator_to_array($this->hydrator->toIterable($this->mockResult, $this->mockResultMapping));
     }
 
     /**

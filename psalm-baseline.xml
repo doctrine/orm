@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="4.10.0@916b098b008f6de4543892b1e0651c1c3b92cbfa">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
-    <DeprecatedClass occurrences="1">
-      <code>IterableResult</code>
-    </DeprecatedClass>
-    <DeprecatedMethod occurrences="1">
-      <code>iterate</code>
-    </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="1">
       <code>$resultCacheDriver !== null &amp;&amp; ! ($resultCacheDriver instanceof \Doctrine\Common\Cache\Cache)</code>
     </DocblockTypeContradiction>
@@ -33,7 +27,7 @@
       <code>$this-&gt;_queryCacheProfile-&gt;getResultCacheDriver()</code>
       <code>$this-&gt;cacheMode</code>
     </NullableReturnStatement>
-    <PossiblyInvalidArgument occurrences="2">
+    <PossiblyInvalidArgument occurrences="1">
       <code>$stmt</code>
       <code>$stmt</code>
     </PossiblyInvalidArgument>
@@ -502,10 +496,9 @@
       <code>$entityName</code>
       <code>$entityName</code>
     </ParamNameMismatch>
-    <PossiblyNullArgument occurrences="3">
+    <PossiblyNullArgument occurrences="2">
       <code>$config-&gt;getProxyDir()</code>
       <code>$config-&gt;getProxyNamespace()</code>
-      <code>$entity</code>
     </PossiblyNullArgument>
     <PossiblyNullReference occurrences="2">
       <code>createCache</code>
@@ -616,10 +609,6 @@
     </RedundantCondition>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php">
-    <DeprecatedClass occurrences="2">
-      <code>IterableResult</code>
-      <code>new IterableResult($this)</code>
-    </DeprecatedClass>
     <PropertyTypeCoercion occurrences="1">
       <code>$resultSetMapping</code>
     </PropertyTypeCoercion>
@@ -641,18 +630,6 @@
     <ReferenceConstraintViolation occurrences="1">
       <code>$result</code>
     </ReferenceConstraintViolation>
-  </file>
-  <file src="lib/Doctrine/ORM/Internal/Hydration/IterableResult.php">
-    <ImplementedReturnTypeMismatch occurrences="1">
-      <code>mixed[]|false</code>
-    </ImplementedReturnTypeMismatch>
-    <PossiblyFalsePropertyAssignmentValue occurrences="2">
-      <code>$this-&gt;_hydrator-&gt;hydrateRow()</code>
-      <code>$this-&gt;next()</code>
-    </PossiblyFalsePropertyAssignmentValue>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>$this-&gt;_current !== false</code>
-    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php">
     <InvalidScalarArgument occurrences="1">
@@ -1910,12 +1887,6 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Query.php">
-    <DeprecatedClass occurrences="1">
-      <code>IterableResult</code>
-    </DeprecatedClass>
-    <DeprecatedMethod occurrences="1">
-      <code>parent::iterate($parameters, $hydrationMode)</code>
-    </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="2">
       <code>$this-&gt;_resultSetMapping === null</code>
       <code>$this-&gt;_resultSetMapping === null</code>
@@ -1930,10 +1901,6 @@
       <code>parent::setHint($name, $value)</code>
       <code>parent::setHydrationMode($hydrationMode)</code>
     </LessSpecificReturnStatement>
-    <MoreSpecificImplementedParamType occurrences="2">
-      <code>$hydrationMode</code>
-      <code>$parameters</code>
-    </MoreSpecificImplementedParamType>
     <MoreSpecificReturnType occurrences="2">
       <code>self</code>
       <code>self</code>
@@ -3218,10 +3185,9 @@
     <NullableReturnStatement occurrences="1">
       <code>$this-&gt;cacheMode</code>
     </NullableReturnStatement>
-    <PossiblyFalseArgument occurrences="3">
+    <PossiblyFalseArgument occurrences="2">
       <code>$spacePos</code>
       <code>$spacePos</code>
-      <code>strpos($join, '.')</code>
     </PossiblyFalseArgument>
     <PossiblyFalseOperand occurrences="2">
       <code>$spacePos</code>

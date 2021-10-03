@@ -28,7 +28,6 @@ use Doctrine\Tests\Models\Hydration\EntityWithArrayDefaultArrayValueM2M;
 use Doctrine\Tests\Models\Hydration\SimpleEntity;
 
 use function count;
-use function is_array;
 
 class ObjectHydratorTest extends HydrationTestCase
 {
@@ -1262,23 +1261,22 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $hydrator = new ObjectHydrator($this->entityManager);
 
-        $iterableResult = $hydrator->iterate(
+        $iterableResult = $hydrator->toIterable(
             ArrayResultFactory::createFromArray($resultSet),
             $rsm,
             [Query::HINT_FORCE_PARTIAL_LOAD => true]
         );
         $rowNum         = 0;
 
-        while (($row = $iterableResult->next()) !== false) {
-            self::assertEquals(1, count($row));
-            self::assertInstanceOf(CmsUser::class, $row[0]);
+        foreach ($iterableResult as $row) {
+            self::assertInstanceOf(CmsUser::class, $row);
 
             if ($rowNum === 0) {
-                self::assertEquals(1, $row[0]->id);
-                self::assertEquals('romanb', $row[0]->name);
+                self::assertEquals(1, $row->id);
+                self::assertEquals('romanb', $row->name);
             } elseif ($rowNum === 1) {
-                self::assertEquals(2, $row[0]->id);
-                self::assertEquals('jwage', $row[0]->name);
+                self::assertEquals(2, $row->id);
+                self::assertEquals('jwage', $row->name);
             }
 
             ++$rowNum;
@@ -1337,24 +1335,23 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $hydrator       = new ObjectHydrator($this->entityManager);
         $rowNum         = 0;
-        $iterableResult = $hydrator->iterate(
+        $iterableResult = $hydrator->toIterable(
             ArrayResultFactory::createFromArray($resultSet),
             $rsm,
             [Query::HINT_FORCE_PARTIAL_LOAD => true]
         );
 
-        while (($row = $iterableResult->next()) !== false) {
-            self::assertEquals(1, count($row));
-            self::assertArrayHasKey(0, $row);
-            self::assertArrayHasKey('user', $row[0]);
-            self::assertInstanceOf(CmsUser::class, $row[0]['user']);
+        foreach ($iterableResult as $row) {
+            self::assertCount(1, $row);
+            self::assertArrayHasKey('user', $row);
+            self::assertInstanceOf(CmsUser::class, $row['user']);
 
             if ($rowNum === 0) {
-                self::assertEquals(1, $row[0]['user']->id);
-                self::assertEquals('romanb', $row[0]['user']->name);
+                self::assertEquals(1, $row['user']->id);
+                self::assertEquals('romanb', $row['user']->name);
             } elseif ($rowNum === 1) {
-                self::assertEquals(2, $row[0]['user']->id);
-                self::assertEquals('jwage', $row[0]['user']->name);
+                self::assertEquals(2, $row['user']->id);
+                self::assertEquals('jwage', $row['user']->name);
             }
 
             ++$rowNum;

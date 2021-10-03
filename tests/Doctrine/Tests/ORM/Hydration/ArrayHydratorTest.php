@@ -1023,19 +1023,16 @@ class ArrayHydratorTest extends HydrationTestCase
 
         $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
-        $iterator = $hydrator->iterate($stmt, $rsm);
+        $iterator = $hydrator->toIterable($stmt, $rsm);
         $rowNum   = 0;
 
-        while (($row = $iterator->next()) !== false) {
-            self::assertCount(1, $row);
-            self::assertIsArray($row[0]);
-
+        foreach ($iterator as $row) {
             if ($rowNum === 0) {
-                self::assertEquals(1, $row[0]['id']);
-                self::assertEquals('romanb', $row[0]['name']);
+                self::assertEquals(1, $row['id']);
+                self::assertEquals('romanb', $row['name']);
             } elseif ($rowNum === 1) {
-                self::assertEquals(2, $row[0]['id']);
-                self::assertEquals('jwage', $row[0]['name']);
+                self::assertEquals(2, $row['id']);
+                self::assertEquals('jwage', $row['name']);
             }
 
             ++$rowNum;
@@ -1068,20 +1065,18 @@ class ArrayHydratorTest extends HydrationTestCase
 
         $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
-        $iterator = $hydrator->iterate($stmt, $rsm);
+        $iterator = $hydrator->toIterable($stmt, $rsm);
         $rowNum   = 0;
 
-        while (($row = $iterator->next()) !== false) {
-            self::assertCount(1, $row);
-            self::assertArrayHasKey(0, $row);
-            self::assertArrayHasKey('user', $row[0]);
+        foreach ($iterator as $row) {
+            self::assertArrayHasKey('user', $row);
 
             if ($rowNum === 0) {
-                self::assertEquals(1, $row[0]['user']['id']);
-                self::assertEquals('romanb', $row[0]['user']['name']);
+                self::assertEquals(1, $row['user']['id']);
+                self::assertEquals('romanb', $row['user']['name']);
             } elseif ($rowNum === 1) {
-                self::assertEquals(2, $row[0]['user']['id']);
-                self::assertEquals('jwage', $row[0]['user']['name']);
+                self::assertEquals(2, $row['user']['id']);
+                self::assertEquals('jwage', $row['user']['name']);
             }
 
             ++$rowNum;

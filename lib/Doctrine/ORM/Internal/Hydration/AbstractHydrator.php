@@ -106,39 +106,6 @@ abstract class AbstractHydrator
     /**
      * Initiates a row-by-row hydration.
      *
-     * @deprecated
-     *
-     * @param Result|ResultStatement $stmt
-     * @param ResultSetMapping       $resultSetMapping
-     * @psalm-param array<string, mixed> $hints
-     *
-     * @return IterableResult
-     */
-    public function iterate($stmt, $resultSetMapping, array $hints = [])
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/8463',
-            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use toIterable() instead.',
-            __METHOD__
-        );
-
-        $this->_stmt  = $stmt instanceof ResultStatement ? ForwardCompatibilityResult::ensure($stmt) : $stmt;
-        $this->_rsm   = $resultSetMapping;
-        $this->_hints = $hints;
-
-        $evm = $this->_em->getEventManager();
-
-        $evm->addEventListener([Events::onClear], $this);
-
-        $this->prepare();
-
-        return new IterableResult($this);
-    }
-
-    /**
-     * Initiates a row-by-row hydration.
-     *
      * @param Result|ResultStatement $stmt
      * @psalm-param array<string, mixed> $hints
      *
@@ -272,7 +239,7 @@ abstract class AbstractHydrator
 
     /**
      * Hydrates a single row returned by the current statement instance during
-     * row-by-row hydration with {@link iterate()} or {@link toIterable()}.
+     * row-by-row hydration with {@link toIterable()}.
      *
      * @return mixed[]|false
      */
@@ -307,7 +274,7 @@ abstract class AbstractHydrator
 
     /**
      * Executes one-time preparation tasks, once each time hydration is started
-     * through {@link hydrateAll} or {@link iterate()}.
+     * through {@link hydrateAll} or {@link toIterable()}.
      *
      * @return void
      */
@@ -317,7 +284,7 @@ abstract class AbstractHydrator
 
     /**
      * Executes one-time cleanup tasks at the end of a hydration that was initiated
-     * through {@link hydrateAll} or {@link iterate()}.
+     * through {@link hydrateAll} or {@link toIterable()}.
      *
      * @return void
      */
