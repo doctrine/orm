@@ -1,3 +1,4 @@
+
 Working with DateTime Instances
 ===============================
 
@@ -67,16 +68,155 @@ The problem is simple. Not a single database vendor saves the timezone, only the
 However with frequent daylight saving and political timezone changes you can have a UTC offset that moves
 in different offset directions depending on the real location.
 
-The solution for this dilemma is simple. Don't use timezones with DateTime and Doctrine ORM. However there is a workaround
-that even allows correct date-time handling with timezones:
+The solution for this dilemma seems simple: don't use timezones with DateTime(Immutable) and Doctrine ORM. However there are some
+workarounds that allow correct date-time handling with timezones depending on your use case:
 
-1. Always convert any DateTime instance to UTC.
-2. Only set Timezones for displaying purposes
+1a. Don't convert DateTimes to UTC
+1b. Always convert any DateTime instance to UTC
+2. Set Timezones for displaying purposes
 3. Save the Timezone in the Entity for persistence.
+
+Wait: **What? Shall we convert to UTC or not?**
+
+That depends on what kind of DateTimes you are handling! When you are handling current dates like log-entries or
+datetimes that are within one or two days of the current date, you can - and even should - convert them to UTC.
+But as soon as you are handling datetimes that are more than a few days in advance (or back) you should **not**
+convert them to UTC but instead keep them in their local timezone. Why? You might want to read up on
+`why not to convert a datetime to a timestamp<https://andreas.heigl.org/2016/12/22/why-not-to-convert-a-datetime-to-timestamp/>`_
+
+Handling DateTimes with timezone-informations
+_____________________________________________
+
+Say we have an international calendaring application where users can add events that occur at different places
+worldwide and therefore at different timezones. To determine the exact date and time an event will happen means to save
+both the local time of the event and the timezone the event will happen in.
+
+Using the default datetime-type will store the datetime in the local time but without the timezone information.
+Therefore we need to store the timezone information as well and also need to provide a way to get the datetime
+back from the database with the correct timezone-information.
+
+To be able to transform these values back into their real timezone we have to save the timezone in a separate
+field of the entity requiring timezoned datetimes:
+
+.. code-block:: php
+
+    <?php
+    namespace Calendaring;
+
+    use DateTimeImmutable;
+    use DateTimeInterface;
+    use DateTimezone;
+    use Doctrine\ORM\Mapping as ORM;
+
+    /**
+     * @ORM\Entity
+     */
+    class Event
+    {
+        /**
+         * @ORM\Id
+         * @ORM\GeneratedValue
+         * @ORM\Column(type="integer")
+         */
+        private ?int $id;
+
+        /** @ORM\Column(type="datetime") */
+        private DateTimeInterface $eventDateTime;
+
+        /** @ORM\Column(type="string") */
+        private string $timezone;
+
+        public function __construct(DateTimeInterface $eventDateTime)
+        {
+            $this->eventDateTime = $eventDateTime;
+            $this->timezone = $eventDateTime->getTimeZone()->getName();
+        }
+
+        public function getEventDateTime()
+        {
+            return new DateTimeImmutable(
+                $this->eventDateTime->format('Y-m-d H:i:s'),
+                new DateTimeZone($this->timezone)
+            );
+        }
+    }
+
+During hydration $this->eventDateTime will set with a new DateTimeImmutable instance with the servers
+default timezone. So when getting the eventDateTime we need to make sure that the correct timezone is set.
+Therefore we return a correctly created DateTimeImmutable object in the `getEventDateTime()`-method
+
+DBALTypes sadly currently can not take care of this during hydration due to the fact that they are not
+allowing to access multiple fields.
+
+An alternative would be to use a post-processing lifecycle event to recreate the object in the right way like this:
+
+.. code-block:: php
+
+    <?php
+    namespace Calendaring;
+
+    use DateTimeImmutable;
+    use DateTimeInterface;
+    use DateTimezone;
+    use Doctrine\ORM\Mapping as ORM;
+
+    /**
+     * @ORM\Entity
+     * @ORM\HasLifecycleCallbacks
+     */
+    class Event
+    {
+        /**
+         * @ORM\Id
+         * @ORM\GeneratedValue
+         * @ORM\Column(type="integer")
+         */
+        private ?int $id;
+
+        /** @ORM\Column(type="datetime") */
+        private DateTimeInterface $eventDateTime;
+
+        /** @ORM\Column(type="string") */
+        private string $timezone;
+
+        public function __construct(DateTimeInterface $eventDateTime)
+        {
+            $this->eventDateTime = $eventDateTime;
+            $this->timezone = $eventDateTime->getTimeZone()->getName();
+        }
+
+        /** @ORM\PostLoad */
+        public function correctTimezone(): void
+        {
+            $correctEntity = new DateTimeImmutable(
+                $this->eventDateTime->format('Y-m-d H:i:s'),
+                new DateTimeZone($this->timezone)
+            );
+
+            $this->eventDateTime->setTimezone(new DateTimezone($this->timezone))
+                                ->modify($correctEntity->format('Y-m-d H:i:s'));
+        }
+
+
+        public function getEventDateTime(): DateTimeImmutable
+        {
+            return $this->eventDateTime;
+        }
+    }
+
+Using these ways of handling timezones allow you also to use the database-specific ways of
+doing DateTime-arithmetics in SQL with the appropriate timezones. Make sure though that the database
+always has the latest version of the timezone-database when you use these features.
+
+Handling log-like DateTimes that shall be converted to UTC
+__________________________________________________________
 
 Say we have an application for an international postal company and employees insert events regarding postal-package
 around the world, in their current timezones. To determine the exact time an event occurred means to save both
-the UTC time at the time of the booking and the timezone the event happened in.
+the time of the booking and the timezone the event happened in.
+
+As we are handling current dates here, it might be a good idea to convert the time to UTC. For that we can create a
+custom UTCDateTimeType:
 
 .. code-block:: php
 
@@ -84,21 +224,23 @@ the UTC time at the time of the booking and the timezone the event happened in.
 
     namespace DoctrineExtensions\DBAL\Types;
 
+    use DateTimeImmutable;
+    use DateTimeInterface;
+    use DateTimezone;
     use Doctrine\DBAL\Platforms\AbstractPlatform;
     use Doctrine\DBAL\Types\ConversionException;
     use Doctrine\DBAL\Types\DateTimeType;
 
     class UTCDateTimeType extends DateTimeType
     {
-        /**
-         * @var \DateTimeZone
-         */
         private static $utc;
 
         public function convertToDatabaseValue($value, AbstractPlatform $platform)
         {
-            if ($value instanceof \DateTime) {
-                $value->setTimezone(self::getUtc());
+            if ($value instanceof DateTimeInterface) {
+                $value = $value->setTimezone(
+                    self::$utc ? self::$utc : self::$utc = new DateTimeZone('UTC')
+                );
             }
 
             return parent::convertToDatabaseValue($value, $platform);
@@ -106,14 +248,14 @@ the UTC time at the time of the booking and the timezone the event happened in.
 
         public function convertToPHPValue($value, AbstractPlatform $platform)
         {
-            if (null === $value || $value instanceof \DateTime) {
+            if (null === $value || $value instanceof DateTimeImmutable) {
                 return $value;
             }
 
-            $converted = \DateTime::createFromFormat(
+            $converted = DateTimeImmutable::createFromFormat(
                 $platform->getDateTimeFormatString(),
                 $value,
-                self::getUtc()
+                self::$utc ? self::$utc : self::$utc = new DateTimeZone('UTC')
             );
 
             if (! $converted) {
@@ -125,11 +267,6 @@ the UTC time at the time of the booking and the timezone the event happened in.
             }
 
             return $converted;
-        }
-        
-        private static function getUtc(): \DateTimeZone
-        {
-            return self::$utc ?: self::$utc = new \DateTimeZone('UTC');
         }
     }
 
@@ -149,49 +286,7 @@ code before bootstrapping the ORM:
     Type::overrideType('datetime', UTCDateTimeType::class);
     Type::overrideType('datetimetz', UTCDateTimeType::class);
 
-
-To be able to transform these values
-back into their real timezone you have to save the timezone in a separate field of the entity
-requiring timezoned datetimes:
-
-.. code-block:: php
-
-    <?php
-    namespace Shipping;
-
-    /**
-     * @Entity
-     */
-    class Event
-    {
-        /** @Column(type="datetime") */
-        private $created;
-
-        /** @Column(type="string") */
-        private $timezone;
-
-        /**
-         * @var bool
-         */
-        private $localized = false;
-
-        public function __construct(\DateTime $createDate)
-        {
-            $this->localized = true;
-            $this->created = $createDate;
-            $this->timezone = $createDate->getTimeZone()->getName();
-        }
-
-        public function getCreated()
-        {
-            if (!$this->localized) {
-                $this->created->setTimeZone(new \DateTimeZone($this->timezone));
-            }
-            return $this->created;
-        }
-    }
-
-This snippet makes use of the previously discussed "changeset by reference only" property of
+These snippets makes use of the previously discussed "changeset by reference only" property of
 objects. That means a new DateTime will only be used during updating if the reference
 changes between retrieval and flush operation. This means we can easily go and modify
 the instance by setting the previous local timezone.
