@@ -1,266 +1,14 @@
 Caching
 =======
 
-Doctrine provides cache drivers in the ``doctrine/cache`` package for some
-of the most popular caching implementations such as APCu, Memcache
-and Xcache. We also provide an ``ArrayCache`` driver which stores
-the data in a PHP array. Obviously, when using ``ArrayCache``, the 
-cache does not persist between requests, but this is useful for 
-testing in a development environment.
+The Doctrine ORM package can leverage cache adapters implementing the PSR-6
+standard to allow you to improve the performance of various aspects of
+Doctrine by simply making some additional configurations and method calls.
 
-Cache Drivers
--------------
+.. _types-of-caches:
 
-The cache drivers follow a simple interface that is defined in
-``Doctrine\Common\Cache\Cache``. All the cache drivers extend a
-base class ``Doctrine\Common\Cache\CacheProvider`` which implements
-this interface.
-
-The interface defines the following public methods for you to implement:
-
-
--  fetch($id) - Fetches an entry from the cache
--  contains($id) - Test if an entry exists in the cache
--  save($id, $data, $lifeTime = false) - Puts data into the cache for x seconds. 0 = infinite time
--  delete($id) - Deletes a cache entry
-
-Each driver extends the ``CacheProvider`` class which defines a few
-abstract protected methods that each of the drivers must
-implement:
-
-
--  doFetch($id)
--  doContains($id)
--  doSave($id, $data, $lifeTime = false)
--  doDelete($id)
-
-The public methods ``fetch()``, ``contains()`` etc. use the
-above protected methods which are implemented by the drivers. The
-code is organized this way so that the protected methods in the
-drivers do the raw interaction with the cache implementation and
-the ``CacheProvider`` can build custom functionality on top of
-these methods.
-
-This documentation does not cover every single cache driver included
-with Doctrine. For an up-to-date-list, see the
-`cache directory on GitHub <https://github.com/doctrine/cache/tree/2.8.x/lib/Doctrine/Common/Cache>`_.
-
-PhpFileCache
-~~~~~~~~~~~~
-
-The preferred cache driver for metadata and query caches is ``PhpFileCache``.
-This driver serializes cache items and writes them to a file. This allows for
-opcode caching to be used and provides high performance in most scenarios.
-
-In order to use the ``PhpFileCache`` driver it must be able to write to
-a directory.
-
-Below is an example of how to use the ``PhpFileCache`` driver by itself.
-
-.. code-block:: php
-
-    <?php
-    $cacheDriver = new \Doctrine\Common\Cache\PhpFileCache(
-        '/path/to/writable/directory'
-    );
-    $cacheDriver->save('cache_id', 'my_data');
-
-The PhpFileCache is not distributed across multiple machines if you are running
-your application in a distributed setup. This is ok for the metadata and query
-cache but is not a good approach for the result cache.
-
-Memcache
-~~~~~~~~
-
-In order to use the Memcache cache driver you must have it compiled
-and enabled in your php.ini. You can read about Memcache
-`on the PHP website <https://php.net/memcache>`_. It will
-give you a little background information about what it is and how
-you can use it as well as how to install it.
-
-Below is a simple example of how you could use the Memcache cache
-driver by itself.
-
-.. code-block:: php
-
-    <?php
-    $memcache = new Memcache();
-    $memcache->connect('memcache_host', 11211);
-    
-    $cacheDriver = new \Doctrine\Common\Cache\MemcacheCache();
-    $cacheDriver->setMemcache($memcache);
-    $cacheDriver->save('cache_id', 'my_data');
-
-Memcached
-~~~~~~~~~
-
-Memcached is a more recent and complete alternative extension to
-Memcache.
-
-In order to use the Memcached cache driver you must have it compiled
-and enabled in your php.ini. You can read about Memcached
-`on the PHP website <https://php.net/memcached>`_. It will
-give you a little background information about what it is and how
-you can use it as well as how to install it.
-
-Below is a simple example of how you could use the Memcached cache
-driver by itself.
-
-.. code-block:: php
-
-    <?php
-    $memcached = new Memcached();
-    $memcached->addServer('memcache_host', 11211);
-    
-    $cacheDriver = new \Doctrine\Common\Cache\MemcachedCache();
-    $cacheDriver->setMemcached($memcached);
-    $cacheDriver->save('cache_id', 'my_data');
-
-Redis
-~~~~~
-
-In order to use the Redis cache driver you must have it compiled
-and enabled in your php.ini. You can read about what Redis is
-`from here <https://redis.io/>`_. Also check
-`A PHP extension for Redis <https://github.com/nicolasff/phpredis/>`_ for how you can use
-and install the Redis PHP extension.
-
-Below is a simple example of how you could use the Redis cache
-driver by itself.
-
-.. code-block:: php
-
-    <?php
-    $redis = new Redis();
-    $redis->connect('redis_host', 6379);
-
-    $cacheDriver = new \Doctrine\Common\Cache\RedisCache();
-    $cacheDriver->setRedis($redis);
-    $cacheDriver->save('cache_id', 'my_data');
-
-Using Cache Drivers
--------------------
-
-In this section we'll describe how you can fully utilize the API of
-the cache drivers to save data to a cache, check if some cached data 
-exists, fetch the cached data and delete the cached data. We'll use the
-``ArrayCache`` implementation as our example here.
-
-.. code-block:: php
-
-    <?php
-    $cacheDriver = new \Doctrine\Common\Cache\ArrayCache();
-
-Saving
-~~~~~~
-
-Saving some data to the cache driver is as simple as using the
-``save()`` method.
-
-.. code-block:: php
-
-    <?php
-    $cacheDriver->save('cache_id', 'my_data');
-
-The ``save()`` method accepts three arguments which are described
-below:
-
-
--  ``$id`` - The cache id
--  ``$data`` - The cache entry/data.
--  ``$lifeTime`` - The lifetime. If != false, sets a specific
-   lifetime for this cache entry (null => infinite lifeTime).
-
-You can save any type of data whether it be a string, array,
-object, etc.
-
-.. code-block:: php
-
-    <?php
-    $array = array(
-        'key1' => 'value1',
-        'key2' => 'value2'
-    );
-    $cacheDriver->save('my_array', $array);
-
-Checking
-~~~~~~~~
-
-Checking whether cached data exists is very simple: just use the
-``contains()`` method. It accepts a single argument which is the ID
-of the cache entry.
-
-.. code-block:: php
-
-    <?php
-    if ($cacheDriver->contains('cache_id')) {
-        echo 'cache exists';
-    } else {
-        echo 'cache does not exist';
-    }
-
-Fetching
-~~~~~~~~
-
-Now if you want to retrieve some cache entry you can use the
-``fetch()`` method. It also accepts a single argument just like
-``contains()`` which is again the ID of the cache entry.
-
-.. code-block:: php
-
-    <?php
-    $array = $cacheDriver->fetch('my_array');
-
-Deleting
-~~~~~~~~
-
-As you might guess, deleting is just as easy as saving, checking
-and fetching. You can delete by an individual ID, or you can 
-delete all entries.
-
-By Cache ID
-^^^^^^^^^^^
-
-.. code-block:: php
-
-    <?php
-    $cacheDriver->delete('my_array');
-
-All
-^^^
-
-If you simply want to delete all cache entries you can do so with
-the ``deleteAll()`` method.
-
-.. code-block:: php
-
-    <?php
-    $deleted = $cacheDriver->deleteAll();
-
-Namespaces
-~~~~~~~~~~
-
-If you heavily use caching in your application and use it in
-multiple parts of your application, or use it in different
-applications on the same server you may have issues with cache
-naming collisions. This can be worked around by using namespaces.
-You can set the namespace a cache driver should use by using the
-``setNamespace()`` method.
-
-.. code-block:: php
-
-    <?php
-    $cacheDriver->setNamespace('my_namespace_');
-
-.. _integrating-with-the-orm:
-
-Integrating with the ORM
-------------------------
-
-The Doctrine ORM package is tightly integrated with the cache
-drivers to allow you to improve the performance of various aspects of
-Doctrine by simply making some additional configurations and
-method calls.
+Types of Caches
+---------------
 
 Query Cache
 ~~~~~~~~~~~
@@ -276,11 +24,9 @@ use on your ORM configuration.
 .. code-block:: php
 
     <?php
-    $cacheDriver = new \Doctrine\Common\Cache\PhpFileCache(
-        '/path/to/writable/directory'
-    );
+    $cache = new \Symfony\Component\Cache\Adapter\PhpFilesAdapter('doctrine_queries');
     $config = new \Doctrine\ORM\Configuration();
-    $config->setQueryCacheImpl($cacheDriver);
+    $config->setQueryCache($cache);
 
 Result Cache
 ~~~~~~~~~~~~
@@ -292,11 +38,13 @@ You just need to configure the result cache implementation.
 .. code-block:: php
 
     <?php
-    $cacheDriver = new \Doctrine\Common\Cache\PhpFileCache(
+    $cache = new \Symfony\Component\Cache\Adapter\PhpFilesAdapter(
+        'doctrine_results',
+        0,
         '/path/to/writable/directory'
     );
     $config = new \Doctrine\ORM\Configuration();
-    $config->setResultCacheImpl($cacheDriver);
+    $config->setResultCache($cache);
 
 Now when you're executing DQL queries you can configure them to use
 the result cache.
@@ -313,10 +61,12 @@ result cache driver.
 .. code-block:: php
 
     <?php
-    $cacheDriver = new \Doctrine\Common\Cache\PhpFileCache(
+    $cache = new \Symfony\Component\Cache\Adapter\PhpFilesAdapter(
+        'doctrine_results',
+        0,
         '/path/to/writable/directory'
     );
-    $query->setResultCacheDriver($cacheDriver);
+    $query->setResultCache($cache);
 
 .. note::
 
@@ -368,11 +118,13 @@ first.
 .. code-block:: php
 
     <?php
-    $cacheDriver = new \Doctrine\Common\Cache\PhpFileCache(
+    $cache = \Symfony\Component\Cache\Adapter\PhpFilesAdapter(
+        'doctrine_metadata',
+        0,
         '/path/to/writable/directory'
     );
     $config = new \Doctrine\ORM\Configuration();
-    $config->setMetadataCacheImpl($cacheDriver);
+    $config->setMetadataCache($cache);
 
 Now the metadata information will only be parsed once and stored in
 the cache driver.
@@ -422,30 +174,15 @@ requested many times in a single PHP request. Even though this data
 may be stored in a fast memory cache, often that cache is over a
 network link leading to sizable network traffic.
 
-The ChainCache class allows multiple caches to be registered at once.
-For example, a per-request ArrayCache can be used first, followed by
-a (relatively) slower MemcacheCache if the ArrayCache misses.
-ChainCache automatically handles pushing data up to faster caches in
+A chain cache class allows multiple caches to be registered at once.
+For example, a per-request array cache can be used first, followed by
+a (relatively) slower Memcached cache if the array cache misses.
+The chain cache automatically handles pushing data up to faster caches in
 the chain and clearing data in the entire stack when it is deleted.
 
-A ChainCache takes a simple array of CacheProviders in the order that
-they should be used.
-
-.. code-block:: php
-
-    $arrayCache = new \Doctrine\Common\Cache\ArrayCache();
-    $memcache = new Memcache();
-    $memcache->connect('memcache_host', 11211);
-    $chainCache = new \Doctrine\Common\Cache\ChainCache([
-        $arrayCache,
-        $memcache,
-    ]);
-
-ChainCache itself extends the CacheProvider interface, so it is
-possible to create chains of chains. While this may seem like an easy
-way to build a simple high-availability cache, ChainCache does not
-implement any exception handling so using it as a high-availability
-mechanism is not recommended.
+Symfony Cache provides such a chain cache. To find out how to use it,
+please have a look at the
+`Symfony Documentation <https://symfony.com/doc/current/components/cache/adapters/chain_adapter.html>`_.
 
 Cache Slams
 -----------

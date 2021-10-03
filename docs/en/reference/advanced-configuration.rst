@@ -9,22 +9,27 @@ steps of configuration.
 .. code-block:: php
 
     <?php
-    use Doctrine\ORM\EntityManager,
-        Doctrine\ORM\Configuration;
+
+    use Doctrine\ORM\Configuration;
+    use Doctrine\ORM\EntityManager;
+    use Symfony\Component\Cache\Adapter\ArrayAdapter;
+    use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 
     // ...
 
     if ($applicationMode == "development") {
-        $cache = new \Doctrine\Common\Cache\ArrayCache;
+        $queryCache = new ArrayAdapter();
+        $metadataCache = new ArrayAdapter();
     } else {
-        $cache = new \Doctrine\Common\Cache\ApcCache;
+        $queryCache = new PhpFilesAdapter('doctrine_queries');
+        $metadataCache = new PhpFilesAdapter('doctrine_metadata');
     }
 
     $config = new Configuration;
-    $config->setMetadataCacheImpl($cache);
+    $config->setMetadataCache($metadataCache);
     $driverImpl = $config->newDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
     $config->setMetadataDriverImpl($driverImpl);
-    $config->setQueryCacheImpl($cache);
+    $config->setQueryCache($queryCache);
     $config->setProxyDir('/path/to/myproject/lib/MyProject/Proxies');
     $config->setProxyNamespace('MyProject\Proxies');
 
@@ -41,19 +46,22 @@ steps of configuration.
 
     $em = EntityManager::create($connectionOptions, $config);
 
+Doctrine and Caching
+--------------------
+
+Doctrine is optimized for working with caches. The main parts in Doctrine
+that are optimized for caching are the metadata mapping information with
+the metadata cache and the DQL to SQL conversions with the query cache.
+These 2 caches require only an absolute minimum of memory yet they heavily
+improve the runtime performance of Doctrine.
+
+Doctrine does not bundle its own cache implementation anymore. Instead,
+the PSR-6 standard interfaces are used to access the cache. In the examples
+in this documentation, Symfony Cache is used as a reference implementation.
+
 .. note::
 
     Do not use Doctrine without a metadata and query cache!
-    Doctrine is optimized for working with caches. The main
-    parts in Doctrine that are optimized for caching are the metadata
-    mapping information with the metadata cache and the DQL to SQL
-    conversions with the query cache. These 2 caches require only an
-    absolute minimum of memory yet they heavily improve the runtime
-    performance of Doctrine. The recommended cache driver to use with
-    Doctrine is `APC <https://php.net/apc>`_. APC provides you with
-    an opcode-cache (which is highly recommended anyway) and a very
-    fast in-memory cache storage that you can use for the metadata and
-    query caches as seen in the previous code snippet.
 
 Configuration Options
 ---------------------
@@ -137,30 +145,21 @@ Metadata Cache (***RECOMMENDED***)
 .. code-block:: php
 
     <?php
-    $config->setMetadataCacheImpl($cache);
-    $config->getMetadataCacheImpl();
+    $config->setMetadataCache($cache);
+    $config->getMetadataCache();
 
-Gets or sets the cache implementation to use for caching metadata
+Gets or sets the cache adapter to use for caching metadata
 information, that is, all the information you supply via
 annotations, xml or yaml, so that they do not need to be parsed and
 loaded from scratch on every single request which is a waste of
-resources. The cache implementation must implement the
-``Doctrine\Common\Cache\Cache`` interface.
+resources. The cache implementation must implement the PSR-6
+``Psr\Cache\CacheItemPoolInterface`` interface.
 
 Usage of a metadata cache is highly recommended.
 
-The recommended implementations for production are:
-
-
--  ``Doctrine\Common\Cache\ApcCache``
--  ``Doctrine\Common\Cache\ApcuCache``
--  ``Doctrine\Common\Cache\MemcacheCache``
--  ``Doctrine\Common\Cache\XcacheCache``
--  ``Doctrine\Common\Cache\RedisCache``
-
-For development you should use the
-``Doctrine\Common\Cache\ArrayCache`` which only caches data on a
-per-request basis.
+For development you should use an array cache like
+``Symfony\Component\Cache\Adapter\ArrayAdapter``
+which only caches data on a per-request basis.
 
 Query Cache (***RECOMMENDED***)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -168,8 +167,8 @@ Query Cache (***RECOMMENDED***)
 .. code-block:: php
 
     <?php
-    $config->setQueryCacheImpl($cache);
-    $config->getQueryCacheImpl();
+    $config->setQueryCache($cache);
+    $config->getQueryCache();
 
 Gets or sets the cache implementation to use for caching DQL
 queries, that is, the result of a DQL parsing process that includes
@@ -181,18 +180,9 @@ minimal memory usage in your cache).
 
 Usage of a query cache is highly recommended.
 
-The recommended implementations for production are:
-
-
--  ``Doctrine\Common\Cache\ApcCache``
--  ``Doctrine\Common\Cache\ApcuCache``
--  ``Doctrine\Common\Cache\MemcacheCache``
--  ``Doctrine\Common\Cache\XcacheCache``
--  ``Doctrine\Common\Cache\RedisCache``
-
-For development you should use the
-``Doctrine\Common\Cache\ArrayCache`` which only caches data on a
-per-request basis.
+For development you should use an array cache like
+``Symfony\Component\Cache\Adapter\ArrayAdapter``
+which only caches data on a per-request basis.
 
 SQL Logger (***Optional***)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -269,10 +259,10 @@ Development vs Production Configuration
 
 You should code your Doctrine2 bootstrapping with two different
 runtime models in mind. There are some serious benefits of using
-APC or Memcache in production. In development however this will
+APCu or Memcache in production. In development however this will
 frequently give you fatal errors, when you change your entities and
 the cache still keeps the outdated metadata. That is why we
-recommend the ``ArrayCache`` for development.
+recommend an array cache for development.
 
 Furthermore you should have the Auto-generating Proxy Classes
 option to true in development and to false in production. If this

@@ -207,14 +207,14 @@ class DatabaseDriver implements MappingDriver
                     continue;
                 }
 
-                $localColumn = current($myFk->getColumns());
+                $localColumn = current($myFk->getLocalColumns());
 
                 $associationMapping                 = [];
-                $associationMapping['fieldName']    = $this->getFieldNameForColumn($manyTable->getName(), current($otherFk->getColumns()), true);
+                $associationMapping['fieldName']    = $this->getFieldNameForColumn($manyTable->getName(), current($otherFk->getLocalColumns()), true);
                 $associationMapping['targetEntity'] = $this->getClassNameForTable($otherFk->getForeignTableName());
 
                 if (current($manyTable->getColumns())->getName() === $localColumn) {
-                    $associationMapping['inversedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current($myFk->getColumns()), true);
+                    $associationMapping['inversedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current($myFk->getLocalColumns()), true);
                     $associationMapping['joinTable']  = [
                         'name' => strtolower($manyTable->getName()),
                         'joinColumns' => [],
@@ -222,7 +222,7 @@ class DatabaseDriver implements MappingDriver
                     ];
 
                     $fkCols = $myFk->getForeignColumns();
-                    $cols   = $myFk->getColumns();
+                    $cols   = $myFk->getLocalColumns();
 
                     for ($i = 0, $colsCount = count($cols); $i < $colsCount; $i++) {
                         $associationMapping['joinTable']['joinColumns'][] = [
@@ -232,7 +232,7 @@ class DatabaseDriver implements MappingDriver
                     }
 
                     $fkCols = $otherFk->getForeignColumns();
-                    $cols   = $otherFk->getColumns();
+                    $cols   = $otherFk->getLocalColumns();
 
                     for ($i = 0, $colsCount = count($cols); $i < $colsCount; $i++) {
                         $associationMapping['joinTable']['inverseJoinColumns'][] = [
@@ -241,7 +241,7 @@ class DatabaseDriver implements MappingDriver
                         ];
                     }
                 } else {
-                    $associationMapping['mappedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current($myFk->getColumns()), true);
+                    $associationMapping['mappedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current($myFk->getLocalColumns()), true);
                 }
 
                 $metadata->mapManyToMany($associationMapping);
@@ -454,7 +454,7 @@ class DatabaseDriver implements MappingDriver
 
         foreach ($foreignKeys as $foreignKey) {
             $foreignTableName   = $foreignKey->getForeignTableName();
-            $fkColumns          = $foreignKey->getColumns();
+            $fkColumns          = $foreignKey->getLocalColumns();
             $fkForeignColumns   = $foreignKey->getForeignColumns();
             $localColumn        = current($fkColumns);
             $associationMapping = [
