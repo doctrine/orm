@@ -510,6 +510,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Ensures that this Configuration instance contains settings that are
      * suitable for a production environment.
      *
+     * @deprecated
+     *
      * @return void
      *
      * @throws ProxyClassesAlwaysRegenerating
@@ -518,6 +520,13 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function ensureProductionSettings()
     {
+        Deprecation::triggerIfCalledFromOutside(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9074',
+            '%s is deprecated',
+            __METHOD__
+        );
+
         $queryCacheImpl = $this->getQueryCacheImpl();
 
         if (! $queryCacheImpl) {

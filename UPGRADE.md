@@ -5,6 +5,16 @@
 Following the deprecation of the method `AbstractHydrator::iterate()`, the
 method `hydrateRow()` has been deprecated as well.
 
+## Deprecate cache settings inspection
+
+Doctrine does not provide its own cache implementation anymore and relies on
+the PSR-6 standard instead. As a consequence, we cannot determine anymore
+whether a given cache adapter is suitable for a production environment.
+Because of that, functionality that aims to do so has been deprecated:
+
+* `Configuration::ensureProductionSettings()`
+* the `orm:ensure-production-settings` console command
+
 # Upgrade to 2.10
 
 ## BC Break: Removed `TABLE` id generator strategy
