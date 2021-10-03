@@ -15,9 +15,7 @@ jobs:
         uses: "actions/checkout@v2"
 
       - name: "Release"
-        # revert to v1 when
-        # https://github.com/laminas/automatic-releases/issues/166 is fixed
-        uses: "laminas/automatic-releases@1.11.1"
+        uses: "laminas/automatic-releases@v1"
         with:
           command-name: "laminas:automatic-releases:release"
         env:
@@ -28,9 +26,7 @@ jobs:
           "SHELL_VERBOSITY": "3"
 
       - name: "Create Merge-Up Pull Request"
-        # revert to v1 when
-        # https://github.com/laminas/automatic-releases/issues/166 is fixed
-        uses: "laminas/automatic-releases@1.11.1"
+        uses: "laminas/automatic-releases@v1"
         with:
           command-name: "laminas:automatic-releases:create-merge-up-pull-request"
         env:
@@ -40,9 +36,7 @@ jobs:
           "GIT_AUTHOR_EMAIL": ${{ secrets.GIT_AUTHOR_EMAIL }}
 
       - name: "Create new milestones"
-        # revert to v1 when
-        # https://github.com/laminas/automatic-releases/issues/166 is fixed
-        uses: "laminas/automatic-releases@1.11.1"
+        uses: "laminas/automatic-releases@v1"
         with:
           command-name: "laminas:automatic-releases:create-milestones"
         env:
