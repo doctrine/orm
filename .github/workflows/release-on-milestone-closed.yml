@@ -15,24 +15,20 @@ jobs:
         uses: "actions/checkout@v2"
 
       - name: "Release"
-        # revert to v1 when
-        # https://github.com/laminas/automatic-releases/issues/166 is fixed
-        uses: "docker://ghcr.io/laminas/automatic-releases:1.11.1"
+        uses: "laminas/automatic-releases@v1"
         with:
-          args: "laminas:automatic-releases:release"
+          command-name: "laminas:automatic-releases:release"
         env:
-          "GITHUB_TOKEN": ${{ secrets.ORGANIZATION_ADMIN_TOKEN }}
+          "GITHUB_TOKEN": ${{ secrets.GITHUB_TOKEN }}
           "SIGNING_SECRET_KEY": ${{ secrets.SIGNING_SECRET_KEY }}
           "GIT_AUTHOR_NAME": ${{ secrets.GIT_AUTHOR_NAME }}
           "GIT_AUTHOR_EMAIL": ${{ secrets.GIT_AUTHOR_EMAIL }}
           "SHELL_VERBOSITY": "3"
 
       - name: "Create Merge-Up Pull Request"
-        # revert to v1 when
-        # https://github.com/laminas/automatic-releases/issues/166 is fixed
-        uses: "docker://ghcr.io/laminas/automatic-releases:1.11.1"
+        uses: "laminas/automatic-releases@v1"
         with:
-          args: "laminas:automatic-releases:create-merge-up-pull-request"
+          command-name: "laminas:automatic-releases:create-merge-up-pull-request"
         env:
           "GITHUB_TOKEN": ${{ secrets.GITHUB_TOKEN }}
           "SIGNING_SECRET_KEY": ${{ secrets.SIGNING_SECRET_KEY }}
@@ -40,11 +36,9 @@ jobs:
           "GIT_AUTHOR_EMAIL": ${{ secrets.GIT_AUTHOR_EMAIL }}
 
       - name: "Create new milestones"
-        # revert to v1 when
-        # https://github.com/laminas/automatic-releases/issues/166 is fixed
-        uses: "docker://ghcr.io/laminas/automatic-releases:1.11.1"
+        uses: "laminas/automatic-releases@v1"
         with:
-          args: "laminas:automatic-releases:create-milestones"
+          command-name: "laminas:automatic-releases:create-milestones"
         env:
           "GITHUB_TOKEN": ${{ secrets.GITHUB_TOKEN }}
           "SIGNING_SECRET_KEY": ${{ secrets.SIGNING_SECRET_KEY }}
