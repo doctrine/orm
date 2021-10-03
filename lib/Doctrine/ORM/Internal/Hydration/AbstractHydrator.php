@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Internal\Hydration;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -186,10 +187,19 @@ abstract class AbstractHydrator
      * Hydrates a single row returned by the current statement instance during
      * row-by-row hydration with {@link toIterable()}.
      *
+     * @deprecated
+     *
      * @return mixed[]|false
      */
     public function hydrateRow()
     {
+        Deprecation::triggerIfCalledFromOutside(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9072',
+            '%s is deprecated.',
+            __METHOD__
+        );
+
         $row = $this->statement()->fetchAssociative();
 
         if ($row === false) {

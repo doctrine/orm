@@ -4,13 +4,9 @@ on:
   pull_request:
     branches:
       - "*.x"
-    tag-ignore:
-      - "*"
   push:
     branches:
       - "*.x"
-    tag-ignore:
-      - "*"
 
 env:
   fail-fast: true

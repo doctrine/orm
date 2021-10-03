@@ -26,6 +26,8 @@
             <errorLevel type="suppress">
                 <!-- We're calling the deprecated method for BC here. -->
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
+                <!-- Remove on 3.0.x -->
+                <referencedMethod name="Doctrine\ORM\Internal\Hydration\AbstractHydrator::hydrateRow"/>
             </errorLevel>
         </DeprecatedMethod>
         <DocblockTypeContradiction>
