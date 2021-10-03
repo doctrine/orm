@@ -11,12 +11,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Result;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
-use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
@@ -1027,40 +1025,6 @@ abstract class AbstractQuery
     public function getHints()
     {
         return $this->_hints;
-    }
-
-    /**
-     * Executes the query and returns an IterableResult that can be used to incrementally
-     * iterate over the result.
-     *
-     * @deprecated 2.8 Use {@see toIterable} instead. See https://github.com/doctrine/orm/issues/8463
-     *
-     * @param ArrayCollection|mixed[]|null $parameters    The query parameters.
-     * @param string|int|null              $hydrationMode The hydration mode to use.
-     *
-     * @return IterableResult
-     */
-    public function iterate($parameters = null, $hydrationMode = null)
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/8463',
-            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use toIterable() instead.',
-            __METHOD__
-        );
-
-        if ($hydrationMode !== null) {
-            $this->setHydrationMode($hydrationMode);
-        }
-
-        if (! empty($parameters)) {
-            $this->setParameters($parameters);
-        }
-
-        $rsm  = $this->getResultSetMapping();
-        $stmt = $this->_doExecute();
-
-        return $this->_em->newHydrator($this->_hydrationMode)->iterate($stmt, $rsm, $this->_hints);
     }
 
     /**

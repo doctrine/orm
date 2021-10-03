@@ -7,12 +7,10 @@ namespace Doctrine\ORM;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\Deprecations\Deprecation;
-use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\AST\DeleteStatement;
 use Doctrine\ORM\Query\AST\SelectStatement;
@@ -690,23 +688,6 @@ final class Query extends AbstractQuery
     public function getMaxResults(): ?int
     {
         return $this->maxResults;
-    }
-
-    /**
-     * Executes the query and returns an IterableResult that can be used to incrementally
-     * iterated over the result.
-     *
-     * @deprecated
-     *
-     * @param ArrayCollection|mixed[]|null $parameters    The query parameters.
-     * @param string|int                   $hydrationMode The hydration mode to use.
-     * @psalm-param ArrayCollection<int, Parameter>|array<string, mixed>|null $parameters
-     */
-    public function iterate($parameters = null, $hydrationMode = self::HYDRATE_OBJECT): IterableResult
-    {
-        $this->setHint(self::HINT_INTERNAL_ITERATION, true);
-
-        return parent::iterate($parameters, $hydrationMode);
     }
 
     /** {@inheritDoc} */

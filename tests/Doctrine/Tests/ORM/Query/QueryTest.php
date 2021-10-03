@@ -13,7 +13,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnitOfWork;
@@ -164,28 +163,12 @@ class QueryTest extends OrmTestCase
         self::assertSame($this->entityManager->getConfiguration()->getResultCache(), CacheAdapter::wrap($q->getQueryCacheProfile()->getResultCacheDriver()));
     }
 
-    public function testIterateWithNoDistinctAndWrongSelectClause(): void
-    {
-        $this->expectException(QueryException::class);
-
-        $q = $this->entityManager->createQuery('select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
-        $q->iterate();
-    }
-
     public function testToIterableWithNoDistinctAndWrongSelectClause(): void
     {
         $this->expectException(QueryException::class);
 
         $q = $this->entityManager->createQuery('select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
         $q->toIterable();
-    }
-
-    public function testIterateWithNoDistinctAndWithValidSelectClause(): void
-    {
-        $this->expectException(QueryException::class);
-
-        $q = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
-        $q->iterate();
     }
 
     public function testToIterableWithNoDistinctAndWithValidSelectClause(): void
@@ -200,7 +183,7 @@ class QueryTest extends OrmTestCase
     {
         $q = $this->entityManager->createQuery('SELECT DISTINCT u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
 
-        self::assertInstanceOf(IterableResult::class, $q->iterate());
+        self::assertInstanceOf(Generator::class, $q->toIterable());
     }
 
     public function testIterateEmptyResult(): void
