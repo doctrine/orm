@@ -32,6 +32,8 @@
                 <!-- We need to keep the calls for DBAL 2.13 compatibility. -->
                 <referencedMethod name="Doctrine\DBAL\Connection::getSchemaManager"/>
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
+                <!-- Remove on 3.0.x -->
+                <referencedMethod name="Doctrine\ORM\Internal\Hydration\AbstractHydrator::hydrateRow"/>
             </errorLevel>
         </DeprecatedMethod>
         <DocblockTypeContradiction>

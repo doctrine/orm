@@ -1,3 +1,10 @@
+# Upgrade to 2.11
+
+## Deprecated: `AbstractHydrator::hydrateRow()`
+
+Following the deprecation of the method `AbstractHydrator::iterate()`, the
+method `hydrateRow()` has been deprecated as well.
+
 # Upgrade to 2.10
 
 ## BC Break: Removed `TABLE` id generator strategy
