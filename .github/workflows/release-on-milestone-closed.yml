@@ -17,9 +17,9 @@ jobs:
       - name: "Release"
         # revert to v1 when
         # https://github.com/laminas/automatic-releases/issues/166 is fixed
-        uses: "laminas/automatic-releases@1.11.1"
+        uses: "docker://ghcr.io/laminas/automatic-releases:1.11.1"
         with:
-          command-name: "laminas:automatic-releases:release"
+          args: "laminas:automatic-releases:release"
         env:
           "GITHUB_TOKEN": ${{ secrets.GITHUB_TOKEN }}
           "SIGNING_SECRET_KEY": ${{ secrets.SIGNING_SECRET_KEY }}
@@ -30,9 +30,9 @@ jobs:
       - name: "Create Merge-Up Pull Request"
         # revert to v1 when
         # https://github.com/laminas/automatic-releases/issues/166 is fixed
-        uses: "laminas/automatic-releases@1.11.1"
+        uses: "docker://ghcr.io/laminas/automatic-releases:1.11.1"
         with:
-          command-name: "laminas:automatic-releases:create-merge-up-pull-request"
+          args: "laminas:automatic-releases:create-merge-up-pull-request"
         env:
           "GITHUB_TOKEN": ${{ secrets.GITHUB_TOKEN }}
           "SIGNING_SECRET_KEY": ${{ secrets.SIGNING_SECRET_KEY }}
@@ -42,9 +42,9 @@ jobs:
       - name: "Create new milestones"
         # revert to v1 when
         # https://github.com/laminas/automatic-releases/issues/166 is fixed
-        uses: "laminas/automatic-releases@1.11.1"
+        uses: "docker://ghcr.io/laminas/automatic-releases:1.11.1"
         with:
-          command-name: "laminas:automatic-releases:create-milestones"
+          args: "laminas:automatic-releases:create-milestones"
         env:
           "GITHUB_TOKEN": ${{ secrets.GITHUB_TOKEN }}
           "SIGNING_SECRET_KEY": ${{ secrets.SIGNING_SECRET_KEY }}
