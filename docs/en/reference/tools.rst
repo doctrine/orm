@@ -342,7 +342,7 @@ First you need to retrieve the metadata instances with the
     <?php
     $em->getConfiguration()->setMetadataDriverImpl(
         new \Doctrine\ORM\Mapping\Driver\DatabaseDriver(
-            $em->getConnection()->getSchemaManager()
+            $em->getConnection()->createSchemaManager()
         )
     );
 

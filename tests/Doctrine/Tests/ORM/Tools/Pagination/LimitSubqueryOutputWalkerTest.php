@@ -10,11 +10,6 @@ use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker;
 
-use function class_exists;
-
-// DBAL 2 compatibility
-class_exists('Doctrine\DBAL\Platforms\MySqlPlatform');
-
 final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
 {
     public function testLimitSubquery(): void

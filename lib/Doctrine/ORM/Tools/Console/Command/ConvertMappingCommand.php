@@ -90,11 +90,7 @@ EOT
         $em = $this->getEntityManager($input);
 
         if ($input->getOption('from-database') === true) {
-            $databaseDriver = new DatabaseDriver(
-                method_exists(Connection::class, 'createSchemaManager')
-                    ? $em->getConnection()->createSchemaManager()
-                    : $em->getConnection()->getSchemaManager()
-            );
+            $databaseDriver = new DatabaseDriver($em->getConnection()->createSchemaManager());
 
             $em->getConfiguration()->setMetadataDriverImpl(
                 $databaseDriver

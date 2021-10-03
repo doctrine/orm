@@ -35,13 +35,6 @@ use function strtolower;
  */
 class DatabaseDriver implements MappingDriver
 {
-    /**
-     * Replacement for {@see Types::JSON_ARRAY}.
-     *
-     * To be removed as soon as support for DBAL 2 is dropped.
-     */
-    private const JSON_ARRAY = 'json_array';
-
     /** @var AbstractSchemaManager */
     private $_sm;
 
@@ -404,7 +397,6 @@ class DatabaseDriver implements MappingDriver
             case Types::ARRAY:
             case Types::BLOB:
             case Types::GUID:
-            case self::JSON_ARRAY:
             case Types::OBJECT:
             case Types::SIMPLE_ARRAY:
             case Types::STRING:

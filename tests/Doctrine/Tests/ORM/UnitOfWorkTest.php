@@ -462,11 +462,9 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @param object $entity
-     *
      * @dataProvider entitiesWithValidIdentifiersProvider
      */
-    public function testAddToIdentityMapValidIdentifiers($entity, string $idHash): void
+    public function testAddToIdentityMapValidIdentifiers(object $entity, string $idHash): void
     {
         $this->_unitOfWork->persist($entity);
         $this->_unitOfWork->addToIdentityMap($entity);
@@ -523,12 +521,11 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @param object               $entity
      * @param array<string, mixed> $identifier
      *
      * @dataProvider entitiesWithInvalidIdentifiersProvider
      */
-    public function testAddToIdentityMapInvalidIdentifiers($entity, array $identifier): void
+    public function testAddToIdentityMapInvalidIdentifiers(object $entity, array $identifier): void
     {
         $this->expectException(ORMInvalidArgumentException::class);
 

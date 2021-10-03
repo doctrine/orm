@@ -31,7 +31,7 @@ class ConnectionMock extends Connection
     /** @var Result|null */
     private $_queryResult;
 
-    /** @var DatabasePlatformMock */
+    /** @var AbstractPlatform */
     private $_platformMock;
 
     /** @var int */
@@ -121,14 +121,6 @@ class ConnectionMock extends Connection
         }
 
         return $this->_fetchOneResult;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function fetchColumn($statement, array $params = [], $colunm = 0, array $types = [])
-    {
-        throw new BadMethodCallException('Call to deprecated method.');
     }
 
     public function query(?string $sql = null): Result

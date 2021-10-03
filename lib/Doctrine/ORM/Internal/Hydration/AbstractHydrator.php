@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\ForwardCompatibility\Result as ForwardCompatibilityResult;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -19,15 +16,12 @@ use Doctrine\ORM\UnitOfWork;
 use Generator;
 use LogicException;
 use ReflectionClass;
-use TypeError;
 
 use function array_map;
 use function array_merge;
 use function count;
 use function end;
-use function get_debug_type;
 use function in_array;
-use function sprintf;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
@@ -106,37 +100,12 @@ abstract class AbstractHydrator
     /**
      * Initiates a row-by-row hydration.
      *
-     * @param Result|ResultStatement $stmt
      * @psalm-param array<string, mixed> $hints
      *
      * @return Generator<int, mixed>
-     *
-     * @final
      */
-    public function toIterable($stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
+    final public function toIterable(Result $stmt, ResultSetMapping $resultSetMapping, array $hints = []): Generator
     {
-        if (! $stmt instanceof Result) {
-            if (! $stmt instanceof ResultStatement) {
-                throw new TypeError(sprintf(
-                    '%s: Expected parameter $stmt to be an instance of %s or %s, got %s',
-                    __METHOD__,
-                    Result::class,
-                    ResultStatement::class,
-                    get_debug_type($stmt)
-                ));
-            }
-
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/8796',
-                '%s: Passing a result as $stmt that does not implement %s is deprecated and will cause a TypeError on 3.0',
-                __METHOD__,
-                Result::class
-            );
-
-            $stmt = ForwardCompatibilityResult::ensure($stmt);
-        }
-
         $this->_stmt  = $stmt;
         $this->_rsm   = $resultSetMapping;
         $this->_hints = $hints;
@@ -191,36 +160,12 @@ abstract class AbstractHydrator
     /**
      * Hydrates all rows returned by the passed statement instance at once.
      *
-     * @param Result|ResultStatement $stmt
-     * @param object                 $resultSetMapping
      * @psalm-param array<string, string> $hints
      *
      * @return mixed[]
      */
-    public function hydrateAll($stmt, $resultSetMapping, array $hints = [])
+    public function hydrateAll(Result $stmt, object $resultSetMapping, array $hints = [])
     {
-        if (! $stmt instanceof Result) {
-            if (! $stmt instanceof ResultStatement) {
-                throw new TypeError(sprintf(
-                    '%s: Expected parameter $stmt to be an instance of %s or %s, got %s',
-                    __METHOD__,
-                    Result::class,
-                    ResultStatement::class,
-                    get_debug_type($stmt)
-                ));
-            }
-
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/8796',
-                '%s: Passing a result as $stmt that does not implement %s is deprecated and will cause a TypeError on 3.0',
-                __METHOD__,
-                Result::class
-            );
-
-            $stmt = ForwardCompatibilityResult::ensure($stmt);
-        }
-
         $this->_stmt  = $stmt;
         $this->_rsm   = $resultSetMapping;
         $this->_hints = $hints;

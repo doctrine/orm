@@ -74,9 +74,7 @@ class SchemaTool
         $this->em            = $em;
         $this->platform      = $em->getConnection()->getDatabasePlatform();
         $this->quoteStrategy = $em->getConfiguration()->getQuoteStrategy();
-        $this->schemaManager = method_exists(Connection::class, 'createSchemaManager')
-            ? $em->getConnection()->createSchemaManager()
-            : $em->getConnection()->getSchemaManager();
+        $this->schemaManager = $em->getConnection()->createSchemaManager();
     }
 
     /**

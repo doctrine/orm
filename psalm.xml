@@ -18,9 +18,6 @@
     <issueHandlers>
         <DeprecatedClass>
             <errorLevel type="suppress">
-                <!-- DBAL 2 compatibility -->
-                <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ImportCommand"/>
-                <referencedClass name="Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper"/>
                 <!-- The exception is thrown by a deprecated method. -->
                 <referencedClass name="Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver"/>
             </errorLevel>
@@ -29,8 +26,6 @@
             <errorLevel type="suppress">
                 <!-- We're calling the deprecated method for BC here. -->
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
-                <!-- We need to keep the calls for DBAL 2.13 compatibility. -->
-                <referencedMethod name="Doctrine\DBAL\Connection::getSchemaManager"/>
             </errorLevel>
         </DeprecatedMethod>
         <DocblockTypeContradiction>
@@ -93,21 +88,10 @@
                 <referencedClass name="Doctrine\Common\Cache\ArrayCache"/>
                 <referencedClass name="Doctrine\Common\Cache\XcacheCache"/>
 
-                <!-- DBAL 2 compatibility -->
-                <referencedClass name="Doctrine\DBAL\Driver\ResultStatement"/>
-                <referencedClass name="Doctrine\DBAL\ForwardCompatibility\Result"/>
-                <referencedClass name="Doctrine\DBAL\Platforms\SQLAnywherePlatform"/>
-
                 <!-- DBAL 3.2 forward compatibility -->
                 <referencedClass name="Doctrine\DBAL\Platforms\PostgreSQLPlatform"/>
                 <referencedClass name="Doctrine\DBAL\Platforms\SQLServerPlatform"/>
             </errorLevel>
         </UndefinedClass>
-        <UndefinedDocblockClass>
-            <errorLevel type="suppress">
-                <!-- DBAL 2 compatibility -->
-                <referencedClass name="Doctrine\DBAL\Driver\ResultStatement"/>
-            </errorLevel>
-        </UndefinedDocblockClass>
     </issueHandlers>
 </psalm>
