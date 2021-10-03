@@ -2,7 +2,15 @@ name: "Continuous Integration"
 
 on:
   pull_request:
+    branches:
+      - "*.x"
+    tag-ignore:
+      - "*"
   push:
+    branches:
+      - "*.x"
+    tag-ignore:
+      - "*"
 
 env:
   fail-fast: true
@@ -19,12 +27,13 @@ jobs:
           - "7.3"
           - "7.4"
           - "8.0"
+          - "8.1"
         dbal-version:
           - "default"
         include:
           - php-version: "8.0"
             dbal-version: "2.13"
-          - php-version: "8.0"
+          - php-version: "8.1"
             dbal-version: "3.2@dev"
 
     steps:

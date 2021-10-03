@@ -74,8 +74,11 @@ downstream packages or applications, and were consequently removed:
 ## Deprecated: database-side UUID generation
 
 [DB-generated UUIDs are deprecated as of `doctrine/dbal` 2.8][DBAL deprecation].
-As a consequence, `Doctrine\ORM\Id\UuidGenerator` is deprecated, and using the
-`UUID` strategy for generating identifiers is deprecated as well.
+As a consequence, using the `UUID` strategy for generating identifiers is deprecated as well.
+Furthermore, relying on the following classes and methods is deprecated:
+
+- `Doctrine\ORM\Id\UuidGenerator`
+- `Doctrine\ORM\Mapping\ClassMetadataInfo::isIdentifierUuid()`
 
 [DBAL deprecation]: https://github.com/doctrine/dbal/pull/3212
 

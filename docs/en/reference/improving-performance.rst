@@ -11,7 +11,7 @@ request and can greatly improve performance.
     "If you care about performance and don't use a bytecode
     cache then you don't really care about performance. Please get one
     and start using it."
-    
+
     *Stas Malyshev, Core Contributor to PHP and Zend Employee*
 
 
@@ -27,11 +27,13 @@ Doctrine will need to load your mapping information on every single
 request and has to parse each DQL query on every single request.
 This is a waste of resources.
 
-The preferred cache driver for metadata and query caches is ``PhpFileCache``. 
-This driver serializes cache items and writes them to a file. 
+The preferred cache adapter for metadata and query caches is a PHP file
+cache like Symfony's
+`PHP files adapter <https://symfony.com/doc/current/components/cache/adapters/php_files_adapter.html>`_.
+This kind of cache serializes cache items and writes them to a file.
 This allows for opcode caching to be used and provides high performance in most scenarios.
 
-See :ref:`integrating-with-the-orm`
+See :ref:`types-of-caches`
 
 Alternative Query Result Formats
 --------------------------------

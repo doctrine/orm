@@ -483,7 +483,9 @@ use function sprintf;
             case $lockMode === LockMode::OPTIMISTIC:
                 $entity = $persister->load($sortedId);
 
-                $unitOfWork->lock($entity, $lockMode, $lockVersion);
+                if ($entity !== null) {
+                    $unitOfWork->lock($entity, $lockMode, $lockVersion);
+                }
 
                 return $entity;
 
