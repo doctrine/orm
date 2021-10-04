@@ -31,9 +31,14 @@ Using the `UUID` strategy for generating identifiers is not supported anymore.
 
 ## BC BREAK: Removed `Query::iterate()`
 
-The deprecated methods `Query::iterate()` and `AbstractHydrator::iterate()`
-have been removed along with the `IterableResult` class. Use `toIterable()`
-instead.
+The deprecated method `Query::iterate()` has been removed along with the
+following classes and methods:
+
+- `AbstractHydrator::iterate()`
+- `AbstractHydrator::hydrateRow()`
+- `IterableResult`
+
+Use `toIterable()` instead.
 
 # Upgrade to 2.11
 
