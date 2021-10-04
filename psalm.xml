@@ -23,6 +23,8 @@
                 <referencedClass name="Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper"/>
                 <!-- The exception is thrown by a deprecated method. -->
                 <referencedClass name="Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver"/>
+                <!-- Remove on 3.0.x -->
+                <referencedClass name="Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand"/>
             </errorLevel>
         </DeprecatedClass>
         <DeprecatedMethod>
@@ -34,6 +36,7 @@
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
                 <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\ORM\Internal\Hydration\AbstractHydrator::hydrateRow"/>
+                <referencedMethod name="Doctrine\ORM\Configuration::ensureProductionSettings"/>
             </errorLevel>
         </DeprecatedMethod>
         <DocblockTypeContradiction>
