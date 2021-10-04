@@ -430,7 +430,7 @@ The following example sets up such a unidirectional one-to-many association:
             // ...
 
             /**
-             * Many User have Many Phonenumbers.
+             * Many Users have Many Phonenumbers.
              * @ManyToMany(targetEntity="Phonenumber")
              * @JoinTable(name="users_phonenumbers",
              *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
