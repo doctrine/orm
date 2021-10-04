@@ -675,6 +675,10 @@ final class Query extends AbstractQuery
      */
     public function setMaxResults($maxResults): self
     {
+        if ($maxResults !== null) {
+            $maxResults = (int) $maxResults;
+        }
+
         $this->maxResults = $maxResults;
         $this->_state     = self::STATE_DIRTY;
 

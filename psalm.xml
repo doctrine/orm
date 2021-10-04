@@ -76,6 +76,13 @@
                 <file name="lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php"/>
             </errorLevel>
         </NullArgument>
+        <RedundantCastGivenDocblockType>
+            <errorLevel type="suppress">
+                <!-- Can be removed once the "getMaxResults" methods of those classes have native parameter types -->
+                <file name="lib/Doctrine/ORM/Query.php"/>
+                <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
+            </errorLevel>
+        </RedundantCastGivenDocblockType>
         <TypeDoesNotContainType>
             <errorLevel type="suppress">
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>

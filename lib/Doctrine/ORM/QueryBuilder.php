@@ -652,6 +652,10 @@ class QueryBuilder
      */
     public function setMaxResults($maxResults)
     {
+        if ($maxResults !== null) {
+            $maxResults = (int) $maxResults;
+        }
+
         $this->_maxResults = $maxResults;
 
         return $this;
