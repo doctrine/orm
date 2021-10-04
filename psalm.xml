@@ -20,6 +20,8 @@
             <errorLevel type="suppress">
                 <!-- The exception is thrown by a deprecated method. -->
                 <referencedClass name="Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver"/>
+                <!-- Remove on 3.0.x -->
+                <referencedClass name="Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand"/>
             </errorLevel>
         </DeprecatedClass>
         <DeprecatedMethod>
@@ -28,6 +30,7 @@
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
                 <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\ORM\Internal\Hydration\AbstractHydrator::hydrateRow"/>
+                <referencedMethod name="Doctrine\ORM\Configuration::ensureProductionSettings"/>
             </errorLevel>
         </DeprecatedMethod>
         <DocblockTypeContradiction>
