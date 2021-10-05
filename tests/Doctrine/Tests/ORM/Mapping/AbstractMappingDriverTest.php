@@ -76,7 +76,6 @@ use function strpos;
 use function strtolower;
 
 use const CASE_UPPER;
-use const PHP_VERSION_ID;
 
 abstract class AbstractMappingDriverTest extends OrmTestCase
 {
@@ -287,10 +286,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
     public function testFieldTypeFromReflection(): void
     {
-        if (PHP_VERSION_ID < 70400) {
-            self::markTestSkipped('requies PHP 7.4');
-        }
-
         $class = $this->createClassMetadata(UserTyped::class);
 
         self::assertEquals('integer', $class->getTypeOfField('id'));

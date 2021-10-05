@@ -50,8 +50,6 @@ use function strtolower;
 use function trait_exists;
 use function trim;
 
-use const PHP_VERSION_ID;
-
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
  * of an entity and its associations.
@@ -1428,8 +1426,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     private function isTypedProperty(string $name): bool
     {
-        return PHP_VERSION_ID >= 70400
-               && isset($this->reflClass)
+        return isset($this->reflClass)
                && $this->reflClass->hasProperty($name)
                && $this->reflClass->getProperty($name)->hasType();
     }
@@ -3592,12 +3589,12 @@ class ClassMetadataInfo implements ClassMetadata
     public function inlineEmbeddable($property, ClassMetadataInfo $embeddable)
     {
         foreach ($embeddable->fieldMappings as $fieldMapping) {
-            $fieldMapping['originalClass'] = $fieldMapping['originalClass'] ?? $embeddable->name;
-            $fieldMapping['declaredField'] = isset($fieldMapping['declaredField'])
+            $fieldMapping['originalClass'] ??= $embeddable->name;
+            $fieldMapping['declaredField']   = isset($fieldMapping['declaredField'])
                 ? $property . '.' . $fieldMapping['declaredField']
                 : $property;
-            $fieldMapping['originalField'] = $fieldMapping['originalField'] ?? $fieldMapping['fieldName'];
-            $fieldMapping['fieldName']     = $property . '.' . $fieldMapping['fieldName'];
+            $fieldMapping['originalField'] ??= $fieldMapping['fieldName'];
+            $fieldMapping['fieldName']       = $property . '.' . $fieldMapping['fieldName'];
 
             if (! empty($this->embeddedClasses[$property]['columnPrefix'])) {
                 $fieldMapping['columnName'] = $this->embeddedClasses[$property]['columnPrefix'] . $fieldMapping['columnName'];

@@ -40,8 +40,6 @@ use function unserialize;
 
 use const CASE_UPPER;
 
-use const PHP_VERSION_ID;
-
 require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
 class ClassMetadataTest extends OrmTestCase
@@ -115,10 +113,6 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testFieldIsNullableByType(): void
     {
-        if (PHP_VERSION_ID < 70400) {
-            self::markTestSkipped('requies PHP 7.4');
-        }
-
         $cm = new ClassMetadata(TypedProperties\UserTyped::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
@@ -134,10 +128,6 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testFieldTypeFromReflection(): void
     {
-        if (PHP_VERSION_ID < 70400) {
-            self::markTestSkipped('requies PHP 7.4');
-        }
-
         $cm = new ClassMetadata(TypedProperties\UserTyped::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
