@@ -652,7 +652,7 @@ final class Query extends AbstractQuery
         if ($firstResult !== null) {
             $firstResult = (int) $firstResult;
         }
-        
+
         $this->firstResult = $firstResult;
         $this->_state      = self::STATE_DIRTY;
 
