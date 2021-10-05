@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\ORM\Functional\Ticket;
+namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Result;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -156,7 +156,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
             ->hydrator
             ->expects(self::once())
             ->method('hydrateAllData')
-            ->willThrowException(new ORMException());
+            ->willThrowException($this->createStub(ORMException::class));
 
         $this->expectException(ORMException::class);
         $this->hydrator->hydrateAll($this->mockResult, $this->mockResultMapping);

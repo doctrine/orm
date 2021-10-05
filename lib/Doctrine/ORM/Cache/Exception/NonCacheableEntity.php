@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Exception;
 
-use LogicException;
-
 use function sprintf;
 
 class NonCacheableEntity extends CacheException

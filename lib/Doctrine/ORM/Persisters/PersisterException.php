@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Persisters;
 
 use Doctrine\ORM\Exception\ORMException;
+use Exception;
 
 use function sprintf;
 
-class PersisterException extends ORMException
+class PersisterException extends Exception implements ORMException
 {
     /**
      * @param string $class

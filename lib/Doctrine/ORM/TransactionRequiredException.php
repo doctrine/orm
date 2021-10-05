@@ -12,7 +12,7 @@ use LogicException;
  *
  * @link        www.doctrine-project.com
  */
-class TransactionRequiredException extends ORMException
+class TransactionRequiredException extends LogicException implements ORMException
 {
     /**
      * @return TransactionRequiredException

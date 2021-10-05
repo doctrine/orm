@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Exception;
 
 use LogicException;
 
-final class ProxyClassesAlwaysRegenerating extends ORMException implements ConfigurationException
+final class ProxyClassesAlwaysRegenerating extends LogicException implements ConfigurationException
 {
     public static function create(): self
     {

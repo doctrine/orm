@@ -9,7 +9,7 @@ use LogicException;
 
 use function sprintf;
 
-final class MissingColumnException extends ORMException
+final class MissingColumnException extends LogicException implements ORMException
 {
     public static function fromColumnSourceAndTarget(string $column, string $source, string $target): self
     {

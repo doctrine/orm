@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Exception;
 
-use LogicException;
-
 final class MetadataCacheNotConfigured extends CacheException
 {
     public static function create(): self

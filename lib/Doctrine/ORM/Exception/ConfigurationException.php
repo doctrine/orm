@@ -6,6 +6,6 @@ namespace Doctrine\ORM\Exception;
 
 use Throwable;
 
-interface ConfigurationException extends Throwable
+interface ConfigurationException extends ORMException
 {
 }

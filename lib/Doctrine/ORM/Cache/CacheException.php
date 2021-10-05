@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Exception\ORMException;
+use LogicException;
 
 use function sprintf;
 
 /**
  * Exception for cache.
  */
-class CacheException extends ORMException
+class CacheException extends LogicException implements ORMException
 {
     /**
      * @param string $sourceEntity

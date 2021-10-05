@@ -1,5 +1,10 @@
 # Upgrade to 3.0
 
+## BC BREAK: changes in exception hierarchy
+
+- `Doctrine\ORM\ORMException` has been removed
+- `Doctrine\ORM\Exception\ORMException` is now an interface
+
 ## Variadic methods now use native variadics
 The following methods were using `func_get_args()` to simulate a variadic argument:
 - `Doctrine\ORM\Query\Expr#andX()`
