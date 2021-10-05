@@ -143,9 +143,10 @@ Events Overview
 +-----------------------------+-----------------------+-----------+
 | ``postLoad``                | Loading from database | Yes       |
 +-----------------------------+-----------------------+-----------+
-| ``loadClassMetadata``       | ?                     | No        |
+| ``loadClassMetadata``       | Loading of mapping    | No        |
+|                             | metadata              |           |
 +-----------------------------+-----------------------+-----------+
-| ``onClassMetadataNotFound`` | ?                     | No        |
+| ``onClassMetadataNotFound`` | ``MappingException``  | No        |
 +-----------------------------+-----------------------+-----------+
 | ``preFlush``                | ``$em->flush()``      | Yes       |
 +-----------------------------+-----------------------+-----------+
