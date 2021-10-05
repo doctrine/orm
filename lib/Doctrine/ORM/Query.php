@@ -647,6 +647,10 @@ final class Query extends AbstractQuery
      */
     public function setFirstResult($firstResult): self
     {
+        if ($firstResult !== null) {
+            $firstResult = (int) $firstResult;
+        }
+
         $this->firstResult = $firstResult;
         $this->_state      = self::STATE_DIRTY;
 
@@ -673,6 +677,10 @@ final class Query extends AbstractQuery
      */
     public function setMaxResults($maxResults): self
     {
+        if ($maxResults !== null) {
+            $maxResults = (int) $maxResults;
+        }
+
         $this->maxResults = $maxResults;
         $this->_state     = self::STATE_DIRTY;
 
