@@ -16,7 +16,7 @@
         "sort-packages": true
     },
     "require": {
-        "php": "^7.3 || ^8.0",
+        "php": "^7.4 || ^8.0",
         "ext-ctype": "*",
         "ext-pdo": "*",
         "composer/package-versions-deprecated": "^1.8",
