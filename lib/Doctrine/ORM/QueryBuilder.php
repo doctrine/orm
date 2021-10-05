@@ -627,6 +627,10 @@ class QueryBuilder
      */
     public function setFirstResult($firstResult)
     {
+        if ($firstResult !== null) {
+            $firstResult = (int) $firstResult;
+        }
+
         $this->_firstResult = $firstResult;
 
         return $this;
