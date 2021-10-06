@@ -227,7 +227,7 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @todo Add this method to `ObjectRepository` interface in the next major release
      */
-    public function count(array $criteria)
+    public function count(array $criteria = [])
     {
         return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->count($criteria);
     }
