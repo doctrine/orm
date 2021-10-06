@@ -21,8 +21,10 @@ use LogicException;
 use ReflectionClass;
 use TypeError;
 
+use function array_keys;
 use function array_map;
 use function array_merge;
+use function array_values;
 use function count;
 use function end;
 use function get_debug_type;
@@ -148,6 +150,23 @@ abstract class AbstractHydrator
      */
     public function toIterable($stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
     {
+        foreach ($this->toIndexedIterable($stmt, $resultSetMapping, $hints) as $result) {
+            yield $result;
+        }
+    }
+
+    /**
+     * Initiates a row-by-row hydration honoring INDEX BY construct.
+     *
+     * @param Result|ResultStatement $stmt
+     * @psalm-param array<string, mixed> $hints
+     *
+     * @return Generator<array-key, mixed>
+     *
+     * @final
+     */
+    public function toIndexedIterable($stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
+    {
         if (! $stmt instanceof Result) {
             if (! $stmt instanceof ResultStatement) {
                 throw new TypeError(sprintf(
@@ -196,9 +215,13 @@ abstract class AbstractHydrator
             $this->cleanupAfterRowIteration();
 
             if (count($result) === 1) {
-                yield end($result);
+                yield from $result;
             } else {
-                yield $result;
+                if (count($resultSetMapping->indexByMap) === 0) {
+                        yield $result;
+                } else {
+                    yield array_keys($result)[0] => array_values($result);
+                }
             }
         }
     }

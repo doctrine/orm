@@ -1098,6 +1098,40 @@ abstract class AbstractQuery
     }
 
     /**
+     * Executes the query and returns an iterable that can be used to incrementally
+     * iterate over the result honoring INDEX BY construct.
+     *
+     * @param ArrayCollection|array|mixed[] $parameters    The query parameters.
+     * @param string|int|null               $hydrationMode The hydration mode to use.
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
+     *
+     * @return iterable<mixed>
+     */
+    public function toIndexedIterable(iterable $parameters = [], $hydrationMode = null): iterable
+    {
+        if ($hydrationMode !== null) {
+            $this->setHydrationMode($hydrationMode);
+        }
+
+        if (
+            ($this->isCountable($parameters) && count($parameters) !== 0)
+            || ($parameters instanceof Traversable && iterator_count($parameters) !== 0)
+        ) {
+            $this->setParameters($parameters);
+        }
+
+        $rsm = $this->getResultSetMapping();
+
+        if ($rsm->isMixed && count($rsm->scalarMappings) > 0) {
+            throw QueryException::iterateWithMixedResultNotAllowed();
+        }
+
+        $stmt = $this->_doExecute();
+
+        return $this->_em->newHydrator($this->_hydrationMode)->toIndexedIterable($stmt, $rsm, $this->_hints);
+    }
+
+    /**
      * Executes the query.
      *
      * @param ArrayCollection|mixed[]|null $parameters    Query parameters.

@@ -725,6 +725,14 @@ final class Query extends AbstractQuery
         return parent::toIterable($parameters, $hydrationMode);
     }
 
+    /** {@inheritDoc} */
+    public function toIndexedIterable(iterable $parameters = [], $hydrationMode = self::HYDRATE_OBJECT): iterable
+    {
+        $this->setHint(self::HINT_INTERNAL_ITERATION, true);
+
+        return parent::toIndexedIterable($parameters, $hydrationMode);
+    }
+
     /**
      * {@inheritdoc}
      */
