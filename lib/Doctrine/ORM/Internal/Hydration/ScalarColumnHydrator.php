@@ -22,7 +22,7 @@ final class ScalarColumnHydrator extends AbstractHydrator
      */
     protected function hydrateAllData(): array
     {
-        if (count($this->resultSetMapping()->fieldMappings) > 1) {
+        if (count($this->resultSetMapping()->scalarMappings) > 1) {
             throw MultipleSelectorsFoundException::create($this->resultSetMapping()->fieldMappings);
         }
 
