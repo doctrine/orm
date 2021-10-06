@@ -121,6 +121,16 @@ Now you can test the ``$eventSubscriber`` instance to see if the
         echo 'pre foo invoked!';
     }
 
+Registering Events
+~~~~~~~~~~~~~~~~~~
+
+There are two ways to register an event:
+
+* *All events* can be registered by calling ``$eventManager->addEventListener()``
+or ``eventManager->addEventSubscriber()`` (see :ref:`Listening and subscribing to Lifecycle Events`)
+* *Lifecycle Callbacks* can also be registered by adding an annotation to the entity
+(see :ref:`Lifecycle Callbacks`)
+
 Naming convention
 ~~~~~~~~~~~~~~~~~
 
@@ -128,7 +138,6 @@ Events being used with the Doctrine ORM EventManager are best named
 with camelcase and the value of the corresponding constant should
 be the name of the constant itself, even with spelling. This has
 several reasons:
-
 
 -  It is easy to read.
 -  Simplicity.
