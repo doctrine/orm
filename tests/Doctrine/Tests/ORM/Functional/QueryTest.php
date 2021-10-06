@@ -19,6 +19,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
+use function array_keys;
 use function array_values;
 use function count;
 use function is_array;
@@ -299,6 +300,89 @@ class QueryTest extends OrmFunctionalTestCase
 
         self::assertSame(['Doctrine 2', 'Symfony 2'], $topics);
         self::assertSame(2, $iteratedCount);
+    }
+
+    public function testIndexedIterable(): void
+    {
+        $article1        = new CmsArticle();
+        $article1->topic = 'Doctrine 2';
+        $article1->text  = 'This is an introduction to Doctrine 2.';
+
+        $article2        = new CmsArticle();
+        $article2->topic = 'Symfony 2';
+        $article2->text  = 'This is an introduction to Symfony 2.';
+
+        $article3        = new CmsArticle();
+        $article3->topic = 'Laminas';
+        $article3->text  = 'This is an introduction to Laminas.';
+
+        $article4        = new CmsArticle();
+        $article4->topic = 'CodeIgniter';
+        $article4->text  = 'This is an introduction to CodeIgniter.';
+
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+        $this->_em->persist($article3);
+        $this->_em->persist($article4);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query    = $this->_em->createQuery('select a from ' . CmsArticle::class . ' a INDEX BY a.topic');
+        $articles = iterator_to_array($query->toIndexedIterable());
+
+        self::assertCount(4, $articles);
+        self::assertSame(['Doctrine 2', 'Symfony 2', 'Laminas', 'CodeIgniter'], array_keys($articles));
+        foreach ($articles as $topic => $article) {
+            self::assertSame($article->topic, $topic);
+        }
+    }
+
+    public function testIndexedIterableWithMultipleSelectElements(): void
+    {
+        $author           = new CmsUser();
+        $author->name     = 'Ben';
+        $author->username = 'beberlei';
+
+        $article1        = new CmsArticle();
+        $article1->topic = 'Doctrine 2';
+        $article1->text  = 'This is an introduction to Doctrine 2.';
+        $article1->setAuthor($author);
+
+        $article2        = new CmsArticle();
+        $article2->topic = 'Symfony 2';
+        $article2->text  = 'This is an introduction to Symfony 2.';
+        $article2->setAuthor($author);
+
+        $article3        = new CmsArticle();
+        $article3->topic = 'Laminas';
+        $article3->text  = 'This is an introduction to Laminas.';
+        $article3->setAuthor($author);
+
+        $article4        = new CmsArticle();
+        $article4->topic = 'CodeIgniter';
+        $article4->text  = 'This is an introduction to CodeIgniter.';
+        $article4->setAuthor($author);
+
+        $this->_em->persist($author);
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+        $this->_em->persist($article3);
+        $this->_em->persist($article4);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query    = $this->_em->createQuery('select a, u from ' . CmsArticle::class . ' a INDEX BY a.topic JOIN ' . CmsUser::class . ' u WITH a.user = u');
+        $articles = iterator_to_array($query->toIndexedIterable());
+
+        self::assertCount(4, $articles);
+        self::assertSame(['Doctrine 2', 'Symfony 2', 'Laminas', 'CodeIgniter'], array_keys($articles));
+        foreach ($articles as $topic => $row) {
+            self::assertInstanceOf(CmsArticle::class, $row[0]);
+            self::assertInstanceOf(CmsUser::class, $row[1]);
+            self::assertSame($row[0]->topic, $topic);
+        }
     }
 
     public function testToIterableWithMultipleSelectElements(): void
