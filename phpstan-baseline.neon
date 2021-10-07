@@ -86,11 +86,6 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
 
 		-
-			message: "#^If condition is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
-
-		-
 			message: "#^Parameter \\#3 \\$entry of method Doctrine\\\\ORM\\\\Cache\\\\EntityHydrator\\:\\:loadCacheEntry\\(\\) expects Doctrine\\\\ORM\\\\Cache\\\\EntityCacheEntry, Doctrine\\\\ORM\\\\Cache\\\\CacheEntry given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
@@ -412,7 +407,7 @@ parameters:
 
 		-
 			message: "#^If condition is always true\\.$#"
-			count: 2
+			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
@@ -422,7 +417,7 @@ parameters:
 
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
-			count: 3
+			count: 2
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
