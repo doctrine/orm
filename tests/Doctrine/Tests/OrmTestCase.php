@@ -132,6 +132,7 @@ abstract class OrmTestCase extends DoctrineTestCase
                 'wrapperClass' => Mocks\ConnectionMock::class,
                 'user'         => 'john',
                 'password'     => 'wayne',
+                'platform'     => new Mocks\DatabasePlatformMock(),
             ];
         }
 
