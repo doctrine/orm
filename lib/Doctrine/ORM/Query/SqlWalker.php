@@ -1457,7 +1457,9 @@ class SqlWalker implements TreeWalker
 
                     $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
 
-                    $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
+                    if (! $hidden) {
+                        $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
+                    }
                 }
 
                 // Add any additional fields of subclasses (excluding inherited fields)
@@ -1488,7 +1490,9 @@ class SqlWalker implements TreeWalker
 
                             $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
 
-                            $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $subClassName);
+                            if (! $hidden) {
+                                $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $subClassName);
+                            }
                         }
                     }
                 }
