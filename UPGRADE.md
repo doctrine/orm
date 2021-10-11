@@ -1,5 +1,10 @@
 # Upgrade to 3.0
 
+## BC BREAK: EntityRepository::count() signature change
+
+The argument `$criteria` of `Doctrine\ORM\EntityRepository::count()` is now
+optional. Overrides in child classes should be made compatible.
+
 ## BC BREAK: changes in exception hierarchy
 
 - `Doctrine\ORM\ORMException` has been removed
