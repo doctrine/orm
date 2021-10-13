@@ -2367,58 +2367,56 @@ class Parser
     {
         $peek = $this->lexer->glimpse();
 
-        if ($this->lexer->lookahead !== null) {
-            switch ($this->lexer->lookahead['type']) {
-                case Lexer::T_IDENTIFIER:
-                    switch (true) {
-                        case $peek['type'] === Lexer::T_DOT:
-                            $expression = $this->StateFieldPathExpression();
-
-                            return new AST\SimpleSelectExpression($expression);
-
-                        case $peek['type'] !== Lexer::T_OPEN_PARENTHESIS:
-                            $expression = $this->IdentificationVariable();
-
-                            return new AST\SimpleSelectExpression($expression);
-
-                        case $this->isFunction():
-                            // SUM(u.id) + COUNT(u.id)
-                            if ($this->isMathOperator($this->peekBeyondClosingParenthesis())) {
-                                return new AST\SimpleSelectExpression($this->ScalarExpression());
-                            }
-
-                            // COUNT(u.id)
-                            if ($this->isAggregateFunction($this->lexer->lookahead['type'])) {
-                                return new AST\SimpleSelectExpression($this->AggregateExpression());
-                            }
-
-                            // IDENTITY(u)
-                            return new AST\SimpleSelectExpression($this->FunctionDeclaration());
-
-                        default:
-                            // Do nothing
-                    }
-
-                    break;
-
-                case Lexer::T_OPEN_PARENTHESIS:
-                    if ($peek['type'] !== Lexer::T_SELECT) {
-                        // Shortcut: ScalarExpression => SimpleArithmeticExpression
-                        $expression = $this->SimpleArithmeticExpression();
+        switch ($this->lexer->lookahead['type'] ?? null) {
+            case Lexer::T_IDENTIFIER:
+                switch (true) {
+                    case $peek['type'] === Lexer::T_DOT:
+                        $expression = $this->StateFieldPathExpression();
 
                         return new AST\SimpleSelectExpression($expression);
-                    }
 
-                    // Subselect
-                    $this->match(Lexer::T_OPEN_PARENTHESIS);
-                    $expression = $this->Subselect();
-                    $this->match(Lexer::T_CLOSE_PARENTHESIS);
+                    case $peek['type'] !== Lexer::T_OPEN_PARENTHESIS:
+                        $expression = $this->IdentificationVariable();
+
+                        return new AST\SimpleSelectExpression($expression);
+
+                    case $this->isFunction():
+                        // SUM(u.id) + COUNT(u.id)
+                        if ($this->isMathOperator($this->peekBeyondClosingParenthesis())) {
+                            return new AST\SimpleSelectExpression($this->ScalarExpression());
+                        }
+
+                        // COUNT(u.id)
+                        if ($this->lexer->lookahead && $this->isAggregateFunction($this->lexer->lookahead['type'])) {
+                            return new AST\SimpleSelectExpression($this->AggregateExpression());
+                        }
+
+                        // IDENTITY(u)
+                        return new AST\SimpleSelectExpression($this->FunctionDeclaration());
+
+                    default:
+                        // Do nothing
+                }
+
+                break;
+
+            case Lexer::T_OPEN_PARENTHESIS:
+                if ($peek['type'] !== Lexer::T_SELECT) {
+                    // Shortcut: ScalarExpression => SimpleArithmeticExpression
+                    $expression = $this->SimpleArithmeticExpression();
 
                     return new AST\SimpleSelectExpression($expression);
+                }
 
-                default:
-                    // Do nothing
-            }
+                // Subselect
+                $this->match(Lexer::T_OPEN_PARENTHESIS);
+                $expression = $this->Subselect();
+                $this->match(Lexer::T_CLOSE_PARENTHESIS);
+
+                return new AST\SimpleSelectExpression($expression);
+
+            default:
+                // Do nothing
         }
 
         $this->lexer->peek();
