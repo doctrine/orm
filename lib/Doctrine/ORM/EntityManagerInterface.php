@@ -19,6 +19,7 @@ use Doctrine\Persistence\ObjectManager;
  * EntityManager interface
  *
  * @method Mapping\ClassMetadataFactory getMetadataFactory()
+ * @method mixed wrapInTransaction(callable $func)
  */
 interface EntityManagerInterface extends ObjectManager
 {
