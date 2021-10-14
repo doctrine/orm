@@ -335,6 +335,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Issue5989\Issue5989Employee::class,
             Models\Issue5989\Issue5989Manager::class,
         ],
+        'issue9124' => [
+            Models\Issue9124\Issue9124Item::class,
+            Models\Issue9124\Issue9124Group::class,
+        ],
     ];
 
     protected function useModelSet(string $setName): void
