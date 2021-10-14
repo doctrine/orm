@@ -1207,6 +1207,13 @@ class SqlWalker implements TreeWalker
                     $conditions[] = '(' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
                 }
 
+                // Apply the filters
+                $filterExpr = $this->generateFilterConditionSQL($class, $tableAlias);
+
+                if ($filterExpr) {
+                    $conditions[] = $filterExpr;
+                }
+
                 $isUnconditionalJoin = $conditions === [];
                 $condExprConjunction = $class->isInheritanceTypeJoined() && $joinType !== AST\Join::JOIN_TYPE_LEFT && $joinType !== AST\Join::JOIN_TYPE_LEFTOUTER && $isUnconditionalJoin
                     ? ' AND '
@@ -1219,13 +1226,6 @@ class SqlWalker implements TreeWalker
 
                 if ($discrSql) {
                     $conditions[] = $discrSql;
-                }
-
-                // Apply the filters
-                $filterExpr = $this->generateFilterConditionSQL($class, $tableAlias);
-
-                if ($filterExpr) {
-                    $conditions[] = $filterExpr;
                 }
 
                 if ($conditions) {
