@@ -121,6 +121,16 @@ Now you can test the ``$eventSubscriber`` instance to see if the
         echo 'pre foo invoked!';
     }
 
+Registering Events
+~~~~~~~~~~~~~~~~~~
+
+There are two ways to register an event:
+
+* *All events* can be registered by calling ``$eventManager->addEventListener()``
+or ``eventManager->addEventSubscriber()`` (see :ref:`listening-and-subscribing-to-lifecycle-events`)
+* *Lifecycle Callbacks* can also be registered by adding an annotation to the entity
+(see :ref:`lifecycle-callbacks`)
+
 Events Overview
 ---------------
 
@@ -273,6 +283,7 @@ The ``EventArgs`` instance received by the listener gives access to the entity,
     :ref:`reference-events-implementing-listeners` section very carefully
     to understand which operations are allowed in which lifecycle event.
 
+.. _lifecycle-callbacks:
 
 Lifecycle Callbacks
 -------------------
@@ -438,6 +449,8 @@ With the additional argument you have access to the
             }
         }
     }
+
+.. _listening-and-subscribing-to-lifecycle-events:
 
 Listening and subscribing to Lifecycle Events
 ---------------------------------------------
