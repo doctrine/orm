@@ -8,6 +8,8 @@ use Doctrine\Tests\Models\Issue9124\Issue9124Group;
 use Doctrine\Tests\Models\Issue9124\Issue9124Item;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function assert;
+
 /**
  * @group issue-9124
  */
@@ -33,7 +35,7 @@ class Issue9124Test extends OrmFunctionalTestCase
 
         $this->_em->flush();
 
-        $groupId  = $group->id;
+        $groupId = $group->id;
         $item1Id = $item1->id;
 
         // clear entity manager so that $repository->find actually fetches them and uses the hydrator
@@ -41,16 +43,16 @@ class Issue9124Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $groupRepository = $this->_em->getRepository(Issue9124Group::class);
-        $itemRepository = $this->_em->getRepository(Issue9124Item::class);
+        $itemRepository  = $this->_em->getRepository(Issue9124Item::class);
 
-        /** @var Issue9124Group $group */
         $group = $groupRepository->find($groupId);
+        assert($group instanceof Issue9124Group);
 
         // Extract elements to initialize collection
         $a = $group->items->toArray();
 
-        /** @var Issue9124Item $item */
         $item = $itemRepository->find($item1Id);
+        assert($item instanceof Issue9124Item);
 
         $this->_em->remove($item);
 

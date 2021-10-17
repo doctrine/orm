@@ -17,15 +17,17 @@ use Doctrine\ORM\Mapping\Table;
 class Issue9124Group
 {
     /**
-     * @var int
      * @ORM\Id()
-     * @Column(type="integer")
      * @ORM\GeneratedValue()
+     *
+     * @var int
+     * @Column(type="integer")
      */
     public $id;
 
     /**
      * @ORM\ManyToMany(targetEntity="Issue9124Item")
+     *
      * @var Issue9124Item[]
      */
     public $items;
