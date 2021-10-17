@@ -2583,7 +2583,7 @@ class Parser
             return $this->ExistsExpression();
         }
 
-        $token     = $this->lexer->lookahead ?? ['type' => null, 'value' => null];
+        $token     = $this->lexer->lookahead ?? ['type' => null, 'value' => ''];
         $peek      = $this->lexer->glimpse();
         $lookahead = $token;
 
