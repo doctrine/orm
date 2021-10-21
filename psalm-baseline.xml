@@ -273,8 +273,7 @@
       <code>getCacheFactory</code>
       <code>getTimestampRegion</code>
     </PossiblyNullReference>
-    <RedundantConditionGivenDocblockType occurrences="2">
-      <code>$result</code>
+    <RedundantConditionGivenDocblockType occurrences="1">
       <code>assert($metadata instanceof ClassMetadata)</code>
     </RedundantConditionGivenDocblockType>
     <UndefinedInterfaceMethod occurrences="9">
@@ -503,10 +502,9 @@
       <code>$entityName</code>
       <code>$entityName</code>
     </ParamNameMismatch>
-    <PossiblyNullArgument occurrences="3">
+    <PossiblyNullArgument occurrences="2">
       <code>$config-&gt;getProxyDir()</code>
       <code>$config-&gt;getProxyNamespace()</code>
-      <code>$entity</code>
     </PossiblyNullArgument>
     <PossiblyNullReference occurrences="2">
       <code>createCache</code>
@@ -827,8 +825,7 @@
       <code>addNamedNativeQuery</code>
       <code>addNamedQuery</code>
     </DeprecatedMethod>
-    <DocblockTypeContradiction occurrences="3">
-      <code>! $class-&gt;reflClass</code>
+    <DocblockTypeContradiction occurrences="2">
       <code>$class-&gt;reflClass</code>
       <code>$definition</code>
     </DocblockTypeContradiction>
@@ -893,8 +890,7 @@
     <PropertyTypeCoercion occurrences="1">
       <code>$subClass-&gt;table</code>
     </PropertyTypeCoercion>
-    <RedundantConditionGivenDocblockType occurrences="2">
-      <code>$parent</code>
+    <RedundantConditionGivenDocblockType occurrences="1">
       <code>$parent-&gt;idGenerator</code>
     </RedundantConditionGivenDocblockType>
     <UndefinedInterfaceMethod occurrences="17">
@@ -1973,9 +1969,6 @@
       <code>$queryCacheTTL</code>
       <code>Query</code>
     </PropertyNotSetInConstructor>
-    <RedundantCastGivenDocblockType occurrences="1">
-      <code>(int) $timeToLive</code>
-    </RedundantCastGivenDocblockType>
     <RedundantConditionGivenDocblockType occurrences="4">
       <code>$dqlQuery !== null</code>
       <code>$rsm !== null</code>
@@ -3239,10 +3232,9 @@
     <NullableReturnStatement occurrences="1">
       <code>$this-&gt;cacheMode</code>
     </NullableReturnStatement>
-    <PossiblyFalseArgument occurrences="3">
+    <PossiblyFalseArgument occurrences="2">
       <code>$spacePos</code>
       <code>$spacePos</code>
-      <code>strpos($join, '.')</code>
     </PossiblyFalseArgument>
     <PossiblyFalseOperand occurrences="2">
       <code>$spacePos</code>
@@ -3258,13 +3250,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>$_dql</code>
     </PropertyNotSetInConstructor>
-    <RedundantCastGivenDocblockType occurrences="5">
-      <code>(bool) $cacheable</code>
-      <code>(bool) $flag</code>
-      <code>(int) $cacheMode</code>
-      <code>(int) $lifetime</code>
-      <code>(string) $cacheRegion</code>
-    </RedundantCastGivenDocblockType>
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>$this-&gt;_dql !== null</code>
     </RedundantConditionGivenDocblockType>
@@ -3538,15 +3523,9 @@
       <code>$fullClassName</code>
       <code>$fullClassName</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="1">
-      <code>EntityRepository::class</code>
-    </DocblockTypeContradiction>
     <PossiblyFalseOperand occurrences="1">
       <code>strrpos($fullClassName, '\\')</code>
     </PossiblyFalseOperand>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$repositoryName</code>
-    </PropertyNotSetInConstructor>
     <PropertyTypeCoercion occurrences="1">
       <code>$repositoryName</code>
     </PropertyTypeCoercion>
@@ -3877,7 +3856,8 @@
       <code>setValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
-    <PossiblyUndefinedMethod occurrences="3">
+    <PossiblyUndefinedMethod occurrences="4">
+      <code>addPropertyChangedListener</code>
       <code>unwrap</code>
       <code>unwrap</code>
       <code>unwrap</code>
