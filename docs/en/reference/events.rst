@@ -134,38 +134,38 @@ see :ref:`lifecycle-callbacks`
 Events Overview
 ---------------
 
-+------------------------------------+-----------------------+-----------+
-| Event                              | Dispatched by         | Lifecycle |
-|                                    |                       | Callback  |
-+====================================+=======================+===========+
-| :ref:`reference-events-pre-remove` | ``$em->remove()``     | Yes       |
-+------------------------------------+-----------------------+-----------+
-| ``postRemove``                     | ``$em->flush()``      | Yes       |
-+------------------------------------+-----------------------+-----------+
-| ``prePersist``                     | ``$em->persist()``    | Yes       |
-|                                    | on *initial* persist  |           |
-+------------------------------------+-----------------------+-----------+
-| ``postPersist``                    | ``$em->flush()``      | Yes       |
-+------------------------------------+-----------------------+-----------+
-| ``preUpdate``                      | ``$em->flush()``      | Yes       |
-+------------------------------------+-----------------------+-----------+
-| ``postUpdate``                     | ``$em->flush()``      | Yes       |
-+------------------------------------+-----------------------+-----------+
-| ``postLoad``                       | Loading from database | Yes       |
-+------------------------------------+-----------------------+-----------+
-| ``loadClassMetadata``              | Loading of mapping    | No        |
-|                                    | metadata              |           |
-+------------------------------------+-----------------------+-----------+
-| ``onClassMetadataNotFound``        | ``MappingException``  | No        |
-+------------------------------------+-----------------------+-----------+
-| ``preFlush``                       | ``$em->flush()``      | Yes       |
-+------------------------------------+-----------------------+-----------+
-| ``onFlush``                        | ``$em->flush()``      | No        |
-+------------------------------------+-----------------------+-----------+
-| ``postFlush``                      | ``$em->flush()``      | No        |
-+------------------------------------+-----------------------+-----------+
-| ``onClear``                        | ``$em->clear()``      | No        |
-+------------------------------------+-----------------------+-----------+
++-----------------------------------------------------------------+-----------------------+-----------+
+| Event                                                           | Dispatched by         | Lifecycle |
+|                                                                 |                       | Callback  |
++=================================================================+=======================+===========+
+| :ref:`reference-events-pre-remove`                              | ``$em->remove()``     | Yes       |
++-----------------------------------------------------------------+-----------------------+-----------+
+| :ref:`reference-events-post-update-remove-persist<postRemove>`  | ``$em->flush()``      | Yes       |
++-----------------------------------------------------------------+-----------------------+-----------+
+| :ref:`reference-events-pre-persist`                             | ``$em->persist()``    | Yes       |
+|                                                                 | on *initial* persist  |           |
++-----------------------------------------------------------------+-----------------------+-----------+
+| :ref:`reference-events-post-update-remove-persist<postPersist>` | ``$em->flush()``      | Yes       |
++-----------------------------------------------------------------+-----------------------+-----------+
+| :ref:`reference-events-pre-update`                              | ``$em->flush()``      | Yes       |
++-----------------------------------------------------------------+-----------------------+-----------+
+| :ref:`reference-events-post-update-remove-persist<postUpdate>`  | ``$em->flush()``      | Yes       |
++-----------------------------------------------------------------+-----------------------+-----------+
+| :ref:`reference-events-post-load`                               | Loading from database | Yes       |
++-----------------------------------------------------------------+-----------------------+-----------+
+| :ref:`reference-events-load-class-metadata`                     | Loading of mapping    | No        |
+|                                                                 | metadata              |           |
++-----------------------------------------------------------------+-----------------------+-----------+
+| ``onClassMetadataNotFound``                                     | ``MappingException``  | No        |
++-----------------------------------------------------------------+-----------------------+-----------+
+| :ref:`reference-events-pre-flush`                               | ``$em->flush()``      | Yes       |
++-----------------------------------------------------------------+-----------------------+-----------+
+| :ref:`reference-events-on-flush`                                | ``$em->flush()``      | No        |
++-----------------------------------------------------------------+-----------------------+-----------+
+| :ref:`reference-events-post-flush`                              | ``$em->flush()``      | No        |
++-----------------------------------------------------------------+-----------------------+-----------+
+| ``onClear``                                                     | ``$em->clear()``      | No        |
++-----------------------------------------------------------------+-----------------------+-----------+
 
 Naming convention
 ~~~~~~~~~~~~~~~~~
@@ -563,6 +563,8 @@ the restrictions apply as well, with the additional restriction
 that (prior to version 2.4) you do not have access to the
 ``EntityManager`` or ``UnitOfWork`` APIs inside these events.
 
+.. _reference-events-pre-persist:
+
 prePersist
 ~~~~~~~~~~
 
@@ -602,6 +604,8 @@ There are no restrictions to what methods can be called inside the
 ``preRemove`` event, except when the remove method itself was
 called during a flush operation.
 
+.. _reference-events-pre-flush:
+
 preFlush
 ~~~~~~~~
 
@@ -623,6 +627,8 @@ result in infinite loop.
             // ...
         }
     }
+
+.. _reference-events-on-flush:
 
 onFlush
 ~~~~~~~
@@ -687,6 +693,8 @@ The following restrictions apply to the onFlush event:
    affected entity. This can be done by calling
    ``$unitOfWork->recomputeSingleEntityChangeSet($classMetadata, $entity)``.
 
+.. _reference-events-post-flush:
+
 postFlush
 ~~~~~~~~~
 
@@ -706,6 +714,8 @@ postFlush
             // ...
         }
     }
+
+.. _reference-events-pre-update:
 
 preUpdate
 ~~~~~~~~~
@@ -791,6 +801,8 @@ Restrictions for this event:
    API are strongly discouraged and don't work as expected outside the
    flush operation.
 
+.. _reference-events-post-update-remove-persist:
+
 postUpdate, postRemove, postPersist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -799,6 +811,8 @@ Changes in here are not relevant to the persistence in the
 database, but you can use these events to alter non-persistable items,
 like non-mapped fields, logging or even associated classes that are
 not directly mapped by Doctrine.
+
+.. _reference-events-post-load:
 
 postLoad
 ~~~~~~~~
@@ -1011,6 +1025,8 @@ Implementing your own resolver :
     // Configure the listener resolver only before instantiating the EntityManager
     $configurations->setEntityListenerResolver(new MyEntityListenerResolver);
     EntityManager::create(.., $configurations, ..);
+
+.. _reference-events-load-class-metadata:
 
 Load ClassMetadata Event
 ------------------------
