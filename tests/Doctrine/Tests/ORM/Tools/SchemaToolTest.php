@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Platforms\MySQL57Platform;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Column;
@@ -356,6 +357,7 @@ class SchemaToolTest extends OrmTestCase
 
         echo 'AbstractMiddleClassPartOfEntityHierarchy \n';
         var_dump($grandParentMetadata->subClasses);
+        var_dump($schema->toSql(new MySQL57Platform()));
         self::assertNotNull($schema->getTable('foo_grand_parent')->getColumn('parent_value'));
     }
 
@@ -372,6 +374,7 @@ class SchemaToolTest extends OrmTestCase
 
         echo 'AbstractMiddleClassIsMappedSuperclass \n';
         var_dump($grandParentMetadata->subClasses);
+        var_dump($schema->toSql(new MySQL57Platform()));
         self::assertNotNull($schema->getTable('foo_grand_parent_mapped_superclass')->getColumn('parent_value'));
     }
 
@@ -388,6 +391,7 @@ class SchemaToolTest extends OrmTestCase
 
         echo 'AbstractMiddleClassMissingInEntityHierarchy \n';
         var_dump($grandParentMetadata->subClasses);
+        var_dump($schema->toSql(new MySQL57Platform()));
         self::assertNotNull($schema->getTable('foo_grand_parent_wrong')->getColumn('parent_value'));
     }
 }
