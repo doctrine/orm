@@ -8,11 +8,14 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
@@ -42,6 +45,7 @@ use Doctrine\Tests\OrmTestCase;
 
 use function count;
 use function current;
+use function var_dump;
 
 class SchemaToolTest extends OrmTestCase
 {
@@ -338,6 +342,171 @@ class SchemaToolTest extends OrmTestCase
         $this->expectException(MappingException::class);
         $schemaTool->getSchemaFromMetadata([$class]);
     }
+
+    public function testAbstractMiddleClassPartOfEntityHierarchy(): void
+    {
+        $em = $this->getTestEntityManager();
+        $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy());
+
+        $schemaTool          = new SchemaTool($em);
+        $parentMetadata      = $em->getClassMetadata(FooParent::class);
+        $grandParentMetadata = $em->getClassMetadata(FooGrandParent::class);
+        $childMetadata       = $em->getClassMetadata(FooChild::class);
+        $schema              = $schemaTool->getSchemaFromMetadata([$parentMetadata, $grandParentMetadata, $childMetadata]);
+
+        echo 'AbstractMiddleClassPartOfEntityHierarchy \n';
+        var_dump($grandParentMetadata->subClasses);
+        self::assertNotNull($schema->getTable('foo_grand_parent')->getColumn('parent_value'));
+    }
+
+    public function testAbstractMiddleClassIsMappedSuperclass(): void
+    {
+        $em = $this->getTestEntityManager();
+        $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy());
+
+        $schemaTool          = new SchemaTool($em);
+        $grandParentMetadata = $em->getClassMetadata(FooGrandParentMappedSuperclass::class);
+        $parentMetadata      = $em->getClassMetadata(FooParentMappedSuperclass::class);
+        $childMetadata       = $em->getClassMetadata(FooChildMappedSuperclass::class);
+        $schema              = $schemaTool->getSchemaFromMetadata([$parentMetadata, $grandParentMetadata, $childMetadata]);
+
+        echo 'AbstractMiddleClassIsMappedSuperclass \n';
+        var_dump($grandParentMetadata->subClasses);
+        self::assertNotNull($schema->getTable('foo_grand_parent_mapped_superclass')->getColumn('parent_value'));
+    }
+
+    public function testAbstractMiddleClassMissingInEntityHierarchy(): void
+    {
+        $em = $this->getTestEntityManager();
+        $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy());
+
+        $schemaTool          = new SchemaTool($em);
+        $grandParentMetadata = $em->getClassMetadata(FooGrandParentWrong::class);
+        $parentMetadata      = $em->getClassMetadata(FooParentWrong::class);
+        $childMetadata       = $em->getClassMetadata(FooChildWrong::class);
+        $schema              = $schemaTool->getSchemaFromMetadata([$parentMetadata, $grandParentMetadata, $childMetadata]);
+
+        echo 'AbstractMiddleClassMissingInEntityHierarchy \n';
+        var_dump($grandParentMetadata->subClasses);
+        self::assertNotNull($schema->getTable('foo_grand_parent_wrong')->getColumn('parent_value'));
+    }
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorMap({ "A": "FooGrandParent", "B": "FooParent", "C": "FooChild"})
+ */
+class FooGrandParent
+{
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
+    private $id;
+}
+
+/**
+ * @Entity
+ */
+abstract class FooParent extends FooGrandParent
+{
+    /**
+     * @var string
+     * @Column
+     */
+    private $parentValue;
+}
+
+/**
+ * @Entity
+ */
+class FooChild extends FooParent
+{
+    /**
+     * @var string
+     * @Column
+     */
+    private $childValue;
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorMap({ "A": "FooGrandParentWrong", "C": "FooChildWrong"})
+ */
+class FooGrandParentWrong
+{
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
+    private $id;
+}
+
+/**
+ * @Entity
+ */
+abstract class FooParentWrong extends FooGrandParentWrong
+{
+    /**
+     * @var string
+     * @Column
+     */
+    private $parentValue;
+}
+
+/**
+ * @Entity
+ */
+class FooChildWrong extends FooParentWrong
+{
+    /**
+     * @var string
+     * @Column
+     */
+    private $childValue;
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorMap({ "A": "FooGrandParentMappedSuperclass", "C": "FooChildMappedSuperclass"})
+ */
+class FooGrandParentMappedSuperclass
+{
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
+    private $id;
+}
+
+/**
+ * @MappedSuperclass
+ */
+abstract class FooParentMappedSuperclass extends FooGrandParentMappedSuperclass
+{
+    /**
+     * @var string
+     * @Column
+     */
+    private $parentValue;
+}
+
+/**
+ * @Entity
+ */
+class FooChildMappedSuperclass extends FooParentMappedSuperclass
+{
+    /**
+     * @var string
+     * @Column
+     */
+    private $childValue;
 }
 
 /**
