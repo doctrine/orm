@@ -2022,11 +2022,6 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Tools\\\\Console\\\\Command\\\\ConvertMappingCommand\\:\\:execute\\(\\) should return int but empty return statement found\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php
-
-		-
 			message: "#^Parameter \\#1 \\$metadata of method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:setMetadata\\(\\) expects array\\<int, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata\\>, array\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php

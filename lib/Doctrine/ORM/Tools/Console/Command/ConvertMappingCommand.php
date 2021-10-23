@@ -151,7 +151,7 @@ EOT
         if (empty($metadata)) {
             $ui->success('No Metadata Classes to process.');
 
-            return;
+            return 0;
         }
 
         foreach ($metadata as $class) {
