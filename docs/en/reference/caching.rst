@@ -268,7 +268,7 @@ Query Cache
 It is highly recommended that in a production environment you cache
 the transformation of a DQL query to its SQL counterpart. It
 doesn't make sense to do this parsing multiple times as it doesn't
-change unless you alter the DQL query.
+change unless you alter the DQL query or Entity Declaration.
 
 This can be done by configuring the query cache implementation to
 use on your ORM configuration.
