@@ -135,7 +135,7 @@ class ClassMetadataTest extends OrmTestCase
     public function testFieldTypeFromReflection(): void
     {
         if (PHP_VERSION_ID < 70400) {
-            self::markTestSkipped('requies PHP 7.4');
+            self::markTestSkipped('requires PHP 7.4');
         }
 
         $cm = new ClassMetadata(TypedProperties\UserTyped::class);
@@ -172,6 +172,19 @@ class ClassMetadataTest extends OrmTestCase
         // float
         $cm->mapField(['fieldName' => 'float']);
         self::assertEquals('float', $cm->getTypeOfField('float'));
+    }
+
+    public function testFieldTypeEnumFromReflection(): void
+    {
+        if (PHP_VERSION_ID < 80100) {
+            self::markTestSkipped('requires PHP 8.1');
+        }
+
+        $cm = new ClassMetadata(TypedProperties\Article::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->mapField(['fieldName' => 'enum']);
+        self::assertEquals('enum', $cm->getTypeOfField('enum'));
     }
 
     /**

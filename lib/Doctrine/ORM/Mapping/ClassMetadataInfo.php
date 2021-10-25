@@ -1493,6 +1493,10 @@ class ClassMetadataInfo implements ClassMetadata
                     case 'string':
                         $mapping['type'] = Types::STRING;
                         break;
+                    default:
+                        if (PHP_VERSION_ID >= 80100 && enum_exists($type->getName())) {
+                            $mapping['type'] = Types::ENUM;
+                        }
                 }
             }
         }
