@@ -114,7 +114,10 @@ Add the following directories:
     The YAML driver is deprecated and will be removed in version 3.0.
     It is strongly recommended to switch to one of the other mappings.
 .. note::
-    When using the entity data mapping it is best practice to explicity specify the version of doctrine/dbal in your composer.json. This helps ensure that your entity data mappings remain supported through package upgrades.
+    When using the entity data mapping it is best practice to explicity
+    specify the version of ``doctrine/dbal`` in your ``composer.json``.
+    This helps ensure that your entity data mappings remain supported
+    through package upgrades.
 
 Obtaining the EntityManager
 ---------------------------
