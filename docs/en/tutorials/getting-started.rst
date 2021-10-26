@@ -81,7 +81,8 @@ that directory with the following contents:
 
     {
         "require": {
-            "doctrine/orm": "^2.6.2",
+            "doctrine/orm": "^2.10.2",
+            "doctrine/dbal": "^3.1.1",
             "symfony/yaml": "2.*",
             "symfony/cache": "^5.3"
         },
@@ -112,6 +113,8 @@ Add the following directories:
 .. note::
     The YAML driver is deprecated and will be removed in version 3.0.
     It is strongly recommended to switch to one of the other mappings.
+.. note::
+    When using the entity data mapping it is best practice to explicity specify the version of doctrine/dbal in your composer.json. This helps ensure that your entity data mappings remain supported through package upgrades.
 
 Obtaining the EntityManager
 ---------------------------
