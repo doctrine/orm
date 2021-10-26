@@ -138,31 +138,31 @@ Events Overview
 | Event                                                           | Dispatched by         | Lifecycle |
 |                                                                 |                       | Callback  |
 +=================================================================+=======================+===========+
-| :ref:`reference-events-pre-remove`                              | ``$em->remove()``     | Yes       |
+| :ref:`preRemove<reference-events-pre-remove>`                   | ``$em->remove()``     | Yes       |
 +-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`reference-events-post-update-remove-persist<postRemove>`  | ``$em->flush()``      | Yes       |
+| :ref:`postRemove<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       |
 +-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`reference-events-pre-persist`                             | ``$em->persist()``    | Yes       |
+| :ref:`prePersist<reference-events-pre-persist>`                 | ``$em->persist()``    | Yes       |
 |                                                                 | on *initial* persist  |           |
 +-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`reference-events-post-update-remove-persist<postPersist>` | ``$em->flush()``      | Yes       |
+| :ref:`postPersist<reference-events-post-update-remove-persist>` | ``$em->flush()``      | Yes       |
 +-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`reference-events-pre-update`                              | ``$em->flush()``      | Yes       |
+| :ref:`preUpdate<reference-events-pre-update>`                   | ``$em->flush()``      | Yes       |
 +-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`reference-events-post-update-remove-persist<postUpdate>`  | ``$em->flush()``      | Yes       |
+| :ref:`postUpdate<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       |
 +-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`reference-events-post-load`                               | Loading from database | Yes       |
+| :ref:`postLoad<reference-events-post-load>`                     | Loading from database | Yes       |
 +-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`reference-events-load-class-metadata`                     | Loading of mapping    | No        |
+| :ref:`loadClassMetadata<reference-events-load-class-metadata>`  | Loading of mapping    | No        |
 |                                                                 | metadata              |           |
 +-----------------------------------------------------------------+-----------------------+-----------+
 | ``onClassMetadataNotFound``                                     | ``MappingException``  | No        |
 +-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`reference-events-pre-flush`                               | ``$em->flush()``      | Yes       |
+| :ref:`preFlush<reference-events-pre-flush>`                     | ``$em->flush()``      | Yes       |
 +-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`reference-events-on-flush`                                | ``$em->flush()``      | No        |
+| :ref:`onFlush<reference-events-on-flush>`                       | ``$em->flush()``      | No        |
 +-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`reference-events-post-flush`                              | ``$em->flush()``      | No        |
+| :ref:`postFlush<reference-events-post-flush>`                   | ``$em->flush()``      | No        |
 +-----------------------------------------------------------------+-----------------------+-----------+
 | ``onClear``                                                     | ``$em->clear()``      | No        |
 +-----------------------------------------------------------------+-----------------------+-----------+
