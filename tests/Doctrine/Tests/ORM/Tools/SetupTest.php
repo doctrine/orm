@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Tools;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\Setup;
@@ -65,6 +66,19 @@ class SetupTest extends OrmTestCase
         self::assertEquals(sys_get_temp_dir(), $config->getProxyDir());
         self::assertEquals('DoctrineProxies', $config->getProxyNamespace());
         self::assertInstanceOf(AnnotationDriver::class, $config->getMetadataDriverImpl());
+    }
+
+    /**
+     * @requires PHP >= 8.0
+     */
+    public function testAttributeConfiguration(): void
+    {
+        $config = Setup::createAttributeMetadataConfiguration([], true);
+
+        self::assertInstanceOf(Configuration::class, $config);
+        self::assertEquals(sys_get_temp_dir(), $config->getProxyDir());
+        self::assertEquals('DoctrineProxies', $config->getProxyNamespace());
+        self::assertInstanceOf(AttributeDriver::class, $config->getMetadataDriverImpl());
     }
 
     public function testXMLConfiguration(): void
