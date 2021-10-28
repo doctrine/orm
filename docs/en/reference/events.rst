@@ -299,107 +299,89 @@ specific to a particular entity class's lifecycle.
 
     Note that Licecycle Callbacks are not supported for Embeddables.
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
+    .. code-block:: php
 
-    /** @Entity @HasLifecycleCallbacks */
-    class User
-    {
-        // ...
+        <?php
 
-        /**
-         * @Column(type="string", length=255)
-         */
-        public $value;
-
-        /** @Column(name="created_at", type="string", length=255) */
-        private $createdAt;
-
-        /** @PrePersist */
-        public function doStuffOnPrePersist()
+        /** @Entity @HasLifecycleCallbacks */
+        class User
         {
-            $this->createdAt = date('Y-m-d H:i:s');
-        }
+            // ...
 
-        /** @PrePersist */
-        public function doOtherStuffOnPrePersist()
-        {
-            $this->value = 'changed from prePersist callback!';
-        }
+            /**
+             * @Column(type="string", length=255)
+             */
+            public $value;
 
-        /** @PostPersist */
-        public function doStuffOnPostPersist()
-        {
-            $this->value = 'changed from postPersist callback!';
-        }
+            /** @Column(name="created_at", type="string", length=255) */
+            private $createdAt;
 
-        /** @PostLoad */
-        public function doStuffOnPostLoad()
-        {
-            $this->value = 'changed from postLoad callback!';
-        }
+            /** @PrePersist */
+            public function doStuffOnPrePersist()
+            {
+                $this->createdAt = date('Y-m-d H:i:s');
+            }
 
-        /** @PreUpdate */
-        public function doStuffOnPreUpdate()
-        {
-            $this->value = 'changed from preUpdate callback!';
+            /** @PrePersist */
+            public function doOtherStuffOnPrePersist()
+            {
+                $this->value = 'changed from prePersist callback!';
+            }
+
+            /** @PostPersist */
+            public function doStuffOnPostPersist()
+            {
+                $this->value = 'changed from postPersist callback!';
+            }
+
+            /** @PostLoad */
+            public function doStuffOnPostLoad()
+            {
+                $this->value = 'changed from postLoad callback!';
+            }
+
+            /** @PreUpdate */
+            public function doStuffOnPreUpdate()
+            {
+                $this->value = 'changed from preUpdate callback!';
+            }
         }
-    }
+    .. code-block:: xml
+
+        <?xml version="1.0" encoding="UTF-8"?>
+
+        <doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+              xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+                                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+            <entity name="User">
+
+                <lifecycle-callbacks>
+                    <lifecycle-callback type="prePersist" method="doStuffOnPrePersist"/>
+                    <lifecycle-callback type="postPersist" method="doStuffOnPostPersist"/>
+                </lifecycle-callbacks>
+
+            </entity>
+
+        </doctrine-mapping>
+    .. code-block:: yaml
+
+        User:
+          type: entity
+          fields:
+        # ...
+            name:
+              type: string(50)
+          lifecycleCallbacks:
+            prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersist ]
+            postPersist: [ doStuffOnPostPersist ]
 
 Note that the methods set as lifecycle callbacks need to be public and,
 when using these annotations, you have to apply the
 ``@HasLifecycleCallbacks`` marker annotation on the entity class.
-
-If you want to register lifecycle callbacks from YAML or XML you
-can do it with the following.
-
-.. code-block:: yaml
-
-    User:
-      type: entity
-      fields:
-    # ...
-        name:
-          type: string(50)
-      lifecycleCallbacks:
-        prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersist ]
-        postPersist: [ doStuffOnPostPersist ]
-
-In YAML the ``key`` of the lifecycleCallbacks entry is the event that you
-are triggering on and the value is the method (or methods) to call. The allowed
-event types are the ones listed in the previous Lifecycle Events section.
-
-XML would look something like this:
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="UTF-8"?>
-
-    <doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
-          xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
-                              https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-
-        <entity name="User">
-
-            <lifecycle-callbacks>
-                <lifecycle-callback type="prePersist" method="doStuffOnPrePersist"/>
-                <lifecycle-callback type="postPersist" method="doStuffOnPostPersist"/>
-            </lifecycle-callbacks>
-
-        </entity>
-
-    </doctrine-mapping>
-
-In XML the ``type`` of the lifecycle-callback entry is the event that you
-are triggering on and the ``method`` is the method to call. The allowed event
-types are the ones listed in the previous Lifecycle Events section.
-
-When using YAML or XML you need to remember to create public methods to match the
-callback names you defined. E.g. in these examples ``doStuffOnPrePersist()``,
-``doOtherStuffOnPrePersist()`` and ``doStuffOnPostPersist()`` methods need to be
-defined on your ``User`` model.
 
 .. code-block:: php
 
