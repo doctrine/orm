@@ -127,9 +127,10 @@ Registering Events
 There are two ways to register an event:
 
 * *All events* can be registered by calling ``$eventManager->addEventListener()``
-or ``eventManager->addEventSubscriber()``, see :ref:`listening-and-subscribing-to-lifecycle-events`
+or ``eventManager->addEventSubscriber()``, see
+:ref:`Listening and subscribing to Lifecycle Events<listening-and-subscribing-to-lifecycle-events>`
 * *Lifecycle Callbacks* can also be registered in the entity mapping (annotation, attribute, etc.), 
-see :ref:`lifecycle-callbacks`
+see :ref:`Lifecycle Callbacks<lifecycle-callbacks>`
 
 Events Overview
 ---------------
@@ -462,7 +463,7 @@ behaviors across different entity classes.
 
 Note that they require much more detailed knowledge about the inner
 workings of the ``EntityManager`` and ``UnitOfWork`` classes. Please
-read the :ref:`reference-events-implementing-listeners` section
+read the :ref:`Implementing Event Listeners<reference-events-implementing-listeners>` section
 carefully if you are trying to write your own listener.
 
 For event subscribers, there are no surprises. They declare the
