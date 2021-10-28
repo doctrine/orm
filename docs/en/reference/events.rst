@@ -297,7 +297,7 @@ specific to a particular entity class's lifecycle.
 
 .. note::
 
-    Note that Licecycle Callbacks are not supported for :doc:`Embeddables</tutorials/embeddables>`.
+    Lifecycle Callbacks are not supported for :doc:`Embeddables</tutorials/embeddables>`.
 
 .. code-block:: php
 
