@@ -1334,7 +1334,7 @@ call this script as follows:
     php create_bug.php 1 1 1
 
 See how simple it is to relate a Bug, Reporter, Engineer and Products?
-Also recall that thanks to the UnitOfWork pattern, Doctrine will detect
+Also recall that thanks to the :ref:`UnitOfWork pattern<unit-of-work>`, Doctrine will detect
 these relations and update all of the modified entities in the database
 automatically when ``flush()`` is called.
 
