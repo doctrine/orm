@@ -115,7 +115,7 @@ Add the following directories:
     It is strongly recommended to switch to one of the other mappings.
 .. note::
     It is strongly recommended that you require ``doctrine/dbal`` in your
-    composer.json as well, because using the ORM means mapping objects
+    ``composer.json`` as well, because using the ORM means mapping objects
     and their fields to database tables and their columns, and that
     requires mentioning so-called types that are defined in ``doctrine/dbal``
     in your application. Having an explicit requirement means you control
