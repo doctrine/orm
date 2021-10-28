@@ -383,32 +383,6 @@ Note that the methods set as lifecycle callbacks need to be public and,
 when using these annotations, you have to apply the
 ``@HasLifecycleCallbacks`` marker annotation on the entity class.
 
-.. code-block:: php
-
-    <?php
-    // ...
-
-    class User
-    {
-        // ...
-
-        public function doStuffOnPrePersist()
-        {
-            // ...
-        }
-
-        public function doOtherStuffOnPrePersist()
-        {
-            // ...
-        }
-
-        public function doStuffOnPostPersist()
-        {
-            // ...
-        }
-    }
-
-
 Lifecycle Callbacks Event Argument
 ----------------------------------
 
