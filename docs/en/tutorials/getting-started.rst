@@ -117,7 +117,7 @@ Add the following directories:
     It is strongly recommended that you require doctrine/dbal in your
     composer.json as well, because using the ORM means mapping objects
     and their fields to database tables and their columns, and that
-    requires mentioning so-called types that are defined in doctrine/dbal
+    requires mentioning so-called types that are defined in ``doctrine/dbal``
     in your application. Having an explicit requirement means you control
     when the upgrade to the next major version happens, so that you can
     do the necessary changes in your application beforehand.
