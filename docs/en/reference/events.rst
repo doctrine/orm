@@ -254,15 +254,6 @@ events during the life-time of their registered entities.
     cascade remove relations. In this case, you should load yourself the proxy in
     the associated pre event.
 
-You can access the Event constants from the ``Events`` class in the
-ORM package.
-
-.. code-block:: php
-
-    <?php
-    use Doctrine\ORM\Events;
-    echo Events::preUpdate;
-
 These can be hooked into by two different types of event
 listeners:
 
@@ -531,8 +522,10 @@ EventManager that is passed to the EntityManager factory:
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Events;
+
     $eventManager = new EventManager();
-    $eventManager->addEventListener(array(Events::preUpdate), new MyEventListener());
+    $eventManager->addEventListener([Events::preUpdate], new MyEventListener());
     $eventManager->addEventSubscriber(new MyEventSubscriber());
 
     $entityManager = EntityManager::create($dbOpts, $config, $eventManager);
@@ -543,7 +536,9 @@ EntityManager was created:
 .. code-block:: php
 
     <?php
-    $entityManager->getEventManager()->addEventListener(array(Events::preUpdate), new MyEventListener());
+    use Doctrine\ORM\Events;
+
+    $entityManager->getEventManager()->addEventListener([Events::preUpdate], new MyEventListener());
     $entityManager->getEventManager()->addEventSubscriber(new MyEventSubscriber());
 
 .. _reference-events-implementing-listeners:
