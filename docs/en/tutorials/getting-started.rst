@@ -81,7 +81,8 @@ that directory with the following contents:
 
     {
         "require": {
-            "doctrine/orm": "^2.6.2",
+            "doctrine/orm": "^2.10.2",
+            "doctrine/dbal": "^3.1.1",
             "symfony/yaml": "2.*",
             "symfony/cache": "^5.3"
         },
@@ -112,6 +113,14 @@ Add the following directories:
 .. note::
     The YAML driver is deprecated and will be removed in version 3.0.
     It is strongly recommended to switch to one of the other mappings.
+.. note::
+    It is strongly recommended that you require ``doctrine/dbal`` in your
+    ``composer.json`` as well, because using the ORM means mapping objects
+    and their fields to database tables and their columns, and that
+    requires mentioning so-called types that are defined in ``doctrine/dbal``
+    in your application. Having an explicit requirement means you control
+    when the upgrade to the next major version happens, so that you can
+    do the necessary changes in your application beforehand.
 
 Obtaining the EntityManager
 ---------------------------
