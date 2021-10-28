@@ -121,15 +121,16 @@ Now you can test the ``$eventSubscriber`` instance to see if the
         echo 'pre foo invoked!';
     }
 
-Registering Events
-~~~~~~~~~~~~~~~~~~
+Registering Event Handlers
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are two ways to register an event:
+There are two ways to set up an event handler:
 
-* *All events* can be registered by calling ``$eventManager->addEventListener()``
-or ``eventManager->addEventSubscriber()``, see :ref:`listening-and-subscribing-to-lifecycle-events`
-* *Lifecycle Callbacks* can also be registered in the entity mapping (annotation, attribute, etc.), 
-see :ref:`lifecycle-callbacks`
+* For *all events* you can create a Lifecycle Event Listener or Subscriber class and register
+it by calling ``$eventManager->addEventListener()`` or ``eventManager->addEventSubscriber()``,
+see :ref:`listening-and-subscribing-to-lifecycle-events`. These are more powerful than lifecycle callbacks.
+* For *some events* (see table below), you can create a *Lifecycle Callback* method in the
+entity, see :ref:`lifecycle-callbacks`.
 
 Events Overview
 ---------------
@@ -262,18 +263,6 @@ ORM package.
     <?php
     use Doctrine\ORM\Events;
     echo Events::preUpdate;
-
-These can be hooked into by two different types of event
-listeners:
-
--  Lifecycle Callbacks are methods on the entity classes that are
-   called when the event is triggered. They receive some kind
-   of ``EventArgs`` instance.
--  Lifecycle Event Listeners and Subscribers are classes with specific callback
-   methods that receives some kind of ``EventArgs`` instance.
-
-The ``EventArgs`` instance received by the listener gives access to the entity,
-``EntityManager`` instance and other relevant data.
 
 .. note::
 
