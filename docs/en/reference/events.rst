@@ -305,7 +305,10 @@ specific to a particular entity class's lifecycle.
 
         <?php
 
-        /** @Entity @HasLifecycleCallbacks */
+        /**
+         * @Entity
+         * @HasLifecycleCallbacks // Not needed for XML and YAML mapping
+         */
         class User
         {
             // ...
@@ -314,9 +317,6 @@ specific to a particular entity class's lifecycle.
              * @Column(type="string", length=255)
              */
             public $value;
-
-            /** @Column(name="created_at", type="string", length=255) */
-            private $createdAt;
 
             /** @PrePersist */
             public function doStuffOnPrePersist()
@@ -330,22 +330,10 @@ specific to a particular entity class's lifecycle.
                 $this->value = 'changed from prePersist callback!';
             }
 
-            /** @PostPersist */
-            public function doStuffOnPostPersist()
-            {
-                $this->value = 'changed from postPersist callback!';
-            }
-
             /** @PostLoad */
             public function doStuffOnPostLoad()
             {
                 $this->value = 'changed from postLoad callback!';
-            }
-
-            /** @PreUpdate */
-            public function doStuffOnPreUpdate()
-            {
-                $this->value = 'changed from preUpdate callback!';
             }
         }
     .. code-block:: xml
@@ -361,7 +349,8 @@ specific to a particular entity class's lifecycle.
 
                 <lifecycle-callbacks>
                     <lifecycle-callback type="prePersist" method="doStuffOnPrePersist"/>
-                    <lifecycle-callback type="postPersist" method="doStuffOnPostPersist"/>
+                    <lifecycle-callback type="prePersist" method="doOtherStuffOnPrePersist"/>
+                    <lifecycle-callback type="postLoad" method="doStuffOnPostLoad"/>
                 </lifecycle-callbacks>
 
             </entity>
@@ -372,16 +361,12 @@ specific to a particular entity class's lifecycle.
         User:
           type: entity
           fields:
-        # ...
-            name:
-              type: string(50)
+            # ...
+            value:
+              type: string(255)
           lifecycleCallbacks:
             prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersist ]
-            postPersist: [ doStuffOnPostPersist ]
-
-Note that the methods set as lifecycle callbacks need to be public and,
-when using these annotations, you have to apply the
-``@HasLifecycleCallbacks`` marker annotation on the entity class.
+            postLoad: [ doStuffOnPostLoad ]
 
 Lifecycle Callbacks Event Argument
 ----------------------------------
