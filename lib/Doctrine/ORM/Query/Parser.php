@@ -3625,6 +3625,8 @@ class Parser
     }
 
     /**
+     * Gets the lookahead type used by the parser.
+     *
      * @return int
      */
     protected function getLookaheadType()
