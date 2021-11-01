@@ -3635,6 +3635,8 @@ class Parser
     }
 
     /**
+     * Gets the lookahead value used by the parser.
+     *
      * @return string
      */
     protected function getLookaheadValue()
