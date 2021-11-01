@@ -16,10 +16,6 @@ It is now deprecated to rely on:
 - `Doctrine\ORM\Mapping\ClassMetadata::$tableGeneratorDefinition`;
 - or `Doctrine\ORM\Mapping\ClassMetadata::isIdGeneratorTable()`.
 
-## BC Break: Removed possibility to extend the doctrine mapping xml schema with anything
-
-If you want to extend it now you have to provide your own validation schema.
-
 ## New method `Doctrine\ORM\EntityManagerInterface#wrapInTransaction($func)`
 
 Works the same as `Doctrine\ORM\EntityManagerInterface#transactional()` but returns any value returned from `$func` closure rather than just _non-empty value returned from the closure or true_.
