@@ -128,7 +128,7 @@ There are two ways to set up an event handler:
 
 * For *all events* you can create a Lifecycle Event Listener or Subscriber class and register
 it by calling ``$eventManager->addEventListener()`` or ``eventManager->addEventSubscriber()``,
-see :ref:`listening-and-subscribing-to-lifecycle-events`. These are more powerful than lifecycle callbacks.
+see :ref:`listening-and-subscribing-to-lifecycle-events`.
 * For *some events* (see table below), you can create a *Lifecycle Callback* method in the
 entity, see :ref:`lifecycle-callbacks`.
 
