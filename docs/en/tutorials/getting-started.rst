@@ -642,7 +642,7 @@ Let's continue by creating a script to display the name of a product based on it
     echo sprintf("-%s\n", $product->getName());
 
 Next we'll update a product's name, given its id. This simple example will
-help demonstrate Doctrine's implementation of the UnitOfWork pattern. Doctrine
+help demonstrate Doctrine's implementation of the :ref:`UnitOfWork pattern <unit-of-work>`. Doctrine
 keeps track of all the entities that were retrieved from the Entity Manager,
 and can detect when any of those entities' properties have been modified.
 As a result, rather than needing to call ``persist($entity)`` for each individual
@@ -1334,7 +1334,7 @@ call this script as follows:
     php create_bug.php 1 1 1
 
 See how simple it is to relate a Bug, Reporter, Engineer and Products?
-Also recall that thanks to the UnitOfWork pattern, Doctrine will detect
+Also recall that thanks to the :ref:`UnitOfWork pattern <unit-of-work>`, Doctrine will detect
 these relations and update all of the modified entities in the database
 automatically when ``flush()`` is called.
 
