@@ -1253,7 +1253,8 @@ abstract class AbstractQuery
      * Will return the configured id if it exists otherwise a hash will be
      * automatically generated for you.
      *
-     * @return array<string, string> ($key, $hash)
+     * @return string[] ($key, $hash)
+     * @psalm-return array{string, string} ($key, $hash)
      */
     protected function getHydrationCacheId()
     {

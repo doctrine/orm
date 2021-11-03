@@ -21,7 +21,7 @@ parameters:
         	message: '/^Call to an undefined method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getSQLResultCasing\(\)\.$/'
         	path: lib/Doctrine/ORM/Internal/SQLResultCasing.php
         -
-        	message: '/^Parameter \$stmt of method .* has invalid typehint type Doctrine\\DBAL\\Driver\\ResultStatement\.$/'
+        	message: '/^Parameter \$stmt of method .* has invalid type Doctrine\\DBAL\\Driver\\ResultStatement\.$/'
         	path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
         -
         	message: '/^Class Doctrine\\DBAL\\Driver\\ResultStatement not found\.$/'

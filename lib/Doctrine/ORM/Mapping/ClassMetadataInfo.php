@@ -442,6 +442,7 @@ class ClassMetadataInfo implements ClassMetadata
      *      originalField?: string,
      *      quoted?: bool,
      *      requireSQLConversion?: bool,
+     *      declared?: class-string,
      *      declaredField?: string,
      *      options: array<mixed>
      * }>
@@ -509,7 +510,14 @@ class ClassMetadataInfo implements ClassMetadata
      * uniqueConstraints => array
      *
      * @var mixed[]
-     * @psalm-var array{name: string, schema: string, indexes: array, uniqueConstraints: array}
+     * @psalm-var array{
+     *               name: string,
+     *               schema: string,
+     *               indexes: array,
+     *               uniqueConstraints: array,
+     *               options: array<string, mixed>,
+     *               quoted?: bool
+     *           }
      */
     public $table;
 
@@ -665,7 +673,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var ReflectionClass
+     * @var ReflectionClass|null
      */
     public $reflClass;
 
