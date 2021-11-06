@@ -1276,21 +1276,32 @@ You can use the ``getSingleScalarResult()`` shortcut as well:
 Scalar Column Hydration
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-If you have a query which returns a one-dimensional array of scalar values
-you can use scalar column hydration:
+If your query returns just **one column**, the result looks something like this:
+
+.. code-block:: php
+
+    [
+        ['id' => 5],
+        ['id' => 12],
+        ['id' => 23],
+    ]
+
+In this case, you can use scalar column hydration to "flatten" it into a
+one-dimensional array like this:
+
+.. code-block:: php
+
+    [5, 12, 23]
 
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT a.id FROM CmsUser u');
-    $ids = $query->getResult(Query::HYDRATE_SCALAR_COLUMN);
+    use Doctrine\ORM\AbstractQuery;
 
-You can use the ``getSingleColumnResult()`` shortcut as well:
-
-.. code-block:: php
-
-    <?php
+    $query = $entityManager->createQuery('SELECT u.id FROM User u');
     $ids = $query->getSingleColumnResult();
+    // Same as:
+    $ids = $query->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
 
 Custom Hydration Modes
 ^^^^^^^^^^^^^^^^^^^^^^
