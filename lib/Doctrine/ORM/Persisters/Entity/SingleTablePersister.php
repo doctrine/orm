@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 use function array_flip;
+use function assert;
 use function implode;
 
 /**
@@ -44,16 +45,19 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         $rootClass  = $this->em->getClassMetadata($this->class->rootEntityName);
         $tableAlias = $this->getSQLTableAlias($rootClass->name);
 
+        $discrColumn = $this->class->discriminatorColumn;
+        assert($discrColumn !== null);
+
          // Append discriminator column
-        $discrColumn     = $this->class->discriminatorColumn['name'];
-        $discrColumnType = $this->class->discriminatorColumn['type'];
+        $discrColumnName = $discrColumn['name'];
+        $discrColumnType = $discrColumn['type'];
 
-        $columnList[] = $tableAlias . '.' . $discrColumn;
+        $columnList[] = $tableAlias . '.' . $discrColumnName;
 
-        $resultColumnName = $this->getSQLResultCasing($this->platform, $discrColumn);
+        $resultColumnName = $this->getSQLResultCasing($this->platform, $discrColumnName);
 
         $this->currentPersisterContext->rsm->setDiscriminatorColumn('r', $resultColumnName);
-        $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumn, false, $discrColumnType);
+        $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumnName, false, $discrColumnType);
 
         // Append subclass columns
         foreach ($this->class->subClasses as $subClassName) {
@@ -99,8 +103,11 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     {
         $columns = parent::getInsertColumnList();
 
+        $discrColumn = $this->class->discriminatorColumn;
+        assert($discrColumn !== null);
+
         // Add discriminator column to the INSERT SQL
-        $columns[] = $this->class->discriminatorColumn['name'];
+        $columns[] = $discrColumn['name'];
 
         return $columns;
     }
@@ -158,11 +165,14 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             $values[] = $this->conn->quote($discrValues[$subclassName]);
         }
 
+        $discrColumn = $this->class->discriminatorColumn;
+        assert($discrColumn !== null);
+        $discColumnName = $discrColumn['name'];
+
         $values     = implode(', ', $values);
-        $discColumn = $this->class->discriminatorColumn['name'];
         $tableAlias = $this->getSQLTableAlias($this->class->name);
 
-        return $tableAlias . '.' . $discColumn . ' IN (' . $values . ')';
+        return $tableAlias . '.' . $discColumnName . ' IN (' . $values . ')';
     }
 
     /**
