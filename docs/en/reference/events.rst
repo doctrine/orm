@@ -293,21 +293,52 @@ specific to a particular entity class's lifecycle.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
 
         /**
-         * @Entity
-         * @HasLifecycleCallbacks // Not needed for XML and YAML mapping
+         * #[Entity]
+         * #[HasLifecycleCallbacks]
          */
         class User
         {
             // ...
 
-            /**
-             * @Column(type="string", length=255)
-             */
+            #[Column(type: 'string', length: 255)]
+            public $value;
+
+            #[PrePersist]
+            public function doStuffOnPrePersist()
+            {
+                $this->createdAt = date('Y-m-d H:i:s');
+            }
+
+            #[PrePersist]
+            public function doOtherStuffOnPrePersist()
+            {
+                $this->value = 'changed from prePersist callback!';
+            }
+
+            #[PostLoad]
+            public function doStuffOnPostLoad()
+            {
+                $this->value = 'changed from postLoad callback!';
+            }
+        }
+    .. code-block:: annotation
+
+        <?php
+
+        /**
+         * @Entity
+         * @HasLifecycleCallbacks
+         */
+        class User
+        {
+            // ...
+
+            /** @Column(type="string", length=255) */
             public $value;
 
             /** @PrePersist */
@@ -336,17 +367,14 @@ specific to a particular entity class's lifecycle.
               xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
                                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-
             <entity name="User">
-
+                <!-- ... -->
                 <lifecycle-callbacks>
                     <lifecycle-callback type="prePersist" method="doStuffOnPrePersist"/>
                     <lifecycle-callback type="prePersist" method="doOtherStuffOnPrePersist"/>
                     <lifecycle-callback type="postLoad" method="doStuffOnPostLoad"/>
                 </lifecycle-callbacks>
-
             </entity>
-
         </doctrine-mapping>
     .. code-block:: yaml
 
