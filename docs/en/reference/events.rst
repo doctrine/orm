@@ -135,38 +135,38 @@ see :ref:`Lifecycle Callbacks<lifecycle-callbacks>`
 Events Overview
 ---------------
 
-+-----------------------------------------------------------------+-----------------------+-----------+
-| Event                                                           | Dispatched by         | Lifecycle |
-|                                                                 |                       | Callback  |
-+=================================================================+=======================+===========+
-| :ref:`preRemove<reference-events-pre-remove>`                   | ``$em->remove()``     | Yes       |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`postRemove<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`prePersist<reference-events-pre-persist>`                 | ``$em->persist()``    | Yes       |
-|                                                                 | on *initial* persist  |           |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`postPersist<reference-events-post-update-remove-persist>` | ``$em->flush()``      | Yes       |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`preUpdate<reference-events-pre-update>`                   | ``$em->flush()``      | Yes       |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`postUpdate<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`postLoad<reference-events-post-load>`                     | Loading from database | Yes       |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`loadClassMetadata<reference-events-load-class-metadata>`  | Loading of mapping    | No        |
-|                                                                 | metadata              |           |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| ``onClassMetadataNotFound``                                     | ``MappingException``  | No        |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`preFlush<reference-events-pre-flush>`                     | ``$em->flush()``      | Yes       |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`onFlush<reference-events-on-flush>`                       | ``$em->flush()``      | No        |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`postFlush<reference-events-post-flush>`                   | ``$em->flush()``      | No        |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| ``onClear``                                                     | ``$em->clear()``      | No        |
-+-----------------------------------------------------------------+-----------------------+-----------+
++-----------------------------------------------------------------+-----------------------+-----------+------------------------+
+| Event                                                           | Dispatched by         | Lifecycle | Passed                 |
+|                                                                 |                       | Callback  | Argument               |
++=================================================================+=======================+===========+========================+
+| :ref:`preRemove<reference-events-pre-remove>`                   | ``$em->remove()``     | Yes       |                        |
++-----------------------------------------------------------------+-----------------------+-----------+------------------------+
+| :ref:`postRemove<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       |                        |
++-----------------------------------------------------------------+-----------------------+-----------+------------------------+
+| :ref:`prePersist<reference-events-pre-persist>`                 | ``$em->persist()``    | Yes       | `_LifecycleEventArgs`_ |
+|                                                                 | on *initial* persist  |           |                        |
++-----------------------------------------------------------------+-----------------------+-----------+------------------------+
+| :ref:`postPersist<reference-events-post-update-remove-persist>` | ``$em->flush()``      | Yes       |                        |
++-----------------------------------------------------------------+-----------------------+-----------+------------------------+
+| :ref:`preUpdate<reference-events-pre-update>`                   | ``$em->flush()``      | Yes       |                        |
++-----------------------------------------------------------------+-----------------------+-----------+------------------------+
+| :ref:`postUpdate<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       |                        |
++-----------------------------------------------------------------+-----------------------+-----------+------------------------+
+| :ref:`postLoad<reference-events-post-load>`                     | Loading from database | Yes       |                        |
++-----------------------------------------------------------------+-----------------------+-----------+------------------------+
+| :ref:`loadClassMetadata<reference-events-load-class-metadata>`  | Loading of mapping    | No        |                        |
+|                                                                 | metadata              |           |                        |
++-----------------------------------------------------------------+-----------------------+-----------+------------------------+
+| ``onClassMetadataNotFound``                                     | ``MappingException``  | No        |                        |
++-----------------------------------------------------------------+-----------------------+-----------+------------------------+
+| :ref:`preFlush<reference-events-pre-flush>`                     | ``$em->flush()``      | Yes       |                        |
++-----------------------------------------------------------------+-----------------------+-----------+------------------------+
+| :ref:`onFlush<reference-events-on-flush>`                       | ``$em->flush()``      | No        |                        |
++-----------------------------------------------------------------+-----------------------+-----------+------------------------+
+| :ref:`postFlush<reference-events-post-flush>`                   | ``$em->flush()``      | No        |                        |
++-----------------------------------------------------------------+-----------------------+-----------+------------------------+
+| ``onClear``                                                     | ``$em->clear()``      | No        |                        |
++-----------------------------------------------------------------+-----------------------+-----------+------------------------+
 
 Naming convention
 ~~~~~~~~~~~~~~~~~
@@ -296,6 +296,8 @@ specific to a particular entity class's lifecycle.
     .. code-block:: attribute
 
         <?php
+        
+        use Doctrine\Persistence\Event\LifecycleEventArgs;
 
         /**
          * #[Entity]
@@ -309,7 +311,7 @@ specific to a particular entity class's lifecycle.
             public $value;
 
             #[PrePersist]
-            public function doStuffOnPrePersist()
+            public function doStuffOnPrePersist(LifecycleEventArgs $eventArgs)
             {
                 $this->createdAt = date('Y-m-d H:i:s');
             }
@@ -320,15 +322,17 @@ specific to a particular entity class's lifecycle.
                 $this->value = 'changed from prePersist callback!';
             }
 
-            #[PostLoad]
-            public function doStuffOnPostLoad()
+            #[PreUpdate]
+            public function doStuffOnPreUpdate(PreUpdateEventArgs $eventArgs)
             {
-                $this->value = 'changed from postLoad callback!';
+                $this->value = 'changed from preUpdate callback!';
             }
         }
     .. code-block:: annotation
 
         <?php
+        
+        use Doctrine\Persistence\Event\LifecycleEventArgs;
 
         /**
          * @Entity
@@ -342,7 +346,7 @@ specific to a particular entity class's lifecycle.
             public $value;
 
             /** @PrePersist */
-            public function doStuffOnPrePersist()
+            public function doStuffOnPrePersist(LifecycleEventArgs $eventArgs)
             {
                 $this->createdAt = date('Y-m-d H:i:s');
             }
@@ -353,10 +357,10 @@ specific to a particular entity class's lifecycle.
                 $this->value = 'changed from prePersist callback!';
             }
 
-            /** @PostLoad */
-            public function doStuffOnPostLoad()
+            /** @PreUpdate */
+            public function doStuffOnPreUpdate(PreUpdateEventArgs $eventArgs)
             {
-                $this->value = 'changed from postLoad callback!';
+                $this->value = 'changed from preUpdate callback!';
             }
         }
     .. code-block:: xml
@@ -372,7 +376,7 @@ specific to a particular entity class's lifecycle.
                 <lifecycle-callbacks>
                     <lifecycle-callback type="prePersist" method="doStuffOnPrePersist"/>
                     <lifecycle-callback type="prePersist" method="doOtherStuffOnPrePersist"/>
-                    <lifecycle-callback type="postLoad" method="doStuffOnPostLoad"/>
+                    <lifecycle-callback type="preUpdate" method="doStuffOnPreUpdate"/>
                 </lifecycle-callbacks>
             </entity>
         </doctrine-mapping>
@@ -386,7 +390,7 @@ specific to a particular entity class's lifecycle.
               type: string(255)
           lifecycleCallbacks:
             prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersist ]
-            postLoad: [ doStuffOnPostLoad ]
+            preUpdate: [ doStuffOnPreUpdate ]
 
 Lifecycle Callbacks Event Argument
 ----------------------------------
@@ -1073,3 +1077,5 @@ and the EntityManager.
             $em = $eventArgs->getEntityManager();
         }
     }
+
+.. _LifecycleEventArgs: https://github.com/doctrine/persistence/blob/2.2.x/lib/Doctrine/Persistence/Event/LifecycleEventArgs.php
