@@ -44,16 +44,17 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         $rootClass  = $this->em->getClassMetadata($this->class->rootEntityName);
         $tableAlias = $this->getSQLTableAlias($rootClass->name);
 
-         // Append discriminator column
-        $discrColumn     = $this->class->discriminatorColumn['name'];
-        $discrColumnType = $this->class->discriminatorColumn['type'];
+        // Append discriminator column
+        $discrColumn     = $this->class->getDiscriminatorColumn();
+        $discrColumnName = $discrColumn['name'];
+        $discrColumnType = $discrColumn['type'];
 
-        $columnList[] = $tableAlias . '.' . $discrColumn;
+        $columnList[] = $tableAlias . '.' . $discrColumnName;
 
-        $resultColumnName = $this->getSQLResultCasing($this->platform, $discrColumn);
+        $resultColumnName = $this->getSQLResultCasing($this->platform, $discrColumnName);
 
         $this->currentPersisterContext->rsm->setDiscriminatorColumn('r', $resultColumnName);
-        $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumn, false, $discrColumnType);
+        $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumnName, false, $discrColumnType);
 
         // Append subclass columns
         foreach ($this->class->subClasses as $subClassName) {
@@ -100,7 +101,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         $columns = parent::getInsertColumnList();
 
         // Add discriminator column to the INSERT SQL
-        $columns[] = $this->class->discriminatorColumn['name'];
+        $columns[] = $this->class->getDiscriminatorColumn()['name'];
 
         return $columns;
     }
@@ -158,11 +159,12 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             $values[] = $this->conn->quote($discrValues[$subclassName]);
         }
 
+        $discColumnName = $this->class->getDiscriminatorColumn()['name'];
+
         $values     = implode(', ', $values);
-        $discColumn = $this->class->discriminatorColumn['name'];
         $tableAlias = $this->getSQLTableAlias($this->class->name);
 
-        return $tableAlias . '.' . $discColumn . ' IN (' . $values . ')';
+        return $tableAlias . '.' . $discColumnName . ' IN (' . $values . ')';
     }
 
     /**

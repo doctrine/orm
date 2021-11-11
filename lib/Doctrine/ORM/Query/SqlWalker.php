@@ -465,7 +465,7 @@ class SqlWalker implements TreeWalker
                 ? $this->getSQLTableAlias($class->getTableName(), $dqlAlias) . '.'
                 : '';
 
-            $sqlParts[] = $sqlTableAlias . $class->discriminatorColumn['name'] . ' IN (' . implode(', ', $values) . ')';
+            $sqlParts[] = $sqlTableAlias . $class->getDiscriminatorColumn()['name'] . ' IN (' . implode(', ', $values) . ')';
         }
 
         $sql = implode(' AND ', $sqlParts);
@@ -739,7 +739,7 @@ class SqlWalker implements TreeWalker
                 // Add discriminator columns to SQL
                 $rootClass   = $this->em->getClassMetadata($class->rootEntityName);
                 $tblAlias    = $this->getSQLTableAlias($rootClass->getTableName(), $dqlAlias);
-                $discrColumn = $rootClass->discriminatorColumn;
+                $discrColumn = $rootClass->getDiscriminatorColumn();
                 $columnAlias = $this->getSQLColumnAlias($discrColumn['name']);
 
                 $sqlSelectExpressions[] = $tblAlias . '.' . $discrColumn['name'] . ' AS ' . $columnAlias;
@@ -2091,7 +2091,7 @@ class SqlWalker implements TreeWalker
             $sql .= $this->getSQLTableAlias($discrClass->getTableName(), $dqlAlias) . '.';
         }
 
-        $sql .= $class->discriminatorColumn['name'] . ($instanceOfExpr->not ? ' NOT IN ' : ' IN ');
+        $sql .= $class->getDiscriminatorColumn()['name'] . ($instanceOfExpr->not ? ' NOT IN ' : ' IN ');
         $sql .= $this->getChildDiscriminatorsFromClassMetadata($discrClass, $instanceOfExpr);
 
         return $sql;
