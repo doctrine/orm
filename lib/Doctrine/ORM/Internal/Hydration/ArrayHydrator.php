@@ -113,6 +113,7 @@ class ArrayHydrator extends AbstractHydrator
 
                     if (! isset($baseElement[$relationAlias])) {
                         $baseElement[$relationAlias] = [];
+                        $this->_identifierMap[$path][$id[$parent]] = [];
                     }
 
                     if (isset($nonemptyComponents[$dqlAlias])) {
