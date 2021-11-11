@@ -112,7 +112,7 @@ class ArrayHydrator extends AbstractHydrator
                     $oneToOne = false;
 
                     if (! isset($baseElement[$relationAlias])) {
-                        $baseElement[$relationAlias] = [];
+                        $baseElement[$relationAlias]               = [];
                         $this->_identifierMap[$path][$id[$parent]] = [];
                     }
 
