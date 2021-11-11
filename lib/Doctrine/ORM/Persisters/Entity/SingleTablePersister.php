@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 use function array_flip;
-use function assert;
 use function implode;
 
 /**
@@ -45,10 +44,8 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         $rootClass  = $this->em->getClassMetadata($this->class->rootEntityName);
         $tableAlias = $this->getSQLTableAlias($rootClass->name);
 
-        $discrColumn = $this->class->discriminatorColumn;
-        assert($discrColumn !== null);
-
-         // Append discriminator column
+        // Append discriminator column
+        $discrColumn     = $this->class->getDiscriminatorColumn();
         $discrColumnName = $discrColumn['name'];
         $discrColumnType = $discrColumn['type'];
 
@@ -103,11 +100,8 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     {
         $columns = parent::getInsertColumnList();
 
-        $discrColumn = $this->class->discriminatorColumn;
-        assert($discrColumn !== null);
-
         // Add discriminator column to the INSERT SQL
-        $columns[] = $discrColumn['name'];
+        $columns[] = $this->class->getDiscriminatorColumn()['name'];
 
         return $columns;
     }
@@ -165,9 +159,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             $values[] = $this->conn->quote($discrValues[$subclassName]);
         }
 
-        $discrColumn = $this->class->discriminatorColumn;
-        assert($discrColumn !== null);
-        $discColumnName = $discrColumn['name'];
+        $discColumnName = $this->class->getDiscriminatorColumn()['name'];
 
         $values     = implode(', ', $values);
         $tableAlias = $this->getSQLTableAlias($this->class->name);

@@ -23,7 +23,6 @@ use function array_filter;
 use function array_keys;
 use function array_map;
 use function array_merge;
-use function assert;
 use function count;
 use function implode;
 use function in_array;
@@ -466,10 +465,7 @@ class SqlWalker implements TreeWalker
                 ? $this->getSQLTableAlias($class->getTableName(), $dqlAlias) . '.'
                 : '';
 
-            $discrColumn = $class->discriminatorColumn;
-            assert($discrColumn !== null);
-
-            $sqlParts[] = $sqlTableAlias . $discrColumn['name'] . ' IN (' . implode(', ', $values) . ')';
+            $sqlParts[] = $sqlTableAlias . $class->getDiscriminatorColumn()['name'] . ' IN (' . implode(', ', $values) . ')';
         }
 
         $sql = implode(' AND ', $sqlParts);
@@ -743,8 +739,7 @@ class SqlWalker implements TreeWalker
                 // Add discriminator columns to SQL
                 $rootClass   = $this->em->getClassMetadata($class->rootEntityName);
                 $tblAlias    = $this->getSQLTableAlias($rootClass->getTableName(), $dqlAlias);
-                $discrColumn = $rootClass->discriminatorColumn;
-                assert($discrColumn !== null);
+                $discrColumn = $rootClass->getDiscriminatorColumn();
                 $columnAlias = $this->getSQLColumnAlias($discrColumn['name']);
 
                 $sqlSelectExpressions[] = $tblAlias . '.' . $discrColumn['name'] . ' AS ' . $columnAlias;
@@ -2096,10 +2091,7 @@ class SqlWalker implements TreeWalker
             $sql .= $this->getSQLTableAlias($discrClass->getTableName(), $dqlAlias) . '.';
         }
 
-        $discrColumn = $class->discriminatorColumn;
-        assert($discrColumn !== null);
-
-        $sql .= $discrColumn['name'] . ($instanceOfExpr->not ? ' NOT IN ' : ' IN ');
+        $sql .= $class->getDiscriminatorColumn()['name'] . ($instanceOfExpr->not ? ' NOT IN ' : ' IN ');
         $sql .= $this->getChildDiscriminatorsFromClassMetadata($discrClass, $instanceOfExpr);
 
         return $sql;

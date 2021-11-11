@@ -12,7 +12,6 @@ use RuntimeException;
 
 use function array_keys;
 use function array_search;
-use function assert;
 use function count;
 use function in_array;
 use function key;
@@ -80,8 +79,7 @@ class SimpleObjectHydrator extends AbstractHydrator
 
         // We need to find the correct entity class name if we have inheritance in resultset
         if ($this->class->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
-            $discrColumn = $this->class->discriminatorColumn;
-            assert($discrColumn !== null);
+            $discrColumn     = $this->class->getDiscriminatorColumn();
             $discrColumnName = $this->getSQLResultCasing($this->_platform, $discrColumn['name']);
 
             // Find mapped discriminator column from the result set.

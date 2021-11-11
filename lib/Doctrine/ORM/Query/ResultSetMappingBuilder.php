@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Utility\PersisterHelper;
 use InvalidArgumentException;
 
-use function assert;
 use function explode;
 use function in_array;
 use function sprintf;
@@ -370,10 +369,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
     {
         if (isset($entityMapping['discriminatorColumn']) && $entityMapping['discriminatorColumn']) {
             $discriminatorColumn = $entityMapping['discriminatorColumn'];
-
-            $classMetadataDiscrColumn = $classMetadata->discriminatorColumn;
-            assert($classMetadataDiscrColumn !== null);
-            $discriminatorType = $classMetadataDiscrColumn['type'];
+            $discriminatorType   = $classMetadata->getDiscriminatorColumn()['type'];
 
             $this->setDiscriminatorColumn($alias, $discriminatorColumn);
             $this->addMetaResult($alias, $discriminatorColumn, $discriminatorColumn, false, $discriminatorType);

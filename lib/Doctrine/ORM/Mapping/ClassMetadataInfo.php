@@ -20,6 +20,7 @@ use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use InvalidArgumentException;
+use LogicException;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionProperty;
@@ -3096,6 +3097,18 @@ class ClassMetadataInfo implements ClassMetadata
 
             $this->discriminatorColumn = $columnDef;
         }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    final public function getDiscriminatorColumn(): array
+    {
+        if ($this->discriminatorColumn === null) {
+            throw new LogicException('The discriminator column was not set.');
+        }
+
+        return $this->discriminatorColumn;
     }
 
     /**

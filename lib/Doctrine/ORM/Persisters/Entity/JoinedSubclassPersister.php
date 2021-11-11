@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 use function array_combine;
-use function assert;
 use function implode;
-use function is_array;
 
 /**
  * The joined subclass persister maps a single entity instance to several tables in the
@@ -412,10 +410,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             return $this->currentPersisterContext->selectColumnListSql;
         }
 
-        $discrColumn = $this->class->discriminatorColumn;
-        assert($discrColumn !== null);
-
         $columnList       = [];
+        $discrColumn      = $this->class->getDiscriminatorColumn();
         $discrColumnName  = $discrColumn['name'];
         $discrColumnType  = $discrColumn['type'];
         $baseTableAlias   = $this->getSQLTableAlias($this->class->name);
@@ -544,10 +540,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         // Add discriminator column if it is the topmost class.
         if ($this->class->name === $this->class->rootEntityName) {
-            $discrColumn = $this->class->discriminatorColumn;
-            assert($discrColumn !== null);
-
-            $columns[] = $discrColumn['name'];
+            $columns[] = $this->class->getDiscriminatorColumn()['name'];
         }
 
         return $columns;
