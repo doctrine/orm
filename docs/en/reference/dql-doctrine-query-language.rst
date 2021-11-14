@@ -1286,7 +1286,7 @@ If your query returns **one column**, the result may look like this:
         ['id' => 23],
     ]
 
-In this case, you can use scalar column hydration to "flatten" it into a
+In this case, you can use the scalar column hydration to reduce the result into a
 one-dimensional array like this:
 
 .. code-block:: php
