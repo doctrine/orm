@@ -1179,23 +1179,39 @@ make best use of the different result formats:
 
 The constants for the different hydration modes are:
 
+- :ref:`Object Hydration <object-hydration>`
+- :ref:`Array Hydration <array-hydration>`
+- :ref:`Scalar Hydration <scalar-hydration>`
+- :ref:`Single Scalar Hydration <single-scalar-hydration>`
+- :ref:`Scalar Column Hydration <scalar-column-hydration>`
 
--  ``Query::HYDRATE_OBJECT``
--  ``Query::HYDRATE_ARRAY``
--  ``Query::HYDRATE_SCALAR``
--  ``Query::HYDRATE_SINGLE_SCALAR``
--  ``Query::HYDRATE_SCALAR_COLUMN``
+Besides, you can create your own :ref:`custom hydration mode <custom-hydration>`
+
+.. _object-hydration:
 
 Object Hydration
 ^^^^^^^^^^^^^^^^
 
-Object hydration hydrates the result set into the object graph:
+This is the default hydration mode. The result is transformed into an array of objects (=entities).
 
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT u FROM CmsUser u');
+    use Doctrine\ORM\Query;
+
+    $query = $entityManager->createQuery('SELECT u FROM User u');
+    /** var $users<int, User> */
     $users = $query->getResult(Query::HYDRATE_OBJECT);
+    // same as:
+    $users = $query->getResult();
+
+Result:
+
+.. code-block:: php
+
+    [0] => User
+    [1] => User
+    // ...
 
 Sometimes the behavior in the object hydrator can be confusing, which is
 why we are listing as many of the assumptions here for reference:
@@ -1212,6 +1228,8 @@ why we are listing as many of the assumptions here for reference:
   previous object is still an unloaded proxy.
 
 This list might be incomplete.
+
+.. _array-hydration:
 
 Array Hydration
 ^^^^^^^^^^^^^^^
@@ -1231,6 +1249,8 @@ You can use the ``getArrayResult()`` shortcut as well:
 
     <?php
     $users = $query->getArrayResult();
+
+.. _scalar-hydration:
 
 Scalar Hydration
 ^^^^^^^^^^^^^^^^
@@ -1253,6 +1273,8 @@ Scalar Hydration:
    A query of the kind 'SELECT u.name ..' returns a key 'u_name' in
    the result rows.
 
+.. _single-scalar-hydration:
+
 Single Scalar Hydration
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1272,6 +1294,8 @@ You can use the ``getSingleScalarResult()`` shortcut as well:
 
     <?php
     $numArticles = $query->getSingleScalarResult();
+
+.. _scalar-column-hydration:
 
 Scalar Column Hydration
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -1309,6 +1333,8 @@ or
 
     $query = $entityManager->createQuery('SELECT u.id FROM User u');
     $ids = $query->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
+
+.. _custom-hydration:
 
 Custom Hydration Modes
 ^^^^^^^^^^^^^^^^^^^^^^
