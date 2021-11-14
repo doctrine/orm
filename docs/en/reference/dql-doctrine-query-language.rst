@@ -1276,7 +1276,7 @@ You can use the ``getSingleScalarResult()`` shortcut as well:
 Scalar Column Hydration
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-If your query returns just **one column**, the result looks something like this:
+If your query returns **one column**, the result may look like this:
 
 .. code-block:: php
 
