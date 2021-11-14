@@ -1192,16 +1192,16 @@ Besides, you can create your own :ref:`custom hydration mode <custom-hydration>`
 Object Hydration
 ^^^^^^^^^^^^^^^^
 
-This is the default hydration mode. The result is transformed into an array of objects (=entities).
+This is the default hydration mode. The result is transformed into an **array of objects** (=entities).
 
 .. code-block:: php
 
     <?php
-    use Doctrine\ORM\Query;
+    use Doctrine\ORM\AbstractQuery;
 
     $query = $entityManager->createQuery('SELECT u FROM User u');
     /** var array<int, User> $users */
-    $users = $query->getResult(Query::HYDRATE_OBJECT);
+    $users = $query->getResult(AbstractQuery::HYDRATE_OBJECT);
     // same as:
     $users = $query->getResult();
 
@@ -1235,7 +1235,7 @@ Array Hydration
 
 This is similar to object hydration (see above), but the individual entities
 are represented as associative *arrays* (instead of objects), so what you're getting is
-an array of arrays.
+an **array of arrays**.
 
 * Advantage: It is *much* faster than object hydration.
 * Disadvantage: If you make changes to the entity, you can not persist it back to the database.
@@ -1243,13 +1243,13 @@ an array of arrays.
 .. code-block:: php
 
     <?php
-    use Doctrine\ORM\Query;
+    use Doctrine\ORM\AbstractQuery;
     
     $query = $entityManager->createQuery('SELECT u FROM User u');
     /** @var array<int, array> $users */
     $users = $query->getArrayResult();
     // same as:
-    $users = $query->getResult(Query::HYDRATE_ARRAY);
+    $users = $query->getResult(AbstractQuery::HYDRATE_ARRAY);
 
 Result:
 
@@ -1258,10 +1258,11 @@ Result:
     [0] => [
         'firstName' => 'John',
         'lastName' => 'Dough'
-    ]
+    ],
     [1] => [
         'firstName' => 'Jane',
         'lastName' => 'Doe'
+    ]
 
 .. _scalar-hydration:
 
@@ -1274,10 +1275,10 @@ object graph you can use scalar hydration:
 .. code-block:: php
 
     <?php
-    use Doctrine\ORM\Query;
+    use Doctrine\ORM\AbstractQuery;
 
     $query = $entityManager->createQuery('SELECT u FROM User u');
-    $users = $query->getResult(Query::HYDRATE_SCALAR);
+    $users = $query->getResult(AbstractQuery::HYDRATE_SCALAR);
     echo $users[0]['u_id'];
 
 The following assumptions are made about selected fields using
@@ -1293,22 +1294,24 @@ Scalar Hydration:
 Single Scalar Hydration
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-If you have a query which returns just a single scalar value you can use
-single scalar hydration:
+If your query returns just a **single scalar value**, this is the best hydration mode:
 
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT COUNT(a.id) FROM CmsUser u LEFT JOIN u.articles a WHERE u.username = ?1 GROUP BY u.id');
-    $query->setParameter(1, 'jwage');
-    $numArticles = $query->getResult(Query::HYDRATE_SINGLE_SCALAR);
+    use Doctrine\ORM\AbstractQuery;
+    
+    $query = $entityManager->createQuery('SELECT COUNT(a.id) FROM User u');
+    /** @var int $countUsers */
+    $countUsers = $query->getSingleScalarResult();;
+    // same as:
+    $countUsers = $query->getResult(AbstractQuery::HYDRATE_SINGLE_SCALAR);
 
-You can use the ``getSingleScalarResult()`` shortcut as well:
+Result:
 
 .. code-block:: php
 
-    <?php
-    $numArticles = $query->getSingleScalarResult();
+    2
 
 .. _scalar-column-hydration:
 
@@ -1320,9 +1323,9 @@ If your query returns **one column**, the result may look like this:
 .. code-block:: php
 
     [
-        ['id' => 5],
-        ['id' => 12],
-        ['id' => 23],
+        [0] => ['id' => 5],
+        [1] => ['id' => 12],
+        [2] => ['id' => 23],
     ]
 
 In this case, you can use the scalar column hydration to reduce the result into a
@@ -1335,18 +1338,12 @@ one-dimensional array like this:
 .. code-block:: php
 
     <?php
-
-    $query = $entityManager->createQuery('SELECT u.id FROM User u');
-    $ids = $query->getSingleColumnResult();
-
-or
-
-.. code-block:: php
-
-    <?php
     use Doctrine\ORM\AbstractQuery;
 
     $query = $entityManager->createQuery('SELECT u.id FROM User u');
+    /** @var array<int> $ids */
+    $ids = $query->getSingleColumnResult();
+    // same as:
     $ids = $query->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
 
 .. _custom-hydration:
