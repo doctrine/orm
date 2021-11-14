@@ -1200,7 +1200,7 @@ This is the default hydration mode. The result is transformed into an array of o
     use Doctrine\ORM\Query;
 
     $query = $entityManager->createQuery('SELECT u FROM User u');
-    /** var $users<int, User> */
+    /** var array<int, User> $users */
     $users = $query->getResult(Query::HYDRATE_OBJECT);
     // same as:
     $users = $query->getResult();
@@ -1211,7 +1211,6 @@ Result:
 
     [0] => User
     [1] => User
-    // ...
 
 Sometimes the behavior in the object hydrator can be confusing, which is
 why we are listing as many of the assumptions here for reference:
@@ -1234,21 +1233,35 @@ This list might be incomplete.
 Array Hydration
 ^^^^^^^^^^^^^^^
 
-You can run the same query with array hydration and the result set
-is hydrated into an array that represents the object graph:
+This is similar to object hydration (see above), but the individual entities
+are represented as associative *arrays* (instead of objects), so what you're getting is
+an array of arrays.
+
+* Advantage: It is *much* faster than object hydration.
+* Disadvantage: If you make changes to the entity, you can not persist it back to the database.
 
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT u FROM CmsUser u');
+    use Doctrine\ORM\Query;
+    
+    $query = $entityManager->createQuery('SELECT u FROM User u');
+    /** @var array<int, array> $users */
+    $users = $query->getArrayResult();
+    // same as:
     $users = $query->getResult(Query::HYDRATE_ARRAY);
 
-You can use the ``getArrayResult()`` shortcut as well:
+Result:
 
 .. code-block:: php
 
-    <?php
-    $users = $query->getArrayResult();
+    [0] => [
+        'firstName' => 'John',
+        'lastName' => 'Dough'
+    ]
+    [1] => [
+        'firstName' => 'Jane',
+        'lastName' => 'Doe'
 
 .. _scalar-hydration:
 
@@ -1261,7 +1274,9 @@ object graph you can use scalar hydration:
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT u FROM CmsUser u');
+    use Doctrine\ORM\Query;
+
+    $query = $entityManager->createQuery('SELECT u FROM User u');
     $users = $query->getResult(Query::HYDRATE_SCALAR);
     echo $users[0]['u_id'];
 
