@@ -1296,11 +1296,18 @@ one-dimensional array like this:
 .. code-block:: php
 
     <?php
-    use Doctrine\ORM\AbstractQuery;
 
     $query = $entityManager->createQuery('SELECT u.id FROM User u');
     $ids = $query->getSingleColumnResult();
-    // Same as:
+
+or
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ORM\AbstractQuery;
+
+    $query = $entityManager->createQuery('SELECT u.id FROM User u');
     $ids = $query->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
 
 Custom Hydration Modes
