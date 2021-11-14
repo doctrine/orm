@@ -1173,11 +1173,8 @@ will return the rows iterating the different top-level entities.
 Hydration Modes
 ~~~~~~~~~~~~~~~
 
-Each of the Hydration Modes makes assumptions about how the result
-is returned to user land. You should know about all the details to
-make best use of the different result formats:
-
-The constants for the different hydration modes are:
+The process of transforming a query result set (i.e. rows and columns) into PHP "variables" (e.g. objects, arrays)
+is called "hydration". Doctrine features the following hydration modes:
 
 - :ref:`Object Hydration <object-hydration>`
 - :ref:`Array Hydration <array-hydration>`
