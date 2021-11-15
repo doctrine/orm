@@ -15,12 +15,12 @@ use Doctrine\Tests\OrmTestCase;
 class GH9185Test extends OrmTestCase
 {
     /**
-     * Sometimes, the way DBMS is ordering rows is kinda random.
+     * Sometimes, DBMS is ordering rows randomly.
      * This 'randomness' caused ArrayHydrator to return null values in one-to-many relationships
-     * instead of correct elements.
+     * instead of correct values.
      *
      * select a.id, a.topic, u.id, u.username, p.phonenumber
-     * form CmsArticle a
+     * from CmsArticle a
      * join a.user u
      * join u.phonenumbers p
      */
@@ -67,14 +67,14 @@ class GH9185Test extends OrmTestCase
                 'a__topic' => 'Article 2',
                 'u__id' => '1',
                 'u__username' => 'LinasRam',
-                'p__phonenumber' => '9876543210', // Different order than in previous rows
+                'p__phonenumber' => '9876543210', // Different order of phone number than in previous rows
             ],
             [
                 'a__id' => '2',
                 'a__topic' => 'Article 2',
                 'u__id' => '1',
                 'u__username' => 'LinasRam',
-                'p__phonenumber' => '1234567890', // Different order than in previous rows
+                'p__phonenumber' => '1234567890', // Different order of phone number than in previous rows
             ],
         ];
 
