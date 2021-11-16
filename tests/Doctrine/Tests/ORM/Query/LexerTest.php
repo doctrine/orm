@@ -240,6 +240,8 @@ class LexerTest extends OrmTestCase
             [Lexer::T_FULLY_QUALIFIED_NAME, 'Some\Class'], // DQL class reference
             [Lexer::T_ALIASED_NAME, 'Some:Name'],
             [Lexer::T_ALIASED_NAME, 'Some:Subclassed\Name'],
+            [Lexer::T_IDENTIFIER, 'fully_qualified_name'], // identifier which matches a token class with a value > 100 and < 200
+            [Lexer::T_SELECT, 'select'], // reserved keyword
         ];
     }
 }

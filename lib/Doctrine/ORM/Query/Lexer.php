@@ -168,7 +168,7 @@ class Lexer extends AbstractLexer
                 if (defined($name)) {
                     $type = constant($name);
 
-                    if ($type > 100) {
+                    if ($type >= 200) {
                         return $type;
                     }
                 }
