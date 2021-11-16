@@ -19,10 +19,10 @@ class GH9185Test extends OrmTestCase
      * This 'randomness' caused ArrayHydrator to return null values in one-to-many relationships
      * instead of correct values.
      *
-     * select a.id, a.topic, u.id, u.username, p.phonenumber
-     * from CmsArticle a
-     * join a.user u
-     * join u.phonenumbers p
+     * SELECT PARTIAL a.{id, topic}, PARTIAL u.{id, username}, PARTIAL p.{phonenumber}
+     * FROM CmsArticle a
+     * INNER JOIN a.user u
+     * INNER JOIN u.phonenumbers p
      */
     public function testMultipleFetchJoinWithInconsistentRowOrder(): void
     {
