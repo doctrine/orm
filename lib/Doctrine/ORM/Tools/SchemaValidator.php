@@ -258,7 +258,7 @@ class SchemaValidator
     /**
      * Checks if the Database Schema is in sync with the current metadata state.
      *
-     * @param bool    $strictSync If TRUE, check that all tables in a database have a mapping files
+     * @param bool $strictSync If TRUE, check that all tables in a database have a mapping files
      *
      * @return bool
      */
