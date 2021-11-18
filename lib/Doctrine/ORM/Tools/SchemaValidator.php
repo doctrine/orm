@@ -258,14 +258,16 @@ class SchemaValidator
     /**
      * Checks if the Database Schema is in sync with the current metadata state.
      *
+     * @param bool    $strictSync If TRUE, check that all tables in a database have a mapping files
+     *
      * @return bool
      */
-    public function schemaInSyncWithMetadata()
+    public function schemaInSyncWithMetadata($strictSync = false)
     {
         $schemaTool = new SchemaTool($this->em);
 
         $allMetadata = $this->em->getMetadataFactory()->getAllMetadata();
 
-        return count($schemaTool->getUpdateSchemaSql($allMetadata, true)) === 0;
+        return count($schemaTool->getUpdateSchemaSql($allMetadata, $strictSync === false)) === 0;
     }
 }
