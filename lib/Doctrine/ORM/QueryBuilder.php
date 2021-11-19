@@ -1090,7 +1090,6 @@ class QueryBuilder
      * </code>
      *
      * @param                 string|object|array $predicates The restriction predicates.
-     * @psalm-param   literal-string|object|array $predicates
      * @phpstan-param literal-string|object|array $predicates
      *
      * @return $this
