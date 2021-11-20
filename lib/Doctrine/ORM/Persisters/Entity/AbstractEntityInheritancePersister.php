@@ -24,7 +24,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
         $data = parent::prepareInsertData($entity);
 
         // Populate the discriminator column
-        $discColumn                                                          = $this->class->discriminatorColumn;
+        $discColumn                                                          = $this->class->getDiscriminatorColumn();
         $this->columnTypes[$discColumn['name']]                              = $discColumn['type'];
         $data[$this->getDiscriminatorColumnTableName()][$discColumn['name']] = $this->class->discriminatorValue;
 

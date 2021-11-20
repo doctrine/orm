@@ -20,6 +20,7 @@ use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use InvalidArgumentException;
+use LogicException;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionProperty;
@@ -442,6 +443,7 @@ class ClassMetadataInfo implements ClassMetadata
      *      originalField?: string,
      *      quoted?: bool,
      *      requireSQLConversion?: bool,
+     *      declared?: class-string,
      *      declaredField?: string,
      *      options: array<mixed>
      * }>
@@ -495,7 +497,7 @@ class ClassMetadataInfo implements ClassMetadata
      * READ-ONLY: The definition of the discriminator column used in JOINED and SINGLE_TABLE
      * inheritance mappings.
      *
-     * @psalm-var array<string, mixed>
+     * @psalm-var array<string, mixed>|null
      */
     public $discriminatorColumn;
 
@@ -509,7 +511,14 @@ class ClassMetadataInfo implements ClassMetadata
      * uniqueConstraints => array
      *
      * @var mixed[]
-     * @psalm-var array{name: string, schema: string, indexes: array, uniqueConstraints: array}
+     * @psalm-var array{
+     *               name: string,
+     *               schema: string,
+     *               indexes: array,
+     *               uniqueConstraints: array,
+     *               options: array<string, mixed>,
+     *               quoted?: bool
+     *           }
      */
     public $table;
 
@@ -665,7 +674,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var ReflectionClass
+     * @var ReflectionClass|null
      */
     public $reflClass;
 
@@ -3088,6 +3097,18 @@ class ClassMetadataInfo implements ClassMetadata
 
             $this->discriminatorColumn = $columnDef;
         }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    final public function getDiscriminatorColumn(): array
+    {
+        if ($this->discriminatorColumn === null) {
+            throw new LogicException('The discriminator column was not set.');
+        }
+
+        return $this->discriminatorColumn;
     }
 
     /**

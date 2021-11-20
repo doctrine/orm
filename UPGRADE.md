@@ -17,6 +17,13 @@ Because of that, functionality that aims to do so has been deprecated:
 
 # Upgrade to 2.10
 
+## BC Break: `UnitOfWork` now relies on SPL object IDs, not hashes
+
+When calling the following methods, you are now supposed to use the result of
+`spl_object_id()`, and not `spl_object_hash()`:
+- `UnitOfWork::clearEntityChangeSet()`
+- `UnitOfWork::setOriginalEntityProperty()`
+
 ## BC Break: Removed `TABLE` id generator strategy
 
 The implementation was unfinished for 14 years.
@@ -25,10 +32,6 @@ It is now deprecated to rely on:
 - `Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_TABLE`;
 - `Doctrine\ORM\Mapping\ClassMetadata::$tableGeneratorDefinition`;
 - or `Doctrine\ORM\Mapping\ClassMetadata::isIdGeneratorTable()`.
-
-## BC Break: Removed possibility to extend the doctrine mapping xml schema with anything
-
-If you want to extend it now you have to provide your own validation schema.
 
 ## New method `Doctrine\ORM\EntityManagerInterface#wrapInTransaction($func)`
 
