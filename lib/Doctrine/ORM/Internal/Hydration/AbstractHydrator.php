@@ -102,7 +102,9 @@ abstract class AbstractHydrator
      *
      * @psalm-param array<string, mixed> $hints
      *
-     * @return Generator<int, mixed>
+     * @return Generator<array-key, mixed>
+     *
+     * @final
      */
     final public function toIterable(Result $stmt, ResultSetMapping $resultSetMapping, array $hints = []): Generator
     {
@@ -130,9 +132,12 @@ abstract class AbstractHydrator
             $this->hydrateRowData($row, $result);
 
             $this->cleanupAfterRowIteration();
-
             if (count($result) === 1) {
-                yield end($result);
+                if (count($resultSetMapping->indexByMap) === 0) {
+                    yield end($result);
+                } else {
+                    yield from $result;
+                }
             } else {
                 yield $result;
             }

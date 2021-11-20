@@ -16,7 +16,6 @@ Doctrine ORM don't panic. You can get help from different sources:
 -  The `Doctrine Mailing List <https://groups.google.com/group/doctrine-user>`_
 -  Slack chat room `#orm <https://www.doctrine-project.org/slack>`_
 -  Report a bug on `GitHub <https://github.com/doctrine/orm/issues>`_.
--  On `Twitter <https://twitter.com/search/%23doctrine2>`_ with ``#doctrine2``
 -  On `StackOverflow <https://stackoverflow.com/questions/tagged/doctrine-orm>`_
 
 If you need more structure over the different topics you can browse the :doc:`table

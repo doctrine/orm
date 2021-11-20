@@ -369,7 +369,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
     {
         if (isset($entityMapping['discriminatorColumn']) && $entityMapping['discriminatorColumn']) {
             $discriminatorColumn = $entityMapping['discriminatorColumn'];
-            $discriminatorType   = $classMetadata->discriminatorColumn['type'];
+            $discriminatorType   = $classMetadata->getDiscriminatorColumn()['type'];
 
             $this->setDiscriminatorColumn($alias, $discriminatorColumn);
             $this->addMetaResult($alias, $discriminatorColumn, $discriminatorColumn, false, $discriminatorType);

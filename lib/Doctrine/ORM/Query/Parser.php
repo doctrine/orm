@@ -214,7 +214,7 @@ class Parser
      */
     private $customOutputWalker;
 
-    /** @psalm-var list<AST\SelectExpression> */
+    /** @psalm-var array<string, AST\SelectExpression> */
     private $identVariableExpressions = [];
 
     /**
