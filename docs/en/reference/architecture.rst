@@ -184,6 +184,8 @@ in well defined units of work. Work with your objects and modify
 them as usual and when you're done call ``EntityManager#flush()``
 to make your changes persistent.
 
+.. _unit-of-work:
+
 The Unit of Work
 ~~~~~~~~~~~~~~~~
 

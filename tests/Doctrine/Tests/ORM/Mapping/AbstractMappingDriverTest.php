@@ -1114,6 +1114,13 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $class = $this->createClassMetadata(SingleTableEntityIncompleteDiscriminatorColumnMapping::class);
         self::assertEquals('dtype', $class->discriminatorColumn['name']);
     }
+
+    public function testReservedWordInTableColumn(): void
+    {
+        $metadata = $this->createClassMetadata(ReservedWordInTableColumn::class);
+
+        self::assertSame('count', $metadata->getFieldMapping('count')['columnName']);
+    }
 }
 
 /**
@@ -1768,4 +1775,43 @@ class SingleTableEntityIncompleteDiscriminatorColumnMappingSub1 extends SingleTa
 }
 class SingleTableEntityIncompleteDiscriminatorColumnMappingSub2 extends SingleTableEntityIncompleteDiscriminatorColumnMapping
 {
+}
+
+/** @Entity */
+#[ORM\Entity]
+class ReservedWordInTableColumn
+{
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="NONE")
+     */
+    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'NONE')]
+    public $id;
+
+    /**
+     * @var string|null
+     * @Column(name="`count`", type="integer")
+     */
+    #[ORM\Column(name: '`count`', type: 'integer')]
+    public $count;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    {
+        $metadata->mapField(
+            [
+                'id' => true,
+                'fieldName' => 'id',
+                'type' => 'integer',
+            ]
+        );
+        $metadata->mapField(
+            [
+                'fieldName' => 'count',
+                'type' => 'integer',
+                'columnName' => '`count`',
+            ]
+        );
+    }
 }

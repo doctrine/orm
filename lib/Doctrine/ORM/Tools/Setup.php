@@ -14,6 +14,7 @@ use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\ClassLoader;
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Memcached;
@@ -69,6 +70,25 @@ class Setup
     {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver($paths, $useSimpleAnnotationReader));
+
+        return $config;
+    }
+
+    /**
+     * Creates a configuration with an attribute metadata driver.
+     *
+     * @param mixed[] $paths
+     * @param bool    $isDevMode
+     * @param string  $proxyDir
+     */
+    public static function createAttributeMetadataConfiguration(
+        array $paths,
+        $isDevMode = false,
+        $proxyDir = null,
+        ?Cache $cache = null
+    ): Configuration {
+        $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
+        $config->setMetadataDriverImpl(new AttributeDriver($paths));
 
         return $config;
     }

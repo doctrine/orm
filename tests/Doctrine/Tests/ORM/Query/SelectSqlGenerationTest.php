@@ -2112,26 +2112,6 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT CONCAT(c0_.id, c0_.name, c0_.status) AS sclr_0 FROM cms_users c0_ WHERE c0_.id = ?'
         );
 
-        $connMock->setDatabasePlatform(new PostgreSQL94Platform());
-        $this->assertSqlGeneration(
-            "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
-            "SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE c0_.name || c0_.status || 's' = ?"
-        );
-        $this->assertSqlGeneration(
-            'SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1',
-            'SELECT c0_.id || c0_.name || c0_.status AS sclr_0 FROM cms_users c0_ WHERE c0_.id = ?'
-        );
-
-        $connMock->setDatabasePlatform(new SQLServer2012Platform());
-        $this->assertSqlGeneration(
-            "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
-            "SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE (c0_.name + c0_.status + 's') = ?"
-        );
-        $this->assertSqlGeneration(
-            'SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1',
-            'SELECT (c0_.id + c0_.name + c0_.status) AS sclr_0 FROM cms_users c0_ WHERE c0_.id = ?'
-        );
-
         $connMock->setDatabasePlatform($orgPlatform);
     }
 
