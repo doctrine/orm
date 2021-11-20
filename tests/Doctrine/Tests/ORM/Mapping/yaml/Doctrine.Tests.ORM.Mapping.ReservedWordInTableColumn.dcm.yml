@@ -1,0 +1,10 @@
+Doctrine\Tests\ORM\Mapping\ReservedWordInTableColumn:
+  type: entity
+  id:
+    id: 
+      generator:
+        strategy: NONE
+  fields:
+    count:
+      type: integer
+      column: '`count`'
