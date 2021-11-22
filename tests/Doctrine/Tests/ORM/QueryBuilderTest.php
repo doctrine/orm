@@ -10,6 +10,7 @@ use Doctrine\ORM\Cache;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\Query\Identifier;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\QueryBuilder;
@@ -694,6 +695,69 @@ class QueryBuilderTest extends OrmTestCase
         $qb->setParameters($parameters);
 
         self::assertEquals($parameters->first(), $qb->getParameter('id'));
+    }
+
+    public function testSetIdentifier(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(CmsUser::class, 'u')
+            ->where('{identifier} = 1')
+            ->setIdentifier('identifier', 'id');
+
+        $identifier = new Identifier('identifier', 'id');
+        $inferred   = $qb->getIdentifier('identifier');
+
+        $this->assertEquals('{identifier} = 1', (string) $qb->getDQLPart('where'));
+
+        self::assertSame($identifier->getValue(), $inferred->getValue());
+    }
+
+    public function testSetIdentifiers(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb->select('u')
+           ->from(CmsUser::class, 'u')
+           ->where($qb->expr()->orX('{identifier1} = 1', '{identifier2} = 1'));
+
+        $identifiers = new ArrayCollection();
+        $identifiers->add(new Identifier('identifier1', 'id'));
+        $identifiers->add(new Identifier('identifier2', 'parent_id'));
+
+        $qb->setIdentifiers($identifiers);
+
+        $this->assertEquals($identifiers, $qb->getQuery()->getIdentifiers());
+    }
+
+    public function testGetIdentifiers(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb->select('u')
+           ->from(CmsUser::class, 'u')
+           ->where('{identifier} = 1');
+
+        $identifiers = new ArrayCollection();
+        $identifiers->add(new Identifier('identifier', 'id'));
+
+        $qb->setIdentifiers($identifiers);
+
+        $this->assertEquals($identifiers, $qb->getIdentifiers());
+    }
+
+    public function testGetIdentifier(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(CmsUser::class, 'u')
+            ->where('{identifier} = 1');
+
+        $identifiers = new ArrayCollection();
+        $identifiers->add(new Identifier('identifier', 'id'));
+
+        $qb->setIdentifiers($identifiers);
+
+        $this->assertEquals($identifiers->first(), $qb->getIdentifier('identifier'));
+        // $this->assertEquals('TODO', $qb->getQuery()->getSQL('identifier'));
     }
 
     public function testMultipleWhere(): void

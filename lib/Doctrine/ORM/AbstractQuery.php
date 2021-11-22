@@ -18,6 +18,7 @@ use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
+use Doctrine\ORM\Query\Identifier;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -87,6 +88,14 @@ abstract class AbstractQuery
      * @psalm-var ArrayCollection<int, Parameter>
      */
     protected $parameters;
+
+    /**
+     * The identifier map of this query.
+     *
+     * @var ArrayCollection|Identifier[]
+     * @psalm-var ArrayCollection<int, Identifier>
+     */
+    protected $identifiers;
 
     /**
      * The user-specified ResultSetMapping to use.
@@ -164,10 +173,11 @@ abstract class AbstractQuery
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->_em        = $em;
-        $this->parameters = new ArrayCollection();
-        $this->_hints     = $em->getConfiguration()->getDefaultQueryHints();
-        $this->hasCache   = $this->_em->getConfiguration()->isSecondLevelCacheEnabled();
+        $this->_em         = $em;
+        $this->parameters  = new ArrayCollection();
+        $this->identifiers = new ArrayCollection();
+        $this->_hints      = $em->getConfiguration()->getDefaultQueryHints();
+        $this->hasCache    = $this->_em->getConfiguration()->isSecondLevelCacheEnabled();
 
         if ($this->hasCache) {
             $this->cacheLogger = $em->getConfiguration()
@@ -292,13 +302,14 @@ abstract class AbstractQuery
     /**
      * Frees the resources used by the query object.
      *
-     * Resets Parameters, Parameter Types and Query Hints.
+     * Resets Parameters, Parameter Types, Identifiers and Query Hints.
      *
      * @return void
      */
     public function free()
     {
-        $this->parameters = new ArrayCollection();
+        $this->parameters  = new ArrayCollection();
+        $this->identifiers = new ArrayCollection();
 
         $this->_hints = $this->_em->getConfiguration()->getDefaultQueryHints();
     }
@@ -443,6 +454,142 @@ abstract class AbstractQuery
     }
 
     /**
+     * Get all defined identifiers.
+     *
+     * @return ArrayCollection The defined query identifiers.
+     * @psalm-return ArrayCollection<int, Identifier>
+     */
+    public function getIdentifiers()
+    {
+        return $this->identifiers;
+    }
+
+    /**
+     * Gets a query identifier.
+     *
+     * @param mixed $key The key (index or name) of the bound identifier.
+     *
+     * @return Identifier|null The value of the bound identifier, or NULL if not available.
+     */
+    public function getIdentifier($key)
+    {
+        $key = Query\Identifier::normalizeName($key);
+
+        $filteredIdentifiers = $this->identifiers->filter(
+            static function (Query\Identifier $identifier) use ($key): bool {
+                $identifierName = $identifier->getName();
+
+                return $key === $identifierName;
+            }
+        );
+
+        return ! $filteredIdentifiers->isEmpty() ? $filteredIdentifiers->first() : null;
+    }
+
+    /**
+     * Sets a collection of query identifiers.
+     *
+     * @param ArrayCollection|mixed[] $identifiers
+     * @psalm-param ArrayCollection<int, Identifier>|mixed[] $identifiers
+     *
+     * @return static This query instance.
+     */
+    public function setIdentifiers($identifiers)
+    {
+        // BC compatibility with 2.3-
+        if (is_array($identifiers)) {
+            /** @psalm-var ArrayCollection<int, Identifier> $identifierCollection */
+            $identifierCollection = new ArrayCollection();
+
+            foreach ($identifiers as $key => $value) {
+                $identifierCollection->add(new Identifier($key, $value));
+            }
+
+            $identifiers = $identifierCollection;
+        }
+
+        $this->identifiers = $identifiers;
+
+        return $this;
+    }
+
+    /**
+     * Sets a query identifier.
+     *
+     * @param string|int $key   The identifier position or name.
+     * @param mixed      $value The identifier value.
+     *
+     * @return static This query instance.
+     */
+    public function setIdentifier($key, $value)
+    {
+        $existingIdentifier = $this->getIdentifier($key);
+
+        if ($existingIdentifier !== null) {
+            $existingIdentifier->setValue($value);
+
+            return $this;
+        }
+
+        $this->identifiers->add(new Identifier($key, $value));
+
+        return $this;
+    }
+
+    /**
+     * Processes an individual identifier value.
+     *
+     * @param mixed $value
+     *
+     * @return mixed[]|string|int|float|bool
+     * @psalm-return array|scalar
+     *
+     * @throws ORMInvalidArgumentException
+     */
+    public function processIdentifierValue($value)
+    {
+        if (is_scalar($value)) {
+            return $value;
+        }
+
+        if ($value instanceof Collection) {
+            $value = iterator_to_array($value);
+        }
+
+        if (is_array($value)) {
+            $value = $this->processArrayIdentifierValue($value);
+
+            return $value;
+        }
+
+        if ($value instanceof Mapping\ClassMetadata) {
+            return $value->name;
+        }
+
+        if (! is_object($value)) {
+            return $value;
+        }
+
+        try {
+            $value = $this->_em->getUnitOfWork()->getSingleIdentifierValue($value);
+
+            if ($value === null) {
+                throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+            }
+        } catch (MappingException | ORMMappingException $e) {
+            /* Silence any mapping exceptions. These can occur if the object in
+               question is not a mapped entity, in which case we just don't do
+               any preparation on the value.
+               Depending on MappingDriver, either MappingException or
+               ORMMappingException is thrown. */
+
+            $value = $this->potentiallyProcessIterable($value);
+        }
+
+        return $value;
+    }
+
+    /**
      * If no mapping is detected, trying to resolve the value as a Traversable
      *
      * @param mixed $value
@@ -471,6 +618,23 @@ abstract class AbstractQuery
         foreach ($value as $key => $paramValue) {
             $paramValue  = $this->processParameterValue($paramValue);
             $value[$key] = is_array($paramValue) ? reset($paramValue) : $paramValue;
+        }
+
+        return $value;
+    }
+
+    /**
+     * Process an identifier value which was previously identified as an array
+     *
+     * @param mixed[] $value
+     *
+     * @return mixed[]
+     */
+    private function processArrayIdentifierValue(array $value): array
+    {
+        foreach ($value as $key => $identifierValue) {
+            $identifierValue = $this->processIdentifierValue($identifierValue);
+            $value[$key]     = is_array($identifierValue) ? reset($identifierValue) : $identifierValue;
         }
 
         return $value;
@@ -1323,7 +1487,8 @@ abstract class AbstractQuery
      */
     public function __clone()
     {
-        $this->parameters = new ArrayCollection();
+        $this->parameters  = new ArrayCollection();
+        $this->identifiers = new ArrayCollection();
 
         $this->_hints = [];
         $this->_hints = $this->_em->getConfiguration()->getDefaultQueryHints();
@@ -1350,9 +1515,21 @@ abstract class AbstractQuery
             return $this->processParameterValue($value);
         }, $this->parameters->getValues());
 
+        $identifiers = array_map(function (Identifier $identifier) {
+            $value = $identifier->getValue();
+
+            // Small optimization
+            // Does not invoke processIdentifierValue for scalar value
+            if (is_scalar($value)) {
+                return $value;
+            }
+
+            return $this->processIdentifierValue($value);
+        }, $this->identifiers->getValues());
+
         ksort($hints);
 
-        return sha1($query . '-' . serialize($params) . '-' . serialize($hints));
+        return sha1($query . '-' . serialize($params) . '-' . serialize($identifiers) . '-' . serialize($hints));
     }
 
     /** @param iterable<mixed> $subject */
