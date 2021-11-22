@@ -70,6 +70,26 @@ use const PHP_VERSION_ID;
  *
  * @template-covariant T of object
  * @template-implements ClassMetadata<T>
+ * @psalm-type FieldMapping = array{
+ *      type: string,
+ *      fieldName: string,
+ *      columnName?: string,
+ *      length?: int,
+ *      id?: bool,
+ *      nullable?: bool,
+ *      columnDefinition?: string,
+ *      precision?: int,
+ *      scale?: int,
+ *      unique?: string,
+ *      inherited?: class-string,
+ *      originalClass?: class-string,
+ *      originalField?: string,
+ *      quoted?: bool,
+ *      requireSQLConversion?: bool,
+ *      declared?: class-string,
+ *      declaredField?: string,
+ *      options?: array<string, mixed>
+ * }
  */
 class ClassMetadataInfo implements ClassMetadata
 {
@@ -427,26 +447,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Whether a unique constraint should be generated for the column.
      *
      * @var mixed[]
-     * @psalm-var array<string, array{
-     *      type: string,
-     *      fieldName: string,
-     *      columnName?: string,
-     *      length?: int,
-     *      id?: bool,
-     *      nullable?: bool,
-     *      columnDefinition?: string,
-     *      precision?: int,
-     *      scale?: int,
-     *      unique?: string,
-     *      inherited?: class-string,
-     *      originalClass?: class-string,
-     *      originalField?: string,
-     *      quoted?: bool,
-     *      requireSQLConversion?: bool,
-     *      declared?: class-string,
-     *      declaredField?: string,
-     *      options: array<mixed>
-     * }>
+     * @psalm-var array<string, FieldMapping>
      */
     public $fieldMappings = [];
 
@@ -1285,18 +1286,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @param string $fieldName The field name.
      *
      * @return mixed[] The field mapping.
-     * @psalm-return array{
-     *      type: string,
-     *      fieldName: string,
-     *      columnName?: string,
-     *      inherited?: class-string,
-     *      nullable?: bool,
-     *      originalClass?: class-string,
-     *      originalField?: string,
-     *      scale?: int,
-     *      precision?: int,
-     *      length?: int
-     * }
+     * @psalm-return FieldMapping
      *
      * @throws MappingException
      */
