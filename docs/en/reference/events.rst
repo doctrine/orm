@@ -297,6 +297,7 @@ specific to a particular entity class's lifecycle.
 
         <?php
         
+        use Doctrine\DBAL\Types\Types;
         use Doctrine\Persistence\Event\LifecycleEventArgs;
 
         /**
@@ -307,7 +308,7 @@ specific to a particular entity class's lifecycle.
         {
             // ...
 
-            #[Column(type: 'string', length: 255)]
+            #[Column(type: Types::STRING, length: 255)]
             public $value;
 
             #[PrePersist]
