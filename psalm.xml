@@ -30,6 +30,10 @@
                 <!-- We're calling the deprecated method for BC here. -->
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
                 <!-- We need to keep the calls for DBAL 2.13 compatibility. -->
+                <referencedMethod name="Doctrine\DBAL\Cache\QueryCacheProfile::getResultCacheDriver"/>
+                <referencedMethod name="Doctrine\DBAL\Cache\QueryCacheProfile::setResultCacheDriver"/>
+                <referencedMethod name="Doctrine\DBAL\Configuration::getResultCacheImpl"/>
+                <referencedMethod name="Doctrine\DBAL\Configuration::setResultCacheImpl"/>
                 <referencedMethod name="Doctrine\DBAL\Connection::getSchemaManager"/>
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
             </errorLevel>
