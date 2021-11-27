@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
-use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -29,7 +28,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         parent::setUp();
 
         $platform = $this->_em->getConnection()->getDatabasePlatform();
-        if (! $platform instanceof PostgreSQL94Platform && ! $platform instanceof PostgreSQLPlatform) {
+        if (! $platform instanceof PostgreSQLPlatform) {
             self::markTestSkipped('The ' . self::class . ' requires the use of postgresql.');
         }
     }

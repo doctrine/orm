@@ -2181,9 +2181,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$this-&gt;stringPrimary</code>
     </ArgumentTypeCoercion>
-    <DeprecatedMethod occurrences="1">
-      <code>getLowerExpression</code>
-    </DeprecatedMethod>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$stringPrimary</code>
     </PropertyNotSetInConstructor>
@@ -2213,9 +2210,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/SqrtFunction.php">
-    <DeprecatedMethod occurrences="1">
-      <code>getSqrtExpression</code>
-    </DeprecatedMethod>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$simpleArithmeticExpression</code>
     </PropertyNotSetInConstructor>
@@ -2254,9 +2248,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$this-&gt;stringPrimary</code>
     </ArgumentTypeCoercion>
-    <DeprecatedMethod occurrences="1">
-      <code>getUpperExpression</code>
-    </DeprecatedMethod>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$stringPrimary</code>
     </PropertyNotSetInConstructor>
@@ -3650,10 +3641,6 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/CountOutputWalker.php">
-    <DeprecatedMethod occurrences="2">
-      <code>getCountExpression</code>
-      <code>getCountExpression</code>
-    </DeprecatedMethod>
     <MoreSpecificImplementedParamType occurrences="1">
       <code>$query</code>
     </MoreSpecificImplementedParamType>
@@ -3723,10 +3710,8 @@
     <RedundantConditionGivenDocblockType occurrences="1"/>
   </file>
   <file src="lib/Doctrine/ORM/Tools/SchemaTool.php">
-    <DeprecatedMethod occurrences="3">
+    <DeprecatedMethod occurrences="1">
       <code>canEmulateSchemas</code>
-      <code>compare</code>
-      <code>setExplicitForeignKeyIndexes</code>
     </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="2">
       <code>! $definingClass</code>

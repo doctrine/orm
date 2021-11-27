@@ -256,7 +256,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getResultCache(): ?CacheItemPoolInterface
     {
-        // Compatibility with DBAL < 3.2
+        // Compatibility with DBAL 2
         if (! method_exists(parent::class, 'getResultCache')) {
             $cacheImpl = $this->getResultCacheImpl();
 
@@ -271,7 +271,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setResultCache(CacheItemPoolInterface $cache): void
     {
-        // Compatibility with DBAL < 3.2
+        // Compatibility with DBAL 2
         if (! method_exists(parent::class, 'setResultCache')) {
             $this->setResultCacheImpl(DoctrineProvider::wrap($cache));
 

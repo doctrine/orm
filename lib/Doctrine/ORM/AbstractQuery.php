@@ -540,7 +540,7 @@ abstract class AbstractQuery
             return $this;
         }
 
-        // DBAL < 3.2
+        // DBAL 2
         if (! method_exists(QueryCacheProfile::class, 'setResultCache')) {
             if (! $profile->getResultCacheDriver()) {
                 $defaultHydrationCacheImpl = $this->_em->getConfiguration()->getHydrationCache();
@@ -584,7 +584,7 @@ abstract class AbstractQuery
             return $this;
         }
 
-        // DBAL < 3.2
+        // DBAL 2
         if (! method_exists(QueryCacheProfile::class, 'setResultCache')) {
             if (! $profile->getResultCacheDriver()) {
                 $defaultResultCacheDriver = $this->_em->getConfiguration()->getResultCache();
@@ -640,7 +640,7 @@ abstract class AbstractQuery
             return $this;
         }
 
-        // DBAL < 3.2
+        // DBAL 2
         if (! method_exists(QueryCacheProfile::class, 'setResultCache')) {
             $resultCacheDriver = DoctrineProvider::wrap($resultCache);
 
@@ -746,7 +746,7 @@ abstract class AbstractQuery
             return $this;
         }
 
-        // Compatibility for DBAL < 3.2
+        // Compatibility for DBAL 2
         if (! method_exists($this->_queryCacheProfile, 'setResultCache')) {
             $this->_queryCacheProfile = $this->_queryCacheProfile->setResultCacheDriver(DoctrineProvider::wrap($cache));
 
@@ -1177,7 +1177,7 @@ abstract class AbstractQuery
     {
         assert($this->_hydrationCacheProfile !== null);
 
-        // Support for DBAL < 3.2
+        // Support for DBAL 2
         if (! method_exists($this->_hydrationCacheProfile, 'getResultCache')) {
             $cacheDriver = $this->_hydrationCacheProfile->getResultCacheDriver();
             assert($cacheDriver !== null);
