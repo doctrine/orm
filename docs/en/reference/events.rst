@@ -793,7 +793,19 @@ An entity listener is a lifecycle listener class used for an entity.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+    
+        <?php
+        namespace MyProject\Entity;
+        use App\EventListener\UserListener;
+
+        #[Entity]
+        #[EntityListeners([UserListener::class])]
+        class User
+        {
+            // ....
+        }
+    .. code-block:: annotation
 
         <?php
         namespace MyProject\Entity;
