@@ -13,6 +13,7 @@ use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\ClassLoader;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
@@ -113,6 +114,8 @@ class Setup
     /**
      * Creates a configuration with a yaml metadata driver.
      *
+     * @deprecated YAML metadata mapping is deprecated and will be removed in 3.0
+     *
      * @param mixed[] $paths
      * @param bool    $isDevMode
      * @param string  $proxyDir
@@ -121,6 +124,12 @@ class Setup
      */
     public static function createYAMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, ?Cache $cache = null)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8465',
+            'YAML mapping driver is deprecated and will be removed in Doctrine ORM 3.0, please migrate to attribute or XML driver.'
+        );
+
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(new YamlDriver($paths));
 
