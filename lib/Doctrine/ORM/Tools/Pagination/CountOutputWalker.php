@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Platforms\SQLServer2012Platform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\SelectStatement;
@@ -72,7 +71,7 @@ class CountOutputWalker extends SqlWalker
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
-        if ($this->platform instanceof SQLServer2012Platform || $this->platform instanceof SQLServerPlatform) {
+        if ($this->platform instanceof SQLServerPlatform) {
             $AST->orderByClause = null;
         }
 
@@ -80,8 +79,7 @@ class CountOutputWalker extends SqlWalker
 
         if ($AST->groupByClause) {
             return sprintf(
-                'SELECT %s AS dctrn_count FROM (%s) dctrn_table',
-                $this->platform->getCountExpression('*'),
+                'SELECT COUNT(*) AS dctrn_count FROM (%s) dctrn_table',
                 $sql
             );
         }
@@ -133,8 +131,7 @@ class CountOutputWalker extends SqlWalker
 
         // Build the counter query
         return sprintf(
-            'SELECT %s AS dctrn_count FROM (SELECT DISTINCT %s FROM (%s) dctrn_result) dctrn_table',
-            $this->platform->getCountExpression('*'),
+            'SELECT COUNT(*) AS dctrn_count FROM (SELECT DISTINCT %s FROM (%s) dctrn_result) dctrn_table',
             implode(', ', $sqlIdentifier),
             $sql
         );

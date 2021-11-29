@@ -20,6 +20,7 @@ use function explode;
 use function get_class;
 use function implode;
 use function is_array;
+use function sprintf;
 use function strtolower;
 
 /**
@@ -176,7 +177,7 @@ class DDC2012TsVectorType extends Type
         // changed to upper expression to keep the test compatible with other Databases
         //sprintf('to_tsvector(%s)', $sqlExpr);
 
-        return $platform->getUpperExpression($sqlExpr);
+        return sprintf('UPPER(%s)', $sqlExpr);
     }
 
     /**

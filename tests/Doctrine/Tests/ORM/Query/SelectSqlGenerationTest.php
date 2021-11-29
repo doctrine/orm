@@ -7,9 +7,8 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
-use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
-use Doctrine\DBAL\Platforms\SQLServer2012Platform;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Column;
@@ -37,6 +36,7 @@ use function sprintf;
 
 // DBAL 2 compatibility
 class_exists('Doctrine\DBAL\Platforms\MySqlPlatform');
+class_exists('Doctrine\DBAL\Platforms\PostgreSqlPlatform');
 
 class SelectSqlGenerationTest extends OrmTestCase
 {
@@ -658,7 +658,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT CONCAT(c0_.id, c0_.name) AS sclr_0 FROM cms_users c0_ WHERE c0_.id = ?'
         );
 
-        $connMock->setDatabasePlatform(new PostgreSQL94Platform());
+        $connMock->setDatabasePlatform(new PostgreSQLPlatform());
         $this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, 's') = ?1",
             "SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE c0_.name || 's' = ?"
@@ -954,7 +954,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testBooleanLiteralInWhereOnPostgres(): void
     {
         $oldPlat = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQL94Platform());
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQLPlatform());
 
         $this->assertSqlGeneration(
             'SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true',
@@ -1096,7 +1096,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testPessimisticReadLockQueryHintPostgreSql(): void
     {
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQL94Platform());
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQLPlatform());
 
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",

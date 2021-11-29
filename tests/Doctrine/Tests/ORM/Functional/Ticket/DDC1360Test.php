@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -21,7 +20,7 @@ class DDC1360Test extends OrmFunctionalTestCase
     public function testSchemaDoubleQuotedCreate(): void
     {
         $platform = $this->_em->getConnection()->getDatabasePlatform();
-        if (! $platform instanceof PostgreSQL94Platform && ! $platform instanceof PostgreSQLPlatform) {
+        if (! $platform instanceof PostgreSQLPlatform) {
             self::markTestSkipped('PostgreSQL only test.');
         }
 

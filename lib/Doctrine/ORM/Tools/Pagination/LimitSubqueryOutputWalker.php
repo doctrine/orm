@@ -7,10 +7,8 @@ namespace Doctrine\ORM\Tools\Pagination;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\DB2Platform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
-use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLAnywherePlatform;
-use Doctrine\DBAL\Platforms\SQLServer2012Platform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\QuoteStrategy;
@@ -117,9 +115,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     private function platformSupportsRowNumber(): bool
     {
-        return $this->platform instanceof PostgreSQL94Platform // DBAL 3.1 compatibility
-            || $this->platform instanceof PostgreSQLPlatform
-            || $this->platform instanceof SQLServer2012Platform // DBAL 3.1 compatibility
+        return $this->platform instanceof PostgreSQLPlatform
             || $this->platform instanceof SQLServerPlatform
             || $this->platform instanceof OraclePlatform
             || $this->platform instanceof SQLAnywherePlatform
