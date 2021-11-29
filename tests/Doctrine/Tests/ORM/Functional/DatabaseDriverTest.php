@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
-use Doctrine\DBAL\Platforms\SQLServer2012Platform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Table;
@@ -231,9 +229,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         // FIXME: Condition here is fugly.
         // NOTE: PostgreSQL and SQL SERVER do not support UNSIGNED integer
 
-        return ! $platform instanceof SQLServer2012Platform
-            && ! $platform instanceof SQLServerPlatform
-            && ! $platform instanceof PostgreSQL94Platform
+        return ! $platform instanceof SQLServerPlatform
             && ! $platform instanceof PostgreSQLPlatform;
     }
 }

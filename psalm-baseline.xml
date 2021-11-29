@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.10.0@916b098b008f6de4543892b1e0651c1c3b92cbfa">
+<files psalm-version="4.13.1@5cf660f63b548ccd4a56f62d916ee4d6028e01a3">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
-    <DocblockTypeContradiction occurrences="1">
-      <code>$resultCacheDriver !== null &amp;&amp; ! ($resultCacheDriver instanceof \Doctrine\Common\Cache\Cache)</code>
-    </DocblockTypeContradiction>
+    <DeprecatedMethod occurrences="3">
+      <code>getResultCacheDriver</code>
+      <code>getResultCacheDriver</code>
+      <code>getResultCacheImpl</code>
+    </DeprecatedMethod>
     <FalsableReturnStatement occurrences="1">
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
     </FalsableReturnStatement>
@@ -510,15 +512,16 @@
     <PropertyTypeCoercion occurrences="1">
       <code>new $metadataFactoryClassName()</code>
     </PropertyTypeCoercion>
-    <RedundantCondition occurrences="1">
+    <RedundantCondition occurrences="2">
+      <code>is_object($connection)</code>
       <code>is_object($connection)</code>
     </RedundantCondition>
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>$this-&gt;filterCollection !== null</code>
     </RedundantConditionGivenDocblockType>
     <TypeDoesNotContainType occurrences="2">
-      <code>$connection instanceof Connection</code>
       <code>': "' . $connection . '"'</code>
+      <code>gettype($connection)</code>
     </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ORM/EntityManagerInterface.php">
@@ -770,11 +773,13 @@
       <code>$parent</code>
       <code>new $definition['class']()</code>
     </ArgumentTypeCoercion>
-    <DeprecatedMethod occurrences="2">
+    <DeprecatedMethod occurrences="3">
       <code>addNamedNativeQuery</code>
       <code>addNamedQuery</code>
+      <code>getName</code>
     </DeprecatedMethod>
-    <DocblockTypeContradiction occurrences="1">
+    <DocblockTypeContradiction occurrences="2">
+      <code>! $definition</code>
       <code>$definition</code>
     </DocblockTypeContradiction>
     <InvalidArrayOffset occurrences="1">
@@ -841,7 +846,8 @@
     <PropertyTypeCoercion occurrences="1">
       <code>$subClass-&gt;table</code>
     </PropertyTypeCoercion>
-    <RedundantConditionGivenDocblockType occurrences="1">
+    <RedundantConditionGivenDocblockType occurrences="2">
+      <code>$parent-&gt;idGenerator</code>
       <code>$parent-&gt;idGenerator</code>
     </RedundantConditionGivenDocblockType>
     <UndefinedInterfaceMethod occurrences="17">
@@ -869,13 +875,17 @@
       <code>$class</code>
       <code>$subclass</code>
     </ArgumentTypeCoercion>
+    <DeprecatedMethod occurrences="1">
+      <code>canEmulateSchemas</code>
+    </DeprecatedMethod>
     <DeprecatedProperty occurrences="4">
       <code>$this-&gt;columnNames</code>
       <code>$this-&gt;columnNames</code>
       <code>$this-&gt;columnNames</code>
       <code>$this-&gt;columnNames</code>
     </DeprecatedProperty>
-    <DocblockTypeContradiction occurrences="1">
+    <DocblockTypeContradiction occurrences="2">
+      <code>! $this-&gt;table</code>
       <code>$this-&gt;table</code>
     </DocblockTypeContradiction>
     <InvalidDocblock occurrences="4">
@@ -1027,6 +1037,10 @@
     </PossiblyFalseOperand>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DefaultQuoteStrategy.php">
+    <DeprecatedMethod occurrences="2">
+      <code>canEmulateSchemas</code>
+      <code>canEmulateSchemas</code>
+    </DeprecatedMethod>
     <MissingClosureParamType occurrences="1">
       <code>$joinColumn</code>
     </MissingClosureParamType>
@@ -1047,7 +1061,8 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$metadata</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="1">
+    <DocblockTypeContradiction occurrences="2">
+      <code>! $class</code>
       <code>$class</code>
     </DocblockTypeContradiction>
     <LessSpecificReturnStatement occurrences="1">
@@ -1232,11 +1247,7 @@
       <code>$indexXml-&gt;options</code>
       <code>$uniqueXml-&gt;options</code>
     </PossiblyInvalidPropertyFetch>
-    <RedundantCast occurrences="1">
-      <code>(string) $attributes-&gt;name</code>
-    </RedundantCast>
-    <RedundantCondition occurrences="20">
-      <code>isset($attributes-&gt;name)</code>
+    <RedundantCondition occurrences="19">
       <code>isset($xmlRoot-&gt;cache)</code>
       <code>isset($xmlRoot-&gt;embedded)</code>
       <code>isset($xmlRoot-&gt;field)</code>
@@ -1528,16 +1539,7 @@
     <InvalidDocblock occurrences="1">
       <code>final class PersistentCollection extends AbstractLazyCollection implements Selectable</code>
     </InvalidDocblock>
-    <InvalidReturnStatement occurrences="5">
-      <code>$persister-&gt;slice($this, $offset, $length)</code>
-      <code>$this-&gt;collection</code>
-      <code>new ArrayCollection($persister-&gt;loadCriteria($this, $criteria))</code>
-      <code>parent::slice($offset, $length)</code>
-    </InvalidReturnStatement>
-    <InvalidReturnType occurrences="2">
-      <code>Collection&lt;TKey, T&gt;</code>
-      <code>array&lt;TKey,T&gt;</code>
-    </InvalidReturnType>
+    <InvalidReturnStatement occurrences="1"/>
     <MissingParamType occurrences="2">
       <code>$key</code>
       <code>$offset</code>
@@ -1572,7 +1574,9 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>$backRefFieldName</code>
     </PropertyNotSetInConstructor>
-    <RedundantConditionGivenDocblockType occurrences="3">
+    <RedundantConditionGivenDocblockType occurrences="5">
+      <code>$this-&gt;em</code>
+      <code>$this-&gt;em</code>
       <code>is_object($this-&gt;collection)</code>
       <code>is_object($value) &amp;&amp; $this-&gt;em</code>
       <code>is_object($value) &amp;&amp; $this-&gt;em</code>
@@ -1798,9 +1802,6 @@
     <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;currentPersisterContext-&gt;sqlTableAliases</code>
     </PropertyTypeCoercion>
-    <RedundantCondition occurrences="1">
-      <code>($comparison === Comparison::EQ || $comparison === Comparison::IS) &amp;&amp; $value === null</code>
-    </RedundantCondition>
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>$this-&gt;insertSql !== null</code>
     </RedundantConditionGivenDocblockType>
@@ -1841,11 +1842,6 @@
       <code>$columnList</code>
     </PossiblyUndefinedVariable>
   </file>
-  <file src="lib/Doctrine/ORM/Persisters/SqlValueVisitor.php">
-    <RedundantCondition occurrences="1">
-      <code>($operator === Comparison::EQ || $operator === Comparison::IS) &amp;&amp; $value === null</code>
-    </RedundantCondition>
-  </file>
   <file src="lib/Doctrine/ORM/Proxy/ProxyFactory.php">
     <ArgumentTypeCoercion occurrences="2">
       <code>$classMetadata</code>
@@ -1872,6 +1868,9 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Query.php">
+    <DeprecatedMethod occurrences="1">
+      <code>getResultCacheDriver</code>
+    </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="2">
       <code>$this-&gt;_resultSetMapping === null</code>
       <code>$this-&gt;_resultSetMapping === null</code>
@@ -2784,22 +2783,23 @@
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
-    <DocblockTypeContradiction occurrences="10">
-      <code>! ($factor instanceof AST\ConditionalFactor)</code>
-      <code>$condExpr instanceof AST\ConditionalExpression</code>
-      <code>$condTerm instanceof AST\ConditionalTerm</code>
-      <code>$simpleArithmeticExpr instanceof AST\SimpleArithmeticExpression</code>
+    <DocblockTypeContradiction occurrences="8">
+      <code>$likeExpr-&gt;stringPattern instanceof AST\Functions\FunctionNode</code>
+      <code>$likeExpr-&gt;stringPattern instanceof AST\PathExpression</code>
       <code>$this-&gt;queryComponents[$dqlAlias]['relation'] === null</code>
       <code>''</code>
-      <code>is_numeric($leftExpr) ? $leftExpr : $this-&gt;conn-&gt;quote($leftExpr)</code>
-      <code>is_numeric($rightExpr) ? $rightExpr : $this-&gt;conn-&gt;quote($rightExpr)</code>
+      <code>is_numeric($leftExpr)</code>
+      <code>is_numeric($rightExpr)</code>
       <code>is_string($expression)</code>
       <code>is_string($stringExpr)</code>
     </DocblockTypeContradiction>
     <ImplicitToStringCast occurrences="1">
       <code>$expr</code>
     </ImplicitToStringCast>
-    <InvalidArgument occurrences="1">
+    <InvalidArgument occurrences="4">
+      <code>$condExpr</code>
+      <code>$condTerm</code>
+      <code>$factor</code>
       <code>$selectedClass['class']-&gt;name</code>
     </InvalidArgument>
     <InvalidArrayOffset occurrences="1">
@@ -2870,10 +2870,12 @@
       <code>$this-&gt;queryComponents</code>
       <code>$this-&gt;selectedClasses</code>
     </PropertyTypeCoercion>
-    <RedundantConditionGivenDocblockType occurrences="5">
+    <RedundantConditionGivenDocblockType occurrences="7">
       <code>$leftExpr instanceof AST\Node</code>
       <code>$likeExpr-&gt;stringPattern instanceof AST\InputParameter</code>
       <code>$rightExpr instanceof AST\Node</code>
+      <code>$this-&gt;conn-&gt;quote($leftExpr)</code>
+      <code>$this-&gt;conn-&gt;quote($rightExpr)</code>
       <code>$whereClause !== null</code>
       <code>($factor-&gt;not ? 'NOT ' : '') . $this-&gt;walkConditionalPrimary($factor-&gt;conditionalPrimary)</code>
     </RedundantConditionGivenDocblockType>
@@ -3233,16 +3235,15 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php">
+    <DeprecatedMethod occurrences="1">
+      <code>getResultCacheImpl</code>
+    </DeprecatedMethod>
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
-    <PossiblyNullArgument occurrences="2">
-      <code>$cacheDriver</code>
+    <PossiblyNullArgument occurrences="1">
       <code>$cacheDriver</code>
     </PossiblyNullArgument>
-    <PossiblyNullReference occurrences="1">
-      <code>deleteAll</code>
-    </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ConvertDoctrine1SchemaCommand.php">
     <ArgumentTypeCoercion occurrences="1">
@@ -3440,7 +3441,9 @@
       <code>(array) $metadata-&gt;table['options']</code>
       <code>(bool) $embeddablesImmutable</code>
     </RedundantCastGivenDocblockType>
-    <RedundantConditionGivenDocblockType occurrences="1">
+    <RedundantConditionGivenDocblockType occurrences="3">
+      <code>$metadata-&gt;sequenceGeneratorDefinition</code>
+      <code>$metadata-&gt;sequenceGeneratorDefinition</code>
       <code>isset($metadata-&gt;lifecycleCallbacks)</code>
     </RedundantConditionGivenDocblockType>
   </file>
@@ -3512,6 +3515,10 @@
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$_extension</code>
     </NonInvariantDocblockPropertyType>
+    <RedundantConditionGivenDocblockType occurrences="2">
+      <code>$metadata-&gt;table</code>
+      <code>$metadata-&gt;table</code>
+    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php">
     <ArgumentTypeCoercion occurrences="3">
@@ -3538,10 +3545,12 @@
     <PossiblyNullReference occurrences="1">
       <code>addAttribute</code>
     </PossiblyNullReference>
-    <RedundantCondition occurrences="1">
+    <RedundantCondition occurrences="2">
+      <code>$field['associationKey']</code>
       <code>isset($field['associationKey']) &amp;&amp; $field['associationKey']</code>
     </RedundantCondition>
-    <RedundantConditionGivenDocblockType occurrences="1">
+    <RedundantConditionGivenDocblockType occurrences="2">
+      <code>$sequenceDefinition</code>
       <code>isset($metadata-&gt;lifecycleCallbacks)</code>
     </RedundantConditionGivenDocblockType>
   </file>
@@ -3631,7 +3640,8 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/WhereInWalker.php">
-    <DocblockTypeContradiction occurrences="2">
+    <DocblockTypeContradiction occurrences="3">
+      <code>$AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalFactor</code>
       <code>$AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalPrimary</code>
     </DocblockTypeContradiction>
     <ImplementedReturnTypeMismatch occurrences="1">
@@ -3643,12 +3653,14 @@
     <PossiblyInvalidPropertyAssignmentValue occurrences="1">
       <code>$AST-&gt;whereClause-&gt;conditionalExpression</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>$AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalExpression</code>
-    </RedundantConditionGivenDocblockType>
+    <RedundantConditionGivenDocblockType occurrences="1"/>
   </file>
   <file src="lib/Doctrine/ORM/Tools/SchemaTool.php">
-    <DocblockTypeContradiction occurrences="1">
+    <DeprecatedMethod occurrences="1">
+      <code>canEmulateSchemas</code>
+    </DeprecatedMethod>
+    <DocblockTypeContradiction occurrences="2">
+      <code>! $definingClass</code>
       <code>$definingClass</code>
     </DocblockTypeContradiction>
     <MissingClosureParamType occurrences="1">

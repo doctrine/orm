@@ -636,7 +636,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         if (
             $platform instanceof Platforms\OraclePlatform
-            || $platform instanceof Platforms\PostgreSQL94Platform
             || $platform instanceof Platforms\PostgreSQLPlatform
         ) {
             return ClassMetadata::GENERATOR_TYPE_SEQUENCE;

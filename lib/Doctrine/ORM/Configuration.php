@@ -252,36 +252,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Gets the cache driver implementation that is used for query result caching.
-     */
-    public function getResultCache(): ?CacheItemPoolInterface
-    {
-        // Compatibility with DBAL < 3.2
-        if (! method_exists(parent::class, 'getResultCache')) {
-            $cacheImpl = $this->getResultCacheImpl();
-
-            return $cacheImpl ? CacheAdapter::wrap($cacheImpl) : null;
-        }
-
-        return parent::getResultCache();
-    }
-
-    /**
-     * Sets the cache driver implementation that is used for query result caching.
-     */
-    public function setResultCache(CacheItemPoolInterface $cache): void
-    {
-        // Compatibility with DBAL < 3.2
-        if (! method_exists(parent::class, 'setResultCache')) {
-            $this->setResultCacheImpl(DoctrineProvider::wrap($cache));
-
-            return;
-        }
-
-        parent::setResultCache($cache);
-    }
-
-    /**
      * Gets the cache driver implementation that is used for the query cache (SQL cache).
      *
      * @deprecated Call {@see getQueryCache()} instead.

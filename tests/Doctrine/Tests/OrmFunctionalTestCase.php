@@ -9,7 +9,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
-use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Types\Type;
@@ -666,7 +665,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $platform = static::$sharedConn->getDatabasePlatform();
             if (
                 $platform instanceof MySQLPlatform
-                || $platform instanceof PostgreSQL94Platform
                 || $platform instanceof PostgreSQLPlatform
             ) {
                 static::$sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/');

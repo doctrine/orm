@@ -189,7 +189,6 @@ class SchemaTool
         $eventManager         = $this->em->getEventManager();
         $metadataSchemaConfig = $this->schemaManager->createSchemaConfig();
 
-        $metadataSchemaConfig->setExplicitForeignKeyIndexes(false);
         $schema = new Schema([], [], $metadataSchemaConfig);
 
         $addedFks       = [];
@@ -929,7 +928,7 @@ class SchemaTool
         $fromSchema = $this->createSchemaForComparison($toSchema);
 
         $comparator = new Comparator();
-        $schemaDiff = $comparator->compare($fromSchema, $toSchema);
+        $schemaDiff = $comparator->compareSchemas($fromSchema, $toSchema);
 
         if ($saveMode) {
             return $schemaDiff->toSaveSql($this->platform);

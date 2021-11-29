@@ -23,7 +23,7 @@
         "doctrine/cache": "^1.12.1 || ^2.1.1",
         "doctrine/collections": "^1.5",
         "doctrine/common": "^3.0.3",
-        "doctrine/dbal": "^3.1.1",
+        "doctrine/dbal": "^3.2",
         "doctrine/deprecations": "^0.5.3",
         "doctrine/event-manager": "^1.1",
         "doctrine/inflector": "^1.4 || ^2.0",
@@ -38,12 +38,12 @@
         "doctrine/annotations": "^1.13",
         "doctrine/coding-standard": "^9.0",
         "phpbench/phpbench": "^1.0",
-        "phpstan/phpstan": "1.0.1",
+        "phpstan/phpstan": "1.2.0",
         "phpunit/phpunit": "^9.5",
         "squizlabs/php_codesniffer": "3.6.1",
         "symfony/cache": "^4.4 || ^5.2",
         "symfony/yaml": "^3.4 || ^4.0 || ^5.0 || ^6.0",
-        "vimeo/psalm": "4.10.0"
+        "vimeo/psalm": "4.13.1"
     },
     "conflict": {
         "doctrine/annotations": "<1.13 || >= 2.0"

@@ -566,18 +566,8 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
 
 		-
-			message: "#^Offset 'unique' on array\\{type\\: string, fieldName\\: string, columnName\\?\\: string, inherited\\?\\: class\\-string, nullable\\?\\: bool, originalClass\\?\\: class\\-string, originalField\\?\\: string, scale\\?\\: int, \\.\\.\\.\\} in isset\\(\\) does not exist\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
-
-		-
 			message: "#^Parameter \\#2 \\$type of static method Doctrine\\\\ORM\\\\Mapping\\\\MappingException\\:\\:invalidInheritanceType\\(\\) expects string, int given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
-
-		-
-			message: "#^Result of && is always false\\.$#"
-			count: 2
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
 
 		-
@@ -2197,11 +2187,6 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
 		-
-			message: "#^Offset 'options' on array\\{type\\: string, fieldName\\: string, columnName\\?\\: string, length\\?\\: int, id\\?\\: bool, nullable\\?\\: bool, columnDefinition\\?\\: string, precision\\?\\: int, \\.\\.\\.\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
-
-		-
 			message: "#^Offset 'schema' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
@@ -2212,7 +2197,7 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
 		-
-			message: "#^Offset 'version' on array\\{type\\: string, fieldName\\: string, options\\: array, columnName\\?\\: string, length\\?\\: int, id\\?\\: bool, nullable\\?\\: bool, columnDefinition\\?\\: string, \\.\\.\\.\\} in isset\\(\\) does not exist\\.$#"
+			message: "#^Offset 'version' on array\\{type\\: string, fieldName\\: string, columnName\\?\\: string, length\\?\\: int, id\\?\\: bool, nullable\\?\\: bool, columnDefinition\\?\\: string, precision\\?\\: int, \\.\\.\\.\\} in isset\\(\\) does not exist\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
@@ -2298,11 +2283,6 @@ parameters:
 
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/SchemaTool.php
-
-		-
-			message: "#^Offset 'columnDefinition' on array\\{type\\: string, fieldName\\: string, columnName\\?\\: string, inherited\\?\\: class\\-string, nullable\\?\\: bool, originalClass\\?\\: class\\-string, originalField\\?\\: string, scale\\?\\: int, \\.\\.\\.\\} in isset\\(\\) does not exist\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/SchemaTool.php
 
