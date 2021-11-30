@@ -44,7 +44,6 @@
       reference/annotations-reference
       reference/attributes-reference
       reference/xml-mapping
-      reference/yaml-mapping
       reference/php-mapping
       reference/caching
       reference/improving-performance

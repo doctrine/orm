@@ -42,15 +42,13 @@
         "phpunit/phpunit": "^9.5",
         "squizlabs/php_codesniffer": "3.6.1",
         "symfony/cache": "^4.4 || ^5.2",
-        "symfony/yaml": "^3.4 || ^4.0 || ^5.0 || ^6.0",
         "vimeo/psalm": "4.13.1"
     },
     "conflict": {
         "doctrine/annotations": "<1.13 || >= 2.0"
     },
     "suggest": {
-        "symfony/cache": "Provides cache support for Setup Tool with doctrine/cache 2.0",
-        "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
+        "symfony/cache": "Provides cache support for Setup Tool with doctrine/cache 2.0"
     },
     "autoload": {
         "psr-4": { "Doctrine\\ORM\\": "lib/Doctrine/ORM" }

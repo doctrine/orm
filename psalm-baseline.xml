@@ -1202,16 +1202,6 @@
       <code>$prefixes</code>
     </MissingParamType>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/Driver/SimplifiedYamlDriver.php">
-    <DeprecatedClass occurrences="2">
-      <code>YamlDriver</code>
-      <code>parent::__construct($locator, $fileExtension)</code>
-    </DeprecatedClass>
-    <MissingParamType occurrences="2">
-      <code>$fileExtension</code>
-      <code>$prefixes</code>
-    </MissingParamType>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php">
     <ArgumentTypeCoercion occurrences="1">
       <code>$metadata</code>
@@ -1302,91 +1292,6 @@
       <code>setPrimaryTable</code>
       <code>setSequenceGeneratorDefinition</code>
       <code>setVersionMapping</code>
-      <code>setVersionMapping</code>
-    </UndefinedInterfaceMethod>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/Driver/YamlDriver.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$metadata</code>
-    </ArgumentTypeCoercion>
-    <InvalidDocblock occurrences="1">
-      <code>private function cacheToArray(array $cacheMapping): array</code>
-    </InvalidDocblock>
-    <MissingParamType occurrences="2">
-      <code>$fileExtension</code>
-      <code>$locator</code>
-    </MissingParamType>
-    <NoInterfaceProperties occurrences="6">
-      <code>$metadata-&gt;inheritanceType</code>
-      <code>$metadata-&gt;isEmbeddedClass</code>
-      <code>$metadata-&gt;isMappedSuperclass</code>
-      <code>$metadata-&gt;table</code>
-      <code>$metadata-&gt;table</code>
-      <code>$metadata-&gt;table</code>
-    </NoInterfaceProperties>
-    <PossiblyUndefinedMethod occurrences="18">
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-    </PossiblyUndefinedMethod>
-    <UndefinedInterfaceMethod occurrences="43">
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>addEntityListener</code>
-      <code>addLifecycleCallback</code>
-      <code>addNamedNativeQuery</code>
-      <code>addNamedQuery</code>
-      <code>addSqlResultSetMapping</code>
-      <code>enableCache</code>
-      <code>getAssociationCacheDefaults</code>
-      <code>getAssociationCacheDefaults</code>
-      <code>getAssociationCacheDefaults</code>
-      <code>getAssociationCacheDefaults</code>
-      <code>mapEmbedded</code>
-      <code>mapField</code>
-      <code>mapField</code>
-      <code>mapManyToMany</code>
-      <code>mapManyToOne</code>
-      <code>mapOneToMany</code>
-      <code>mapOneToOne</code>
-      <code>markReadOnly</code>
-      <code>setAssociationOverride</code>
-      <code>setAttributeOverride</code>
-      <code>setChangeTrackingPolicy</code>
-      <code>setCustomGeneratorDefinition</code>
-      <code>setCustomRepositoryClass</code>
-      <code>setCustomRepositoryClass</code>
-      <code>setDiscriminatorColumn</code>
-      <code>setDiscriminatorColumn</code>
-      <code>setDiscriminatorMap</code>
-      <code>setIdGeneratorType</code>
-      <code>setIdGeneratorType</code>
-      <code>setInheritanceType</code>
-      <code>setPrimaryTable</code>
-      <code>setSequenceGeneratorDefinition</code>
       <code>setVersionMapping</code>
     </UndefinedInterfaceMethod>
   </file>
@@ -3447,10 +3352,9 @@
     </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Setup.php">
-    <DeprecatedClass occurrences="3">
+    <DeprecatedClass occurrences="2">
       <code>new ClassLoader('Doctrine', $directory)</code>
       <code>new ClassLoader('Symfony\Component', $directory . '/Doctrine')</code>
-      <code>new YamlDriver($paths)</code>
     </DeprecatedClass>
     <UnresolvableInclude occurrences="1">
       <code>require_once $directory . '/Doctrine/Common/ClassLoader.php'</code>

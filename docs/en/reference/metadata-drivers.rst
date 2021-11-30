@@ -15,7 +15,6 @@ metadata:
 -  **XML files** (XmlDriver)
 -  **Class DocBlock Annotations** (AnnotationDriver)
 -  **Attributes** (AttributeDriver)
--  **YAML files** (YamlDriver)
 -  **PHP Code in files or static functions** (PhpDriver)
 
 Something important to note about the above drivers is they are all
@@ -192,5 +191,3 @@ iterate over them:
     foreach ($class->fieldMappings as $fieldMapping) {
         echo $fieldMapping['fieldName'] . "\n";
     }
-
-

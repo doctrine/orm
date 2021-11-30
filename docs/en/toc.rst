@@ -46,7 +46,6 @@ Reference Guide
    reference/annotations-reference
    reference/attributes-reference
    reference/xml-mapping
-   reference/yaml-mapping
    reference/php-mapping
    reference/caching
    reference/improving-performance
@@ -84,4 +83,3 @@ Cookbook
    cookbook/mysql-enums
    cookbook/advanced-field-value-conversion-using-custom-mapping-types
    cookbook/entities-in-session
-

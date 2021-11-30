@@ -41,23 +41,6 @@ can specify the ``@OrderBy`` in the following way:
             </entity>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          manyToMany:
-            groups:
-              orderBy: { 'name': 'ASC' }
-              targetEntity: Group
-              joinTable:
-                name: users_groups
-                joinColumns:
-                  user_id:
-                    referencedColumnName: id
-                inverseJoinColumns:
-                  group_id:
-                    referencedColumnName: id
-
 The DQL Snippet in OrderBy is only allowed to consist of
 unqualified, unquoted field names and of an optional ASC/DESC
 positional statement. Multiple Fields are separated by a comma (,).
@@ -106,5 +89,3 @@ You can reverse the order with an explicit DQL ORDER BY:
 .. code-block:: sql
 
     SELECT u, g FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name DESC, g.name ASC
-
-
