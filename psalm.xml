@@ -92,6 +92,13 @@
                 <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
             </errorLevel>
         </RedundantCastGivenDocblockType>
+        <!-- Workaround for https://github.com/vimeo/psalm/issues/7026 -->
+        <ReservedWord>
+            <errorLevel type="suppress">
+                <directory name="lib"/>
+                <directory name="tests"/>
+            </errorLevel>
+        </ReservedWord>
         <TypeDoesNotContainType>
             <errorLevel type="suppress">
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
