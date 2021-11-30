@@ -6,6 +6,16 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -44,9 +54,9 @@ class DDC599Test extends OrmFunctionalTestCase
         $this->_em->remove($item);
         $this->_em->flush(); // Should not fail
 
-        $this->assertFalse($this->_em->contains($item));
+        self::assertFalse($this->_em->contains($item));
         $children = $item->getChildren();
-        $this->assertFalse($this->_em->contains($children[0]));
+        self::assertFalse($this->_em->contains($children[0]));
 
         $this->_em->clear();
 
@@ -64,17 +74,17 @@ class DDC599Test extends OrmFunctionalTestCase
         $this->_em->remove($item2);
         $this->_em->flush(); // should not fail
 
-        $this->assertFalse($this->_em->contains($item));
+        self::assertFalse($this->_em->contains($item));
         $children = $item->getChildren();
-        $this->assertFalse($this->_em->contains($children[0]));
+        self::assertFalse($this->_em->contains($children[0]));
     }
 
     public function testCascadeRemoveOnChildren(): void
     {
         $class = $this->_em->getClassMetadata(DDC599Subitem::class);
 
-        $this->assertArrayHasKey('children', $class->associationMappings);
-        $this->assertTrue($class->associationMappings['children']['isCascadeRemove']);
+        self::assertArrayHasKey('children', $class->associationMappings);
+        self::assertTrue($class->associationMappings['children']['isCascadeRemove']);
     }
 }
 

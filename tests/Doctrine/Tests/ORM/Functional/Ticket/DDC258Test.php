@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC258Test extends OrmFunctionalTestCase
@@ -49,27 +57,27 @@ class DDC258Test extends OrmFunctionalTestCase
 
         $e2 = $this->_em->find(DDC258Super::class, $c2->id);
 
-        $this->assertInstanceOf(DDC258Class2::class, $e2);
-        $this->assertEquals('Bar', $e2->title);
-        $this->assertEquals('Bar', $e2->description);
-        $this->assertEquals('Bar', $e2->text);
+        self::assertInstanceOf(DDC258Class2::class, $e2);
+        self::assertEquals('Bar', $e2->title);
+        self::assertEquals('Bar', $e2->description);
+        self::assertEquals('Bar', $e2->text);
 
         $all = $this->_em->getRepository(DDC258Super::class)->findAll();
 
         foreach ($all as $obj) {
             if ($obj instanceof DDC258Class1) {
-                $this->assertEquals('Foo', $obj->title);
-                $this->assertEquals('Foo', $obj->description);
+                self::assertEquals('Foo', $obj->title);
+                self::assertEquals('Foo', $obj->description);
             } elseif ($obj instanceof DDC258Class2) {
-                $this->assertTrue($e2 === $obj);
-                $this->assertEquals('Bar', $obj->title);
-                $this->assertEquals('Bar', $obj->description);
-                $this->assertEquals('Bar', $obj->text);
+                self::assertSame($e2, $obj);
+                self::assertEquals('Bar', $obj->title);
+                self::assertEquals('Bar', $obj->description);
+                self::assertEquals('Bar', $obj->text);
             } elseif ($obj instanceof DDC258Class3) {
-                $this->assertEquals('Baz', $obj->apples);
-                $this->assertEquals('Baz', $obj->bananas);
+                self::assertEquals('Baz', $obj->apples);
+                self::assertEquals('Baz', $obj->bananas);
             } else {
-                $this->fail('Instance of DDC258Class1, DDC258Class2 or DDC258Class3 expected.');
+                self::fail('Instance of DDC258Class1, DDC258Class2 or DDC258Class3 expected.');
             }
         }
     }

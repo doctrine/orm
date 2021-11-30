@@ -4,6 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -38,16 +47,16 @@ class DDC512Test extends OrmFunctionalTestCase
         $q      = $this->_em->createQuery('select u,i from ' . __NAMESPACE__ . '\\DDC512Customer u left join u.item i');
         $result = $q->getResult();
 
-        $this->assertEquals(2, count($result));
-        $this->assertInstanceOf(DDC512Customer::class, $result[0]);
-        $this->assertInstanceOf(DDC512Customer::class, $result[1]);
+        self::assertCount(2, $result);
+        self::assertInstanceOf(DDC512Customer::class, $result[0]);
+        self::assertInstanceOf(DDC512Customer::class, $result[1]);
         if ($result[0]->id === $customer1->id) {
-            $this->assertInstanceOf(DDC512OfferItem::class, $result[0]->item);
-            $this->assertEquals($item->id, $result[0]->item->id);
-            $this->assertNull($result[1]->item);
+            self::assertInstanceOf(DDC512OfferItem::class, $result[0]->item);
+            self::assertEquals($item->id, $result[0]->item->id);
+            self::assertNull($result[1]->item);
         } else {
-            $this->assertInstanceOf(DDC512OfferItem::class, $result[1]->item);
-            $this->assertNull($result[0]->item);
+            self::assertInstanceOf(DDC512OfferItem::class, $result[1]->item);
+            self::assertNull($result[0]->item);
         }
     }
 }

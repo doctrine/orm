@@ -5,6 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use DateTimeImmutable;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function ltrim;
@@ -50,7 +55,9 @@ final class GH7941Test extends OrmFunctionalTestCase
         $result = $query->getSingleResult();
 
         self::assertSame(6, $result['count']);
-        self::assertSame('325', $result['sales']);
+
+        // While other drivers will return a string, pdo_sqlite returns an integer as of PHP 8.1
+        self::assertEquals(325, $result['sales']);
 
         // Driver return type and precision is determined by the underlying php extension, most seem to return a string.
         // pdo_mysql and mysqli both currently return '54.1667' so this is the maximum precision we can assert.
@@ -68,7 +75,7 @@ final class GH7941Test extends OrmFunctionalTestCase
         foreach ($query->getResult() as $i => $item) {
             $product = self::PRODUCTS[$i];
 
-            self::assertSame(ltrim($product['price'], '-'), $item['absolute']);
+            self::assertEquals(ltrim($product['price'], '-'), $item['absolute']);
             self::assertSame(strlen($product['name']), $item['length']);
 
             // Driver return types for the `square_root` column are inconsistent depending on the underlying

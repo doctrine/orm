@@ -35,7 +35,7 @@ class DDC2074Test extends OrmFunctionalTestCase
         $clonedCollection = clone $collection;
         $clonedCollection->clear();
 
-        $this->assertEquals(0, count($uow->getScheduledCollectionDeletions()));
+        self::assertCount(0, $uow->getScheduledCollectionDeletions());
     }
 
     public function testSavingClonedPersistentCollection(): void
@@ -58,9 +58,9 @@ class DDC2074Test extends OrmFunctionalTestCase
         $product1 = $this->_em->find(ECommerceProduct::class, $product->getId());
         $product2 = $this->_em->find(ECommerceProduct::class, $newProduct->getId());
 
-        $this->assertCount(1, $product1->getCategories());
-        $this->assertCount(1, $product2->getCategories());
+        self::assertCount(1, $product1->getCategories());
+        self::assertCount(1, $product2->getCategories());
 
-        $this->assertSame($product1->getCategories()->get(0), $product2->getCategories()->get(0));
+        self::assertSame($product1->getCategories()->get(0), $product2->getCategories()->get(0));
     }
 }

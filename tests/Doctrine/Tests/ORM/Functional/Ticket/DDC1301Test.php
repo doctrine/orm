@@ -47,14 +47,14 @@ class DDC1301Test extends OrmFunctionalTestCase
         $user       = $this->_em->find(Models\Legacy\LegacyUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($user->articles->isInitialized());
-        $this->assertEquals(2, count($user->articles));
-        $this->assertFalse($user->articles->isInitialized());
+        self::assertFalse($user->articles->isInitialized());
+        self::assertCount(2, $user->articles);
+        self::assertFalse($user->articles->isInitialized());
 
         foreach ($user->articles as $article) {
         }
 
-        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount(), 'Expecting two queries to be fired for count, then iteration.');
+        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), 'Expecting two queries to be fired for count, then iteration.');
     }
 
     public function testCountNotInitializesLegacyCollectionWithForeignIdentifier(): void
@@ -62,14 +62,14 @@ class DDC1301Test extends OrmFunctionalTestCase
         $user       = $this->_em->find(Models\Legacy\LegacyUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($user->references->isInitialized());
-        $this->assertEquals(2, count($user->references));
-        $this->assertFalse($user->references->isInitialized());
+        self::assertFalse($user->references->isInitialized());
+        self::assertCount(2, $user->references);
+        self::assertFalse($user->references->isInitialized());
 
         foreach ($user->references as $reference) {
         }
 
-        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount(), 'Expecting two queries to be fired for count, then iteration.');
+        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), 'Expecting two queries to be fired for count, then iteration.');
     }
 
     public function testCountNotInitializesLegacyManyToManyCollection(): void
@@ -77,14 +77,14 @@ class DDC1301Test extends OrmFunctionalTestCase
         $user       = $this->_em->find(Models\Legacy\LegacyUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($user->cars->isInitialized());
-        $this->assertEquals(3, count($user->cars));
-        $this->assertFalse($user->cars->isInitialized());
+        self::assertFalse($user->cars->isInitialized());
+        self::assertCount(3, $user->cars);
+        self::assertFalse($user->cars->isInitialized());
 
         foreach ($user->cars as $reference) {
         }
 
-        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount(), 'Expecting two queries to be fired for count, then iteration.');
+        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), 'Expecting two queries to be fired for count, then iteration.');
     }
 
     public function loadFixture(): void

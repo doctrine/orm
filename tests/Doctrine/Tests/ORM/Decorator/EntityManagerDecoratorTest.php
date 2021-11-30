@@ -68,6 +68,16 @@ class EntityManagerDecoratorTest extends TestCase
             return [$method->getName(), ['name', new ResultSetMapping()]];
         }
 
+        if ($method->getName() === 'wrapInTransaction') {
+            return [
+                $method->getName(),
+                [
+                    static function (): void {
+                    },
+                ],
+            ];
+        }
+
         if ($method->getNumberOfRequiredParameters() === 0) {
             return [$method->getName(), []];
         }
@@ -88,9 +98,9 @@ class EntityManagerDecoratorTest extends TestCase
      */
     public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters): void
     {
-        $return = ! in_array($method, self::VOID_METHODS) ? 'INNER VALUE FROM ' . $method : null;
+        $return = ! in_array($method, self::VOID_METHODS, true) ? 'INNER VALUE FROM ' . $method : null;
 
-        $this->wrapped->expects($this->once())
+        $this->wrapped->expects(self::once())
             ->method($method)
             ->with(...$parameters)
             ->willReturn($return);
@@ -98,6 +108,6 @@ class EntityManagerDecoratorTest extends TestCase
         $decorator = new class ($this->wrapped) extends EntityManagerDecorator {
         };
 
-        $this->assertSame($return, $decorator->$method(...$parameters));
+        self::assertSame($return, $decorator->$method(...$parameters));
     }
 }

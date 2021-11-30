@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -74,14 +74,14 @@ class ManyToOneOrphanRemovalTest extends OrmFunctionalTestCase
         );
         $result = $query->getResult();
 
-        $this->assertEquals(0, count($result), 'Person should be removed by EntityManager');
+        self::assertEquals(0, count($result), 'Person should be removed by EntityManager');
 
         $query  = $this->_em->createQuery(
             'SELECT p FROM Doctrine\Tests\Models\OrnementalOrphanRemoval\PhoneNumber p'
         );
         $result = $query->getResult();
 
-        $this->assertEquals(2, count($result), 'Orphan removal should not kick in');
+        self::assertEquals(2, count($result), 'Orphan removal should not kick in');
     }
 
     protected function getEntityManager(

@@ -1,27 +1,12 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
@@ -205,24 +190,25 @@ class EntityGenerator
     /**
      * Hash-map for handle types.
      *
-     * @psalm-var array<Type::*, string>
+     * @psalm-var array<Types::*|'json_array', string>
      */
     protected $typeAlias = [
-        Type::DATETIMETZ    => '\DateTime',
-        Type::DATETIME      => '\DateTime',
-        Type::DATE          => '\DateTime',
-        Type::TIME          => '\DateTime',
-        Type::OBJECT        => '\stdClass',
-        Type::INTEGER       => 'int',
-        Type::BIGINT        => 'int',
-        Type::SMALLINT      => 'int',
-        Type::TEXT          => 'string',
-        Type::BLOB          => 'string',
-        Type::DECIMAL       => 'string',
-        Type::GUID          => 'string',
-        Type::JSON_ARRAY    => 'array',
-        Type::SIMPLE_ARRAY  => 'array',
-        Type::BOOLEAN       => 'bool',
+        Types::DATETIMETZ_MUTABLE => '\DateTime',
+        Types::DATETIME_MUTABLE   => '\DateTime',
+        Types::DATE_MUTABLE       => '\DateTime',
+        Types::TIME_MUTABLE       => '\DateTime',
+        Types::OBJECT             => '\stdClass',
+        Types::INTEGER            => 'int',
+        Types::BIGINT             => 'int',
+        Types::SMALLINT           => 'int',
+        Types::TEXT               => 'string',
+        Types::BLOB               => 'string',
+        Types::DECIMAL            => 'string',
+        Types::GUID               => 'string',
+        'json_array'              => 'array',
+        Types::JSON               => 'array',
+        Types::SIMPLE_ARRAY       => 'array',
+        Types::BOOLEAN            => 'bool',
     ];
 
     /**
@@ -233,7 +219,6 @@ class EntityGenerator
     protected static $generatorStrategyMap = [
         ClassMetadataInfo::GENERATOR_TYPE_AUTO      => 'AUTO',
         ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE  => 'SEQUENCE',
-        ClassMetadataInfo::GENERATOR_TYPE_TABLE     => 'TABLE',
         ClassMetadataInfo::GENERATOR_TYPE_IDENTITY  => 'IDENTITY',
         ClassMetadataInfo::GENERATOR_TYPE_NONE      => 'NONE',
         ClassMetadataInfo::GENERATOR_TYPE_UUID      => 'UUID',
@@ -1155,7 +1140,11 @@ public function __construct(<params>)
             return '';
         }
 
-        $discrColumn      = $metadata->discriminatorColumn;
+        $discrColumn = $metadata->discriminatorColumn;
+        if ($discrColumn === null) {
+            return '';
+        }
+
         $columnDefinition = 'name="' . $discrColumn['name']
             . '", type="' . $discrColumn['type']
             . '", length=' . $discrColumn['length'];
@@ -1417,7 +1406,7 @@ public function __construct(<params>)
         $methodName   = $type . $this->inflector->classify($fieldName);
         $variableName = $this->inflector->camelize($fieldName);
 
-        if (in_array($type, ['add', 'remove'])) {
+        if (in_array($type, ['add', 'remove'], true)) {
             $methodName   = $this->inflector->singularize($methodName);
             $variableName = $this->inflector->singularize($variableName);
         }

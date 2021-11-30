@@ -15,9 +15,13 @@ jobs:
     runs-on: "ubuntu-20.04"
 
     strategy:
+      fail-fast: false
       matrix:
         php-version:
           - "8.0"
+        dbal-version:
+          - "default"
+          - "2.13"
 
     steps:
       - name: "Checkout code"
@@ -28,6 +32,10 @@ jobs:
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
+
+      - name: "Require specific DBAL version"
+        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
+        if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
@@ -36,15 +44,24 @@ jobs:
 
       - name: "Run a static analysis with phpstan/phpstan"
         run: "vendor/bin/phpstan analyse"
+        if: "${{ matrix.dbal-version == 'default' }}"
+
+      - name: "Run a static analysis with phpstan/phpstan"
+        run: "vendor/bin/phpstan analyse -c phpstan-dbal2.neon"
+        if: "${{ matrix.dbal-version == '2.13' }}"
 
   static-analysis-psalm:
     name: "Static Analysis with Psalm"
     runs-on: "ubuntu-20.04"
 
     strategy:
+      fail-fast: false
       matrix:
         php-version:
           - "8.0"
+        dbal-version:
+          - "default"
+          - "2.13"
 
     steps:
       - name: "Checkout code"
@@ -55,6 +72,10 @@ jobs:
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
+
+      - name: "Require specific DBAL version"
+        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
+        if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"

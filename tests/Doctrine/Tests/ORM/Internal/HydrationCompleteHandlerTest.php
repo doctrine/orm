@@ -2,24 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
-
 namespace Doctrine\Tests\ORM\Internal;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -70,22 +52,22 @@ class HydrationCompleteHandlerTest extends TestCase
 
         $this
             ->listenersInvoker
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('getSubscribedSystems')
             ->with($metadata)
-            ->will($this->returnValue($listenersFlag));
+            ->will(self::returnValue($listenersFlag));
 
         $this->handler->deferPostLoadInvoking($metadata, $entity);
 
         $this
             ->listenersInvoker
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('invoke')
             ->with(
                 $metadata,
                 Events::postLoad,
                 $entity,
-                $this->callback(static function (LifecycleEventArgs $args) use ($entityManager, $entity) {
+                self::callback(static function (LifecycleEventArgs $args) use ($entityManager, $entity) {
                     return $entity === $args->getEntity() && $entityManager === $args->getObjectManager();
                 }),
                 $listenersFlag
@@ -105,14 +87,14 @@ class HydrationCompleteHandlerTest extends TestCase
 
         $this
             ->listenersInvoker
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('getSubscribedSystems')
             ->with($metadata)
-            ->will($this->returnValue($listenersFlag));
+            ->will(self::returnValue($listenersFlag));
 
         $this->handler->deferPostLoadInvoking($metadata, $entity);
 
-        $this->listenersInvoker->expects($this->once())->method('invoke');
+        $this->listenersInvoker->expects(self::once())->method('invoke');
 
         $this->handler->hydrationComplete();
         $this->handler->hydrationComplete();
@@ -131,23 +113,23 @@ class HydrationCompleteHandlerTest extends TestCase
 
         $this
             ->listenersInvoker
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('getSubscribedSystems')
-            ->with($this->logicalOr($metadata1, $metadata2))
-            ->will($this->returnValue($listenersFlag));
+            ->with(self::logicalOr($metadata1, $metadata2))
+            ->will(self::returnValue($listenersFlag));
 
         $this->handler->deferPostLoadInvoking($metadata1, $entity1);
         $this->handler->deferPostLoadInvoking($metadata2, $entity2);
 
         $this
             ->listenersInvoker
-            ->expects($this->exactly(2))
+            ->expects(self::exactly(2))
             ->method('invoke')
             ->with(
-                $this->logicalOr($metadata1, $metadata2),
+                self::logicalOr($metadata1, $metadata2),
                 Events::postLoad,
-                $this->logicalOr($entity1, $entity2),
-                $this->callback(static function (LifecycleEventArgs $args) use ($entityManager, $entity1, $entity2) {
+                self::logicalOr($entity1, $entity2),
+                self::callback(static function (LifecycleEventArgs $args) use ($entityManager, $entity1, $entity2) {
                     return in_array($args->getEntity(), [$entity1, $entity2], true)
                         && $entityManager === $args->getObjectManager();
                 }),
@@ -165,14 +147,14 @@ class HydrationCompleteHandlerTest extends TestCase
 
         $this
             ->listenersInvoker
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('getSubscribedSystems')
             ->with($metadata)
-            ->will($this->returnValue(ListenersInvoker::INVOKE_NONE));
+            ->will(self::returnValue(ListenersInvoker::INVOKE_NONE));
 
         $this->handler->deferPostLoadInvoking($metadata, $entity);
 
-        $this->listenersInvoker->expects($this->never())->method('invoke');
+        $this->listenersInvoker->expects(self::never())->method('invoke');
 
         $this->handler->hydrationComplete();
     }

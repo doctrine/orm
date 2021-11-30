@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -13,8 +20,9 @@ class DDC1360Test extends OrmFunctionalTestCase
 {
     public function testSchemaDoubleQuotedCreate(): void
     {
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'postgresql') {
-            $this->markTestSkipped('PostgreSQL only test.');
+        $platform = $this->_em->getConnection()->getDatabasePlatform();
+        if (! $platform instanceof PostgreSQL94Platform && ! $platform instanceof PostgreSQLPlatform) {
+            self::markTestSkipped('PostgreSQL only test.');
         }
 
         $sql = $this->_schemaTool->getCreateSchemaSql(
@@ -23,7 +31,7 @@ class DDC1360Test extends OrmFunctionalTestCase
             ]
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'CREATE SCHEMA user',
                 'CREATE TABLE "user"."user" (id INT NOT NULL, PRIMARY KEY(id))',

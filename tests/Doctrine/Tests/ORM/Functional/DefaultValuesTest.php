@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -17,16 +24,19 @@ class DefaultValuesTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DefaultValueUser::class),
-                    $this->_em->getClassMetadata(DefaultValueAddress::class),
-                ]
-            );
-        } catch (Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(DefaultValueUser::class),
+            $this->_em->getClassMetadata(DefaultValueAddress::class),
+        ]);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->_schemaTool->dropSchema([
+            $this->_em->getClassMetadata(DefaultValueUser::class),
+            $this->_em->getClassMetadata(DefaultValueAddress::class),
+        ]);
+        parent::tearDown();
     }
 
     /**
@@ -44,7 +54,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         $user2  = $this->_em->getReference(get_class($user), $userId);
 
         $this->_em->flush();
-        $this->assertFalse($user2->__isInitialized__);
+        self::assertFalse($user2->__isInitialized__);
 
         $a          = new DefaultValueAddress();
         $a->country = 'de';
@@ -56,13 +66,13 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         $this->_em->persist($a);
         $this->_em->flush();
 
-        $this->assertFalse($user2->__isInitialized__);
+        self::assertFalse($user2->__isInitialized__);
         $this->_em->clear();
 
         $a2 = $this->_em->find(get_class($a), $a->id);
-        $this->assertInstanceOf(DefaultValueUser::class, $a2->getUser());
-        $this->assertEquals($userId, $a2->getUser()->getId());
-        $this->assertEquals('Poweruser', $a2->getUser()->type);
+        self::assertInstanceOf(DefaultValueUser::class, $a2->getUser());
+        self::assertEquals($userId, $a2->getUser()->getId());
+        self::assertEquals('Poweruser', $a2->getUser()->type);
     }
 
     /**
@@ -79,14 +89,14 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $user = $this->_em->getPartialReference(DefaultValueUser::class, $user->id);
-        $this->assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
+        self::assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
 
         $this->_em->flush();
         $this->_em->clear();
 
         $user = $this->_em->find(DefaultValueUser::class, $user->id);
 
-        $this->assertEquals('Normaluser', $user->type);
+        self::assertEquals('Normaluser', $user->type);
     }
 }
 

@@ -6,6 +6,13 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -37,39 +44,39 @@ class DDC1335Test extends OrmFunctionalTestCase
         $query  = $this->_em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertEquals(count($result), 3);
-        $this->assertArrayHasKey(1, $result);
-        $this->assertArrayHasKey(2, $result);
-        $this->assertArrayHasKey(3, $result);
+        self::assertCount(3, $result);
+        self::assertArrayHasKey(1, $result);
+        self::assertArrayHasKey(2, $result);
+        self::assertArrayHasKey(3, $result);
 
         $dql    = 'SELECT u, p FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.email INNER JOIN u.phones p INDEX BY p.id';
         $query  = $this->_em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertEquals(count($result), 3);
-        $this->assertArrayHasKey('foo@foo.com', $result);
-        $this->assertArrayHasKey('bar@bar.com', $result);
-        $this->assertArrayHasKey('foobar@foobar.com', $result);
+        self::assertCount(3, $result);
+        self::assertArrayHasKey('foo@foo.com', $result);
+        self::assertArrayHasKey('bar@bar.com', $result);
+        self::assertArrayHasKey('foobar@foobar.com', $result);
 
-        $this->assertEquals(count($result['foo@foo.com']->phones), 3);
-        $this->assertEquals(count($result['bar@bar.com']->phones), 3);
-        $this->assertEquals(count($result['foobar@foobar.com']->phones), 3);
+        self::assertCount(3, $result['foo@foo.com']->phones);
+        self::assertCount(3, $result['bar@bar.com']->phones);
+        self::assertCount(3, $result['foobar@foobar.com']->phones);
 
         $foo    = $result['foo@foo.com']->phones->toArray();
         $bar    = $result['bar@bar.com']->phones->toArray();
         $foobar = $result['foobar@foobar.com']->phones->toArray();
 
-        $this->assertArrayHasKey(1, $foo);
-        $this->assertArrayHasKey(2, $foo);
-        $this->assertArrayHasKey(3, $foo);
+        self::assertArrayHasKey(1, $foo);
+        self::assertArrayHasKey(2, $foo);
+        self::assertArrayHasKey(3, $foo);
 
-        $this->assertArrayHasKey(4, $bar);
-        $this->assertArrayHasKey(5, $bar);
-        $this->assertArrayHasKey(6, $bar);
+        self::assertArrayHasKey(4, $bar);
+        self::assertArrayHasKey(5, $bar);
+        self::assertArrayHasKey(6, $bar);
 
-        $this->assertArrayHasKey(7, $foobar);
-        $this->assertArrayHasKey(8, $foobar);
-        $this->assertArrayHasKey(9, $foobar);
+        self::assertArrayHasKey(7, $foobar);
+        self::assertArrayHasKey(8, $foobar);
+        self::assertArrayHasKey(9, $foobar);
     }
 
     public function testTicket(): void
@@ -80,11 +87,11 @@ class DDC1335Test extends OrmFunctionalTestCase
         $dql    = $builder->getQuery()->getDQL();
         $result = $builder->getQuery()->getResult();
 
-        $this->assertEquals(count($result), 3);
-        $this->assertArrayHasKey(1, $result);
-        $this->assertArrayHasKey(2, $result);
-        $this->assertArrayHasKey(3, $result);
-        $this->assertEquals('SELECT u FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.id', $dql);
+        self::assertCount(3, $result);
+        self::assertArrayHasKey(1, $result);
+        self::assertArrayHasKey(2, $result);
+        self::assertArrayHasKey(3, $result);
+        self::assertEquals('SELECT u FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.id', $dql);
     }
 
     public function testIndexByUnique(): void
@@ -95,11 +102,11 @@ class DDC1335Test extends OrmFunctionalTestCase
         $dql    = $builder->getQuery()->getDQL();
         $result = $builder->getQuery()->getResult();
 
-        $this->assertEquals(count($result), 3);
-        $this->assertArrayHasKey('foo@foo.com', $result);
-        $this->assertArrayHasKey('bar@bar.com', $result);
-        $this->assertArrayHasKey('foobar@foobar.com', $result);
-        $this->assertEquals('SELECT u FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.email', $dql);
+        self::assertCount(3, $result);
+        self::assertArrayHasKey('foo@foo.com', $result);
+        self::assertArrayHasKey('bar@bar.com', $result);
+        self::assertArrayHasKey('foobar@foobar.com', $result);
+        self::assertEquals('SELECT u FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.email', $dql);
     }
 
     public function testIndexWithJoin(): void
@@ -112,28 +119,28 @@ class DDC1335Test extends OrmFunctionalTestCase
         $dql    = $builder->getQuery()->getDQL();
         $result = $builder->getQuery()->getResult();
 
-        $this->assertEquals(count($result), 3);
-        $this->assertArrayHasKey('foo@foo.com', $result);
-        $this->assertArrayHasKey('bar@bar.com', $result);
-        $this->assertArrayHasKey('foobar@foobar.com', $result);
+        self::assertCount(3, $result);
+        self::assertArrayHasKey('foo@foo.com', $result);
+        self::assertArrayHasKey('bar@bar.com', $result);
+        self::assertArrayHasKey('foobar@foobar.com', $result);
 
-        $this->assertEquals(count($result['foo@foo.com']->phones), 3);
-        $this->assertEquals(count($result['bar@bar.com']->phones), 3);
-        $this->assertEquals(count($result['foobar@foobar.com']->phones), 3);
+        self::assertCount(3, $result['foo@foo.com']->phones);
+        self::assertCount(3, $result['bar@bar.com']->phones);
+        self::assertCount(3, $result['foobar@foobar.com']->phones);
 
-        $this->assertArrayHasKey(1, $result['foo@foo.com']->phones->toArray());
-        $this->assertArrayHasKey(2, $result['foo@foo.com']->phones->toArray());
-        $this->assertArrayHasKey(3, $result['foo@foo.com']->phones->toArray());
+        self::assertArrayHasKey(1, $result['foo@foo.com']->phones->toArray());
+        self::assertArrayHasKey(2, $result['foo@foo.com']->phones->toArray());
+        self::assertArrayHasKey(3, $result['foo@foo.com']->phones->toArray());
 
-        $this->assertArrayHasKey(4, $result['bar@bar.com']->phones->toArray());
-        $this->assertArrayHasKey(5, $result['bar@bar.com']->phones->toArray());
-        $this->assertArrayHasKey(6, $result['bar@bar.com']->phones->toArray());
+        self::assertArrayHasKey(4, $result['bar@bar.com']->phones->toArray());
+        self::assertArrayHasKey(5, $result['bar@bar.com']->phones->toArray());
+        self::assertArrayHasKey(6, $result['bar@bar.com']->phones->toArray());
 
-        $this->assertArrayHasKey(7, $result['foobar@foobar.com']->phones->toArray());
-        $this->assertArrayHasKey(8, $result['foobar@foobar.com']->phones->toArray());
-        $this->assertArrayHasKey(9, $result['foobar@foobar.com']->phones->toArray());
+        self::assertArrayHasKey(7, $result['foobar@foobar.com']->phones->toArray());
+        self::assertArrayHasKey(8, $result['foobar@foobar.com']->phones->toArray());
+        self::assertArrayHasKey(9, $result['foobar@foobar.com']->phones->toArray());
 
-        $this->assertEquals('SELECT u, p FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.email INNER JOIN u.phones p INDEX BY p.id', $dql);
+        self::assertEquals('SELECT u, p FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.email INNER JOIN u.phones p INDEX BY p.id', $dql);
     }
 
     private function loadFixture(): void

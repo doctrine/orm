@@ -5,6 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Proxy\Proxy;
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
@@ -51,8 +57,8 @@ class DDC2230Test extends OrmFunctionalTestCase
         $address = $mergedUser->address;
         assert($address instanceof Proxy);
 
-        $this->assertInstanceOf(Proxy::class, $address);
-        $this->assertFalse($address->__isInitialized());
+        self::assertInstanceOf(Proxy::class, $address);
+        self::assertFalse($address->__isInitialized());
     }
 
     public function testNotifyTrackingCalledOnProxyInitialization(): void
@@ -66,12 +72,12 @@ class DDC2230Test extends OrmFunctionalTestCase
         $addressProxy = $this->_em->getReference(DDC2230Address::class, $insertedAddress->id);
         assert($addressProxy instanceof Proxy || $addressProxy instanceof DDC2230Address);
 
-        $this->assertFalse($addressProxy->__isInitialized());
-        $this->assertNull($addressProxy->listener);
+        self::assertFalse($addressProxy->__isInitialized());
+        self::assertNull($addressProxy->listener);
 
         $addressProxy->__load();
 
-        $this->assertSame($this->_em->getUnitOfWork(), $addressProxy->listener);
+        self::assertSame($this->_em->getUnitOfWork(), $addressProxy->listener);
     }
 }
 

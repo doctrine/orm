@@ -1,22 +1,6 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\Filter;
 
@@ -59,8 +43,6 @@ abstract class SQLFilter
     private $parameters = [];
 
     /**
-     * Constructs the SQLFilter object.
-     *
      * @param EntityManagerInterface $em The entity manager.
      */
     final public function __construct(EntityManagerInterface $em)
@@ -76,7 +58,7 @@ abstract class SQLFilter
      * @param string       $type   The parameter type. If specified, the given value will be run through
      *                             the type conversion of this type.
      *
-     * @return self The current SQL filter.
+     * @return $this
      */
     final public function setParameterList(string $name, array $values, string $type = Types::STRING): self
     {
@@ -100,7 +82,7 @@ abstract class SQLFilter
      *                           the type conversion of this type. This is usually not needed for
      *                           strings and numeric types.
      *
-     * @return self The current SQL filter.
+     * @return $this
      */
     final public function setParameter($name, $value, $type = null): self
     {

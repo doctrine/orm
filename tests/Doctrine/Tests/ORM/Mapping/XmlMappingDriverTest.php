@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
@@ -54,13 +55,13 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
             'baz' => CTIBaz::class,
         ];
 
-        $this->assertEquals(3, count($class->discriminatorMap));
-        $this->assertEquals($expectedMap, $class->discriminatorMap);
+        self::assertCount(3, $class->discriminatorMap);
+        self::assertEquals($expectedMap, $class->discriminatorMap);
     }
 
     public function testFailingSecondLevelCacheAssociation(): void
     {
-        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectException(CacheException::class);
         $this->expectExceptionMessage('Entity association field "Doctrine\Tests\ORM\Mapping\XMLSLC#foo" not configured as part of the second-level cache.');
         $mappingDriver = $this->loadDriver();
 
@@ -79,18 +80,18 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
         $class = $factory->getMetadataFor(DDC117Translation::class);
 
-        $this->assertEquals(['language', 'article'], $class->identifier);
-        $this->assertArrayHasKey('article', $class->associationMappings);
+        self::assertEquals(['language', 'article'], $class->identifier);
+        self::assertArrayHasKey('article', $class->associationMappings);
 
-        $this->assertArrayHasKey('id', $class->associationMappings['article']);
-        $this->assertTrue($class->associationMappings['article']['id']);
+        self::assertArrayHasKey('id', $class->associationMappings['article']);
+        self::assertTrue($class->associationMappings['article']['id']);
     }
 
     public function testEmbeddableMapping(): void
     {
         $class = $this->createClassMetadata(Name::class);
 
-        $this->assertEquals(true, $class->isEmbeddedClass);
+        self::assertTrue($class->isEmbeddedClass);
     }
 
     /**
@@ -106,7 +107,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $em->getConfiguration()->setMetadataDriverImpl($this->loadDriver());
         $factory->setEntityManager($em);
 
-        $this->assertEquals(
+        self::assertEquals(
             '__prefix__',
             $factory->getMetadataFor(DDC3293UserPrefixed::class)
                 ->embeddedClasses['address']['columnPrefix']
@@ -126,7 +127,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $em->getConfiguration()->setMetadataDriverImpl($this->loadDriver());
         $factory->setEntityManager($em);
 
-        $this->assertFalse(
+        self::assertFalse(
             $factory->getMetadataFor(DDC3293User::class)
                 ->embeddedClasses['address']['columnPrefix']
         );
@@ -136,7 +137,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     {
         $class = $this->createClassMetadata(Person::class);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'name' => [
                     'class' => Name::class,
@@ -170,7 +171,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
         $dom->load($xmlMappingFile);
 
-        $this->assertTrue($dom->schemaValidate($xsdSchemaFile));
+        self::assertTrue($dom->schemaValidate($xsdSchemaFile));
     }
 
     /**
@@ -183,7 +184,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         assert(is_array($list));
 
         $list = array_filter($list, static function (string $item) use ($invalid): bool {
-            return ! in_array(pathinfo($item, PATHINFO_FILENAME), $invalid);
+            return ! in_array(pathinfo($item, PATHINFO_FILENAME), $invalid, true);
         });
 
         return array_map(static function (string $item) {
@@ -202,7 +203,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $class->initializeReflection(new RuntimeReflectionService());
         $driver->loadMetadataForClass(GH7141Article::class, $class);
 
-        $this->assertEquals(
+        self::assertEquals(
             Criteria::ASC,
             $class->getMetadataValue('associationMappings')['tags']['orderBy']['position']
         );

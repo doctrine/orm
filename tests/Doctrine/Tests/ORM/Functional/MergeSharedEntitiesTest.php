@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -37,7 +43,7 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
 
         $picture = $this->_em->merge($picture);
 
-        $this->assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
+        self::assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
 
     public function testMergeSharedManagedEntities(): void
@@ -55,7 +61,7 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
 
         $picture = $this->_em->merge($picture);
 
-        $this->assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
+        self::assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
 
     public function testMergeSharedDetachedSerializedEntities(): void
@@ -75,7 +81,7 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
 
         $picture = $this->_em->merge(unserialize($serializedPicture));
 
-        $this->assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
+        self::assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
 
     /**
@@ -93,8 +99,8 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
 
         $admin2->setSession('zeh current session data');
 
-        $this->assertSame($admin1, $this->_em->merge($admin2));
-        $this->assertSame('zeh current session data', $admin1->getSession());
+        self::assertSame($admin1, $this->_em->merge($admin2));
+        self::assertSame('zeh current session data', $admin1->getSession());
     }
 }
 

@@ -78,30 +78,30 @@ class DDC117Test extends OrmFunctionalTestCase
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
 
         $mapRef = $this->_em->find(DDC117Reference::class, $idCriteria);
-        $this->assertInstanceOf(DDC117Reference::class, $mapRef);
-        $this->assertInstanceOf(DDC117Article::class, $mapRef->target());
-        $this->assertInstanceOf(DDC117Article::class, $mapRef->source());
-        $this->assertSame($mapRef, $this->_em->find(DDC117Reference::class, $idCriteria));
+        self::assertInstanceOf(DDC117Reference::class, $mapRef);
+        self::assertInstanceOf(DDC117Article::class, $mapRef->target());
+        self::assertInstanceOf(DDC117Article::class, $mapRef->source());
+        self::assertSame($mapRef, $this->_em->find(DDC117Reference::class, $idCriteria));
 
         $this->_em->clear();
 
         $dql    = 'SELECT r, s FROM ' . DDC117Reference::class . ' r JOIN r.source s WHERE r.source = ?1';
         $dqlRef = $this->_em->createQuery($dql)->setParameter(1, 1)->getSingleResult();
 
-        $this->assertInstanceOf(DDC117Reference::class, $mapRef);
-        $this->assertInstanceOf(DDC117Article::class, $mapRef->target());
-        $this->assertInstanceOf(DDC117Article::class, $mapRef->source());
-        $this->assertSame($dqlRef, $this->_em->find(DDC117Reference::class, $idCriteria));
+        self::assertInstanceOf(DDC117Reference::class, $mapRef);
+        self::assertInstanceOf(DDC117Article::class, $mapRef->target());
+        self::assertInstanceOf(DDC117Article::class, $mapRef->source());
+        self::assertSame($dqlRef, $this->_em->find(DDC117Reference::class, $idCriteria));
 
         $this->_em->clear();
 
         $dql    = 'SELECT r, s FROM ' . DDC117Reference::class . ' r JOIN r.source s WHERE s.title = ?1';
         $dqlRef = $this->_em->createQuery($dql)->setParameter(1, 'Foo')->getSingleResult();
 
-        $this->assertInstanceOf(DDC117Reference::class, $dqlRef);
-        $this->assertInstanceOf(DDC117Article::class, $dqlRef->target());
-        $this->assertInstanceOf(DDC117Article::class, $dqlRef->source());
-        $this->assertSame($dqlRef, $this->_em->find(DDC117Reference::class, $idCriteria));
+        self::assertInstanceOf(DDC117Reference::class, $dqlRef);
+        self::assertInstanceOf(DDC117Article::class, $dqlRef->target());
+        self::assertInstanceOf(DDC117Article::class, $dqlRef->source());
+        self::assertSame($dqlRef, $this->_em->find(DDC117Reference::class, $idCriteria));
 
         $dql    = 'SELECT r, s FROM ' . DDC117Reference::class . ' r JOIN r.source s WHERE s.title = ?1';
         $dqlRef = $this->_em->createQuery($dql)->setParameter(1, 'Foo')->getSingleResult();
@@ -117,14 +117,14 @@ class DDC117Test extends OrmFunctionalTestCase
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
 
         $mapRef = $this->_em->find(DDC117Reference::class, $idCriteria);
-        $this->assertNotNull($mapRef);
+        self::assertNotNull($mapRef);
         $mapRef->setDescription('New Description!!');
         $this->_em->flush();
         $this->_em->clear();
 
         $mapRef = $this->_em->find(DDC117Reference::class, $idCriteria);
 
-        $this->assertEquals('New Description!!', $mapRef->getDescription());
+        self::assertEquals('New Description!!', $mapRef->getDescription());
     }
 
     /**
@@ -135,11 +135,11 @@ class DDC117Test extends OrmFunctionalTestCase
         $dql  = 'SELECT r, s FROM Doctrine\Tests\Models\DDC117\DDC117Reference r JOIN r.source s WHERE s.title = ?1';
         $refs = $this->_em->createQuery($dql)->setParameter(1, 'Foo')->getResult();
 
-        $this->assertTrue(count($refs) > 0, 'Has to contain at least one Reference.');
+        self::assertGreaterThan(0, $refs, 'Has to contain at least one Reference.');
 
         foreach ($refs as $ref) {
-            $this->assertInstanceOf(DDC117Reference::class, $ref, 'Contains only Reference instances.');
-            $this->assertTrue($this->_em->contains($ref), 'Contains Reference in the IdentityMap.');
+            self::assertInstanceOf(DDC117Reference::class, $ref, 'Contains only Reference instances.');
+            self::assertTrue($this->_em->contains($ref), 'Contains Reference in the IdentityMap.');
         }
     }
 
@@ -156,7 +156,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertNull($this->_em->find(DDC117Reference::class, $idCriteria));
+        self::assertNull($this->_em->find(DDC117Reference::class, $idCriteria));
     }
 
     /**
@@ -173,7 +173,7 @@ class DDC117Test extends OrmFunctionalTestCase
                   ->setParameter(2, $this->article2->id())
                   ->execute();
 
-        $this->assertNull($this->_em->find(DDC117Reference::class, $idCriteria));
+        self::assertNull($this->_em->find(DDC117Reference::class, $idCriteria));
     }
 
     /**
@@ -183,11 +183,11 @@ class DDC117Test extends OrmFunctionalTestCase
     {
         $this->article1 = $this->_em->find(DDC117Article::class, $this->article1->id());
 
-        $this->assertEquals(1, count($this->article1->references()));
+        self::assertCount(1, $this->article1->references());
 
         foreach ($this->article1->references() as $this->reference) {
-            $this->assertInstanceOf(DDC117Reference::class, $this->reference);
-            $this->assertSame($this->article1, $this->reference->source());
+            self::assertInstanceOf(DDC117Reference::class, $this->reference);
+            self::assertSame($this->article1, $this->reference->source());
         }
 
         $this->_em->clear();
@@ -197,11 +197,11 @@ class DDC117Test extends OrmFunctionalTestCase
                                 ->setParameter(1, $this->article1->id())
                                 ->getSingleResult();
 
-        $this->assertEquals(1, count($this->article1->references()));
+        self::assertCount(1, $this->article1->references());
 
         foreach ($this->article1->references() as $this->reference) {
-            $this->assertInstanceOf(DDC117Reference::class, $this->reference);
-            $this->assertSame($this->article1, $this->reference->source());
+            self::assertInstanceOf(DDC117Reference::class, $this->reference);
+            self::assertSame($this->article1, $this->reference->source());
         }
     }
 
@@ -213,9 +213,9 @@ class DDC117Test extends OrmFunctionalTestCase
         $idCriteria = ['article' => $this->article1->id(), 'language' => 'en'];
 
         $this->translation = $this->_em->find(DDC117Translation::class, $idCriteria);
-        $this->assertInstanceOf(DDC117Translation::class, $this->translation);
+        self::assertInstanceOf(DDC117Translation::class, $this->translation);
 
-        $this->assertSame($this->translation, $this->_em->find(DDC117Translation::class, $idCriteria));
+        self::assertSame($this->translation, $this->_em->find(DDC117Translation::class, $idCriteria));
 
         $this->_em->clear();
 
@@ -225,7 +225,7 @@ class DDC117Test extends OrmFunctionalTestCase
                               ->setParameter(2, 'en')
                               ->getSingleResult();
 
-        $this->assertInstanceOf(DDC117Translation::class, $this->translation);
+        self::assertInstanceOf(DDC117Translation::class, $this->translation);
     }
 
     /**
@@ -245,7 +245,7 @@ class DDC117Test extends OrmFunctionalTestCase
             $exceptionThrown = true;
         }
 
-        $this->assertTrue($exceptionThrown, 'The underlying database driver throws an exception.');
+        self::assertTrue($exceptionThrown, 'The underlying database driver throws an exception.');
     }
 
     /**
@@ -267,7 +267,7 @@ class DDC117Test extends OrmFunctionalTestCase
 
         $article = $this->_em->find(get_class($this->article1), $this->article1->id());
         assert($article instanceof DDC117Article);
-        $this->assertEquals('not so very long text!', $article->getText());
+        self::assertEquals('not so very long text!', $article->getText());
     }
 
     /**
@@ -279,7 +279,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->_em->remove($article);
         $this->_em->flush();
 
-        $this->assertFalse($this->_em->contains($article->getDetails()));
+        self::assertFalse($this->_em->contains($article->getDetails()));
     }
 
     /**
@@ -287,10 +287,6 @@ class DDC117Test extends OrmFunctionalTestCase
      */
     public function testOneToOneCascadePersist(): void
     {
-        if (! $this->_em->getConnection()->getDatabasePlatform()->prefersSequences()) {
-            $this->markTestSkipped('Test only works with databases that prefer sequences as ID strategy.');
-        }
-
         $this->article1       = new DDC117Article('Foo');
         $this->articleDetails = new DDC117ArticleDetails($this->article1, 'Very long text');
 
@@ -318,9 +314,9 @@ class DDC117Test extends OrmFunctionalTestCase
 
         $approveChanges = $this->_em->find(DDC117ApproveChanges::class, $approveChanges->getId());
 
-        $this->assertInstanceOf(DDC117ArticleDetails::class, $approveChanges->getArticleDetails());
-        $this->assertInstanceOf(DDC117Reference::class, $approveChanges->getReference());
-        $this->assertInstanceOf(DDC117Translation::class, $approveChanges->getTranslation());
+        self::assertInstanceOf(DDC117ArticleDetails::class, $approveChanges->getArticleDetails());
+        self::assertInstanceOf(DDC117Reference::class, $approveChanges->getReference());
+        self::assertInstanceOf(DDC117Translation::class, $approveChanges->getTranslation());
     }
 
     /**
@@ -332,9 +328,9 @@ class DDC117Test extends OrmFunctionalTestCase
         assert($article instanceof DDC117Article);
 
         $translations = $article->getTranslations();
-        $this->assertFalse($translations->isInitialized());
-        $this->assertContainsOnly(DDC117Translation::class, $translations);
-        $this->assertTrue($translations->isInitialized());
+        self::assertFalse($translations->isInitialized());
+        self::assertContainsOnly(DDC117Translation::class, $translations);
+        self::assertTrue($translations->isInitialized());
     }
 
     /**
@@ -344,16 +340,16 @@ class DDC117Test extends OrmFunctionalTestCase
     {
         $editor = $this->loadEditorFixture();
 
-        $this->assertFalse($editor->reviewingTranslations->isInitialized());
-        $this->assertContainsOnly(DDC117Translation::class, $editor->reviewingTranslations);
-        $this->assertTrue($editor->reviewingTranslations->isInitialized());
+        self::assertFalse($editor->reviewingTranslations->isInitialized());
+        self::assertContainsOnly(DDC117Translation::class, $editor->reviewingTranslations);
+        self::assertTrue($editor->reviewingTranslations->isInitialized());
 
         $this->_em->clear();
 
         $dql    = 'SELECT e, t FROM Doctrine\Tests\Models\DDC117\DDC117Editor e JOIN e.reviewingTranslations t WHERE e.id = ?1';
         $editor = $this->_em->createQuery($dql)->setParameter(1, $editor->id)->getSingleResult();
-        $this->assertTrue($editor->reviewingTranslations->isInitialized());
-        $this->assertContainsOnly(DDC117Translation::class, $editor->reviewingTranslations);
+        self::assertTrue($editor->reviewingTranslations->isInitialized());
+        self::assertContainsOnly(DDC117Translation::class, $editor->reviewingTranslations);
     }
 
     /**
@@ -362,14 +358,14 @@ class DDC117Test extends OrmFunctionalTestCase
     public function testClearManyToManyCollectionOfForeignKeyEntities(): void
     {
         $editor = $this->loadEditorFixture();
-        $this->assertEquals(3, count($editor->reviewingTranslations));
+        self::assertCount(3, $editor->reviewingTranslations);
 
         $editor->reviewingTranslations->clear();
         $this->_em->flush();
         $this->_em->clear();
 
         $editor = $this->_em->find(get_class($editor), $editor->id);
-        $this->assertEquals(0, count($editor->reviewingTranslations));
+        self::assertCount(0, $editor->reviewingTranslations);
     }
 
     /**
@@ -379,11 +375,11 @@ class DDC117Test extends OrmFunctionalTestCase
     {
         $editor = $this->loadEditorFixture();
 
-        $this->assertInstanceOf(DDC117Translation::class, $editor->reviewingTranslations[0]);
+        self::assertInstanceOf(DDC117Translation::class, $editor->reviewingTranslations[0]);
 
         $reviewedBy = $editor->reviewingTranslations[0]->getReviewedByEditors();
-        $this->assertEquals(1, count($reviewedBy));
-        $this->assertSame($editor, $reviewedBy[0]);
+        self::assertCount(1, $reviewedBy);
+        self::assertSame($editor, $reviewedBy[0]);
 
         $this->_em->clear();
 
@@ -394,9 +390,9 @@ class DDC117Test extends OrmFunctionalTestCase
                            ->setParameter(2, $this->translation->getLanguage())
                            ->getSingleResult();
 
-        $this->assertInstanceOf(DDC117Translation::class, $trans);
-        $this->assertContainsOnly(DDC117Editor::class, $trans->reviewedByEditors);
-        $this->assertEquals(1, count($trans->reviewedByEditors));
+        self::assertInstanceOf(DDC117Translation::class, $trans);
+        self::assertContainsOnly(DDC117Editor::class, $trans->reviewedByEditors);
+        self::assertCount(1, $trans->reviewedByEditors);
     }
 
     /**
@@ -414,7 +410,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $lastTranslatedBy = $editor->reviewingTranslations[0]->getLastTranslatedBy();
         $lastTranslatedBy->count();
 
-        $this->assertEquals(1, count($lastTranslatedBy));
+        self::assertCount(1, $lastTranslatedBy);
     }
 
     private function loadEditorFixture(): DDC117Editor
@@ -456,8 +452,8 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->_em->clear(DDC117Reference::class);
         $refRep = $this->_em->merge($refRep);
 
-        $this->assertEquals($this->article1->id(), $refRep->source()->id());
-        $this->assertEquals($this->article2->id(), $refRep->target()->id());
+        self::assertEquals($this->article1->id(), $refRep->source()->id());
+        self::assertEquals($this->article2->id(), $refRep->target()->id());
     }
 
     /**
@@ -485,7 +481,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $dql  = 'SELECT r,s,t FROM Doctrine\Tests\Models\DDC117\DDC117Reference r INNER JOIN r.source s INNER JOIN r.target t';
         $data = $this->_em->createQuery($dql)->getArrayResult();
 
-        $this->assertEquals($before + 3, count($data));
+        self::assertCount($before + 3, $data);
     }
 
     /**
@@ -494,7 +490,7 @@ class DDC117Test extends OrmFunctionalTestCase
     public function testGetEntityState(): void
     {
         if ($this->isSecondLevelCacheEnabled) {
-            $this->markTestIncomplete('Second level cache - not supported yet');
+            self::markTestIncomplete('Second level cache - not supported yet');
         }
 
         $this->article1 = $this->_em->find(DDC117Article::class, $this->article1->id());
@@ -502,12 +498,12 @@ class DDC117Test extends OrmFunctionalTestCase
 
         $this->reference = new DDC117Reference($this->article2, $this->article1, 'Test-Description');
 
-        $this->assertEquals(UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($this->reference));
+        self::assertEquals(UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($this->reference));
 
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
         $reference  = $this->_em->find(DDC117Reference::class, $idCriteria);
 
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($reference));
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($reference));
     }
 
     /**
@@ -517,8 +513,8 @@ class DDC117Test extends OrmFunctionalTestCase
     {
         $article = $this->_em->find(DDC117Article::class, $this->article1->id());
 
-        $this->assertInstanceOf(DDC117Article::class, $article);
-        $this->assertEquals(1, count($article->getLinks()));
-        $this->assertTrue($article->getLinks()->offsetExists($this->article2->id()));
+        self::assertInstanceOf(DDC117Article::class, $article);
+        self::assertCount(1, $article->getLinks());
+        self::assertTrue($article->getLinks()->offsetExists($this->article2->id()));
     }
 }

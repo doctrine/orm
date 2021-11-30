@@ -6,6 +6,14 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinColumns;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -89,16 +97,16 @@ class DDC881Test extends OrmFunctionalTestCase
         $dql   = 'SELECT c, p FROM ' . DDC881PhoneCall::class . ' c JOIN c.phonenumber p';
         $calls = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertEquals(2, count($calls));
-        $this->assertNotInstanceOf(Proxy::class, $calls[0]->getPhoneNumber());
-        $this->assertNotInstanceOf(Proxy::class, $calls[1]->getPhoneNumber());
+        self::assertCount(2, $calls);
+        self::assertNotInstanceOf(Proxy::class, $calls[0]->getPhoneNumber());
+        self::assertNotInstanceOf(Proxy::class, $calls[1]->getPhoneNumber());
 
         $dql     = 'SELECT p, c FROM ' . DDC881PhoneNumber::class . ' p JOIN p.calls c';
         $numbers = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertEquals(2, count($numbers));
-        $this->assertInstanceOf(PersistentCollection::class, $numbers[0]->getCalls());
-        $this->assertTrue($numbers[0]->getCalls()->isInitialized());
+        self::assertCount(2, $numbers);
+        self::assertInstanceOf(PersistentCollection::class, $numbers[0]->getCalls());
+        self::assertTrue($numbers[0]->getCalls()->isInitialized());
     }
 }
 

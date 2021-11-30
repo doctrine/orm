@@ -6,6 +6,17 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -38,15 +49,15 @@ class DDC422Test extends OrmFunctionalTestCase
 
         $customer = $this->_em->find(get_class($customer), $customer->id);
 
-        $this->assertInstanceOf(PersistentCollection::class, $customer->contacts);
-        $this->assertFalse($customer->contacts->isInitialized());
+        self::assertInstanceOf(PersistentCollection::class, $customer->contacts);
+        self::assertFalse($customer->contacts->isInitialized());
         $contact = new DDC422Contact();
         $customer->contacts->add($contact);
-        $this->assertTrue($customer->contacts->isDirty());
-        $this->assertFalse($customer->contacts->isInitialized());
+        self::assertTrue($customer->contacts->isDirty());
+        self::assertFalse($customer->contacts->isInitialized());
         $this->_em->flush();
 
-        $this->assertEquals(1, $this->_em->getConnection()->fetchColumn('select count(*) from ddc422_customers_contacts'));
+        self::assertEquals(1, $this->_em->getConnection()->fetchOne('select count(*) from ddc422_customers_contacts'));
     }
 }
 

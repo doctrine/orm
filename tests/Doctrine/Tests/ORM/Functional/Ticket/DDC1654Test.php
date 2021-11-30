@@ -5,6 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -28,9 +33,9 @@ class DDC1654Test extends OrmFunctionalTestCase
     public function tearDown(): void
     {
         $conn = static::$sharedConn;
-        $conn->executeUpdate('DELETE FROM ddc1654post_ddc1654comment');
-        $conn->executeUpdate('DELETE FROM DDC1654Comment');
-        $conn->executeUpdate('DELETE FROM DDC1654Post');
+        $conn->executeStatement('DELETE FROM ddc1654post_ddc1654comment');
+        $conn->executeStatement('DELETE FROM DDC1654Comment');
+        $conn->executeStatement('DELETE FROM DDC1654Post');
     }
 
     public function testManyToManyRemoveFromCollectionOrphanRemoval(): void
@@ -49,7 +54,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
-        $this->assertEquals(0, count($comments));
+        self::assertCount(0, $comments);
     }
 
     public function testManyToManyRemoveElementFromCollectionOrphanRemoval(): void
@@ -68,7 +73,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
-        $this->assertEquals(0, count($comments));
+        self::assertCount(0, $comments);
     }
 
     /**
@@ -91,7 +96,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
-        $this->assertEquals(2, count($comments));
+        self::assertCount(2, $comments);
     }
 
     public function testManyToManyClearCollectionOrphanRemoval(): void
@@ -109,7 +114,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
-        $this->assertEquals(0, count($comments));
+        self::assertCount(0, $comments);
     }
 
     /**
@@ -132,7 +137,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
-        $this->assertEquals(1, count($comments));
+        self::assertCount(1, $comments);
     }
 }
 

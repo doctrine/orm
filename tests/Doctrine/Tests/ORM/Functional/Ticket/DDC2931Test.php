@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
@@ -46,7 +51,7 @@ class DDC2931Test extends OrmFunctionalTestCase
 
         $second = $this->_em->find(DDC2931User::class, $second->id);
 
-        $this->assertSame(2, $second->getRank());
+        self::assertSame(2, $second->getRank());
     }
 
     public function testFetchJoinedEntitiesCanBeRefreshed(): void
@@ -82,10 +87,10 @@ class DDC2931Test extends OrmFunctionalTestCase
             ->setHint(Query::HINT_REFRESH, true)
             ->getResult();
 
-        $this->assertCount(1, $refreshedSecond);
-        $this->assertSame(1, $first->value);
-        $this->assertSame(2, $second->value);
-        $this->assertSame(3, $third->value);
+        self::assertCount(1, $refreshedSecond);
+        self::assertSame(1, $first->value);
+        self::assertSame(2, $second->value);
+        self::assertSame(3, $third->value);
     }
 }
 

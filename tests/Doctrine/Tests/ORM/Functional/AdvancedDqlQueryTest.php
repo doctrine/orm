@@ -33,11 +33,11 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
 
         $result = $this->_em->createQuery($dql)->getScalarResult();
 
-        $this->assertEquals(2, count($result));
-        $this->assertEquals('IT', $result[0]['department']);
-        $this->assertEquals(150000, $result[0]['avgSalary']);
-        $this->assertEquals('IT2', $result[1]['department']);
-        $this->assertEquals(600000, $result[1]['avgSalary']);
+        self::assertEquals(2, count($result));
+        self::assertEquals('IT', $result[0]['department']);
+        self::assertEquals(150000, $result[0]['avgSalary']);
+        self::assertEquals('IT2', $result[1]['department']);
+        self::assertEquals(600000, $result[1]['avgSalary']);
     }
 
     public function testCommentsInDQL(): void
@@ -51,11 +51,11 @@ GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department -- com
 
         $result = $this->_em->createQuery($dql)->getScalarResult();
 
-        $this->assertEquals(2, count($result));
-        $this->assertEquals('IT', $result[0]['department']);
-        $this->assertEquals(150000, $result[0]['avgSalary']);
-        $this->assertEquals('IT2', $result[1]['department']);
-        $this->assertEquals(600000, $result[1]['avgSalary']);
+        self::assertCount(2, $result);
+        self::assertEquals('IT', $result[0]['department']);
+        self::assertEquals(150000, $result[0]['avgSalary']);
+        self::assertEquals('IT2', $result[1]['department']);
+        self::assertEquals(600000, $result[1]['avgSalary']);
     }
 
     public function testUnnamedScalarResultsAreOneBased(): void
@@ -66,9 +66,9 @@ GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department -- com
 
         $result = $this->_em->createQuery($dql)->getScalarResult();
 
-        $this->assertEquals(2, count($result));
-        $this->assertEquals(150000, $result[0][1]);
-        $this->assertEquals(600000, $result[1][1]);
+        self::assertCount(2, $result);
+        self::assertEquals(150000, $result[0][1]);
+        self::assertEquals(600000, $result[1][1]);
     }
 
     public function testOrderByResultVariableCollectionSize(): void
@@ -80,19 +80,19 @@ GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department -- com
 
         $result = $this->_em->createQuery($dql)->getScalarResult();
 
-        $this->assertEquals(4, count($result));
+        self::assertCount(4, $result);
 
-        $this->assertEquals('Jonathan W.', $result[0]['name']);
-        $this->assertEquals(3, $result[0]['friends']);
+        self::assertEquals('Jonathan W.', $result[0]['name']);
+        self::assertEquals(3, $result[0]['friends']);
 
-        $this->assertEquals('Guilherme B.', $result[1]['name']);
-        $this->assertEquals(2, $result[1]['friends']);
+        self::assertEquals('Guilherme B.', $result[1]['name']);
+        self::assertEquals(2, $result[1]['friends']);
 
-        $this->assertEquals('Benjamin E.', $result[2]['name']);
-        $this->assertEquals(2, $result[2]['friends']);
+        self::assertEquals('Benjamin E.', $result[2]['name']);
+        self::assertEquals(2, $result[2]['friends']);
 
-        $this->assertEquals('Roman B.', $result[3]['name']);
-        $this->assertEquals(1, $result[3]['friends']);
+        self::assertEquals('Roman B.', $result[3]['name']);
+        self::assertEquals(1, $result[3]['friends']);
     }
 
     public function testOrderBySimpleCaseExpression(): void
@@ -148,12 +148,12 @@ DQL;
         $query  = $this->_em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertEquals(2, count($result));
-        $this->assertTrue($result[0]->getId() > 0);
-        $this->assertNull($result[0]->getSpouse());
+        self::assertCount(2, $result);
+        self::assertGreaterThan(0, $result[0]->getId());
+        self::assertNull($result[0]->getSpouse());
 
-        $this->assertTrue($result[1]->getId() > 0);
-        $this->assertNull($result[1]->getSpouse());
+        self::assertGreaterThan(0, $result[1]->getId());
+        self::assertNull($result[1]->getSpouse());
 
         $this->_em->clear();
 
@@ -167,8 +167,8 @@ DQL;
         $query  = $this->_em->createQuery($dql);
         $result = $query->getArrayResult();
 
-        $this->assertEquals(1, count($result));
-        $this->assertEquals('Caramba', $result[0]['brandName']);
+        self::assertCount(1, $result);
+        self::assertEquals('Caramba', $result[0]['brandName']);
 
         $this->_em->clear();
     }
@@ -182,8 +182,8 @@ DQL;
         $query  = $this->_em->createQuery($dql);
         $result = $query->getScalarResult();
 
-        $this->assertEquals(1, count($result));
-        $this->assertEquals('Roman B.', $result[0]['name']);
+        self::assertCount(1, $result);
+        self::assertEquals('Roman B.', $result[0]['name']);
 
         $this->_em->clear();
 
@@ -197,7 +197,7 @@ DQL;
         $query  = $this->_em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertEquals(4, count($result));
+        self::assertCount(4, $result);
 
         $this->_em->clear();
 
@@ -227,7 +227,7 @@ DQL;
         $dql    = 'SELECT count(p) FROM Doctrine\Tests\Models\Company\CompanyEmployee p';
         $result = $this->_em->createQuery($dql)->getSingleScalarResult();
 
-        $this->assertEquals(0, $result);
+        self::assertEquals(0, $result);
     }
 
     public function generateFixture(): void

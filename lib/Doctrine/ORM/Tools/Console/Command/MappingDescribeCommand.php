@@ -1,22 +1,6 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
@@ -64,7 +48,7 @@ final class MappingDescribeCommand extends AbstractEntityManagerCommand
              ->addArgument('entityName', InputArgument::REQUIRED, 'Full or partial name of entity')
              ->setDescription('Display information about mapped objects')
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
-             ->setHelp(<<<EOT
+             ->setHelp(<<<'EOT'
 The %command.full_name% command describes the metadata for the given full or partial entity class name.
 
     <info>%command.full_name%</info> My\Namespace\Entity\MyEntity
@@ -125,7 +109,6 @@ EOT
                     $this->formatField('Composite identifier?', $metadata->isIdentifierComposite),
                     $this->formatField('Foreign identifier?', $metadata->containsForeignIdentifier),
                     $this->formatField('Sequence generator definition', $metadata->sequenceGeneratorDefinition),
-                    $this->formatField('Table generator definition', $metadata->tableGeneratorDefinition),
                     $this->formatField('Change tracking policy', $metadata->changeTrackingPolicy),
                     $this->formatField('Versioned?', $metadata->isVersioned),
                     $this->formatField('Version field', $metadata->versionField),

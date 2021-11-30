@@ -68,9 +68,9 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
 
         $route = $this->_em->find(RoutingRoute::class, $routeId);
 
-        $this->assertEquals(2, count($route->legs));
-        $this->assertEquals('Berlin', $route->legs[0]->fromLocation->getName());
-        $this->assertEquals('Bonn', $route->legs[1]->fromLocation->getName());
+        self::assertCount(2, $route->legs);
+        self::assertEquals('Berlin', $route->legs[0]->fromLocation->getName());
+        self::assertEquals('Bonn', $route->legs[1]->fromLocation->getName());
     }
 
     public function testLazyOneToManyCollectionIsRetrievedWithOrderByClause(): void
@@ -99,9 +99,9 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
 
         $route = $this->_em->find(RoutingRoute::class, $routeId);
 
-        $this->assertEquals(2, count($route->bookings));
-        $this->assertEquals('Benjamin', $route->bookings[0]->getPassengerName());
-        $this->assertEquals('Guilherme', $route->bookings[1]->getPassengerName());
+        self::assertCount(2, $route->bookings);
+        self::assertEquals('Benjamin', $route->bookings[0]->getPassengerName());
+        self::assertEquals('Guilherme', $route->bookings[1]->getPassengerName());
     }
 
     public function testOrderedResultFromDqlQuery(): void
@@ -112,8 +112,8 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
                            ->setParameter(1, $routeId)
                            ->getSingleResult();
 
-        $this->assertEquals(2, count($route->legs));
-        $this->assertEquals('Berlin', $route->legs[0]->fromLocation->getName());
-        $this->assertEquals('Bonn', $route->legs[1]->fromLocation->getName());
+        self::assertCount(2, $route->legs);
+        self::assertEquals('Berlin', $route->legs[0]->fromLocation->getName());
+        self::assertEquals('Bonn', $route->legs[1]->fromLocation->getName());
     }
 }

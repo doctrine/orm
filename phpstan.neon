@@ -1,18 +1,40 @@
 includes:
     - phpstan-baseline.neon
+    - phpstan-params.neon
 
 parameters:
-    level: 5
-    paths:
-        - lib
-        - tests/Doctrine/StaticAnalysis
-    excludePaths:
-        - lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php
-    earlyTerminatingMethodCalls:
-        Doctrine\ORM\Query\Parser:
-            - syntaxError
-    phpVersion: 70100
-
     ignoreErrors:
-        # The class was added in PHP 8.1
-        - '/^Attribute class ReturnTypeWillChange does not exist.$/'
+        # deprecations from doctrine/dbal:3.x
+        - '/^Call to an undefined method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getGuidExpression\(\).$/'
+
+        # Fallback logic for DBAL 2
+        -
+            message: '/HelperSet constructor expects/'
+            path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
+        -
+            message: '/Application::add\(\) expects Symfony\\Component\\Console\\Command\\Command/'
+            path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
+
+        - '/^Class Doctrine\\DBAL\\Platforms\\(PostgreSQL|SQLServer|SQLAnywhere)Platform not found\.$/'
+
+        -
+        	message: '/^Call to an undefined method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getSQLResultCasing\(\)\.$/'
+        	path: lib/Doctrine/ORM/Internal/SQLResultCasing.php
+        -
+        	message: '/^Parameter \$stmt of method .* has invalid type Doctrine\\DBAL\\Driver\\ResultStatement\.$/'
+        	path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
+        -
+        	message: '/^Class Doctrine\\DBAL\\Driver\\ResultStatement not found\.$/'
+        	path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
+        -
+        	message: '/^Call to static method ensure\(\) on an unknown class Doctrine\\DBAL\\ForwardCompatibility\\Result\.$/'
+        	path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
+
+        # False positive
+        -
+            message: '/^Variable \$offset in isset\(\) always exists and is not nullable\.$/'
+            path: lib/Doctrine/ORM/PersistentCollection.php
+        -
+            message: '/^Call to an undefined method Doctrine\\Common\\Cache\\Cache::deleteAll\(\)\.$/'
+            count: 1
+            path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php

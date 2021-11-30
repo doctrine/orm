@@ -7,6 +7,12 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -27,16 +33,10 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
 
         $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8383');
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(NotifyUser::class),
-                    $this->_em->getClassMetadata(NotifyGroup::class),
-                ]
-            );
-        } catch (Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(NotifyUser::class),
+            $this->_em->getClassMetadata(NotifyGroup::class),
+        ]);
     }
 
     public function testChangeTracking(): void
@@ -52,26 +52,26 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->persist($group);
 
-        $this->assertEquals(1, count($user->listeners));
-        $this->assertEquals(1, count($group->listeners));
+        self::assertCount(1, $user->listeners);
+        self::assertCount(1, $group->listeners);
 
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertEquals(1, count($user->listeners));
-        $this->assertEquals(1, count($group->listeners));
+        self::assertCount(1, $user->listeners);
+        self::assertCount(1, $group->listeners);
 
         $userId  = $user->getId();
         $groupId = $group->getId();
         unset($user, $group);
 
         $user = $this->_em->find(NotifyUser::class, $userId);
-        $this->assertEquals(1, $user->getGroups()->count());
+        self::assertEquals(1, $user->getGroups()->count());
         $group = $this->_em->find(NotifyGroup::class, $groupId);
-        $this->assertEquals(1, $group->getUsers()->count());
+        self::assertEquals(1, $group->getUsers()->count());
 
-        $this->assertEquals(1, count($user->listeners));
-        $this->assertEquals(1, count($group->listeners));
+        self::assertCount(1, $user->listeners);
+        self::assertCount(1, $group->listeners);
 
         $group2 = new NotifyGroup();
         $group2->setName('nerds');
@@ -84,19 +84,19 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertEquals(1, count($user->listeners));
-        $this->assertEquals(1, count($group->listeners));
+        self::assertCount(1, $user->listeners);
+        self::assertCount(1, $group->listeners);
 
         $group2Id = $group2->getId();
         unset($group2, $user);
 
         $user = $this->_em->find(NotifyUser::class, $userId);
-        $this->assertEquals(2, $user->getGroups()->count());
+        self::assertEquals(2, $user->getGroups()->count());
         $group2 = $this->_em->find(NotifyGroup::class, $group2Id);
-        $this->assertEquals(1, $group2->getUsers()->count());
+        self::assertEquals(1, $group2->getUsers()->count());
         $group = $this->_em->find(NotifyGroup::class, $groupId);
-        $this->assertEquals(1, $group->getUsers()->count());
-        $this->assertEquals('geeks', $group->getName());
+        self::assertEquals(1, $group->getUsers()->count());
+        self::assertEquals('geeks', $group->getName());
     }
 }
 

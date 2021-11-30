@@ -1,0 +1,27 @@
+includes:
+    - phpstan-baseline.neon
+    - phpstan-params.neon
+
+parameters:
+    ignoreErrors:
+        # https://github.com/doctrine/collections/pull/282
+        - '/Variable \$offset in isset\(\) always exists and is not nullable\./'
+        # PHPStan doesn't understand our method_exists() safeguards.
+        - '/Call to an undefined method Doctrine\\DBAL\\Connection::createSchemaManager\(\)\./'
+        # Class name will change in DBAL 3.
+        - '/Class Doctrine\\DBAL\\Platforms\\PostgreSqlPlatform referenced with incorrect case: Doctrine\\DBAL\\Platforms\\PostgreSQLPlatform\./'
+
+        # Forward compatibility for DBAL 3.2
+        - '/^Call to an undefined method Doctrine\\DBAL\\Cache\\QueryCacheProfile::[gs]etResultCache\(\)\.$/'
+        -
+        	message: '/^Call to an undefined static method Doctrine\\DBAL\\Configuration::[gs]etResultCache\(\)\.$/'
+        	path: lib/Doctrine/ORM/Configuration.php
+        -
+        	message: '/^Parameter #3 \$resultCache of class Doctrine\\DBAL\\Cache\\QueryCacheProfile constructor/'
+        	path: lib/Doctrine/ORM/AbstractQuery.php
+
+        # False positive
+        -
+            message: '/^Call to an undefined method Doctrine\\Common\\Cache\\Cache::deleteAll\(\)\.$/'
+            count: 1
+            path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php

@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -29,17 +36,17 @@ class DDC2175Test extends OrmFunctionalTestCase
         $this->_em->persist($entity);
         $this->_em->flush();
 
-        $this->assertEquals(1, $entity->version);
+        self::assertEquals(1, $entity->version);
 
         $entity->field = 'bar';
         $this->_em->flush();
 
-        $this->assertEquals(2, $entity->version);
+        self::assertEquals(2, $entity->version);
 
         $entity->field = 'baz';
         $this->_em->flush();
 
-        $this->assertEquals(3, $entity->version);
+        self::assertEquals(3, $entity->version);
     }
 }
 

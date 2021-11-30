@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
@@ -36,8 +42,8 @@ class DDC1461Test extends OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
 
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user, UnitOfWork::STATE_NEW), 'Entity should be managed.');
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user), 'Entity should be managed.');
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user, UnitOfWork::STATE_NEW), 'Entity should be managed.');
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user), 'Entity should be managed.');
 
         $acc                  = new DDC1461TwitterAccount();
         $user->twitterAccount = $acc;
@@ -46,7 +52,7 @@ class DDC1461Test extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $user = $this->_em->find(get_class($user), $user->id);
-        $this->assertNotNull($user->twitterAccount);
+        self::assertNotNull($user->twitterAccount);
     }
 }
 

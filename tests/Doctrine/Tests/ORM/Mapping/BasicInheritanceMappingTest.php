@@ -5,10 +5,24 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Id\SequenceGenerator;
+use Doctrine\ORM\Id\SequenceGenerator as IdSequenceGenerator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Index;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\SequenceGenerator;
+use Doctrine\ORM\Mapping\Table;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\DDC869\DDC869ChequePayment;
 use Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment;
@@ -43,29 +57,29 @@ class BasicInheritanceMappingTest extends OrmTestCase
     {
         $class = $this->cmf->getMetadataFor(EntitySubClass::class);
 
-        $this->assertEmpty($class->subClasses);
-        $this->assertEmpty($class->parentClasses);
-        $this->assertArrayHasKey('id', $class->fieldMappings);
-        $this->assertArrayHasKey('name', $class->fieldMappings);
+        self::assertEmpty($class->subClasses);
+        self::assertEmpty($class->parentClasses);
+        self::assertArrayHasKey('id', $class->fieldMappings);
+        self::assertArrayHasKey('name', $class->fieldMappings);
     }
 
     public function testGetMetadataForSubclassWithMappedSuperclass(): void
     {
         $class = $this->cmf->getMetadataFor(EntitySubClass2::class);
 
-        $this->assertEmpty($class->subClasses);
-        $this->assertEmpty($class->parentClasses);
+        self::assertEmpty($class->subClasses);
+        self::assertEmpty($class->parentClasses);
 
-        $this->assertArrayHasKey('mapped1', $class->fieldMappings);
-        $this->assertArrayHasKey('mapped2', $class->fieldMappings);
-        $this->assertArrayHasKey('id', $class->fieldMappings);
-        $this->assertArrayHasKey('name', $class->fieldMappings);
+        self::assertArrayHasKey('mapped1', $class->fieldMappings);
+        self::assertArrayHasKey('mapped2', $class->fieldMappings);
+        self::assertArrayHasKey('id', $class->fieldMappings);
+        self::assertArrayHasKey('name', $class->fieldMappings);
 
-        $this->assertArrayNotHasKey('inherited', $class->fieldMappings['mapped1']);
-        $this->assertArrayNotHasKey('inherited', $class->fieldMappings['mapped2']);
-        $this->assertArrayNotHasKey('transient', $class->fieldMappings);
+        self::assertArrayNotHasKey('inherited', $class->fieldMappings['mapped1']);
+        self::assertArrayNotHasKey('inherited', $class->fieldMappings['mapped2']);
+        self::assertArrayNotHasKey('transient', $class->fieldMappings);
 
-        $this->assertArrayHasKey('mappedRelated1', $class->associationMappings);
+        self::assertArrayHasKey('mappedRelated1', $class->associationMappings);
     }
 
     /**
@@ -75,24 +89,24 @@ class BasicInheritanceMappingTest extends OrmTestCase
     {
         $class = $this->cmf->getMetadataFor(DDC869CreditCardPayment::class);
 
-        $this->assertArrayHasKey('id', $class->fieldMappings);
-        $this->assertArrayHasKey('value', $class->fieldMappings);
-        $this->assertArrayHasKey('creditCardNumber', $class->fieldMappings);
-        $this->assertEquals($class->customRepositoryClassName, DDC869PaymentRepository::class);
+        self::assertArrayHasKey('id', $class->fieldMappings);
+        self::assertArrayHasKey('value', $class->fieldMappings);
+        self::assertArrayHasKey('creditCardNumber', $class->fieldMappings);
+        self::assertEquals($class->customRepositoryClassName, DDC869PaymentRepository::class);
 
         $class = $this->cmf->getMetadataFor(DDC869ChequePayment::class);
 
-        $this->assertArrayHasKey('id', $class->fieldMappings);
-        $this->assertArrayHasKey('value', $class->fieldMappings);
-        $this->assertArrayHasKey('serialNumber', $class->fieldMappings);
-        $this->assertEquals($class->customRepositoryClassName, DDC869PaymentRepository::class);
+        self::assertArrayHasKey('id', $class->fieldMappings);
+        self::assertArrayHasKey('value', $class->fieldMappings);
+        self::assertArrayHasKey('serialNumber', $class->fieldMappings);
+        self::assertEquals($class->customRepositoryClassName, DDC869PaymentRepository::class);
 
         // override repositoryClass
         $class = $this->cmf->getMetadataFor(SubclassWithRepository::class);
 
-        $this->assertArrayHasKey('id', $class->fieldMappings);
-        $this->assertArrayHasKey('value', $class->fieldMappings);
-        $this->assertEquals($class->customRepositoryClassName, EntityRepository::class);
+        self::assertArrayHasKey('id', $class->fieldMappings);
+        self::assertArrayHasKey('value', $class->fieldMappings);
+        self::assertEquals($class->customRepositoryClassName, EntityRepository::class);
     }
 
     /**
@@ -105,9 +119,9 @@ class BasicInheritanceMappingTest extends OrmTestCase
         $class2 = unserialize(serialize($class));
         $class2->wakeupReflection(new RuntimeReflectionService());
 
-        $this->assertArrayHasKey('mapped1', $class2->reflFields);
-        $this->assertArrayHasKey('mapped2', $class2->reflFields);
-        $this->assertArrayHasKey('mappedRelated1', $class2->reflFields);
+        self::assertArrayHasKey('mapped1', $class2->reflFields);
+        self::assertArrayHasKey('mapped2', $class2->reflFields);
+        self::assertArrayHasKey('mappedRelated1', $class2->reflFields);
     }
 
     /**
@@ -117,9 +131,9 @@ class BasicInheritanceMappingTest extends OrmTestCase
     {
         $class = $this->cmf->getMetadataFor(HierarchyD::class);
 
-        $this->assertArrayHasKey('id', $class->fieldMappings);
-        $this->assertArrayHasKey('a', $class->fieldMappings);
-        $this->assertArrayHasKey('d', $class->fieldMappings);
+        self::assertArrayHasKey('id', $class->fieldMappings);
+        self::assertArrayHasKey('a', $class->fieldMappings);
+        self::assertArrayHasKey('d', $class->fieldMappings);
     }
 
     /**
@@ -146,7 +160,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     {
         $class = $this->cmf->getMetadataFor(SuperclassEntity::class);
 
-        $this->assertArrayHasKey('id', $class->fieldMappings);
+        self::assertArrayHasKey('id', $class->fieldMappings);
     }
 
     /**
@@ -158,8 +172,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
         $class = $this->cmf->getMetadataFor(SuperclassEntity::class);
         assert($class instanceof ClassMetadata);
 
-        $this->assertInstanceOf(SequenceGenerator::class, $class->idGenerator);
-        $this->assertEquals(
+        self::assertInstanceOf(IdSequenceGenerator::class, $class->idGenerator);
+        self::assertEquals(
             ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
             $class->sequenceGeneratorDefinition
         );
@@ -174,8 +188,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
         $class = $this->cmf->getMetadataFor(HierarchyD::class);
         assert($class instanceof ClassMetadata);
 
-        $this->assertInstanceOf(SequenceGenerator::class, $class->idGenerator);
-        $this->assertEquals(
+        self::assertInstanceOf(IdSequenceGenerator::class, $class->idGenerator);
+        self::assertEquals(
             ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
             $class->sequenceGeneratorDefinition
         );
@@ -190,8 +204,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
         $class = $this->cmf->getMetadataFor(MediumSuperclassEntity::class);
         assert($class instanceof ClassMetadata);
 
-        $this->assertInstanceOf(SequenceGenerator::class, $class->idGenerator);
-        $this->assertEquals(
+        self::assertInstanceOf(IdSequenceGenerator::class, $class->idGenerator);
+        self::assertEquals(
             ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
             $class->sequenceGeneratorDefinition
         );
@@ -207,10 +221,10 @@ class BasicInheritanceMappingTest extends OrmTestCase
         $class = $this->cmf->getMetadataFor(EntityIndexSubClass::class);
         assert($class instanceof ClassMetadata);
 
-        $this->assertArrayHasKey('mapped1', $class->fieldMappings);
-        $this->assertArrayHasKey('IDX_NAME_INDEX', $class->table['uniqueConstraints']);
-        $this->assertArrayHasKey('IDX_MAPPED1_INDEX', $class->table['uniqueConstraints']);
-        $this->assertArrayHasKey('IDX_MAPPED2_INDEX', $class->table['indexes']);
+        self::assertArrayHasKey('mapped1', $class->fieldMappings);
+        self::assertArrayHasKey('IDX_NAME_INDEX', $class->table['uniqueConstraints']);
+        self::assertArrayHasKey('IDX_MAPPED1_INDEX', $class->table['uniqueConstraints']);
+        self::assertArrayHasKey('IDX_MAPPED2_INDEX', $class->table['indexes']);
     }
 }
 

@@ -5,6 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -45,11 +51,11 @@ class DDC2350Test extends OrmFunctionalTestCase
         $cnt  = $this->getCurrentQueryCount();
         $user = $this->_em->find(DDC2350User::class, $user->id);
 
-        $this->assertEquals($cnt + 1, $this->getCurrentQueryCount());
+        self::assertEquals($cnt + 1, $this->getCurrentQueryCount());
 
-        $this->assertEquals(2, count($user->reportedBugs));
+        self::assertCount(2, $user->reportedBugs);
 
-        $this->assertEquals($cnt + 1, $this->getCurrentQueryCount());
+        self::assertEquals($cnt + 1, $this->getCurrentQueryCount());
     }
 }
 

@@ -6,6 +6,13 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -52,10 +59,10 @@ class DDC371Test extends OrmFunctionalTestCase
                 ->setHint(Query::HINT_REFRESH, true)
                 ->getResult();
 
-        $this->assertEquals(1, count($children));
-        $this->assertNotInstanceOf(Proxy::class, $children[0]->parent);
-        $this->assertFalse($children[0]->parent->children->isInitialized());
-        $this->assertEquals(0, $children[0]->parent->children->unwrap()->count());
+        self::assertCount(1, $children);
+        self::assertNotInstanceOf(Proxy::class, $children[0]->parent);
+        self::assertFalse($children[0]->parent->children->isInitialized());
+        self::assertEquals(0, $children[0]->parent->children->unwrap()->count());
     }
 }
 

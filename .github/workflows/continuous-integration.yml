@@ -2,7 +2,11 @@ name: "Continuous Integration"
 
 on:
   pull_request:
+    branches:
+      - "*.x"
   push:
+    branches:
+      - "*.x"
 
 env:
   fail-fast: true
@@ -19,6 +23,14 @@ jobs:
           - "7.3"
           - "7.4"
           - "8.0"
+          - "8.1"
+        dbal-version:
+          - "default"
+        include:
+          - php-version: "8.0"
+            dbal-version: "2.13"
+          - php-version: "8.1"
+            dbal-version: "3.2@dev"
 
     steps:
       - name: "Checkout"
@@ -33,6 +45,10 @@ jobs:
           extensions: "pdo, pdo_sqlite"
           coverage: "pcov"
           ini-values: "zend.assertions=1"
+
+      - name: "Require specific DBAL version"
+        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
+        if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
@@ -50,7 +66,7 @@ jobs:
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v2"
         with:
-          name: "phpunit-sqlite-${{ matrix.php-version }}-coverage"
+          name: "phpunit-sqlite-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage*.xml"
 
 
@@ -63,9 +79,15 @@ jobs:
       matrix:
         php-version:
           - "7.4"
+        dbal-version:
+          - "default"
         postgres-version:
           - "9.6"
           - "13"
+        include:
+          - php-version: "8.0"
+            dbal-version: "2.13"
+            postgres-version: "13"
 
     services:
       postgres:
@@ -92,6 +114,10 @@ jobs:
           coverage: "pcov"
           ini-values: "zend.assertions=1"
 
+      - name: "Require specific DBAL version"
+        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
+        if: "${{ matrix.dbal-version != 'default' }}"
+
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
 
@@ -101,7 +127,7 @@ jobs:
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v2"
         with:
-          name: "${{ github.job }}-${{ matrix.postgres-version }}-${{ matrix.php-version }}-coverage"
+          name: "${{ github.job }}-${{ matrix.postgres-version }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage.xml"
 
 
@@ -114,11 +140,18 @@ jobs:
       matrix:
         php-version:
           - "7.4"
+        dbal-version:
+          - "default"
         mariadb-version:
           - "10.5"
         extension:
           - "mysqli"
           - "pdo_mysql"
+        include:
+          - php-version: "8.0"
+            dbal-version: "2.13"
+            mariadb-version: "10.5"
+            extension: "pdo_mysql"
 
     services:
       mariadb:
@@ -139,6 +172,10 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: "Require specific DBAL version"
+        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
+        if: "${{ matrix.dbal-version != 'default' }}"
+
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -156,7 +193,7 @@ jobs:
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v2"
         with:
-          name: "${{ github.job }}-${{ matrix.mariadb-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-coverage"
+          name: "${{ github.job }}-${{ matrix.mariadb-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage.xml"
 
 
@@ -169,12 +206,19 @@ jobs:
       matrix:
         php-version:
           - "7.4"
+        dbal-version:
+          - "default"
         mysql-version:
           - "5.7"
           - "8.0"
         extension:
           - "mysqli"
           - "pdo_mysql"
+        include:
+          - php-version: "8.0"
+            dbal-version: "2.13"
+            mysql-version: "8.0"
+            extension: "pdo_mysql"
 
     services:
       mysql:
@@ -202,6 +246,10 @@ jobs:
           ini-values: "zend.assertions=1"
           extensions: "${{ matrix.extension }}"
 
+      - name: "Require specific DBAL version"
+        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
+        if: "${{ matrix.dbal-version != 'default' }}"
+
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
 
@@ -218,8 +266,9 @@ jobs:
       - name: "Upload coverage files"
         uses: "actions/upload-artifact@v2"
         with:
-          name: "${{ github.job }}-${{ matrix.mysql-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-coverage"
+          name: "${{ github.job }}-${{ matrix.mysql-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage*.xml"
+
 
   phpunit-lower-php-versions:
     name: "PHPUnit with SQLite"
@@ -252,6 +301,7 @@ jobs:
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit -c ci/github/phpunit/sqlite.xml"
+
 
   upload_coverage:
     name: "Upload coverage to Codecov"

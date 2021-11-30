@@ -103,6 +103,14 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
+    public function wrapInTransaction(callable $func)
+    {
+        return $this->realEntityManager->wrapInTransaction($func);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function commit()
     {
         $this->realEntityManager->commit();

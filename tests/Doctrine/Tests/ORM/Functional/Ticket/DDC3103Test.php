@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Embeddable;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function serialize;
@@ -24,12 +26,12 @@ class DDC3103Test extends OrmFunctionalTestCase
 
         $this->createAnnotationDriver()->loadMetadataForClass(DDC3103ArticleId::class, $classMetadata);
 
-        $this->assertTrue(
+        self::assertTrue(
             $classMetadata->isEmbeddedClass,
             'The isEmbeddedClass property should be true from the mapping data.'
         );
 
-        $this->assertTrue(
+        self::assertTrue(
             unserialize(serialize($classMetadata))->isEmbeddedClass,
             'The isEmbeddedClass property should still be true after serialization and unserialization.'
         );

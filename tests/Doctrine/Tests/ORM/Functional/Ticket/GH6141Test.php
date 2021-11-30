@@ -8,6 +8,13 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
 
@@ -126,7 +133,7 @@ class GH6141People
 
     private static function isValid(string $valid): bool
     {
-        return in_array($valid, [self::BOSS, self::EMPLOYEE]);
+        return in_array($valid, [self::BOSS, self::EMPLOYEE], true);
     }
 
     private function __construct(string $value)

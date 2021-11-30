@@ -6,6 +6,14 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -56,10 +64,10 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $sqlCount = count($this->_sqlLoggerStack->queries);
 
         $train = $this->_em->find(get_class($train), $train->id);
-        $this->assertNotInstanceOf(Proxy::class, $train->driver);
-        $this->assertEquals('Benjamin', $train->driver->name);
+        self::assertNotInstanceOf(Proxy::class, $train->driver);
+        self::assertEquals('Benjamin', $train->driver->name);
 
-        $this->assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
+        self::assertCount($sqlCount + 1, $this->_sqlLoggerStack->queries);
     }
 
     /**
@@ -76,10 +84,10 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $sqlCount = count($this->_sqlLoggerStack->queries);
 
         $train = $this->_em->find(get_class($train), $train->id);
-        $this->assertNotInstanceOf(Proxy::class, $train->driver);
-        $this->assertNull($train->driver);
+        self::assertNotInstanceOf(Proxy::class, $train->driver);
+        self::assertNull($train->driver);
 
-        $this->assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
+        self::assertCount($sqlCount + 1, $this->_sqlLoggerStack->queries);
     }
 
     /**
@@ -97,10 +105,10 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $sqlCount = count($this->_sqlLoggerStack->queries);
 
         $driver = $this->_em->find(get_class($owner), $owner->id);
-        $this->assertNotInstanceOf(Proxy::class, $owner->train);
-        $this->assertNotNull($owner->train);
+        self::assertNotInstanceOf(Proxy::class, $owner->train);
+        self::assertNotNull($owner->train);
 
-        $this->assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
+        self::assertCount($sqlCount + 1, $this->_sqlLoggerStack->queries);
     }
 
     /**
@@ -114,15 +122,15 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertNull($driver->train);
+        self::assertNull($driver->train);
 
         $sqlCount = count($this->_sqlLoggerStack->queries);
 
         $driver = $this->_em->find(get_class($driver), $driver->id);
-        $this->assertNotInstanceOf(Proxy::class, $driver->train);
-        $this->assertNull($driver->train);
+        self::assertNotInstanceOf(Proxy::class, $driver->train);
+        self::assertNull($driver->train);
 
-        $this->assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
+        self::assertCount($sqlCount + 1, $this->_sqlLoggerStack->queries);
     }
 
     public function testEagerLoadManyToOne(): void
@@ -136,8 +144,8 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $waggon = $this->_em->find(get_class($waggon), $waggon->id);
-        $this->assertNotInstanceOf(Proxy::class, $waggon->train);
-        $this->assertNotNull($waggon->train);
+        self::assertNotInstanceOf(Proxy::class, $waggon->train);
+        self::assertNotNull($waggon->train);
     }
 
     /**
@@ -226,11 +234,11 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->persist($order);
         $this->_em->flush();
 
-        $this->_em->getConnection()->exec('UPDATE TrainOrder SET train_id = NULL');
+        $this->_em->getConnection()->executeStatement('UPDATE TrainOrder SET train_id = NULL');
 
-        $this->assertSame($train, $order->train);
+        self::assertSame($train, $order->train);
         $this->_em->refresh($order);
-        $this->assertTrue($order->train === null, 'Train reference was not refreshed to NULL.');
+        self::assertNull($order->train, 'Train reference was not refreshed to NULL.');
     }
 }
 
@@ -311,7 +319,7 @@ class TrainDriver
 
     /**
      * @var string
-     * @column(type="string")
+     * @Column(type="string")
      */
     public $name;
 
@@ -349,7 +357,7 @@ class TrainOwner
 
     /**
      * @var string
-     * @column(type="string")
+     * @Column(type="string")
      */
     public $name;
 
@@ -379,9 +387,9 @@ class Waggon
 {
     /**
      * @var int
-     * @id
-     * @generatedValue
-     * @column(type="integer")
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
      */
     public $id;
     /**
@@ -404,9 +412,9 @@ class TrainOrder
 {
     /**
      * @var int
-     * @id
-     * @generatedValue
-     * @column(type="integer")
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
      */
     public $id;
 

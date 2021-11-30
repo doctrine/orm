@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function sprintf;
@@ -34,7 +40,7 @@ class DDC444Test extends OrmFunctionalTestCase
 
         $q = $this->_em->createQuery(sprintf('SELECT u FROM %s u', $classname));
         $u = $q->getSingleResult();
-        $this->assertEquals('Initial value', $u->name);
+        self::assertEquals('Initial value', $u->name);
 
         $u->name = 'Modified value';
 
@@ -45,7 +51,7 @@ class DDC444Test extends OrmFunctionalTestCase
         $u = $this->_em->createQuery(sprintf('SELECT u FROM %s u', $classname));
         $u = $q->getSingleResult();
 
-        $this->assertEquals('Initial value', $u->name);
+        self::assertEquals('Initial value', $u->name);
 
         $u->name = 'Modified value';
         $this->_em->persist($u);
@@ -55,7 +61,7 @@ class DDC444Test extends OrmFunctionalTestCase
         $q = $this->_em->createQuery(sprintf('SELECT u FROM %s u', $classname));
         $u = $q->getSingleResult();
 
-        $this->assertEquals('Modified value', $u->name);
+        self::assertEquals('Modified value', $u->name);
     }
 }
 

@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -27,10 +30,10 @@ class DDC2224Test extends OrmFunctionalTestCase
     {
         $dql   = 'SELECT e FROM ' . __NAMESPACE__ . '\DDC2224Entity e WHERE e.field = :field';
         $query = $this->_em->createQuery($dql);
-        $query->setQueryCacheDriver(DoctrineProvider::wrap(new ArrayAdapter()));
+        $query->setQueryCache(new ArrayAdapter());
 
         $query->setParameter('field', 'test', 'DDC2224Type');
-        $this->assertStringEndsWith('.field = FUNCTION(?)', $query->getSQL());
+        self::assertStringEndsWith('.field = FUNCTION(?)', $query->getSQL());
 
         return $query;
     }
@@ -41,7 +44,7 @@ class DDC2224Test extends OrmFunctionalTestCase
     public function testCacheMissWhenTypeChanges(Query $query): void
     {
         $query->setParameter('field', 'test', 'string');
-        $this->assertStringEndsWith('.field = ?', $query->getSQL());
+        self::assertStringEndsWith('.field = ?', $query->getSQL());
     }
 }
 

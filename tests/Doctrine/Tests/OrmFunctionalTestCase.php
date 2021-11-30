@@ -1,18 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests;
 
 use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
-use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\DebugStack;
+use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Doctrine\DBAL\Platforms\OraclePlatform;
+use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -34,8 +40,8 @@ use function explode;
 use function get_class;
 use function getenv;
 use function implode;
-use function in_array;
 use function is_object;
+use function method_exists;
 use function realpath;
 use function sprintf;
 use function strpos;
@@ -59,14 +65,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * The query cache shared between all functional tests.
      *
-     * @var Cache|null
+     * @var CacheItemPoolInterface|null
      */
-    private static $_queryCacheImpl = null;
+    private static $queryCache = null;
 
     /**
      * Shared connection when a TestCase is run alone (outside of its functional suite).
      *
-     * @var \Doctrine\DBAL\Connection|null
+     * @var Connection|null
      */
     protected static $sharedConn;
 
@@ -89,9 +95,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * To be configured by the test that uses result set cache
      *
-     * @var Cache|null
+     * @var CacheItemPoolInterface|null
      */
-    protected $resultCacheImpl;
+    protected $resultCache;
 
     /**
      * Whether the database schema has already been created.
@@ -355,162 +361,162 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($this->_usedModelSets['cms'])) {
-            $conn->executeUpdate('DELETE FROM cms_users_groups');
-            $conn->executeUpdate('DELETE FROM cms_groups');
-            $conn->executeUpdate('DELETE FROM cms_users_tags');
-            $conn->executeUpdate('DELETE FROM cms_tags');
-            $conn->executeUpdate('DELETE FROM cms_addresses');
-            $conn->executeUpdate('DELETE FROM cms_phonenumbers');
-            $conn->executeUpdate('DELETE FROM cms_comments');
-            $conn->executeUpdate('DELETE FROM cms_articles');
-            $conn->executeUpdate('DELETE FROM cms_users');
-            $conn->executeUpdate('DELETE FROM cms_emails');
+            $conn->executeStatement('DELETE FROM cms_users_groups');
+            $conn->executeStatement('DELETE FROM cms_groups');
+            $conn->executeStatement('DELETE FROM cms_users_tags');
+            $conn->executeStatement('DELETE FROM cms_tags');
+            $conn->executeStatement('DELETE FROM cms_addresses');
+            $conn->executeStatement('DELETE FROM cms_phonenumbers');
+            $conn->executeStatement('DELETE FROM cms_comments');
+            $conn->executeStatement('DELETE FROM cms_articles');
+            $conn->executeStatement('DELETE FROM cms_users');
+            $conn->executeStatement('DELETE FROM cms_emails');
         }
 
         if (isset($this->_usedModelSets['ecommerce'])) {
-            $conn->executeUpdate('DELETE FROM ecommerce_carts_products');
-            $conn->executeUpdate('DELETE FROM ecommerce_products_categories');
-            $conn->executeUpdate('DELETE FROM ecommerce_products_related');
-            $conn->executeUpdate('DELETE FROM ecommerce_carts');
-            $conn->executeUpdate('DELETE FROM ecommerce_customers');
-            $conn->executeUpdate('DELETE FROM ecommerce_features');
-            $conn->executeUpdate('DELETE FROM ecommerce_products');
-            $conn->executeUpdate('DELETE FROM ecommerce_shippings');
-            $conn->executeUpdate('UPDATE ecommerce_categories SET parent_id = NULL');
-            $conn->executeUpdate('DELETE FROM ecommerce_categories');
+            $conn->executeStatement('DELETE FROM ecommerce_carts_products');
+            $conn->executeStatement('DELETE FROM ecommerce_products_categories');
+            $conn->executeStatement('DELETE FROM ecommerce_products_related');
+            $conn->executeStatement('DELETE FROM ecommerce_carts');
+            $conn->executeStatement('DELETE FROM ecommerce_customers');
+            $conn->executeStatement('DELETE FROM ecommerce_features');
+            $conn->executeStatement('DELETE FROM ecommerce_products');
+            $conn->executeStatement('DELETE FROM ecommerce_shippings');
+            $conn->executeStatement('UPDATE ecommerce_categories SET parent_id = NULL');
+            $conn->executeStatement('DELETE FROM ecommerce_categories');
         }
 
         if (isset($this->_usedModelSets['company'])) {
-            $conn->executeUpdate('DELETE FROM company_contract_employees');
-            $conn->executeUpdate('DELETE FROM company_contract_managers');
-            $conn->executeUpdate('DELETE FROM company_contracts');
-            $conn->executeUpdate('DELETE FROM company_persons_friends');
-            $conn->executeUpdate('DELETE FROM company_managers');
-            $conn->executeUpdate('DELETE FROM company_employees');
-            $conn->executeUpdate('UPDATE company_persons SET spouse_id = NULL');
-            $conn->executeUpdate('DELETE FROM company_persons');
-            $conn->executeUpdate('DELETE FROM company_raffles');
-            $conn->executeUpdate('DELETE FROM company_auctions');
-            $conn->executeUpdate('UPDATE company_organizations SET main_event_id = NULL');
-            $conn->executeUpdate('DELETE FROM company_events');
-            $conn->executeUpdate('DELETE FROM company_organizations');
+            $conn->executeStatement('DELETE FROM company_contract_employees');
+            $conn->executeStatement('DELETE FROM company_contract_managers');
+            $conn->executeStatement('DELETE FROM company_contracts');
+            $conn->executeStatement('DELETE FROM company_persons_friends');
+            $conn->executeStatement('DELETE FROM company_managers');
+            $conn->executeStatement('DELETE FROM company_employees');
+            $conn->executeStatement('UPDATE company_persons SET spouse_id = NULL');
+            $conn->executeStatement('DELETE FROM company_persons');
+            $conn->executeStatement('DELETE FROM company_raffles');
+            $conn->executeStatement('DELETE FROM company_auctions');
+            $conn->executeStatement('UPDATE company_organizations SET main_event_id = NULL');
+            $conn->executeStatement('DELETE FROM company_events');
+            $conn->executeStatement('DELETE FROM company_organizations');
         }
 
         if (isset($this->_usedModelSets['generic'])) {
-            $conn->executeUpdate('DELETE FROM boolean_model');
-            $conn->executeUpdate('DELETE FROM date_time_model');
-            $conn->executeUpdate('DELETE FROM decimal_model');
-            $conn->executeUpdate('DELETE FROM serialize_model');
+            $conn->executeStatement('DELETE FROM boolean_model');
+            $conn->executeStatement('DELETE FROM date_time_model');
+            $conn->executeStatement('DELETE FROM decimal_model');
+            $conn->executeStatement('DELETE FROM serialize_model');
         }
 
         if (isset($this->_usedModelSets['routing'])) {
-            $conn->executeUpdate('DELETE FROM RoutingRouteLegs');
-            $conn->executeUpdate('DELETE FROM RoutingRouteBooking');
-            $conn->executeUpdate('DELETE FROM RoutingRoute');
-            $conn->executeUpdate('DELETE FROM RoutingLeg');
-            $conn->executeUpdate('DELETE FROM RoutingLocation');
+            $conn->executeStatement('DELETE FROM RoutingRouteLegs');
+            $conn->executeStatement('DELETE FROM RoutingRouteBooking');
+            $conn->executeStatement('DELETE FROM RoutingRoute');
+            $conn->executeStatement('DELETE FROM RoutingLeg');
+            $conn->executeStatement('DELETE FROM RoutingLocation');
         }
 
         if (isset($this->_usedModelSets['navigation'])) {
-            $conn->executeUpdate('DELETE FROM navigation_tour_pois');
-            $conn->executeUpdate('DELETE FROM navigation_photos');
-            $conn->executeUpdate('DELETE FROM navigation_pois');
-            $conn->executeUpdate('DELETE FROM navigation_tours');
-            $conn->executeUpdate('DELETE FROM navigation_countries');
+            $conn->executeStatement('DELETE FROM navigation_tour_pois');
+            $conn->executeStatement('DELETE FROM navigation_photos');
+            $conn->executeStatement('DELETE FROM navigation_pois');
+            $conn->executeStatement('DELETE FROM navigation_tours');
+            $conn->executeStatement('DELETE FROM navigation_countries');
         }
 
         if (isset($this->_usedModelSets['directorytree'])) {
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('file'));
+            $conn->executeStatement('DELETE FROM ' . $platform->quoteIdentifier('file'));
             // MySQL doesn't know deferred deletions therefore only executing the second query gives errors.
-            $conn->executeUpdate('DELETE FROM Directory WHERE parentDirectory_id IS NOT NULL');
-            $conn->executeUpdate('DELETE FROM Directory');
+            $conn->executeStatement('DELETE FROM Directory WHERE parentDirectory_id IS NOT NULL');
+            $conn->executeStatement('DELETE FROM Directory');
         }
 
         if (isset($this->_usedModelSets['ddc117'])) {
-            $conn->executeUpdate('DELETE FROM ddc117editor_ddc117translation');
-            $conn->executeUpdate('DELETE FROM DDC117Editor');
-            $conn->executeUpdate('DELETE FROM DDC117ApproveChanges');
-            $conn->executeUpdate('DELETE FROM DDC117Link');
-            $conn->executeUpdate('DELETE FROM DDC117Reference');
-            $conn->executeUpdate('DELETE FROM DDC117ArticleDetails');
-            $conn->executeUpdate('DELETE FROM DDC117Translation');
-            $conn->executeUpdate('DELETE FROM DDC117Article');
+            $conn->executeStatement('DELETE FROM ddc117editor_ddc117translation');
+            $conn->executeStatement('DELETE FROM DDC117Editor');
+            $conn->executeStatement('DELETE FROM DDC117ApproveChanges');
+            $conn->executeStatement('DELETE FROM DDC117Link');
+            $conn->executeStatement('DELETE FROM DDC117Reference');
+            $conn->executeStatement('DELETE FROM DDC117ArticleDetails');
+            $conn->executeStatement('DELETE FROM DDC117Translation');
+            $conn->executeStatement('DELETE FROM DDC117Article');
         }
 
         if (isset($this->_usedModelSets['stockexchange'])) {
-            $conn->executeUpdate('DELETE FROM exchange_bonds_stocks');
-            $conn->executeUpdate('DELETE FROM exchange_bonds');
-            $conn->executeUpdate('DELETE FROM exchange_stocks');
-            $conn->executeUpdate('DELETE FROM exchange_markets');
+            $conn->executeStatement('DELETE FROM exchange_bonds_stocks');
+            $conn->executeStatement('DELETE FROM exchange_bonds');
+            $conn->executeStatement('DELETE FROM exchange_stocks');
+            $conn->executeStatement('DELETE FROM exchange_markets');
         }
 
         if (isset($this->_usedModelSets['legacy'])) {
-            $conn->executeUpdate('DELETE FROM legacy_users_cars');
-            $conn->executeUpdate('DELETE FROM legacy_users_reference');
-            $conn->executeUpdate('DELETE FROM legacy_articles');
-            $conn->executeUpdate('DELETE FROM legacy_cars');
-            $conn->executeUpdate('DELETE FROM legacy_users');
+            $conn->executeStatement('DELETE FROM legacy_users_cars');
+            $conn->executeStatement('DELETE FROM legacy_users_reference');
+            $conn->executeStatement('DELETE FROM legacy_articles');
+            $conn->executeStatement('DELETE FROM legacy_cars');
+            $conn->executeStatement('DELETE FROM legacy_users');
         }
 
         if (isset($this->_usedModelSets['customtype'])) {
-            $conn->executeUpdate('DELETE FROM customtype_parent_friends');
-            $conn->executeUpdate('DELETE FROM customtype_parents');
-            $conn->executeUpdate('DELETE FROM customtype_children');
-            $conn->executeUpdate('DELETE FROM customtype_uppercases');
+            $conn->executeStatement('DELETE FROM customtype_parent_friends');
+            $conn->executeStatement('DELETE FROM customtype_parents');
+            $conn->executeStatement('DELETE FROM customtype_children');
+            $conn->executeStatement('DELETE FROM customtype_uppercases');
         }
 
         if (isset($this->_usedModelSets['compositekeyinheritance'])) {
-            $conn->executeUpdate('DELETE FROM JoinedChildClass');
-            $conn->executeUpdate('DELETE FROM JoinedRootClass');
-            $conn->executeUpdate('DELETE FROM SingleRootClass');
+            $conn->executeStatement('DELETE FROM JoinedChildClass');
+            $conn->executeStatement('DELETE FROM JoinedRootClass');
+            $conn->executeStatement('DELETE FROM SingleRootClass');
         }
 
         if (isset($this->_usedModelSets['taxi'])) {
-            $conn->executeUpdate('DELETE FROM taxi_paid_ride');
-            $conn->executeUpdate('DELETE FROM taxi_ride');
-            $conn->executeUpdate('DELETE FROM taxi_car');
-            $conn->executeUpdate('DELETE FROM taxi_driver');
+            $conn->executeStatement('DELETE FROM taxi_paid_ride');
+            $conn->executeStatement('DELETE FROM taxi_ride');
+            $conn->executeStatement('DELETE FROM taxi_car');
+            $conn->executeStatement('DELETE FROM taxi_driver');
         }
 
         if (isset($this->_usedModelSets['tweet'])) {
-            $conn->executeUpdate('DELETE FROM tweet_tweet');
-            $conn->executeUpdate('DELETE FROM tweet_user_list');
-            $conn->executeUpdate('DELETE FROM tweet_user');
+            $conn->executeStatement('DELETE FROM tweet_tweet');
+            $conn->executeStatement('DELETE FROM tweet_user_list');
+            $conn->executeStatement('DELETE FROM tweet_user');
         }
 
         if (isset($this->_usedModelSets['cache'])) {
-            $conn->executeUpdate('DELETE FROM cache_attraction_location_info');
-            $conn->executeUpdate('DELETE FROM cache_attraction_contact_info');
-            $conn->executeUpdate('DELETE FROM cache_attraction_info');
-            $conn->executeUpdate('DELETE FROM cache_visited_cities');
-            $conn->executeUpdate('DELETE FROM cache_flight');
-            $conn->executeUpdate('DELETE FROM cache_attraction');
-            $conn->executeUpdate('DELETE FROM cache_travel');
-            $conn->executeUpdate('DELETE FROM cache_traveler');
-            $conn->executeUpdate('DELETE FROM cache_traveler_profile_info');
-            $conn->executeUpdate('DELETE FROM cache_traveler_profile');
-            $conn->executeUpdate('DELETE FROM cache_city');
-            $conn->executeUpdate('DELETE FROM cache_state');
-            $conn->executeUpdate('DELETE FROM cache_country');
-            $conn->executeUpdate('DELETE FROM cache_login');
-            $conn->executeUpdate('DELETE FROM cache_token');
-            $conn->executeUpdate('DELETE FROM cache_complex_action');
-            $conn->executeUpdate('DELETE FROM cache_action');
-            $conn->executeUpdate('DELETE FROM cache_client');
+            $conn->executeStatement('DELETE FROM cache_attraction_location_info');
+            $conn->executeStatement('DELETE FROM cache_attraction_contact_info');
+            $conn->executeStatement('DELETE FROM cache_attraction_info');
+            $conn->executeStatement('DELETE FROM cache_visited_cities');
+            $conn->executeStatement('DELETE FROM cache_flight');
+            $conn->executeStatement('DELETE FROM cache_attraction');
+            $conn->executeStatement('DELETE FROM cache_travel');
+            $conn->executeStatement('DELETE FROM cache_traveler');
+            $conn->executeStatement('DELETE FROM cache_traveler_profile_info');
+            $conn->executeStatement('DELETE FROM cache_traveler_profile');
+            $conn->executeStatement('DELETE FROM cache_city');
+            $conn->executeStatement('DELETE FROM cache_state');
+            $conn->executeStatement('DELETE FROM cache_country');
+            $conn->executeStatement('DELETE FROM cache_login');
+            $conn->executeStatement('DELETE FROM cache_token');
+            $conn->executeStatement('DELETE FROM cache_complex_action');
+            $conn->executeStatement('DELETE FROM cache_action');
+            $conn->executeStatement('DELETE FROM cache_client');
         }
 
         if (isset($this->_usedModelSets['ddc3346'])) {
-            $conn->executeUpdate('DELETE FROM ddc3346_articles');
-            $conn->executeUpdate('DELETE FROM ddc3346_users');
+            $conn->executeStatement('DELETE FROM ddc3346_articles');
+            $conn->executeStatement('DELETE FROM ddc3346_users');
         }
 
         if (isset($this->_usedModelSets['ornemental_orphan_removal'])) {
-            $conn->executeUpdate('DELETE FROM ornemental_orphan_removal_person');
-            $conn->executeUpdate('DELETE FROM ornemental_orphan_removal_phone_number');
+            $conn->executeStatement('DELETE FROM ornemental_orphan_removal_person');
+            $conn->executeStatement('DELETE FROM ornemental_orphan_removal_phone_number');
         }
 
         if (isset($this->_usedModelSets['quote'])) {
-            $conn->executeUpdate(
+            $conn->executeStatement(
                 sprintf(
                     'UPDATE %s SET %s = NULL',
                     $platform->quoteIdentifier('quote-address'),
@@ -518,104 +524,104 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
                 )
             );
 
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-users-groups'));
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-group'));
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-phone'));
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-user'));
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-address'));
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-city'));
+            $conn->executeStatement('DELETE FROM ' . $platform->quoteIdentifier('quote-users-groups'));
+            $conn->executeStatement('DELETE FROM ' . $platform->quoteIdentifier('quote-group'));
+            $conn->executeStatement('DELETE FROM ' . $platform->quoteIdentifier('quote-phone'));
+            $conn->executeStatement('DELETE FROM ' . $platform->quoteIdentifier('quote-user'));
+            $conn->executeStatement('DELETE FROM ' . $platform->quoteIdentifier('quote-address'));
+            $conn->executeStatement('DELETE FROM ' . $platform->quoteIdentifier('quote-city'));
         }
 
         if (isset($this->_usedModelSets['vct_onetoone'])) {
-            $conn->executeUpdate('DELETE FROM vct_owning_onetoone');
-            $conn->executeUpdate('DELETE FROM vct_inversed_onetoone');
+            $conn->executeStatement('DELETE FROM vct_owning_onetoone');
+            $conn->executeStatement('DELETE FROM vct_inversed_onetoone');
         }
 
         if (isset($this->_usedModelSets['vct_onetoone_compositeid'])) {
-            $conn->executeUpdate('DELETE FROM vct_owning_onetoone_compositeid');
-            $conn->executeUpdate('DELETE FROM vct_inversed_onetoone_compositeid');
+            $conn->executeStatement('DELETE FROM vct_owning_onetoone_compositeid');
+            $conn->executeStatement('DELETE FROM vct_inversed_onetoone_compositeid');
         }
 
         if (isset($this->_usedModelSets['vct_onetoone_compositeid_foreignkey'])) {
-            $conn->executeUpdate('DELETE FROM vct_owning_onetoone_compositeid_foreignkey');
-            $conn->executeUpdate('DELETE FROM vct_inversed_onetoone_compositeid_foreignkey');
-            $conn->executeUpdate('DELETE FROM vct_auxiliary');
+            $conn->executeStatement('DELETE FROM vct_owning_onetoone_compositeid_foreignkey');
+            $conn->executeStatement('DELETE FROM vct_inversed_onetoone_compositeid_foreignkey');
+            $conn->executeStatement('DELETE FROM vct_auxiliary');
         }
 
         if (isset($this->_usedModelSets['vct_onetomany'])) {
-            $conn->executeUpdate('DELETE FROM vct_owning_manytoone');
-            $conn->executeUpdate('DELETE FROM vct_inversed_onetomany');
+            $conn->executeStatement('DELETE FROM vct_owning_manytoone');
+            $conn->executeStatement('DELETE FROM vct_inversed_onetomany');
         }
 
         if (isset($this->_usedModelSets['vct_onetomany_compositeid'])) {
-            $conn->executeUpdate('DELETE FROM vct_owning_manytoone_compositeid');
-            $conn->executeUpdate('DELETE FROM vct_inversed_onetomany_compositeid');
+            $conn->executeStatement('DELETE FROM vct_owning_manytoone_compositeid');
+            $conn->executeStatement('DELETE FROM vct_inversed_onetomany_compositeid');
         }
 
         if (isset($this->_usedModelSets['vct_onetomany_compositeid_foreignkey'])) {
-            $conn->executeUpdate('DELETE FROM vct_owning_manytoone_compositeid_foreignkey');
-            $conn->executeUpdate('DELETE FROM vct_inversed_onetomany_compositeid_foreignkey');
-            $conn->executeUpdate('DELETE FROM vct_auxiliary');
+            $conn->executeStatement('DELETE FROM vct_owning_manytoone_compositeid_foreignkey');
+            $conn->executeStatement('DELETE FROM vct_inversed_onetomany_compositeid_foreignkey');
+            $conn->executeStatement('DELETE FROM vct_auxiliary');
         }
 
         if (isset($this->_usedModelSets['vct_onetomany_extralazy'])) {
-            $conn->executeUpdate('DELETE FROM vct_owning_manytoone_extralazy');
-            $conn->executeUpdate('DELETE FROM vct_inversed_onetomany_extralazy');
+            $conn->executeStatement('DELETE FROM vct_owning_manytoone_extralazy');
+            $conn->executeStatement('DELETE FROM vct_inversed_onetomany_extralazy');
         }
 
         if (isset($this->_usedModelSets['vct_manytomany'])) {
-            $conn->executeUpdate('DELETE FROM vct_xref_manytomany');
-            $conn->executeUpdate('DELETE FROM vct_owning_manytomany');
-            $conn->executeUpdate('DELETE FROM vct_inversed_manytomany');
+            $conn->executeStatement('DELETE FROM vct_xref_manytomany');
+            $conn->executeStatement('DELETE FROM vct_owning_manytomany');
+            $conn->executeStatement('DELETE FROM vct_inversed_manytomany');
         }
 
         if (isset($this->_usedModelSets['vct_manytomany_compositeid'])) {
-            $conn->executeUpdate('DELETE FROM vct_xref_manytomany_compositeid');
-            $conn->executeUpdate('DELETE FROM vct_owning_manytomany_compositeid');
-            $conn->executeUpdate('DELETE FROM vct_inversed_manytomany_compositeid');
+            $conn->executeStatement('DELETE FROM vct_xref_manytomany_compositeid');
+            $conn->executeStatement('DELETE FROM vct_owning_manytomany_compositeid');
+            $conn->executeStatement('DELETE FROM vct_inversed_manytomany_compositeid');
         }
 
         if (isset($this->_usedModelSets['vct_manytomany_compositeid_foreignkey'])) {
-            $conn->executeUpdate('DELETE FROM vct_xref_manytomany_compositeid_foreignkey');
-            $conn->executeUpdate('DELETE FROM vct_owning_manytomany_compositeid_foreignkey');
-            $conn->executeUpdate('DELETE FROM vct_inversed_manytomany_compositeid_foreignkey');
-            $conn->executeUpdate('DELETE FROM vct_auxiliary');
+            $conn->executeStatement('DELETE FROM vct_xref_manytomany_compositeid_foreignkey');
+            $conn->executeStatement('DELETE FROM vct_owning_manytomany_compositeid_foreignkey');
+            $conn->executeStatement('DELETE FROM vct_inversed_manytomany_compositeid_foreignkey');
+            $conn->executeStatement('DELETE FROM vct_auxiliary');
         }
 
         if (isset($this->_usedModelSets['vct_manytomany_extralazy'])) {
-            $conn->executeUpdate('DELETE FROM vct_xref_manytomany_extralazy');
-            $conn->executeUpdate('DELETE FROM vct_owning_manytomany_extralazy');
-            $conn->executeUpdate('DELETE FROM vct_inversed_manytomany_extralazy');
+            $conn->executeStatement('DELETE FROM vct_xref_manytomany_extralazy');
+            $conn->executeStatement('DELETE FROM vct_owning_manytomany_extralazy');
+            $conn->executeStatement('DELETE FROM vct_inversed_manytomany_extralazy');
         }
 
         if (isset($this->_usedModelSets['geonames'])) {
-            $conn->executeUpdate('DELETE FROM geonames_admin1_alternate_name');
-            $conn->executeUpdate('DELETE FROM geonames_admin1');
-            $conn->executeUpdate('DELETE FROM geonames_city');
-            $conn->executeUpdate('DELETE FROM geonames_country');
+            $conn->executeStatement('DELETE FROM geonames_admin1_alternate_name');
+            $conn->executeStatement('DELETE FROM geonames_admin1');
+            $conn->executeStatement('DELETE FROM geonames_city');
+            $conn->executeStatement('DELETE FROM geonames_country');
         }
 
         if (isset($this->_usedModelSets['custom_id_object_type'])) {
-            $conn->executeUpdate('DELETE FROM custom_id_type_child');
-            $conn->executeUpdate('DELETE FROM custom_id_type_parent');
+            $conn->executeStatement('DELETE FROM custom_id_type_child');
+            $conn->executeStatement('DELETE FROM custom_id_type_parent');
         }
 
         if (isset($this->_usedModelSets['pagination'])) {
-            $conn->executeUpdate('DELETE FROM pagination_logo');
-            $conn->executeUpdate('DELETE FROM pagination_department');
-            $conn->executeUpdate('DELETE FROM pagination_company');
-            $conn->executeUpdate('DELETE FROM pagination_user');
+            $conn->executeStatement('DELETE FROM pagination_logo');
+            $conn->executeStatement('DELETE FROM pagination_department');
+            $conn->executeStatement('DELETE FROM pagination_company');
+            $conn->executeStatement('DELETE FROM pagination_user');
         }
 
         if (isset($this->_usedModelSets['versioned_many_to_one'])) {
-            $conn->executeUpdate('DELETE FROM versioned_many_to_one_article');
-            $conn->executeUpdate('DELETE FROM versioned_many_to_one_category');
+            $conn->executeStatement('DELETE FROM versioned_many_to_one_article');
+            $conn->executeStatement('DELETE FROM versioned_many_to_one_category');
         }
 
         if (isset($this->_usedModelSets['issue5989'])) {
-            $conn->executeUpdate('DELETE FROM issue5989_persons');
-            $conn->executeUpdate('DELETE FROM issue5989_employees');
-            $conn->executeUpdate('DELETE FROM issue5989_managers');
+            $conn->executeStatement('DELETE FROM issue5989_persons');
+            $conn->executeStatement('DELETE FROM issue5989_employees');
+            $conn->executeStatement('DELETE FROM issue5989_managers');
         }
 
         $this->_em->clear();
@@ -658,9 +664,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($GLOBALS['DOCTRINE_MARK_SQL_LOGS'])) {
-            if (in_array(static::$sharedConn->getDatabasePlatform()->getName(), ['mysql', 'postgresql'])) {
+            $platform = static::$sharedConn->getDatabasePlatform();
+            if (
+                $platform instanceof MySQLPlatform
+                || $platform instanceof PostgreSQL94Platform
+                || $platform instanceof PostgreSQLPlatform
+            ) {
                 static::$sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/');
-            } elseif (static::$sharedConn->getDatabasePlatform()->getName() === 'oracle') {
+            } elseif ($platform instanceof OraclePlatform) {
                 static::$sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/ FROM dual');
             }
         }
@@ -709,8 +720,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             }
         }
 
-        if (self::$_queryCacheImpl === null) {
-            self::$_queryCacheImpl = DoctrineProvider::wrap(new ArrayAdapter());
+        if (self::$queryCache === null) {
+            self::$queryCache = new ArrayAdapter();
         }
 
         $this->_sqlLoggerStack          = new DebugStack();
@@ -725,12 +736,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $config->setMetadataCacheImpl(self::$_metadataCache);
         }
 
-        $config->setQueryCacheImpl(self::$_queryCacheImpl);
+        $config->setQueryCache(self::$queryCache);
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
 
-        if ($this->resultCacheImpl !== null) {
-            $config->setResultCacheImpl($this->resultCacheImpl);
+        if ($this->resultCache !== null) {
+            $config->setResultCache($this->resultCache);
         }
 
         $enableSecondLevelCache = getenv('ENABLE_SECOND_LEVEL_CACHE');
@@ -760,7 +771,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
                     realpath(__DIR__ . '/Models/Cache'),
                     realpath(__DIR__ . '/Models/GeoNames'),
                 ],
-                true
+                false
             )
         );
 
@@ -793,6 +804,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         return EntityManager::create($conn, $config);
     }
 
+    final protected function createSchemaManager(): AbstractSchemaManager
+    {
+        return method_exists(Connection::class, 'createSchemaManager')
+            ? $this->_em->getConnection()->createSchemaManager()
+            : $this->_em->getConnection()->getSchemaManager();
+    }
+
     /**
      * @throws Throwable
      */
@@ -807,11 +825,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $last25queries = array_slice(array_reverse($this->_sqlLoggerStack->queries, true), 0, 25, true);
             foreach ($last25queries as $i => $query) {
                 $params   = array_map(static function ($p) {
-                    if (is_object($p)) {
-                        return get_class($p);
-                    } else {
-                        return var_export($p, true);
-                    }
+                    return is_object($p) ? get_class($p) : var_export($p, true);
                 }, $query['params'] ?: []);
                 $queries .= $i . ". SQL: '" . $query['sql'] . "' Params: " . implode(', ', $params) . PHP_EOL;
             }
@@ -839,7 +853,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
     public function assertSQLEquals(string $expectedSql, string $actualSql): void
     {
-        $this->assertEquals(
+        self::assertEquals(
             strtolower($expectedSql),
             strtolower($actualSql),
             'Lowercase comparison of SQL statements failed.'

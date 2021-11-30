@@ -29,11 +29,11 @@ class DDC657Test extends OrmFunctionalTestCase
         $query    = $this->_em->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d');
         $datetime = $query->setMaxResults(1)->getSingleResult();
 
-        $this->assertInstanceOf(DateTimeModel::class, $datetime);
+        self::assertInstanceOf(DateTimeModel::class, $datetime);
 
-        $this->assertInstanceOf('DateTime', $datetime->datetime);
-        $this->assertInstanceOf('DateTime', $datetime->time);
-        $this->assertInstanceOf('DateTime', $datetime->date);
+        self::assertInstanceOf('DateTime', $datetime->datetime);
+        self::assertInstanceOf('DateTime', $datetime->time);
+        self::assertInstanceOf('DateTime', $datetime->date);
     }
 
     public function testScalarResult(): void
@@ -41,15 +41,15 @@ class DDC657Test extends OrmFunctionalTestCase
         $query  = $this->_em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $result = $query->getScalarResult();
 
-        $this->assertCount(2, $result);
+        self::assertCount(2, $result);
 
-        $this->assertStringContainsString('11:11:11', $result[0]['time']);
-        $this->assertStringContainsString('2010-01-01', $result[0]['date']);
-        $this->assertStringContainsString('2010-01-01 11:11:11', $result[0]['datetime']);
+        self::assertStringContainsString('11:11:11', $result[0]['time']);
+        self::assertStringContainsString('2010-01-01', $result[0]['date']);
+        self::assertStringContainsString('2010-01-01 11:11:11', $result[0]['datetime']);
 
-        $this->assertStringContainsString('12:12:12', $result[1]['time']);
-        $this->assertStringContainsString('2010-02-02', $result[1]['date']);
-        $this->assertStringContainsString('2010-02-02 12:12:12', $result[1]['datetime']);
+        self::assertStringContainsString('12:12:12', $result[1]['time']);
+        self::assertStringContainsString('2010-02-02', $result[1]['date']);
+        self::assertStringContainsString('2010-02-02 12:12:12', $result[1]['datetime']);
     }
 
     public function testaTicketEntityArrayResult(): void
@@ -57,15 +57,15 @@ class DDC657Test extends OrmFunctionalTestCase
         $query  = $this->_em->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $result = $query->getArrayResult();
 
-        $this->assertCount(2, $result);
+        self::assertCount(2, $result);
 
-        $this->assertInstanceOf('DateTime', $result[0]['datetime']);
-        $this->assertInstanceOf('DateTime', $result[0]['time']);
-        $this->assertInstanceOf('DateTime', $result[0]['date']);
+        self::assertInstanceOf('DateTime', $result[0]['datetime']);
+        self::assertInstanceOf('DateTime', $result[0]['time']);
+        self::assertInstanceOf('DateTime', $result[0]['date']);
 
-        $this->assertInstanceOf('DateTime', $result[1]['datetime']);
-        $this->assertInstanceOf('DateTime', $result[1]['time']);
-        $this->assertInstanceOf('DateTime', $result[1]['date']);
+        self::assertInstanceOf('DateTime', $result[1]['datetime']);
+        self::assertInstanceOf('DateTime', $result[1]['time']);
+        self::assertInstanceOf('DateTime', $result[1]['date']);
     }
 
     public function testTicketSingleResult(): void
@@ -73,11 +73,11 @@ class DDC657Test extends OrmFunctionalTestCase
         $query    = $this->_em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $datetime = $query->setMaxResults(1)->getSingleResult();
 
-        $this->assertTrue(is_array($datetime));
+        self::assertIsArray($datetime);
 
-        $this->assertInstanceOf('DateTime', $datetime['datetime']);
-        $this->assertInstanceOf('DateTime', $datetime['time']);
-        $this->assertInstanceOf('DateTime', $datetime['date']);
+        self::assertInstanceOf('DateTime', $datetime['datetime']);
+        self::assertInstanceOf('DateTime', $datetime['time']);
+        self::assertInstanceOf('DateTime', $datetime['date']);
     }
 
     public function testTicketResult(): void
@@ -85,19 +85,19 @@ class DDC657Test extends OrmFunctionalTestCase
         $query  = $this->_em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $result = $query->getResult();
 
-        $this->assertCount(2, $result);
+        self::assertCount(2, $result);
 
-        $this->assertInstanceOf('DateTime', $result[0]['time']);
-        $this->assertInstanceOf('DateTime', $result[0]['date']);
-        $this->assertInstanceOf('DateTime', $result[0]['datetime']);
+        self::assertInstanceOf('DateTime', $result[0]['time']);
+        self::assertInstanceOf('DateTime', $result[0]['date']);
+        self::assertInstanceOf('DateTime', $result[0]['datetime']);
 
-        $this->assertEquals('2010-01-01 11:11:11', $result[0]['datetime']->format('Y-m-d G:i:s'));
+        self::assertEquals('2010-01-01 11:11:11', $result[0]['datetime']->format('Y-m-d G:i:s'));
 
-        $this->assertInstanceOf('DateTime', $result[1]['time']);
-        $this->assertInstanceOf('DateTime', $result[1]['date']);
-        $this->assertInstanceOf('DateTime', $result[1]['datetime']);
+        self::assertInstanceOf('DateTime', $result[1]['time']);
+        self::assertInstanceOf('DateTime', $result[1]['date']);
+        self::assertInstanceOf('DateTime', $result[1]['datetime']);
 
-        $this->assertEquals('2010-02-02 12:12:12', $result[1]['datetime']->format('Y-m-d G:i:s'));
+        self::assertEquals('2010-02-02 12:12:12', $result[1]['datetime']->format('Y-m-d G:i:s'));
     }
 
     public function loadFixtures(): void

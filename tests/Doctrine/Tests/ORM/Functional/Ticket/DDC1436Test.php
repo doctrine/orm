@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -48,13 +54,13 @@ class DDC1436Test extends OrmFunctionalTestCase
                 ->setParameter('id', $id)
                 ->getOneOrNullResult();
 
-        $this->assertInstanceOf(DDC1436Page::class, $page);
+        self::assertInstanceOf(DDC1436Page::class, $page);
 
         // step 2
         $page = $this->_em->find(DDC1436Page::class, $id);
-        $this->assertInstanceOf(DDC1436Page::class, $page);
-        $this->assertInstanceOf(DDC1436Page::class, $page->getParent());
-        $this->assertInstanceOf(DDC1436Page::class, $page->getParent()->getParent());
+        self::assertInstanceOf(DDC1436Page::class, $page);
+        self::assertInstanceOf(DDC1436Page::class, $page->getParent());
+        self::assertInstanceOf(DDC1436Page::class, $page->getParent()->getParent());
     }
 }
 

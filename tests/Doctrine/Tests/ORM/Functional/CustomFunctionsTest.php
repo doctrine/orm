@@ -48,8 +48,8 @@ class CustomFunctionsTest extends OrmFunctionalTestCase
 
         $users = $query->getResult();
 
-        $this->assertEquals(1, count($users));
-        $this->assertSame($user, $users[0]);
+        self::assertCount(1, $users);
+        self::assertSame($user, $users[0]);
     }
 
     public function testCustomFunctionOverride(): void
@@ -66,7 +66,7 @@ class CustomFunctionsTest extends OrmFunctionalTestCase
 
         $usersCount = $query->getSingleScalarResult();
 
-        $this->assertEquals(1, $usersCount);
+        self::assertEquals(1, $usersCount);
     }
 }
 

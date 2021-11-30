@@ -50,7 +50,6 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
         mkdir($this->tmpDir);
 
         $this->generator = new EntityGenerator();
-        $this->generator->setAnnotationPrefix('');
         $this->generator->setGenerateAnnotations(true);
         $this->generator->setGenerateStubMethods(true);
         $this->generator->setRegenerateEntityIfExists(false);
@@ -94,15 +93,15 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
 
         $rpath = $this->writeRepositoryClass($className);
 
-        $this->assertFileExists($rpath);
+        self::assertFileExists($rpath);
 
         require $rpath;
 
         $repo = new ReflectionClass($em->getRepository($className));
 
-        $this->assertTrue($repo->inNamespace());
-        $this->assertSame($className . 'Repository', $repo->getName());
-        $this->assertSame(EntityRepository::class, $repo->getParentClass()->getName());
+        self::assertTrue($repo->inNamespace());
+        self::assertSame($className . 'Repository', $repo->getName());
+        self::assertSame(EntityRepository::class, $repo->getParentClass()->getName());
 
         require_once __DIR__ . '/../../Models/DDC3231/DDC3231User1NoNamespace.php';
 
@@ -111,15 +110,15 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
 
         $rpath2 = $this->writeRepositoryClass($className2);
 
-        $this->assertFileExists($rpath2);
+        self::assertFileExists($rpath2);
 
         require $rpath2;
 
         $repo2 = new ReflectionClass($em->getRepository($className2));
 
-        $this->assertFalse($repo2->inNamespace());
-        $this->assertSame($className2 . 'Repository', $repo2->getName());
-        $this->assertSame(EntityRepository::class, $repo2->getParentClass()->getName());
+        self::assertFalse($repo2->inNamespace());
+        self::assertSame($className2 . 'Repository', $repo2->getName());
+        self::assertSame(EntityRepository::class, $repo2->getParentClass()->getName());
     }
 
     /**
@@ -135,16 +134,16 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
 
         $rpath = $this->writeRepositoryClass($className, DDC3231EntityRepository::class);
 
-        $this->assertNotNull($rpath);
-        $this->assertFileExists($rpath);
+        self::assertNotNull($rpath);
+        self::assertFileExists($rpath);
 
         require $rpath;
 
         $repo = new ReflectionClass($em->getRepository($className));
 
-        $this->assertTrue($repo->inNamespace());
-        $this->assertSame($className . 'Repository', $repo->getName());
-        $this->assertSame(DDC3231EntityRepository::class, $repo->getParentClass()->getName());
+        self::assertTrue($repo->inNamespace());
+        self::assertSame($className . 'Repository', $repo->getName());
+        self::assertSame(DDC3231EntityRepository::class, $repo->getParentClass()->getName());
 
         require_once __DIR__ . '/../../Models/DDC3231/DDC3231User2NoNamespace.php';
 
@@ -153,16 +152,16 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
 
         $rpath2 = $this->writeRepositoryClass($className2, DDC3231EntityRepository::class);
 
-        $this->assertNotNull($rpath2);
-        $this->assertFileExists($rpath2);
+        self::assertNotNull($rpath2);
+        self::assertFileExists($rpath2);
 
         require $rpath2;
 
         $repo2 = new ReflectionClass($em->getRepository($className2));
 
-        $this->assertFalse($repo2->inNamespace());
-        $this->assertSame($className2 . 'Repository', $repo2->getName());
-        $this->assertSame(DDC3231EntityRepository::class, $repo2->getParentClass()->getName());
+        self::assertFalse($repo2->inNamespace());
+        self::assertSame($className2 . 'Repository', $repo2->getName());
+        self::assertSame(DDC3231EntityRepository::class, $repo2->getParentClass()->getName());
     }
 
     private function writeEntityClass(string $className, string $newClassName): void

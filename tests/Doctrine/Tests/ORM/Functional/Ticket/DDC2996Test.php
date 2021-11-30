@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\PreFlush;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function get_class;
@@ -33,12 +40,12 @@ class DDC2996Test extends OrmFunctionalTestCase
         $pref->value = 'bar';
         $this->_em->flush();
 
-        $this->assertEquals(1, $pref->user->counter);
+        self::assertEquals(1, $pref->user->counter);
 
         $this->_em->clear();
 
         $pref = $this->_em->find(DDC2996UserPreference::class, $pref->id);
-        $this->assertEquals(1, $pref->user->counter);
+        self::assertEquals(1, $pref->user->counter);
     }
 }
 

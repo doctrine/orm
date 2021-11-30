@@ -6,6 +6,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_values;
@@ -55,7 +61,7 @@ class GH7864Test extends OrmFunctionalTestCase
             return $tweet->content;
         });
 
-        $this->assertEquals(['Goodbye, and thanks for all the fish'], array_values($tweets->toArray()));
+        self::assertEquals(['Goodbye, and thanks for all the fish'], array_values($tweets->toArray()));
     }
 }
 

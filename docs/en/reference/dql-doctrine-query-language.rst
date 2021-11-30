@@ -490,21 +490,21 @@ where you can generate an arbitrary join with the following syntax:
 With an arbitrary join the result differs from the joins using a mapped property.
 The result of an arbitrary join is an one dimensional array with a mix of the entity from the ``SELECT``
 and the joined entity fitting to the filtering of the query. In case of the example with ``User``
-and ``Blacklist``, it can look like this:
+and ``Banlist``, it can look like this:
 
 - User
-- Blacklist
-- Blacklist
+- Banlist
+- Banlist
 - User
-- Blacklist
+- Banlist
 - User
-- Blacklist
-- Blacklist
-- Blacklist
+- Banlist
+- Banlist
+- Banlist
 
-In this form of join, the ``Blacklist`` entities found by the filtering in the ``WITH`` part are not fetched by an accessor
-method on ``User``, but are already part of the result. In case the accessor method for Blacklists is invoked on a User instance,
-it loads all the related ``Blacklist`` objects corresponding to this ``User``. This change of behaviour needs to be considered
+In this form of join, the ``Banlist`` entities found by the filtering in the ``WITH`` part are not fetched by an accessor
+method on ``User``, but are already part of the result. In case the accessor method for Banlists is invoked on a User instance,
+it loads all the related ``Banlist`` objects corresponding to this ``User``. This change of behaviour needs to be considered
 when the DQL is switched to an arbitrary join.
 
 .. note::
@@ -1184,6 +1184,7 @@ The constants for the different hydration modes are:
 -  ``Query::HYDRATE_ARRAY``
 -  ``Query::HYDRATE_SCALAR``
 -  ``Query::HYDRATE_SINGLE_SCALAR``
+-  ``Query::HYDRATE_SCALAR_COLUMN``
 
 Object Hydration
 ^^^^^^^^^^^^^^^^
@@ -1272,6 +1273,25 @@ You can use the ``getSingleScalarResult()`` shortcut as well:
     <?php
     $numArticles = $query->getSingleScalarResult();
 
+Scalar Column Hydration
+^^^^^^^^^^^^^^^^^^^^^^^
+
+If you have a query which returns a one-dimensional array of scalar values
+you can use scalar column hydration:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT a.id FROM CmsUser u');
+    $ids = $query->getResult(Query::HYDRATE_SCALAR_COLUMN);
+
+You can use the ``getSingleColumnResult()`` shortcut as well:
+
+.. code-block:: php
+
+    <?php
+    $ids = $query->getSingleColumnResult();
+
 Custom Hydration Modes
 ^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1283,13 +1303,14 @@ creating a class which extends ``AbstractHydrator``:
     <?php
     namespace MyProject\Hydrators;
 
+    use Doctrine\DBAL\FetchMode;
     use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 
     class CustomHydrator extends AbstractHydrator
     {
         protected function _hydrateAll()
         {
-            return $this->_stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $this->_stmt->fetchAll(FetchMode::FETCH_ASSOC);
         }
     }
 
@@ -1526,7 +1547,6 @@ Terminals
 
 -  identifier (name, email, ...) must match ``[a-z_][a-z0-9_]*``
 -  fully_qualified_name (Doctrine\Tests\Models\CMS\CmsUser) matches PHP's fully qualified class names
--  aliased_name (CMS:CmsUser) uses two identifiers, one for the namespace alias and one for the class inside it
 -  string ('foo', 'bar''s house', '%ninja%', ...)
 -  char ('/', '\\', ' ', ...)
 -  integer (-1, 0, 1, 34, ...)

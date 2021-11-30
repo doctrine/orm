@@ -1,26 +1,11 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Event;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\PersistentCollection;
 use InvalidArgumentException;
 
 use function get_class;
@@ -31,12 +16,13 @@ use function sprintf;
  */
 class PreUpdateEventArgs extends LifecycleEventArgs
 {
-    /** @var array<string,array<int,mixed>> */
+    /** @var array<string, array{mixed, mixed}|PersistentCollection> */
     private $entityChangeSet;
 
     /**
-     * @param object                         $entity
-     * @param array<string,array<int,mixed>> $changeSet
+     * @param object    $entity
+     * @param mixed[][] $changeSet
+     * @psalm-param array<string, array{mixed, mixed}|PersistentCollection> $changeSet
      */
     public function __construct($entity, EntityManagerInterface $em, array &$changeSet)
     {
@@ -48,7 +34,8 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     /**
      * Retrieves entity changeset.
      *
-     * @return array<string,array<int,mixed>>
+     * @return mixed[][]
+     * @psalm-return array<string, array{mixed, mixed}|PersistentCollection>
      */
     public function getEntityChangeSet()
     {

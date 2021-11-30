@@ -4,6 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -41,7 +50,7 @@ class DDC3223Test extends OrmFunctionalTestCase
 
         $profileStatus = clone $participant->profileStatus;
 
-        $this->assertSame(1, $profileStatus->getId(), 'The identifier on the cloned instance is an integer');
+        self::assertSame(1, $profileStatus->getId(), 'The identifier on the cloned instance is an integer');
     }
 }
 

@@ -5,6 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -55,8 +62,8 @@ class DDC809Test extends OrmFunctionalTestCase
                         ->getQuery()
                         ->getResult();
 
-        $this->assertEquals(4, count($result[0]->getSpecificationValues()), 'Works in test-setup.');
-        $this->assertEquals(4, count($result[1]->getSpecificationValues()), 'Only returns 2 in the case of the hydration bug.');
+        self::assertCount(4, $result[0]->getSpecificationValues(), 'Works in test-setup.');
+        self::assertCount(4, $result[1]->getSpecificationValues(), 'Only returns 2 in the case of the hydration bug.');
     }
 }
 

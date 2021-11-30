@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\ORM\Cache\CacheKey;
@@ -64,7 +66,7 @@ class FileLockRegionTest extends AbstractRegionTest
 
     public function testGetRegionName(): void
     {
-        $this->assertEquals('concurren_region_test', $this->region->getName());
+        self::assertEquals('concurren_region_test', $this->region->getName());
     }
 
     public function testLockAndUnlock(): void
@@ -73,22 +75,22 @@ class FileLockRegionTest extends AbstractRegionTest
         $entry = new CacheEntryMock(['foo' => 'bar']);
         $file  = $this->getFileName($this->region, $key);
 
-        $this->assertFalse($this->region->contains($key));
-        $this->assertTrue($this->region->put($key, $entry));
-        $this->assertTrue($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertTrue($this->region->put($key, $entry));
+        self::assertTrue($this->region->contains($key));
 
         $lock = $this->region->lock($key);
 
-        $this->assertFileExists($file);
-        $this->assertInstanceOf(Lock::class, $lock);
-        $this->assertEquals($lock->value, file_get_contents($file));
+        self::assertFileExists($file);
+        self::assertInstanceOf(Lock::class, $lock);
+        self::assertStringEqualsFile($file, $lock->value);
 
         // should be not available after lock
-        $this->assertFalse($this->region->contains($key));
-        $this->assertNull($this->region->get($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertNull($this->region->get($key));
 
-        $this->assertTrue($this->region->unlock($key, $lock));
-        $this->assertFileDoesNotExist($file);
+        self::assertTrue($this->region->unlock($key, $lock));
+        self::assertFileDoesNotExist($file);
     }
 
     public function testLockWithExistingLock(): void
@@ -97,21 +99,21 @@ class FileLockRegionTest extends AbstractRegionTest
         $entry = new CacheEntryMock(['foo' => 'bar']);
         $file  = $this->getFileName($this->region, $key);
 
-        $this->assertFalse($this->region->contains($key));
-        $this->assertTrue($this->region->put($key, $entry));
-        $this->assertTrue($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertTrue($this->region->put($key, $entry));
+        self::assertTrue($this->region->contains($key));
 
         file_put_contents($file, 'foo');
-        $this->assertFileExists($file);
-        $this->assertEquals('foo', file_get_contents($file));
+        self::assertFileExists($file);
+        self::assertStringEqualsFile($file, 'foo');
 
-        $this->assertNull($this->region->lock($key));
-        $this->assertEquals('foo', file_get_contents($file));
-        $this->assertFileExists($file);
+        self::assertNull($this->region->lock($key));
+        self::assertStringEqualsFile($file, 'foo');
+        self::assertFileExists($file);
 
         // should be not available
-        $this->assertFalse($this->region->contains($key));
-        $this->assertNull($this->region->get($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertNull($this->region->get($key));
     }
 
     public function testUnlockWithExistingLock(): void
@@ -120,27 +122,27 @@ class FileLockRegionTest extends AbstractRegionTest
         $entry = new CacheEntryMock(['foo' => 'bar']);
         $file  = $this->getFileName($this->region, $key);
 
-        $this->assertFalse($this->region->contains($key));
-        $this->assertTrue($this->region->put($key, $entry));
-        $this->assertTrue($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertTrue($this->region->put($key, $entry));
+        self::assertTrue($this->region->contains($key));
 
-        $this->assertInstanceOf(Lock::class, $lock = $this->region->lock($key));
-        $this->assertEquals($lock->value, file_get_contents($file));
-        $this->assertFileExists($file);
+        self::assertInstanceOf(Lock::class, $lock = $this->region->lock($key));
+        self::assertStringEqualsFile($file, $lock->value);
+        self::assertFileExists($file);
 
         // change the lock
         file_put_contents($file, 'foo');
-        $this->assertFileExists($file);
-        $this->assertEquals('foo', file_get_contents($file));
+        self::assertFileExists($file);
+        self::assertStringEqualsFile($file, 'foo');
 
         //try to unlock
-        $this->assertFalse($this->region->unlock($key, $lock));
-        $this->assertEquals('foo', file_get_contents($file));
-        $this->assertFileExists($file);
+        self::assertFalse($this->region->unlock($key, $lock));
+        self::assertStringEqualsFile($file, 'foo');
+        self::assertFileExists($file);
 
         // should be not available
-        $this->assertFalse($this->region->contains($key));
-        $this->assertNull($this->region->get($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertNull($this->region->get($key));
     }
 
     public function testPutWithExistingLock(): void
@@ -149,21 +151,21 @@ class FileLockRegionTest extends AbstractRegionTest
         $entry = new CacheEntryMock(['foo' => 'bar']);
         $file  = $this->getFileName($this->region, $key);
 
-        $this->assertFalse($this->region->contains($key));
-        $this->assertTrue($this->region->put($key, $entry));
-        $this->assertTrue($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertTrue($this->region->put($key, $entry));
+        self::assertTrue($this->region->contains($key));
 
         // create lock
         file_put_contents($file, 'foo');
-        $this->assertFileExists($file);
-        $this->assertEquals('foo', file_get_contents($file));
+        self::assertFileExists($file);
+        self::assertStringEqualsFile($file, 'foo');
 
-        $this->assertFalse($this->region->contains($key));
-        $this->assertFalse($this->region->put($key, $entry));
-        $this->assertFalse($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertFalse($this->region->put($key, $entry));
+        self::assertFalse($this->region->contains($key));
 
-        $this->assertFileExists($file);
-        $this->assertEquals('foo', file_get_contents($file));
+        self::assertFileExists($file);
+        self::assertStringEqualsFile($file, 'foo');
     }
 
     public function testLockedEvict(): void
@@ -172,18 +174,18 @@ class FileLockRegionTest extends AbstractRegionTest
         $entry = new CacheEntryMock(['foo' => 'bar']);
         $file  = $this->getFileName($this->region, $key);
 
-        $this->assertFalse($this->region->contains($key));
-        $this->assertTrue($this->region->put($key, $entry));
-        $this->assertTrue($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertTrue($this->region->put($key, $entry));
+        self::assertTrue($this->region->contains($key));
 
-        $this->assertInstanceOf(Lock::class, $lock = $this->region->lock($key));
-        $this->assertEquals($lock->value, file_get_contents($file));
-        $this->assertFileExists($file);
+        self::assertInstanceOf(Lock::class, $lock = $this->region->lock($key));
+        self::assertStringEqualsFile($file, $lock->value);
+        self::assertFileExists($file);
 
-        $this->assertFalse($this->region->contains($key));
-        $this->assertTrue($this->region->evict($key));
-        $this->assertFalse($this->region->contains($key));
-        $this->assertFileDoesNotExist($file);
+        self::assertFalse($this->region->contains($key));
+        self::assertTrue($this->region->evict($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertFileDoesNotExist($file);
     }
 
     public function testLockedEvictAll(): void
@@ -196,30 +198,30 @@ class FileLockRegionTest extends AbstractRegionTest
         $entry2 = new CacheEntryMock(['foo2' => 'bar2']);
         $file2  = $this->getFileName($this->region, $key2);
 
-        $this->assertFalse($this->region->contains($key1));
-        $this->assertTrue($this->region->put($key1, $entry1));
-        $this->assertTrue($this->region->contains($key1));
+        self::assertFalse($this->region->contains($key1));
+        self::assertTrue($this->region->put($key1, $entry1));
+        self::assertTrue($this->region->contains($key1));
 
-        $this->assertFalse($this->region->contains($key2));
-        $this->assertTrue($this->region->put($key2, $entry2));
-        $this->assertTrue($this->region->contains($key2));
+        self::assertFalse($this->region->contains($key2));
+        self::assertTrue($this->region->put($key2, $entry2));
+        self::assertTrue($this->region->contains($key2));
 
-        $this->assertInstanceOf(Lock::class, $lock1 = $this->region->lock($key1));
-        $this->assertInstanceOf(Lock::class, $lock2 = $this->region->lock($key2));
+        self::assertInstanceOf(Lock::class, $lock1 = $this->region->lock($key1));
+        self::assertInstanceOf(Lock::class, $lock2 = $this->region->lock($key2));
 
-        $this->assertEquals($lock2->value, file_get_contents($file2));
-        $this->assertEquals($lock1->value, file_get_contents($file1));
+        self::assertStringEqualsFile($file2, $lock2->value);
+        self::assertStringEqualsFile($file1, $lock1->value);
 
-        $this->assertFileExists($file1);
-        $this->assertFileExists($file2);
+        self::assertFileExists($file1);
+        self::assertFileExists($file2);
 
-        $this->assertTrue($this->region->evictAll());
+        self::assertTrue($this->region->evictAll());
 
-        $this->assertFileDoesNotExist($file1);
-        $this->assertFileDoesNotExist($file2);
+        self::assertFileDoesNotExist($file1);
+        self::assertFileDoesNotExist($file2);
 
-        $this->assertFalse($this->region->contains($key1));
-        $this->assertFalse($this->region->contains($key2));
+        self::assertFalse($this->region->contains($key1));
+        self::assertFalse($this->region->contains($key2));
     }
 
     public function testLockLifetime(): void
@@ -232,18 +234,18 @@ class FileLockRegionTest extends AbstractRegionTest
         $property->setAccessible(true);
         $property->setValue($this->region, -10);
 
-        $this->assertFalse($this->region->contains($key));
-        $this->assertTrue($this->region->put($key, $entry));
-        $this->assertTrue($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertTrue($this->region->put($key, $entry));
+        self::assertTrue($this->region->contains($key));
 
-        $this->assertInstanceOf(Lock::class, $lock = $this->region->lock($key));
-        $this->assertEquals($lock->value, file_get_contents($file));
-        $this->assertFileExists($file);
+        self::assertInstanceOf(Lock::class, $lock = $this->region->lock($key));
+        self::assertStringEqualsFile($file, $lock->value);
+        self::assertFileExists($file);
 
         // outdated lock should be removed
-        $this->assertTrue($this->region->contains($key));
-        $this->assertNotNull($this->region->get($key));
-        $this->assertFileDoesNotExist($file);
+        self::assertTrue($this->region->contains($key));
+        self::assertNotNull($this->region->get($key));
+        self::assertFileDoesNotExist($file);
     }
 
     /**
@@ -260,7 +262,7 @@ class FileLockRegionTest extends AbstractRegionTest
 
         set_error_handler(static function (): void {
         }, E_WARNING);
-        $this->assertTrue($region->evictAll());
+        self::assertTrue($region->evictAll());
         restore_error_handler();
     }
 
@@ -282,9 +284,9 @@ class FileLockRegionTest extends AbstractRegionTest
 
         foreach ($directoryIterator as $file) {
             if ($file->isFile()) {
-                @unlink($file->getRealPath());
+                @unlink((string) $file->getRealPath());
             } else {
-                @rmdir($file->getRealPath());
+                @rmdir((string) $file->getRealPath());
             }
         }
     }

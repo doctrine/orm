@@ -25,7 +25,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
      */
     protected function convertToClassMetadata(array $entityTables, array $manyTables = []): array
     {
-        $sm     = $this->_em->getConnection()->getSchemaManager();
+        $sm     = $this->createSchemaManager();
         $driver = new DatabaseDriver($sm);
         $driver->setTables($entityTables, $manyTables);
 
@@ -49,11 +49,11 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
         $classNames = array_map('strtolower', $classNames);
         $metadatas  = [];
 
-        $sm     = $this->_em->getConnection()->getSchemaManager();
+        $sm     = $this->createSchemaManager();
         $driver = new DatabaseDriver($sm);
 
         foreach ($driver->getAllClassNames() as $className) {
-            if (! in_array(strtolower($className), $classNames)) {
+            if (! in_array(strtolower($className), $classNames, true)) {
                 continue;
             }
 
@@ -63,7 +63,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
         }
 
         if (count($metadatas) !== count($classNames)) {
-            $this->fail("Have not found all classes matching the names '" . implode(', ', $classNames) . "' only tables " . implode(', ', array_keys($metadatas)));
+            self::fail("Have not found all classes matching the names '" . implode(', ', $classNames) . "' only tables " . implode(', ', array_keys($metadatas)));
         }
 
         return $metadatas;

@@ -39,8 +39,9 @@ an entity.
         $em->getConfiguration()->setMetadataCacheImpl(new ApcuCache());
 
 
-If you want to use one of the included core metadata drivers you
-just need to configure it. All the drivers are in the
+If you want to use one of the included core metadata drivers you need to
+configure it. If you pick the annotation driver, you will additionally
+need to install ``doctrine/annotations``. All the drivers are in the
 ``Doctrine\ORM\Mapping\Driver`` namespace:
 
 .. code-block:: php

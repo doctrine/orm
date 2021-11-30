@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -45,8 +52,8 @@ class DDC3300Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertEquals($boss, $this->_em->find(DDC3300Boss::class, $boss->id));
-        $this->assertEquals($employee, $this->_em->find(DDC3300Employee::class, $employee->id));
+        self::assertEquals($boss, $this->_em->find(DDC3300Boss::class, $boss->id));
+        self::assertEquals($employee, $this->_em->find(DDC3300Employee::class, $employee->id));
     }
 }
 

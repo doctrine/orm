@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping\Symfony;
 
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
@@ -29,7 +31,7 @@ abstract class AbstractDriverTest extends TestCase
         );
 
         touch($filename = $this->dir . '/Foo' . $this->getFileExtension());
-        $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo'));
+        self::assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo'));
     }
 
     public function testFindMappingFileInSubnamespace(): void
@@ -41,7 +43,7 @@ abstract class AbstractDriverTest extends TestCase
         );
 
         touch($filename = $this->dir . '/Foo.Bar' . $this->getFileExtension());
-        $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo\Bar'));
+        self::assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo\Bar'));
     }
 
     public function testFindMappingFileNamespacedFoundFileNotFound(): void
@@ -84,9 +86,9 @@ abstract class AbstractDriverTest extends TestCase
 
         foreach ($iterator as $path) {
             if ($path->isDir()) {
-                @rmdir($path);
+                @rmdir((string) $path);
             } else {
-                @unlink($path);
+                @unlink((string) $path);
             }
         }
 

@@ -6,6 +6,11 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -46,20 +51,20 @@ class DDC729Test extends OrmFunctionalTestCase
         $a     = new DDC729A();
         $a->id = $aId;
 
-        $this->assertInstanceOf(ArrayCollection::class, $a->related);
+        self::assertInstanceOf(ArrayCollection::class, $a->related);
 
         $a = $this->_em->merge($a);
 
-        $this->assertInstanceOf(PersistentCollection::class, $a->related);
+        self::assertInstanceOf(PersistentCollection::class, $a->related);
 
-        $this->assertFalse($a->related->isInitialized(), 'Collection should not be marked initialized.');
-        $this->assertFalse($a->related->isDirty(), 'Collection should not be marked as dirty.');
+        self::assertFalse($a->related->isInitialized(), 'Collection should not be marked initialized.');
+        self::assertFalse($a->related->isDirty(), 'Collection should not be marked as dirty.');
 
         $this->_em->flush();
         $this->_em->clear();
 
         $a = $this->_em->find(DDC729A::class, $aId);
-        $this->assertEquals(1, count($a->related));
+        self::assertEquals(1, count($a->related));
     }
 
     public function testUnidirectionalMergeManyToMany(): void
@@ -89,7 +94,7 @@ class DDC729Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $a = $this->_em->find(DDC729A::class, $aId);
-        $this->assertEquals(2, count($a->related));
+        self::assertEquals(2, count($a->related));
     }
 
     public function testBidirectionalMergeManyToMany(): void
@@ -121,7 +126,7 @@ class DDC729Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $a = $this->_em->find(DDC729A::class, $aId);
-        $this->assertEquals(2, count($a->related));
+        self::assertEquals(2, count($a->related));
     }
 
     public function testBidirectionalMultiMergeManyToMany(): void
@@ -153,7 +158,7 @@ class DDC729Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $a = $this->_em->find(DDC729A::class, $aId);
-        $this->assertEquals(2, count($a->related));
+        self::assertEquals(2, count($a->related));
     }
 }
 

@@ -5,6 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\MappedSuperclass;
+use Doctrine\ORM\Mapping\NamedQueries;
+use Doctrine\ORM\Mapping\NamedQuery;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -42,13 +49,13 @@ class DDC1404Test extends OrmFunctionalTestCase
         $queryFirst  = $repository->createNamedQuery('first');
         $querySecond = $repository->createNamedQuery('second');
 
-        $this->assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p', $queryAll->getDQL());
-        $this->assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p WHERE p.id = 1', $queryFirst->getDQL());
-        $this->assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p WHERE p.id = 2', $querySecond->getDQL());
+        self::assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p', $queryAll->getDQL());
+        self::assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p WHERE p.id = 1', $queryFirst->getDQL());
+        self::assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p WHERE p.id = 2', $querySecond->getDQL());
 
-        $this->assertEquals(count($queryAll->getResult()), 2);
-        $this->assertEquals(count($queryFirst->getResult()), 1);
-        $this->assertEquals(count($querySecond->getResult()), 1);
+        self::assertCount(2, $queryAll->getResult());
+        self::assertCount(1, $queryFirst->getResult());
+        self::assertCount(1, $querySecond->getResult());
     }
 
     public function loadFixtures(): void
@@ -97,7 +104,7 @@ class DDC1404ChildEntity extends DDC1404ParentEntity
 {
     /**
      * @var string
-     * @column(type="string")
+     * @Column(type="string")
      */
     private $name;
 

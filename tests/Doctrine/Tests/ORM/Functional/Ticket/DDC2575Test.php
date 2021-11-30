@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -73,23 +79,23 @@ class DDC2575Test extends OrmFunctionalTestCase
         $query  = $qb->getQuery();
         $result = $query->getResult();
 
-        $this->assertCount(2, $result);
+        self::assertCount(2, $result);
 
         $row = $result[0];
-        $this->assertNotNull($row->aRelation);
-        $this->assertEquals(1, $row->id);
-        $this->assertNotNull($row->aRelation->rootRelation);
-        $this->assertSame($row, $row->aRelation->rootRelation);
-        $this->assertNotNull($row->aRelation->bRelation);
-        $this->assertEquals(2, $row->aRelation->bRelation->id);
+        self::assertNotNull($row->aRelation);
+        self::assertEquals(1, $row->id);
+        self::assertNotNull($row->aRelation->rootRelation);
+        self::assertSame($row, $row->aRelation->rootRelation);
+        self::assertNotNull($row->aRelation->bRelation);
+        self::assertEquals(2, $row->aRelation->bRelation->id);
 
         $row = $result[1];
-        $this->assertNotNull($row->aRelation);
-        $this->assertEquals(3, $row->id);
-        $this->assertNotNull($row->aRelation->rootRelation);
-        $this->assertSame($row, $row->aRelation->rootRelation);
-        $this->assertNotNull($row->aRelation->bRelation);
-        $this->assertEquals(4, $row->aRelation->bRelation->id);
+        self::assertNotNull($row->aRelation);
+        self::assertEquals(3, $row->id);
+        self::assertNotNull($row->aRelation->rootRelation);
+        self::assertSame($row, $row->aRelation->rootRelation);
+        self::assertNotNull($row->aRelation->bRelation);
+        self::assertEquals(4, $row->aRelation->bRelation->id);
     }
 }
 

@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PDOException;
 
@@ -15,12 +21,9 @@ class DDC1250Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [$this->_em->getClassMetadata(DDC1250ClientHistory::class)]
-            );
-        } catch (PDOException $e) {
-        }
+        $this->_schemaTool->createSchema(
+            [$this->_em->getClassMetadata(DDC1250ClientHistory::class)]
+        );
     }
 
     public function testIssue(): void
@@ -40,7 +43,7 @@ class DDC1250Test extends OrmFunctionalTestCase
         $history = $this->_em->createQuery('SELECT h FROM ' . __NAMESPACE__ . '\\DDC1250ClientHistory h WHERE h.id = ?1')
                   ->setParameter(1, $c2->id)->getSingleResult();
 
-        $this->assertInstanceOf(DDC1250ClientHistory::class, $history);
+        self::assertInstanceOf(DDC1250ClientHistory::class, $history);
     }
 }
 

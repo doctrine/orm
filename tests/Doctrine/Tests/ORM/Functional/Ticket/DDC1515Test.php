@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -35,7 +40,7 @@ class DDC1515Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $bar = $this->_em->find(DDC1515Bar::class, $bar->id);
-        $this->assertInstanceOf(DDC1515Foo::class, $bar->foo);
+        self::assertInstanceOf(DDC1515Foo::class, $bar->foo);
     }
 }
 

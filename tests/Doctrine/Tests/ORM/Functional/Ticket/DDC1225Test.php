@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PDOException;
 
@@ -17,15 +24,12 @@ class DDC1225Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1225TestEntity1::class),
-                    $this->_em->getClassMetadata(DDC1225TestEntity2::class),
-                ]
-            );
-        } catch (PDOException $e) {
-        }
+        $this->_schemaTool->createSchema(
+            [
+                $this->_em->getClassMetadata(DDC1225TestEntity1::class),
+                $this->_em->getClassMetadata(DDC1225TestEntity2::class),
+            ]
+        );
     }
 
     public function testIssue(): void
@@ -36,7 +40,7 @@ class DDC1225Test extends OrmFunctionalTestCase
            ->where('te1.testEntity2 = ?1')
            ->setParameter(1, 0);
 
-        $this->assertEquals(
+        self::assertEquals(
             strtolower('SELECT t0_.test_entity2_id AS test_entity2_id_0 FROM te1 t0_ WHERE t0_.test_entity2_id = ?'),
             strtolower($qb->getQuery()->getSQL())
         );

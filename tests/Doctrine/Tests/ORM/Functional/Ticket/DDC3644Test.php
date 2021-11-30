@@ -6,7 +6,16 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -71,13 +80,13 @@ class DDC3644Test extends OrmFunctionalTestCase
         // We should only have 1 item in the collection list now
         $user = $this->_em->find(DDC3644User::class, $userId);
 
-        $this->assertCount(1, $user->addresses);
+        self::assertCount(1, $user->addresses);
 
         // We should only have 1 item in the addresses table too
         $repository = $this->_em->getRepository(DDC3644Address::class);
         $addresses  = $repository->findAll();
 
-        $this->assertCount(1, $addresses);
+        self::assertCount(1, $addresses);
     }
 
     /**
@@ -121,13 +130,13 @@ class DDC3644Test extends OrmFunctionalTestCase
         // We should only have 1 item in the collection list now
         $user = $this->_em->find(DDC3644User::class, $userId);
 
-        $this->assertCount(1, $user->pets);
+        self::assertCount(1, $user->pets);
 
         // We should only have 1 item in the pets table too
         $repository = $this->_em->getRepository(DDC3644Pet::class);
         $pets       = $repository->findAll();
 
-        $this->assertCount(1, $pets);
+        self::assertCount(1, $pets);
     }
 }
 

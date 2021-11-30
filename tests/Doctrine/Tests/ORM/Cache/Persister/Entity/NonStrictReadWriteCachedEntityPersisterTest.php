@@ -38,11 +38,11 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
         $persister->update($entity);
         $persister->delete($entity);
 
-        $this->assertCount(2, $property->getValue($persister));
+        self::assertCount(2, $property->getValue($persister));
 
         $persister->afterTransactionRolledBack();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testInsertTransactionCommitShouldPutCache(): void
@@ -55,19 +55,19 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
 
         $property->setAccessible(true);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('put')
-            ->with($this->equalTo($key), $this->equalTo($entry));
+            ->with(self::equalTo($key), self::equalTo($entry));
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('addInsert')
-            ->with($this->equalTo($entity));
+            ->with(self::equalTo($entity));
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('getInserts')
-            ->will($this->returnValue([$entity]));
+            ->will(self::returnValue([$entity]));
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('executeInserts');
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
@@ -75,11 +75,11 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
         $persister->addInsert($entity);
         $persister->executeInserts();
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testUpdateTransactionCommitShouldPutCache(): void
@@ -92,23 +92,23 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
 
         $property->setAccessible(true);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('put')
-            ->with($this->equalTo($key), $this->equalTo($entry));
+            ->with(self::equalTo($key), self::equalTo($entry));
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('update')
-            ->with($this->equalTo($entity));
+            ->with(self::equalTo($entity));
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($entity);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testDeleteTransactionCommitShouldEvictCache(): void
@@ -120,22 +120,22 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
 
         $property->setAccessible(true);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('evict')
-            ->with($this->equalTo($key));
+            ->with(self::equalTo($key));
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('delete')
-            ->with($this->equalTo($entity));
+            ->with(self::equalTo($entity));
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->delete($entity);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 }

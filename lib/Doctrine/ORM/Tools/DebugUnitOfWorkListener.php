@@ -1,22 +1,6 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools;
 
@@ -34,7 +18,7 @@ use function fopen;
 use function fwrite;
 use function gettype;
 use function is_object;
-use function spl_object_hash;
+use function spl_object_id;
 
 /**
  * Use this logger to dump the identity map during the onFlush event. This is useful for debugging
@@ -92,7 +76,7 @@ class DebugUnitOfWorkListener
             fwrite($fh, 'Class: ' . $className . "\n");
 
             foreach ($map as $entity) {
-                fwrite($fh, ' Entity: ' . $this->getIdString($entity, $uow) . ' ' . spl_object_hash($entity) . "\n");
+                fwrite($fh, ' Entity: ' . $this->getIdString($entity, $uow) . ' ' . spl_object_id($entity) . "\n");
                 fwrite($fh, "  Associations:\n");
 
                 $cm = $em->getClassMetadata($className);
@@ -109,7 +93,7 @@ class DebugUnitOfWorkListener
                                 fwrite($fh, '[PROXY] ');
                             }
 
-                            fwrite($fh, $this->getIdString($value, $uow) . ' ' . spl_object_hash($value) . "\n");
+                            fwrite($fh, $this->getIdString($value, $uow) . ' ' . spl_object_id($value) . "\n");
                         }
                     } else {
                         $initialized = ! ($value instanceof PersistentCollection) || $value->isInitialized();
@@ -119,12 +103,12 @@ class DebugUnitOfWorkListener
                             fwrite($fh, '[INITIALIZED] ' . $this->getType($value) . ' ' . count($value) . " elements\n");
 
                             foreach ($value as $obj) {
-                                fwrite($fh, '    ' . $this->getIdString($obj, $uow) . ' ' . spl_object_hash($obj) . "\n");
+                                fwrite($fh, '    ' . $this->getIdString($obj, $uow) . ' ' . spl_object_id($obj) . "\n");
                             }
                         } else {
                             fwrite($fh, '[PROXY] ' . $this->getType($value) . " unknown element size\n");
                             foreach ($value->unwrap() as $obj) {
-                                fwrite($fh, '    ' . $this->getIdString($obj, $uow) . ' ' . spl_object_hash($obj) . "\n");
+                                fwrite($fh, '    ' . $this->getIdString($obj, $uow) . ' ' . spl_object_id($obj) . "\n");
                             }
                         }
                     }

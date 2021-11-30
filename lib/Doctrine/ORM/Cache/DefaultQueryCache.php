@@ -1,28 +1,14 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Cache;
+use Doctrine\ORM\Cache\Exception\FeatureNotImplemented;
+use Doctrine\ORM\Cache\Exception\NonCacheableEntity;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\EntityManagerInterface;
@@ -47,7 +33,7 @@ use function reset;
  */
 class DefaultQueryCache implements QueryCache
 {
-     /** @var EntityManagerInterface */
+    /** @var EntityManagerInterface */
     private $em;
 
     /** @var UnitOfWork */
@@ -186,7 +172,7 @@ class DefaultQueryCache implements QueryCache
                 $assocEntries = $assocRegion->getMultiple($assocKeys);
 
                 foreach ($assoc['list'] as $assocIndex => $assocId) {
-                    $assocEntry = is_array($assocEntries) && array_key_exists($assocIndex, $assocEntries) ? $assocEntries[$assocIndex] : null;
+                    $assocEntry = is_array($assocEntries) ? ($assocEntries[$assocIndex] ?? null) : null;
 
                     if ($assocEntry === null) {
                         if ($this->cacheLogger !== null) {
@@ -245,19 +231,19 @@ class DefaultQueryCache implements QueryCache
     public function put(QueryCacheKey $key, ResultSetMapping $rsm, $result, array $hints = [])
     {
         if ($rsm->scalarMappings) {
-            throw new CacheException('Second level cache does not support scalar results.');
+            throw FeatureNotImplemented::scalarResults();
         }
 
         if (count($rsm->entityMappings) > 1) {
-            throw new CacheException('Second level cache does not support multiple root entities.');
+            throw FeatureNotImplemented::multipleRootEntities();
         }
 
         if (! $rsm->isSelect) {
-            throw new CacheException('Second-level cache query supports only select statements.');
+            throw FeatureNotImplemented::nonSelectStatements();
         }
 
         if (($hints[Query\SqlWalker::HINT_PARTIAL] ?? false) === true || ($hints[Query::HINT_FORCE_PARTIAL_LOAD] ?? false) === true) {
-            throw new CacheException('Second level cache does not support partial entities.');
+            throw FeatureNotImplemented::partialEntities();
         }
 
         if (! ($key->cacheMode & Cache::MODE_PUT)) {
@@ -270,7 +256,7 @@ class DefaultQueryCache implements QueryCache
         $persister  = $this->uow->getEntityPersister($entityName);
 
         if (! $persister instanceof CachedEntityPersister) {
-            throw CacheException::nonCacheableEntity($entityName);
+            throw NonCacheableEntity::fromEntity($entityName);
         }
 
         $region = $persister->getCacheRegion();

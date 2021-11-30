@@ -5,6 +5,16 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\MappedSuperclass;
+use Doctrine\ORM\Mapping\OrderBy;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function strtolower;
@@ -28,7 +38,7 @@ class DDC719Test extends OrmFunctionalTestCase
 
         $referenceSQL = 'SELECT g0_.name AS name_0, g0_.description AS description_1, g0_.id AS id_2, g1_.name AS name_3, g1_.description AS description_4, g1_.id AS id_5 FROM groups g0_ LEFT JOIN groups_groups g2_ ON g0_.id = g2_.parent_id LEFT JOIN groups g1_ ON g1_.id = g2_.child_id WHERE (SELECT COUNT(*) FROM groups_groups g3_ WHERE g3_.child_id = g0_.id) = 0';
 
-        $this->assertEquals(
+        self::assertEquals(
             strtolower($referenceSQL),
             strtolower($q->getSQL())
         );
@@ -38,7 +48,7 @@ class DDC719Test extends OrmFunctionalTestCase
 /**
  * @MappedSuperclass
  */
-class Entity
+class MyEntity
 {
     /**
      * @var int
@@ -58,7 +68,7 @@ class Entity
  * @Entity
  * @Table(name="groups")
  */
-class DDC719Group extends Entity
+class DDC719Group extends MyEntity
 {
     /**
      * @var string

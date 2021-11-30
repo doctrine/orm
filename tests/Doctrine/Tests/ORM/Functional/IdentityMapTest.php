@@ -46,16 +46,16 @@ class IdentityMapTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $user2 = $this->_em->find(get_class($user), $user->getId());
-        $this->assertTrue($user2 !== $user);
+        self::assertNotSame($user2, $user);
         $user3 = $this->_em->find(get_class($user), $user->getId());
-        $this->assertTrue($user2 === $user3);
+        self::assertSame($user2, $user3);
 
         $address2 = $this->_em->find(get_class($address), $address->getId());
-        $this->assertTrue($address2 !== $address);
+        self::assertNotSame($address2, $address);
         $address3 = $this->_em->find(get_class($address), $address->getId());
-        $this->assertTrue($address2 === $address3);
+        self::assertSame($address2, $address3);
 
-        $this->assertTrue($user2->getAddress() === $address2); // !!!
+        self::assertSame($user2->getAddress(), $address2); // !!!
     }
 
     public function testSingleValuedAssociationIdentityMapBehaviorWithRefresh(): void
@@ -82,22 +82,22 @@ class IdentityMapTest extends OrmFunctionalTestCase
         $this->_em->persist($user2);
         $this->_em->flush();
 
-        $this->assertSame($user1, $address->user);
+        self::assertSame($user1, $address->user);
 
         //external update to CmsAddress
-        $this->_em->getConnection()->executeUpdate('update cms_addresses set user_id = ?', [$user2->getId()]);
+        $this->_em->getConnection()->executeStatement('update cms_addresses set user_id = ?', [$user2->getId()]);
 
         // But we want to have this external change!
         // Solution 1: refresh(), broken atm!
         $this->_em->refresh($address);
 
         // Now the association should be "correct", referencing $user2
-        $this->assertSame($user2, $address->user);
-        $this->assertSame($user2->address, $address); // check back reference also
+        self::assertSame($user2, $address->user);
+        self::assertSame($user2->address, $address); // check back reference also
 
         // Attention! refreshes can result in broken bidirectional associations! this is currently expected!
         // $user1 still points to $address!
-        $this->assertSame($user1->address, $address);
+        self::assertSame($user1->address, $address);
     }
 
     public function testSingleValuedAssociationIdentityMapBehaviorWithRefreshQuery(): void
@@ -124,20 +124,20 @@ class IdentityMapTest extends OrmFunctionalTestCase
         $this->_em->persist($user2);
         $this->_em->flush();
 
-        $this->assertSame($user1, $address->user);
+        self::assertSame($user1, $address->user);
 
         //external update to CmsAddress
-        $this->_em->getConnection()->executeUpdate('update cms_addresses set user_id = ?', [$user2->getId()]);
+        $this->_em->getConnection()->executeStatement('update cms_addresses set user_id = ?', [$user2->getId()]);
 
         //select
         $q        = $this->_em->createQuery('select a, u from Doctrine\Tests\Models\CMS\CmsAddress a join a.user u');
         $address2 = $q->getSingleResult();
 
-        $this->assertSame($address, $address2);
+        self::assertSame($address, $address2);
 
         // Should still be $user1
-        $this->assertSame($user1, $address2->user);
-        $this->assertTrue($user2->address === null);
+        self::assertSame($user1, $address2->user);
+        self::assertNull($user2->address);
 
         // But we want to have this external change!
         // Solution 2: Alternatively, a refresh query should work
@@ -145,15 +145,15 @@ class IdentityMapTest extends OrmFunctionalTestCase
         $q->setHint(Query::HINT_REFRESH, true);
         $address3 = $q->getSingleResult();
 
-        $this->assertSame($address, $address3); // should still be the same, always from identity map
+        self::assertSame($address, $address3); // should still be the same, always from identity map
 
         // Now the association should be "correct", referencing $user2
-        $this->assertSame($user2, $address2->user);
-        $this->assertSame($user2->address, $address2); // check back reference also
+        self::assertSame($user2, $address2->user);
+        self::assertSame($user2->address, $address2); // check back reference also
 
         // Attention! refreshes can result in broken bidirectional associations! this is currently expected!
         // $user1 still points to $address2!
-        $this->assertSame($user1->address, $address2);
+        self::assertSame($user1->address, $address2);
     }
 
     public function testCollectionValuedAssociationIdentityMapBehaviorWithRefreshQuery(): void
@@ -179,20 +179,20 @@ class IdentityMapTest extends OrmFunctionalTestCase
         $this->_em->persist($user); // cascaded to phone numbers
         $this->_em->flush();
 
-        $this->assertEquals(3, count($user->getPhonenumbers()));
-        $this->assertFalse($user->getPhonenumbers()->isDirty());
+        self::assertCount(3, $user->getPhonenumbers());
+        self::assertFalse($user->getPhonenumbers()->isDirty());
 
         //external update to CmsAddress
-        $this->_em->getConnection()->executeUpdate('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', [999, $user->getId()]);
+        $this->_em->getConnection()->executeStatement('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', [999, $user->getId()]);
 
         //select
         $q     = $this->_em->createQuery('select u, p from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p');
         $user2 = $q->getSingleResult();
 
-        $this->assertSame($user, $user2);
+        self::assertSame($user, $user2);
 
         // Should still be the same 3 phonenumbers
-        $this->assertEquals(3, count($user2->getPhonenumbers()));
+        self::assertCount(3, $user2->getPhonenumbers());
 
         // But we want to have this external change!
         // Solution 1: refresh().
@@ -202,10 +202,10 @@ class IdentityMapTest extends OrmFunctionalTestCase
         $q->setHint(Query::HINT_REFRESH, true);
         $user3 = $q->getSingleResult();
 
-        $this->assertSame($user, $user3); // should still be the same, always from identity map
+        self::assertSame($user, $user3); // should still be the same, always from identity map
 
         // Now the collection should be refreshed with correct count
-        $this->assertEquals(4, count($user3->getPhonenumbers()));
+        self::assertCount(4, $user3->getPhonenumbers());
     }
 
     /**
@@ -234,27 +234,27 @@ class IdentityMapTest extends OrmFunctionalTestCase
         $this->_em->persist($user); // cascaded to phone numbers
         $this->_em->flush();
 
-        $this->assertEquals(3, count($user->getPhonenumbers()));
+        self::assertCount(3, $user->getPhonenumbers());
 
         //external update to CmsAddress
-        $this->_em->getConnection()->executeUpdate('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', [999, $user->getId()]);
+        $this->_em->getConnection()->executeStatement('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', [999, $user->getId()]);
 
         //select
         $q     = $this->_em->createQuery('select u, p from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p');
         $user2 = $q->getSingleResult();
 
-        $this->assertSame($user, $user2);
+        self::assertSame($user, $user2);
 
         // Should still be the same 3 phonenumbers
-        $this->assertEquals(3, count($user2->getPhonenumbers()));
+        self::assertCount(3, $user2->getPhonenumbers());
 
         // But we want to have this external change!
         // Solution 1: refresh().
         $this->_em->refresh($user2);
 
-        $this->assertSame($user, $user2); // should still be the same, always from identity map
+        self::assertSame($user, $user2); // should still be the same, always from identity map
 
         // Now the collection should be refreshed with correct count
-        $this->assertEquals(4, count($user2->getPhonenumbers()));
+        self::assertCount(4, $user2->getPhonenumbers());
     }
 }

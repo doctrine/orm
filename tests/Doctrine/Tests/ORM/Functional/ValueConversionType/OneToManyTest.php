@@ -45,18 +45,18 @@ class OneToManyTest extends OrmFunctionalTestCase
     {
         $conn = static::$sharedConn;
 
-        $conn->executeUpdate('DROP TABLE vct_owning_manytoone');
-        $conn->executeUpdate('DROP TABLE vct_inversed_onetomany');
+        $conn->executeStatement('DROP TABLE vct_owning_manytoone');
+        $conn->executeStatement('DROP TABLE vct_inversed_onetomany');
     }
 
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase(): void
     {
         $conn = $this->_em->getConnection();
 
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT id1 FROM vct_inversed_onetomany LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchOne('SELECT id1 FROM vct_inversed_onetomany LIMIT 1'));
 
-        $this->assertEquals('qrs', $conn->fetchColumn('SELECT id2 FROM vct_owning_manytoone LIMIT 1'));
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT associated_id FROM vct_owning_manytoone LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchOne('SELECT id2 FROM vct_owning_manytoone LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchOne('SELECT associated_id FROM vct_owning_manytoone LIMIT 1'));
     }
 
     /**
@@ -74,8 +74,8 @@ class OneToManyTest extends OrmFunctionalTestCase
             'def'
         );
 
-        $this->assertInstanceOf(Models\ValueConversionType\InversedOneToManyEntity::class, $inversed);
-        $this->assertInstanceOf(Models\ValueConversionType\OwningManyToOneEntity::class, $owning);
+        self::assertInstanceOf(Models\ValueConversionType\InversedOneToManyEntity::class, $inversed);
+        self::assertInstanceOf(Models\ValueConversionType\OwningManyToOneEntity::class, $owning);
     }
 
     /**
@@ -93,8 +93,8 @@ class OneToManyTest extends OrmFunctionalTestCase
             'def'
         );
 
-        $this->assertEquals('abc', $inversed->id1);
-        $this->assertEquals('def', $owning->id2);
+        self::assertEquals('abc', $inversed->id1);
+        self::assertEquals('def', $owning->id2);
     }
 
     /**
@@ -109,7 +109,7 @@ class OneToManyTest extends OrmFunctionalTestCase
 
         $inversedProxy = $owning->associatedEntity;
 
-        $this->assertEquals('some value to be loaded', $inversedProxy->someProperty);
+        self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
     /**
@@ -122,6 +122,6 @@ class OneToManyTest extends OrmFunctionalTestCase
             'abc'
         );
 
-        $this->assertCount(1, $inversed->associatedEntities);
+        self::assertCount(1, $inversed->associatedEntities);
     }
 }

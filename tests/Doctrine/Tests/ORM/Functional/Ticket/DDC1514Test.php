@@ -6,6 +6,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -61,11 +67,11 @@ class DDC1514Test extends OrmFunctionalTestCase
         $dql     = 'SELECT a, b, ba, c FROM ' . __NAMESPACE__ . '\DDC1514EntityA AS a LEFT JOIN a.entitiesB AS b LEFT JOIN b.entityATo AS ba LEFT JOIN a.entityC AS c ORDER BY a.title';
         $results = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertEquals($a1->id, $results[0]->id);
-        $this->assertNull($results[0]->entityC);
+        self::assertEquals($a1->id, $results[0]->id);
+        self::assertNull($results[0]->entityC);
 
-        $this->assertEquals($a2->id, $results[1]->id);
-        $this->assertEquals($c->title, $results[1]->entityC->title);
+        self::assertEquals($a2->id, $results[1]->id);
+        self::assertEquals($c->title, $results[1]->entityC->title);
     }
 }
 

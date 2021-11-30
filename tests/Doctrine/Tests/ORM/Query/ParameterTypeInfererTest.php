@@ -8,10 +8,10 @@ use DateInterval;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\Tests\OrmTestCase;
-use PDO;
 
 class ParameterTypeInfererTest extends OrmTestCase
 {
@@ -19,17 +19,17 @@ class ParameterTypeInfererTest extends OrmTestCase
     public function providerParameterTypeInferer(): array
     {
         return [
-            [1,                 Type::INTEGER],
-            ['bar',             PDO::PARAM_STR],
-            ['1',               PDO::PARAM_STR],
-            [new DateTime(),     Type::DATETIME],
-            [new DateTimeImmutable(), Type::DATETIME_IMMUTABLE],
-            [new DateInterval('P1D'), Type::DATEINTERVAL],
+            [1,                 Types::INTEGER],
+            ['bar',             ParameterType::STRING],
+            ['1',               ParameterType::STRING],
+            [new DateTime(),     Types::DATETIME_MUTABLE],
+            [new DateTimeImmutable(), Types::DATETIME_IMMUTABLE],
+            [new DateInterval('P1D'), Types::DATEINTERVAL],
             [[2],          Connection::PARAM_INT_ARRAY],
             [['foo'],      Connection::PARAM_STR_ARRAY],
             [['1','2'],    Connection::PARAM_STR_ARRAY],
             [[],           Connection::PARAM_STR_ARRAY],
-            [true,              Type::BOOLEAN],
+            [true,              Types::BOOLEAN],
         ];
     }
 
@@ -41,6 +41,6 @@ class ParameterTypeInfererTest extends OrmTestCase
      */
     public function testParameterTypeInferer($value, $expected): void
     {
-        $this->assertEquals($expected, ParameterTypeInferer::inferType($value));
+        self::assertEquals($expected, ParameterTypeInferer::inferType($value));
     }
 }

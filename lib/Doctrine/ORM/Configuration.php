@@ -1,22 +1,6 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
@@ -31,6 +15,16 @@ use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Cache\Exception\CacheException;
+use Doctrine\ORM\Cache\Exception\MetadataCacheNotConfigured;
+use Doctrine\ORM\Cache\Exception\MetadataCacheUsesNonPersistentCache;
+use Doctrine\ORM\Cache\Exception\QueryCacheNotConfigured;
+use Doctrine\ORM\Cache\Exception\QueryCacheUsesNonPersistentCache;
+use Doctrine\ORM\Exception\InvalidEntityRepository;
+use Doctrine\ORM\Exception\NamedNativeQueryNotFound;
+use Doctrine\ORM\Exception\NamedQueryNotFound;
+use Doctrine\ORM\Exception\ProxyClassesAlwaysRegenerating;
+use Doctrine\ORM\Exception\UnknownEntityNamespace;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
@@ -48,6 +42,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
 
 use function class_exists;
+use function method_exists;
 use function strtolower;
 use function trim;
 
@@ -59,6 +54,9 @@ use function trim;
  */
 class Configuration extends \Doctrine\DBAL\Configuration
 {
+    /** @var mixed[] */
+    protected $_attributes = [];
+
     /**
      * Sets the directory where Doctrine generates any necessary proxy class files.
      *
@@ -203,12 +201,19 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return string
      *
-     * @throws ORMException
+     * @throws UnknownEntityNamespace
      */
     public function getEntityNamespace($entityNamespaceAlias)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8818',
+            'Entity short namespace aliases such as "%s" are deprecated, use ::class constant instead.',
+            $entityNamespaceAlias
+        );
+
         if (! isset($this->_attributes['entityNamespaces'][$entityNamespaceAlias])) {
-            throw ORMException::unknownEntityNamespace($entityNamespaceAlias);
+            throw UnknownEntityNamespace::fromNamespaceAlias($entityNamespaceAlias);
         }
 
         return trim($this->_attributes['entityNamespaces'][$entityNamespaceAlias], '\\');
@@ -240,8 +245,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Gets the cache driver implementation that is used for the mapping metadata.
      *
      * @return MappingDriver|null
-     *
-     * @throws ORMException
      */
     public function getMetadataDriverImpl()
     {
@@ -249,43 +252,139 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
+     * Gets the cache driver implementation that is used for query result caching.
+     */
+    public function getResultCache(): ?CacheItemPoolInterface
+    {
+        // Compatibility with DBAL < 3.2
+        if (! method_exists(parent::class, 'getResultCache')) {
+            $cacheImpl = $this->getResultCacheImpl();
+
+            return $cacheImpl ? CacheAdapter::wrap($cacheImpl) : null;
+        }
+
+        return parent::getResultCache();
+    }
+
+    /**
+     * Sets the cache driver implementation that is used for query result caching.
+     */
+    public function setResultCache(CacheItemPoolInterface $cache): void
+    {
+        // Compatibility with DBAL < 3.2
+        if (! method_exists(parent::class, 'setResultCache')) {
+            $this->setResultCacheImpl(DoctrineProvider::wrap($cache));
+
+            return;
+        }
+
+        parent::setResultCache($cache);
+    }
+
+    /**
      * Gets the cache driver implementation that is used for the query cache (SQL cache).
+     *
+     * @deprecated Call {@see getQueryCache()} instead.
      *
      * @return CacheDriver|null
      */
     public function getQueryCacheImpl()
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9002',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use getQueryCache() instead.',
+            __METHOD__
+        );
+
         return $this->_attributes['queryCacheImpl'] ?? null;
     }
 
     /**
      * Sets the cache driver implementation that is used for the query cache (SQL cache).
      *
+     * @deprecated Call {@see setQueryCache()} instead.
+     *
      * @return void
      */
     public function setQueryCacheImpl(CacheDriver $cacheImpl)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9002',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use setQueryCache() instead.',
+            __METHOD__
+        );
+
+        $this->_attributes['queryCache']     = CacheAdapter::wrap($cacheImpl);
         $this->_attributes['queryCacheImpl'] = $cacheImpl;
+    }
+
+    /**
+     * Gets the cache driver implementation that is used for the query cache (SQL cache).
+     */
+    public function getQueryCache(): ?CacheItemPoolInterface
+    {
+        return $this->_attributes['queryCache'] ?? null;
+    }
+
+    /**
+     * Sets the cache driver implementation that is used for the query cache (SQL cache).
+     */
+    public function setQueryCache(CacheItemPoolInterface $cache): void
+    {
+        $this->_attributes['queryCache']     = $cache;
+        $this->_attributes['queryCacheImpl'] = DoctrineProvider::wrap($cache);
     }
 
     /**
      * Gets the cache driver implementation that is used for the hydration cache (SQL cache).
      *
+     * @deprecated Call {@see getHydrationCache()} instead.
+     *
      * @return CacheDriver|null
      */
     public function getHydrationCacheImpl()
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9002',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use getHydrationCache() instead.',
+            __METHOD__
+        );
+
         return $this->_attributes['hydrationCacheImpl'] ?? null;
     }
 
     /**
      * Sets the cache driver implementation that is used for the hydration cache (SQL cache).
      *
+     * @deprecated Call {@see setHydrationCache()} instead.
+     *
      * @return void
      */
     public function setHydrationCacheImpl(CacheDriver $cacheImpl)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9002',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use setHydrationCache() instead.',
+            __METHOD__
+        );
+
+        $this->_attributes['hydrationCache']     = CacheAdapter::wrap($cacheImpl);
         $this->_attributes['hydrationCacheImpl'] = $cacheImpl;
+    }
+
+    public function getHydrationCache(): ?CacheItemPoolInterface
+    {
+        return $this->_attributes['hydrationCache'] ?? null;
+    }
+
+    public function setHydrationCache(CacheItemPoolInterface $cache): void
+    {
+        $this->_attributes['hydrationCache']     = $cache;
+        $this->_attributes['hydrationCacheImpl'] = DoctrineProvider::wrap($cache);
     }
 
     /**
@@ -362,12 +461,12 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return string The DQL query.
      *
-     * @throws ORMException
+     * @throws NamedQueryNotFound
      */
     public function getNamedQuery($name)
     {
         if (! isset($this->_attributes['namedQueries'][$name])) {
-            throw ORMException::namedQueryNotFound($name);
+            throw NamedQueryNotFound::fromName($name);
         }
 
         return $this->_attributes['namedQueries'][$name];
@@ -396,12 +495,12 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @psalm-return array{string, ResultSetMapping} A tuple with the first element being the SQL string and the second
      *                                               element being the ResultSetMapping.
      *
-     * @throws ORMException
+     * @throws NamedNativeQueryNotFound
      */
     public function getNamedNativeQuery($name)
     {
         if (! isset($this->_attributes['namedNativeQueries'][$name])) {
-            throw ORMException::namedNativeQueryNotFound($name);
+            throw NamedNativeQueryNotFound::fromName($name);
         }
 
         return $this->_attributes['namedNativeQueries'][$name];
@@ -413,33 +512,34 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return void
      *
-     * @throws ORMException If a configuration setting has a value that is not
-     *                      suitable for a production environment.
+     * @throws ProxyClassesAlwaysRegenerating
+     * @throws CacheException If a configuration setting has a value that is not
+     *                        suitable for a production environment.
      */
     public function ensureProductionSettings()
     {
         $queryCacheImpl = $this->getQueryCacheImpl();
 
         if (! $queryCacheImpl) {
-            throw ORMException::queryCacheNotConfigured();
+            throw QueryCacheNotConfigured::create();
         }
 
         if ($queryCacheImpl instanceof ArrayCache) {
-            throw ORMException::queryCacheUsesNonPersistentCache($queryCacheImpl);
+            throw QueryCacheUsesNonPersistentCache::fromDriver($queryCacheImpl);
         }
 
         if ($this->getAutoGenerateProxyClasses()) {
-            throw ORMException::proxyClassesAlwaysRegenerating();
+            throw ProxyClassesAlwaysRegenerating::create();
         }
 
         if (! $this->getMetadataCache()) {
-            throw ORMException::metadataCacheNotConfigured();
+            throw MetadataCacheNotConfigured::create();
         }
 
         $metadataCacheImpl = $this->getMetadataCacheImpl();
 
         if ($metadataCacheImpl instanceof ArrayCache) {
-            throw ORMException::metadataCacheUsesNonPersistentCache($metadataCacheImpl);
+            throw MetadataCacheUsesNonPersistentCache::fromDriver($metadataCacheImpl);
         }
     }
 
@@ -703,14 +803,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return void
      *
-     * @throws ORMException If $classname is not an ObjectRepository.
+     * @throws InvalidEntityRepository If $classname is not an ObjectRepository.
      */
     public function setDefaultRepositoryClassName($className)
     {
         $reflectionClass = new ReflectionClass($className);
 
         if (! $reflectionClass->implementsInterface(ObjectRepository::class)) {
-            throw ORMException::invalidEntityRepository($className);
+            throw InvalidEntityRepository::fromClassName($className);
         }
 
         $this->_attributes['defaultRepositoryClassName'] = $className;

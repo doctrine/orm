@@ -7,6 +7,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -41,12 +44,12 @@ class DDC1998Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $found = $this->_em->find(DDC1998Entity::class, $entity->id);
-        $this->assertNull($found);
+        self::assertNull($found);
 
         $found = $this->_em->find(DDC1998Entity::class, 'foo');
-        $this->assertNull($found);
+        self::assertNull($found);
 
-        $this->assertEquals(0, count($this->_em->getRepository(DDC1998Entity::class)->findAll()));
+        self::assertCount(0, $this->_em->getRepository(DDC1998Entity::class)->findAll());
     }
 }
 

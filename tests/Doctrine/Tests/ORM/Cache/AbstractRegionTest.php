@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
+use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\Tests\Mocks\CacheEntryMock;
@@ -19,7 +20,7 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
     /** @var Region */
     protected $region;
 
-    /** @var ArrayCache */
+    /** @var Cache */
     protected $cache;
 
     protected function setUp(): void
@@ -46,19 +47,19 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
      */
     public function testPutGetContainsEvict($key, $value): void
     {
-        $this->assertFalse($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
 
         $this->region->put($key, $value);
 
-        $this->assertTrue($this->region->contains($key));
+        self::assertTrue($this->region->contains($key));
 
         $actual = $this->region->get($key);
 
-        $this->assertEquals($value, $actual);
+        self::assertEquals($value, $actual);
 
         $this->region->evict($key);
 
-        $this->assertFalse($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
     }
 
     public function testEvictAll(): void
@@ -66,18 +67,18 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
         $key1 = new CacheKeyMock('key.1');
         $key2 = new CacheKeyMock('key.2');
 
-        $this->assertFalse($this->region->contains($key1));
-        $this->assertFalse($this->region->contains($key2));
+        self::assertFalse($this->region->contains($key1));
+        self::assertFalse($this->region->contains($key2));
 
         $this->region->put($key1, new CacheEntryMock(['value' => 'foo']));
         $this->region->put($key2, new CacheEntryMock(['value' => 'bar']));
 
-        $this->assertTrue($this->region->contains($key1));
-        $this->assertTrue($this->region->contains($key2));
+        self::assertTrue($this->region->contains($key1));
+        self::assertTrue($this->region->contains($key2));
 
         $this->region->evictAll();
 
-        $this->assertFalse($this->region->contains($key1));
-        $this->assertFalse($this->region->contains($key2));
+        self::assertFalse($this->region->contains($key1));
+        self::assertFalse($this->region->contains($key2));
     }
 }

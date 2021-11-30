@@ -1,22 +1,6 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools;
 
@@ -235,7 +219,7 @@ class ConvertDoctrine1Schema
         $allowed = ['precision', 'scale', 'unique', 'options', 'version'];
 
         foreach ($column as $key => $value) {
-            if (in_array($key, $allowed)) {
+            if (in_array($key, $allowed, true)) {
                 $fieldMapping[$key] = $value;
             }
         }
@@ -248,15 +232,15 @@ class ConvertDoctrine1Schema
             $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
 
             $definition = [
-                'sequenceName' => is_array($column['sequence']) ? $column['sequence']['name'] : $column['sequence'],
+                'sequenceName' => (string) (is_array($column['sequence']) ? $column['sequence']['name'] : $column['sequence']),
             ];
 
             if (isset($column['sequence']['size'])) {
-                $definition['allocationSize'] = $column['sequence']['size'];
+                $definition['allocationSize'] = (int) $column['sequence']['size'];
             }
 
             if (isset($column['sequence']['value'])) {
-                $definition['initialValue'] = $column['sequence']['value'];
+                $definition['initialValue'] = (int) $column['sequence']['value'];
             }
 
             $metadata->setSequenceGeneratorDefinition($definition);

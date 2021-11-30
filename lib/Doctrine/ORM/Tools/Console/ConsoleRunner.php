@@ -1,22 +1,6 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console;
 
@@ -31,6 +15,8 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Helper\HelperSet;
 
+use function class_exists;
+
 /**
  * Handles running the Console Tools inside Symfony Console context.
  */
@@ -41,12 +27,13 @@ final class ConsoleRunner
      */
     public static function createHelperSet(EntityManagerInterface $entityManager): HelperSet
     {
-        return new HelperSet(
-            [
-                'db' => new DBALConsole\Helper\ConnectionHelper($entityManager->getConnection()),
-                'em' => new EntityManagerHelper($entityManager),
-            ]
-        );
+        $helpers = ['em' => new EntityManagerHelper($entityManager)];
+
+        if (class_exists(DBALConsole\Helper\ConnectionHelper::class)) {
+            $helpers['db'] = new DBALConsole\Helper\ConnectionHelper($entityManager->getConnection());
+        }
+
+        return new HelperSet($helpers);
     }
 
     /**
@@ -95,10 +82,13 @@ final class ConsoleRunner
 
         $connectionProvider = new ConnectionFromManagerProvider($entityManagerProvider);
 
+        if (class_exists(DBALConsole\Command\ImportCommand::class)) {
+            $cli->add(new DBALConsole\Command\ImportCommand());
+        }
+
         $cli->addCommands(
             [
                 // DBAL Commands
-                new DBALConsole\Command\ImportCommand(),
                 new DBALConsole\Command\ReservedWordsCommand($connectionProvider),
                 new DBALConsole\Command\RunSqlCommand($connectionProvider),
 

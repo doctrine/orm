@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Embeddable;
+use Doctrine\ORM\Mapping\Embedded;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
@@ -40,7 +41,7 @@ class DDC6460Test extends OrmFunctionalTestCase
             ->getClassMetadata(DDC6460Entity::class)
             ->hasField('embedded');
 
-        $this->assertTrue($isFieldMapped);
+        self::assertTrue($isFieldMapped);
     }
 
     /**
@@ -64,11 +65,11 @@ class DDC6460Test extends OrmFunctionalTestCase
 
         $secondEntityWithLazyParameter = $this->_em->getRepository(DDC6460ParentEntity::class)->findOneById(1);
 
-        $this->assertInstanceOf(Proxy::class, $secondEntityWithLazyParameter->lazyLoaded);
-        $this->assertInstanceOf(DDC6460Entity::class, $secondEntityWithLazyParameter->lazyLoaded);
-        $this->assertFalse($secondEntityWithLazyParameter->lazyLoaded->__isInitialized());
-        $this->assertEquals($secondEntityWithLazyParameter->lazyLoaded->embedded, $entity->embedded);
-        $this->assertTrue($secondEntityWithLazyParameter->lazyLoaded->__isInitialized());
+        self::assertInstanceOf(Proxy::class, $secondEntityWithLazyParameter->lazyLoaded);
+        self::assertInstanceOf(DDC6460Entity::class, $secondEntityWithLazyParameter->lazyLoaded);
+        self::assertFalse($secondEntityWithLazyParameter->lazyLoaded->__isInitialized());
+        self::assertEquals($secondEntityWithLazyParameter->lazyLoaded->embedded, $entity->embedded);
+        self::assertTrue($secondEntityWithLazyParameter->lazyLoaded->__isInitialized());
     }
 }
 

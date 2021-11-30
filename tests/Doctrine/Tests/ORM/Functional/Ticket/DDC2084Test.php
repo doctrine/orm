@@ -49,9 +49,9 @@ class DDC2084Test extends OrmFunctionalTestCase
         $e2 = $e1->getMyEntity2();
         $e  = $this->_em->find(__NAMESPACE__ . '\DDC2084\MyEntity1', $e2);
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC2084\MyEntity1', $e);
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC2084\MyEntity2', $e->getMyEntity2());
-        $this->assertEquals('Foo', $e->getMyEntity2()->getValue());
+        self::assertInstanceOf(__NAMESPACE__ . '\DDC2084\MyEntity1', $e);
+        self::assertInstanceOf(__NAMESPACE__ . '\DDC2084\MyEntity2', $e->getMyEntity2());
+        self::assertEquals('Foo', $e->getMyEntity2()->getValue());
     }
 
     public function testinvalidIdentifierBindingEntityException(): void
@@ -63,6 +63,14 @@ class DDC2084Test extends OrmFunctionalTestCase
 }
 
 namespace Doctrine\Tests\ORM\Functional\Ticket\DDC2084;
+
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity

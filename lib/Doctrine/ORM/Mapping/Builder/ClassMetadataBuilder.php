@@ -1,22 +1,6 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
@@ -49,7 +33,7 @@ class ClassMetadataBuilder
     /**
      * Marks the class as mapped superclass.
      *
-     * @return static
+     * @return $this
      */
     public function setMappedSuperClass()
     {
@@ -62,7 +46,7 @@ class ClassMetadataBuilder
     /**
      * Marks the class as embeddable.
      *
-     * @return static
+     * @return $this
      */
     public function setEmbeddable()
     {
@@ -99,7 +83,7 @@ class ClassMetadataBuilder
      *
      * @param string $repositoryClassName
      *
-     * @return static
+     * @return $this
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
@@ -111,7 +95,7 @@ class ClassMetadataBuilder
     /**
      * Marks class read only.
      *
-     * @return static
+     * @return $this
      */
     public function setReadOnly()
     {
@@ -125,7 +109,7 @@ class ClassMetadataBuilder
      *
      * @param string $name
      *
-     * @return static
+     * @return $this
      */
     public function setTable($name)
     {
@@ -140,7 +124,7 @@ class ClassMetadataBuilder
      * @param string $name
      * @psalm-param list<string> $columns
      *
-     * @return static
+     * @return $this
      */
     public function addIndex(array $columns, $name)
     {
@@ -159,7 +143,7 @@ class ClassMetadataBuilder
      * @param string $name
      * @psalm-param list<string> $columns
      *
-     * @return static
+     * @return $this
      */
     public function addUniqueConstraint(array $columns, $name)
     {
@@ -178,7 +162,7 @@ class ClassMetadataBuilder
      * @param string $name
      * @param string $dqlQuery
      *
-     * @return static
+     * @return $this
      */
     public function addNamedQuery($name, $dqlQuery)
     {
@@ -195,7 +179,7 @@ class ClassMetadataBuilder
     /**
      * Sets class as root of a joined table inheritance hierarchy.
      *
-     * @return static
+     * @return $this
      */
     public function setJoinedTableInheritance()
     {
@@ -207,7 +191,7 @@ class ClassMetadataBuilder
     /**
      * Sets class as root of a single table inheritance hierarchy.
      *
-     * @return static
+     * @return $this
      */
     public function setSingleTableInheritance()
     {
@@ -223,7 +207,7 @@ class ClassMetadataBuilder
      * @param string $type
      * @param int    $length
      *
-     * @return static
+     * @return $this
      */
     public function setDiscriminatorColumn($name, $type = 'string', $length = 255)
     {
@@ -244,7 +228,7 @@ class ClassMetadataBuilder
      * @param string $name
      * @param string $class
      *
-     * @return static
+     * @return $this
      */
     public function addDiscriminatorMapClass($name, $class)
     {
@@ -256,7 +240,7 @@ class ClassMetadataBuilder
     /**
      * Sets deferred explicit change tracking policy.
      *
-     * @return static
+     * @return $this
      */
     public function setChangeTrackingPolicyDeferredExplicit()
     {
@@ -268,7 +252,7 @@ class ClassMetadataBuilder
     /**
      * Sets notify change tracking policy.
      *
-     * @return static
+     * @return $this
      */
     public function setChangeTrackingPolicyNotify()
     {
@@ -283,7 +267,7 @@ class ClassMetadataBuilder
      * @param string $methodName
      * @param string $event
      *
-     * @return static
+     * @return $this
      */
     public function addLifecycleEvent($methodName, $event)
     {
@@ -299,7 +283,7 @@ class ClassMetadataBuilder
      * @param string $type
      * @psalm-param array<string, mixed> $mapping
      *
-     * @return static
+     * @return $this
      */
     public function addField($name, $type, array $mapping = [])
     {

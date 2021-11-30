@@ -55,7 +55,7 @@ class PersistentCollectionTest extends OrmTestCase
         $class      = $this->_emMock->getClassMetadata(ECommerceProduct::class);
         $collection = new PersistentCollection($this->_emMock, $class, new ArrayCollection());
         $collection->setInitialized(false);
-        $this->assertFalse($collection->isInitialized());
+        self::assertFalse($collection->isInitialized());
     }
 
     /**
@@ -64,7 +64,7 @@ class PersistentCollectionTest extends OrmTestCase
     public function testCurrentInitializesCollection(): void
     {
         $this->collection->current();
-        $this->assertTrue($this->collection->isInitialized());
+        self::assertTrue($this->collection->isInitialized());
     }
 
     /**
@@ -73,7 +73,7 @@ class PersistentCollectionTest extends OrmTestCase
     public function testKeyInitializesCollection(): void
     {
         $this->collection->key();
-        $this->assertTrue($this->collection->isInitialized());
+        self::assertTrue($this->collection->isInitialized());
     }
 
     /**
@@ -82,7 +82,7 @@ class PersistentCollectionTest extends OrmTestCase
     public function testNextInitializesCollection(): void
     {
         $this->collection->next();
-        $this->assertTrue($this->collection->isInitialized());
+        self::assertTrue($this->collection->isInitialized());
     }
 
     /**
@@ -90,11 +90,11 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testNonObjects(): void
     {
-        $this->assertEmpty($this->collection);
+        self::assertEmpty($this->collection);
 
         $this->collection->add('dummy');
 
-        $this->assertNotEmpty($this->collection);
+        self::assertNotEmpty($this->collection);
 
         $product = new ECommerceProduct();
 
@@ -102,9 +102,9 @@ class PersistentCollectionTest extends OrmTestCase
         $this->collection->set(2, 'dummy');
         $this->collection->set(3, null);
 
-        $this->assertSame($product, $this->collection->get(1));
-        $this->assertSame('dummy', $this->collection->get(2));
-        $this->assertSame(null, $this->collection->get(3));
+        self::assertSame($product, $this->collection->get(1));
+        self::assertSame('dummy', $this->collection->get(2));
+        self::assertNull($this->collection->get(3));
     }
 
     /**
@@ -115,10 +115,10 @@ class PersistentCollectionTest extends OrmTestCase
         $dummy = new stdClass();
 
         $this->collection->add($dummy);
-        $this->assertEquals([0], array_keys($this->collection->toArray()));
+        self::assertEquals([0], array_keys($this->collection->toArray()));
 
         $this->collection->removeElement($dummy);
-        $this->assertEquals([], array_keys($this->collection->toArray()));
+        self::assertEquals([], array_keys($this->collection->toArray()));
     }
 
     /**
@@ -128,7 +128,7 @@ class PersistentCollectionTest extends OrmTestCase
     {
         $this->collection->add(new stdClass());
         $this->collection->clear();
-        $this->assertEquals([], array_keys($this->collection->toArray()));
+        self::assertEquals([], array_keys($this->collection->toArray()));
     }
 
     /**
@@ -142,7 +142,7 @@ class PersistentCollectionTest extends OrmTestCase
         $this->collection->removeElement($dummy);
         $this->collection->clear();
         $this->collection->add($dummy);
-        $this->assertEquals([0], array_keys($this->collection->toArray()));
+        self::assertEquals([0], array_keys($this->collection->toArray()));
     }
 
     /**

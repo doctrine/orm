@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinColumns;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
@@ -37,13 +44,13 @@ class DDC353Test extends OrmFunctionalTestCase
         $em->clear();
 
         $fileId = $file->getFileId();
-        $this->assertTrue($fileId > 0);
+        self::assertGreaterThan(0, $fileId);
 
         $file = $em->getReference(DDC353File::class, $fileId);
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($file), 'Reference Proxy should be marked MANAGED.');
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($file), 'Reference Proxy should be marked MANAGED.');
 
         $picture = $em->find(DDC353Picture::class, $picture->getPictureId());
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');
 
         $em->remove($picture);
         $em->flush();
@@ -64,10 +71,10 @@ class DDC353Test extends OrmFunctionalTestCase
         $fileId    = $file->getFileId();
         $pictureId = $picture->getPictureId();
 
-        $this->assertTrue($fileId > 0);
+        self::assertGreaterThan(0, $fileId);
 
         $picture = $em->find(DDC353Picture::class, $pictureId);
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');
 
         $em->remove($picture);
         $em->flush();

@@ -6,6 +6,17 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -56,11 +67,11 @@ class ClassTableInheritanceSecondTest extends OrmFunctionalTestCase
 
         $related2 = $this->_em->find(CTIRelated::class, $relatedId);
 
-        $this->assertInstanceOf(CTIRelated::class, $related2);
-        $this->assertInstanceOf(CTIChild::class, $related2->getCTIParent());
-        $this->assertEquals('hello', $related2->getCTIParent()->getData());
+        self::assertInstanceOf(CTIRelated::class, $related2);
+        self::assertInstanceOf(CTIChild::class, $related2->getCTIParent());
+        self::assertEquals('hello', $related2->getCTIParent()->getData());
 
-        $this->assertSame($related2, $related2->getCTIParent()->getRelated());
+        self::assertSame($related2, $related2->getCTIParent()->getRelated());
     }
 
     public function testManyToManyToCTIHierarchy(): void
@@ -78,10 +89,10 @@ class ClassTableInheritanceSecondTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $mmrel2 = $this->_em->find(get_class($mmrel), $mmrel->getId());
-        $this->assertFalse($mmrel2->getCTIChildren()->isInitialized());
-        $this->assertEquals(1, count($mmrel2->getCTIChildren()));
-        $this->assertTrue($mmrel2->getCTIChildren()->isInitialized());
-        $this->assertInstanceOf(CTIChild::class, $mmrel2->getCTIChildren()->get(0));
+        self::assertFalse($mmrel2->getCTIChildren()->isInitialized());
+        self::assertEquals(1, count($mmrel2->getCTIChildren()));
+        self::assertTrue($mmrel2->getCTIChildren()->isInitialized());
+        self::assertInstanceOf(CTIChild::class, $mmrel2->getCTIChildren()->get(0));
     }
 }
 

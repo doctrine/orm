@@ -32,20 +32,20 @@ class DDC7969Test extends SecondLevelCacheAbstractTest
 
         $repository = $this->_em->getRepository(Bar::class);
 
-        $this->assertFalse($this->cache->containsEntity(Bar::class, $bar->getId()));
-        $this->assertFalse($this->cache->containsEntity(Attraction::class, $bar->getId()));
+        self::assertFalse($this->cache->containsEntity(Bar::class, $bar->getId()));
+        self::assertFalse($this->cache->containsEntity(Attraction::class, $bar->getId()));
 
         $repository->findOneBy([
             'name' => $bar->getName(),
         ]);
 
-        $this->assertTrue($this->cache->containsEntity(Bar::class, $bar->getId()));
+        self::assertTrue($this->cache->containsEntity(Bar::class, $bar->getId()));
 
         $repository->findOneBy([
             'name' => $bar->getName(),
         ]);
 
         // One hit for entity cache, one hit for query cache
-        $this->assertEquals(2, $this->secondLevelCacheLogger->getHitCount());
+        self::assertEquals(2, $this->secondLevelCacheLogger->getHitCount());
     }
 }

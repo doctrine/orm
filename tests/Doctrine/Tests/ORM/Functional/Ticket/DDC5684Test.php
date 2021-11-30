@@ -6,6 +6,11 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types as DBALTypes;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -43,7 +48,7 @@ class DDC5684Test extends OrmFunctionalTestCase
         $this->_em->persist($object);
         $this->_em->flush();
 
-        $this->assertInstanceOf(DDC5684ObjectId::class, $object->id);
+        self::assertInstanceOf(DDC5684ObjectId::class, $object->id);
     }
 
     public function testFetchObjectWithAutoIncrementedCustomType(): void
@@ -56,8 +61,8 @@ class DDC5684Test extends OrmFunctionalTestCase
         $rawId  = $object->id->value;
         $object = $this->_em->find(DDC5684Object::class, new DDC5684ObjectId($rawId));
 
-        $this->assertInstanceOf(DDC5684ObjectId::class, $object->id);
-        $this->assertEquals($rawId, $object->id->value);
+        self::assertInstanceOf(DDC5684ObjectId::class, $object->id);
+        self::assertEquals($rawId, $object->id->value);
     }
 }
 

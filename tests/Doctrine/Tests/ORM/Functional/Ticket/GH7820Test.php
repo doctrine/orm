@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Cache\ClearableCache;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_map;
-use function assert;
 use function is_string;
 use function iterator_to_array;
 
@@ -83,12 +84,9 @@ class GH7820Test extends OrmFunctionalTestCase
     /** @group GH7837 */
     public function testWillFindSongsInPaginatorEvenWithCachedQueryParsing(): void
     {
-        $cache = $this->_em->getConfiguration()
-            ->getQueryCacheImpl();
-
-        assert($cache instanceof ClearableCache);
-
-        $cache->deleteAll();
+        $this->_em->getConfiguration()
+            ->getQueryCache()
+            ->clear();
 
         $query = $this->_em->getRepository(GH7820Line::class)
             ->createQueryBuilder('l')

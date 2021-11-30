@@ -1,22 +1,6 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Persisters\Entity;
 
@@ -24,21 +8,26 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement as DriverStatement;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Persisters\Exception\CantUseInOperatorOnCompositeKeys;
+use Doctrine\ORM\Persisters\Exception\InvalidOrientation;
+use Doctrine\ORM\Persisters\Exception\UnrecognizedField;
 use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Repository\Exception\InvalidFindByCall;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -56,7 +45,7 @@ use function implode;
 use function is_array;
 use function is_object;
 use function reset;
-use function spl_object_hash;
+use function spl_object_id;
 use function sprintf;
 use function strpos;
 use function strtoupper;
@@ -145,7 +134,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Queued inserts.
      *
-     * @psalm-var array<string, object>
+     * @psalm-var array<int, object>
      */
     protected $queuedInserts = [];
 
@@ -246,7 +235,7 @@ class BasicEntityPersister implements EntityPersister
      */
     public function addInsert($entity)
     {
-        $this->queuedInserts[spl_object_hash($entity)] = $entity;
+        $this->queuedInserts[spl_object_id($entity)] = $entity;
     }
 
     /**
@@ -284,7 +273,7 @@ class BasicEntityPersister implements EntityPersister
                 }
             }
 
-            $stmt->execute();
+            $stmt->executeStatement();
 
             if ($isPostInsertId) {
                 $generatedId     = $idGenerator->generate($this->em, $entity);
@@ -302,7 +291,6 @@ class BasicEntityPersister implements EntityPersister
             }
         }
 
-        $stmt->closeCursor();
         $this->queuedInserts = [];
 
         return $postInsertIds;
@@ -348,10 +336,9 @@ class BasicEntityPersister implements EntityPersister
 
         $flatId = $this->identifierFlattener->flattenIdentifier($versionedClass, $id);
 
-        $value = $this->conn->fetchColumn(
+        $value = $this->conn->fetchOne(
             $sql,
             array_values($flatId),
-            0,
             $this->extractIdentifierTypes($id, $versionedClass)
         );
 
@@ -414,7 +401,7 @@ class BasicEntityPersister implements EntityPersister
      * @param mixed[] $updateData      The map of columns to update (column => value).
      * @param bool    $versioned       Whether the UPDATE should be versioned.
      *
-     * @throws ORMException
+     * @throws UnrecognizedField
      * @throws OptimisticLockException
      */
     final protected function updateTable(
@@ -477,7 +464,7 @@ class BasicEntityPersister implements EntityPersister
             $targetType    = PersisterHelper::getTypeOfField($targetMapping->identifier[0], $targetMapping, $this->em);
 
             if ($targetType === []) {
-                throw ORMException::unrecognizedField($targetMapping->identifier[0]);
+                throw UnrecognizedField::byName($targetMapping->identifier[0]);
             }
 
             $types[] = reset($targetType);
@@ -493,13 +480,13 @@ class BasicEntityPersister implements EntityPersister
             $params[] = $this->class->reflFields[$versionField]->getValue($entity);
 
             switch ($versionFieldType) {
-                case Type::SMALLINT:
-                case Type::INTEGER:
-                case Type::BIGINT:
+                case Types::SMALLINT:
+                case Types::INTEGER:
+                case Types::BIGINT:
                     $set[] = $versionColumn . ' = ' . $versionColumn . ' + 1';
                     break;
 
-                case Type::DATETIME:
+                case Types::DATETIME_MUTABLE:
                     $set[] = $versionColumn . ' = CURRENT_TIMESTAMP';
                     break;
             }
@@ -509,7 +496,7 @@ class BasicEntityPersister implements EntityPersister
              . ' SET ' . implode(', ', $set)
              . ' WHERE ' . implode(' = ? AND ', $where) . ' = ?';
 
-        $result = $this->conn->executeUpdate($sql, $params, $types);
+        $result = $this->conn->executeStatement($sql, $params, $types);
 
         if ($versioned && ! $result) {
             throw OptimisticLockException::lockFailed($entity);
@@ -655,7 +642,7 @@ class BasicEntityPersister implements EntityPersister
             }
 
             if ($newVal !== null) {
-                $oid = spl_object_hash($newVal);
+                $oid = spl_object_id($newVal);
 
                 if (isset($this->queuedInserts[$oid]) || $uow->isScheduledForInsert($newVal)) {
                     // The associated entity $newVal is not yet persisted, so we must
@@ -832,7 +819,7 @@ class BasicEntityPersister implements EntityPersister
             ? $this->expandCriteriaParameters($criteria)
             : $this->expandParameters($criteria);
 
-        return (int) $this->conn->executeQuery($sql, $params, $types)->fetchColumn();
+        return (int) $this->conn->executeQuery($sql, $params, $types)->fetchOne();
     }
 
     /**
@@ -909,7 +896,7 @@ class BasicEntityPersister implements EntityPersister
 
         $stmt = $this->getManyToManyStatement($assoc, $sourceEntity, $offset, $limit);
 
-        return $this->loadArrayFromStatement($assoc, $stmt);
+        return $this->loadArrayFromResult($assoc, $stmt);
     }
 
     /**
@@ -919,7 +906,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return mixed[]
      */
-    private function loadArrayFromStatement(array $assoc, DriverStatement $stmt): array
+    private function loadArrayFromResult(array $assoc, Result $stmt): array
     {
         $rsm   = $this->currentPersisterContext->rsm;
         $hints = [UnitOfWork::HINT_DEFEREAGERLOAD => true];
@@ -941,7 +928,7 @@ class BasicEntityPersister implements EntityPersister
      */
     private function loadCollectionFromStatement(
         array $assoc,
-        DriverStatement $stmt,
+        Result $stmt,
         PersistentCollection $coll
     ): array {
         $rsm   = $this->currentPersisterContext->rsm;
@@ -972,7 +959,7 @@ class BasicEntityPersister implements EntityPersister
      * @param object $sourceEntity
      * @psalm-param array<string, mixed> $assoc
      *
-     * @return DriverStatement
+     * @return Result
      *
      * @throws MappingException
      */
@@ -1096,14 +1083,14 @@ class BasicEntityPersister implements EntityPersister
         $from   = ' FROM ' . $tableName . ' ' . $tableAlias;
         $join   = $this->currentPersisterContext->selectJoinSql . $joinSql;
         $where  = ($conditionSql ? ' WHERE ' . $conditionSql : '');
-        $lock   = $this->platform->appendLockHint($from, $lockMode);
+        $lock   = $this->platform->appendLockHint($from, $lockMode ?? LockMode::NONE);
         $query  = $select
             . $lock
             . $join
             . $where
             . $orderBySql;
 
-        return $this->platform->modifyLimitQuery($query, $limit, $offset) . $lockSql;
+        return $this->platform->modifyLimitQuery($query, $limit, $offset ?? 0) . $lockSql;
     }
 
     /**
@@ -1136,7 +1123,9 @@ class BasicEntityPersister implements EntityPersister
      *
      * @psalm-param array<string, string> $orderBy
      *
-     * @throws ORMException
+     * @throws InvalidOrientation
+     * @throws InvalidFindByCall
+     * @throws UnrecognizedField
      */
     final protected function getOrderBySQL(array $orderBy, string $baseTableAlias): string
     {
@@ -1146,7 +1135,7 @@ class BasicEntityPersister implements EntityPersister
             $orientation = strtoupper(trim($orientation));
 
             if ($orientation !== 'ASC' && $orientation !== 'DESC') {
-                throw ORMException::invalidOrientation($this->class->name, $fieldName);
+                throw InvalidOrientation::fromClassNameAndField($this->class->name, $fieldName);
             }
 
             if (isset($this->class->fieldMappings[$fieldName])) {
@@ -1162,7 +1151,7 @@ class BasicEntityPersister implements EntityPersister
 
             if (isset($this->class->associationMappings[$fieldName])) {
                 if (! $this->class->associationMappings[$fieldName]['isOwningSide']) {
-                    throw ORMException::invalidFindByInverseAssociation($this->class->name, $fieldName);
+                    throw InvalidFindByCall::fromInverseSideUsage($this->class->name, $fieldName);
                 }
 
                 $tableAlias = isset($this->class->associationMappings[$fieldName]['inherited'])
@@ -1177,7 +1166,7 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            throw ORMException::unrecognizedField($fieldName);
+            throw UnrecognizedField::byName($fieldName);
         }
 
         return ' ORDER BY ' . implode(', ', $orderByList);
@@ -1559,7 +1548,7 @@ class BasicEntityPersister implements EntityPersister
             'FROM '
             . $this->quoteStrategy->getTableName($this->class, $this->platform) . ' '
             . $this->getSQLTableAlias($this->class->name),
-            $lockMode
+            $lockMode ?? LockMode::NONE
         );
     }
 
@@ -1594,7 +1583,7 @@ class BasicEntityPersister implements EntityPersister
              *  @todo try to support multi-column IN expressions.
              *  Example: (col1, col2) IN (('val1A', 'val2A'), ('val1B', 'val2B'))
              */
-            throw ORMException::cantUseInOperatorOnCompositeKeys();
+            throw CantUseInOperatorOnCompositeKeys::create();
         }
 
         foreach ($columns as $column) {
@@ -1658,7 +1647,8 @@ class BasicEntityPersister implements EntityPersister
      * @return string[]
      * @psalm-return list<string>
      *
-     * @throws ORMException
+     * @throws InvalidFindByCall
+     * @throws UnrecognizedField
      */
     private function getSelectConditionStatementColumnSQL(
         string $field,
@@ -1691,7 +1681,10 @@ class BasicEntityPersister implements EntityPersister
                 }
             } else {
                 if (! $association['isOwningSide']) {
-                    throw ORMException::invalidFindByInverseAssociation($this->class->name, $field);
+                    throw InvalidFindByCall::fromInverseSideUsage(
+                        $this->class->name,
+                        $field
+                    );
                 }
 
                 $className = $association['inherited'] ?? $this->class->name;
@@ -1712,7 +1705,7 @@ class BasicEntityPersister implements EntityPersister
             return [$field];
         }
 
-        throw ORMException::unrecognizedField($field);
+        throw UnrecognizedField::byName($field);
     }
 
     /**
@@ -1748,7 +1741,7 @@ class BasicEntityPersister implements EntityPersister
 
         $stmt = $this->getOneToManyStatement($assoc, $sourceEntity, $offset, $limit);
 
-        return $this->loadArrayFromStatement($assoc, $stmt);
+        return $this->loadArrayFromResult($assoc, $stmt);
     }
 
     /**
@@ -1772,7 +1765,7 @@ class BasicEntityPersister implements EntityPersister
         $sourceEntity,
         ?int $offset = null,
         ?int $limit = null
-    ): DriverStatement {
+    ): Result {
         $this->switchPersisterContext($offset, $limit);
 
         $criteria    = [];
@@ -2004,7 +1997,7 @@ class BasicEntityPersister implements EntityPersister
             $sql .= ' AND ' . $filterSql;
         }
 
-        return (bool) $this->conn->fetchColumn($sql, $params, 0, $types);
+        return (bool) $this->conn->fetchOne($sql, $params, $types);
     }
 
     /**

@@ -6,6 +6,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -54,9 +60,9 @@ class DDC1452Test extends OrmFunctionalTestCase
         $dql     = 'SELECT a, b, ba FROM ' . __NAMESPACE__ . '\DDC1452EntityA AS a LEFT JOIN a.entitiesB AS b LEFT JOIN b.entityATo AS ba';
         $results = $this->_em->createQuery($dql)->setMaxResults(1)->getResult();
 
-        $this->assertSame($results[0], $results[0]->entitiesB[0]->entityAFrom);
-        $this->assertNotInstanceOf(Proxy::class, $results[0]->entitiesB[0]->entityATo);
-        $this->assertInstanceOf(Collection::class, $results[0]->entitiesB[0]->entityATo->getEntitiesB());
+        self::assertSame($results[0], $results[0]->entitiesB[0]->entityAFrom);
+        self::assertNotInstanceOf(Proxy::class, $results[0]->entitiesB[0]->entityATo);
+        self::assertInstanceOf(Collection::class, $results[0]->entitiesB[0]->entityATo->getEntitiesB());
     }
 
     public function testFetchJoinOneToOneFromInverse(): void
@@ -83,12 +89,12 @@ class DDC1452Test extends OrmFunctionalTestCase
         $data = $this->_em->createQuery($dql)->getResult();
         $this->_em->clear();
 
-        $this->assertNotInstanceOf(Proxy::class, $data[0]->user);
+        self::assertNotInstanceOf(Proxy::class, $data[0]->user);
 
         $dql  = 'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.address a';
         $data = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertNotInstanceOf(Proxy::class, $data[0]->address);
+        self::assertNotInstanceOf(Proxy::class, $data[0]->address);
     }
 }
 

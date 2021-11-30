@@ -19,8 +19,8 @@ class LexerTest extends OrmTestCase
         $lexer->moveNext();
         $token = $lexer->lookahead;
 
-        $this->assertEquals($type, $token['type']);
-        $this->assertEquals($value, $token['value']);
+        self::assertEquals($type, $token['type']);
+        self::assertEquals($value, $token['value']);
     }
 
     public function testScannerRecognizesTerminalString(): void
@@ -36,7 +36,7 @@ class LexerTest extends OrmTestCase
         $lexer->moveNext();
         $token = $lexer->lookahead;
 
-        $this->assertEquals(Lexer::T_ALL, $token['type']);
+        self::assertEquals(Lexer::T_ALL, $token['type']);
     }
 
     public function testScannerRecognizesDecimalInteger(): void
@@ -44,8 +44,8 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer('1234');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_INTEGER, $token['type']);
-        $this->assertEquals(1234, $token['value']);
+        self::assertEquals(Lexer::T_INTEGER, $token['type']);
+        self::assertEquals(1234, $token['value']);
     }
 
     public function testScannerRecognizesFloat(): void
@@ -53,8 +53,8 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer('1.234');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_FLOAT, $token['type']);
-        $this->assertEquals(1.234, $token['value']);
+        self::assertEquals(Lexer::T_FLOAT, $token['type']);
+        self::assertEquals(1.234, $token['value']);
     }
 
     public function testScannerRecognizesFloatWithExponent(): void
@@ -62,8 +62,8 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer('1.2e3');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_FLOAT, $token['type']);
-        $this->assertEquals(1.2e3, $token['value']);
+        self::assertEquals(Lexer::T_FLOAT, $token['type']);
+        self::assertEquals(1.2e3, $token['value']);
     }
 
     public function testScannerRecognizesFloatWithExponent2(): void
@@ -71,8 +71,8 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer('0.2e3');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_FLOAT, $token['type']);
-        $this->assertEquals(.2e3, $token['value']);
+        self::assertEquals(Lexer::T_FLOAT, $token['type']);
+        self::assertEquals(.2e3, $token['value']);
     }
 
     public function testScannerRecognizesFloatWithNegativeExponent(): void
@@ -80,8 +80,8 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer('7E-10');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_FLOAT, $token['type']);
-        $this->assertEquals(7E-10, $token['value']);
+        self::assertEquals(Lexer::T_FLOAT, $token['type']);
+        self::assertEquals(7E-10, $token['value']);
     }
 
     public function testScannerRecognizesFloatBig(): void
@@ -89,8 +89,8 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer('123456789.01');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_FLOAT, $token['type']);
-        $this->assertEquals(1.2345678901e8, $token['value']);
+        self::assertEquals(Lexer::T_FLOAT, $token['type']);
+        self::assertEquals(1.2345678901e8, $token['value']);
     }
 
     public function testScannerRecognizesFloatContainingWhitespace(): void
@@ -98,14 +98,14 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer('-   1.234e2');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_MINUS, $token['type']);
-        $this->assertEquals('-', $token['value']);
+        self::assertEquals(Lexer::T_MINUS, $token['type']);
+        self::assertEquals('-', $token['value']);
 
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_FLOAT, $token['type']);
-        $this->assertNotEquals(-1.234e2, $token['value']);
-        $this->assertEquals(1.234e2, $token['value']);
+        self::assertEquals(Lexer::T_FLOAT, $token['type']);
+        self::assertNotEquals(-1.234e2, $token['value']);
+        self::assertEquals(1.234e2, $token['value']);
     }
 
     public function testScannerRecognizesStringContainingWhitespace(): void
@@ -113,8 +113,8 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer("'This is a string.'");
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_STRING, $token['type']);
-        $this->assertEquals('This is a string.', $token['value']);
+        self::assertEquals(Lexer::T_STRING, $token['type']);
+        self::assertEquals('This is a string.', $token['value']);
     }
 
     public function testScannerRecognizesStringContainingSingleQuotes(): void
@@ -122,8 +122,8 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer("'abc''defg'''");
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_STRING, $token['type']);
-        $this->assertEquals("abc'defg'", $token['value']);
+        self::assertEquals(Lexer::T_STRING, $token['type']);
+        self::assertEquals("abc'defg'", $token['value']);
     }
 
     public function testScannerRecognizesInputParameter(): void
@@ -131,8 +131,8 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer('?1');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_INPUT_PARAMETER, $token['type']);
-        $this->assertEquals('?1', $token['value']);
+        self::assertEquals(Lexer::T_INPUT_PARAMETER, $token['type']);
+        self::assertEquals('?1', $token['value']);
     }
 
     public function testScannerRecognizesNamedInputParameter(): void
@@ -140,8 +140,8 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer(':name');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_INPUT_PARAMETER, $token['type']);
-        $this->assertEquals(':name', $token['value']);
+        self::assertEquals(Lexer::T_INPUT_PARAMETER, $token['type']);
+        self::assertEquals(':name', $token['value']);
     }
 
     public function testScannerRecognizesNamedInputParameterStartingWithUnderscore(): void
@@ -149,8 +149,8 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer(':_name');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        $this->assertEquals(Lexer::T_INPUT_PARAMETER, $token['type']);
-        $this->assertEquals(':_name', $token['value']);
+        self::assertEquals(Lexer::T_INPUT_PARAMETER, $token['type']);
+        self::assertEquals(':_name', $token['value']);
     }
 
     public function testScannerTokenizesASimpleQueryCorrectly(): void
@@ -219,12 +219,12 @@ class LexerTest extends OrmTestCase
         foreach ($tokens as $expected) {
             $lexer->moveNext();
             $actual = $lexer->lookahead;
-            $this->assertEquals($expected['value'], $actual['value']);
-            $this->assertEquals($expected['type'], $actual['type']);
-            $this->assertEquals($expected['position'], $actual['position']);
+            self::assertEquals($expected['value'], $actual['value']);
+            self::assertEquals($expected['type'], $actual['type']);
+            self::assertEquals($expected['position'], $actual['position']);
         }
 
-        $this->assertFalse($lexer->moveNext());
+        self::assertFalse($lexer->moveNext());
     }
 
     /** @psalm-return list<array{int, string}> */

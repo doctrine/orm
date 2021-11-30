@@ -1,22 +1,6 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
@@ -32,10 +16,11 @@ use function array_combine;
 use function array_diff_key;
 use function array_map;
 use function array_udiff_assoc;
+use function array_values;
 use function array_walk;
 use function get_class;
 use function is_object;
-use function spl_object_hash;
+use function spl_object_id;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
@@ -46,7 +31,6 @@ use function spl_object_hash;
  * Similarly, if you remove entities from a collection that is part of a one-many
  * mapping this will only result in the nulling out of the foreign keys on flush.
  *
- * @phpstan-template TKey
  * @psalm-template TKey of array-key
  * @psalm-template T
  * @template-implements Collection<TKey,T>
@@ -176,7 +160,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             );
 
             $this->em->getUnitOfWork()->setOriginalEntityProperty(
-                spl_object_hash($element),
+                spl_object_id($element),
                 $this->backRefFieldName,
                 $this->owner
             );
@@ -249,13 +233,12 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      */
     public function getDeleteDiff(): array
     {
-        return array_udiff_assoc(
-            $this->snapshot,
-            $this->collection->toArray(),
-            static function ($a, $b): int {
-                return $a === $b ? 0 : 1;
-            }
-        );
+        $collectionItems = $this->collection->toArray();
+
+        return array_values(array_diff_key(
+            array_combine(array_map('spl_object_id', $this->snapshot), $this->snapshot),
+            array_combine(array_map('spl_object_id', $collectionItems), $collectionItems)
+        ));
     }
 
     /**
@@ -266,13 +249,12 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      */
     public function getInsertDiff(): array
     {
-        return array_udiff_assoc(
-            $this->collection->toArray(),
-            $this->snapshot,
-            static function ($a, $b): int {
-                return $a === $b ? 0 : 1;
-            }
-        );
+        $collectionItems = $this->collection->toArray();
+
+        return array_values(array_diff_key(
+            array_combine(array_map('spl_object_id', $collectionItems), $collectionItems),
+            array_combine(array_map('spl_object_id', $this->snapshot), $this->snapshot)
+        ));
     }
 
     /**
@@ -705,7 +687,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * @param object[] $newObjects
      *
-     * Note: the only reason why this entire looping/complexity is performed via `spl_object_hash`
+     * Note: the only reason why this entire looping/complexity is performed via `spl_object_id`
      *       is because we want to prevent using `array_udiff()`, which is likely to cause very
      *       high overhead (complexity of O(n^2)). `array_diff_key()` performs the operation in
      *       core, which is faster than using a callback for comparisons
@@ -713,8 +695,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     private function restoreNewObjectsInDirtyCollection(array $newObjects): void
     {
         $loadedObjects               = $this->collection->toArray();
-        $newObjectsByOid             = array_combine(array_map('spl_object_hash', $newObjects), $newObjects);
-        $loadedObjectsByOid          = array_combine(array_map('spl_object_hash', $loadedObjects), $loadedObjects);
+        $newObjectsByOid             = array_combine(array_map('spl_object_id', $newObjects), $newObjects);
+        $loadedObjectsByOid          = array_combine(array_map('spl_object_id', $loadedObjects), $loadedObjects);
         $newObjectsThatWereNotLoaded = array_diff_key($newObjectsByOid, $loadedObjectsByOid);
 
         if ($newObjectsThatWereNotLoaded) {

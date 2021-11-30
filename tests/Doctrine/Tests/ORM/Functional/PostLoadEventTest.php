@@ -34,9 +34,9 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
         // CmsUser and CmsAddres, because it's a ToOne inverse side on CmsUser
         $mockListener
-            ->expects($this->exactly(2))
+            ->expects(self::exactly(2))
             ->method('postLoad')
-            ->will($this->returnValue(true));
+            ->will(self::returnValue(true));
 
         $eventManager = $this->_em->getEventManager();
 
@@ -51,9 +51,9 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
         // CmsUser and CmsAddres, because it's a ToOne inverse side on CmsUser
         $mockListener
-            ->expects($this->exactly(2))
+            ->expects(self::exactly(2))
             ->method('postLoad')
-            ->will($this->returnValue(true));
+            ->will(self::returnValue(true));
 
         $eventManager = $this->_em->getEventManager();
 
@@ -71,9 +71,9 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
         // CmsUser (root), CmsAddress (ToOne inverse side), CmsEmail (joined association)
         $mockListener
-            ->expects($this->exactly(3))
+            ->expects(self::exactly(3))
             ->method('postLoad')
-            ->will($this->returnValue(true));
+            ->will(self::returnValue(true));
 
         $eventManager = $this->_em->getEventManager();
 
@@ -91,9 +91,9 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
         // CmsUser (root), CmsAddress (ToOne inverse side), 2 CmsPhonenumber (joined association)
         $mockListener
-            ->expects($this->exactly(4))
+            ->expects(self::exactly(4))
             ->method('postLoad')
-            ->will($this->returnValue(true));
+            ->will(self::returnValue(true));
 
         $eventManager = $this->_em->getEventManager();
 
@@ -113,9 +113,9 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $mockListener = $this->createMock(PostLoadListener::class);
 
         $mockListener
-            ->expects($this->never())
+            ->expects(self::never())
             ->method('postLoad')
-            ->will($this->returnValue(true));
+            ->will(self::returnValue(true));
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
@@ -127,9 +127,9 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $mockListener2 = $this->createMock(PostLoadListener::class);
 
         $mockListener2
-            ->expects($this->exactly(2))
+            ->expects(self::exactly(2))
             ->method('postLoad')
-            ->will($this->returnValue(true));
+            ->will(self::returnValue(true));
 
         $eventManager->addEventListener([Events::postLoad], $mockListener2);
 
@@ -145,9 +145,9 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
         // CmsUser (partially loaded), CmsAddress (inverse ToOne), 2 CmsPhonenumber
         $mockListener
-            ->expects($this->exactly(4))
+            ->expects(self::exactly(4))
             ->method('postLoad')
-            ->will($this->returnValue(true));
+            ->will(self::returnValue(true));
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
@@ -165,9 +165,9 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
         // CmsEmail (proxy)
         $mockListener
-            ->expects($this->exactly(1))
+            ->expects(self::exactly(1))
             ->method('postLoad')
-            ->will($this->returnValue(true));
+            ->will(self::returnValue(true));
 
         $eventManager = $this->_em->getEventManager();
 
@@ -186,9 +186,9 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
         // 2 CmsPhonenumber (proxy)
         $mockListener
-            ->expects($this->exactly(2))
+            ->expects(self::exactly(2))
             ->method('postLoad')
-            ->will($this->returnValue(true));
+            ->will(self::returnValue(true));
 
         $eventManager = $this->_em->getEventManager();
 
@@ -212,8 +212,8 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $qb->addSelect('email');
         $qb->getQuery()->getSingleResult();
 
-        $this->assertTrue($checkerListener->checked, 'postLoad event is not invoked');
-        $this->assertTrue($checkerListener->populated, 'Association of email is not populated in postLoad event');
+        self::assertTrue($checkerListener->checked, 'postLoad event is not invoked');
+        self::assertTrue($checkerListener->populated, 'Association of email is not populated in postLoad event');
     }
 
     /**
@@ -226,8 +226,8 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $eventManager->addEventListener([Events::postLoad], $listener);
 
         $this->_em->find(CmsUser::class, $this->userId);
-        $this->assertSame(1, $listener->countHandledEvents(CmsUser::class), CmsUser::class . ' should be handled once!');
-        $this->assertSame(1, $listener->countHandledEvents(CmsEmail::class), CmsEmail::class . ' should be handled once!');
+        self::assertSame(1, $listener->countHandledEvents(CmsUser::class), CmsUser::class . ' should be handled once!');
+        self::assertSame(1, $listener->countHandledEvents(CmsEmail::class), CmsEmail::class . ' should be handled once!');
     }
 
     private function loadFixture(): void

@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\ORM\Internal\Hydration\ScalarHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\Mocks\HydratorMockStatement;
+use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsUser;
 
 class ScalarHydratorTest extends HydrationTestCase
@@ -33,17 +33,17 @@ class ScalarHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockStatement($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ScalarHydrator($this->entityManager);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertIsArray($result);
-        $this->assertCount(2, $result);
-        $this->assertEquals('romanb', $result[0]['u_name']);
-        $this->assertEquals(1, $result[0]['u_id']);
-        $this->assertEquals('jwage', $result[1]['u_name']);
-        $this->assertEquals(2, $result[1]['u_id']);
+        self::assertIsArray($result);
+        self::assertCount(2, $result);
+        self::assertEquals('romanb', $result[0]['u_name']);
+        self::assertEquals(1, $result[0]['u_id']);
+        self::assertEquals('jwage', $result[1]['u_name']);
+        self::assertEquals(2, $result[1]['u_id']);
     }
 
     /**
@@ -64,7 +64,7 @@ class ScalarHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockStatement($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ScalarHydrator($this->entityManager);
 
         self::assertCount(1, $hydrator->hydrateAll($stmt, $rsm));
@@ -94,7 +94,7 @@ class ScalarHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = new HydratorMockStatement($resultSet);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ScalarHydrator($this->entityManager);
 
         self::assertCount(1, $hydrator->hydrateAll($stmt, $rsm));

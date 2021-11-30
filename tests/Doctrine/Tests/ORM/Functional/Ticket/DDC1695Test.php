@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -13,14 +19,14 @@ class DDC1695Test extends OrmFunctionalTestCase
 {
     public function testIssue(): void
     {
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'sqlite') {
-            $this->markTestSkipped('Only with sqlite');
+        if (! $this->_em->getConnection()->getDatabasePlatform() instanceof SqlitePlatform) {
+            self::markTestSkipped('Only with sqlite');
         }
 
         $dql = 'SELECT n.smallText, n.publishDate FROM ' . __NAMESPACE__ . '\\DDC1695News n';
         $sql = $this->_em->createQuery($dql)->getSQL();
 
-        $this->assertEquals(
+        self::assertEquals(
             'SELECT d0_."SmallText" AS SmallText_0, d0_."PublishDate" AS PublishDate_1 FROM "DDC1695News" d0_',
             $sql
         );

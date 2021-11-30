@@ -5,6 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use DateTime;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\MappedSuperclass;
+use Doctrine\ORM\Mapping\PrePersist;
+use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -30,7 +38,7 @@ class DDC2895Test extends OrmFunctionalTestCase
     {
         $cm = $this->_em->getClassMetadata(DDC2895::class);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'prePersist' => ['setLastModifiedPreUpdate'],
                 'preUpdate' => ['setLastModifiedPreUpdate'],
@@ -47,7 +55,7 @@ class DDC2895Test extends OrmFunctionalTestCase
         $ddc2895 = $this->_em->find(get_class($ddc2895), $ddc2895->id);
         assert($ddc2895 instanceof DDC2895);
 
-        $this->assertNotNull($ddc2895->getLastModified());
+        self::assertNotNull($ddc2895->getLastModified());
     }
 }
 

@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\SequenceGenerator;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -17,7 +22,7 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
         parent::setUp();
 
         if (! $this->_em->getConnection()->getDatabasePlatform()->supportsSequences()) {
-            $this->markTestSkipped('Only working for Databases that support sequences.');
+            self::markTestSkipped('Only working for Databases that support sequences.');
         }
 
         try {
@@ -50,7 +55,7 @@ class SequenceEntity
     /**
      * @var int
      * @Id
-     * @column(type="integer")
+     * @Column(type="integer")
      * @GeneratedValue(strategy="SEQUENCE")
      * @SequenceGenerator(allocationSize=5, sequenceName="person_id_seq")
      */

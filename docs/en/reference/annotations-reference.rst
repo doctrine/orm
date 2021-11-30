@@ -1,6 +1,11 @@
 Annotations Reference
 =====================
 
+.. note::
+
+    To be able to use annotations, you will have to install an extra
+    package called ``doctrine/annotations``.
+
 You've probably used docblock annotations in some form already,
 most likely to provide documentation metadata for a tool like
 ``PHPDocumentor`` (@author, @link, ...). Docblock annotations are a
@@ -13,12 +18,15 @@ chances of clashes with other docblock annotations, the Doctrine ORM
 docblock annotations feature an alternative syntax that is heavily
 inspired by the Annotation syntax introduced in Java 5.
 
-The implementation of these enhanced docblock annotations is
-located in the ``Doctrine\Common\Annotations`` namespace and
-therefore part of the Common package. Doctrine ORM docblock
-annotations support namespaces and nested annotations among other
-things. The Doctrine ORM ORM defines its own set of docblock
-annotations for supplying object-relational mapping metadata.
+The implementation of these enhanced docblock annotations is located in
+the ``doctrine/annotations`` package, but in the
+``Doctrine\Common\Annotations`` namespace for backwards compatibility
+reasons. Note that ``doctrine/annotations`` is not required by Doctrine
+ORM, and you will need to require that package if you want to use
+annotations. Doctrine ORM docblock annotations support namespaces and
+nested annotations among other things. The Doctrine ORM defines its
+own set of docblock annotations for supplying object-relational mapping
+metadata.
 
 .. note::
 
@@ -455,7 +463,7 @@ Optional attributes:
 
 
 -  **strategy**: Set the name of the identifier generation strategy.
-   Valid values are ``AUTO``, ``SEQUENCE``, ``TABLE``, ``IDENTITY``, ``UUID``, ``CUSTOM`` and ``NONE``, explained
+   Valid values are ``AUTO``, ``SEQUENCE``, ``IDENTITY``, ``UUID`` (deprecated), ``CUSTOM`` and ``NONE``, explained
    in the :ref:`Identifier Generation Strategies <identifier-generation-strategies>` section.
    If not specified, default value is AUTO.
 

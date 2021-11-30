@@ -1,10 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
@@ -54,7 +62,7 @@ class GH5887Test extends OrmFunctionalTestCase
             ->getOneOrNullResult();
         assert($customer instanceof GH5887Customer);
 
-        $this->assertInstanceOf(GH5887Cart::class, $customer->getCart());
+        self::assertInstanceOf(GH5887Cart::class, $customer->getCart());
     }
 }
 
@@ -187,7 +195,7 @@ class GH5887CustomIdObjectType extends StringType
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return new GH5887CustomIdObject($value);
+        return new GH5887CustomIdObject((int) $value);
     }
 
     /**

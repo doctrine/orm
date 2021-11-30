@@ -6,6 +6,11 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
@@ -26,7 +31,7 @@ class GH7869Test extends OrmTestCase
             ->setMethods(['getClassMetadata'])
             ->getMock();
 
-        $em->expects($this->exactly(2))
+        $em->expects(self::exactly(2))
             ->method('getClassMetadata')
             ->willReturnCallback([$decoratedEm, 'getClassMetadata']);
 

@@ -6,7 +6,18 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
-use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\Table as DbalTable;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -32,22 +43,22 @@ class DDC2138Test extends OrmFunctionalTestCase
         ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
-        $this->assertTrue($schema->hasTable('users_followed_objects'), 'Table users_followed_objects should exist.');
+        self::assertTrue($schema->hasTable('users_followed_objects'), 'Table users_followed_objects should exist.');
 
         $table = $schema->getTable('users_followed_objects');
-        assert($table instanceof Table);
-        $this->assertTrue($table->columnsAreIndexed(['object_id']));
-        $this->assertTrue($table->columnsAreIndexed(['user_id']));
+        assert($table instanceof DbalTable);
+        self::assertTrue($table->columnsAreIndexed(['object_id']));
+        self::assertTrue($table->columnsAreIndexed(['user_id']));
         $foreignKeys = $table->getForeignKeys();
-        $this->assertCount(1, $foreignKeys, 'user_id column has to have FK, but not object_id');
+        self::assertCount(1, $foreignKeys, 'user_id column has to have FK, but not object_id');
 
         $fk = reset($foreignKeys);
         assert($fk instanceof ForeignKeyConstraint);
-        $this->assertEquals('users', $fk->getForeignTableName());
+        self::assertEquals('users', $fk->getForeignTableName());
 
         $localColumns = $fk->getLocalColumns();
-        $this->assertContains('user_id', $localColumns);
-        $this->assertCount(1, $localColumns);
+        self::assertContains('user_id', $localColumns);
+        self::assertCount(1, $localColumns);
     }
 }
 

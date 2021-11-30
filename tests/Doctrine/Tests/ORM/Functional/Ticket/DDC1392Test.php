@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
@@ -43,10 +49,10 @@ class DDC1392Test extends OrmFunctionalTestCase
         $fileId    = $file->getFileId();
         $pictureId = $picture->getPictureId();
 
-        $this->assertTrue($fileId > 0);
+        self::assertTrue($fileId > 0);
 
         $picture = $em->find(DDC1392Picture::class, $pictureId);
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');
 
         $file = $picture->getFile();
 

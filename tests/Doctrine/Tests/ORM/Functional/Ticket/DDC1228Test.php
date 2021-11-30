@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -41,18 +46,18 @@ class DDC1228Test extends OrmFunctionalTestCase
 
         $user = $this->_em->find(DDC1228User::class, $user->id);
 
-        $this->assertFalse($user->getProfile()->__isInitialized__, 'Proxy is not initialized');
+        self::assertFalse($user->getProfile()->__isInitialized__, 'Proxy is not initialized');
         $user->getProfile()->setName('Bar');
-        $this->assertTrue($user->getProfile()->__isInitialized__, 'Proxy is not initialized');
+        self::assertTrue($user->getProfile()->__isInitialized__, 'Proxy is not initialized');
 
-        $this->assertEquals('Bar', $user->getProfile()->getName());
-        $this->assertEquals(['id' => 1, 'name' => 'Foo'], $this->_em->getUnitOfWork()->getOriginalEntityData($user->getProfile()));
+        self::assertEquals('Bar', $user->getProfile()->getName());
+        self::assertEquals(['id' => 1, 'name' => 'Foo'], $this->_em->getUnitOfWork()->getOriginalEntityData($user->getProfile()));
 
         $this->_em->flush();
         $this->_em->clear();
 
         $user = $this->_em->find(DDC1228User::class, $user->id);
-        $this->assertEquals('Bar', $user->getProfile()->getName());
+        self::assertEquals('Bar', $user->getProfile()->getName());
     }
 
     public function testRefresh(): void
@@ -75,7 +80,7 @@ class DDC1228Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $user = $this->_em->find(DDC1228User::class, $user->id);
-        $this->assertEquals('Baz', $user->name);
+        self::assertEquals('Baz', $user->name);
     }
 }
 
@@ -122,7 +127,7 @@ class DDC1228Profile
     public $id;
 
     /**
-     * @column(type="string")
+     * @Column(type="string")
      * @var string
      */
     public $name;

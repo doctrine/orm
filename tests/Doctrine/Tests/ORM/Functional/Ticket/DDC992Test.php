@@ -6,6 +6,18 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -47,11 +59,10 @@ class DDC992Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $child   = $this->_em->getRepository(get_class($role))->find($child->roleID);
-        $parents = count($child->extends);
-        $this->assertEquals(1, $parents);
+        $child = $this->_em->getRepository(get_class($role))->find($child->roleID);
+        self::assertCount(1, $child->extends);
         foreach ($child->extends as $parent) {
-            $this->assertEquals($role->getRoleID(), $parent->getRoleID());
+            self::assertEquals($role->getRoleID(), $parent->getRoleID());
         }
     }
 
@@ -71,21 +82,21 @@ class DDC992Test extends OrmFunctionalTestCase
         $childRepository  = $this->_em->getRepository(get_class($child));
 
         $parent = $parentRepository->find($parent->id);
-        $this->assertEquals(1, count($parent->childs));
-        $this->assertEquals(0, count($parent->childs[0]->childs()));
+        self::assertCount(1, $parent->childs);
+        self::assertCount(0, $parent->childs[0]->childs());
 
         $child = $parentRepository->findOneBy(['id' => $child->id]);
-        $this->assertSame($parent->childs[0], $child);
+        self::assertSame($parent->childs[0], $child);
 
         $this->_em->clear();
 
         $child = $parentRepository->find($child->id);
-        $this->assertEquals(0, count($child->childs));
+        self::assertCount(0, $child->childs);
 
         $this->_em->clear();
 
         $child = $childRepository->find($child->id);
-        $this->assertEquals(0, count($child->childs));
+        self::assertCount(0, $child->childs);
     }
 }
 

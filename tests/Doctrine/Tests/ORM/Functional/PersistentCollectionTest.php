@@ -8,6 +8,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\PersistentObject;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -45,7 +50,7 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         $content = new PersistentCollectionContent('second element');
         $collectionHolder->addElement($content);
 
-        $this->assertEquals(2, $collectionHolder->getCollection()->count());
+        self::assertEquals(2, $collectionHolder->getCollection()->count());
     }
 
     /**
@@ -62,8 +67,8 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
         $collection       = $collectionHolder->getRawCollection();
 
-        $this->assertTrue($collection->isEmpty());
-        $this->assertFalse($collection->isInitialized());
+        self::assertTrue($collection->isEmpty());
+        self::assertFalse($collection->isInitialized());
 
         $collectionHolder->addElement(new PersistentCollectionContent());
 
@@ -73,8 +78,8 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
         $collection       = $collectionHolder->getRawCollection();
 
-        $this->assertFalse($collection->isEmpty());
-        $this->assertFalse($collection->isInitialized());
+        self::assertFalse($collection->isEmpty());
+        self::assertFalse($collection->isInitialized());
     }
 
     /**
@@ -94,10 +99,10 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
         $collectionHolder->getCollection()->matching($criteria);
 
-        $this->assertEmpty($criteria->getWhereExpression());
-        $this->assertEmpty($criteria->getFirstResult());
-        $this->assertEmpty($criteria->getMaxResults());
-        $this->assertEmpty($criteria->getOrderings());
+        self::assertEmpty($criteria->getWhereExpression());
+        self::assertEmpty($criteria->getFirstResult());
+        self::assertEmpty($criteria->getMaxResults());
+        self::assertEmpty($criteria->getOrderings());
     }
 }
 

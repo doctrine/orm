@@ -6,6 +6,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -63,16 +69,16 @@ class DDC2306Test extends OrmFunctionalTestCase
         $user = $address->users->first()->user;
         assert($user instanceof DDC2306User || $user instanceof Proxy);
 
-        $this->assertInstanceOf(Proxy::class, $user);
-        $this->assertInstanceOf(DDC2306User::class, $user);
+        self::assertInstanceOf(Proxy::class, $user);
+        self::assertInstanceOf(DDC2306User::class, $user);
 
         $userId = $user->id;
 
-        $this->assertNotNull($userId);
+        self::assertNotNull($userId);
 
         $user->__load();
 
-        $this->assertEquals(
+        self::assertEquals(
             $userId,
             $user->id,
             'As of DDC-1734, the identifier is NULL for un-managed proxies. The identifier should be an integer here'

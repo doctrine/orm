@@ -7,6 +7,11 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -53,15 +58,15 @@ class DDC2579Test extends OrmFunctionalTestCase
         $criteria = ['assoc' => $assoc, 'id' => $id];
         $entity   = $repository->findOneBy($criteria);
 
-        $this->assertInstanceOf(DDC2579Entity::class, $entity);
-        $this->assertEquals($value, $entity->value);
+        self::assertInstanceOf(DDC2579Entity::class, $entity);
+        self::assertEquals($value, $entity->value);
 
         $this->_em->remove($entity);
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertNull($repository->findOneBy($criteria));
-        $this->assertCount(0, $repository->findAll());
+        self::assertNull($repository->findOneBy($criteria));
+        self::assertCount(0, $repository->findAll());
     }
 }
 

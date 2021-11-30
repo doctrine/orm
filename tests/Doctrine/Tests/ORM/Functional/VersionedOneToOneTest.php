@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity;
 use Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -56,8 +56,8 @@ class VersionedOneToOneTest extends OrmFunctionalTestCase
         $secondEntity = $this->_em->getRepository(SecondRelatedEntity::class)
             ->findOneBy(['name' => 'Bob']);
 
-        $this->assertSame($firstRelatedEntity, $firstEntity);
-        $this->assertSame($secondRelatedEntity, $secondEntity);
-        $this->assertSame($firstEntity->secondEntity, $secondEntity);
+        self::assertSame($firstRelatedEntity, $firstEntity);
+        self::assertSame($secondRelatedEntity, $secondEntity);
+        self::assertSame($firstEntity->secondEntity, $secondEntity);
     }
 }

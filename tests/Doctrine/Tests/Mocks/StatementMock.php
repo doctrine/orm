@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Driver\Statement;
+use EmptyIterator;
 use IteratorAggregate;
 use PDO;
+use Traversable;
 
 /**
  * This class is a mock of the Statement interface.
@@ -44,15 +47,14 @@ class StatementMock implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function execute($params = null)
+    public function execute($params = null): Result
     {
+        return new DriverResultMock();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rowCount()
+    public function rowCount(): int
     {
+        return 1;
     }
 
     /**
@@ -81,6 +83,7 @@ class StatementMock implements IteratorAggregate, Statement
      */
     public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
+        return false;
     }
 
     /**
@@ -97,10 +100,8 @@ class StatementMock implements IteratorAggregate, Statement
     {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
+        return new EmptyIterator();
     }
 }

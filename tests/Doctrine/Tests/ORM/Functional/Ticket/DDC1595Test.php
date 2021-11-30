@@ -6,6 +6,18 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Logging\DebugStack;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\OrderBy;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -53,7 +65,7 @@ class DDC1595Test extends OrmFunctionalTestCase
 
         $entities = $entity1->getEntities()->getValues();
 
-        $this->assertEquals(
+        self::assertEquals(
             "SELECT t0.id AS id_1, t0.type FROM base t0 INNER JOIN entity1_entity2 ON t0.id = entity1_entity2.item WHERE entity1_entity2.parent = ? AND t0.type IN ('Entity2')",
             $sqlLogger->queries[count($sqlLogger->queries)]['sql']
         );

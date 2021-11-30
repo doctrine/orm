@@ -1,22 +1,6 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
@@ -27,6 +11,7 @@ use Doctrine\Common\Cache\XcacheCache;
 use Doctrine\ORM\Tools\Console\Command\AbstractEntityManagerCommand;
 use InvalidArgumentException;
 use LogicException;
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -51,7 +36,7 @@ class QueryCommand extends AbstractEntityManagerCommand
              ->setDescription('Clear all query cache of the various cache drivers')
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, cache entries will be flushed instead of deleted/invalidated.')
-             ->setHelp(<<<EOT
+             ->setHelp(<<<'EOT'
 The <info>%command.name%</info> command is meant to clear the query cache of associated Entity Manager.
 It is possible to invalidate all cache entries at once - called delete -, or flushes the cache provider
 instance completely.
@@ -73,24 +58,27 @@ EOT
 
     /**
      * {@inheritdoc}
+     *
+     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $ui = new SymfonyStyle($input, $output);
 
         $em          = $this->getEntityManager($input);
+        $cache       = $em->getConfiguration()->getQueryCache();
         $cacheDriver = $em->getConfiguration()->getQueryCacheImpl();
 
         if (! $cacheDriver) {
             throw new InvalidArgumentException('No Query cache driver is configured on given EntityManager.');
         }
 
-        if ($cacheDriver instanceof ApcCache) {
-            throw new LogicException('Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.');
+        if ($cacheDriver instanceof ApcCache || $cache instanceof ApcuAdapter) {
+            throw new LogicException('Cannot clear APCu Cache from Console, it\'s shared in the Webserver memory and not accessible from the CLI.');
         }
 
         if ($cacheDriver instanceof XcacheCache) {
-            throw new LogicException('Cannot clear XCache Cache from Console, its shared in the Webserver memory and not accessible from the CLI.');
+            throw new LogicException('Cannot clear XCache Cache from Console, it\'s shared in the Webserver memory and not accessible from the CLI.');
         }
 
         if (! ($cacheDriver instanceof ClearableCache)) {
@@ -102,10 +90,10 @@ EOT
 
         $ui->comment('Clearing <info>all</info> Query cache entries');
 
-        $result  = $cacheDriver->deleteAll();
+        $result  = $cache ? $cache->clear() : $cacheDriver->deleteAll();
         $message = $result ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
 
-        if ($input->getOption('flush') === true) {
+        if ($input->getOption('flush') === true && ! $cache) {
             if (! ($cacheDriver instanceof FlushableCache)) {
                 throw new LogicException(sprintf(
                     'Can only clear cache when FlushableCache interface is implemented, %s does not implement.',

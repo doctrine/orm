@@ -5,6 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
@@ -33,7 +38,7 @@ class LanguageRecognitionTest extends OrmTestCase
                 echo $e->getTraceAsString() . PHP_EOL;
             }
 
-            $this->fail($e->getMessage());
+            self::fail($e->getMessage());
         }
     }
 
@@ -42,7 +47,7 @@ class LanguageRecognitionTest extends OrmTestCase
         try {
             $parserResult = $this->parseDql($dql);
 
-            $this->fail('No syntax errors were detected, when syntax errors were expected');
+            self::fail('No syntax errors were detected, when syntax errors were expected');
         } catch (QueryException $e) {
             if ($debug) {
                 echo $e->getMessage() . PHP_EOL;

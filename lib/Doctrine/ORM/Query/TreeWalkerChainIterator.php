@@ -1,28 +1,13 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
 use ArrayAccess;
 use Doctrine\ORM\AbstractQuery;
 use Iterator;
+use ReturnTypeWillChange;
 
 use function key;
 use function next;
@@ -58,6 +43,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
      * @return string|false
      * @psalm-return class-string<TreeWalker>|false
      */
+    #[ReturnTypeWillChange]
     public function rewind()
     {
         return reset($this->walkers);
@@ -66,6 +52,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
     /**
      * @return TreeWalker|null
      */
+    #[ReturnTypeWillChange]
     public function current()
     {
         return $this->offsetGet(key($this->walkers));
@@ -74,6 +61,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
     /**
      * @return int
      */
+    #[ReturnTypeWillChange]
     public function key()
     {
         return key($this->walkers);
@@ -82,6 +70,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
     /**
      * @return TreeWalker|null
      */
+    #[ReturnTypeWillChange]
     public function next()
     {
         next($this->walkers);
@@ -91,18 +80,25 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
 
     /**
      * {@inheritdoc}
+     *
+     * @return bool
      */
+    #[ReturnTypeWillChange]
     public function valid()
     {
         return key($this->walkers) !== null;
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $offset
+     * @psalm-param array-key|null $offset
+     *
+     * @return bool
      */
+    #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
-        return isset($this->walkers[$offset]);
+        return isset($this->walkers[$offset ?? '']);
     }
 
     /**
@@ -111,6 +107,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
      *
      * @return TreeWalker|null
      */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if ($this->offsetExists($offset)) {
@@ -129,7 +126,10 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
      *
      * @param string $value
      * @psalm-param array-key|null $offset
+     *
+     * @return void
      */
+    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if ($offset === null) {
@@ -140,12 +140,16 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $offset
+     * @psalm-param array-key|null $offset
+     *
+     * @return void
      */
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         if ($this->offsetExists($offset)) {
-            unset($this->walkers[$offset]);
+            unset($this->walkers[$offset ?? '']);
         }
     }
 }

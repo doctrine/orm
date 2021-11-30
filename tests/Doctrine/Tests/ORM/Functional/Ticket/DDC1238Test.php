@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -41,7 +45,7 @@ class DDC1238Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $userId2 = $user->getId();
-        $this->assertEquals($userId, $userId2, 'This proxy can still be initialized.');
+        self::assertEquals($userId, $userId2, 'This proxy can still be initialized.');
     }
 
     public function testIssueProxyClear(): void
@@ -65,7 +69,7 @@ class DDC1238Test extends OrmFunctionalTestCase
 
         // force proxy load, getId() doesn't work anymore
         $user->getName();
-        $this->assertNull($user->getId(), 'Now this is null, we already have a user instance of that type');
+        self::assertNull($user->getId(), 'Now this is null, we already have a user instance of that type');
     }
 }
 

@@ -13,14 +13,12 @@
 
     <file>lib</file>
     <file>tests</file>
-    <file>tools</file>
 
     <exclude-pattern>*/lib/Doctrine/ORM/Mapping/InverseJoinColumn.php</exclude-pattern>
     <exclude-pattern>*/tests/Doctrine/Tests/Proxies/__CG__*</exclude-pattern>
     <exclude-pattern>*/tests/Doctrine/Tests/ORM/Tools/Export/export/*</exclude-pattern>
 
     <rule ref="Doctrine">
-        <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes"/>
         <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint" />
         <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint"/>
         <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint" />
@@ -204,7 +202,6 @@
         <!-- https://github.com/squizlabs/PHP_CodeSniffer/issues/1961 -->
         <exclude-pattern>tests/Doctrine/Tests/Mocks/DatabasePlatformMock.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/Mocks/DriverMock.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/Mocks/SequenceMock.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/UnitOfWorkTest.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Query/DeleteSqlGenerationTest.php</exclude-pattern>
     </rule>
@@ -234,6 +231,7 @@
 
     <rule ref="Squiz.NamingConventions.ValidVariableName.PublicHasUnderscore">
         <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Configuration.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/EntityRepository.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php</exclude-pattern>
@@ -247,7 +245,6 @@
         <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php</exclude-pattern>
         <!-- the impact of changing this would be too big -->
-        <exclude-pattern>tests/Doctrine/Tests/DbalFunctionalTestCase.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/OrmFunctionalTestCase.php</exclude-pattern>
     </rule>
     <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps">

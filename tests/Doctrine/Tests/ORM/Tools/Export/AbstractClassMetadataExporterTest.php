@@ -73,7 +73,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
             'yaml'       => YamlDriver::class,
         ];
 
-        $this->assertArrayHasKey($type, $mappingDriver, "There is no metadata driver for the type '" . $type . "'.");
+        self::assertArrayHasKey($type, $mappingDriver, "There is no metadata driver for the type '" . $type . "'.");
 
         $class = $mappingDriver[$type];
 
@@ -105,7 +105,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 
         $metadata[0]->name = ExportedUser::class;
 
-        $this->assertEquals(ExportedUser::class, $metadata[0]->name);
+        self::assertEquals(ExportedUser::class, $metadata[0]->name);
 
         $type     = $this->getType();
         $cme      = new ClassMetadataExporter();
@@ -114,7 +114,6 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         if ($type === 'annotation') {
             $entityGenerator = new EntityGenerator();
 
-            $entityGenerator->setAnnotationPrefix('');
             $exporter->setEntityGenerator($entityGenerator);
         }
 
@@ -124,9 +123,9 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         $exporter->export();
 
         if ($type === 'annotation') {
-            $this->assertTrue(file_exists(__DIR__ . '/export/' . $type . '/' . str_replace('\\', '/', ExportedUser::class) . $this->extension));
+            self::assertFileExists(__DIR__ . '/export/' . $type . '/' . str_replace('\\', '/', ExportedUser::class) . $this->extension);
         } else {
-            $this->assertTrue(file_exists(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.ExportedUser' . $this->extension));
+            self::assertFileExists(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.ExportedUser' . $this->extension);
         }
     }
 
@@ -142,11 +141,11 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         $cmf            = $this->createClassMetadataFactory($em, $type);
         $metadata       = $cmf->getAllMetadata();
 
-        $this->assertEquals(1, count($metadata));
+        self::assertCount(1, $metadata);
 
         $class = current($metadata);
 
-        $this->assertEquals(ExportedUser::class, $class->name);
+        self::assertEquals(ExportedUser::class, $class->name);
 
         return $class;
     }
@@ -156,8 +155,8 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testTableIsExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
-        $this->assertEquals('cms_users', $class->table['name']);
-        $this->assertEquals(
+        self::assertEquals('cms_users', $class->table['name']);
+        self::assertEquals(
             ['engine' => 'MyISAM', 'foo' => ['bar' => 'baz']],
             $class->table['options']
         );
@@ -170,7 +169,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testTypeIsExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
-        $this->assertFalse($class->isMappedSuperclass);
+        self::assertFalse($class->isMappedSuperclass);
 
         return $class;
     }
@@ -180,9 +179,9 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testIdentifierIsExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
-        $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_IDENTITY, $class->generatorType, 'Generator Type wrong');
-        $this->assertEquals(['id'], $class->identifier);
-        $this->assertTrue(isset($class->fieldMappings['id']['id']) && $class->fieldMappings['id']['id'] === true);
+        self::assertEquals(ClassMetadataInfo::GENERATOR_TYPE_IDENTITY, $class->generatorType, 'Generator Type wrong');
+        self::assertEquals(['id'], $class->identifier);
+        self::assertTrue(isset($class->fieldMappings['id']['id']) && $class->fieldMappings['id']['id'] === true);
 
         return $class;
     }
@@ -192,22 +191,22 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testFieldsAreExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
-        $this->assertTrue(isset($class->fieldMappings['id']['id']) && $class->fieldMappings['id']['id'] === true);
-        $this->assertEquals('id', $class->fieldMappings['id']['fieldName']);
-        $this->assertEquals('integer', $class->fieldMappings['id']['type']);
-        $this->assertEquals('id', $class->fieldMappings['id']['columnName']);
+        self::assertTrue(isset($class->fieldMappings['id']['id']) && $class->fieldMappings['id']['id'] === true);
+        self::assertEquals('id', $class->fieldMappings['id']['fieldName']);
+        self::assertEquals('integer', $class->fieldMappings['id']['type']);
+        self::assertEquals('id', $class->fieldMappings['id']['columnName']);
 
-        $this->assertEquals('name', $class->fieldMappings['name']['fieldName']);
-        $this->assertEquals('string', $class->fieldMappings['name']['type']);
-        $this->assertEquals(50, $class->fieldMappings['name']['length']);
-        $this->assertEquals('name', $class->fieldMappings['name']['columnName']);
+        self::assertEquals('name', $class->fieldMappings['name']['fieldName']);
+        self::assertEquals('string', $class->fieldMappings['name']['type']);
+        self::assertEquals(50, $class->fieldMappings['name']['length']);
+        self::assertEquals('name', $class->fieldMappings['name']['columnName']);
 
-        $this->assertEquals('email', $class->fieldMappings['email']['fieldName']);
-        $this->assertEquals('string', $class->fieldMappings['email']['type']);
-        $this->assertEquals('user_email', $class->fieldMappings['email']['columnName']);
-        $this->assertEquals('CHAR(32) NOT NULL', $class->fieldMappings['email']['columnDefinition']);
+        self::assertEquals('email', $class->fieldMappings['email']['fieldName']);
+        self::assertEquals('string', $class->fieldMappings['email']['type']);
+        self::assertEquals('user_email', $class->fieldMappings['email']['columnName']);
+        self::assertEquals('CHAR(32) NOT NULL', $class->fieldMappings['email']['columnDefinition']);
 
-        $this->assertEquals(true, $class->fieldMappings['age']['options']['unsigned']);
+        self::assertTrue($class->fieldMappings['age']['options']['unsigned']);
 
         return $class;
     }
@@ -224,12 +223,12 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 
             $xml->registerXPathNamespace('d', 'http://doctrine-project.org/schemas/orm/doctrine-mapping');
             $nodes = $xml->xpath("/d:doctrine-mapping/d:entity/d:field[@name='name' and @type='string' and @nullable='true']");
-            $this->assertEquals(1, count($nodes));
+            self::assertEquals(1, count($nodes));
 
             $nodes = $xml->xpath("/d:doctrine-mapping/d:entity/d:field[@name='name' and @type='string' and @unique='true']");
-            $this->assertEquals(1, count($nodes));
+            self::assertEquals(1, count($nodes));
         } else {
-            $this->markTestSkipped('Test not available for ' . $type . ' driver');
+            self::markTestSkipped('Test not available for ' . $type . ' driver');
         }
     }
 
@@ -238,19 +237,19 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testOneToOneAssociationsAreExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
-        $this->assertTrue(isset($class->associationMappings['address']));
-        $this->assertEquals(Address::class, $class->associationMappings['address']['targetEntity']);
-        $this->assertEquals('address_id', $class->associationMappings['address']['joinColumns'][0]['name']);
-        $this->assertEquals('id', $class->associationMappings['address']['joinColumns'][0]['referencedColumnName']);
-        $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
+        self::assertTrue(isset($class->associationMappings['address']));
+        self::assertEquals(Address::class, $class->associationMappings['address']['targetEntity']);
+        self::assertEquals('address_id', $class->associationMappings['address']['joinColumns'][0]['name']);
+        self::assertEquals('id', $class->associationMappings['address']['joinColumns'][0]['referencedColumnName']);
+        self::assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
 
-        $this->assertTrue($class->associationMappings['address']['isCascadeRemove']);
-        $this->assertTrue($class->associationMappings['address']['isCascadePersist']);
-        $this->assertFalse($class->associationMappings['address']['isCascadeRefresh']);
-        $this->assertFalse($class->associationMappings['address']['isCascadeMerge']);
-        $this->assertFalse($class->associationMappings['address']['isCascadeDetach']);
-        $this->assertTrue($class->associationMappings['address']['orphanRemoval']);
-        $this->assertEquals(ClassMetadataInfo::FETCH_EAGER, $class->associationMappings['address']['fetch']);
+        self::assertTrue($class->associationMappings['address']['isCascadeRemove']);
+        self::assertTrue($class->associationMappings['address']['isCascadePersist']);
+        self::assertFalse($class->associationMappings['address']['isCascadeRefresh']);
+        self::assertFalse($class->associationMappings['address']['isCascadeMerge']);
+        self::assertFalse($class->associationMappings['address']['isCascadeDetach']);
+        self::assertTrue($class->associationMappings['address']['orphanRemoval']);
+        self::assertEquals(ClassMetadataInfo::FETCH_EAGER, $class->associationMappings['address']['fetch']);
 
         return $class;
     }
@@ -260,8 +259,8 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testManyToOneAssociationsAreExported($class): void
     {
-        $this->assertTrue(isset($class->associationMappings['mainGroup']));
-        $this->assertEquals(Group::class, $class->associationMappings['mainGroup']['targetEntity']);
+        self::assertTrue(isset($class->associationMappings['mainGroup']));
+        self::assertEquals(Group::class, $class->associationMappings['mainGroup']['targetEntity']);
     }
 
     /**
@@ -269,18 +268,18 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testOneToManyAssociationsAreExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
-        $this->assertTrue(isset($class->associationMappings['phonenumbers']));
-        $this->assertEquals(Phonenumber::class, $class->associationMappings['phonenumbers']['targetEntity']);
-        $this->assertEquals('user', $class->associationMappings['phonenumbers']['mappedBy']);
-        $this->assertEquals(['number' => 'ASC'], $class->associationMappings['phonenumbers']['orderBy']);
+        self::assertTrue(isset($class->associationMappings['phonenumbers']));
+        self::assertEquals(Phonenumber::class, $class->associationMappings['phonenumbers']['targetEntity']);
+        self::assertEquals('user', $class->associationMappings['phonenumbers']['mappedBy']);
+        self::assertEquals(['number' => 'ASC'], $class->associationMappings['phonenumbers']['orderBy']);
 
-        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
-        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
-        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
-        $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
-        $this->assertEquals(ClassMetadataInfo::FETCH_LAZY, $class->associationMappings['phonenumbers']['fetch']);
+        self::assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
+        self::assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
+        self::assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
+        self::assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
+        self::assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
+        self::assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
+        self::assertEquals(ClassMetadataInfo::FETCH_LAZY, $class->associationMappings['phonenumbers']['fetch']);
 
         return $class;
     }
@@ -290,23 +289,23 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testManyToManyAssociationsAreExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
-        $this->assertTrue(isset($class->associationMappings['groups']));
-        $this->assertEquals(Group::class, $class->associationMappings['groups']['targetEntity']);
-        $this->assertEquals('cms_users_groups', $class->associationMappings['groups']['joinTable']['name']);
+        self::assertTrue(isset($class->associationMappings['groups']));
+        self::assertEquals(Group::class, $class->associationMappings['groups']['targetEntity']);
+        self::assertEquals('cms_users_groups', $class->associationMappings['groups']['joinTable']['name']);
 
-        $this->assertEquals('user_id', $class->associationMappings['groups']['joinTable']['joinColumns'][0]['name']);
-        $this->assertEquals('id', $class->associationMappings['groups']['joinTable']['joinColumns'][0]['referencedColumnName']);
+        self::assertEquals('user_id', $class->associationMappings['groups']['joinTable']['joinColumns'][0]['name']);
+        self::assertEquals('id', $class->associationMappings['groups']['joinTable']['joinColumns'][0]['referencedColumnName']);
 
-        $this->assertEquals('group_id', $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['name']);
-        $this->assertEquals('id', $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['referencedColumnName']);
-        $this->assertEquals('INT NULL', $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['columnDefinition']);
+        self::assertEquals('group_id', $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['name']);
+        self::assertEquals('id', $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['referencedColumnName']);
+        self::assertEquals('INT NULL', $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['columnDefinition']);
 
-        $this->assertTrue($class->associationMappings['groups']['isCascadeRemove']);
-        $this->assertTrue($class->associationMappings['groups']['isCascadePersist']);
-        $this->assertTrue($class->associationMappings['groups']['isCascadeRefresh']);
-        $this->assertTrue($class->associationMappings['groups']['isCascadeMerge']);
-        $this->assertTrue($class->associationMappings['groups']['isCascadeDetach']);
-        $this->assertEquals(ClassMetadataInfo::FETCH_EXTRA_LAZY, $class->associationMappings['groups']['fetch']);
+        self::assertTrue($class->associationMappings['groups']['isCascadeRemove']);
+        self::assertTrue($class->associationMappings['groups']['isCascadePersist']);
+        self::assertTrue($class->associationMappings['groups']['isCascadeRefresh']);
+        self::assertTrue($class->associationMappings['groups']['isCascadeMerge']);
+        self::assertTrue($class->associationMappings['groups']['isCascadeDetach']);
+        self::assertEquals(ClassMetadataInfo::FETCH_EXTRA_LAZY, $class->associationMappings['groups']['fetch']);
 
         return $class;
     }
@@ -316,14 +315,14 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testLifecycleCallbacksAreExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
-        $this->assertTrue(isset($class->lifecycleCallbacks['prePersist']));
-        $this->assertEquals(2, count($class->lifecycleCallbacks['prePersist']));
-        $this->assertEquals('doStuffOnPrePersist', $class->lifecycleCallbacks['prePersist'][0]);
-        $this->assertEquals('doOtherStuffOnPrePersistToo', $class->lifecycleCallbacks['prePersist'][1]);
+        self::assertTrue(isset($class->lifecycleCallbacks['prePersist']));
+        self::assertCount(2, $class->lifecycleCallbacks['prePersist']);
+        self::assertEquals('doStuffOnPrePersist', $class->lifecycleCallbacks['prePersist'][0]);
+        self::assertEquals('doOtherStuffOnPrePersistToo', $class->lifecycleCallbacks['prePersist'][1]);
 
-        $this->assertTrue(isset($class->lifecycleCallbacks['postPersist']));
-        $this->assertEquals(1, count($class->lifecycleCallbacks['postPersist']));
-        $this->assertEquals('doStuffOnPostPersist', $class->lifecycleCallbacks['postPersist'][0]);
+        self::assertTrue(isset($class->lifecycleCallbacks['postPersist']));
+        self::assertCount(1, $class->lifecycleCallbacks['postPersist']);
+        self::assertEquals('doStuffOnPostPersist', $class->lifecycleCallbacks['postPersist'][0]);
 
         return $class;
     }
@@ -333,12 +332,12 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testCascadeIsExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
-        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
-        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
-        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
-        $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
+        self::assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
+        self::assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
+        self::assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
+        self::assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
+        self::assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
+        self::assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
 
         return $class;
     }
@@ -348,7 +347,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testInversedByIsExported(ClassMetadataInfo $class): void
     {
-        $this->assertEquals('user', $class->associationMappings['address']['inversedBy']);
+        self::assertEquals('user', $class->associationMappings['address']['inversedBy']);
     }
 
     /**
@@ -363,18 +362,18 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 
             $xml->registerXPathNamespace('d', 'http://doctrine-project.org/schemas/orm/doctrine-mapping');
             $nodes = $xml->xpath("/d:doctrine-mapping/d:entity/d:one-to-many[@field='interests']/d:cascade/d:*");
-            $this->assertEquals(1, count($nodes));
+            self::assertEquals(1, count($nodes));
 
-            $this->assertEquals('cascade-all', $nodes[0]->getName());
+            self::assertEquals('cascade-all', $nodes[0]->getName());
         } elseif ($type === 'yaml') {
             $yaml  = new Parser();
             $value = $yaml->parse(file_get_contents(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.yml'));
 
-            $this->assertTrue(isset($value[ExportedUser::class]['oneToMany']['interests']['cascade']));
-            $this->assertEquals(1, count($value[ExportedUser::class]['oneToMany']['interests']['cascade']));
-            $this->assertEquals('all', $value[ExportedUser::class]['oneToMany']['interests']['cascade'][0]);
+            self::assertTrue(isset($value[ExportedUser::class]['oneToMany']['interests']['cascade']));
+            self::assertEquals(1, count($value[ExportedUser::class]['oneToMany']['interests']['cascade']));
+            self::assertEquals('all', $value[ExportedUser::class]['oneToMany']['interests']['cascade'][0]);
         } else {
-            $this->markTestSkipped('Test not available for ' . $type . ' driver');
+            self::markTestSkipped('Test not available for ' . $type . ' driver');
         }
     }
 
@@ -383,17 +382,17 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testEntityListenersAreExported(ClassMetadata $class): void
     {
-        $this->assertNotEmpty($class->entityListeners);
-        $this->assertCount(2, $class->entityListeners[Events::prePersist]);
-        $this->assertCount(2, $class->entityListeners[Events::postPersist]);
-        $this->assertEquals(UserListener::class, $class->entityListeners[Events::prePersist][0]['class']);
-        $this->assertEquals('customPrePersist', $class->entityListeners[Events::prePersist][0]['method']);
-        $this->assertEquals(GroupListener::class, $class->entityListeners[Events::prePersist][1]['class']);
-        $this->assertEquals('prePersist', $class->entityListeners[Events::prePersist][1]['method']);
-        $this->assertEquals(UserListener::class, $class->entityListeners[Events::postPersist][0]['class']);
-        $this->assertEquals('customPostPersist', $class->entityListeners[Events::postPersist][0]['method']);
-        $this->assertEquals(AddressListener::class, $class->entityListeners[Events::postPersist][1]['class']);
-        $this->assertEquals('customPostPersist', $class->entityListeners[Events::postPersist][1]['method']);
+        self::assertNotEmpty($class->entityListeners);
+        self::assertCount(2, $class->entityListeners[Events::prePersist]);
+        self::assertCount(2, $class->entityListeners[Events::postPersist]);
+        self::assertEquals(UserListener::class, $class->entityListeners[Events::prePersist][0]['class']);
+        self::assertEquals('customPrePersist', $class->entityListeners[Events::prePersist][0]['method']);
+        self::assertEquals(GroupListener::class, $class->entityListeners[Events::prePersist][1]['class']);
+        self::assertEquals('prePersist', $class->entityListeners[Events::prePersist][1]['method']);
+        self::assertEquals(UserListener::class, $class->entityListeners[Events::postPersist][0]['class']);
+        self::assertEquals('customPostPersist', $class->entityListeners[Events::postPersist][0]['method']);
+        self::assertEquals(AddressListener::class, $class->entityListeners[Events::postPersist][1]['class']);
+        self::assertEquals('customPostPersist', $class->entityListeners[Events::postPersist][1]['method']);
     }
 
     protected function deleteDirectory(string $path): void

@@ -35,6 +35,6 @@ class JoinedSubClassPersisterTest extends OrmTestCase
      */
     public function testExecuteInsertsWillReturnEmptySetWithNoQueuedInserts(): void
     {
-        $this->assertSame([], $this->persister->executeInserts());
+        self::assertSame([], $this->persister->executeInserts());
     }
 }

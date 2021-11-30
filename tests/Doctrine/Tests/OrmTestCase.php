@@ -39,9 +39,9 @@ abstract class OrmTestCase extends DoctrineTestCase
     /**
      * The query cache that is shared between all ORM tests (except functional tests).
      *
-     * @var Cache|null
+     * @var CacheItemPoolInterface|null
      */
-    private static $_queryCacheImpl = null;
+    private static $queryCache = null;
 
     /** @var bool */
     protected $isSecondLevelCacheEnabled = false;
@@ -64,9 +64,7 @@ abstract class OrmTestCase extends DoctrineTestCase
     protected function createAnnotationDriver(array $paths = [], $alias = null): AnnotationDriver
     {
         // Register the ORM Annotations in the AnnotationRegistry
-        $reader = new Annotations\SimpleAnnotationReader();
-
-        $reader->addNamespace('Doctrine\ORM\Mapping');
+        $reader = new Annotations\AnnotationReader();
 
         if (class_exists(Annotations\PsrCachedReader::class)) {
             $reader = new Annotations\PsrCachedReader($reader, new ArrayAdapter());
@@ -103,15 +101,15 @@ abstract class OrmTestCase extends DoctrineTestCase
         $config = new Configuration();
 
         $config->setMetadataCache($metadataCache);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], true));
-        $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
+        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], false));
+        $config->setQueryCache(self::getSharedQueryCache());
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
             [
                 realpath(__DIR__ . '/Models/Cache'),
             ],
-            true
+            false
         ));
 
         if ($this->isSecondLevelCacheEnabled) {
@@ -157,13 +155,13 @@ abstract class OrmTestCase extends DoctrineTestCase
         return self::$_metadataCache;
     }
 
-    private static function getSharedQueryCacheImpl(): Cache
+    private static function getSharedQueryCache(): CacheItemPoolInterface
     {
-        if (self::$_queryCacheImpl === null) {
-            self::$_queryCacheImpl = DoctrineProvider::wrap(new ArrayAdapter());
+        if (self::$queryCache === null) {
+            self::$queryCache = new ArrayAdapter();
         }
 
-        return self::$_queryCacheImpl;
+        return self::$queryCache;
     }
 
     protected function getSharedSecondLevelCacheDriverImpl(): Cache

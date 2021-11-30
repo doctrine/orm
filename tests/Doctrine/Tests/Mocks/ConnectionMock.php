@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
+use BadMethodCallException;
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
-use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Result;
 use Exception;
 
 use function is_string;
+use function sprintf;
 
 /**
  * Mock class for Connection.
@@ -25,7 +28,7 @@ class ConnectionMock extends Connection
     /** @var Exception|null */
     private $_fetchOneException;
 
-    /** @var Statement|null */
+    /** @var Result|null */
     private $_queryResult;
 
     /** @var DatabasePlatformMock */
@@ -38,19 +41,24 @@ class ConnectionMock extends Connection
     private $_inserts = [];
 
     /** @var array */
-    private $_executeUpdates = [];
+    private $_executeStatements = [];
 
     /** @var array */
     private $_deletes = [];
 
-    public function __construct(array $params, Driver $driver, ?Configuration $config = null, ?EventManager $eventManager = null)
+    public function __construct(array $params = [], ?Driver $driver = null, ?Configuration $config = null, ?EventManager $eventManager = null)
     {
         $this->_platformMock = new DatabasePlatformMock();
 
-        parent::__construct($params, $driver, $config, $eventManager);
+        parent::__construct($params, $driver ?? new DriverMock(), $config, $eventManager);
 
         // Override possible assignment of platform to database platform mock
         $this->_platform = $this->_platformMock;
+    }
+
+    public function getDatabase(): string
+    {
+        return 'mock';
     }
 
     /**
@@ -72,9 +80,19 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function executeUpdate($query, array $params = [], array $types = [])
+    public function executeUpdate($query, array $params = [], array $types = []): int
     {
-        $this->_executeUpdates[] = ['query' => $query, 'params' => $params, 'types' => $types];
+        throw new BadMethodCallException(sprintf('Call to deprecated method %s().', __METHOD__));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function executeStatement($sql, array $params = [], array $types = []): int
+    {
+        $this->_executeStatements[] = ['sql' => $sql, 'params' => $params, 'types' => $types];
+
+        return 1;
     }
 
     /**
@@ -96,7 +114,7 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function fetchColumn($statement, array $params = [], $colnum = 0, array $types = [])
+    public function fetchOne(string $sql, array $params = [], array $types = [])
     {
         if ($this->_fetchOneException !== null) {
             throw $this->_fetchOneException;
@@ -105,9 +123,22 @@ class ConnectionMock extends Connection
         return $this->_fetchOneResult;
     }
 
-    public function query(): Statement
+    /**
+     * {@inheritdoc}
+     */
+    public function fetchColumn($statement, array $params = [], $colunm = 0, array $types = [])
     {
-        return $this->_queryResult;
+        throw new BadMethodCallException('Call to deprecated method.');
+    }
+
+    public function query(?string $sql = null): Result
+    {
+        throw new BadMethodCallException('Call to deprecated method.');
+    }
+
+    public function executeQuery($sql, array $params = [], $types = [], ?QueryCacheProfile $qcp = null): Result
+    {
+        return $this->_queryResult ?? parent::executeQuery($sql, $params, $types, $qcp);
     }
 
     /**
@@ -147,7 +178,7 @@ class ConnectionMock extends Connection
         $this->_lastInsertId = $id;
     }
 
-    public function setQueryResult(Statement $result): void
+    public function setQueryResult(Result $result): void
     {
         $this->_queryResult = $result;
     }
@@ -163,9 +194,9 @@ class ConnectionMock extends Connection
     /**
      * @return array
      */
-    public function getExecuteUpdates(): array
+    public function getExecuteStatements(): array
     {
-        return $this->_executeUpdates;
+        return $this->_executeStatements;
     }
 
     /**

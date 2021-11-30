@@ -5,6 +5,17 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -46,12 +57,12 @@ class DDC199Test extends OrmFunctionalTestCase
         $query  = $this->_em->createQuery('select e,r from Doctrine\Tests\ORM\Functional\Ticket\DDC199ParentClass e join e.relatedEntities r');
         $result = $query->getResult();
 
-        $this->assertEquals(1, count($result));
-        $this->assertInstanceOf(DDC199ParentClass::class, $result[0]);
-        $this->assertTrue($result[0]->relatedEntities->isInitialized());
-        $this->assertEquals(2, $result[0]->relatedEntities->count());
-        $this->assertInstanceOf(DDC199RelatedClass::class, $result[0]->relatedEntities[0]);
-        $this->assertInstanceOf(DDC199RelatedClass::class, $result[0]->relatedEntities[1]);
+        self::assertCount(1, $result);
+        self::assertInstanceOf(DDC199ParentClass::class, $result[0]);
+        self::assertTrue($result[0]->relatedEntities->isInitialized());
+        self::assertEquals(2, $result[0]->relatedEntities->count());
+        self::assertInstanceOf(DDC199RelatedClass::class, $result[0]->relatedEntities[0]);
+        self::assertInstanceOf(DDC199RelatedClass::class, $result[0]->relatedEntities[1]);
     }
 }
 

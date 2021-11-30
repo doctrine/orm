@@ -1,22 +1,6 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
@@ -35,6 +19,7 @@ use Doctrine\Persistence\ObjectManager;
  * EntityManager interface
  *
  * @method Mapping\ClassMetadataFactory getMetadataFactory()
+ * @method mixed wrapInTransaction(callable $func)
  */
 interface EntityManagerInterface extends ObjectManager
 {
@@ -96,11 +81,31 @@ interface EntityManagerInterface extends ObjectManager
      * If an exception occurs during execution of the function or flushing or transaction commit,
      * the transaction is rolled back, the EntityManager closed and the exception re-thrown.
      *
+     * @deprecated 2.10 Use {@link wrapInTransaction} instead.
+     *
      * @param callable $func The function to execute transactionally.
      *
      * @return mixed The non-empty value returned from the closure or true instead.
      */
     public function transactional($func);
+
+    /**
+     * Executes a function in a transaction.
+     *
+     * The function gets passed this EntityManager instance as an (optional) parameter.
+     *
+     * {@link flush} is invoked prior to transaction commit.
+     *
+     * If an exception occurs during execution of the function or flushing or transaction commit,
+     * the transaction is rolled back, the EntityManager closed and the exception re-thrown.
+     *
+     * @param callable(self): T $func The function to execute transactionally.
+     *
+     * @return T The value returned from the closure.
+     *
+     * @template T
+     */
+    // public function wrapInTransaction(callable $func);
 
     /**
      * Commits a transaction on the underlying database connection.
@@ -169,7 +174,7 @@ interface EntityManagerInterface extends ObjectManager
      * @psalm-param class-string<T> $entityName
      *
      * @return object|null The entity reference.
-     * @psalm-return ?T
+     * @psalm-return T|null
      *
      * @throws ORMException
      *
@@ -194,8 +199,12 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param string $entityName The name of the entity type.
      * @param mixed  $identifier The entity identifier.
+     * @psalm-param class-string<T> $entityName
      *
-     * @return object|null The (partial) entity reference.
+     * @return object|null The (partial) entity reference
+     * @psalm-return T|null
+     *
+     * @template T
      */
     public function getPartialReference($entityName, $identifier);
 
@@ -325,7 +334,7 @@ interface EntityManagerInterface extends ObjectManager
      * @return Mapping\ClassMetadata
      * @psalm-return Mapping\ClassMetadata<T>
      *
-     * @template T of object
+     * @psalm-template T of object
      */
     public function getClassMetadata($className);
 }

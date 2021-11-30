@@ -1,22 +1,6 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
@@ -230,7 +214,7 @@ class Parser
      */
     private $customOutputWalker;
 
-    /** @psalm-var list<AST\SelectExpression> */
+    /** @psalm-var array<string, AST\SelectExpression> */
     private $identVariableExpressions = [];
 
     /**
@@ -479,7 +463,7 @@ class Parser
             }
 
             $expr = $this->identVariableExpressions[$dqlAlias];
-            $key  = array_search($expr, $AST->selectClause->selectExpressions);
+            $key  = array_search($expr, $AST->selectClause->selectExpressions, true);
 
             unset($AST->selectClause->selectExpressions[$key]);
 
@@ -511,7 +495,7 @@ class Parser
         $message .= $expected !== '' ? sprintf('Expected %s, got ', $expected) : 'Unexpected ';
         $message .= $this->lexer->lookahead === null ? 'end of string.' : sprintf("'%s'", $token['value']);
 
-        throw QueryException::syntaxError($message, QueryException::dqlError($this->query->getDQL()));
+        throw QueryException::syntaxError($message, QueryException::dqlError($this->query->getDQL() ?? ''));
     }
 
     /**
@@ -528,7 +512,7 @@ class Parser
     public function semanticalError($message = '', $token = null)
     {
         if ($token === null) {
-            $token = $this->lexer->lookahead ?? ['position' => null];
+            $token = $this->lexer->lookahead ?? ['position' => 0];
         }
 
         // Minimum exposed chars ahead of token
@@ -541,7 +525,7 @@ class Parser
         $pos    = strpos($dql, ' ', $length > $pos ? $pos : $length);
         $length = $pos !== false ? $pos - $token['position'] : $distance;
 
-        $tokenPos = isset($token['position']) && $token['position'] > 0 ? $token['position'] : '-1';
+        $tokenPos = $token['position'] > 0 ? $token['position'] : '-1';
         $tokenStr = substr($dql, $token['position'], $length);
 
         // Building informative message
@@ -594,7 +578,7 @@ class Parser
      */
     private function isMathOperator(?array $token): bool
     {
-        return $token !== null && in_array($token['type'], [Lexer::T_PLUS, Lexer::T_MINUS, Lexer::T_DIVIDE, Lexer::T_MULTIPLY]);
+        return $token !== null && in_array($token['type'], [Lexer::T_PLUS, Lexer::T_MINUS, Lexer::T_DIVIDE, Lexer::T_MULTIPLY], true);
     }
 
     /**
@@ -623,7 +607,8 @@ class Parser
     {
         return in_array(
             $tokenType,
-            [Lexer::T_AVG, Lexer::T_MIN, Lexer::T_MAX, Lexer::T_SUM, Lexer::T_COUNT]
+            [Lexer::T_AVG, Lexer::T_MIN, Lexer::T_MAX, Lexer::T_SUM, Lexer::T_COUNT],
+            true
         );
     }
 
@@ -634,7 +619,8 @@ class Parser
     {
         return in_array(
             $this->lexer->lookahead['type'],
-            [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME]
+            [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME],
+            true
         );
     }
 
@@ -2557,8 +2543,8 @@ class Parser
 
         if (
             $peek !== null && (
-            in_array($peek['value'], ['=', '<', '<=', '<>', '>', '>=', '!=']) ||
-            in_array($peek['type'], [Lexer::T_NOT, Lexer::T_BETWEEN, Lexer::T_LIKE, Lexer::T_IN, Lexer::T_IS, Lexer::T_EXISTS]) ||
+            in_array($peek['value'], ['=', '<', '<=', '<>', '>', '>=', '!='], true) ||
+            in_array($peek['type'], [Lexer::T_NOT, Lexer::T_BETWEEN, Lexer::T_LIKE, Lexer::T_IN, Lexer::T_IS, Lexer::T_EXISTS], true) ||
             $this->isMathOperator($peek)
             )
         ) {
@@ -2962,7 +2948,7 @@ class Parser
     /**
      * StringExpression ::= StringPrimary | ResultVariable | "(" Subselect ")"
      *
-     * @return Subselect|string
+     * @return Subselect|Node|string
      */
     public function StringExpression()
     {
@@ -3078,7 +3064,7 @@ class Parser
         $lookaheadType = $this->lexer->lookahead['type'];
         $isDistinct    = false;
 
-        if (! in_array($lookaheadType, [Lexer::T_COUNT, Lexer::T_AVG, Lexer::T_MAX, Lexer::T_MIN, Lexer::T_SUM])) {
+        if (! in_array($lookaheadType, [Lexer::T_COUNT, Lexer::T_AVG, Lexer::T_MAX, Lexer::T_MIN, Lexer::T_SUM], true)) {
             $this->syntaxError('One of: MAX, MIN, AVG, SUM, COUNT');
         }
 
@@ -3108,7 +3094,7 @@ class Parser
         $lookaheadType = $this->lexer->lookahead['type'];
         $value         = $this->lexer->lookahead['value'];
 
-        if (! in_array($lookaheadType, [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME])) {
+        if (! in_array($lookaheadType, [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME], true)) {
             $this->syntaxError('ALL, ANY or SOME');
         }
 

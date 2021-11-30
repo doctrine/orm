@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
@@ -18,16 +24,10 @@ class DDC1690Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1690Parent::class),
-                    $this->_em->getClassMetadata(DDC1690Child::class),
-                ]
-            );
-        } catch (Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(DDC1690Parent::class),
+            $this->_em->getClassMetadata(DDC1690Child::class),
+        ]);
     }
 
     public function testChangeTracking(): void
@@ -43,14 +43,14 @@ class DDC1690Test extends OrmFunctionalTestCase
         $this->_em->persist($parent);
         $this->_em->persist($child);
 
-        $this->assertEquals(1, count($parent->listeners));
-        $this->assertEquals(1, count($child->listeners));
+        self::assertEquals(1, count($parent->listeners));
+        self::assertEquals(1, count($child->listeners));
 
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertEquals(1, count($parent->listeners));
-        $this->assertEquals(1, count($child->listeners));
+        self::assertEquals(1, count($parent->listeners));
+        self::assertEquals(1, count($child->listeners));
 
         $parentId = $parent->getId();
         $childId  = $child->getId();
@@ -59,25 +59,25 @@ class DDC1690Test extends OrmFunctionalTestCase
         $parent = $this->_em->find(DDC1690Parent::class, $parentId);
         $child  = $this->_em->find(DDC1690Child::class, $childId);
 
-        $this->assertEquals(1, count($parent->listeners));
-        $this->assertInstanceOf(Proxy::class, $child, 'Verifying that $child is a proxy before using proxy API');
-        $this->assertCount(0, $child->listeners);
+        self::assertEquals(1, count($parent->listeners));
+        self::assertInstanceOf(Proxy::class, $child, 'Verifying that $child is a proxy before using proxy API');
+        self::assertCount(0, $child->listeners);
         $child->__load();
-        $this->assertCount(1, $child->listeners);
+        self::assertCount(1, $child->listeners);
         unset($parent, $child);
 
         $parent = $this->_em->find(DDC1690Parent::class, $parentId);
         $child  = $parent->getChild();
 
-        $this->assertEquals(1, count($parent->listeners));
-        $this->assertEquals(1, count($child->listeners));
+        self::assertEquals(1, count($parent->listeners));
+        self::assertEquals(1, count($child->listeners));
         unset($parent, $child);
 
         $child  = $this->_em->find(DDC1690Child::class, $childId);
         $parent = $child->getParent();
 
-        $this->assertEquals(1, count($parent->listeners));
-        $this->assertEquals(1, count($child->listeners));
+        self::assertEquals(1, count($parent->listeners));
+        self::assertEquals(1, count($child->listeners));
     }
 }
 
@@ -88,7 +88,7 @@ class NotifyBaseEntity implements NotifyPropertyChanged
 
     public function addPropertyChangedListener(PropertyChangedListener $listener): void
     {
-        if (! in_array($listener, $this->listeners)) {
+        if (! in_array($listener, $this->listeners, true)) {
             $this->listeners[] = $listener;
         }
     }

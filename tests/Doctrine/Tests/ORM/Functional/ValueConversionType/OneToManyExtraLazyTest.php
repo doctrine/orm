@@ -57,8 +57,8 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
     {
         $conn = static::$sharedConn;
 
-        $conn->executeUpdate('DROP TABLE vct_owning_manytoone_extralazy');
-        $conn->executeUpdate('DROP TABLE vct_inversed_onetomany_extralazy');
+        $conn->executeStatement('DROP TABLE vct_owning_manytoone_extralazy');
+        $conn->executeStatement('DROP TABLE vct_inversed_onetomany_extralazy');
     }
 
     public function testThatExtraLazyCollectionIsCounted(): void
@@ -68,7 +68,7 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
             'abc'
         );
 
-        $this->assertEquals(3, $inversed->associatedEntities->count());
+        self::assertEquals(3, $inversed->associatedEntities->count());
     }
 
     public function testThatExtraLazyCollectionContainsAnEntity(): void
@@ -83,7 +83,7 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
             'def'
         );
 
-        $this->assertTrue($inversed->associatedEntities->contains($owning));
+        self::assertTrue($inversed->associatedEntities->contains($owning));
     }
 
     public function testThatExtraLazyCollectionContainsAnIndexbyKey(): void
@@ -93,7 +93,7 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
             'abc'
         );
 
-        $this->assertTrue($inversed->associatedEntities->containsKey('def'));
+        self::assertTrue($inversed->associatedEntities->containsKey('def'));
     }
 
     public function testThatASliceOfTheExtraLazyCollectionIsLoaded(): void
@@ -103,6 +103,6 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
             'abc'
         );
 
-        $this->assertCount(2, $inversed->associatedEntities->slice(0, 2));
+        self::assertCount(2, $inversed->associatedEntities->slice(0, 2));
     }
 }

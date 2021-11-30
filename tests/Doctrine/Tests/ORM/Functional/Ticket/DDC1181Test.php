@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinColumns;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC1181Test extends OrmFunctionalTestCase
@@ -68,7 +76,7 @@ class DDC1181Hotel
     public $id;
 
     /**
-     * @oneToMany(targetEntity="DDC1181Booking", mappedBy="hotel", cascade={"remove"})
+     * @OneToMany(targetEntity="DDC1181Booking", mappedBy="hotel", cascade={"remove"})
      * @var Booking[]
      */
     public $bookings;

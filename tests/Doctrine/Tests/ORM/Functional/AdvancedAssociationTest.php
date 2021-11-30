@@ -6,6 +6,17 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OrderBy;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -71,17 +82,17 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
 
         // test1 - lazy-loading many-to-one after find()
         $phrase2 = $this->_em->find(Phrase::class, $phrase->getId());
-        $this->assertTrue(is_numeric($phrase2->getType()->getId()));
+        self::assertTrue(is_numeric($phrase2->getType()->getId()));
 
         $this->_em->clear();
 
         // test2 - eager load in DQL query
         $query = $this->_em->createQuery('SELECT p,t FROM Doctrine\Tests\ORM\Functional\Phrase p JOIN p.type t');
         $res   = $query->getResult();
-        $this->assertEquals(1, count($res));
-        $this->assertInstanceOf(PhraseType::class, $res[0]->getType());
-        $this->assertInstanceOf(PersistentCollection::class, $res[0]->getType()->getPhrases());
-        $this->assertFalse($res[0]->getType()->getPhrases()->isInitialized());
+        self::assertCount(1, $res);
+        self::assertInstanceOf(PhraseType::class, $res[0]->getType());
+        self::assertInstanceOf(PersistentCollection::class, $res[0]->getType()->getPhrases());
+        self::assertFalse($res[0]->getType()->getPhrases()->isInitialized());
 
         $this->_em->clear();
 
@@ -92,18 +103,18 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         // test2 - eager load in DQL query with double-join back and forth
         $query = $this->_em->createQuery('SELECT p,t,pp FROM Doctrine\Tests\ORM\Functional\Phrase p JOIN p.type t JOIN t.phrases pp');
         $res   = $query->getResult();
-        $this->assertEquals(1, count($res));
-        $this->assertInstanceOf(PhraseType::class, $res[0]->getType());
-        $this->assertInstanceOf(PersistentCollection::class, $res[0]->getType()->getPhrases());
-        $this->assertTrue($res[0]->getType()->getPhrases()->isInitialized());
+        self::assertCount(1, $res);
+        self::assertInstanceOf(PhraseType::class, $res[0]->getType());
+        self::assertInstanceOf(PersistentCollection::class, $res[0]->getType()->getPhrases());
+        self::assertTrue($res[0]->getType()->getPhrases()->isInitialized());
 
         $this->_em->clear();
 
         // test3 - lazy-loading one-to-many after find()
         $phrase3     = $this->_em->find(Phrase::class, $phrase->getId());
         $definitions = $phrase3->getDefinitions();
-        $this->assertInstanceOf(PersistentCollection::class, $definitions);
-        $this->assertInstanceOf(Definition::class, $definitions[0]);
+        self::assertInstanceOf(PersistentCollection::class, $definitions);
+        self::assertInstanceOf(Definition::class, $definitions[0]);
 
         $this->_em->clear();
 
@@ -112,10 +123,10 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         $res         = $query->getResult();
         $definitions = $res[0]->getDefinitions();
 
-        $this->assertEquals(1, count($res));
+        self::assertEquals(1, count($res));
 
-        $this->assertInstanceOf(Definition::class, $definitions[0]);
-        $this->assertEquals(2, $definitions->count());
+        self::assertInstanceOf(Definition::class, $definitions[0]);
+        self::assertEquals(2, $definitions->count());
 
         $this->_em->clear();
 
@@ -142,7 +153,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         $res   = $query->getResult();
         $types = $res[0]->getTypes();
 
-        $this->assertInstanceOf(Type::class, $types[0]);
+        self::assertInstanceOf(Type::class, $types[0]);
 
         $this->_em->clear();
 
@@ -173,7 +184,7 @@ class Lemma
     private $lemma;
 
     /**
-     * @var kateglo\application\utilities\collections\ArrayCollection
+     * @var Collection
      * @ManyToMany(targetEntity="Type", mappedBy="lemmas", cascade={"persist"})
      */
     private $types;
@@ -198,9 +209,6 @@ class Lemma
         return $this->lemma;
     }
 
-    /**
-     * @param kateglo\application\models\Type $type
-     */
     public function addType(Type $type): void
     {
         if (! $this->types->contains($type)) {
@@ -209,9 +217,6 @@ class Lemma
         }
     }
 
-    /**
-     * @param kateglo\application\models\Type $type
-     */
     public function removeType(Type $type): void
     {
         $removed = $this->sources->removeElement($type);
@@ -255,7 +260,7 @@ class Type
     private $abbreviation;
 
     /**
-     * @var kateglo\application\helpers\collections\ArrayCollection
+     * @var Collection
      * @ManyToMany(targetEntity="Lemma")
      * @JoinTable(name="lemma_type",
      *      joinColumns={@JoinColumn(name="type_id", referencedColumnName="type_id")},
@@ -294,9 +299,6 @@ class Type
         return $this->abbreviation;
     }
 
-    /**
-     * @param kateglo\application\models\Lemma $lemma
-     */
     public function addLemma(Lemma $lemma): void
     {
         if (! $this->lemmas->contains($lemma)) {
@@ -305,9 +307,6 @@ class Type
         }
     }
 
-    /**
-     * @param kateglo\application\models\Lemma $lemma
-     */
     public function removeLEmma(Lemma $lemma): void
     {
         $removed = $this->lemmas->removeElement($lemma);
@@ -316,7 +315,7 @@ class Type
         }
     }
 
-    public function getCategories(): kateglo\application\helpers\collections\ArrayCollection
+    public function getCategories(): Collection
     {
         return $this->categories;
     }
@@ -523,7 +522,7 @@ class Definition
     {
         if ($this->phrase !== null) {
             $phrase = $this->phrase;
-            assert($phrase instanceof kateglo\application\models\Phrase);
+            assert($phrase instanceof Phrase);
             $this->phrase = null;
             $phrase->removeDefinition($this);
         }

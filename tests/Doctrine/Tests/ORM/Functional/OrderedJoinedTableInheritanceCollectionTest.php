@@ -4,6 +4,19 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -17,17 +30,11 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(OJTICPet::class),
-                    $this->_em->getClassMetadata(OJTICCat::class),
-                    $this->_em->getClassMetadata(OJTICDog::class),
-                ]
-            );
-        } catch (Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(OJTICPet::class),
+            $this->_em->getClassMetadata(OJTICCat::class),
+            $this->_em->getClassMetadata(OJTICDog::class),
+        ]);
 
         $dog       = new OJTICDog();
         $dog->name = 'Poofy';
@@ -54,8 +61,8 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
     {
         $poofy = $this->_em->createQuery("SELECT p FROM Doctrine\Tests\ORM\Functional\OJTICPet p WHERE p.name = 'Poofy'")->getSingleResult();
 
-        $this->assertEquals('Aari', $poofy->children[0]->getName());
-        $this->assertEquals('Zampa', $poofy->children[1]->getName());
+        self::assertEquals('Aari', $poofy->children[0]->getName());
+        self::assertEquals('Zampa', $poofy->children[1]->getName());
 
         $this->_em->clear();
 
@@ -64,11 +71,11 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
         )
                 ->getResult();
 
-        $this->assertEquals(1, count($result));
+        self::assertCount(1, $result);
         $poofy = $result[0];
 
-        $this->assertEquals('Aari', $poofy->children[0]->getName());
-        $this->assertEquals('Zampa', $poofy->children[1]->getName());
+        self::assertEquals('Aari', $poofy->children[0]->getName());
+        self::assertEquals('Zampa', $poofy->children[1]->getName());
     }
 }
 

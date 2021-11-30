@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
@@ -44,8 +48,8 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $dbReadOnly = $this->_em->find(ReadOnlyEntity::class, $readOnly->id);
-        $this->assertEquals('Test1', $dbReadOnly->name);
-        $this->assertEquals(1234, $dbReadOnly->numericValue);
+        self::assertEquals('Test1', $dbReadOnly->name);
+        self::assertEquals(1234, $dbReadOnly->numericValue);
     }
 
     /**
@@ -60,7 +64,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $this->assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
+        self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
     }
 
     /**
@@ -75,7 +79,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
 
         $this->_em->clear(get_class($readOnly));
 
-        $this->assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
+        self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
     }
 
     public function testReadOnlyQueryHint(): void
@@ -95,7 +99,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
 
         $user = $query->getSingleResult();
 
-        $this->assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
+        self::assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
     }
 
     public function testNotReadOnlyIfObjectWasProxyBefore(): void
@@ -117,7 +121,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
 
         $user = $query->getSingleResult();
 
-        $this->assertFalse($this->_em->getUnitOfWork()->isReadOnly($user));
+        self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($user));
     }
 
     public function testNotReadOnlyIfObjectWasKnownBefore(): void
@@ -139,7 +143,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
 
         $user = $query->getSingleResult();
 
-        $this->assertFalse($this->_em->getUnitOfWork()->isReadOnly($user));
+        self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($user));
     }
 }
 
@@ -155,7 +159,7 @@ class ReadOnlyEntity
     public $id;
     /**
      * @var string
-     * @column(type="string")
+     * @Column(type="string")
      */
     public $name;
     /**

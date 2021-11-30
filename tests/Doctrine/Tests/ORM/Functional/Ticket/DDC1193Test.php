@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -48,14 +53,14 @@ class DDC1193Test extends OrmFunctionalTestCase
 
         $company = $this->_em->find(get_class($company), $companyId);
 
-        $this->assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($company), 'Company is in identity map.');
-        $this->assertFalse($company->member->__isInitialized__, 'Pre-Condition');
-        $this->assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($company->member), 'Member is in identity map.');
+        self::assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($company), 'Company is in identity map.');
+        self::assertFalse($company->member->__isInitialized__, 'Pre-Condition');
+        self::assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($company->member), 'Member is in identity map.');
 
         $this->_em->remove($company);
         $this->_em->flush();
 
-        $this->assertEquals(count($this->_em->getRepository(get_class($account))->findAll()), 0);
+        self::assertCount(0, $this->_em->getRepository(get_class($account))->findAll());
     }
 }
 

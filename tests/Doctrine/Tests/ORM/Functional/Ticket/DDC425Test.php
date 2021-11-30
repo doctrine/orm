@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use DateTime;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC425Test extends OrmFunctionalTestCase
@@ -28,9 +32,9 @@ class DDC425Test extends OrmFunctionalTestCase
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
         $num = $this->_em->createQuery('DELETE ' . __NAMESPACE__ . '\DDC425Entity e WHERE e.someDatetimeField > ?1')
-                ->setParameter(1, new DateTime(), Type::DATETIME)
+                ->setParameter(1, new DateTime(), Types::DATETIME_MUTABLE)
                 ->getResult();
-        $this->assertEquals(0, $num);
+        self::assertEquals(0, $num);
     }
 }
 

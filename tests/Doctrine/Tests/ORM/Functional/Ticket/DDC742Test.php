@@ -6,6 +6,15 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\OrderBy;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
@@ -23,7 +32,7 @@ class DDC742Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         if (! class_exists(FilesystemCache::class)) {
-            $this->markTestSkipped('Test only applies with doctrine/cache 1.x');
+            self::markTestSkipped('Test only applies with doctrine/cache 1.x');
         }
 
         parent::setUp();
