@@ -1079,8 +1079,8 @@ and the EntityManager.
         }
     }
 
-.. _LifecycleEventArgs: https://github.com/doctrine/persistence/blob/master/lib/Doctrine/Persistence/Event/LifecycleEventArgs.php
-.. _PreUpdateEventArgs: https://github.com/doctrine/persistence/blob/master/lib/Doctrine/Persistence/Event/PreUpdateEventArgs.php
+.. _LifecycleEventArgs: https://github.com/doctrine/orm/blob/2.10.x/lib/Doctrine/ORM/Event/LifecycleEventArgs.php
+.. _PreUpdateEventArgs: https://github.com/doctrine/orm/blob/2.10.x/lib/Doctrine/ORM/Event/PreUpdateEventArgs.php
 .. _PreFlushEventArgs: https://github.com/doctrine/orm/blob/2.10.x/lib/Doctrine/ORM/Event/PreFlushEventArgs.php
 .. _PostFlushEventArgs: https://github.com/doctrine/orm/blob/2.10.x/lib/Doctrine/ORM/Event/PostFlushEventArgs.php
 .. _OnFlushEventArgs: https://github.com/doctrine/orm/blob/2.10.x/lib/Doctrine/ORM/Event/OnFlushEventArgs.php
