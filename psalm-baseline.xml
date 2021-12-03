@@ -3438,11 +3438,8 @@
     </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php">
-    <DeprecatedClass occurrences="4">
+    <DeprecatedClass occurrences="1">
       <code>Versions::getVersion('doctrine/orm')</code>
-      <code>new Command\ConvertDoctrine1SchemaCommand()</code>
-      <code>new Command\GenerateEntitiesCommand($entityManagerProvider)</code>
-      <code>new Command\GenerateRepositoriesCommand($entityManagerProvider)</code>
     </DeprecatedClass>
   </file>
   <file src="lib/Doctrine/ORM/Tools/DebugUnitOfWorkListener.php">
