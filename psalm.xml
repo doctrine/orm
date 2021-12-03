@@ -21,7 +21,11 @@
                 <!-- The exception is thrown by a deprecated method. -->
                 <referencedClass name="Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver"/>
                 <!-- Remove on 3.0.x -->
+                <referencedClass name="Doctrine\ORM\Tools\Console\Command\ConvertDoctrine1SchemaCommand"/>
+                <referencedClass name="Doctrine\ORM\Tools\Console\Command\ConvertMappingCommand"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand"/>
+                <referencedClass name="Doctrine\ORM\Tools\Console\Command\GenerateEntitiesCommand"/>
+                <referencedClass name="Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand"/>
             </errorLevel>
         </DeprecatedClass>
         <DeprecatedMethod>
@@ -81,6 +85,13 @@
                 <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
             </errorLevel>
         </RedundantCastGivenDocblockType>
+        <!-- Workaround for https://github.com/vimeo/psalm/issues/7026 -->
+        <ReservedWord>
+            <errorLevel type="suppress">
+                <directory name="lib"/>
+                <directory name="tests"/>
+            </errorLevel>
+        </ReservedWord>
         <TypeDoesNotContainType>
             <errorLevel type="suppress">
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
