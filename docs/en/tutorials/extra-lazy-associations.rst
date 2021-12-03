@@ -40,7 +40,7 @@ easily using a combination of ``count`` and ``slice``.
    ``removeElement`` directly issued DELETE queries to the database from
    version 2.4.0 to 2.7.0.  This circumvents the flush operation and might run
    outside a transactional boundary if you don't create one yourself. We
-   consider this a critical bug in the assumptio of how the ORM works and
+   consider this a critical bug in the assumption of how the ORM works and
    reverted ``removeElement`` EXTRA_LAZY behavior in 2.7.1.
 
 
