@@ -1,5 +1,22 @@
 # Upgrade to 3.0
 
+## BC BREAK: Remove code generators and related console commands
+
+These console commands have been removed:
+
+* `orm:convert-d1-schema`
+* `orm:convert-mapping`
+* `orm:generate:entities`
+* `orm:generate-repositories`
+
+These classes have been deprecated:
+
+* `Doctrine\ORM\Tools\ConvertDoctrine1Schema`
+* `Doctrine\ORM\Tools\EntityGenerator`
+* `Doctrine\ORM\Tools\EntityRepositoryGenerator`
+
+The entire `Doctrine\ORM\Tools\Export` namespace has been removed as well.
+
 ## BC BREAK: Removed `Doctrine\ORM\Version`
 
 Use Composer's runtime API if you _really_ need to check the version of the ORM package at runtime.
