@@ -1,5 +1,9 @@
 # Upgrade to 3.0
 
+## BC BREAK: Removed `Doctrine\ORM\Version`
+
+Use Composer's runtime API if you _really_ need to check the version of the ORM package at runtime.
+
 ## BC BREAK: EntityRepository::count() signature change
 
 The argument `$criteria` of `Doctrine\ORM\EntityRepository::count()` is now
