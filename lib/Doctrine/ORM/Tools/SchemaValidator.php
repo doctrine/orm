@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 use function array_diff;
+use function array_filter;
 use function array_key_exists;
 use function array_search;
 use function array_values;
@@ -268,6 +269,11 @@ class SchemaValidator
 
         $allMetadata = $this->em->getMetadataFactory()->getAllMetadata();
 
-        return count($schemaTool->getUpdateSchemaSql($allMetadata, $strictSync === false)) === 0;
+        return count(array_filter(
+                $schemaTool->getUpdateSchemaSql($allMetadata, $strictSync === false),
+                function ($value) {
+                    return $value != 'DROP TABLE migration_versions';
+                }
+            )) == 0;
     }
 }
