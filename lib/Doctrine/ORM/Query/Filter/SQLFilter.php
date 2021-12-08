@@ -194,8 +194,8 @@ abstract class SQLFilter
     /**
      * Gets the SQL query part to add to a query.
      *
-     * @psalm-param ClassMetadata<object> $targetEntity
      * @param string $targetTableAlias
+     * @psalm-param ClassMetadata<object> $targetEntity
      *
      * @return string The constraint SQL if there is available, empty string otherwise.
      */
