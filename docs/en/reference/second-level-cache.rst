@@ -448,8 +448,9 @@ It caches the primary keys of association and cache each element will be cached 
               cache:
                 usage: NONSTRICT_READ_WRITE
 
+.. note::
 
-> Note: for this to work, the target entity must also be marked as cacheable.
+    for this to work, the target entity must also be marked as cacheable.
 
 Cache usage
 ~~~~~~~~~~~
