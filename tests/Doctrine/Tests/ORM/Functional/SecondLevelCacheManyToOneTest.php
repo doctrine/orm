@@ -240,7 +240,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
 
         $queryCount = $this->getCurrentQueryCount();
         /**
-         * @var $entity Token
+         * @var Token $entity
          */
         $entity = $this->_em->find(Token::class, $token->token);
 
