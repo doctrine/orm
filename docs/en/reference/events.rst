@@ -1079,11 +1079,11 @@ and the EntityManager.
         }
     }
 
-.. _LifecycleEventArgs: https://github.com/doctrine/orm/blob/2.10.x/lib/Doctrine/ORM/Event/LifecycleEventArgs.php
-.. _PreUpdateEventArgs: https://github.com/doctrine/orm/blob/2.10.x/lib/Doctrine/ORM/Event/PreUpdateEventArgs.php
-.. _PreFlushEventArgs: https://github.com/doctrine/orm/blob/2.10.x/lib/Doctrine/ORM/Event/PreFlushEventArgs.php
-.. _PostFlushEventArgs: https://github.com/doctrine/orm/blob/2.10.x/lib/Doctrine/ORM/Event/PostFlushEventArgs.php
-.. _OnFlushEventArgs: https://github.com/doctrine/orm/blob/2.10.x/lib/Doctrine/ORM/Event/OnFlushEventArgs.php
-.. _OnClearEventArgs: https://github.com/doctrine/orm/blob/2.10.x/lib/Doctrine/ORM/Event/OnClearEventArgs.php
-.. _LoadClassMetadataEventArgs: https://github.com/doctrine/orm/blob/2.10.x/lib/Doctrine/ORM/Event/LoadClassMetadataEventArgs.php
-.. _OnClassMetadataNotFoundEventArgs: https://github.com/doctrine/orm/blob/2.10.x/lib/Doctrine/ORM/Event/OnClassMetadataNotFoundEventArgs.php
+.. _LifecycleEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/LifecycleEventArgs.php
+.. _PreUpdateEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PreUpdateEventArgs.php
+.. _PreFlushEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PreFlushEventArgs.php
+.. _PostFlushEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PostFlushEventArgs.php
+.. _OnFlushEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/OnFlushEventArgs.php
+.. _OnClearEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/OnClearEventArgs.php
+.. _LoadClassMetadataEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/LoadClassMetadataEventArgs.php
+.. _OnClassMetadataNotFoundEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/OnClassMetadataNotFoundEventArgs.php
