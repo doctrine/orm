@@ -2002,7 +2002,24 @@ class SqlWalker implements TreeWalker
             $sqlParts    = [];
 
             foreach ($joinColumns as $joinColumn) {
-                $targetColumn = $this->quoteStrategy->getColumnName($class->fieldNames[$joinColumn['referencedColumnName']], $class, $this->platform);
+                $referencedColumnName = $joinColumn['referencedColumnName'];
+
+                // when the referenced column is an association
+                if (!isset($class->fieldNames[$referencedColumnName])) {
+                    foreach ($class->associationMappings as $associationMapping) {
+                        if ($associationMapping['isOwningSide'] && isset($associationMapping['joinColumnFieldNames'][$referencedColumnName])) {
+                            $joinColumnFieldName = $associationMapping['joinColumnFieldNames'][$referencedColumnName];
+                            foreach ($associationMapping['joinColumns'] as $joinColumn) {
+                                if ($joinColumn['name'] === $joinColumnFieldName) {
+                                    $targetColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    $targetColumn = $this->quoteStrategy->getColumnName($class->fieldNames[$referencedColumnName], $class, $this->platform);
+                }
 
                 $sqlParts[] = $joinTableAlias . '.' . $joinColumn['name'] . ' = ' . $sourceTableAlias . '.' . $targetColumn;
             }
