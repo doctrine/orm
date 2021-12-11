@@ -58,23 +58,12 @@ abstract class OrmTestCase extends DoctrineTestCase
     /** @var Cache|null */
     protected $secondLevelCacheDriverImpl = null;
 
-    /**
-     * @param mixed $alias
-     */
-    protected function createAnnotationDriver(array $paths = [], $alias = null): AnnotationDriver
+    protected function createAnnotationDriver(array $paths = []): AnnotationDriver
     {
-        // Register the ORM Annotations in the AnnotationRegistry
-        $reader = new Annotations\AnnotationReader();
-
-        if (class_exists(Annotations\PsrCachedReader::class)) {
-            $reader = new Annotations\PsrCachedReader($reader, new ArrayAdapter());
-        } else {
-            $reader = new Annotations\CachedReader($reader, DoctrineProvider::wrap(new ArrayAdapter()));
-        }
-
-        Annotations\AnnotationRegistry::registerFile(__DIR__ . '/../../../lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
-
-        return new AnnotationDriver($reader, (array) $paths);
+        return new AnnotationDriver(
+            new Annotations\PsrCachedReader(new Annotations\AnnotationReader(), new ArrayAdapter()),
+            $paths
+        );
     }
 
     /**
