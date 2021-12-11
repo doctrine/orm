@@ -18,6 +18,8 @@ use function method_exists;
  */
 class UuidGenerator extends AbstractIdGenerator
 {
+    use FetchOneFromPrimary;
+
     public function __construct()
     {
         Deprecation::trigger(
@@ -42,6 +44,6 @@ class UuidGenerator extends AbstractIdGenerator
         $conn = $em->getConnection();
         $sql  = 'SELECT ' . $conn->getDatabasePlatform()->getGuidExpression();
 
-        return $conn->executeQuery($sql)->fetchOne();
+        return $this->fetchOneFromPrimary($conn, $sql);
     }
 }

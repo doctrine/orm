@@ -25,9 +25,6 @@ class ConnectionMock extends Connection
     /** @var mixed */
     private $_fetchOneResult;
 
-    /** @var Exception|null */
-    private $_fetchOneException;
-
     /** @var Result|null */
     private $_queryResult;
 
@@ -116,10 +113,6 @@ class ConnectionMock extends Connection
      */
     public function fetchOne(string $sql, array $params = [], array $types = [])
     {
-        if ($this->_fetchOneException !== null) {
-            throw $this->_fetchOneException;
-        }
-
         return $this->_fetchOneResult;
     }
 
@@ -161,11 +154,6 @@ class ConnectionMock extends Connection
     public function setFetchOneResult($fetchOneResult): void
     {
         $this->_fetchOneResult = $fetchOneResult;
-    }
-
-    public function setFetchOneException(?Exception $exception = null): void
-    {
-        $this->_fetchOneException = $exception;
     }
 
     public function setDatabasePlatform(AbstractPlatform $platform): void

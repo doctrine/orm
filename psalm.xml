@@ -27,7 +27,8 @@
         </DeprecatedClass>
         <DeprecatedMethod>
             <errorLevel type="suppress">
-                <!-- We're calling the deprecated method for BC here. -->
+                <!-- We're calling the deprecated methods for BC here. -->
+                <file name="lib/Doctrine/ORM/Id/FetchOneFromPrimary.php"/>
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
                 <!-- We need to keep the calls for DBAL 2.13 compatibility. -->
                 <referencedMethod name="Doctrine\DBAL\Cache\QueryCacheProfile::getResultCacheDriver"/>
@@ -87,6 +88,12 @@
                 <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
             </errorLevel>
         </RedundantCastGivenDocblockType>
+        <RedundantCondition>
+            <errorLevel type="suppress">
+                <!-- Fallback logic for DBAL 2 -->
+                <file name="lib/Doctrine/ORM/Id/FetchOneFromPrimary.php"/>
+            </errorLevel>
+        </RedundantCondition>
         <!-- Workaround for https://github.com/vimeo/psalm/issues/7026 -->
         <ReservedWord>
             <errorLevel type="suppress">

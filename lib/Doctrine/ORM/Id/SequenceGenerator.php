@@ -15,6 +15,8 @@ use function unserialize;
  */
 class SequenceGenerator extends AbstractIdGenerator implements Serializable
 {
+    use FetchOneFromPrimary;
+
     /**
      * The allocation size of the sequence.
      *
@@ -57,9 +59,9 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
             $conn = $em->getConnection();
             $sql  = $conn->getDatabasePlatform()->getSequenceNextValSQL($this->_sequenceName);
 
-            // Using `query` to force usage of the master server in MasterSlaveConnection
-            $this->_nextValue = (int) $conn->executeQuery($sql)->fetchOne();
-            $this->_maxValue  = $this->_nextValue + $this->_allocationSize;
+            $this->_nextValue = (int) $this->fetchOneFromPrimary($conn, $sql);
+
+            $this->_maxValue = $this->_nextValue + $this->_allocationSize;
         }
 
         return $this->_nextValue++;
