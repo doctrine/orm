@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Id;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Exception\NotSupported;
@@ -41,6 +42,10 @@ class UuidGenerator extends AbstractIdGenerator
     {
         $conn = $em->getConnection();
         $sql  = 'SELECT ' . $conn->getDatabasePlatform()->getGuidExpression();
+
+        if ($conn instanceof PrimaryReadReplicaConnection) {
+            $conn->ensureConnectedToPrimary();
+        }
 
         return $conn->executeQuery($sql)->fetchOne();
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Query\AST\DeleteStatement;
@@ -48,6 +49,10 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $conn          = $em->getConnection();
         $platform      = $conn->getDatabasePlatform();
         $quoteStrategy = $em->getConfiguration()->getQuoteStrategy();
+
+        if ($conn instanceof PrimaryReadReplicaConnection) {
+            $conn->ensureConnectedToPrimary();
+        }
 
         $primaryClass    = $em->getClassMetadata($AST->deleteClause->abstractSchemaName);
         $primaryDqlAlias = $AST->deleteClause->aliasIdentificationVariable;
