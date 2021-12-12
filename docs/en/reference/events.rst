@@ -196,23 +196,14 @@ The ``EntityManager`` and ``UnitOfWork`` classes trigger a bunch of
 events during the life-time of their registered entities.
 
 
--  ``postRemove`` - The ``postRemove`` event occurs for an entity after the
-   entity has been deleted. It will be invoked after the database
-   delete operations. It is not called for a DQL ``DELETE`` statement.
+
 -  ``prePersist`` - The ``prePersist`` event occurs for a given entity
    before the respective ``EntityManager`` persist operation for that
    entity is executed. It should be noted that this event is only triggered on
-   *initial* persist of an entity (i.e. it does not trigger on future updates).
--  ``postPersist`` - The ``postPersist`` event occurs for an entity after
-   the entity has been made persistent. It will be invoked after the
-   database insert operations. Generated primary key values are
-   available in the postPersist event.
+   *initial* persist of an entity (i.e. it does not trigger on future updates).   
 -  ``preUpdate`` - The ``preUpdate`` event occurs before the database
    update operations to entity data. It is not called for a DQL
    ``UPDATE`` statement nor when the computed changeset is empty.
--  ``postUpdate`` - The ``postUpdate`` event occurs after the database
-   update operations to entity data. It is not called for a DQL
-   ``UPDATE`` statement.
 -  ``postLoad`` - The postLoad event occurs for an entity after the
    entity has been loaded into the current ``EntityManager`` from the
    database or after the refresh operation has been applied to it.
@@ -772,11 +763,22 @@ Restrictions for this event:
 postUpdate, postRemove, postPersist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The three post events are called inside ``EntityManager#flush()``.
+These three post* events are called inside ``EntityManager::flush()``.
 Changes in here are not relevant to the persistence in the
 database, but you can use these events to alter non-persistable items,
 like non-mapped fields, logging or even associated classes that are
 not directly mapped by Doctrine.
+
+-  The ``postUpdate`` event occurs after the database
+   update operations to entity data. It is not called for a DQL
+   ``UPDATE`` statement.
+-  The ``postPersist`` event occurs for an entity after
+   the entity has been made persistent. It will be invoked after the
+   database insert operations. Generated primary key values are
+   available in the postPersist event.
+-  The ``postRemove`` event occurs for an entity after the
+   entity has been deleted. It will be invoked after the database
+   delete operations. It is not called for a DQL ``DELETE`` statement.
 
 .. _reference-events-post-load:
 
