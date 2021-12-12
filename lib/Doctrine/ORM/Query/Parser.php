@@ -2761,7 +2761,7 @@ class Parser
     /**
      * InParameter ::= ArithmeticExpression | InputParameter
      *
-     * @return AST\InputParameter|AST\Literal
+     * @return AST\InputParameter|AST\ArithmeticExpression
      */
     public function InParameter()
     {
