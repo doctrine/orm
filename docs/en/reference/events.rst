@@ -196,9 +196,6 @@ The ``EntityManager`` and ``UnitOfWork`` classes trigger a bunch of
 events during the life-time of their registered entities.
 
 
--  ``loadClassMetadata`` - The ``loadClassMetadata`` event occurs after the
-   mapping metadata for a class has been loaded from a mapping source
-   (annotations/xml/yaml). This event is not a lifecycle callback.
 -  ``onClassMetadataNotFound`` - Loading class metadata for a particular
    requested class name failed. Manipulating the given event args instance
    allows providing fallback metadata even when no actual metadata exists
@@ -1002,9 +999,11 @@ Implementing your own resolver :
 Load ClassMetadata Event
 ------------------------
 
-When the mapping information for an entity is read, it is populated
-in to a ``Doctrine\ORM\Mapping\ClassMetadata`` instance. You can hook in to this
-process and manipulate the instance.
+``loadClassMetadata`` - The ``loadClassMetadata`` event occurs after the
+mapping metadata for a class has been loaded from a mapping source
+(annotations/xml/yaml) in to a ``Doctrine\ORM\Mapping\ClassMetadata`` instance.
+You can hook in to this process and manipulate the instance.
+This event is not a lifecycle callback.
 
 .. code-block:: php
 
