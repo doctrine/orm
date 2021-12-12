@@ -165,7 +165,7 @@ Events Overview
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
 | :ref:`postFlush<reference-events-post-flush>`                   | ``$em->flush()``      | No        | `_PostFlushEventArgs`               |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| ``onClear``                                                     | ``$em->clear()``      | No        | `_OnClearEventArgs`                 |
+| :ref:`onClear<reference-events-on-clear>`                       | ``$em->clear()``      | No        | `_OnClearEventArgs`                 |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
 
 Naming convention
@@ -195,11 +195,6 @@ Lifecycle Events
 The ``EntityManager`` and ``UnitOfWork`` classes trigger a bunch of
 events during the life-time of their registered entities.
 
-
--  ``onClear`` - The ``onClear`` event occurs when the
-   ``EntityManager#clear()`` operation is invoked, after all references
-   to entities have been removed from the unit of work. This event is not
-   a lifecycle callback.
 
 
 .. warning::
@@ -763,6 +758,14 @@ postLoad
 The postLoad event occurs after the entity has been loaded into the current
 ``EntityManager`` from the database or after ``refresh()`` has been applied to it.
 
+.. _reference-events-on-clear:
+
+onClear
+~~~~~~~~
+
+The ``onClear`` event occurs when the ``EntityManager::clear()`` operation is invoked,
+after all references to entities have been removed from the unit of work.
+This event is not a lifecycle callback.
 
 Entity listeners
 ----------------
