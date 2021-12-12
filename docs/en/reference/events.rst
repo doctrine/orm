@@ -196,10 +196,6 @@ The ``EntityManager`` and ``UnitOfWork`` classes trigger a bunch of
 events during the life-time of their registered entities.
 
 
-
--  ``preRemove`` - The ``preRemove`` event occurs for a given entity
-   before the respective ``EntityManager`` remove operation for that
-   entity is executed.  It is not called for a DQL ``DELETE`` statement.
 -  ``postRemove`` - The ``postRemove`` event occurs for an entity after the
    entity has been deleted. It will be invoked after the database
    delete operations. It is not called for a DQL ``DELETE`` statement.
@@ -564,9 +560,11 @@ The following restrictions apply to ``prePersist``:
 preRemove
 ~~~~~~~~~
 
-The ``preRemove`` event is called on every entity when its passed
-to the ``EntityManager#remove()`` method. It is cascaded for all
-associations that are marked as cascade delete.
+The ``preRemove`` event is called on every entity immediately when it is passed
+to the ``EntityManager::remove()`` method. It is cascaded for all
+associations that are marked as :ref:`cascade: remove<transitive-persistence>`
+
+It is not called for a DQL ``DELETE`` statement.
 
 There are no restrictions to what methods can be called inside the
 ``preRemove`` event, except when the remove method itself was
