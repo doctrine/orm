@@ -132,6 +132,8 @@ or ``eventManager->addEventSubscriber()``, see
 * *Lifecycle Callbacks* can also be registered in the entity mapping (annotation, attribute, etc.), 
 see :ref:`Lifecycle Callbacks<lifecycle-callbacks>`
 
+.. _reference-events-lifecycle-events:
+
 Events Overview
 ---------------
 
@@ -186,38 +188,6 @@ several reasons:
 
 An example for a correct notation can be found in the example
 ``TestEvent`` above.
-
-.. _reference-events-lifecycle-events:
-
-Lifecycle Events
-----------------
-
-The ``EntityManager`` and ``UnitOfWork`` classes trigger a bunch of
-events during the life-time of their registered entities.
-
-
-
-
-
-These can be hooked into by two different types of event
-listeners:
-
--  Lifecycle Callbacks are methods on the entity classes that are
-   called when the event is triggered. They receive some kind
-   of ``EventArgs`` instance.
--  Lifecycle Event Listeners and Subscribers are classes with specific callback
-   methods that receives some kind of ``EventArgs`` instance.
-
-The ``EventArgs`` instance received by the listener gives access to the entity,
-``EntityManager`` instance and other relevant data.
-
-.. note::
-
-    All Lifecycle events that happen during the ``flush()`` of
-    an ``EntityManager`` have very specific constraints on the allowed
-    operations that can be executed. Please read the
-    :ref:`reference-events-implementing-listeners` section very carefully
-    to understand which operations are allowed in which lifecycle event.
 
 .. _lifecycle-callbacks:
 
