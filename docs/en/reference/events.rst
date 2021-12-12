@@ -300,10 +300,8 @@ specific to a particular entity class's lifecycle.
         use Doctrine\DBAL\Types\Types;
         use Doctrine\Persistence\Event\LifecycleEventArgs;
 
-        /**
-         * #[Entity]
-         * #[HasLifecycleCallbacks]
-         */
+        #[Entity]
+        #[HasLifecycleCallbacks]
         class User
         {
             // ...
