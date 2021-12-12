@@ -196,9 +196,6 @@ The ``EntityManager`` and ``UnitOfWork`` classes trigger a bunch of
 events during the life-time of their registered entities.
 
 
--  ``postLoad`` - The postLoad event occurs for an entity after the
-   entity has been loaded into the current ``EntityManager`` from the
-   database or after the refresh operation has been applied to it.
 -  ``loadClassMetadata`` - The ``loadClassMetadata`` event occurs after the
    mapping metadata for a class has been loaded from a mapping source
    (annotations/xml/yaml). This event is not a lifecycle callback.
@@ -778,8 +775,9 @@ not directly mapped by Doctrine.
 postLoad
 ~~~~~~~~
 
-This event is called after an entity is constructed by the
-EntityManager.
+The postLoad event occurs after the entity has been loaded into the current
+``EntityManager`` from the database or after ``refresh()`` has been applied to it.
+
 
 Entity listeners
 ----------------
