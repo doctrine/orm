@@ -196,8 +196,6 @@ The ``EntityManager`` and ``UnitOfWork`` classes trigger a bunch of
 events during the life-time of their registered entities.
 
 
--  ``preFlush`` - The ``preFlush`` event occurs at the very beginning of
-   a flush operation.
 -  ``onFlush`` - The ``onFlush`` event occurs after the change-sets of all
    managed entities are computed. This event is not a lifecycle
    callback.
@@ -550,10 +548,10 @@ called during a flush operation.
 preFlush
 ~~~~~~~~
 
-``preFlush`` is called at ``EntityManager#flush()`` before
-anything else. ``EntityManager#flush()`` should not be called inside
-its listeners, since `preFlush` event is dispatched in it, which would
-result in infinite loop.
+``preFlush`` is called inside ``EntityManager::flush()`` before
+anything else. ``EntityManager::flush()`` must not be called inside
+its listeners, since it would fire the ``preFlush`` event again, which would
+result in an infinite loop.
 
 .. code-block:: php
 
