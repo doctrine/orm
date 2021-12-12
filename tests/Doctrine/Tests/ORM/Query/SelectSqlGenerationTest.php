@@ -653,9 +653,9 @@ SELECT f0_.id AS id_0, f0_.username AS username_1 FROM forum_users f0_ WHERE f0_
 SQL
         );
         $this->assertSqlGeneration(
-            "SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u WHERE u.id IN (1+1)",
+            'SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u WHERE u.id IN (1+1)',
             <<<'SQL'
-SELECT f0_.id AS id_0, f0_.username AS username_1 FROM forum_users f0_ WHERE f0_.id IN (1+1)
+SELECT f0_.id AS id_0, f0_.username AS username_1 FROM forum_users f0_ WHERE f0_.id IN (1 + 1)
 SQL
         );
     }
