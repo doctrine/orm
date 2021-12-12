@@ -941,4 +941,14 @@ class MappingException extends ORMException
             )
         );
     }
+
+    /** @return self */
+    public static function invalidOverrideType(string $expectdType, $givenValue)
+    {
+        return new self(sprintf(
+            "Expected %s, but %s was given.",
+            $expectdType,
+            is_object($givenValue) ? get_class($givenValue) : gettype($givenValue)
+        ));
+    }
 }

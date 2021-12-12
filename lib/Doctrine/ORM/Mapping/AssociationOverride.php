@@ -8,6 +8,7 @@ namespace Doctrine\ORM\Mapping;
  * This annotation is used to override association mapping of property for an entity relationship.
  *
  * @Annotation
+ * @NamedArgumentConstructor
  * @Target("ANNOTATION")
  */
 final class AssociationOverride implements Annotation
@@ -47,4 +48,22 @@ final class AssociationOverride implements Annotation
      * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
      */
     public $fetch;
+
+    public function __construct(
+        string $name,
+        $joinColumns = null,
+        ?JoinTable $joinTable = null,
+        ?string $inversedBy = null,
+        ?string $fetch = null
+    ) {
+        if ($joinColumns instanceof JoinColumn) {
+            $joinColumns = [$joinColumns];
+        }
+
+        $this->name = $name;
+        $this->joinColumns = $joinColumns;
+        $this->joinTable = $joinTable;
+        $this->inversedBy = $inversedBy;
+        $this->fetch = $fetch;
+    }
 }
