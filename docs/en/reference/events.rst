@@ -197,10 +197,7 @@ events during the life-time of their registered entities.
 
 
 
--  ``prePersist`` - The ``prePersist`` event occurs for a given entity
-   before the respective ``EntityManager`` persist operation for that
-   entity is executed. It should be noted that this event is only triggered on
-   *initial* persist of an entity (i.e. it does not trigger on future updates).   
+ 
 -  ``preUpdate`` - The ``preUpdate`` event occurs before the database
    update operations to entity data. It is not called for a DQL
    ``UPDATE`` statement nor when the computed changeset is empty.
@@ -523,21 +520,23 @@ that (prior to version 2.4) you do not have access to the
 prePersist
 ~~~~~~~~~~
 
-There are two ways for the ``prePersist`` event to be triggered.
-One is obviously when you call ``EntityManager#persist()``. The
-event is also called for all cascaded associations.
+There are two ways for the ``prePersist`` event to be triggered:
 
-There is another way for ``prePersist`` to be called, inside the
+- One is obviously when you call ``EntityManager::persist()``. The
+event is also called for all :ref:`cascaded associations<transitive-persistence>`.
+- The other is inside the
 ``flush()`` method when changes to associations are computed and
-this association is marked as cascade persist. Any new entity found
+this association is marked as :ref:`cascade: persist<transitive-persistence>`. Any new entity found
 during this operation is also persisted and ``prePersist`` called
-on it. This is called "persistence by reachability".
+on it. This is called :ref:`persistence by reachability<persistence-by-reachability>`.
 
 In both cases you get passed a ``LifecycleEventArgs`` instance
 which has access to the entity and the entity manager.
 
-The following restrictions apply to ``prePersist``:
+This event is only triggered on *initial* persist of an entity
+(i.e. it does not trigger on future updates).
 
+The following restrictions apply to ``prePersist``:
 
 -  If you are using a PrePersist Identity Generator such as
    sequences the ID value will *NOT* be available within any
@@ -545,7 +544,7 @@ The following restrictions apply to ``prePersist``:
 -  Doctrine will not recognize changes made to relations in a prePersist
    event. This includes modifications to
    collections such as additions, removals or replacement.
-   
+
 .. _reference-events-pre-remove:
 
 preRemove
