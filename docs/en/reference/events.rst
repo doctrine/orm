@@ -196,9 +196,6 @@ The ``EntityManager`` and ``UnitOfWork`` classes trigger a bunch of
 events during the life-time of their registered entities.
 
 
--  ``onFlush`` - The ``onFlush`` event occurs after the change-sets of all
-   managed entities are computed. This event is not a lifecycle
-   callback.
 -  ``postFlush`` - The ``postFlush`` event occurs at the end of a flush operation. This
    event is not a lifecycle callback.
 -  ``onClear`` - The ``onClear`` event occurs when the
@@ -572,11 +569,10 @@ result in an infinite loop.
 onFlush
 ~~~~~~~
 
-OnFlush is a very powerful event. It is called inside
-``EntityManager#flush()`` after the changes to all the managed
+``onFlush`` is a very powerful event. It is called inside
+``EntityManager::flush()`` after the changes to all the managed
 entities and their associations have been computed. This means, the
 ``onFlush`` event has access to the sets of:
-
 
 -  Entities scheduled for insert
 -  Entities scheduled for update
@@ -585,7 +581,7 @@ entities and their associations have been computed. This means, the
 -  Collections scheduled for removal
 
 To make use of the ``onFlush`` event you have to be familiar with the
-internal ``UnitOfWork`` API, which grants you access to the previously
+internal :ref:`UnitOfWork<unit-of-work>` API, which grants you access to the previously
 mentioned sets. See this example:
 
 .. code-block:: php
@@ -620,11 +616,10 @@ mentioned sets. See this example:
         }
     }
 
-The following restrictions apply to the onFlush event:
-
+The following restrictions apply to the ``onFlush`` event:
 
 -  If you create and persist a new entity in ``onFlush``, then
-   calling ``EntityManager#persist()`` is not enough.
+   calling ``EntityManager::persist()`` is not enough.
    You have to execute an additional call to
    ``$unitOfWork->computeChangeSet($classMetadata, $entity)``.
 -  Changing primitive fields or associations requires you to
