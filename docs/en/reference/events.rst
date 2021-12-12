@@ -197,20 +197,7 @@ events during the life-time of their registered entities.
 
 
 
-.. warning::
 
-    Note that, when using ``Doctrine\ORM\AbstractQuery#toIterable()``, ``postLoad``
-    events will be executed immediately after objects are being hydrated, and therefore
-    associations are not guaranteed to be initialized. It is not safe to combine
-    usage of ``Doctrine\ORM\AbstractQuery#toIterable()`` and ``postLoad`` event
-    handlers.
-
-.. warning::
-
-    Note that the ``postRemove`` event or any events triggered after an entity removal
-    can receive an uninitializable proxy in case you have configured an entity to
-    cascade remove relations. In this case, you should load yourself the proxy in
-    the associated pre event.
 
 These can be hooked into by two different types of event
 listeners:
@@ -750,6 +737,13 @@ not directly mapped by Doctrine.
    entity has been deleted. It will be invoked after the database
    delete operations. It is not called for a DQL ``DELETE`` statement.
 
+.. warning::
+
+    The ``postRemove`` event or any events triggered after an entity removal
+    can receive an uninitializable proxy in case you have configured an entity to
+    cascade remove relations. In this case, you should load yourself the proxy in
+    the associated ``pre*`` event.
+
 .. _reference-events-post-load:
 
 postLoad
@@ -757,6 +751,14 @@ postLoad
 
 The postLoad event occurs after the entity has been loaded into the current
 ``EntityManager`` from the database or after ``refresh()`` has been applied to it.
+
+.. warning::
+
+    When using ``Doctrine\ORM\AbstractQuery::toIterable()``, ``postLoad``
+    events will be executed immediately after objects are being hydrated, and therefore
+    associations are not guaranteed to be initialized. It is not safe to combine
+    usage of ``Doctrine\ORM\AbstractQuery::toIterable()`` and ``postLoad`` event
+    handlers.
 
 .. _reference-events-on-clear:
 
