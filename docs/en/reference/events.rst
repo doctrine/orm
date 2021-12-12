@@ -196,11 +196,6 @@ The ``EntityManager`` and ``UnitOfWork`` classes trigger a bunch of
 events during the life-time of their registered entities.
 
 
-
- 
--  ``preUpdate`` - The ``preUpdate`` event occurs before the database
-   update operations to entity data. It is not called for a DQL
-   ``UPDATE`` statement nor when the computed changeset is empty.
 -  ``postLoad`` - The postLoad event occurs for an entity after the
    entity has been loaded into the current ``EntityManager`` from the
    database or after the refresh operation has been applied to it.
@@ -676,21 +671,21 @@ postFlush
 preUpdate
 ~~~~~~~~~
 
-PreUpdate is called inside the ``EntityManager#flush()`` method,
+PreUpdate is called inside the ``EntityManager::flush()`` method,
 right before an SQL ``UPDATE`` statement. This event is not
-triggered when the computed changeset is empty.
+triggered when the computed changeset is empty, nor for a DQL
+   ``UPDATE`` statement.
 
 Changes to associations of the updated entity are never allowed in
 this event, since Doctrine cannot guarantee to correctly handle
 referential integrity at this point of the flush operation. This
 event has a powerful feature however, it is executed with a
-``PreUpdateEventArgs`` instance, which contains a reference to the
+`_PreUpdateEventArgs`_ instance, which contains a reference to the
 computed change-set of this entity.
 
 This means you have access to all the fields that have changed for
 this entity with their old and new value. The following methods are
 available on the ``PreUpdateEventArgs``:
-
 
 -  ``getEntity()`` to get access to the actual entity.
 -  ``getEntityChangeSet()`` to get a copy of the changeset array.
@@ -745,15 +740,14 @@ lifecycle callback when there are expensive validations to call:
 
 Restrictions for this event:
 
-
 -  Changes to associations of the passed entities are not
    recognized by the flush operation anymore.
 -  Changes to fields of the passed entities are not recognized by
    the flush operation anymore, use the computed change-set passed to
    the event to modify primitive field values, e.g. use
    ``$eventArgs->setNewValue($field, $value);`` as in the Alice to Bob example above.
--  Any calls to ``EntityManager#persist()`` or
-   ``EntityManager#remove()``, even in combination with the ``UnitOfWork``
+-  Any calls to ``EntityManager::persist()`` or
+   ``EntityManager::remove()``, even in combination with the ``UnitOfWork``
    API are strongly discouraged and don't work as expected outside the
    flush operation.
 
