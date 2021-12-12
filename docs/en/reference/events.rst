@@ -196,8 +196,6 @@ The ``EntityManager`` and ``UnitOfWork`` classes trigger a bunch of
 events during the life-time of their registered entities.
 
 
--  ``postFlush`` - The ``postFlush`` event occurs at the end of a flush operation. This
-   event is not a lifecycle callback.
 -  ``onClear`` - The ``onClear`` event occurs when the
    ``EntityManager#clear()`` operation is invoked, after all references
    to entities have been removed from the unit of work. This event is not
@@ -632,8 +630,9 @@ The following restrictions apply to the ``onFlush`` event:
 postFlush
 ~~~~~~~~~
 
-``postFlush`` is called at the end of ``EntityManager#flush()``.
-``EntityManager#flush()`` can **NOT** be called safely inside its listeners.
+``postFlush`` is called at the end of ``EntityManager::flush()``.
+``EntityManager::flush()`` can **NOT** be called safely inside its listeners.
+This event is not a lifecycle callback.
 
 .. code-block:: php
 
