@@ -196,10 +196,6 @@ The ``EntityManager`` and ``UnitOfWork`` classes trigger a bunch of
 events during the life-time of their registered entities.
 
 
--  ``onClassMetadataNotFound`` - Loading class metadata for a particular
-   requested class name failed. Manipulating the given event args instance
-   allows providing fallback metadata even when no actual metadata exists
-   or could be found. This event is not a lifecycle callback.
 -  ``preFlush`` - The ``preFlush`` event occurs at the very beginning of
    a flush operation.
 -  ``onFlush`` - The ``onFlush`` event occurs after the change-sets of all
@@ -1025,6 +1021,11 @@ This event is not a lifecycle callback.
             $classMetadata->mapField($fieldMapping);
         }
     }
+
+If not class metadata can be found, an ``onClassMetadataNotFound`` event is dispatched.
+Manipulating the given event args instance
+allows providing fallback metadata even when no actual metadata exists
+or could be found. This event is not a lifecycle callback.
 
 SchemaTool Events
 -----------------
