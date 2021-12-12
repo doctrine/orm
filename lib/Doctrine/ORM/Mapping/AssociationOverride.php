@@ -23,32 +23,35 @@ final class AssociationOverride implements Annotation
     /**
      * The join column that is being mapped to the persistent attribute.
      *
-     * @var array<\Doctrine\ORM\Mapping\JoinColumn>
+     * @var array<\Doctrine\ORM\Mapping\JoinColumn>|null
      */
     public $joinColumns;
 
     /**
      * The join table that maps the relationship.
      *
-     * @var \Doctrine\ORM\Mapping\JoinTable
+     * @var \Doctrine\ORM\Mapping\JoinTable|null
      */
     public $joinTable;
 
     /**
      * The name of the association-field on the inverse-side.
      *
-     * @var string
+     * @var ?string
      */
     public $inversedBy;
 
     /**
      * The fetching strategy to use for the association.
      *
-     * @var string
+     * @var ?string
      * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
      */
     public $fetch;
 
+    /**
+     * @param JoinColumn|array<JoinColumn> $joinColumns
+     */
     public function __construct(
         string $name,
         $joinColumns = null,
@@ -60,10 +63,10 @@ final class AssociationOverride implements Annotation
             $joinColumns = [$joinColumns];
         }
 
-        $this->name = $name;
+        $this->name        = $name;
         $this->joinColumns = $joinColumns;
-        $this->joinTable = $joinTable;
-        $this->inversedBy = $inversedBy;
-        $this->fetch = $fetch;
+        $this->joinTable   = $joinTable;
+        $this->inversedBy  = $inversedBy;
+        $this->fetch       = $fetch;
     }
 }

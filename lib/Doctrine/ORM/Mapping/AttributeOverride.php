@@ -31,7 +31,7 @@ final class AttributeOverride implements Annotation
 
     public function __construct(string $name, Column $column)
     {
-        $this->name = $name;
+        $this->name   = $name;
         $this->column = $column;
     }
 }

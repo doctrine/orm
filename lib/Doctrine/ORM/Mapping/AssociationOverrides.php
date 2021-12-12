@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Attribute;
+
+use function is_array;
+
 /**
  * This annotation is used to override association mappings of relationship properties.
  *
@@ -22,16 +26,16 @@ final class AssociationOverrides implements Annotation
     public $overrides = [];
 
     /**
-     * @param array|AssociationOverride  $overrides
+     * @param array|AssociationOverride $overrides
      */
     public function __construct($overrides)
     {
-        if (!is_array($overrides)) {
+        if (! is_array($overrides)) {
             $overrides = [$overrides];
         }
 
         foreach ($overrides as $override) {
-            if (!($override instanceof AssociationOverride)) {
+            if (! ($override instanceof AssociationOverride)) {
                 throw MappingException::invalidOverrideType('AssociationOverride', $override);
             }
 

@@ -363,6 +363,18 @@ class AttributeDriver extends AnnotationDriver
                         'name' => $joinTableAttribute->name,
                         'schema' => $joinTableAttribute->schema,
                     ];
+
+                    if ($joinTableAttribute->joinColumns) {
+                        foreach ($joinTableAttribute->joinColumns as $joinColumn) {
+                            $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
+                        }
+                    }
+
+                    if ($joinTableAttribute->inverseJoinColumns) {
+                        foreach ($joinTableAttribute->inverseJoinColumns as $joinColumn) {
+                            $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumn);
+                        }
+                    }
                 }
 
                 foreach ($this->reader->getPropertyAnnotation($property, Mapping\JoinColumn::class) as $joinColumn) {
@@ -397,12 +409,66 @@ class AttributeDriver extends AnnotationDriver
             }
         }
 
-        // Evaluate AttributeOverrides annotation
-        if (isset($classAttributes[Mapping\AttributeOverride::class])) {
-            foreach ($classAttributes[Mapping\AttributeOverride::class] as $attributeOverrideAttribute) {
-                $attributeOverride = $this->columnToArray($attributeOverrideAttribute->name, $attributeOverrideAttribute->column);
+        // Evaluate AssociationOverrides annotation
+        if (isset($classAttributes[Mapping\AssociationOverrides::class])) {
+            $associationOverride = $classAttributes[Mapping\AssociationOverrides::class];
 
-                $metadata->setAttributeOverride($attributeOverrideAttribute->name, $attributeOverride);
+            foreach ($associationOverride->overrides as $associationOverride) {
+                $override  = [];
+                $fieldName = $associationOverride->name;
+
+                // Check for JoinColumn/JoinColumns annotations
+                if ($associationOverride->joinColumns) {
+                    $joinColumns = [];
+
+                    foreach ($associationOverride->joinColumns as $joinColumn) {
+                        $joinColumns[] = $this->joinColumnToArray($joinColumn);
+                    }
+
+                    $override['joinColumns'] = $joinColumns;
+                }
+
+                // Check for JoinTable annotations
+                if ($associationOverride->joinTable) {
+                    $joinTableAnnot = $associationOverride->joinTable;
+                    $joinTable      = [
+                        'name'      => $joinTableAnnot->name,
+                        'schema'    => $joinTableAnnot->schema,
+                    ];
+
+                    foreach ($joinTableAnnot->joinColumns as $joinColumn) {
+                        $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
+                    }
+
+                    foreach ($joinTableAnnot->inverseJoinColumns as $joinColumn) {
+                        $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumn);
+                    }
+
+                    $override['joinTable'] = $joinTable;
+                }
+
+                // Check for inversedBy
+                if ($associationOverride->inversedBy) {
+                    $override['inversedBy'] = $associationOverride->inversedBy;
+                }
+
+                // Check for `fetch`
+                if ($associationOverride->fetch) {
+                    $override['fetch'] = constant(Mapping\ClassMetadata::class . '::FETCH_' . $associationOverride->fetch);
+                }
+
+                $metadata->setAssociationOverride($fieldName, $override);
+            }
+        }
+
+        // Evaluate AttributeOverrides annotation
+        if (isset($classAttributes[Mapping\AttributeOverrides::class])) {
+            $attributeOverridesAnnot = $classAttributes[Mapping\AttributeOverrides::class];
+
+            foreach ($attributeOverridesAnnot->overrides as $attributeOverride) {
+                $mapping = $this->columnToArray($attributeOverride->name, $attributeOverride->column);
+
+                $metadata->setAttributeOverride($attributeOverride->name, $mapping);
             }
         }
 

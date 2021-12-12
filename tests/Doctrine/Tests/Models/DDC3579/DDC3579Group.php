@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\ManyToMany;
 /**
  * @Entity
  */
+#[Entity]
 class DDC3579Group
 {
     /**
@@ -22,18 +23,21 @@ class DDC3579Group
      * @GeneratedValue
      * @Id @Column(type="integer")
      */
+    #[Id, GeneratedValue, Column(type: "integer")]
     private $id;
 
     /**
      * @var string|null
      * @Column
      */
+    #[Column]
     private $name;
 
     /**
      * @psalm-var Collection<int, DDC3579Admin>
      * @ManyToMany(targetEntity="DDC3579Admin", mappedBy="groups")
      */
+    #[ManyToMany(targetEntity: DDC3579Admin::class, mappedBy: "groups")]
     private $admins;
 
     public function __construct(?string $name = null)

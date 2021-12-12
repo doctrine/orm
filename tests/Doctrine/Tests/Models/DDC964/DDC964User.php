@@ -20,6 +20,7 @@ use Doctrine\ORM\Mapping\OrderBy;
 /**
  * @MappedSuperclass
  */
+#[MappedSuperclass]
 class DDC964User
 {
     /**
@@ -28,12 +29,14 @@ class DDC964User
      * @GeneratedValue
      * @Column(type="integer", name="user_id", length=150)
      */
+    #[Id, GeneratedValue, Column(type: "integer", name: "user_id", length: 150)]
     protected $id;
 
     /**
      * @var string|null
      * @Column(name="user_name", nullable=true, unique=false, length=250)
      */
+    #[Column(name: "user_name", nullable: true, unique: false, length: 250)]
     protected $name;
 
     /**
@@ -44,6 +47,8 @@ class DDC964User
      *  inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
      * )
      */
+    #[ManyToMany(targetEntity: DDC964Group::class, inversedBy: "users", cascade: ["persist", "merge", "detach"])]
+    #[JoinTable(name: "ddc964_users_groups", joinColumns: [new JoinColumn(name: "user_id", referencedColumnName: "id")], inverseJoinColumns: [new JoinColumn(name: "group_id", referencedColumnName: "id")])]
     protected $groups;
 
     /**
@@ -51,6 +56,8 @@ class DDC964User
      * @ManyToOne(targetEntity="DDC964Address", cascade={"persist", "merge"})
      * @JoinColumn(name="address_id", referencedColumnName="id")
      */
+    #[ManyToOne(targetEntity: DDC964Address::class, cascade: ["persist", "merge"])]
+    #[JoinColumn(name: "address_id", referencedColumnName: "id")]
     protected $address;
 
     public function __construct(?string $name = null)

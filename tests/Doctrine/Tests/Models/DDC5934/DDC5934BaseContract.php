@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\ManyToMany;
 /**
  * @Entity
  */
+#[Entity]
 class DDC5934BaseContract
 {
     /**
@@ -24,12 +25,14 @@ class DDC5934BaseContract
      * @Column(name="id", type="integer")
      * @GeneratedValue()
      */
+    #[Id, Column, GeneratedValue]
     public $id;
 
     /**
      * @psalm-var Collection<int, DDC5934Member>
      * @ManyToMany(targetEntity="DDC5934Member", fetch="LAZY", inversedBy="contracts")
      */
+    #[ManyToMany(targetEntity: DDC5934Member::class, fetch: "LAZY", inversedBy: "contracts")]
     public $members;
 
     public function __construct()
