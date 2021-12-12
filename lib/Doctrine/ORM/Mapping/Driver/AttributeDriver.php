@@ -94,6 +94,14 @@ class AttributeDriver extends AnnotationDriver
             if ($tableAnnot->options) {
                 $primaryTable['options'] = $tableAnnot->options;
             }
+
+            if ($tableAnnot->indexes) {
+                $classAttributes[Mapping\Index::class] = $tableAnnot->indexes;
+            }
+
+            if ($tableAnnot->uniqueConstraints) {
+                $classAttributes[Mapping\UniqueConstraint::class] = $tableAnnot->uniqueConstraints;
+            }
         }
 
         if (isset($classAttributes[Mapping\Index::class])) {
