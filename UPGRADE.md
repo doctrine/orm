@@ -1,5 +1,9 @@
 # Upgrade to 3.0
 
+## BC BREAK: Remove `Setup::registerAutoloadDirectory()`
+
+Use Composer's autoloader instead.
+
 ## BC BREAK: Remove YAML mapping drivers.
 
 If your code relies on `YamlDriver` or `SimpleYamlDriver`, you **MUST** migrate to

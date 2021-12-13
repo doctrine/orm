@@ -3354,15 +3354,6 @@
       <code>isAbstract</code>
     </PossiblyNullReference>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Setup.php">
-    <DeprecatedClass occurrences="2">
-      <code>new ClassLoader('Doctrine', $directory)</code>
-      <code>new ClassLoader('Symfony\Component', $directory . '/Doctrine')</code>
-    </DeprecatedClass>
-    <UnresolvableInclude occurrences="1">
-      <code>require_once $directory . '/Doctrine/Common/ClassLoader.php'</code>
-    </UnresolvableInclude>
-  </file>
   <file src="lib/Doctrine/ORM/UnitOfWork.php">
     <ArgumentTypeCoercion occurrences="6">
       <code>$class</code>
