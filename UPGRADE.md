@@ -1,5 +1,17 @@
 # Upgrade to 3.0
 
+## BC BREAK: Remove YAML mapping drivers.
+
+If your code relies on `YamlDriver` or `SimpleYamlDriver`, you **MUST** migrate to
+attribute, annotation or XML drivers instead.
+
+You can use the `orm:convert-mapping` command to convert your metadata mapping to XML
+_before_ upgrading to 3.0:
+
+```sh
+php doctrine orm:convert-mapping xml /path/to/mapping-path-converted-to-xml
+```
+
 ## BC BREAK: Remove code generators and related console commands
 
 These console commands have been removed:

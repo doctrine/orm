@@ -9,7 +9,6 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
-use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\Tests\OrmTestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -87,14 +86,6 @@ class SetupTest extends OrmTestCase
 
         self::assertInstanceOf(Configuration::class, $config);
         self::assertInstanceOf(XmlDriver::class, $config->getMetadataDriverImpl());
-    }
-
-    public function testYAMLConfiguration(): void
-    {
-        $config = Setup::createYAMLMetadataConfiguration([], true);
-
-        self::assertInstanceOf(Configuration::class, $config);
-        self::assertInstanceOf(YamlDriver::class, $config->getMetadataDriverImpl());
     }
 
     /**

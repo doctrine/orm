@@ -223,7 +223,7 @@ events during the life-time of their registered entities.
    database or after the refresh operation has been applied to it.
 -  ``loadClassMetadata`` - The ``loadClassMetadata`` event occurs after the
    mapping metadata for a class has been loaded from a mapping source
-   (annotations/xml/yaml). This event is not a lifecycle callback.
+   (annotations/xml). This event is not a lifecycle callback.
 -  ``onClassMetadataNotFound`` - Loading class metadata for a particular
    requested class name failed. Manipulating the given event args instance
    allows providing fallback metadata even when no actual metadata exists
@@ -374,17 +374,6 @@ specific to a particular entity class's lifecycle.
                 </lifecycle-callbacks>
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          fields:
-            # ...
-            value:
-              type: string(255)
-          lifecycleCallbacks:
-            prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersist ]
-            postLoad: [ doStuffOnPostLoad ]
 
 Lifecycle Callbacks Event Argument
 ----------------------------------
@@ -825,13 +814,6 @@ An entity listener is a lifecycle listener class used for an entity.
                 <!-- .... -->
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        MyProject\Entity\User:
-          type: entity
-          entityListeners:
-            UserListener:
-          # ....
 
 .. _reference-entity-listeners:
 
@@ -914,24 +896,6 @@ you need to map the listener method using the event type mapping:
                 <!-- .... -->
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        MyProject\Entity\User:
-          type: entity
-          entityListeners:
-            UserListener:
-              preFlush: [preFlushHandler]
-              postLoad: [postLoadHandler]
-
-              postPersist: [postPersistHandler]
-              prePersist: [prePersistHandler]
-
-              postUpdate: [postUpdateHandler]
-              preUpdate: [preUpdateHandler]
-
-              postRemove: [postRemoveHandler]
-              preRemove: [preRemoveHandler]
-          # ....
 
 .. note::
 

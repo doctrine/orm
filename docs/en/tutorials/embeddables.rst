@@ -59,22 +59,6 @@ instead of simply adding the respective columns to the ``User`` class.
             </embeddable>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          embedded:
-            address:
-              class: Address
-
-        Address:
-          type: embeddable
-          fields:
-            street: { type: string }
-            postalCode: { type: string }
-            city: { type: string }
-            country: { type: string }
-
 In terms of your database schema, Doctrine will automatically inline all
 columns from the ``Address`` class into the table of the ``User`` class,
 just as if you had declared them directly there.
@@ -126,15 +110,6 @@ The following example shows you how to set your prefix to ``myPrefix_``:
             <embedded name="address" class="Address" column-prefix="myPrefix_" />
         </entity>
 
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          embedded:
-            address:
-              class: Address
-              columnPrefix: myPrefix_
-
 To have Doctrine drop the prefix and use the value object's property name
 directly, set ``columnPrefix=false`` (``use-column-prefix="false"`` for XML):
 
@@ -150,15 +125,6 @@ directly, set ``columnPrefix=false`` (``use-column-prefix="false"`` for XML):
             /** @Embedded(class = "Address", columnPrefix = false) */
             private $address;
         }
-
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          embedded:
-            address:
-              class: Address
-              columnPrefix: false
 
     .. code-block:: xml
 
@@ -176,4 +142,3 @@ as if they were declared in the ``User`` class:
 .. code-block:: sql
 
     SELECT u FROM User u WHERE u.address.city = :myCity
-

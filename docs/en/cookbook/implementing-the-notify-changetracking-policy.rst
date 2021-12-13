@@ -55,7 +55,7 @@ listeners:
 .. code-block:: php
 
     <?php
-    // Mapping not shown, either in annotations, xml or yaml as usual
+    // Mapping not shown, either in annotations or xml as usual
     class MyEntity extends DomainObject
     {
         private $data;
@@ -73,5 +73,3 @@ The check whether the new value is different from the old one is
 not mandatory but recommended. That way you can avoid unnecessary
 updates and also have full control over when you consider a
 property changed.
-
-

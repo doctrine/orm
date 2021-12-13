@@ -35,7 +35,6 @@ class ConfigurationBlock(Directive):
         'html':            'HTML',
         'xml':             'XML',
         'php':             'PHP',
-        'yaml':            'YAML',
         'jinja':           'Twig',
         'html+jinja':      'Twig',
         'jinja+html':      'Twig',
