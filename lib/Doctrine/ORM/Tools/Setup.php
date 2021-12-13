@@ -40,6 +40,8 @@ class Setup
      * Use this method to register all autoloads for a downloaded Doctrine library.
      * Pick the directory the library was uncompressed into.
      *
+     * @deprecated Use Composer's autoloader instead.
+     *
      * @param string $directory
      *
      * @return void
