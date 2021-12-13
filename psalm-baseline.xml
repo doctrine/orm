@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.13.1@5cf660f63b548ccd4a56f62d916ee4d6028e01a3">
+<files psalm-version="v4.15.0@a1b5e489e6fcebe40cb804793d964e99fc347820">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedMethod occurrences="3">
       <code>getResultCacheDriver</code>
@@ -999,6 +999,9 @@
       <code>$this-&gt;table</code>
       <code>$this-&gt;table</code>
     </PropertyTypeCoercion>
+    <RedundantCast occurrences="1">
+      <code>array_values</code>
+    </RedundantCast>
     <RedundantConditionGivenDocblockType occurrences="3">
       <code>$className !== null</code>
       <code>$mapping !== false</code>

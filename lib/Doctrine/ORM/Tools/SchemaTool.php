@@ -127,7 +127,8 @@ class SchemaTool
         return isset($processedClasses[$class->name]) ||
             $class->isMappedSuperclass ||
             $class->isEmbeddedClass ||
-            ($class->isInheritanceTypeSingleTable() && $class->name !== $class->rootEntityName);
+            ($class->isInheritanceTypeSingleTable() && $class->name !== $class->rootEntityName) ||
+            in_array($class->name, $this->em->getConfiguration()->getSchemaIgnoreClasses());
     }
 
     /**

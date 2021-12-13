@@ -40,9 +40,9 @@
         "phpbench/phpbench": "^1.0",
         "phpstan/phpstan": "1.2.0",
         "phpunit/phpunit": "^9.5",
-        "squizlabs/php_codesniffer": "3.6.1",
+        "squizlabs/php_codesniffer": "3.6.2",
         "symfony/cache": "^4.4 || ^5.2",
-        "vimeo/psalm": "4.13.1"
+        "vimeo/psalm": "4.15.0"
     },
     "conflict": {
         "doctrine/annotations": "<1.13 || >= 2.0"
