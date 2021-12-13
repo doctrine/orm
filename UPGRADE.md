@@ -1,5 +1,9 @@
 # Upgrade to 2.11
 
+## Deprecated: `Setup::registerAutoloadDirectory()`
+
+Use Composer's autoloader instead.
+
 ## Deprecated: `AbstractHydrator::hydrateRow()`
 
 Following the deprecation of the method `AbstractHydrator::iterate()`, the
