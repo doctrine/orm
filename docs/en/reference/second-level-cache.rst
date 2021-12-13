@@ -563,7 +563,7 @@ The Cache Mode controls how a particular query interacts with the second-level c
     /* @var $em \Doctrine\ORM\EntityManager */
     // Will refresh the query cache and all entities the cache as it reads from the database.
     $result1 = $em->createQuery('SELECT c FROM Country c ORDER BY c.name')
-        ->setCacheMode(Cache::MODE_GET)
+        ->setCacheMode(\Doctrine\ORM\Cache::MODE_GET)
         ->setCacheable(true)
         ->getResult();
 
@@ -587,7 +587,7 @@ Execute the ``UPDATE`` and invalidate ``all cache entries`` using ``Query::HINT_
     <?php
     // Execute and invalidate
     $this->_em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
-        ->setHint(Query::HINT_CACHE_EVICT, true)
+        ->setHint(\Doctrine\ORM\Query::HINT_CACHE_EVICT, true)
         ->execute();
 
 
