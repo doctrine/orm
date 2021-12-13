@@ -93,8 +93,6 @@ Cache region
 ``Doctrine\ORM\Cache\Region`` defines a contract for accessing a particular
 cache region.
 
-`See API Doc <https://www.doctrine-project.org/api/orm/current/Doctrine/ORM/Cache/Region.html>`_.
-
 Concurrent cache region
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -105,16 +103,12 @@ If you want to use an ``READ_WRITE`` cache, you should consider providing your o
 
 ``Doctrine\ORM\Cache\ConcurrentRegion`` defines a contract for concurrently managed data region.
 
-`See API Doc <https://www.doctrine-project.org/api/orm/current/Doctrine/ORM/Cache/ConcurrentRegion.html>`_.
-
 Timestamp region
 ~~~~~~~~~~~~~~~~
 
 ``Doctrine\ORM\Cache\TimestampRegion``
 
 Tracks the timestamps of the most recent updates to particular entity.
-
-`See API Doc <https://www.doctrine-project.org/api/orm/current/Doctrine/ORM/Cache/TimestampRegion.html>`_.
 
 .. _reference-second-level-cache-mode:
 
@@ -209,8 +203,6 @@ It allows you to provide a specific implementation of the following components:
 ``CollectionHydrator``
     transforms collections into cache entries and cache entries into collections
 
-`See API Doc <https://www.doctrine-project.org/api/orm/current/Doctrine/ORM/Cache/DefaultCacheFactory.html>`_.
-
 Region Lifetime
 ~~~~~~~~~~~~~~~
 
@@ -271,9 +263,6 @@ By providing a cache logger you should be able to get information about all cach
 If you want to get more information you should implement
 ``Doctrine\ORM\Cache\Logging\CacheLogger`` and collect
 all the information you want.
-
-`See API Doc <https://www.doctrine-project.org/api/orm/current/Doctrine/ORM/Cache/Logging/CacheLogger.html>`_.
-
 
 Entity cache definition
 -----------------------
