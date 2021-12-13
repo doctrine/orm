@@ -136,38 +136,38 @@ entity, see :ref:`Lifecycle Callbacks<lifecycle-callbacks>`.
 Events Overview
 ---------------
 
-+-----------------------------------------------------------------+-----------------------+-----------+
-| Event                                                           | Dispatched by         | Lifecycle |
-|                                                                 |                       | Callback  |
-+=================================================================+=======================+===========+
-| :ref:`preRemove<reference-events-pre-remove>`                   | ``$em->remove()``     | Yes       |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`postRemove<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`prePersist<reference-events-pre-persist>`                 | ``$em->persist()``    | Yes       |
-|                                                                 | on *initial* persist  |           |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`postPersist<reference-events-post-update-remove-persist>` | ``$em->flush()``      | Yes       |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`preUpdate<reference-events-pre-update>`                   | ``$em->flush()``      | Yes       |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`postUpdate<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`postLoad<reference-events-post-load>`                     | Loading from database | Yes       |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`loadClassMetadata<reference-events-load-class-metadata>`  | Loading of mapping    | No        |
-|                                                                 | metadata              |           |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| ``onClassMetadataNotFound``                                     | ``MappingException``  | No        |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`preFlush<reference-events-pre-flush>`                     | ``$em->flush()``      | Yes       |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`onFlush<reference-events-on-flush>`                       | ``$em->flush()``      | No        |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| :ref:`postFlush<reference-events-post-flush>`                   | ``$em->flush()``      | No        |
-+-----------------------------------------------------------------+-----------------------+-----------+
-| ``onClear``                                                     | ``$em->clear()``      | No        |
-+-----------------------------------------------------------------+-----------------------+-----------+
++-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| Event                                                           | Dispatched by         | Lifecycle | Passed                              |
+|                                                                 |                       | Callback  | Argument                            |
++=================================================================+=======================+===========+=====================================+
+| :ref:`preRemove<reference-events-pre-remove>`                   | ``$em->remove()``     | Yes       | `_LifecycleEventArgs`_              |
++-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`postRemove<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       | `_LifecycleEventArgs`_              |
++-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`prePersist<reference-events-pre-persist>`                 | ``$em->persist()``    | Yes       | `_LifecycleEventArgs`_              |
+|                                                                 | on *initial* persist  |           |                                     |
++-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`postPersist<reference-events-post-update-remove-persist>` | ``$em->flush()``      | Yes       | `_LifecycleEventArgs`_              |
++-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`preUpdate<reference-events-pre-update>`                   | ``$em->flush()``      | Yes       | `_PreUpdateEventArgs`_              |
++-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`postUpdate<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       | `_LifecycleEventArgs`_              |
++-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`postLoad<reference-events-post-load>`                     | Loading from database | Yes       | `_LifecycleEventArgs`_              |
++-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`loadClassMetadata<reference-events-load-class-metadata>`  | Loading of mapping    | No        | `_LoadClassMetadataEventArgs`       |
+|                                                                 | metadata              |           |                                     |
++-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| ``onClassMetadataNotFound``                                     | ``MappingException``  | No        | `_OnClassMetadataNotFoundEventArgs` |
++-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`preFlush<reference-events-pre-flush>`                     | ``$em->flush()``      | Yes       | `_PreFlushEventArgs`_               |
++-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`onFlush<reference-events-on-flush>`                       | ``$em->flush()``      | No        | `_OnFlushEventArgs`                 |
++-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`postFlush<reference-events-post-flush>`                   | ``$em->flush()``      | No        | `_PostFlushEventArgs`               |
++-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| ``onClear``                                                     | ``$em->clear()``      | No        | `_OnClearEventArgs`                 |
++-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
 
 Naming convention
 ~~~~~~~~~~~~~~~~~
@@ -294,6 +294,9 @@ specific to a particular entity class's lifecycle.
     .. code-block:: attribute
 
         <?php
+        
+        use Doctrine\DBAL\Types\Types;
+        use Doctrine\Persistence\Event\LifecycleEventArgs;
 
         /**
          * #[Entity]
@@ -303,11 +306,11 @@ specific to a particular entity class's lifecycle.
         {
             // ...
 
-            #[Column(type: 'string', length: 255)]
+            #[Column(type: Types::STRING, length: 255)]
             public $value;
 
             #[PrePersist]
-            public function doStuffOnPrePersist()
+            public function doStuffOnPrePersist(LifecycleEventArgs $eventArgs)
             {
                 $this->createdAt = date('Y-m-d H:i:s');
             }
@@ -318,15 +321,17 @@ specific to a particular entity class's lifecycle.
                 $this->value = 'changed from prePersist callback!';
             }
 
-            #[PostLoad]
-            public function doStuffOnPostLoad()
+            #[PreUpdate]
+            public function doStuffOnPreUpdate(PreUpdateEventArgs $eventArgs)
             {
-                $this->value = 'changed from postLoad callback!';
+                $this->value = 'changed from preUpdate callback!';
             }
         }
     .. code-block:: annotation
 
         <?php
+        
+        use Doctrine\Persistence\Event\LifecycleEventArgs;
 
         /**
          * @Entity
@@ -340,7 +345,7 @@ specific to a particular entity class's lifecycle.
             public $value;
 
             /** @PrePersist */
-            public function doStuffOnPrePersist()
+            public function doStuffOnPrePersist(LifecycleEventArgs $eventArgs)
             {
                 $this->createdAt = date('Y-m-d H:i:s');
             }
@@ -351,10 +356,10 @@ specific to a particular entity class's lifecycle.
                 $this->value = 'changed from prePersist callback!';
             }
 
-            /** @PostLoad */
-            public function doStuffOnPostLoad()
+            /** @PreUpdate */
+            public function doStuffOnPreUpdate(PreUpdateEventArgs $eventArgs)
             {
-                $this->value = 'changed from postLoad callback!';
+                $this->value = 'changed from preUpdate callback!';
             }
         }
     .. code-block:: xml
@@ -370,7 +375,7 @@ specific to a particular entity class's lifecycle.
                 <lifecycle-callbacks>
                     <lifecycle-callback type="prePersist" method="doStuffOnPrePersist"/>
                     <lifecycle-callback type="prePersist" method="doOtherStuffOnPrePersist"/>
-                    <lifecycle-callback type="postLoad" method="doStuffOnPostLoad"/>
+                    <lifecycle-callback type="preUpdate" method="doStuffOnPreUpdate"/>
                 </lifecycle-callbacks>
             </entity>
         </doctrine-mapping>
@@ -384,7 +389,7 @@ specific to a particular entity class's lifecycle.
               type: string(255)
           lifecycleCallbacks:
             prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersist ]
-            postLoad: [ doStuffOnPostLoad ]
+            preUpdate: [ doStuffOnPreUpdate ]
 
 Lifecycle Callbacks Event Argument
 ----------------------------------
@@ -1083,3 +1088,12 @@ and the EntityManager.
             $em = $eventArgs->getEntityManager();
         }
     }
+
+.. _LifecycleEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/LifecycleEventArgs.php
+.. _PreUpdateEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PreUpdateEventArgs.php
+.. _PreFlushEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PreFlushEventArgs.php
+.. _PostFlushEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PostFlushEventArgs.php
+.. _OnFlushEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/OnFlushEventArgs.php
+.. _OnClearEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/OnClearEventArgs.php
+.. _LoadClassMetadataEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/LoadClassMetadataEventArgs.php
+.. _OnClassMetadataNotFoundEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/OnClassMetadataNotFoundEventArgs.php
