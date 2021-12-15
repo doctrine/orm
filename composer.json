@@ -69,8 +69,8 @@
     },
     "repositories": {
         "greg0ire": {
-            "type": "vcs",
-            "url": "https://github.com/greg0ire/dbal"
+            "type": "git",
+            "url": "git@github.com:greg0ire/dbal.git"
         }
     }
 }
