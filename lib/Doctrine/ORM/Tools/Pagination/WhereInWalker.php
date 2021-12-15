@@ -55,6 +55,11 @@ class WhereInWalker extends TreeWalkerAdapter
     const HINT_PAGINATOR_ID_COUNT = 'doctrine.id.count';
 
     /**
+     * Hint name for using the fullyLoadChildCollection option
+     */
+    const HINT_FULLY_LOAD_CHILD_COLLECTION = 'HINT_FULLY_LOAD_CHILD_COLLECTION';
+
+    /**
      * Primary key alias for query.
      */
     const PAGINATOR_ID_ALIAS = 'dpid';
@@ -125,6 +130,25 @@ class WhereInWalker extends TreeWalkerAdapter
 
         $conditionalPrimary = new ConditionalPrimary;
         $conditionalPrimary->simpleConditionalExpression = $expression;
+
+        $fullyLoadChildCollection = $this->_getQuery()->getHint(self::HINT_FULLY_LOAD_CHILD_COLLECTION);
+
+        if ($fullyLoadChildCollection) {
+            // Replace Where clause with IN condition
+            $AST->whereClause = new WhereClause(
+                new ConditionalExpression(
+                    [
+                        new ConditionalTerm([$conditionalPrimary]),
+                    ]
+                )
+            );
+
+            // Reset having clause since data will be queried by the IN condition in Where clause
+            $AST->havingClause = null;
+
+            return;
+        }
+
         if ($AST->whereClause) {
             if ($AST->whereClause->conditionalExpression instanceof ConditionalTerm) {
                 $AST->whereClause->conditionalExpression->conditionalFactors[] = $conditionalPrimary;
