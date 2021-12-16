@@ -1061,6 +1061,8 @@ Required attributes:
 Optional attributes:
 
 -  **schema**: Name of the schema the table lies in.
+-  **indexes**: An array of nested #[Index] attributes (requires PHP 8.1)
+-  **uniqueConstraints**: An array of nested #[UniqueConstraint] attributes (requires PHP 8.1)
 
 Example:
 
