@@ -81,12 +81,6 @@
                 <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
             </errorLevel>
         </RedundantCastGivenDocblockType>
-        <RedundantCondition>
-            <errorLevel type="suppress">
-                <!-- The SQLAnywherePlatform class may or may not exist depending on the DBAL version -->
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
-            </errorLevel>
-        </RedundantCondition>
         <!-- Workaround for https://github.com/vimeo/psalm/issues/7026 -->
         <ReservedWord>
             <errorLevel type="suppress">

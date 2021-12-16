@@ -5,16 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\DBAL\Platforms\SqlitePlatform;
-use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\ORM\Tools;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
 use function array_filter;
-use function count;
 use function implode;
-use function method_exists;
 use function strpos;
 
 use const PHP_EOL;
@@ -96,13 +93,7 @@ class DDC214Test extends OrmFunctionalTestCase
 
         $fromSchema = $sm->createSchema();
         $toSchema   = $this->schemaTool->getSchemaFromMetadata($classMetadata);
-
-        if (method_exists($sm, 'createComparator')) {
-            $comparator = $sm->createComparator();
-        } else {
-            $comparator = new Comparator();
-        }
-
+        $comparator = $sm->createComparator();
         $schemaDiff = $comparator->compareSchemas($fromSchema, $toSchema);
 
         $sql = $schemaDiff->toSql($this->_em->getConnection()->getDatabasePlatform());
