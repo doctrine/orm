@@ -635,7 +635,8 @@ are missing they will be computed considering the field's name and the current
 
 The ``#[InverseJoinColumn]`` is the same as ``#[JoinColumn]`` and is used in the context
 of a ``#[ManyToMany]`` attribute declaration to specifiy the details of the join table's
-column information used for the join to the inverse entity.
+column information used for the join to the inverse entity. This is only required
+on PHP 8.0, where nested attributes are not yet supported.
 
 Optional attributes:
 
@@ -685,12 +686,22 @@ details of the database join table. If you do not specify
 using the affected table and the column names.
 
 A notable difference to the annotation metadata support, ``#[JoinColumn]``
-and ``#[InverseJoinColumn]`` are specified at the property level and are not
-nested within the ``#[JoinTable]`` attribute.
+and ``#[InverseJoinColumn]`` can be specified at the property level and are not
+nested within the ``#[JoinTable]`` attribute. This is required for PHP 8.0 support,
+but can be replaced with PHP 8.1 using nested attributes.
 
 Required attribute:
 
 -  **name**: Database name of the join-table
+
+Optional parameters:
+
+-  **joinColumns**: An array of #[JoinColumn] attributes describing the
+   join-relation between the owning entities table and the join table.
+   Requires PHP 8.1 for nested attributes support.
+-  **inverseJoinColumns**: An array of #[JoinColumn] attributes
+   describing the join-relation between the inverse entities table and
+   the join table. Requires PHP 8.1 for nested attributes support.
 
 Example:
 
