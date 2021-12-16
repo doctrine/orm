@@ -10,6 +10,8 @@ annotation metadata supported since the first version 2.0.
 Index
 -----
 
+-  :ref:`#[AssociationOverride] <attrref_associationoverride]`
+-  :ref:`#[AttributeOverride] <attrref_attributeoverride]`
 -  :ref:`#[Column] <attrref_column>`
 -  :ref:`#[Cache] <attrref_cache>`
 -  :ref:`#[ChangeTrackingPolicy <attrref_changetrackingpolicy>`
@@ -48,6 +50,93 @@ Index
 
 Reference
 ---------
+
+.. _attrref_associationoverride:
+
+#[AssociationOverride]
+~~~~~~~~~~~~~~~~~~~~~~
+
+In an inheritance hierarchy this attribute allows to override the
+assocation mapping definitions of the parent mappings. It needs to be nested
+within a ``#[AssociationOverrides]`` on the class level.
+
+Required parameters:
+
+-  **name**: Name of the association mapping to overwrite.
+
+Optional parameters:
+
+-  **joinColumns**: A list of nested ``#[JoinColumn]`` declarations.
+-  **joinTable**: A nested ``#[JoinTable]`` declaration in case of a many-to-many overwrite.
+-  **inversedBy**: The name of the inversedBy field on the target entity side.
+-  **fetch**: The fetch strategy, one of: EAGER, LAZY, EXTRA_LAZY.
+
+Examples:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ORM\Mapping\AssociationOverride;
+    use Doctrine\ORM\Mapping\AssociationOverrides;
+    use Doctrine\ORM\Mapping\Column;
+    use Doctrine\ORM\Mapping\Entity;
+
+    #[AssociationOverrides([
+        new AssociationOverride(
+            name: "groups",
+            joinTable: new JoinTable(
+                name: "ddc964_users_admingroups",
+                joinColumns: [new JoinColumn(name: "adminuser_id")],
+                inverseJoinColumns: [new JoinColumn(name: "admingroup_id")]
+            )
+        ),
+        new AssociationOverride(
+            name: "address",
+            joinColumns: [new JoinColumn(name: "adminaddress_id", referencedColumnName: "id")]
+        )
+    ])]
+    class DDC964Admin extends DDC964User
+    {
+    }
+
+.. _attrref_attributeoverride:
+
+#[AttributeOverride]
+~~~~~~~~~~~~~~~~~~~~
+
+In an inheritance hierarchy this attribute allows to override the
+field mapping definitions of the parent mappings. It needs to be nested
+within a ``#[AttributeOverrides]`` on the class level.
+
+Required parameters:
+
+-  **name**: Name of the association mapping to overwrite.
+-  **column**: A nested ``#[Column]`` attribute with the overwritten field settings.
+
+Examples:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ORM\Mapping\AttributeOverride;
+    use Doctrine\ORM\Mapping\AttributeOverrides;
+    use Doctrine\ORM\Mapping\Column;
+    use Doctrine\ORM\Mapping\Entity;
+
+    #[Entity]
+    #[AttributeOverrides([
+        new AttributeOverride(
+            name: "id",
+            column: new Column(name: "guest_id", type: "integer", length: 140)
+        ),
+        new AttributeOverride(
+            name: "name",
+            column: new Column(name: "guest_name", nullable: false, unique: true, length: 240)
+        )]
+    )]
+    class DDC964Guest extends DDC964User
+    {
+    }
 
 .. _attrref_column:
 
