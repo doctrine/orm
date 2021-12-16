@@ -3668,10 +3668,6 @@ class ClassMetadataInfo implements ClassMetadata
         $schemaName = $this->getSchemaName();
         if ($schemaName) {
             $sequencePrefix = $schemaName . '.' . $tableName;
-
-            if (! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
-                $sequencePrefix = $schemaName . '__' . $tableName;
-            }
         }
 
         return $sequencePrefix;

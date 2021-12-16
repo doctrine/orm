@@ -41,10 +41,6 @@ class DefaultQuoteStrategy implements QuoteStrategy
 
         if (! empty($class->table['schema'])) {
             $tableName = $class->table['schema'] . '.' . $class->table['name'];
-
-            if (! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
-                $tableName = $class->table['schema'] . '__' . $class->table['name'];
-            }
         }
 
         return isset($class->table['quoted'])
@@ -90,8 +86,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
         $schema = '';
 
         if (isset($association['joinTable']['schema'])) {
-            $schema  = $association['joinTable']['schema'];
-            $schema .= ! $platform->supportsSchemas() && $platform->canEmulateSchemas() ? '__' : '.';
+            $schema = $association['joinTable']['schema'] . '.';
         }
 
         $tableName = $association['joinTable']['name'];
