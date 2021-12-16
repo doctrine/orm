@@ -930,7 +930,12 @@ class SchemaTool
         $toSchema   = $this->getSchemaFromMetadata($classes);
         $fromSchema = $this->createSchemaForComparison($toSchema);
 
-        $comparator = new Comparator();
+        if (method_exists($this->schemaManager, 'createComparator')) {
+            $comparator = $this->schemaManager->createComparator();
+        } else {
+            $comparator = new Comparator();
+        }
+
         $schemaDiff = $comparator->compareSchemas($fromSchema, $toSchema);
 
         if ($saveMode) {
