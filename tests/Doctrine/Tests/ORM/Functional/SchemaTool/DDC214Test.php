@@ -14,6 +14,7 @@ use Exception;
 use function array_filter;
 use function count;
 use function implode;
+use function method_exists;
 use function strpos;
 
 use const PHP_EOL;
@@ -96,8 +97,13 @@ class DDC214Test extends OrmFunctionalTestCase
         $fromSchema = $sm->createSchema();
         $toSchema   = $this->schemaTool->getSchemaFromMetadata($classMetadata);
 
-        $comparator = new Comparator();
-        $schemaDiff = $comparator->compare($fromSchema, $toSchema);
+        if (method_exists($sm, 'createComparator')) {
+            $comparator = $sm->createComparator();
+        } else {
+            $comparator = new Comparator();
+        }
+
+        $schemaDiff = $comparator->compareSchemas($fromSchema, $toSchema);
 
         $sql = $schemaDiff->toSql($this->_em->getConnection()->getDatabasePlatform());
         $sql = array_filter($sql, static function ($sql) {
