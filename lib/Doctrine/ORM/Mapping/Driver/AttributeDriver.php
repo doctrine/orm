@@ -417,7 +417,7 @@ class AttributeDriver extends AnnotationDriver
             }
         }
 
-        // Evaluate AssociationOverrides annotation
+        // Evaluate AssociationOverrides attribute
         if (isset($classAttributes[Mapping\AssociationOverrides::class])) {
             $associationOverride = $classAttributes[Mapping\AssociationOverrides::class];
 
@@ -425,7 +425,7 @@ class AttributeDriver extends AnnotationDriver
                 $override  = [];
                 $fieldName = $associationOverride->name;
 
-                // Check for JoinColumn/JoinColumns annotations
+                // Check for JoinColumn/JoinColumns attributes
                 if ($associationOverride->joinColumns) {
                     $joinColumns = [];
 
@@ -436,7 +436,7 @@ class AttributeDriver extends AnnotationDriver
                     $override['joinColumns'] = $joinColumns;
                 }
 
-                // Check for JoinTable annotations
+                // Check for JoinTable attributes
                 if ($associationOverride->joinTable) {
                     $joinTableAnnot = $associationOverride->joinTable;
                     $joinTable      = [

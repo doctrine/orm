@@ -947,14 +947,13 @@ class MappingException extends ORMException
 
     /**
      * @param mixed $givenValue
-     * @return self
      */
-    public static function invalidOverrideType(string $expectdType, $givenValue)
+    public static function invalidOverrideType(string $expectdType, $givenValue): self
     {
         return new self(sprintf(
             'Expected %s, but %s was given.',
             $expectdType,
-            is_object($givenValue) ? get_class($givenValue) : gettype($givenValue)
+            get_debug_type($givenValue)
         ));
     }
 }
