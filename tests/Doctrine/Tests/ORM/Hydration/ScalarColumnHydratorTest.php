@@ -119,4 +119,34 @@ class ScalarColumnHydratorTest extends HydrationTestCase
 
         $hydrator->hydrateAll($stmt, $rsm);
     }
+
+    /**
+     * Select u.id from CmsUser u
+     */
+    public function testSingleColumnEntityQueryWithFalsyValuesExceptFalse(): void
+    {
+        $rsm = new ResultSetMapping();
+
+        $rsm->addEntityResult(CmsUser::class, 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addScalarResult('sclr0', 'id');
+        $rsm->addIndexByScalar('sclr0');
+
+        $resultSet = [
+            ['u__id' => ''],
+            ['u__id' => 0],
+            ['u__id' => null],
+        ];
+
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $hydrator = new ScalarColumnHydrator($this->entityManager);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+
+        $this->assertIsArray($result);
+        $this->assertCount(3, $result);
+
+        $this->assertEquals('', $result[0]);
+        $this->assertEquals(0, $result[1]);
+        $this->assertEquals(null, $result[2]);
+    }
 }

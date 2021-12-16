@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\DBAL\Driver\Exception;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\Exception\MultipleSelectorsFoundException;
 
 use function count;
