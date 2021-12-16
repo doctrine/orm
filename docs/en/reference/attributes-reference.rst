@@ -148,12 +148,12 @@ inside the instance variables PHP DocBlock comment. Any value hold
 inside this variable will be saved to and loaded from the database
 as part of the lifecycle of the instance variables entity-class.
 
-Required attributes:
+Required parameters:
 
 -  **type**: Name of the DBAL Type which does the conversion between PHP
    and Database representation.
 
-Optional attributes:
+Optional parameters:
 
 -  **name**: By default the property name is used for the database
    column name also, however the ``name`` attribute allows you to
@@ -254,7 +254,7 @@ Examples:
 ~~~~~~~~
 Add caching strategy to a root entity or a collection.
 
-Optional attributes:
+Optional parameters:
 
 -  **usage**: One of ``READ_ONLY``, ``READ_WRITE`` or ``NONSTRICT_READ_WRITE``, By default this is ``READ_ONLY``.
 -  **region**: An specific region name
@@ -299,7 +299,7 @@ Example:
 
 This attribute allows you to specify a user-provided class to generate identifiers. This attribute only works when both :ref:`#[Id] <attrref_id>` and :ref:`#[GeneratedValue(strategy: "CUSTOM")] <attrref_generatedvalue>` are specified.
 
-Required attributes:
+Required parameters:
 
 -  **class**: name of the class which should extend Doctrine\ORM\Id\AbstractIdGenerator
 
@@ -333,13 +333,13 @@ actually instantiated as.
 If this attribute is not specified, the discriminator column defaults
 to a string column of length 255 called ``dtype``.
 
-Required attributes:
+Required parameters:
 
 
 -  **name**: The column name of the discriminator. This name is also
    used during Array hydration as key to specify the class-name.
 
-Optional attributes:
+Optional parameters:
 
 
 -  **type**: By default this is string.
@@ -408,7 +408,7 @@ attribute to establish the relationship between the two classes.
 The embedded attribute is required on an entity's member variable,
 in order to specify that it is an embedded class.
 
-Required attributes:
+Required parameters:
 
 -  **class**: The embeddable class
 
@@ -420,7 +420,7 @@ Required attributes:
 Required attribute to mark a PHP class as an entity. Doctrine manages
 the persistence of all classes marked as entities.
 
-Optional attributes:
+Optional parameters:
 
 -  **repositoryClass**: Specifies the FQCN of a subclass of the
    ``EntityRepository``. Use of repositories for entities is encouraged to keep
@@ -457,7 +457,7 @@ conjunction with #[Id].
 If this attribute is not specified with ``#[Id]`` the ``NONE`` strategy is
 used as default.
 
-Optional attributes:
+Optional parameters:
 
 -  **strategy**: Set the name of the identifier generation strategy.
    Valid values are ``AUTO``, ``SEQUENCE``, ``IDENTITY``, ``UUID``
@@ -513,14 +513,14 @@ Attribute is used on the entity-class level. It provides a hint to the SchemaToo
 generate a database index on the specified table columns. It only
 has meaning in the ``SchemaTool`` schema generation context.
 
-Required attributes:
+Required parameters:
 
 -  **name**: Name of the Index
 -  **fields**: Array of fields. Exactly one of **fields, columns** is required.
 -  **columns**: Array of columns. Exactly one of **fields, columns** is required.
 
 
-Optional attributes:
+Optional parameters:
 
 -  **options**: Array of platform specific options:
 
@@ -638,7 +638,7 @@ of a ``#[ManyToMany]`` attribute declaration to specifiy the details of the join
 column information used for the join to the inverse entity. This is only required
 on PHP 8.0, where nested attributes are not yet supported.
 
-Optional attributes:
+Optional parameters:
 
 -  **name**: Column name that holds the foreign key identifier for
    this relation. In the context of ``#[JoinTable]`` it specifies the column
@@ -723,14 +723,14 @@ Example:
 Defines that the annotated instance variable holds a reference that
 describes a many-to-one relationship between two entities.
 
-Required attributes:
+Required parameters:
 
 
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
    *IMPORTANT:* No leading backslash!
 
-Optional attributes:
+Optional parameters:
 
 
 -  **cascade**: Cascade Option
@@ -759,14 +759,14 @@ additional, optional attribute that has reasonable default
 configuration values using the table and names of the two related
 entities.
 
-Required attributes:
+Required parameters:
 
 
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
    *IMPORTANT:* No leading backslash!
 
-Optional attributes:
+Optional parameters:
 
 
 -  **mappedBy**: This option specifies the property name on the
@@ -820,7 +820,7 @@ The ``#[MappedSuperclass]`` attribute cannot be used in conjunction with
 ``#[Entity]``. See the Inheritance Mapping section for
 :doc:`more details on the restrictions of mapped superclasses <inheritance-mapping>`.
 
-Optional attributes:
+Optional parameters:
 
 -  **repositoryClass**: Specifies the FQCN of a subclass of the EntityRepository.
    That will be inherited for all subclasses of that Mapped Superclass.
@@ -856,13 +856,13 @@ be specified. When no
 :ref:`#[JoinColumn] <attrref_joincolumn>` is specified it defaults to using the target entity table and
 primary key column names and the current naming strategy to determine a name for the join column.
 
-Required attributes:
+Required parameters:
 
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
    *IMPORTANT:* No leading backslash!
 
-Optional attributes:
+Optional parameters:
 
 -  **cascade**: Cascade Option
 -  **fetch**: One of LAZY or EAGER
@@ -886,13 +886,13 @@ Example:
 #[OneToMany]
 ~~~~~~~~~~~~
 
-Required attributes:
+Required parameters:
 
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
    *IMPORTANT:* No leading backslash!
 
-Optional attributes:
+Optional parameters:
 
 -  **cascade**: Cascade Option
 -  **orphanRemoval**: Boolean that specifies if orphans, inverse
@@ -1016,11 +1016,11 @@ For use with ``#[GeneratedValue(strategy: "SEQUENCE")]`` this
 attribute allows to specify details about the sequence, such as
 the increment size and initial values of the sequence.
 
-Required attributes:
+Required parameters:
 
 -  **sequenceName**: Name of the sequence
 
-Optional attributes:
+Optional parameters:
 
 -  **allocationSize**: Increment the sequence by the allocation size
    when its fetched. A value larger than 1 allows optimization for
@@ -1054,11 +1054,11 @@ placed on the entity-class level and is optional. If it is
 not specified the table name will default to the entity's
 unqualified classname.
 
-Required attributes:
+Required parameters:
 
 -  **name**: Name of the table
 
-Optional attributes:
+Optional parameters:
 
 -  **schema**: Name of the schema the table lies in.
 -  **indexes**: An array of nested #[Index] attributes (requires PHP 8.1)
@@ -1087,12 +1087,12 @@ generate a database unique constraint on the specified table
 columns. It only has meaning in the SchemaTool schema generation
 context.
 
-Required attributes:
+Required parameters:
 
 -  **name**: Name of the Index
 -  **columns**: Array of columns.
 
-Optional attributes:
+Optional parameters:
 
 -  **options**: Array of platform specific options:
 
