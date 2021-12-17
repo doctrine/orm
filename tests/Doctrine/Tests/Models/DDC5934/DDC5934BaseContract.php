@@ -32,7 +32,7 @@ class DDC5934BaseContract
      * @psalm-var Collection<int, DDC5934Member>
      * @ManyToMany(targetEntity="DDC5934Member", fetch="LAZY", inversedBy="contracts")
      */
-    #[ManyToMany(targetEntity: DDC5934Member::class, fetch: "LAZY", inversedBy: "contracts")]
+    #[ManyToMany(targetEntity: DDC5934Member::class, fetch: 'LAZY', inversedBy: 'contracts')]
     public $members;
 
     public function __construct()

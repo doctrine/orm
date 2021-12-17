@@ -23,7 +23,7 @@ class DDC3579Group
      * @GeneratedValue
      * @Id @Column(type="integer")
      */
-    #[Id, GeneratedValue, Column(type: "integer")]
+    #[Id, GeneratedValue, Column(type: 'integer')]
     private $id;
 
     /**
@@ -37,7 +37,7 @@ class DDC3579Group
      * @psalm-var Collection<int, DDC3579Admin>
      * @ManyToMany(targetEntity="DDC3579Admin", mappedBy="groups")
      */
-    #[ManyToMany(targetEntity: DDC3579Admin::class, mappedBy: "groups")]
+    #[ManyToMany(targetEntity: DDC3579Admin::class, mappedBy: 'groups')]
     private $admins;
 
     public function __construct(?string $name = null)

@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping\Entity;
  * })
  */
 #[Entity]
-#[AssociationOverrides([new AssociationOverride(name: "groups", inversedBy: "admins")])]
+#[AssociationOverrides([new AssociationOverride(name: 'groups', inversedBy: 'admins')])]
 class DDC3579Admin extends DDC3579User
 {
     public static function loadMetadata($metadata): void

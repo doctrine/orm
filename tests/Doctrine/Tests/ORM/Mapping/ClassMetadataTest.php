@@ -1147,7 +1147,7 @@ class ClassMetadataTest extends OrmTestCase
     public function testInvalidPropertyAssociationOverrideNameException(): void
     {
         if (PHP_VERSION_ID >= 80000 && PHP_VERSION_ID < 80100) {
-            $this->markTestSkipped("Does not work on PHP 8.0.* due to nested attributes missing.");
+            $this->markTestSkipped('Does not work on PHP 8.0.* due to nested attributes missing.');
         }
 
         $this->expectException('Doctrine\ORM\Mapping\MappingException');
@@ -1165,7 +1165,7 @@ class ClassMetadataTest extends OrmTestCase
     public function testInvalidPropertyAttributeOverrideNameException(): void
     {
         if (PHP_VERSION_ID >= 80000 && PHP_VERSION_ID < 80100) {
-            $this->markTestSkipped("Does not work on PHP 8.0.* due to nested attributes missing.");
+            $this->markTestSkipped('Does not work on PHP 8.0.* due to nested attributes missing.');
         }
 
         $this->expectException('Doctrine\ORM\Mapping\MappingException');
@@ -1183,7 +1183,7 @@ class ClassMetadataTest extends OrmTestCase
     public function testInvalidOverrideAttributeFieldTypeException(): void
     {
         if (PHP_VERSION_ID >= 80000 && PHP_VERSION_ID < 80100) {
-            $this->markTestSkipped("Does not work on PHP 8.0.* due to nested attributes missing.");
+            $this->markTestSkipped('Does not work on PHP 8.0.* due to nested attributes missing.');
         }
 
         $this->expectException('Doctrine\ORM\Mapping\MappingException');

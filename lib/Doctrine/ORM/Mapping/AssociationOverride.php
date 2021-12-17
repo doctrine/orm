@@ -58,6 +58,7 @@ final class AssociationOverride implements Annotation
 
     /**
      * @param JoinColumn|array<JoinColumn> $joinColumns
+     * @param JoinColumn|array<JoinColumn> $inverseJoinColumns
      */
     public function __construct(
         string $name,
@@ -71,11 +72,11 @@ final class AssociationOverride implements Annotation
             $joinColumns = [$joinColumns];
         }
 
-        $this->name        = $name;
-        $this->joinColumns = $joinColumns;
+        $this->name               = $name;
+        $this->joinColumns        = $joinColumns;
         $this->inverseJoinColumns = $inverseJoinColumns;
-        $this->joinTable   = $joinTable;
-        $this->inversedBy  = $inversedBy;
-        $this->fetch       = $fetch;
+        $this->joinTable          = $joinTable;
+        $this->inversedBy         = $inversedBy;
+        $this->fetch              = $fetch;
     }
 }

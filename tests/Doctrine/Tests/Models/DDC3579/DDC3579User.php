@@ -24,14 +24,14 @@ class DDC3579User
      * @GeneratedValue
      * @Column(type="integer", name="user_id", length=150)
      */
-    #[Id, GeneratedValue, Column(type: "integer", name: "user_id", length: 150)]
+    #[Id, GeneratedValue, Column(type: 'integer', name: 'user_id', length: 150)]
     protected $id;
 
     /**
      * @var string
      * @Column(name="user_name", nullable=true, unique=false, length=250)
      */
-    #[Column(name: "user_name", nullable: true, unique: false, length: 250)]
+    #[Column(name: 'user_name', nullable: true, unique: false, length: 250)]
     protected $name;
 
     /**

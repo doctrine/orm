@@ -12,6 +12,7 @@ use function array_keys;
 use function array_map;
 use function array_values;
 use function get_class;
+use function get_debug_type;
 use function get_parent_class;
 use function gettype;
 use function implode;

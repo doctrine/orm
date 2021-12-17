@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping\Entity;
  * )
  */
 #[Entity]
-#[AssociationOverrides([new AssociationOverride(name: "members", fetch: "EXTRA_LAZY")])]
+#[AssociationOverrides([new AssociationOverride(name: 'members', fetch: 'EXTRA_LAZY')])]
 class DDC5934Contract extends DDC5934BaseContract
 {
     public static function loadMetadata(ClassMetadata $metadata): void
