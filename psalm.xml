@@ -92,6 +92,8 @@
             <errorLevel type="suppress">
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
                 <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+                <!-- DBAL 3 compatibility -->
+                <file name="lib/Doctrine/ORM/UnitOfWork.php"/>
             </errorLevel>
         </TypeDoesNotContainType>
         <UndefinedAttributeClass>
