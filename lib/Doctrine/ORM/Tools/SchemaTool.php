@@ -393,7 +393,7 @@ class SchemaTool
             }
         }
 
-        if (! $this->platform->supportsSchemas() && ! $this->platform->canEmulateSchemas()) {
+        if (! $this->platform->supportsSchemas()) {
             $schema->visit(new RemoveNamespacedAssets());
         }
 
