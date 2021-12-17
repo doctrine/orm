@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
@@ -11,30 +13,32 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function count;
+
 require_once __DIR__ . '/../../TestInit.php';
 
 class CustomFunctionsTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->useModelSet('cms');
 
         parent::setUp();
     }
 
-    public function testCustomFunctionDefinedWithCallback()
+    public function testCustomFunctionDefinedWithCallback(): void
     {
-        $user = new CmsUser();
-        $user->name = 'Bob';
+        $user           = new CmsUser();
+        $user->name     = 'Bob';
         $user->username = 'Dylan';
         $this->_em->persist($user);
         $this->_em->flush();
 
         // Instead of defining the function with the class name, we use a callback
-        $this->_em->getConfiguration()->addCustomStringFunction('FOO', function($funcName) {
+        $this->_em->getConfiguration()->addCustomStringFunction('FOO', static function ($funcName) {
             return new NoOp($funcName);
         });
-        $this->_em->getConfiguration()->addCustomNumericFunction('BAR', function($funcName) {
+        $this->_em->getConfiguration()->addCustomNumericFunction('BAR', static function ($funcName) {
             return new NoOp($funcName);
         });
 
@@ -44,14 +48,14 @@ class CustomFunctionsTest extends OrmFunctionalTestCase
 
         $users = $query->getResult();
 
-        $this->assertEquals(1, count($users));
-        $this->assertSame($user, $users[0]);
+        self::assertCount(1, $users);
+        self::assertSame($user, $users[0]);
     }
 
-    public function testCustomFunctionOverride()
+    public function testCustomFunctionOverride(): void
     {
-        $user = new CmsUser();
-        $user->name = 'Bob';
+        $user           = new CmsUser();
+        $user->name     = 'Bob';
         $user->username = 'Dylan';
         $this->_em->persist($user);
         $this->_em->flush();
@@ -62,18 +66,16 @@ class CustomFunctionsTest extends OrmFunctionalTestCase
 
         $usersCount = $query->getSingleScalarResult();
 
-        $this->assertEquals(1, $usersCount);
+        self::assertEquals(1, $usersCount);
     }
 }
 
 class NoOp extends FunctionNode
 {
-    /**
-     * @var PathExpression
-     */
+    /** @var PathExpression */
     private $field;
 
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
@@ -81,7 +83,7 @@ class NoOp extends FunctionNode
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         return $this->field->dispatch($sqlWalker);
     }
@@ -89,9 +91,7 @@ class NoOp extends FunctionNode
 
 class CustomCount extends FunctionNode
 {
-    /**
-     * @var Query\AST\AggregateExpression
-     */
+    /** @var Query\AST\AggregateExpression */
     private $aggregateExpression;
 
     public function parse(Parser $parser): void

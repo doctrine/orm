@@ -5,7 +5,15 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
 use function array_values;
 
 /**
@@ -13,9 +21,9 @@ use function array_values;
  */
 class GH7864Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
 
         $this->setUpEntitySchema(
             [
@@ -25,7 +33,7 @@ class GH7864Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testExtraLazyRemoveElement()
+    public function testExtraLazyRemoveElement(): void
     {
         $user       = new GH7864User();
         $user->name = 'test';
@@ -53,7 +61,7 @@ class GH7864Test extends OrmFunctionalTestCase
             return $tweet->content;
         });
 
-        $this->assertEquals(['Goodbye, and thanks for all the fish'], array_values($tweets->toArray()));
+        self::assertEquals(['Goodbye, and thanks for all the fish'], array_values($tweets->toArray()));
     }
 }
 
@@ -62,13 +70,24 @@ class GH7864Test extends OrmFunctionalTestCase
  */
 class GH7864User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
-    /** @OneToMany(targetEntity="GH7864Tweet", mappedBy="user", fetch="EXTRA_LAZY") */
+    /**
+     * @var Collection<int, GH7864Tweet>
+     * @OneToMany(targetEntity="GH7864Tweet", mappedBy="user", fetch="EXTRA_LAZY")
+     */
     public $tweets;
 
     public function __construct()
@@ -76,7 +95,7 @@ class GH7864User
         $this->tweets = new ArrayCollection();
     }
 
-    public function addTweet(GH7864Tweet $tweet)
+    public function addTweet(GH7864Tweet $tweet): void
     {
         $tweet->user = $this;
         $this->tweets->add($tweet);
@@ -88,12 +107,23 @@ class GH7864User
  */
 class GH7864Tweet
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $content;
 
-    /** @ManyToOne(targetEntity="GH7864User", inversedBy="tweets") */
+    /**
+     * @var GH7864User
+     * @ManyToOne(targetEntity="GH7864User", inversedBy="tweets")
+     */
     public $user;
 }

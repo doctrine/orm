@@ -1,30 +1,50 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Logging\DebugStack;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\OrderBy;
+use Doctrine\ORM\Mapping\Table;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function count;
 
 /**
  * @group DDC-1595
  * @group DDC-1596
  * @group non-cacheable
  */
-class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1595Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\DebugStack);
+        $this->_em->getConnection()->getConfiguration()->setSQLLogger(new DebugStack());
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1595BaseInheritance::class),
-            $this->_em->getClassMetadata(DDC1595InheritedEntity1::class),
-            $this->_em->getClassMetadata(DDC1595InheritedEntity2::class),
+                $this->_em->getClassMetadata(DDC1595BaseInheritance::class),
+                $this->_em->getClassMetadata(DDC1595InheritedEntity1::class),
+                $this->_em->getClassMetadata(DDC1595InheritedEntity2::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $e1 = new DDC1595InheritedEntity1();
 
@@ -35,7 +55,7 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $sqlLogger  = $this->_em->getConnection()->getConfiguration()->getSQLLogger();
         $repository = $this->_em->getRepository(DDC1595InheritedEntity1::class);
 
-        $entity1  = $repository->find($e1->id);
+        $entity1 = $repository->find($e1->id);
 
         // DDC-1596
         $this->assertSQLEquals(
@@ -45,7 +65,7 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $entities = $entity1->getEntities()->getValues();
 
-        $this->assertEquals(
+        self::assertEquals(
             "SELECT t0.id AS id_1, t0.type FROM base t0 INNER JOIN entity1_entity2 ON t0.id = entity1_entity2.item WHERE entity1_entity2.parent = ? AND t0.type IN ('Entity2')",
             $sqlLogger->queries[count($sqlLogger->queries)]['sql']
         );
@@ -56,7 +76,7 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $entities = $entity1->getEntities()->count();
 
         $this->assertSQLEquals(
-            "SELECT COUNT(*) FROM entity1_entity2 t WHERE t.parent = ?",
+            'SELECT COUNT(*) FROM entity1_entity2 t WHERE t.parent = ?',
             $sqlLogger->queries[count($sqlLogger->queries)]['sql']
         );
     }
@@ -65,7 +85,6 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
 /**
  * @Entity
  * @Table(name="base")
- *
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="type", type="string")
  * @DiscriminatorMap({
@@ -78,7 +97,6 @@ abstract class DDC1595BaseInheritance
     /**
      * @Id @GeneratedValue
      * @Column(type="integer")
-     *
      * @var int
      */
     public $id;
@@ -91,6 +109,7 @@ abstract class DDC1595BaseInheritance
 class DDC1595InheritedEntity1 extends DDC1595BaseInheritance
 {
     /**
+     * @psalm-var Collection<int, DDC1595InheritedEntity2>
      * @ManyToMany(targetEntity="DDC1595InheritedEntity2", fetch="EXTRA_LAZY")
      * @JoinTable(name="entity1_entity2",
      *     joinColumns={@JoinColumn(name="parent", referencedColumnName="id")},
@@ -99,7 +118,10 @@ class DDC1595InheritedEntity1 extends DDC1595BaseInheritance
      */
     protected $entities;
 
-    public function getEntities()
+    /**
+     * @psalm-return Collection<int, DDC1595InheritedEntity2>
+     */
+    public function getEntities(): Collection
     {
         return $this->entities;
     }

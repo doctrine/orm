@@ -1,0 +1,86 @@
+
+name: "Static Analysis"
+
+on:
+  pull_request:
+    branches:
+      - "*.x"
+  push:
+    branches:
+      - "*.x"
+
+jobs:
+  static-analysis-phpstan:
+    name: "Static Analysis with PHPStan"
+    runs-on: "ubuntu-20.04"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version:
+          - "8.0"
+        dbal-version:
+          - "default"
+          - "2.13"
+
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@v2"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+
+      - name: "Require specific DBAL version"
+        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
+        if: "${{ matrix.dbal-version != 'default' }}"
+
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v1"
+        with:
+          dependency-versions: "highest"
+
+      - name: "Run a static analysis with phpstan/phpstan"
+        run: "vendor/bin/phpstan analyse"
+        if: "${{ matrix.dbal-version == 'default' }}"
+
+      - name: "Run a static analysis with phpstan/phpstan"
+        run: "vendor/bin/phpstan analyse -c phpstan-dbal2.neon"
+        if: "${{ matrix.dbal-version == '2.13' }}"
+
+  static-analysis-psalm:
+    name: "Static Analysis with Psalm"
+    runs-on: "ubuntu-20.04"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version:
+          - "8.0"
+        dbal-version:
+          - "default"
+          - "2.13"
+
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@v2"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+
+      - name: "Require specific DBAL version"
+        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
+        if: "${{ matrix.dbal-version != 'default' }}"
+
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v1"
+        with:
+          dependency-versions: "highest"
+
+      - name: "Run a static analysis with vimeo/psalm"
+        run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc)"

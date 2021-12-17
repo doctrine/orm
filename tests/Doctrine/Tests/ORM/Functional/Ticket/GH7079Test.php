@@ -6,7 +6,14 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -21,10 +28,7 @@ final class GH7079Test extends OrmFunctionalTestCase
     /** @var AbstractPlatform */
     private $platform;
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -32,7 +36,7 @@ final class GH7079Test extends OrmFunctionalTestCase
         $this->strategy = new DefaultQuoteStrategy();
     }
 
-    public function testGetTableName() : void
+    public function testGetTableName(): void
     {
         $table = [
             'name'   => 'cms_user',
@@ -45,7 +49,7 @@ final class GH7079Test extends OrmFunctionalTestCase
         self::assertEquals($this->getTableFullName($table), $this->strategy->getTableName($cm, $this->platform));
     }
 
-    public function testJoinTableName() : void
+    public function testJoinTableName(): void
     {
         $table = [
             'name'   => 'cmsaddress_cmsuser',
@@ -68,7 +72,7 @@ final class GH7079Test extends OrmFunctionalTestCase
         );
     }
 
-    private function getTableFullName(array $table) : string
+    private function getTableFullName(array $table): string
     {
         $join = '.';
         if (! $this->platform->supportsSchemas() && $this->platform->canEmulateSchemas()) {
@@ -78,7 +82,7 @@ final class GH7079Test extends OrmFunctionalTestCase
         return $table['schema'] . $join . $table['name'];
     }
 
-    private function createClassMetadata(string $className) : ClassMetadata
+    private function createClassMetadata(string $className): ClassMetadata
     {
         $cm = new ClassMetadata($className);
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -94,12 +98,16 @@ final class GH7079Test extends OrmFunctionalTestCase
 class GH7079CmsUser
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
 
-    /** @OneToOne(targetEntity=GH7079CmsAddress::class, mappedBy="user", cascade={"persist"}, orphanRemoval=true) */
+    /**
+     * @var GH7079CmsAddress
+     * @OneToOne(targetEntity=GH7079CmsAddress::class, mappedBy="user", cascade={"persist"}, orphanRemoval=true)
+     */
     public $address;
 }
 
@@ -110,12 +118,14 @@ class GH7079CmsUser
 class GH7079CmsAddress
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id @GeneratedValue
      */
     public $id;
 
     /**
+     * @var GH7079CmsUser
      * @OneToOne(targetEntity=GH7079CmsUser::class, inversedBy="address")
      * @JoinColumn(referencedColumnName="id")
      */

@@ -1,40 +1,28 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
-use Symfony\Component\Console\Command\Command;
+use Doctrine\ORM\Tools\Console\Command\AbstractEntityManagerCommand;
+use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use function get_class;
+use function gettype;
+use function is_object;
+use function sprintf;
+
 /**
  * Command to clear a collection cache region.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class CollectionRegionCommand extends Command
+class CollectionRegionCommand extends AbstractEntityManagerCommand
 {
     /**
      * {@inheritdoc}
@@ -46,9 +34,10 @@ class CollectionRegionCommand extends Command
              ->addArgument('owner-class', InputArgument::OPTIONAL, 'The owner entity name.')
              ->addArgument('association', InputArgument::OPTIONAL, 'The association collection name.')
              ->addArgument('owner-id', InputArgument::OPTIONAL, 'The owner identifier.')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('all', null, InputOption::VALUE_NONE, 'If defined, all entity regions will be deleted/invalidated.')
              ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, all cache entries will be flushed.')
-             ->setHelp(<<<EOT
+             ->setHelp(<<<'EOT'
 The <info>%command.name%</info> command is meant to clear a second-level cache collection regions for an associated Entity Manager.
 It is possible to delete/invalidate all collection region, a specific collection region or flushes the cache provider.
 
@@ -77,30 +66,32 @@ EOT
 
     /**
      * {@inheritdoc}
+     *
+     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $ui = new SymfonyStyle($input, $output);
 
-        $em          = $this->getHelper('em')->getEntityManager();
-        $ownerClass  = $input->getArgument('owner-class');
-        $assoc       = $input->getArgument('association');
-        $ownerId     = $input->getArgument('owner-id');
-        $cache       = $em->getCache();
+        $em         = $this->getEntityManager($input);
+        $ownerClass = $input->getArgument('owner-class');
+        $assoc      = $input->getArgument('association');
+        $ownerId    = $input->getArgument('owner-id');
+        $cache      = $em->getCache();
 
-        if ( ! $cache instanceof Cache) {
-            throw new \InvalidArgumentException('No second-level cache is configured on the given EntityManager.');
+        if (! $cache instanceof Cache) {
+            throw new InvalidArgumentException('No second-level cache is configured on the given EntityManager.');
         }
 
         if (( ! $ownerClass || ! $assoc) && ! $input->getOption('all')) {
-            throw new \InvalidArgumentException('Missing arguments "--owner-class" "--association"');
+            throw new InvalidArgumentException('Missing arguments "--owner-class" "--association"');
         }
 
         if ($input->getOption('flush')) {
-            $collectionRegion  = $cache->getCollectionCacheRegion($ownerClass, $assoc);
+            $collectionRegion = $cache->getCollectionCacheRegion($ownerClass, $assoc);
 
-            if ( ! $collectionRegion instanceof DefaultRegion) {
-                throw new \InvalidArgumentException(sprintf(
+            if (! $collectionRegion instanceof DefaultRegion) {
+                throw new InvalidArgumentException(sprintf(
                     'The option "--flush" expects a "Doctrine\ORM\Cache\Region\DefaultRegion", but got "%s".',
                     is_object($collectionRegion) ? get_class($collectionRegion) : gettype($collectionRegion)
                 ));

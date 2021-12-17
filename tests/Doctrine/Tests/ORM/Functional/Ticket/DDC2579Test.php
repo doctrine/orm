@@ -1,17 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2579
  */
-class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2579Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -19,16 +27,16 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2579Entity::class),
-            $this->_em->getClassMetadata(DDC2579EntityAssoc::class),
-            $this->_em->getClassMetadata(DDC2579AssocAssoc::class),
+                $this->_em->getClassMetadata(DDC2579Entity::class),
+                $this->_em->getClassMetadata(DDC2579EntityAssoc::class),
+                $this->_em->getClassMetadata(DDC2579AssocAssoc::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
-        $id         = new DDC2579Id("foo");
+        $id         = new DDC2579Id('foo');
         $assoc      = new DDC2579AssocAssoc($id);
         $assocAssoc = new DDC2579EntityAssoc($assoc);
         $entity     = new DDC2579Entity($assocAssoc);
@@ -50,15 +58,15 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $criteria = ['assoc' => $assoc, 'id' => $id];
         $entity   = $repository->findOneBy($criteria);
 
-        $this->assertInstanceOf(DDC2579Entity::class, $entity);
-        $this->assertEquals($value, $entity->value);
+        self::assertInstanceOf(DDC2579Entity::class, $entity);
+        self::assertEquals($value, $entity->value);
 
         $this->_em->remove($entity);
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertNull($repository->findOneBy($criteria));
-        $this->assertCount(0, $repository->findAll());
+        self::assertNull($repository->findOneBy($criteria));
+        self::assertCount(0, $repository->findAll());
     }
 }
 
@@ -68,12 +76,14 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC2579Entity
 {
     /**
+     * @var DDC2579Id
      * @Id
      * @Column(type="ddc2579")
      */
     public $id;
 
     /**
+     * @var DDC2579EntityAssoc
      * @Id
      * @ManyToOne(targetEntity="DDC2579EntityAssoc")
      * @JoinColumn(name="relation_id", referencedColumnName="association_id")
@@ -81,17 +91,17 @@ class DDC2579Entity
     public $assoc;
 
     /**
+     * @var int
      * @Column(type="integer")
      */
     public $value;
 
-    public function __construct(DDC2579EntityAssoc $assoc, $value = 0)
+    public function __construct(DDC2579EntityAssoc $assoc, int $value = 0)
     {
         $this->id    = $assoc->assocAssoc->associationId;
         $this->assoc = $assoc;
         $this->value = $value;
     }
-
 }
 
 /**
@@ -100,6 +110,7 @@ class DDC2579Entity
 class DDC2579EntityAssoc
 {
     /**
+     * @var DDC2579AssocAssoc
      * @Id
      * @ManyToOne(targetEntity="DDC2579AssocAssoc")
      * @JoinColumn(name="association_id", referencedColumnName="associationId")
@@ -118,6 +129,7 @@ class DDC2579EntityAssoc
 class DDC2579AssocAssoc
 {
     /**
+     * @var DDC2579Id
      * @Id
      * @Column(type="ddc2579")
      */
@@ -125,24 +137,27 @@ class DDC2579AssocAssoc
 
     public function __construct(DDC2579Id $id)
     {
-        $this->associationId  = $id;
+        $this->associationId = $id;
     }
 }
 
 
 class DDC2579Type extends StringType
 {
-    const NAME = 'ddc2579';
+    public const NAME = 'ddc2579';
 
     /**
      * {@inheritdoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return (string)$value;
+        return (string) $value;
     }
 
-    public function convertToPhpValue($value, AbstractPlatform $platform)
+    /**
+     * {@inheritDoc}
+     */
+    public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         return new DDC2579Id($value);
     }
@@ -158,14 +173,15 @@ class DDC2579Type extends StringType
 
 class DDC2579Id
 {
+    /** @var string */
     private $val;
 
-    public function __construct($val)
+    public function __construct(string $val)
     {
         $this->val = $val;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->val;
     }

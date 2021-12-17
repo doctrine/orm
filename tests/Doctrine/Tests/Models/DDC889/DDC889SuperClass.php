@@ -1,25 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC889;
+
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\MappedSuperclass;
 
 /**
  * @MappedSuperclass
  */
+#[ORM\MappedSuperclass]
 class DDC889SuperClass
 {
-
-    /** @Column() */
+    /**
+     * @var string
+     * @Column()
+     */
+    #[ORM\Column]
     protected $name;
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
         $metadata->mapField(
-            [
-           'fieldName'  => 'name',
-            ]
+            ['fieldName' => 'name']
         );
 
         $metadata->isMappedSuperclass = true;
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
     }
 }

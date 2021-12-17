@@ -85,9 +85,9 @@ Or if you prefer YAML:
 
 Inside the ``Setup`` methods several assumptions are made:
 
--  If `$isDevMode` is true caching is done in memory with the ``ArrayCache``. Proxy objects are recreated on every request.
--  If `$isDevMode` is false, check for Caches in the order APC, Xcache, Memcache (127.0.0.1:11211), Redis (127.0.0.1:6379) unless `$cache` is passed as fourth argument.
--  If `$isDevMode` is false, set then proxy classes have to be explicitly created through the command line.
+-  If ``$isDevMode`` is true caching is done in memory with the ``ArrayCache``. Proxy objects are recreated on every request.
+-  If ``$isDevMode`` is false, check for Caches in the order APC, Xcache, Memcache (127.0.0.1:11211), Redis (127.0.0.1:6379) unless `$cache` is passed as fourth argument.
+-  If ``$isDevMode`` is false, set then proxy classes have to be explicitly created through the command line.
 -  If third argument `$proxyDir` is not set, use the systems temporary directory.
 
 If you want to configure Doctrine in more detail, take a look at the :doc:`Advanced Configuration <reference/advanced-configuration>` section.
@@ -95,7 +95,7 @@ If you want to configure Doctrine in more detail, take a look at the :doc:`Advan
 .. note::
 
     You can learn more about the database connection configuration in the
-    `Doctrine DBAL connection configuration reference <http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html>`_.
+    `Doctrine DBAL connection configuration reference <https://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html>`_.
 
 Setting up the Commandline Tool
 -------------------------------
@@ -112,8 +112,6 @@ You need to register your applications EntityManager to the console tool
 to make use of the tasks by creating a ``cli-config.php`` file with the
 following content:
 
-On Doctrine 2.4 and above:
-
 .. code-block:: php
 
     <?php
@@ -126,19 +124,3 @@ On Doctrine 2.4 and above:
     $entityManager = GetEntityManager();
 
     return ConsoleRunner::createHelperSet($entityManager);
-
-On Doctrine 2.3 and below:
-
-.. code-block:: php
-
-    <?php
-    // cli-config.php
-    require_once 'my_bootstrap.php';
-
-    // Any way to access the EntityManager from  your application
-    $em = GetMyEntityManager();
-
-    $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
-        'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
-        'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
-    ));

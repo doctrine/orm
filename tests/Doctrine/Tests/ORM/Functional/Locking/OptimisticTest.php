@@ -1,45 +1,71 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use DateTime;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\Table;
+use Doctrine\ORM\Mapping\Version;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+use function date;
+use function strtotime;
 
 class OptimisticTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    /** @var Connection */
+    private $_conn;
+
+    protected function setUp(): void
     {
         parent::setUp();
-
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(OptimisticJoinedParent::class),
-                    $this->_em->getClassMetadata(OptimisticJoinedChild::class),
-                    $this->_em->getClassMetadata(OptimisticStandard::class),
-                    $this->_em->getClassMetadata(OptimisticTimestamp::class)
-                ]
-            );
-        } catch (\Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
-
         $this->_conn = $this->_em->getConnection();
     }
 
-    public function testJoinedChildInsertSetsInitialVersionValue()
+    private function createSchema(): void
     {
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(OptimisticJoinedParent::class),
+            $this->_em->getClassMetadata(OptimisticJoinedChild::class),
+            $this->_em->getClassMetadata(OptimisticStandard::class),
+            $this->_em->getClassMetadata(OptimisticTimestamp::class),
+        ]);
+    }
+
+    private function dropSchema(): void
+    {
+        $this->_schemaTool->dropSchema([
+            $this->_em->getClassMetadata(OptimisticJoinedParent::class),
+            $this->_em->getClassMetadata(OptimisticJoinedChild::class),
+            $this->_em->getClassMetadata(OptimisticStandard::class),
+            $this->_em->getClassMetadata(OptimisticTimestamp::class),
+        ]);
+    }
+
+    public function testJoinedChildInsertSetsInitialVersionValue(): OptimisticJoinedChild
+    {
+        $this->createSchema();
         $test = new OptimisticJoinedChild();
 
-        $test->name = 'child';
+        $test->name     = 'child';
         $test->whatever = 'whatever';
 
         $this->_em->persist($test);
         $this->_em->flush();
 
-        $this->assertEquals(1, $test->version);
+        self::assertEquals(1, $test->version);
 
         return $test;
     }
@@ -47,7 +73,7 @@ class OptimisticTest extends OrmFunctionalTestCase
     /**
      * @depends testJoinedChildInsertSetsInitialVersionValue
      */
-    public function testJoinedChildFailureThrowsException(OptimisticJoinedChild $child)
+    public function testJoinedChildFailureThrowsException(OptimisticJoinedChild $child): void
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedChild t WHERE t.id = :id');
 
@@ -66,12 +92,15 @@ class OptimisticTest extends OrmFunctionalTestCase
         try {
             $this->_em->flush();
         } catch (OptimisticLockException $e) {
-            $this->assertSame($test, $e->getEntity());
+            self::assertSame($test, $e->getEntity());
         }
+
+        $this->dropSchema();
     }
 
-    public function testJoinedParentInsertSetsInitialVersionValue()
+    public function testJoinedParentInsertSetsInitialVersionValue(): OptimisticJoinedParent
     {
+        $this->createSchema();
         $test = new OptimisticJoinedParent();
 
         $test->name = 'parent';
@@ -79,7 +108,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->_em->persist($test);
         $this->_em->flush();
 
-        $this->assertEquals(1, $test->version);
+        self::assertEquals(1, $test->version);
 
         return $test;
     }
@@ -87,7 +116,7 @@ class OptimisticTest extends OrmFunctionalTestCase
     /**
      * @depends testJoinedParentInsertSetsInitialVersionValue
      */
-    public function testJoinedParentFailureThrowsException(OptimisticJoinedParent $parent)
+    public function testJoinedParentFailureThrowsException(OptimisticJoinedParent $parent): void
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedParent t WHERE t.id = :id');
 
@@ -106,12 +135,16 @@ class OptimisticTest extends OrmFunctionalTestCase
         try {
             $this->_em->flush();
         } catch (OptimisticLockException $e) {
-            $this->assertSame($test, $e->getEntity());
+            self::assertSame($test, $e->getEntity());
         }
+
+        $this->dropSchema();
     }
 
-    public function testMultipleFlushesDoIncrementalUpdates()
+    public function testMultipleFlushesDoIncrementalUpdates(): void
     {
+        $this->createSchema();
+
         $test = new OptimisticStandard();
 
         for ($i = 0; $i < 5; $i++) {
@@ -120,13 +153,17 @@ class OptimisticTest extends OrmFunctionalTestCase
             $this->_em->persist($test);
             $this->_em->flush();
 
-            $this->assertInternalType('int', $test->getVersion());
-            $this->assertEquals($i + 1, $test->getVersion());
+            self::assertIsInt($test->getVersion());
+            self::assertEquals($i + 1, $test->getVersion());
         }
+
+        $this->dropSchema();
     }
 
-    public function testStandardInsertSetsInitialVersionValue()
+    public function testStandardInsertSetsInitialVersionValue(): OptimisticStandard
     {
+        $this->createSchema();
+
         $test = new OptimisticStandard();
 
         $test->name = 'test';
@@ -134,8 +171,8 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->_em->persist($test);
         $this->_em->flush();
 
-        $this->assertInternalType('int', $test->getVersion());
-        $this->assertEquals(1, $test->getVersion());
+        self::assertIsInt($test->getVersion());
+        self::assertEquals(1, $test->getVersion());
 
         return $test;
     }
@@ -143,7 +180,7 @@ class OptimisticTest extends OrmFunctionalTestCase
     /**
      * @depends testStandardInsertSetsInitialVersionValue
      */
-    public function testStandardFailureThrowsException(OptimisticStandard $entity)
+    public function testStandardFailureThrowsException(OptimisticStandard $entity): void
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard t WHERE t.id = :id');
 
@@ -162,13 +199,16 @@ class OptimisticTest extends OrmFunctionalTestCase
         try {
             $this->_em->flush();
         } catch (OptimisticLockException $e) {
-            $this->assertSame($test, $e->getEntity());
+            self::assertSame($test, $e->getEntity());
         }
+
+        $this->dropSchema();
     }
 
-    public function testLockWorksWithProxy()
+    public function testLockWorksWithProxy(): void
     {
-        $test = new OptimisticStandard();
+        $this->createSchema();
+        $test       = new OptimisticStandard();
         $test->name = 'test';
 
         $this->_em->persist($test);
@@ -180,20 +220,22 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->_em->lock($proxy, LockMode::OPTIMISTIC, 1);
 
         $this->addToAssertionCount(1);
+        $this->dropSchema();
     }
 
-    public function testOptimisticTimestampSetsDefaultValue()
+    public function testOptimisticTimestampSetsDefaultValue(): OptimisticTimestamp
     {
+        $this->createSchema();
         $test = new OptimisticTimestamp();
 
         $test->name = 'Testing';
 
-        $this->assertNull($test->version, "Pre-Condition");
+        self::assertNull($test->version, 'Pre-Condition');
 
         $this->_em->persist($test);
         $this->_em->flush();
 
-        $this->assertInstanceOf('DateTime', $test->version);
+        self::assertInstanceOf('DateTime', $test->version);
 
         return $test;
     }
@@ -201,7 +243,7 @@ class OptimisticTest extends OrmFunctionalTestCase
     /**
      * @depends testOptimisticTimestampSetsDefaultValue
      */
-    public function testOptimisticTimestampFailureThrowsException(OptimisticTimestamp $entity)
+    public function testOptimisticTimestampFailureThrowsException(OptimisticTimestamp $entity): void
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp t WHERE t.id = :id');
 
@@ -209,17 +251,16 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         $test = $q->getSingleResult();
 
-        $this->assertInstanceOf('DateTime', $test->version);
+        self::assertInstanceOf('DateTime', $test->version);
 
         // Manually increment the version datetime column
         $format = $this->_em->getConnection()->getDatabasePlatform()->getDateTimeFormatString();
 
-        $this->_conn->executeQuery('UPDATE optimistic_timestamp SET version = ? WHERE id = ?', [date($format, strtotime($test->version->format($format)) + 3600), $test->id]
-        );
+        $this->_conn->executeQuery('UPDATE optimistic_timestamp SET version = ? WHERE id = ?', [date($format, strtotime($test->version->format($format)) + 3600), $test->id]);
 
         // Try and update the record and it should throw an exception
         $caughtException = null;
-        $test->name = 'Testing again';
+        $test->name      = 'Testing again';
 
         try {
             $this->_em->flush();
@@ -227,15 +268,14 @@ class OptimisticTest extends OrmFunctionalTestCase
             $caughtException = $e;
         }
 
-        $this->assertNotNull($caughtException, "No OptimisticLockingException was thrown");
-        $this->assertSame($test, $caughtException->getEntity());
-
+        self::assertNotNull($caughtException, 'No OptimisticLockingException was thrown');
+        self::assertSame($test, $caughtException->getEntity());
     }
 
     /**
      * @depends testOptimisticTimestampSetsDefaultValue
      */
-    public function testOptimisticTimestampLockFailureThrowsException(OptimisticTimestamp $entity)
+    public function testOptimisticTimestampLockFailureThrowsException(OptimisticTimestamp $entity): void
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp t WHERE t.id = :id');
 
@@ -243,24 +283,27 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         $test = $q->getSingleResult();
 
-        $this->assertInstanceOf('DateTime', $test->version);
+        self::assertInstanceOf('DateTime', $test->version);
 
         // Try to lock the record with an older timestamp and it should throw an exception
         $caughtException = null;
 
         try {
-            $expectedVersionExpired = DateTime::createFromFormat('U', $test->version->getTimestamp()-3600);
+            $expectedVersionExpired = DateTime::createFromFormat(
+                'U',
+                (string) ($test->version->getTimestamp() - 3600)
+            );
 
             $this->_em->lock($test, LockMode::OPTIMISTIC, $expectedVersionExpired);
         } catch (OptimisticLockException $e) {
             $caughtException = $e;
         }
 
-        $this->assertNotNull($caughtException, "No OptimisticLockingException was thrown");
-        $this->assertSame($test, $caughtException->getEntity());
+        self::assertNotNull($caughtException, 'No OptimisticLockingException was thrown');
+        self::assertSame($test, $caughtException->getEntity());
 
+        $this->dropSchema();
     }
-
 }
 
 /**
@@ -273,21 +316,26 @@ class OptimisticTest extends OrmFunctionalTestCase
 class OptimisticJoinedParent
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
+     * @var string
      * @Column(type="string", length=255)
      */
     public $name;
 
     /**
-     * @Version @Column(type="integer")
+     * @var int
+     * @Version
+     * @Column(type="integer")
      */
     public $version;
 }
+
 
 /**
  * @Entity
@@ -296,6 +344,7 @@ class OptimisticJoinedParent
 class OptimisticJoinedChild extends OptimisticJoinedParent
 {
     /**
+     * @var string
      * @Column(type="string", length=255)
      */
     public $whatever;
@@ -308,22 +357,26 @@ class OptimisticJoinedChild extends OptimisticJoinedParent
 class OptimisticStandard
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
+     * @var string
      * @Column(type="string", length=255)
      */
     public $name;
 
     /**
-     * @Version @Column(type="integer")
+     * @var int
+     * @Version
+     * @Column(type="integer")
      */
     private $version;
 
-    public function getVersion()
+    public function getVersion(): int
     {
         return $this->version;
     }
@@ -336,18 +389,22 @@ class OptimisticStandard
 class OptimisticTimestamp
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
+     * @var string
      * @Column(type="string", length=255)
      */
     public $name;
 
     /**
-     * @Version @Column(type="datetime")
+     * @var DateTime
+     * @Version
+     * @Column(type="datetime")
      */
     public $version;
 }

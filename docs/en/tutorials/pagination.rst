@@ -1,9 +1,7 @@
 Pagination
 ==========
 
-.. versionadded:: 2.2
-
-Starting with version 2.2 Doctrine ships with a Paginator for DQL queries. It
+Doctrine ORM ships with a Paginator for DQL queries. It
 has a very simple API and implements the SPL interfaces ``Countable`` and
 ``IteratorAggregate``.
 
@@ -41,3 +39,7 @@ collection. You can disable this behavior by setting the
 ``$fetchJoinCollection`` flag to ``false``; in that case only 2 instead of the 3 queries
 described are executed. We hope to automate the detection for this in
 the future.
+
+.. note::
+
+    ``$fetchJoinCollection`` flag set to ``true`` might affect results if you use aggregations in your query.

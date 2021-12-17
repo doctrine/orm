@@ -1,76 +1,49 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Persisters\Collection;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\UnitOfWork;
 
 /**
  * Base class for all collection persisters.
- *
- * @since 2.0
- * @author Roman Borschel <roman@code-factory.org>
  */
 abstract class AbstractCollectionPersister implements CollectionPersister
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     protected $em;
 
-    /**
-     * @var \Doctrine\DBAL\Connection
-     */
+    /** @var Connection */
     protected $conn;
 
-    /**
-     * @var UnitOfWork
-     */
+    /** @var UnitOfWork */
     protected $uow;
 
     /**
      * The database platform.
      *
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
+     * @var AbstractPlatform
      */
     protected $platform;
 
-    /**
-     * The quote strategy.
-     *
-     * @var \Doctrine\ORM\Mapping\QuoteStrategy
-     */
+    /** @var QuoteStrategy */
     protected $quoteStrategy;
 
     /**
      * Initializes a new instance of a class derived from AbstractCollectionPersister.
-     *
-     * @param EntityManagerInterface $em
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em               = $em;
-        $this->uow              = $em->getUnitOfWork();
-        $this->conn             = $em->getConnection();
-        $this->platform         = $this->conn->getDatabasePlatform();
-        $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
+        $this->em            = $em;
+        $this->uow           = $em->getUnitOfWork();
+        $this->conn          = $em->getConnection();
+        $this->platform      = $this->conn->getDatabasePlatform();
+        $this->quoteStrategy = $em->getConfiguration()->getQuoteStrategy();
     }
 
     /**

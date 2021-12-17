@@ -1,28 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Console;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
+use Doctrine\Tests\OrmTestCase;
+
+use function count;
 
 /**
  * Tests for {@see \Doctrine\ORM\Tools\Console\MetadataFilter}
  *
  * @covers \Doctrine\ORM\Tools\Console\MetadataFilter
  */
-class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
+class MetadataFilterTest extends OrmTestCase
 {
-    /**
-     * @var DisconnectedClassMetadataFactory
-     */
+    /** @var DisconnectedClassMetadataFactory */
     private $cmf;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $driver = $this->createAnnotationDriver();
-        $em     = $this->_getTestEntityManager();
+        $em     = $this->getTestEntityManager();
 
         $em->getConfiguration()->setMetadataDriverImpl($driver);
 
@@ -30,7 +36,7 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $this->cmf->setEntityManager($em);
     }
 
-    public function testFilterWithEmptyArray() : void
+    public function testFilterWithEmptyArray(): void
     {
         $originalMetadatas = [
             $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::class),
@@ -40,12 +46,12 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $metadatas = $originalMetadatas;
         $metadatas = MetadataFilter::filter($metadatas, []);
 
-        $this->assertContains($metadataAaa, $metadatas);
-        $this->assertContains($metadataBbb, $metadatas);
-        $this->assertCount(count($originalMetadatas), $metadatas);
+        self::assertContains($metadataAaa, $metadatas);
+        self::assertContains($metadataBbb, $metadatas);
+        self::assertCount(count($originalMetadatas), $metadatas);
     }
 
-    public function testFilterWithString() : void
+    public function testFilterWithString(): void
     {
         $originalMetadatas = [
             $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::class),
@@ -56,29 +62,29 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $metadatas = $originalMetadatas;
         $metadatas = MetadataFilter::filter($metadatas, 'MetadataFilterTestEntityAaa');
 
-        $this->assertContains($metadataAaa, $metadatas);
-        $this->assertNotContains($metadataBbb, $metadatas);
-        $this->assertNotContains($metadataCcc, $metadatas);
-        $this->assertCount(1, $metadatas);
+        self::assertContains($metadataAaa, $metadatas);
+        self::assertNotContains($metadataBbb, $metadatas);
+        self::assertNotContains($metadataCcc, $metadatas);
+        self::assertCount(1, $metadatas);
 
         $metadatas = $originalMetadatas;
         $metadatas = MetadataFilter::filter($metadatas, 'MetadataFilterTestEntityBbb');
 
-        $this->assertNotContains($metadataAaa, $metadatas);
-        $this->assertContains($metadataBbb, $metadatas);
-        $this->assertNotContains($metadataCcc, $metadatas);
-        $this->assertCount(1, $metadatas);
+        self::assertNotContains($metadataAaa, $metadatas);
+        self::assertContains($metadataBbb, $metadatas);
+        self::assertNotContains($metadataCcc, $metadatas);
+        self::assertCount(1, $metadatas);
 
         $metadatas = $originalMetadatas;
         $metadatas = MetadataFilter::filter($metadatas, 'MetadataFilterTestEntityCcc');
 
-        $this->assertNotContains($metadataAaa, $metadatas);
-        $this->assertNotContains($metadataBbb, $metadatas);
-        $this->assertContains($metadataCcc, $metadatas);
-        $this->assertCount(1, $metadatas);
+        self::assertNotContains($metadataAaa, $metadatas);
+        self::assertNotContains($metadataBbb, $metadatas);
+        self::assertContains($metadataCcc, $metadatas);
+        self::assertCount(1, $metadatas);
     }
 
-    public function testFilterWithString2() : void
+    public function testFilterWithString2(): void
     {
         $originalMetadatas = [
             $metadataFoo    = $this->cmf->getMetadataFor(MetadataFilterTestEntityFoo::class),
@@ -89,13 +95,13 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $metadatas = $originalMetadatas;
         $metadatas = MetadataFilter::filter($metadatas, 'MetadataFilterTestEntityFoo');
 
-        $this->assertContains($metadataFoo, $metadatas);
-        $this->assertContains($metadataFooBar, $metadatas);
-        $this->assertNotContains($metadataBar, $metadatas);
-        $this->assertCount(2, $metadatas);
+        self::assertContains($metadataFoo, $metadatas);
+        self::assertContains($metadataFooBar, $metadatas);
+        self::assertNotContains($metadataBar, $metadatas);
+        self::assertCount(2, $metadatas);
     }
 
-    public function testFilterWithArray() : void
+    public function testFilterWithArray(): void
     {
         $originalMetadatas = [
             $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::class),
@@ -109,13 +115,13 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
             'MetadataFilterTestEntityCcc',
         ]);
 
-        $this->assertContains($metadataAaa, $metadatas);
-        $this->assertNotContains($metadataBbb, $metadatas);
-        $this->assertContains($metadataCcc, $metadatas);
-        $this->assertCount(2, $metadatas);
+        self::assertContains($metadataAaa, $metadatas);
+        self::assertNotContains($metadataBbb, $metadatas);
+        self::assertContains($metadataCcc, $metadatas);
+        self::assertCount(2, $metadatas);
     }
 
-    public function testFilterWithRegex() : void
+    public function testFilterWithRegex(): void
     {
         $originalMetadatas = [
             $metadataFoo    = $this->cmf->getMetadataFor(MetadataFilterTestEntityFoo::class),
@@ -126,59 +132,83 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $metadatas = $originalMetadatas;
         $metadatas = MetadataFilter::filter($metadatas, 'Foo$');
 
-        $this->assertContains($metadataFoo, $metadatas);
-        $this->assertNotContains($metadataFooBar, $metadatas);
-        $this->assertNotContains($metadataBar, $metadatas);
-        $this->assertCount(1, $metadatas);
+        self::assertContains($metadataFoo, $metadatas);
+        self::assertNotContains($metadataFooBar, $metadatas);
+        self::assertNotContains($metadataBar, $metadatas);
+        self::assertCount(1, $metadatas);
 
         $metadatas = $originalMetadatas;
         $metadatas = MetadataFilter::filter($metadatas, 'Bar$');
 
-        $this->assertNotContains($metadataFoo, $metadatas);
-        $this->assertContains($metadataFooBar, $metadatas);
-        $this->assertContains($metadataBar, $metadatas);
-        $this->assertCount(2, $metadatas);
+        self::assertNotContains($metadataFoo, $metadatas);
+        self::assertContains($metadataFooBar, $metadatas);
+        self::assertContains($metadataBar, $metadatas);
+        self::assertCount(2, $metadatas);
     }
 }
 
 /** @Entity */
 class MetadataFilterTestEntityAaa
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityBbb
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityCcc
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityFoo
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityBar
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityFooBar
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }

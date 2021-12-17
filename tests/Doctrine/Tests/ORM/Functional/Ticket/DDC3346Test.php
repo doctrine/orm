@@ -1,16 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\DDC3346\DDC3346Article;
 use Doctrine\Tests\Models\DDC3346\DDC3346Author;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function assert;
 
 /**
  * @group DDC-3346
  */
-class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3346Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         $this->useModelSet('ddc3346');
 
@@ -19,32 +24,32 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->loadAuthorFixture();
     }
 
-    public function testFindOneWithEagerFetchWillNotHydrateLimitedCollection()
+    public function testFindOneWithEagerFetchWillNotHydrateLimitedCollection(): void
     {
-        /* @var DDC3346Author $author */
         $author = $this->_em->getRepository(DDC3346Author::class)->findOneBy(
             ['username' => 'bwoogy']
         );
+        assert($author instanceof DDC3346Author);
 
-        $this->assertCount(2, $author->articles);
+        self::assertCount(2, $author->articles);
     }
 
-    public function testFindLimitedWithEagerFetchWillNotHydrateLimitedCollection()
+    public function testFindLimitedWithEagerFetchWillNotHydrateLimitedCollection(): void
     {
-        /* @var DDC3346Author[] $authors */
+        /** @var DDC3346Author[] $authors */
         $authors = $this->_em->getRepository(DDC3346Author::class)->findBy(
             ['username' => 'bwoogy'],
             null,
             1
         );
 
-        $this->assertCount(1, $authors);
-        $this->assertCount(2, $authors[0]->articles);
+        self::assertCount(1, $authors);
+        self::assertCount(2, $authors[0]->articles);
     }
 
-    public function testFindWithEagerFetchAndOffsetWillNotHydrateLimitedCollection()
+    public function testFindWithEagerFetchAndOffsetWillNotHydrateLimitedCollection(): void
     {
-        /* @var DDC3346Author[] $authors */
+        /** @var DDC3346Author[] $authors */
         $authors = $this->_em->getRepository(DDC3346Author::class)->findBy(
             ['username' => 'bwoogy'],
             null,
@@ -52,11 +57,11 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
             0 // using an explicitly defined offset
         );
 
-        $this->assertCount(1, $authors);
-        $this->assertCount(2, $authors[0]->articles);
+        self::assertCount(1, $authors);
+        self::assertCount(2, $authors[0]->articles);
     }
 
-    private function loadAuthorFixture()
+    private function loadAuthorFixture(): void
     {
         $user     = new DDC3346Author();
         $article1 = new DDC3346Article();

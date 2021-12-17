@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
@@ -9,40 +11,41 @@ use PHPUnit\Framework\TestCase;
 
 class ParserResultTest extends TestCase
 {
+    /** @var ParserResult */
     public $parserResult;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->parserResult = new ParserResult();
     }
 
-    public function testGetRsm()
+    public function testGetRsm(): void
     {
-        $this->assertInstanceOf(ResultSetMapping::class, $this->parserResult->getResultSetMapping());
+        self::assertInstanceOf(ResultSetMapping::class, $this->parserResult->getResultSetMapping());
     }
 
-    public function testSetGetSqlExecutor()
+    public function testSetGetSqlExecutor(): void
     {
-        $this->assertNull($this->parserResult->getSqlExecutor());
+        self::assertNull($this->parserResult->getSqlExecutor());
 
         $executor = $this->getMockBuilder(AbstractSqlExecutor::class)->setMethods(['execute'])->getMock();
         $this->parserResult->setSqlExecutor($executor);
-        $this->assertSame($executor, $this->parserResult->getSqlExecutor());
+        self::assertSame($executor, $this->parserResult->getSqlExecutor());
     }
 
-    public function testGetSqlParameterPosition()
+    public function testGetSqlParameterPosition(): void
     {
         $this->parserResult->addParameterMapping(1, 1);
         $this->parserResult->addParameterMapping(1, 2);
-        $this->assertEquals([1, 2], $this->parserResult->getSqlParameterPositions(1));
+        self::assertEquals([1, 2], $this->parserResult->getSqlParameterPositions(1));
     }
 
-    public function testGetParameterMappings()
+    public function testGetParameterMappings(): void
     {
-        $this->assertInternalType('array', $this->parserResult->getParameterMappings());
+        self::assertIsArray($this->parserResult->getParameterMappings());
 
         $this->parserResult->addParameterMapping(1, 1);
         $this->parserResult->addParameterMapping(1, 2);
-        $this->assertEquals([1 => [1, 2]], $this->parserResult->getParameterMappings());
+        self::assertEquals([1 => [1, 2]], $this->parserResult->getParameterMappings());
     }
 }

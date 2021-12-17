@@ -1,21 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
+
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\SequenceGenerator;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * Description of SequenceGeneratorTest
- *
- * @author robo
  */
 class SequenceGeneratorTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        if ( ! $this->_em->getConnection()->getDatabasePlatform()->supportsSequences()) {
-            $this->markTestSkipped('Only working for Databases that support sequences.');
+        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsSequences()) {
+            self::markTestSkipped('Only working for Databases that support sequences.');
         }
 
         try {
@@ -24,11 +31,11 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(SequenceEntity::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
-    public function testHighAllocationSizeSequence()
+    public function testHighAllocationSizeSequence(): void
     {
         for ($i = 0; $i < 11; ++$i) {
             $this->_em->persist(new SequenceEntity());
@@ -46,8 +53,9 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
 class SequenceEntity
 {
     /**
+     * @var int
      * @Id
-     * @column(type="integer")
+     * @Column(type="integer")
      * @GeneratedValue(strategy="SEQUENCE")
      * @SequenceGenerator(allocationSize=5, sequenceName="person_id_seq")
      */

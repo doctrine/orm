@@ -1,9 +1,7 @@
 Filters
 =======
 
-.. versionadded:: 2.2
-
-Doctrine 2.2 features a filter system that allows the developer to add SQL to
+Doctrine ORM features a filter system that allows the developer to add SQL to
 the conditional clauses of queries, regardless the place where the SQL is
 generated (e.g. from a DQL query, or by loading associated entities).
 
@@ -55,6 +53,9 @@ proper quoting of parameters.
         }
     }
 
+If the parameter is an array and should be quoted as a list of values for an IN query
+this is possible with the alternative ``SQLFilter#setParameterList()`` and
+``SQLFilter#getParameterList()`` functions.
 
 Configuration
 -------------

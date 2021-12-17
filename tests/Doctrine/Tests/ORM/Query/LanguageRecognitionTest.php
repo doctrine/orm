@@ -1,26 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query,
-    Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\ParserResult;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Mocks\MockTreeWalker;
 use Doctrine\Tests\OrmTestCase;
 
+use const PHP_EOL;
+
 class LanguageRecognitionTest extends OrmTestCase
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $_em;
+    /** @var EntityManagerInterface */
+    private $entityManager;
 
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->_em = $this->_getTestEntityManager();
+        $this->entityManager = $this->getTestEntityManager();
     }
 
-    public function assertValidDQL($dql, $debug = false)
+    public function assertValidDQL($dql, $debug = false): void
     {
         try {
             $parserResult = $this->parseDql($dql);
@@ -30,33 +38,37 @@ class LanguageRecognitionTest extends OrmTestCase
                 echo $e->getTraceAsString() . PHP_EOL;
             }
 
-            $this->fail($e->getMessage());
+            self::fail($e->getMessage());
         }
     }
 
-    public function assertInvalidDQL($dql, $debug = false)
+    public function assertInvalidDQL($dql, $debug = false): void
     {
         try {
             $parserResult = $this->parseDql($dql);
 
-            $this->fail('No syntax errors were detected, when syntax errors were expected');
+            self::fail('No syntax errors were detected, when syntax errors were expected');
         } catch (QueryException $e) {
             if ($debug) {
                 echo $e->getMessage() . PHP_EOL;
                 echo $e->getTraceAsString() . PHP_EOL;
             }
+
             $this->addToAssertionCount(1);
         }
     }
 
-    public function parseDql($dql, $hints = [])
+    /**
+     * @psalm-param array<string, mixed> $hints
+     */
+    public function parseDql(string $dql, array $hints = []): ParserResult
     {
-        $query = $this->_em->createQuery($dql);
+        $query = $this->entityManager->createQuery($dql);
         $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
         $query->setDQL($dql);
 
         foreach ($hints as $key => $value) {
-        	$query->setHint($key, $value);
+            $query->setHint($key, $value);
         }
 
         $parser = new Query\Parser($query);
@@ -67,17 +79,17 @@ class LanguageRecognitionTest extends OrmTestCase
         return $parser->parse();
     }
 
-    public function testEmptyQueryString()
+    public function testEmptyQueryString(): void
     {
         $this->assertInvalidDQL('');
     }
 
-    public function testPlainFromClauseWithAlias()
+    public function testPlainFromClauseWithAlias(): void
     {
         $this->assertValidDQL('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
-    public function testSelectSingleComponentWithAsterisk()
+    public function testSelectSingleComponentWithAsterisk(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
@@ -85,21 +97,24 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @dataProvider invalidDQL
      */
-    public function testRejectsInvalidDQL($dql)
+    public function testRejectsInvalidDQL(string $dql): void
     {
         $this->expectException(QueryException::class);
 
-        $this->_em->getConfiguration()->setEntityNamespaces(
+        $this->entityManager->getConfiguration()->setEntityNamespaces(
             [
-            'Unknown' => 'Unknown',
-            'CMS' => 'Doctrine\Tests\Models\CMS'
+                'Unknown' => 'Unknown',
+                'CMS' => 'Doctrine\Tests\Models\CMS',
             ]
         );
 
         $this->parseDql($dql);
     }
 
-    public function invalidDQL()
+    /**
+     * @psalm-return list<array{string}>
+     */
+    public function invalidDQL(): array
     {
         return [
 
@@ -139,143 +154,143 @@ class LanguageRecognitionTest extends OrmTestCase
         ];
     }
 
-    public function testSelectSingleComponentWithMultipleColumns()
+    public function testSelectSingleComponentWithMultipleColumns(): void
     {
         $this->assertValidDQL('SELECT u.name, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
-    public function testSelectMultipleComponentsUsingMultipleFrom()
+    public function testSelectMultipleComponentsUsingMultipleFrom(): void
     {
         $this->assertValidDQL('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE u = p.user');
     }
 
-    public function testSelectMultipleComponentsWithAsterisk()
+    public function testSelectMultipleComponentsWithAsterisk(): void
     {
         $this->assertValidDQL('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.phonenumbers p');
     }
 
-    public function testSelectDistinctIsSupported()
+    public function testSelectDistinctIsSupported(): void
     {
         $this->assertValidDQL('SELECT DISTINCT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
-    public function testAggregateFunctionInSelect()
+    public function testAggregateFunctionInSelect(): void
     {
         $this->assertValidDQL('SELECT COUNT(u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
-    public function testMultipleParenthesisInSelect()
+    public function testMultipleParenthesisInSelect(): void
     {
         $this->assertValidDQL('SELECT (((u.id))) as v FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
-    public function testDuplicatedAliasInAggregateFunction()
+    public function testDuplicatedAliasInAggregateFunction(): void
     {
         $this->assertInvalidDQL('SELECT COUNT(u.id) AS num, SUM(u.id) AS num FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
-    public function testAggregateFunctionWithDistinctInSelect()
+    public function testAggregateFunctionWithDistinctInSelect(): void
     {
         $this->assertValidDQL('SELECT COUNT(DISTINCT u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
-    public function testFunctionalExpressionsSupportedInWherePart()
+    public function testFunctionalExpressionsSupportedInWherePart(): void
     {
         $this->assertValidDQL("SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(u.name) = 'someone'");
     }
 
-    public function testArithmeticExpressionsSupportedInWherePart()
+    public function testArithmeticExpressionsSupportedInWherePart(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE ((u.id + 5000) * u.id + 3) < 10000000');
     }
 
-    public function testInExpressionSupportedInWherePart()
+    public function testInExpressionSupportedInWherePart(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN (1, 2)');
     }
 
-    public function testInExpressionWithoutSpacesSupportedInWherePart()
+    public function testInExpressionWithoutSpacesSupportedInWherePart(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN (1,2,3)');
     }
 
-    public function testNotInExpressionSupportedInWherePart()
+    public function testNotInExpressionSupportedInWherePart(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN (1)');
     }
 
-    public function testInExpressionWithSingleValuedAssociationPathExpression()
+    public function testInExpressionWithSingleValuedAssociationPathExpression(): void
     {
-        $this->assertValidDQL("SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u WHERE u.avatar IN (?1, ?2)");
+        $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u WHERE u.avatar IN (?1, ?2)');
     }
 
-    public function testInvalidInExpressionWithCollectionValuedAssociationPathExpression()
+    public function testInvalidInExpressionWithCollectionValuedAssociationPathExpression(): void
     {
-        $this->assertInvalidDQL("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.phonenumbers IN (?1, ?2)");
+        $this->assertInvalidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.phonenumbers IN (?1, ?2)');
     }
 
-    public function testInstanceOfExpressionSupportedInWherePart()
+    public function testInstanceOfExpressionSupportedInWherePart(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee');
     }
 
-    public function testInstanceOfExpressionWithInputParamSupportedInWherePart()
+    public function testInstanceOfExpressionWithInputParamSupportedInWherePart(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1');
     }
 
-    public function testNotInstanceOfExpressionSupportedInWherePart()
+    public function testNotInstanceOfExpressionSupportedInWherePart(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u NOT INSTANCE OF ?1');
     }
 
-    public function testExistsExpressionSupportedInWherePart()
+    public function testExistsExpressionSupportedInWherePart(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE EXISTS (SELECT p.phonenumber FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234)');
     }
 
-    public function testNotExistsExpressionSupportedInWherePart()
+    public function testNotExistsExpressionSupportedInWherePart(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT EXISTS (SELECT p.phonenumber FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234)');
     }
 
-    public function testAggregateFunctionInHavingClause()
+    public function testAggregateFunctionInHavingClause(): void
     {
         $this->assertValidDQL('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.phonenumbers p HAVING COUNT(p.phonenumber) > 2');
         $this->assertValidDQL("SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.phonenumbers p HAVING MAX(u.name) = 'romanb'");
     }
 
-    public function testLeftJoin()
+    public function testLeftJoin(): void
     {
         $this->assertValidDQL('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.phonenumbers p');
     }
 
-    public function testJoin()
+    public function testJoin(): void
     {
         $this->assertValidDQL('SELECT u,p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.phonenumbers p');
     }
 
-    public function testInnerJoin()
+    public function testInnerJoin(): void
     {
         $this->assertValidDQL('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.phonenumbers p');
     }
 
-    public function testMultipleLeftJoin()
+    public function testMultipleLeftJoin(): void
     {
         $this->assertValidDQL('SELECT u, a, p FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a LEFT JOIN u.phonenumbers p');
     }
 
-    public function testMultipleInnerJoin()
+    public function testMultipleInnerJoin(): void
     {
         $this->assertValidDQL('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a INNER JOIN u.phonenumbers p');
     }
 
-    public function testMixingOfJoins()
+    public function testMixingOfJoins(): void
     {
         $this->assertValidDQL('SELECT u.name, a.topic, p.phonenumber FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a LEFT JOIN u.phonenumbers p');
     }
 
-    public function testJoinClassPathUsingWITH()
+    public function testJoinClassPathUsingWITH(): void
     {
         $this->assertValidDQL('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN Doctrine\Tests\Models\CMS\CmsArticle a WITH a.user = u.id');
     }
@@ -283,7 +298,7 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @group DDC-3701
      */
-    public function testJoinClassPathUsingWHERE()
+    public function testJoinClassPathUsingWHERE(): void
     {
         $this->assertValidDQL('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = u.id');
     }
@@ -291,52 +306,52 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @group DDC-3701
      */
-    public function testDDC3701WHEREIsNotWITH()
+    public function testDDC3701WHEREIsNotWITH(): void
     {
         $this->assertInvalidDQL('SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c JOIN Doctrine\Tests\Models\Company\CompanyEmployee e WHERE e.id = c.salesPerson WHERE c.completed = true');
     }
 
-    public function testOrderBySingleColumn()
+    public function testOrderBySingleColumn(): void
     {
         $this->assertValidDQL('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.name');
     }
 
-    public function testOrderBySingleColumnAscending()
+    public function testOrderBySingleColumnAscending(): void
     {
         $this->assertValidDQL('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.name ASC');
     }
 
-    public function testOrderBySingleColumnDescending()
+    public function testOrderBySingleColumnDescending(): void
     {
         $this->assertValidDQL('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.name DESC');
     }
 
-    public function testOrderByMultipleColumns()
+    public function testOrderByMultipleColumns(): void
     {
         $this->assertValidDQL('SELECT u.name, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username DESC, u.name DESC');
     }
 
-    public function testSubselectInInExpression()
+    public function testSubselectInInExpression(): void
     {
         $this->assertValidDQL("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN (SELECT u2.id FROM Doctrine\Tests\Models\CMS\CmsUser u2 WHERE u2.name = 'zYne')");
     }
 
-    public function testSubselectInSelectPart()
+    public function testSubselectInSelectPart(): void
     {
         $this->assertValidDQL("SELECT u.name, (SELECT COUNT(p.phonenumber) FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234) pcount FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = 'jon'");
     }
 
-    public function testArithmeticExpressionInSelectPart()
+    public function testArithmeticExpressionInSelectPart(): void
     {
-        $this->assertValidDQL("SELECT SUM(u.id) / COUNT(u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u");
+        $this->assertValidDQL('SELECT SUM(u.id) / COUNT(u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
-    public function testArithmeticExpressionInSubselectPart()
+    public function testArithmeticExpressionInSubselectPart(): void
     {
         $this->assertValidDQL("SELECT (SELECT SUM(u.id) / COUNT(u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u2) value FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = 'jon'");
     }
 
-    public function testArithmeticExpressionWithParenthesisInSubselectPart()
+    public function testArithmeticExpressionWithParenthesisInSubselectPart(): void
     {
         $this->assertValidDQL("SELECT (SELECT (SUM(u.id) / COUNT(u.id)) FROM Doctrine\Tests\Models\CMS\CmsUser u2) value FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = 'jon'");
     }
@@ -344,7 +359,7 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @group DDC-1079
      */
-    public function testSelectLiteralInSubselect()
+    public function testSelectLiteralInSubselect(): void
     {
         $this->assertValidDQL('SELECT (SELECT 1 FROM Doctrine\Tests\Models\CMS\CmsUser u2) value FROM Doctrine\Tests\Models\CMS\CmsUser u');
         $this->assertValidDQL('SELECT (SELECT 0 FROM Doctrine\Tests\Models\CMS\CmsUser u2) value FROM Doctrine\Tests\Models\CMS\CmsUser u');
@@ -353,125 +368,125 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @group DDC-1077
      */
-    public function testConstantValueInSelect()
+    public function testConstantValueInSelect(): void
     {
         $this->assertValidDQL("SELECT u.name, 'foo' AS bar FROM Doctrine\Tests\Models\CMS\CmsUser u", true);
     }
 
-    public function testDuplicateAliasInSubselectPart()
+    public function testDuplicateAliasInSubselectPart(): void
     {
         $this->assertInvalidDQL("SELECT (SELECT SUM(u.id) / COUNT(u.id) AS foo FROM Doctrine\Tests\Models\CMS\CmsUser u2) foo FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = 'jon'");
     }
 
-    public function testPositionalInputParameter()
+    public function testPositionalInputParameter(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1');
     }
 
-    public function testNamedInputParameter()
+    public function testNamedInputParameter(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :id');
     }
 
-    public function testJoinConditionOverrideNotSupported()
+    public function testJoinConditionOverrideNotSupported(): void
     {
         $this->assertInvalidDQL("SELECT u.name, p FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.phonenumbers p ON p.phonenumber = '123 123'");
     }
 
-    public function testIndexByClauseWithOneComponent()
+    public function testIndexByClauseWithOneComponent(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INDEX BY u.id');
     }
 
-    public function testIndexBySupportsJoins()
+    public function testIndexBySupportsJoins(): void
     {
         $this->assertValidDQL('SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a INDEX BY a.id'); // INDEX BY is now referring to articles
     }
 
-    public function testIndexBySupportsJoins2()
+    public function testIndexBySupportsJoins2(): void
     {
         $this->assertValidDQL('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u INDEX BY u.id LEFT JOIN u.phonenumbers p INDEX BY p.phonenumber');
     }
 
-    public function testBetweenExpressionSupported()
+    public function testBetweenExpressionSupported(): void
     {
         $this->assertValidDQL("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name BETWEEN 'jepso' AND 'zYne'");
     }
 
-    public function testNotBetweenExpressionSupported()
+    public function testNotBetweenExpressionSupported(): void
     {
         $this->assertValidDQL("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name NOT BETWEEN 'jepso' AND 'zYne'");
     }
 
-    public function testLikeExpression()
+    public function testLikeExpression(): void
     {
         $this->assertValidDQL("SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name LIKE 'z%'");
     }
 
-    public function testNotLikeExpression()
+    public function testNotLikeExpression(): void
     {
         $this->assertValidDQL("SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name NOT LIKE 'z%'");
     }
 
-    public function testLikeExpressionWithCustomEscapeCharacter()
+    public function testLikeExpressionWithCustomEscapeCharacter(): void
     {
         $this->assertValidDQL("SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name LIKE 'z|%' ESCAPE '|'");
     }
 
-    public function testFieldComparisonWithoutAlias()
+    public function testFieldComparisonWithoutAlias(): void
     {
-        $this->assertInvalidDQL("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE id = 1");
+        $this->assertInvalidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE id = 1');
     }
 
-    public function testDuplicatedAliasDeclaration()
+    public function testDuplicatedAliasDeclaration(): void
     {
-        $this->assertInvalidDQL("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles u WHERE u.id = 1");
+        $this->assertInvalidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles u WHERE u.id = 1');
     }
 
-    public function testImplicitJoinInWhereOnSingleValuedAssociationPathExpression()
+    public function testImplicitJoinInWhereOnSingleValuedAssociationPathExpression(): void
     {
         // This should be allowed because avatar is a single-value association.
         // SQL: SELECT ... FROM forum_user fu INNER JOIN forum_avatar fa ON fu.avatar_id = fa.id WHERE fa.id = ?
-        $this->assertValidDQL("SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u JOIN u.avatar a WHERE a.id = ?1");
+        $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u JOIN u.avatar a WHERE a.id = ?1');
     }
 
-    public function testImplicitJoinInWhereOnCollectionValuedPathExpression()
+    public function testImplicitJoinInWhereOnCollectionValuedPathExpression(): void
     {
         // This should be forbidden, because articles is a collection
-        $this->assertInvalidDQL("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.articles a WHERE a.title = ?");
+        $this->assertInvalidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.articles a WHERE a.title = ?');
     }
 
-    public function testInvalidSyntaxIsRejected()
+    public function testInvalidSyntaxIsRejected(): void
     {
-        $this->assertInvalidDQL("FOOBAR CmsUser");
-        $this->assertInvalidDQL("DELETE FROM Doctrine\Tests\Models\CMS\CmsUser.articles");
-        $this->assertInvalidDQL("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.articles.comments");
+        $this->assertInvalidDQL('FOOBAR CmsUser');
+        $this->assertInvalidDQL('DELETE FROM Doctrine\Tests\Models\CMS\CmsUser.articles');
+        $this->assertInvalidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.articles.comments');
 
         // Currently UNDEFINED OFFSET error
-        $this->assertInvalidDQL("SELECT c FROM CmsUser.articles.comments c");
+        $this->assertInvalidDQL('SELECT c FROM CmsUser.articles.comments c');
     }
 
-    public function testUpdateWorksWithOneField()
+    public function testUpdateWorksWithOneField(): void
     {
         $this->assertValidDQL("UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = 'someone'");
     }
 
-    public function testUpdateWorksWithMultipleFields()
+    public function testUpdateWorksWithMultipleFields(): void
     {
         $this->assertValidDQL("UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = 'someone', u.username = 'some'");
     }
 
-    public function testUpdateSupportsConditions()
+    public function testUpdateSupportsConditions(): void
     {
         $this->assertValidDQL("UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = 'someone' WHERE u.id = 5");
     }
 
-    public function testDeleteAll()
+    public function testDeleteAll(): void
     {
         $this->assertValidDQL('DELETE FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
-    public function testDeleteWithCondition()
+    public function testDeleteWithCondition(): void
     {
         $this->assertValidDQL('DELETE FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = 3');
     }
@@ -480,94 +495,94 @@ class LanguageRecognitionTest extends OrmTestCase
      * The main use case for this generalized style of join is when a join condition
      * does not involve a foreign key relationship that is mapped to an entity relationship.
      */
-    public function testImplicitJoinWithCartesianProductAndConditionInWhere()
+    public function testImplicitJoinWithCartesianProductAndConditionInWhere(): void
     {
-        $this->assertValidDQL("SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a WHERE u.name = a.topic");
+        $this->assertValidDQL('SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a WHERE u.name = a.topic');
     }
 
-    public function testAllExpressionWithCorrelatedSubquery()
+    public function testAllExpressionWithCorrelatedSubquery(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id > ALL (SELECT u2.id FROM Doctrine\Tests\Models\CMS\CmsUser u2 WHERE u2.name = u.name)');
     }
 
-    public function testCustomJoinsAndWithKeywordSupported()
+    public function testCustomJoinsAndWithKeywordSupported(): void
     {
         $this->assertValidDQL('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.phonenumbers p WITH p.phonenumber = 123 WHERE u.id = 1');
     }
 
-    public function testAnyExpressionWithCorrelatedSubquery()
+    public function testAnyExpressionWithCorrelatedSubquery(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id > ANY (SELECT u2.id FROM Doctrine\Tests\Models\CMS\CmsUser u2 WHERE u2.name = u.name)');
     }
 
-    public function testSomeExpressionWithCorrelatedSubquery()
+    public function testSomeExpressionWithCorrelatedSubquery(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id > SOME (SELECT u2.id FROM Doctrine\Tests\Models\CMS\CmsUser u2 WHERE u2.name = u.name)');
     }
 
-    public function testArithmeticExpressionWithoutParenthesisInWhereClause()
+    public function testArithmeticExpressionWithoutParenthesisInWhereClause(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE SIZE(u.phonenumbers) + 1 > 10');
     }
 
-    public function testMemberOfExpression()
+    public function testMemberOfExpression(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.phonenumbers');
         //$this->assertValidDQL("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE 'Joe' MEMBER OF u.nicknames");
     }
 
-    public function testSizeFunction()
+    public function testSizeFunction(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE SIZE(u.phonenumbers) > 1');
     }
 
-    public function testEmptyCollectionComparisonExpression()
+    public function testEmptyCollectionComparisonExpression(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.phonenumbers IS EMPTY');
     }
 
-    public function testSingleValuedAssociationFieldInWhere()
+    public function testSingleValuedAssociationFieldInWhere(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address = ?1');
         $this->assertValidDQL('SELECT p FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.user = ?1');
     }
 
-    public function testBooleanLiteralInWhere()
+    public function testBooleanLiteralInWhere(): void
     {
         $this->assertValidDQL('SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true');
     }
 
-    public function testSubqueryInSelectExpression()
+    public function testSubqueryInSelectExpression(): void
     {
         $this->assertValidDQL('select u, (select max(p.phonenumber) from Doctrine\Tests\Models\CMS\CmsPhonenumber p) maxId from Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
-    public function testUsageOfQComponentOutsideSubquery()
+    public function testUsageOfQComponentOutsideSubquery(): void
     {
         $this->assertInvalidDQL('select u, (select max(p.phonenumber) from Doctrine\Tests\Models\CMS\CmsPhonenumber p) maxId from Doctrine\Tests\Models\CMS\CmsUser u WHERE p.user = ?1');
     }
 
-    public function testUnknownAbstractSchemaName()
+    public function testUnknownAbstractSchemaName(): void
     {
         $this->assertInvalidDQL('SELECT u FROM UnknownClassName u');
     }
 
-    public function testCorrectPartialObjectLoad()
+    public function testCorrectPartialObjectLoad(): void
     {
         $this->assertValidDQL('SELECT PARTIAL u.{id,name} FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
-    public function testIncorrectPartialObjectLoadBecauseOfMissingIdentifier()
+    public function testIncorrectPartialObjectLoadBecauseOfMissingIdentifier(): void
     {
         $this->assertInvalidDQL('SELECT PARTIAL u.{name} FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
-    public function testScalarExpressionInSelect()
+    public function testScalarExpressionInSelect(): void
     {
         $this->assertValidDQL('SELECT u, 42 + u.id AS someNumber FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
-    public function testInputParameterInSelect()
+    public function testInputParameterInSelect(): void
     {
         $this->assertValidDQL('SELECT u, u.id + ?1 AS someNumber FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
@@ -575,9 +590,9 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @group DDC-1091
      */
-    public function testCustomFunctionsReturningStringInStringPrimary()
+    public function testCustomFunctionsReturningStringInStringPrimary(): void
     {
-        $this->_em->getConfiguration()->addCustomStringFunction('CC', Query\AST\Functions\ConcatFunction::class);
+        $this->entityManager->getConfiguration()->addCustomStringFunction('CC', Query\AST\Functions\ConcatFunction::class);
 
         $this->assertValidDQL("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CC('%', u.name) LIKE '%foo%'", true);
     }
@@ -585,7 +600,7 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @group DDC-505
      */
-    public function testDQLKeywordInJoinIsAllowed()
+    public function testDQLKeywordInJoinIsAllowed(): void
     {
         $this->assertValidDQL('SELECT u FROM ' . __NAMESPACE__ . '\DQLKeywordsModelUser u JOIN u.group g');
     }
@@ -593,7 +608,7 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @group DDC-505
      */
-    public function testDQLKeywordInConditionIsAllowed()
+    public function testDQLKeywordInConditionIsAllowed(): void
     {
         $this->assertValidDQL('SELECT g FROM ' . __NAMESPACE__ . '\DQLKeywordsModelGroup g WHERE g.from=0');
     }
@@ -608,7 +623,7 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @group DDC-617
      */
-    public function testSelectOnlyNonRootEntityAlias()
+    public function testSelectOnlyNonRootEntityAlias(): void
     {
         $this->assertInvalidDQL('SELECT g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g');
     }
@@ -616,7 +631,7 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @group DDC-1108
      */
-    public function testInputParameterSingleChar()
+    public function testInputParameterSingleChar(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :q');
     }
@@ -624,7 +639,7 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @group DDC-1053
      */
-    public function testGroupBy()
+    public function testGroupBy(): void
     {
         $this->assertValidDQL('SELECT g.id, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY g.id');
     }
@@ -632,7 +647,7 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @group DDC-1053
      */
-    public function testGroupByIdentificationVariable()
+    public function testGroupByIdentificationVariable(): void
     {
         $this->assertValidDQL('SELECT g, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY g');
     }
@@ -640,7 +655,7 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @group DDC-1053
      */
-    public function testGroupByUnknownIdentificationVariable()
+    public function testGroupByUnknownIdentificationVariable(): void
     {
         $this->assertInvalidDQL('SELECT g, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY m');
     }
@@ -648,25 +663,25 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @group DDC-117
      */
-    public function testSizeOfForeignKeyOneToManyPrimaryKeyEntity()
+    public function testSizeOfForeignKeyOneToManyPrimaryKeyEntity(): void
     {
-        $this->assertValidDQL("SELECT a, t FROM Doctrine\Tests\Models\DDC117\DDC117Article a JOIN a.translations t WHERE SIZE(a.translations) > 0");
+        $this->assertValidDQL('SELECT a, t FROM Doctrine\Tests\Models\DDC117\DDC117Article a JOIN a.translations t WHERE SIZE(a.translations) > 0');
     }
 
     /**
      * @group DDC-117
      */
-    public function testSizeOfForeignKeyManyToManyPrimaryKeyEntity()
+    public function testSizeOfForeignKeyManyToManyPrimaryKeyEntity(): void
     {
-        $this->assertValidDQL("SELECT e, t FROM Doctrine\Tests\Models\DDC117\DDC117Editor e JOIN e.reviewingTranslations t WHERE SIZE(e.reviewingTranslations) > 0");
+        $this->assertValidDQL('SELECT e, t FROM Doctrine\Tests\Models\DDC117\DDC117Editor e JOIN e.reviewingTranslations t WHERE SIZE(e.reviewingTranslations) > 0');
     }
 
-    public function testCaseSupportContainingNullIfExpression()
+    public function testCaseSupportContainingNullIfExpression(): void
     {
-        $this->assertValidDQL("SELECT u.id, NULLIF(u.name, u.name) AS shouldBeNull FROM Doctrine\Tests\Models\CMS\CmsUser u");
+        $this->assertValidDQL('SELECT u.id, NULLIF(u.name, u.name) AS shouldBeNull FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
-    public function testCaseSupportContainingCoalesceExpression()
+    public function testCaseSupportContainingCoalesceExpression(): void
     {
         $this->assertValidDQL("select COALESCE(NULLIF(u.name, ''), u.username) as Display FROM Doctrine\Tests\Models\CMS\CmsUser u");
     }
@@ -674,23 +689,23 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @group DDC-1858
      */
-    public function testHavingSupportIsNullExpression()
+    public function testHavingSupportIsNullExpression(): void
     {
-        $this->assertValidDQL("SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING u.username IS NULL");
+        $this->assertValidDQL('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING u.username IS NULL');
     }
 
     /**
      * @group DDC-3085
      */
-    public function testHavingSupportResultVariableInNullComparisonExpression()
+    public function testHavingSupportResultVariableInNullComparisonExpression(): void
     {
-        $this->assertValidDQL("SELECT u AS user, SUM(a.id) AS score FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN Doctrine\Tests\Models\CMS\CmsAddress a WITH a.user = u GROUP BY u HAVING score IS NOT NULL AND score >= 5");
+        $this->assertValidDQL('SELECT u AS user, SUM(a.id) AS score FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN Doctrine\Tests\Models\CMS\CmsAddress a WITH a.user = u GROUP BY u HAVING score IS NOT NULL AND score >= 5');
     }
 
     /**
      * @group DDC-1858
      */
-    public function testHavingSupportLikeExpression()
+    public function testHavingSupportLikeExpression(): void
     {
         $this->assertValidDQL("SELECT _u.id, count(_articles) as uuuu FROM Doctrine\Tests\Models\CMS\CmsUser _u LEFT JOIN _u.articles _articles GROUP BY _u HAVING uuuu LIKE '3'");
     }
@@ -698,20 +713,20 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @group DDC-3018
      */
-    public function testNewLiteralExpression()
+    public function testNewLiteralExpression(): void
     {
-        $this->assertValidDQL("SELECT new " . __NAMESPACE__ . "\\DummyStruct(u.id, 'foo', 1, true) FROM Doctrine\Tests\Models\CMS\CmsUser u");
+        $this->assertValidDQL('SELECT new ' . __NAMESPACE__ . "\\DummyStruct(u.id, 'foo', 1, true) FROM Doctrine\Tests\Models\CMS\CmsUser u");
     }
 
     /**
      * @group DDC-3075
      */
-    public function testNewLiteralWithSubselectExpression()
+    public function testNewLiteralWithSubselectExpression(): void
     {
-        $this->assertValidDQL("SELECT new " . __NAMESPACE__ . "\\DummyStruct(u.id, 'foo', (SELECT 1 FROM Doctrine\Tests\Models\CMS\CmsUser su), true) FROM Doctrine\Tests\Models\CMS\CmsUser u");
+        $this->assertValidDQL('SELECT new ' . __NAMESPACE__ . "\\DummyStruct(u.id, 'foo', (SELECT 1 FROM Doctrine\Tests\Models\CMS\CmsUser su), true) FROM Doctrine\Tests\Models\CMS\CmsUser u");
     }
 
-    public function testStringPrimaryAcceptsAggregateExpression() : void
+    public function testStringPrimaryAcceptsAggregateExpression(): void
     {
         $this->assertValidDQL(
             'SELECT CONCAT(a.topic, MAX(a.version)) last FROM Doctrine\Tests\Models\CMS\CmsArticle a GROUP BY a'
@@ -722,18 +737,36 @@ class LanguageRecognitionTest extends OrmTestCase
 /** @Entity */
 class DQLKeywordsModelUser
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
-    /** @OneToOne(targetEntity="DQLKeywordsModelGroup") */
+
+    /**
+     * @var DQLKeywordsModelGroup
+     * @OneToOne(targetEntity="DQLKeywordsModelGroup")
+     */
     private $group;
 }
 
 /** @Entity */
 class DQLKeywordsModelGroup
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
-    /** @Column */
+
+    /**
+     * @var string
+     * @Column
+     */
     private $from;
 }
 

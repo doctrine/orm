@@ -6,8 +6,16 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
 use function str_replace;
 
 /**
@@ -17,7 +25,7 @@ use function str_replace;
  */
 final class GH5988Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -28,7 +36,7 @@ final class GH5988Test extends OrmFunctionalTestCase
         $this->setUpEntitySchema([GH5988CustomIdObjectTypeParent::class, GH5988CustomIdObjectTypeChild::class]);
     }
 
-    public function testDelete()
+    public function testDelete(): void
     {
         $object = new GH5988CustomIdObjectTypeChild(new CustomIdObject('foo'), 'Test');
 
@@ -56,6 +64,7 @@ class GH5988CustomIdObjectHashType extends DBALType
     {
         return $value->id . '_test';
     }
+
     /**
      * {@inheritdoc}
      */
@@ -63,6 +72,7 @@ class GH5988CustomIdObjectHashType extends DBALType
     {
         return new CustomIdObject(str_replace('_test', '', $value));
     }
+
     /**
      * {@inheritdoc}
      */
@@ -70,6 +80,7 @@ class GH5988CustomIdObjectHashType extends DBALType
     {
         return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
+
     /**
      * {@inheritdoc}
      */

@@ -18,13 +18,13 @@ This chapter is split into three different sections.
 
 One tip for working with relations is to read the relation from left to right, where the left word refers to the current Entity. For example:
 
-- OneToMany - One instance of the current Entity has Many instances (references) to the refered Entity.
-- ManyToOne - Many instances of the current Entity refer to One instance of the refered Entity.
-- OneToOne - One instance of the current Entity refers to One instance of the refered Entity.
+- OneToMany - One instance of the current Entity has Many instances (references) to the referred Entity.
+- ManyToOne - Many instances of the current Entity refer to One instance of the referred Entity.
+- OneToOne - One instance of the current Entity refers to One instance of the referred Entity.
 
-See below for all the possible relations. 
+See below for all the possible relations.
 
-An association is considered to be unidirectional if only one side of the association has 
+An association is considered to be unidirectional if only one side of the association has
 a property referring to the other side.
 
 To gain a full understanding of associations you should also read about :doc:`owning and
@@ -182,7 +182,7 @@ Here is a one-to-one relationship between a ``Customer`` and a
 ``Cart``. The ``Cart`` has a reference back to the ``Customer`` so
 it is bidirectional.
 
-Here we see the ``mappedBy`` and ``inversedBy`` annotations for the first time.
+Here we see the ``mappedBy`` and ``inversedBy`` attributes for the first time.
 They are used to tell Doctrine which property on the other side refers to the
 object.
 
@@ -259,6 +259,7 @@ Generated MySQL Schema:
     CREATE TABLE Cart (
         id INT AUTO_INCREMENT NOT NULL,
         customer_id INT DEFAULT NULL,
+        UNIQUE INDEX UNIQ_BA388B79395C3F3 (customer_id),
         PRIMARY KEY(id)
     ) ENGINE = InnoDB;
     CREATE TABLE Customer (
@@ -429,7 +430,7 @@ The following example sets up such a unidirectional one-to-many association:
             // ...
 
             /**
-             * Many User have Many Phonenumbers.
+             * Many Users have Many Phonenumbers.
              * @ManyToMany(targetEntity="Phonenumber")
              * @JoinTable(name="users_phonenumbers",
              *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
@@ -977,10 +978,10 @@ similar defaults. As an example, consider this mapping:
         <?php
         class User
         {
-            //...
+            // ...
             /** @ManyToMany(targetEntity="Group") */
             private $groups;
-            //...
+            // ...
         }
 
     .. code-block:: xml
@@ -1008,7 +1009,7 @@ This is essentially the same as the following, more verbose, mapping:
         <?php
         class User
         {
-            //...
+            // ...
             /**
              * Many Users have Many Groups.
              * @ManyToMany(targetEntity="Group")
@@ -1018,7 +1019,7 @@ This is essentially the same as the following, more verbose, mapping:
              *      )
              */
             private $groups;
-            //...
+            // ...
         }
 
     .. code-block:: xml
@@ -1060,6 +1061,70 @@ classes, separated by an underscore character. The names of the
 join columns default to the simple, unqualified class name of the
 targeted class followed by "\_id". The referencedColumnName always
 defaults to "id", just as in one-to-one or many-to-one mappings.
+
+Additionally, when using typed properties with Doctrine 2.9 or newer
+you can skip ``targetEntity`` in ``ManyToOne`` and ``OneToOne``
+associations as they will be set based on type. Also ``nullable``
+attribute on ``JoinColumn`` will be inherited from PHP type. So that:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+        /** @OneToOne */
+        private Shipment $shipment;
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+            <entity class="Product">
+                <one-to-one field="shipment" />
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        Product:
+          type: entity
+          oneToOne:
+            shipment: ~
+
+Is essentially the same as following:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+        /**
+         * One Product has One Shipment.
+         * @OneToOne(targetEntity="Shipment")
+         * @JoinColumn(name="shipment_id", referencedColumnName="id", nullable=false)
+         */
+        private Shipment $shipment;
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+            <entity class="Product">
+                <one-to-one field="shipment" target-entity="Shipment">
+                    <join-column name="shipment_id" referenced-column-name="id" nulable=false />
+                </one-to-one>
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        Product:
+          type: entity
+          oneToOne:
+            shipment:
+              targetEntity: Shipment
+              joinColumn:
+                name: shipment_id
+                referencedColumnName: id
+                nullable: false
 
 If you accept these defaults, you can reduce the mapping code to a
 minimum.

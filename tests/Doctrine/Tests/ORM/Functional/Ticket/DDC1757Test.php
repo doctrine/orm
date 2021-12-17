@@ -1,15 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function assert;
 
 class DDC1757Test extends OrmFunctionalTestCase
 {
-    public function testFailingCase()
+    public function testFailingCase(): void
     {
         $qb = $this->_em->createQueryBuilder();
-        /* @var $qb \Doctrine\ORM\QueryBuilder */
+        assert($qb instanceof QueryBuilder);
 
         $qb->select('_a')
             ->from(DDC1757A::class, '_a')
@@ -17,13 +27,15 @@ class DDC1757Test extends OrmFunctionalTestCase
             ->join('_b.c', '_c')
             ->join('_c.d', '_d');
 
-        $q = $qb->getQuery();
+        $q   = $qb->getQuery();
         $dql = $q->getDQL();
 
         // Show difference between expected and actual queries on error
-        self::assertEquals("SELECT _a FROM " . __NAMESPACE__ . "\DDC1757A _a, " . __NAMESPACE__ . "\DDC1757B _b INNER JOIN _b.c _c INNER JOIN _c.d _d",
-                $dql,
-                "Wrong DQL query");
+        self::assertEquals(
+            'SELECT _a FROM ' . __NAMESPACE__ . '\DDC1757A _a, ' . __NAMESPACE__ . '\DDC1757B _b INNER JOIN _b.c _c INNER JOIN _c.d _d',
+            $dql,
+            'Wrong DQL query'
+        );
     }
 }
 
@@ -33,6 +45,7 @@ class DDC1757Test extends OrmFunctionalTestCase
 class DDC1757A
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
@@ -46,6 +59,7 @@ class DDC1757A
 class DDC1757B
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
@@ -53,6 +67,7 @@ class DDC1757B
     private $id;
 
     /**
+     * @var DDC1757C
      * @OneToOne(targetEntity="DDC1757C")
      */
     private $c;
@@ -64,6 +79,7 @@ class DDC1757B
 class DDC1757C
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
@@ -71,6 +87,7 @@ class DDC1757C
     public $id;
 
     /**
+     * @var DDC1757D
      * @OneToOne(targetEntity="DDC1757D")
      */
     private $d;
@@ -82,6 +99,7 @@ class DDC1757C
 class DDC1757D
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")

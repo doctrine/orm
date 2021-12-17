@@ -1,6 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Quote;
+
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
@@ -11,8 +24,8 @@ namespace Doctrine\Tests\Models\Quote;
  */
 class Address
 {
-
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer", name="`address-id`")
@@ -20,38 +33,38 @@ class Address
     public $id;
 
     /**
+     * @var string
      * @Column(name="`address-zip`")
      */
     public $zip;
 
     /**
+     * @var User
      * @OneToOne(targetEntity="User", inversedBy="address")
      * @JoinColumn(name="`user-id`", referencedColumnName="`user-id`")
      */
     public $user;
 
-
-    public function setUser(User $user) {
+    public function setUser(User $user): void
+    {
         if ($this->user !== $user) {
             $this->user = $user;
             $user->setAddress($this);
         }
     }
 
-
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getZip()
+    public function getZip(): string
     {
         return $this->zip;
     }
 
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }
-
 }

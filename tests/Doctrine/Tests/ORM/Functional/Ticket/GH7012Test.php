@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\Models\Quote\User as QuotedUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function sprintf;
+
 final class GH7012Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('quote');
 
@@ -19,9 +27,9 @@ final class GH7012Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group 7012
+     * @group GH-7012
      */
-    public function testUpdateEntityWithIdentifierAssociationWithQuotedJoinColumn() : void
+    public function testUpdateEntityWithIdentifierAssociationWithQuotedJoinColumn(): void
     {
         $user       = new QuotedUser();
         $user->name = 'John Doe';
@@ -63,6 +71,7 @@ final class GH7012Test extends OrmFunctionalTestCase
 class GH7012UserData
 {
     /**
+     * @var QuotedUser
      * @Id
      * @OneToOne(targetEntity=Doctrine\Tests\Models\Quote\User::class)
      * @JoinColumn(name="`user-id`", referencedColumnName="`user-id`", onDelete="CASCADE")
@@ -70,6 +79,7 @@ class GH7012UserData
     public $user;
 
     /**
+     * @var string
      * @Column(type="string", name="`name`")
      */
     public $name;

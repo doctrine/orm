@@ -1,19 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Id\AbstractIdGenerator;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\CustomIdGenerator;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
- * @group 5804
+ * @group GH-5804
  */
 final class GH5804Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -24,9 +32,9 @@ final class GH5804Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testTextColumnSaveAndRetrieve2()
+    public function testTextColumnSaveAndRetrieve2(): void
     {
-        $firstArticle = new GH5804Article;
+        $firstArticle       = new GH5804Article();
         $firstArticle->text = 'Max';
         $this->_em->persist($firstArticle);
         $this->_em->flush();
@@ -54,8 +62,11 @@ final class GH5804Generator extends AbstractIdGenerator
 
 final class GH5804Type extends Type
 {
-    const NAME = 'GH5804Type';
+    public const NAME = 'GH5804Type';
 
+    /**
+     * {@inheritdoc}
+     */
     public function getName()
     {
         return self::NAME;
@@ -88,6 +99,7 @@ final class GH5804Type extends Type
 class GH5804Article
 {
     /**
+     * @var string
      * @Id
      * @Column(type="GH5804Type")
      * @GeneratedValue(strategy="CUSTOM")
@@ -96,12 +108,14 @@ class GH5804Article
     public $id;
 
     /**
+     * @var int
      * @Version
      * @Column(type="integer")
      */
     public $version;
 
     /**
+     * @var string
      * @Column(type="text")
      */
     public $text;

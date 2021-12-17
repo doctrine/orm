@@ -1,35 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2256
  */
-class DDC2256Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2256Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->_schemaTool->createSchema(
             [
                 $this->_em->getClassMetadata(DDC2256User::class),
-                $this->_em->getClassMetadata(DDC2256Group::class)
+                $this->_em->getClassMetadata(DDC2256Group::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $config = $this->_em->getConfiguration();
         $config->addEntityNamespace('MyNamespace', __NAMESPACE__);
 
-        $user = new DDC2256User();
-        $user->name = 'user';
-        $group = new DDC2256Group();
+        $user        = new DDC2256User();
+        $user->name  = 'user';
+        $group       = new DDC2256Group();
         $group->name = 'group';
         $user->group = $group;
 
@@ -69,6 +82,7 @@ class DDC2256Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC2256User
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -76,11 +90,13 @@ class DDC2256User
     public $id;
 
     /**
+     * @var string
      * @Column(type="string")
      */
     public $name;
 
     /**
+     * @var DDC2256Group
      * @ManyToOne(targetEntity="DDC2256Group", inversedBy="users")A
      * @JoinColumn(name="group_id")
      */
@@ -94,6 +110,7 @@ class DDC2256User
 class DDC2256Group
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -101,18 +118,19 @@ class DDC2256Group
     public $id;
 
     /**
+     * @var string
      * @Column(type="string")
      */
     public $name;
 
     /**
+     * @psalm-var Collection<int, DDC2256User>
      * @OneToMany(targetEntity="DDC2256User", mappedBy="group")
      */
     public $users;
 
     public function __construct()
     {
-        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 }
-

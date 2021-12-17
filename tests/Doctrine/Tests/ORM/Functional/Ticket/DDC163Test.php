@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC163Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC163Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->useModelSet('company');
         parent::setUp();
@@ -15,18 +18,18 @@ class DDC163Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-163
      */
-    public function testQueryWithOrConditionUsingTwoRelationOnSameEntity()
+    public function testQueryWithOrConditionUsingTwoRelationOnSameEntity(): void
     {
-        $p1 = new CompanyPerson;
+        $p1 = new CompanyPerson();
         $p1->setName('p1');
 
-        $p2 = new CompanyPerson;
+        $p2 = new CompanyPerson();
         $p2->setName('p2');
 
-        $p3 = new CompanyPerson;
+        $p3 = new CompanyPerson();
         $p3->setName('p3');
 
-        $p4 = new CompanyPerson;
+        $p4 = new CompanyPerson();
         $p4->setName('p4');
 
         $p1->setSpouse($p3);
@@ -52,12 +55,12 @@ class DDC163Test extends \Doctrine\Tests\OrmFunctionalTestCase
             WHERE person.name=:name AND (spouse_friend.name=:name2 OR friend_friend.name=:name2)';
 
         $q = $this->_em->createQuery($dql);
-        $q->setParameter('name', "p1");
-        $q->setParameter('name2', "p4");
+        $q->setParameter('name', 'p1');
+        $q->setParameter('name2', 'p4');
         $result = $q->getScalarResult();
 
-        $this->assertEquals('p3', $result[0]['spouse_name']);
-        $this->assertEquals('p1', $result[0]['person_name']);
-        $this->assertEquals('p2', $result[0]['friend_name']);
+        self::assertEquals('p3', $result[0]['spouse_name']);
+        self::assertEquals('p1', $result[0]['person_name']);
+        self::assertEquals('p2', $result[0]['friend_name']);
     }
 }

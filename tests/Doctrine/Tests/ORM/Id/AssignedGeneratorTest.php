@@ -1,35 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Id;
 
 use Doctrine\ORM\Id\AssignedGenerator;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\ORMException;
 use Doctrine\Tests\OrmTestCase;
 
 /**
  * AssignedGeneratorTest
- *
- * @author robo
  */
 class AssignedGeneratorTest extends OrmTestCase
 {
-    private $_em;
-    private $_assignedGen;
+    /** @var EntityManagerInterface */
+    private $entityManager;
 
-    protected function setUp()
+    /** @var AssignedGenerator */
+    private $assignedGen;
+
+    protected function setUp(): void
     {
-        $this->_em = $this->_getTestEntityManager();
-        $this->_assignedGen = new AssignedGenerator;
+        $this->entityManager = $this->getTestEntityManager();
+        $this->assignedGen   = new AssignedGenerator();
     }
 
     /**
      * @dataProvider entitiesWithoutId
      */
-    public function testThrowsExceptionIfIdNotAssigned($entity)
+    public function testThrowsExceptionIfIdNotAssigned($entity): void
     {
         $this->expectException(ORMException::class);
 
-        $this->_assignedGen->generate($this->_em, $entity);
+        $this->assignedGen->generate($this->entityManager, $entity);
     }
 
     public function entitiesWithoutId(): array
@@ -40,31 +46,46 @@ class AssignedGeneratorTest extends OrmTestCase
         ];
     }
 
-    public function testCorrectIdGeneration()
+    public function testCorrectIdGeneration(): void
     {
-        $entity = new AssignedSingleIdEntity;
+        $entity       = new AssignedSingleIdEntity();
         $entity->myId = 1;
-        $id = $this->_assignedGen->generate($this->_em, $entity);
-        $this->assertEquals(['myId' => 1], $id);
+        $id           = $this->assignedGen->generate($this->entityManager, $entity);
+        self::assertEquals(['myId' => 1], $id);
 
-        $entity = new AssignedCompositeIdEntity;
+        $entity        = new AssignedCompositeIdEntity();
         $entity->myId2 = 2;
         $entity->myId1 = 4;
-        $id = $this->_assignedGen->generate($this->_em, $entity);
-        $this->assertEquals(['myId1' => 4, 'myId2' => 2], $id);
+        $id            = $this->assignedGen->generate($this->entityManager, $entity);
+        self::assertEquals(['myId1' => 4, 'myId2' => 2], $id);
     }
 }
 
 /** @Entity */
-class AssignedSingleIdEntity {
-    /** @Id @Column(type="integer") */
+class AssignedSingleIdEntity
+{
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     public $myId;
 }
 
 /** @Entity */
-class AssignedCompositeIdEntity {
-    /** @Id @Column(type="integer") */
+class AssignedCompositeIdEntity
+{
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     public $myId1;
-    /** @Id @Column(type="integer") */
+
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     public $myId2;
 }

@@ -1,7 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
+use BadMethodCallException;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
@@ -9,35 +13,30 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  */
 class DatabasePlatformMock extends AbstractPlatform
 {
-    /**
-     * @var string
-     */
-    private $_sequenceNextValSql = "";
+    /** @var bool */
+    private $supportsIdentityColumns = true;
 
-    /**
-     * @var bool
-     */
-    private $_prefersIdentityColumns = true;
+    /** @var bool */
+    private $supportsSequences = false;
 
-    /**
-     * @var bool
-     */
-    private $_prefersSequences = false;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prefersIdentityColumns()
+    public function prefersIdentityColumns(): bool
     {
-        return $this->_prefersIdentityColumns;
+        throw new BadMethodCallException('Call to deprecated method.');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function prefersSequences()
+    public function supportsIdentityColumns(): bool
     {
-        return $this->_prefersSequences;
+        return $this->supportsIdentityColumns;
+    }
+
+    public function prefersSequences(): bool
+    {
+        throw new BadMethodCallException('Call to deprecated method.');
+    }
+
+    public function supportsSequences(): bool
+    {
+        return $this->supportsSequences;
     }
 
     /**
@@ -45,7 +44,7 @@ class DatabasePlatformMock extends AbstractPlatform
      */
     public function getSequenceNextValSQL($sequenceName)
     {
-        return $this->_sequenceNextValSql;
+        return '';
     }
 
     /**
@@ -99,42 +98,19 @@ class DatabasePlatformMock extends AbstractPlatform
 
     /* MOCK API */
 
-    /**
-     * @param bool $bool
-     *
-     * @return void
-     */
-    public function setPrefersIdentityColumns($bool)
+    public function setSupportsIdentityColumns(bool $bool): void
     {
-        $this->_prefersIdentityColumns = $bool;
+        $this->supportsIdentityColumns = $bool;
     }
 
-    /**
-     * @param bool $bool
-     *
-     * @return void
-     */
-    public function setPrefersSequences($bool)
+    public function setSupportsSequences(bool $bool): void
     {
-        $this->_prefersSequences = $bool;
+        $this->supportsSequences = $bool;
     }
 
-    /**
-     * @param string $sql
-     *
-     * @return void
-     */
-    public function setSequenceNextValSql($sql)
+    public function getName(): string
     {
-        $this->_sequenceNextValSql = $sql;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'mock';
+        throw new BadMethodCallException('Call to deprecated method.');
     }
 
     /**
@@ -148,6 +124,11 @@ class DatabasePlatformMock extends AbstractPlatform
      * {@inheritdoc}
      */
     public function getBlobTypeDeclarationSQL(array $field)
+    {
+        throw DBALException::notSupported(__METHOD__);
+    }
+
+    public function getCurrentDatabaseExpression(): string
     {
         throw DBALException::notSupported(__METHOD__);
     }

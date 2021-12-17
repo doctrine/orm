@@ -14,10 +14,10 @@ use Doctrine\Tests\ORM\Functional\DatabaseDriverTestCase;
  */
 class GH7684 extends DatabaseDriverTestCase
 {
-    public function testIssue() : void
+    public function testIssue(): void
     {
         if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
-            $this->markTestSkipped('Platform does not support foreign keys.');
+            self::markTestSkipped('Platform does not support foreign keys.');
         }
 
         $table1 = new Table('GH7684_identity_test_table');
@@ -33,6 +33,6 @@ class GH7684 extends DatabaseDriverTestCase
         $metadatas = $this->convertToClassMetadata([$table1, $table2]);
         $metadata  = $metadatas['Gh7684IdentityTestAssocTable'];
 
-        $this->assertArrayHasKey('gh7684IdentityTest', $metadata->associationMappings);
+        self::assertArrayHasKey('gh7684IdentityTest', $metadata->associationMappings);
     }
 }

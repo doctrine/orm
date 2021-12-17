@@ -1,6 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
+
+use DateTime;
+use Doctrine\ORM\Mapping\Cache;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
@@ -10,6 +21,7 @@ namespace Doctrine\Tests\Models\Cache;
 class Flight
 {
     /**
+     * @var City
      * @Id
      * @Cache
      * @ManyToOne(targetEntity="City")
@@ -18,6 +30,7 @@ class Flight
     protected $leavingFrom;
 
     /**
+     * @var City
      * @Id
      * @Cache
      * @ManyToOne(targetEntity="City")
@@ -26,37 +39,34 @@ class Flight
     protected $goingTo;
 
     /**
+     * @var DateTime
      * @Column(type="date")
      */
     protected $departure;
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\City $leavingFrom
-     * @param \Doctrine\Tests\Models\Cache\City $goingTo
-     */
     public function __construct(City $leavingFrom, City $goingTo)
     {
-        $this->goingTo      = $goingTo;
-        $this->leavingFrom  = $leavingFrom;
-        $this->departure    = new \DateTime();
+        $this->goingTo     = $goingTo;
+        $this->leavingFrom = $leavingFrom;
+        $this->departure   = new DateTime();
     }
 
-    public function getLeavingFrom()
+    public function getLeavingFrom(): City
     {
         return $this->leavingFrom;
     }
 
-    public function getGoingTo()
+    public function getGoingTo(): City
     {
         return $this->goingTo;
     }
 
-    public function getDeparture()
+    public function getDeparture(): DateTime
     {
         return $this->departure;
     }
 
-    public function setDeparture($departure)
+    public function setDeparture(DateTime $departure): void
     {
         $this->departure = $departure;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\ORM\Internal\CommitOrderCalculator;
@@ -15,14 +17,15 @@ use Doctrine\Tests\OrmTestCase;
  */
 class CommitOrderCalculatorTest extends OrmTestCase
 {
+    /** @var CommitOrderCalculator */
     private $_calc;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->_calc = new CommitOrderCalculator();
     }
 
-    public function testCommitOrdering1()
+    public function testCommitOrdering1(): void
     {
         $class1 = new ClassMetadata(NodeClass1::class);
         $class2 = new ClassMetadata(NodeClass2::class);
@@ -46,10 +49,10 @@ class CommitOrderCalculatorTest extends OrmTestCase
         // There is only 1 valid ordering for this constellation
         $correctOrder = [$class5, $class1, $class2, $class3, $class4];
 
-        $this->assertSame($correctOrder, $sorted);
+        self::assertSame($correctOrder, $sorted);
     }
 
-    public function testCommitOrdering2()
+    public function testCommitOrdering2(): void
     {
         $class1 = new ClassMetadata(NodeClass1::class);
         $class2 = new ClassMetadata(NodeClass2::class);
@@ -65,10 +68,10 @@ class CommitOrderCalculatorTest extends OrmTestCase
         // There is only 1 valid ordering for this constellation
         $correctOrder = [$class2, $class1];
 
-        $this->assertSame($correctOrder, $sorted);
+        self::assertSame($correctOrder, $sorted);
     }
 
-    public function testCommitOrdering3()
+    public function testCommitOrdering3(): void
     {
         // this test corresponds to the GH7259Test::testPersistFileBeforeVersion functional test
         $class1 = new ClassMetadata(NodeClass1::class);
@@ -98,12 +101,22 @@ class CommitOrderCalculatorTest extends OrmTestCase
         ];
 
         // We want to perform a strict comparison of the array
-        $this->assertContains($sorted, $correctOrders, '', false, true, true);
+        self::assertContains($sorted, $correctOrders, '', false, true);
     }
 }
 
-class NodeClass1 {}
-class NodeClass2 {}
-class NodeClass3 {}
-class NodeClass4 {}
-class NodeClass5 {}
+class NodeClass1
+{
+}
+class NodeClass2
+{
+}
+class NodeClass3
+{
+}
+class NodeClass4
+{
+}
+class NodeClass5
+{
+}

@@ -1,59 +1,55 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Tools\Console\Command\InfoCommand;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\Models\Cache\City;
-use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Console\Helper\HelperSet;
-use Symfony\Component\Console\Application;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\ORM\Tools\Console\Command\InfoCommand;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Helper\HelperSet;
+use Symfony\Component\Console\Tester\CommandTester;
 
 class InfoCommandTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var \Symfony\Component\Console\Application
-     */
+    /** @var Application */
     private $application;
 
-    /**
-     * @var \Doctrine\ORM\Tools\Console\Command\InfoCommand
-     */
+    /** @var InfoCommand */
     private $command;
 
-    /**
-     * @var \Symfony\Component\Console\Tester\CommandTester
-     */
+    /** @var CommandTester */
     private $tester;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->application = new Application();
 
-        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->_em)]));
-        $this->application->add(new InfoCommand());
+        $this->application->add(new InfoCommand(new SingleManagerProvider($this->_em)));
 
         $this->command = $this->application->find('orm:info');
         $this->tester  = new CommandTester($this->command);
     }
 
-    public function testListAllClasses()
+    public function testListAllClasses(): void
     {
         $this->tester->execute(['command' => $this->command->getName()]);
 
-        self::assertContains(AttractionInfo::class, $this->tester->getDisplay());
-        self::assertContains(City::class, $this->tester->getDisplay());
+        self::assertStringContainsString(AttractionInfo::class, $this->tester->getDisplay());
+        self::assertStringContainsString(City::class, $this->tester->getDisplay());
     }
 
-    public function testEmptyEntityClassNames() :  void
+    public function testEmptyEntityClassNames(): void
     {
         $mappingDriver = $this->createMock(MappingDriver::class);
         $configuration = $this->createMock(Configuration::class);
@@ -77,18 +73,18 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
         $tester->execute(['command' => $command->getName()]);
 
-        self::assertContains(
+        self::assertStringContainsString(
             ' ! [CAUTION] You do not have any mapped Doctrine ORM entities according to the current configuration',
             $tester->getDisplay()
         );
 
-        self::assertContains(
+        self::assertStringContainsString(
             ' !           If you have entities or mapping files you should check your mapping configuration for errors.',
             $tester->getDisplay()
         );
     }
 
-    public function testInvalidEntityClassMetadata() : void
+    public function testInvalidEntityClassMetadata(): void
     {
         $mappingDriver = $this->createMock(MappingDriver::class);
         $configuration = $this->createMock(Configuration::class);
@@ -116,7 +112,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
         $tester->execute(['command' => $command->getName()]);
 
-        self::assertContains('[FAIL] InvalidEntity', $tester->getDisplay());
-        self::assertContains('exception message', $tester->getDisplay());
+        self::assertStringContainsString('[FAIL] InvalidEntity', $tester->getDisplay());
+        self::assertStringContainsString('exception message', $tester->getDisplay());
     }
 }

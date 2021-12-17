@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -11,10 +19,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 final class GH8055Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -24,7 +29,7 @@ final class GH8055Test extends OrmFunctionalTestCase
         ]);
     }
 
-    public function testNumericDescriminatorColumn() : void
+    public function testNumericDescriminatorColumn(): void
     {
         $entity        = new GH8055SubClass();
         $entity->value = 'test';
@@ -52,6 +57,7 @@ final class GH8055Test extends OrmFunctionalTestCase
 class GH8055BaseClass
 {
     /**
+     * @var int
      * @Id @GeneratedValue
      * @Column(type="integer")
      */

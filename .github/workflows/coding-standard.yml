@@ -1,0 +1,15 @@
+name: "Coding Standards"
+
+on:
+  pull_request:
+    branches:
+      - "*.x"
+  push:
+    branches:
+      - "*.x"
+
+jobs:
+  coding-standards:
+    uses: "doctrine/.github/.github/workflows/coding-standards.yml@1.1.1"
+    with:
+      php-version: "7.4"

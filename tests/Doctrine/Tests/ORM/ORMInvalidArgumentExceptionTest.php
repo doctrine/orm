@@ -1,26 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
-use Doctrine\ORM\UnitOfWork;
-use Doctrine\ORM\ORMException;
-use Doctrine\Tests\Mocks\ConnectionMock;
-use Doctrine\Tests\Mocks\DriverMock;
-use Doctrine\Tests\Mocks\EntityManagerMock;
-use Doctrine\Tests\Mocks\EntityPersisterMock;
-use Doctrine\Tests\Mocks\UnitOfWorkMock;
-use Doctrine\Tests\Models\CMS\CmsPhonenumber;
-use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\Forum\ForumAvatar;
-use Doctrine\Tests\Models\Forum\ForumUser;
-use Doctrine\Tests\Models\GeoNames\City;
-use Doctrine\Tests\Models\GeoNames\Country;
-use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\TestCase;
 use stdClass;
+
+use function spl_object_id;
+use function uniqid;
 
 /**
  * @covers \Doctrine\ORM\ORMInvalidArgumentException
@@ -28,14 +17,11 @@ use stdClass;
 class ORMInvalidArgumentExceptionTest extends TestCase
 {
     /**
+     * @param mixed $value
+     *
      * @dataProvider invalidEntityNames
-     *
-     * @param mixed  $value
-     * @param string $expectedMessage
-     *
-     * @return void
      */
-    public function testInvalidEntityName($value, $expectedMessage)
+    public function testInvalidEntityName($value, string $expectedMessage): void
     {
         $exception = ORMInvalidArgumentException::invalidEntityName($value);
 
@@ -46,21 +32,21 @@ class ORMInvalidArgumentExceptionTest extends TestCase
     /**
      * @return string[][]
      */
-    public function invalidEntityNames()
+    public function invalidEntityNames(): array
     {
         return [
             [null, 'Entity name must be a string, NULL given'],
             [true, 'Entity name must be a string, boolean given'],
             [123, 'Entity name must be a string, integer given'],
             [123.45, 'Entity name must be a string, double given'],
-            [new \stdClass(), 'Entity name must be a string, object given'],
+            [new stdClass(), 'Entity name must be a string, object given'],
         ];
     }
 
     /**
      * @dataProvider newEntitiesFoundThroughRelationshipsErrorMessages
      */
-    public function testNewEntitiesFoundThroughRelationships(array $newEntities, string $expectedMessage) : void
+    public function testNewEntitiesFoundThroughRelationships(array $newEntities, string $expectedMessage): void
     {
         $exception = ORMInvalidArgumentException::newEntitiesFoundThroughRelationships($newEntities);
 
@@ -68,12 +54,12 @@ class ORMInvalidArgumentExceptionTest extends TestCase
         self::assertSame($expectedMessage, $exception->getMessage());
     }
 
-    public function newEntitiesFoundThroughRelationshipsErrorMessages() : array
+    public function newEntitiesFoundThroughRelationshipsErrorMessages(): array
     {
         $stringEntity3 = uniqid('entity3', true);
-        $entity1       = new \stdClass();
-        $entity2       = new \stdClass();
-        $entity3       = $this->getMockBuilder(\stdClass::class)->setMethods(['__toString'])->getMock();
+        $entity1       = new stdClass();
+        $entity2       = new stdClass();
+        $entity3       = $this->getMockBuilder(stdClass::class)->setMethods(['__toString'])->getMock();
         $association1  = [
             'sourceEntity' => 'foo1',
             'fieldName'    => 'bar1',
@@ -101,7 +87,7 @@ class ORMInvalidArgumentExceptionTest extends TestCase
                     ],
                 ],
                 'A new entity was found through the relationship \'foo1#bar1\' that was not configured to cascade '
-                . 'persist operations for entity: stdClass@' . spl_object_hash($entity1)
+                . 'persist operations for entity: stdClass@' . spl_object_id($entity1)
                 . '. To solve this issue: Either explicitly call EntityManager#persist() on this unknown entity '
                 . 'or configure cascade persist this association in the mapping for example '
                 . '@ManyToOne(..,cascade={"persist"}). If you cannot find out which entity causes the problem '
@@ -120,17 +106,17 @@ class ORMInvalidArgumentExceptionTest extends TestCase
                 ],
                 'Multiple non-persisted new entities were found through the given association graph:' . "\n\n"
                 . ' * A new entity was found through the relationship \'foo1#bar1\' that was not configured to '
-                . 'cascade persist operations for entity: stdClass@' . spl_object_hash($entity1) . '. '
+                . 'cascade persist operations for entity: stdClass@' . spl_object_id($entity1) . '. '
                 . 'To solve this issue: Either explicitly call EntityManager#persist() on this unknown entity '
                 . 'or configure cascade persist this association in the mapping for example '
                 . '@ManyToOne(..,cascade={"persist"}). If you cannot find out which entity causes the problem '
                 . 'implement \'baz1#__toString()\' to get a clue.' . "\n"
                 . ' * A new entity was found through the relationship \'foo2#bar2\' that was not configured to '
-                . 'cascade persist operations for entity: stdClass@' . spl_object_hash($entity2) . '. To solve '
+                . 'cascade persist operations for entity: stdClass@' . spl_object_id($entity2) . '. To solve '
                 . 'this issue: Either explicitly call EntityManager#persist() on this unknown entity or '
                 . 'configure cascade persist this association in the mapping for example '
                 . '@ManyToOne(..,cascade={"persist"}). If you cannot find out which entity causes the problem '
-                . 'implement \'baz2#__toString()\' to get a clue.'
+                . 'implement \'baz2#__toString()\' to get a clue.',
             ],
             'two entities found, one is stringable' => [
                 [

@@ -1,15 +1,9 @@
 {
-    "bootstrap": "vendor/autoload.php",
-    "path": "tests/Doctrine/Performance",
+    "runner.bootstrap": "tests/Doctrine/Tests/TestInit.php",
+    "runner.path": "tests/Doctrine/Performance",
+    "runner.file_pattern": "*Bench.php",
 
-    "extensions": [
-        "PhpBench\\Extensions\\Dbal\\DbalExtension",
+    "core.extensions": [
         "PhpBench\\Extensions\\XDebug\\XDebugExtension"
-    ],
-
-    "storage": "dbal",
-    "storage.dbal.connection": {
-        "driver": "pdo_sqlite",
-        "path": "tests/Doctrine/Performance/history.db"
-    }
+    ]
 }

@@ -252,8 +252,8 @@ while the named placeholders start with a : followed by a string.
 Calling ``setParameter()`` automatically infers which type you are setting as
 value. This works for integers, arrays of strings/integers, DateTime instances
 and for managed entities. If you want to set a type explicitly you can call
-the third argument to ``setParameter()`` explicitly. It accepts either a PDO
-type or a DBAL Type name for conversion.
+the third argument to ``setParameter()`` explicitly. It accepts either a DBAL
+Doctrine\DBAL\ParameterType::* or a DBAL Type name for conversion.
 
 .. note::
 
@@ -277,10 +277,17 @@ following syntax:
 .. code-block:: php
 
     <?php
+
+    use Doctrine\Common\Collections\ArrayCollection;
+    use Doctrine\ORM\Query\Parameter;
+    
     // $qb instanceof QueryBuilder
 
     // Query here...
-    $qb->setParameters(array(1 => 'value for ?1', 2 => 'value for ?2'));
+    $qb->setParameters(new ArrayCollection([
+        new Parameter('1', 'value for ?1'),
+        new Parameter('2', 'value for ?2')
+    ]));
 
 Getting already bound parameters is easy - simply use the above
 mentioned syntax with "getParameter()" or "getParameters()":
@@ -354,6 +361,7 @@ a querybuilder instance into a Query object:
 
     // Execute Query
     $result = $query->getResult();
+    $iterableResult = $query->toIterable();
     $single = $query->getSingleResult();
     $array = $query->getArrayResult();
     $scalar = $query->getScalarResult();
@@ -512,6 +520,9 @@ complete list of supported helper methods available:
         // Example - $qb->expr()->sqrt('u.currentBalance')
         public function sqrt($x); // Returns Expr\Func
 
+        // Example - $qb->expr()->mod('u.currentBalance', '10')
+        public function mod($x); // Returns Expr\Func
+
         // Example - $qb->expr()->count('u.firstname')
         public function count($x); // Returns Expr\Func
 
@@ -532,7 +543,7 @@ using ``addCriteria``:
     // ...
 
     $criteria = Criteria::create()
-        ->orderBy(['firstName', 'ASC']);
+        ->orderBy(['firstName' => Criteria::ASC]);
 
     // $qb instanceof QueryBuilder
     $qb->addCriteria($criteria);

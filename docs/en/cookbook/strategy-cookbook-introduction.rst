@@ -30,7 +30,7 @@ highly uncomfortable because of the following:
    every panel-type? This wouldn't be flexible. You might be tempted
    to add an AbstractPanelEntity and an AbstractBlockEntity that use
    class inheritance. Your page could then only confer to the
-   AbstractPanelType and Doctrine 2 would do the rest for you, i.e.
+   AbstractPanelType and Doctrine ORM would do the rest for you, i.e.
    load the right entities. But - you'll for sure have lots of panels
    and blocks, and even worse, you'd have to edit the discriminator
    map *manually* every time you or another developer implements a new
@@ -152,7 +152,7 @@ As you can see, we have a method "setBlockEntity" which ties a potential strateg
 
         /**
          * This var contains the classname of the strategy
-         * that is used for this blockitem. (This string (!) value will be persisted by Doctrine 2)
+         * that is used for this blockitem. (This string (!) value will be persisted by Doctrine ORM)
          *
          * This is a doctrine field, so make sure that you use an @column annotation or setup your
          * yaml or xml files correctly
@@ -161,7 +161,7 @@ As you can see, we have a method "setBlockEntity" which ties a potential strateg
         protected $strategyClassName;
 
         /**
-         * This var contains an instance of $this->blockStrategy. Will not be persisted by Doctrine 2.
+         * This var contains an instance of $this->blockStrategy. Will not be persisted by Doctrine ORM.
          *
          * @var BlockStrategyInterface
          */
@@ -199,7 +199,7 @@ As you can see, we have a method "setBlockEntity" which ties a potential strateg
             $strategy->setBlockEntity($this);
         }
 
-Now, the important point is that $strategyClassName is a Doctrine 2
+Now, the important point is that $strategyClassName is a Doctrine ORM
 field, i.e. Doctrine will persist this value. This is only the
 class name of your strategy and not an instance!
 

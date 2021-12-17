@@ -1,17 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Version;
 use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH7366Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -26,13 +30,14 @@ final class GH7366Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function testOptimisticLockNoExceptionOnFind() : void
+    public function testOptimisticLockNoExceptionOnFind(): void
     {
         try {
             $entity = $this->_em->find(GH7366Entity::class, 1, LockMode::OPTIMISTIC);
         } catch (TransactionRequiredException $e) {
             self::fail('EntityManager::find() threw TransactionRequiredException with LockMode::OPTIMISTIC');
         }
+
         self::assertEquals('baz', $entity->getName());
     }
 }
@@ -51,6 +56,7 @@ class GH7366Entity
     public $id;
 
     /**
+     * @var int
      * @Column(type="integer")
      * @Version
      */
@@ -61,7 +67,6 @@ class GH7366Entity
      * @var string
      */
     protected $name;
-
 
     public function __construct(string $name)
     {

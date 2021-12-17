@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Quote\Address;
@@ -9,18 +11,18 @@ use Doctrine\Tests\Models\Quote\User;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
- * @group 6402
+ * @group GH-6402
  */
 class GH6402Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->useModelSet('quote');
 
         parent::setUp();
     }
 
-    public function testFind()
+    public function testFind(): void
     {
         $id = $this->createAddress();
 
@@ -28,7 +30,7 @@ class GH6402Test extends OrmFunctionalTestCase
         self::assertNotNull($address->user);
     }
 
-    public function testQuery()
+    public function testQuery(): void
     {
         $id = $this->createAddress();
 
@@ -40,7 +42,7 @@ class GH6402Test extends OrmFunctionalTestCase
         self::assertNotNull($addresses[0]->user);
     }
 
-    public function testFindWithSubClass()
+    public function testFindWithSubClass(): void
     {
         $id = $this->createFullAddress();
 
@@ -48,7 +50,7 @@ class GH6402Test extends OrmFunctionalTestCase
         self::assertNotNull($address->user);
     }
 
-    public function testQueryWithSubClass()
+    public function testQueryWithSubClass(): void
     {
         $id = $this->createFullAddress();
 
@@ -60,9 +62,9 @@ class GH6402Test extends OrmFunctionalTestCase
         self::assertNotNull($addresses[0]->user);
     }
 
-    private function createAddress()
+    private function createAddress(): int
     {
-        $address = new Address();
+        $address      = new Address();
         $address->zip = 'bar';
 
         $this->persistAddress($address);
@@ -70,10 +72,10 @@ class GH6402Test extends OrmFunctionalTestCase
         return $address->id;
     }
 
-    private function createFullAddress()
+    private function createFullAddress(): int
     {
-        $address = new FullAddress();
-        $address->zip = 'bar';
+        $address       = new FullAddress();
+        $address->zip  = 'bar';
         $address->city = new City('London');
 
         $this->persistAddress($address);
@@ -81,10 +83,10 @@ class GH6402Test extends OrmFunctionalTestCase
         return $address->id;
     }
 
-    private function persistAddress(Address $address)
+    private function persistAddress(Address $address): void
     {
-        $user = new User();
-        $user->name = "foo";
+        $user       = new User();
+        $user->name = 'foo';
         $user->setAddress($address);
 
         $this->_em->persist($user);

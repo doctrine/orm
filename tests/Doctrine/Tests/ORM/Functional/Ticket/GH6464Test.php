@@ -1,7 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -9,10 +18,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class GH6464Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -29,7 +35,7 @@ class GH6464Test extends OrmFunctionalTestCase
      * SqlWalker needs to generate nested INNER JOIN statements, otherwise there would be INNER JOIN
      * statements without an ON clause, which are valid on e.g. MySQL but rejected by PostgreSQL.
      */
-    public function testIssue() : void
+    public function testIssue(): void
     {
         $query = $this->_em->createQueryBuilder()
             ->select('p')
@@ -37,24 +43,32 @@ class GH6464Test extends OrmFunctionalTestCase
             ->innerJoin(GH6464Author::class, 'a', 'WITH', 'p.authorId = a.id')
             ->getQuery();
 
-        $this->assertNotRegExp(
+        self::assertDoesNotMatchRegularExpression(
             '/INNER JOIN \w+ \w+ INNER JOIN/',
             $query->getSQL(),
             'As of GH-6464, every INNER JOIN should have an ON clause, which is missing here'
         );
 
         // Query shouldn't yield a result, yet it shouldn't crash (anymore)
-        $this->assertEquals([], $query->getResult());
+        self::assertEquals([], $query->getResult());
     }
 }
 
 /** @Entity */
 class GH6464Post
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $authorId;
 }
 
@@ -66,7 +80,12 @@ class GH6464Post
  */
 abstract class GH6464User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 

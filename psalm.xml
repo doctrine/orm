@@ -1,15 +1,138 @@
 <?xml version="1.0"?>
 <psalm
-    errorLevel="8"
+    errorLevel="2"
     resolveFromConfigFile="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    errorBaseline="psalm-baseline.xml"
 >
     <projectFiles>
         <directory name="lib/Doctrine/ORM" />
+        <directory name="tests/Doctrine/StaticAnalysis" />
         <ignoreFiles>
             <directory name="vendor" />
+            <file name="lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php" />
         </ignoreFiles>
     </projectFiles>
+    <issueHandlers>
+        <DeprecatedClass>
+            <errorLevel type="suppress">
+                <!-- DBAL 2 compatibility -->
+                <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ImportCommand"/>
+                <referencedClass name="Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper"/>
+                <!-- The exception is thrown by a deprecated method. -->
+                <referencedClass name="Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver"/>
+            </errorLevel>
+        </DeprecatedClass>
+        <DeprecatedMethod>
+            <errorLevel type="suppress">
+                <!-- We're calling the deprecated method for BC here. -->
+                <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
+                <!-- We need to keep the calls for DBAL 2.13 compatibility. -->
+                <referencedMethod name="Doctrine\DBAL\Cache\QueryCacheProfile::getResultCacheDriver"/>
+                <referencedMethod name="Doctrine\DBAL\Cache\QueryCacheProfile::setResultCacheDriver"/>
+                <referencedMethod name="Doctrine\DBAL\Configuration::getResultCacheImpl"/>
+                <referencedMethod name="Doctrine\DBAL\Configuration::setResultCacheImpl"/>
+                <referencedMethod name="Doctrine\DBAL\Connection::getSchemaManager"/>
+                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
+            </errorLevel>
+        </DeprecatedMethod>
+        <DocblockTypeContradiction>
+            <errorLevel type="suppress">
+                <!-- We're catching invalid input here. -->
+                <file name="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php"/>
+
+                <!-- DBAL 3.2 forward compatibility -->
+                <file name="lib/Doctrine/ORM/Tools/Pagination/CountOutputWalker.php"/>
+                <file name="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php"/>
+            </errorLevel>
+        </DocblockTypeContradiction>
+        <InvalidArgument>
+            <errorLevel type="suppress">
+                <!-- Argument type changes in DBAL 3.2 -->
+                <referencedFunction name="Doctrine\DBAL\Cache\QueryCacheProfile::__construct"/>
+            </errorLevel>
+        </InvalidArgument>
+        <InvalidClass>
+            <errorLevel type="suppress">
+                <!-- Class name changes in DBAL 3. -->
+                <referencedClass name="Doctrine\DBAL\Platforms\PostgreSQLPlatform" />
+            </errorLevel>
+        </InvalidClass>
+        <MissingDependency>
+            <errorLevel type="suppress">
+                <!-- DBAL 3.2 forward compatibility -->
+                <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+                <file name="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php"/>
+            </errorLevel>
+        </MissingDependency>
+        <ParadoxicalCondition>
+            <errorLevel type="suppress">
+                <!-- See https://github.com/vimeo/psalm/issues/3381 -->
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php"/>
+            </errorLevel>
+        </ParadoxicalCondition>
+        <NullArgument>
+            <errorLevel type="suppress">
+                <!-- See https://github.com/vimeo/psalm/issues/5920 -->
+                <file name="lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php"/>
+            </errorLevel>
+        </NullArgument>
+        <RedundantCastGivenDocblockType>
+            <errorLevel type="suppress">
+                <!-- Can be removed once the "getMaxResults" methods of those classes have native parameter types -->
+                <file name="lib/Doctrine/ORM/Query.php"/>
+                <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
+            </errorLevel>
+        </RedundantCastGivenDocblockType>
+        <!-- Workaround for https://github.com/vimeo/psalm/issues/7026 -->
+        <ReservedWord>
+            <errorLevel type="suppress">
+                <directory name="lib"/>
+                <directory name="tests"/>
+            </errorLevel>
+        </ReservedWord>
+        <TypeDoesNotContainType>
+            <errorLevel type="suppress">
+                <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+            </errorLevel>
+        </TypeDoesNotContainType>
+        <UndefinedAttributeClass>
+            <errorLevel type="suppress">
+                <!-- The class was added in PHP 8.1 -->
+                <referencedClass name="ReturnTypeWillChange"/>
+            </errorLevel>
+        </UndefinedAttributeClass>
+        <UndefinedClass>
+            <errorLevel type="suppress">
+                <referencedClass name="Doctrine\Common\Cache\ApcCache"/>
+                <referencedClass name="Doctrine\Common\Cache\ArrayCache"/>
+                <referencedClass name="Doctrine\Common\Cache\XcacheCache"/>
+
+                <!-- DBAL 2 compatibility -->
+                <referencedClass name="Doctrine\DBAL\Driver\ResultStatement"/>
+                <referencedClass name="Doctrine\DBAL\ForwardCompatibility\Result"/>
+                <referencedClass name="Doctrine\DBAL\Platforms\SQLAnywherePlatform"/>
+
+                <!-- DBAL 3.2 forward compatibility -->
+                <referencedClass name="Doctrine\DBAL\Platforms\PostgreSQLPlatform"/>
+                <referencedClass name="Doctrine\DBAL\Platforms\SQLServerPlatform"/>
+            </errorLevel>
+        </UndefinedClass>
+        <UndefinedDocblockClass>
+            <errorLevel type="suppress">
+                <!-- DBAL 2 compatibility -->
+                <referencedClass name="Doctrine\DBAL\Driver\ResultStatement"/>
+            </errorLevel>
+        </UndefinedDocblockClass>
+        <UndefinedMethod>
+            <errorLevel type="suppress">
+                <!-- See https://github.com/doctrine/orm/issues/8884 -->
+                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
+            </errorLevel>
+        </UndefinedMethod>
+    </issueHandlers>
 </psalm>

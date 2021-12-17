@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Test\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -8,9 +10,9 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 final class GH6682Test extends OrmFunctionalTestCase
 {
     /**
-     * @group 6682
+     * @group GH-6682
      */
-    public function testIssue() : void
+    public function testIssue(): void
     {
         $parsedDefinition = [
             'sequenceName'   => 'test_sequence',

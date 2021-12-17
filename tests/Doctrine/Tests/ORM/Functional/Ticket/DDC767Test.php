@@ -1,13 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
-class DDC767Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use function assert;
+use function get_class;
+
+class DDC767Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -16,21 +23,21 @@ class DDC767Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-767
      */
-    public function testCollectionChangesInsideTransaction()
+    public function testCollectionChangesInsideTransaction(): void
     {
-        $user = new CmsUser();
-        $user->name = "beberlei";
-        $user->status = "active";
-        $user->username = "beberlei";
+        $user           = new CmsUser();
+        $user->name     = 'beberlei';
+        $user->status   = 'active';
+        $user->username = 'beberlei';
 
-        $group1 = new CmsGroup();
-        $group1->name = "foo";
+        $group1       = new CmsGroup();
+        $group1->name = 'foo';
 
-        $group2 = new CmsGroup();
-        $group2->name = "bar";
+        $group2       = new CmsGroup();
+        $group2->name = 'bar';
 
-        $group3 = new CmsGroup();
-        $group3->name = "baz";
+        $group3       = new CmsGroup();
+        $group3->name = 'baz';
 
         $user->addGroup($group1);
         $user->addGroup($group2);
@@ -43,10 +50,10 @@ class DDC767Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        /* @var $pUser CmsUser */
         $pUser = $this->_em->find(get_class($user), $user->id);
+        assert($pUser instanceof CmsUser);
 
-        $this->assertNotNull($pUser, "User not retrieved from database.");
+        self::assertNotNull($pUser, 'User not retrieved from database.');
 
         $groups = [$group2->id, $group3->id];
 
@@ -64,7 +71,7 @@ class DDC767Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
             $this->_em->flush();
             $this->_em->commit();
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
             $this->_em->rollback();
         }
     }

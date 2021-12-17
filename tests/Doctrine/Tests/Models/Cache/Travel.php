@@ -1,8 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Cache;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Cache
@@ -12,6 +26,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class Travel
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -19,11 +34,13 @@ class Travel
     protected $id;
 
     /**
+     * @var DateTime
      * @Column(type="date")
      */
     protected $createdAt;
 
     /**
+     * @var Traveler
      * @Cache
      * @ManyToOne(targetEntity="Traveler", inversedBy="travels")
      * @JoinColumn(name="traveler_id", referencedColumnName="id")
@@ -31,8 +48,8 @@ class Travel
     protected $traveler;
 
     /**
+     * @psalm-var Collection<int, City>
      * @Cache
-     *
      * @ManyToMany(targetEntity="City", inversedBy="travels", cascade={"persist", "remove"})
      * @JoinTable(name="cache_visited_cities",
      *  joinColumns={
@@ -48,62 +65,44 @@ class Travel
     public function __construct(Traveler $traveler)
     {
         $this->traveler      = $traveler;
-        $this->createdAt     = new \DateTime('now');
+        $this->createdAt     = new DateTime('now');
         $this->visitedCities = new ArrayCollection();
     }
 
-    /**
-     * @return integer
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return \Doctrine\Tests\Models\Cache\Traveler
-     */
-    public function getTraveler()
+    public function getTraveler(): Traveler
     {
         return $this->traveler;
     }
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\Traveler $traveler
-     */
-    public function setTraveler(Traveler $traveler)
+    public function setTraveler(Traveler $traveler): void
     {
         $this->traveler = $traveler;
     }
 
     /**
-     * @return \Doctrine\Common\Collections\ArrayCollection
+     * @psalm-return Collection<int, City>
      */
-    public function getVisitedCities()
+    public function getVisitedCities(): Collection
     {
         return $this->visitedCities;
     }
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\City $city
-     */
-    public function addVisitedCity(City $city)
+    public function addVisitedCity(City $city): void
     {
         $this->visitedCities->add($city);
     }
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\City $city
-     */
-    public function removeVisitedCity(City $city)
+    public function removeVisitedCity(City $city): void
     {
         $this->visitedCities->removeElement($city);
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }

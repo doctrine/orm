@@ -1,67 +1,42 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Proxy;
 
+use Closure;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Common\Proxy\Proxy as BaseProxy;
 use Doctrine\Common\Proxy\ProxyDefinition;
 use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\ClassMetadata;
-use function interface_exists;
 
 /**
  * This factory is used to create proxy objects for entities at runtime.
- *
- * @author Roman Borschel <roman@code-factory.org>
- * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
- * @author Marco Pivetta  <ocramius@gmail.com>
- * @since 2.0
  *
  * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
  */
 class ProxyFactory extends AbstractProxyFactory
 {
-    /**
-     * @var EntityManagerInterface The EntityManager this factory is bound to.
-     */
+    /** @var EntityManagerInterface The EntityManager this factory is bound to. */
     private $em;
 
-    /**
-     * @var \Doctrine\ORM\UnitOfWork The UnitOfWork this factory uses to retrieve persisters
-     */
+    /** @var UnitOfWork The UnitOfWork this factory uses to retrieve persisters */
     private $uow;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $proxyNs;
 
     /**
      * The IdentifierFlattener used for manipulating identifiers
      *
-     * @var \Doctrine\ORM\Utility\IdentifierFlattener
+     * @var IdentifierFlattener
      */
     private $identifierFlattener;
 
@@ -72,8 +47,8 @@ class ProxyFactory extends AbstractProxyFactory
      * @param EntityManagerInterface $em           The EntityManager the new factory works for.
      * @param string                 $proxyDir     The directory to use for the proxy classes. It must exist.
      * @param string                 $proxyNs      The namespace to use for the proxy classes.
-     * @param boolean|int            $autoGenerate The strategy for automatically generating proxy classes. Possible
-     *                                             values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     * @param bool|int               $autoGenerate The strategy for automatically generating proxy classes. Possible
+     *               values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
      */
     public function __construct(EntityManagerInterface $em, $proxyDir, $proxyNs, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
     {
@@ -93,7 +68,6 @@ class ProxyFactory extends AbstractProxyFactory
      */
     protected function skipClass(ClassMetadata $metadata)
     {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadataInfo */
         return $metadata->isMappedSuperclass
             || $metadata->isEmbeddedClass
             || $metadata->getReflectionClass()->isAbstract();
@@ -119,15 +93,15 @@ class ProxyFactory extends AbstractProxyFactory
     /**
      * Creates a closure capable of initializing a proxy
      *
-     * @return \Closure
+     * @psalm-return Closure(BaseProxy):void
      *
-     * @throws \Doctrine\ORM\EntityNotFoundException
+     * @throws EntityNotFoundException
      */
-    private function createInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister)
+    private function createInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister): Closure
     {
         $wakeupProxy = $classMetadata->getReflectionClass()->hasMethod('__wakeup');
 
-        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata, $wakeupProxy) {
+        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata, $wakeupProxy): void {
             $initializer = $proxy->__getInitializer();
             $cloner      = $proxy->__getCloner();
 
@@ -141,7 +115,7 @@ class ProxyFactory extends AbstractProxyFactory
             $properties = $proxy->__getLazyProperties();
 
             foreach ($properties as $propertyName => $property) {
-                if ( ! isset($proxy->$propertyName)) {
+                if (! isset($proxy->$propertyName)) {
                     $proxy->$propertyName = $properties[$propertyName];
                 }
             }
@@ -154,7 +128,7 @@ class ProxyFactory extends AbstractProxyFactory
 
             $identifier = $classMetadata->getIdentifierValues($proxy);
 
-            if (null === $entityPersister->loadById($identifier, $proxy)) {
+            if ($entityPersister->loadById($identifier, $proxy) === null) {
                 $proxy->__setInitializer($initializer);
                 $proxy->__setCloner($cloner);
                 $proxy->__setInitialized(false);
@@ -170,13 +144,13 @@ class ProxyFactory extends AbstractProxyFactory
     /**
      * Creates a closure capable of finalizing state a cloned proxy
      *
-     * @return \Closure
+     * @psalm-return Closure(BaseProxy):void
      *
-     * @throws \Doctrine\ORM\EntityNotFoundException
+     * @throws EntityNotFoundException
      */
-    private function createCloner(ClassMetadata $classMetadata, EntityPersister $entityPersister)
+    private function createCloner(ClassMetadata $classMetadata, EntityPersister $entityPersister): Closure
     {
-        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
+        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata): void {
             if ($proxy->__isInitialized()) {
                 return;
             }
@@ -188,7 +162,7 @@ class ProxyFactory extends AbstractProxyFactory
             $identifier = $classMetadata->getIdentifierValues($proxy);
             $original   = $entityPersister->loadById($identifier);
 
-            if (null === $original) {
+            if ($original === null) {
                 throw EntityNotFoundException::fromClassNameAndIdentifier(
                     $classMetadata->getName(),
                     $this->identifierFlattener->flattenIdentifier($classMetadata, $identifier)
@@ -196,7 +170,7 @@ class ProxyFactory extends AbstractProxyFactory
             }
 
             foreach ($class->getReflectionProperties() as $property) {
-                if ( ! $class->hasField($property->name) && ! $class->hasAssociation($property->name)) {
+                if (! $class->hasField($property->name) && ! $class->hasAssociation($property->name)) {
                     continue;
                 }
 
@@ -206,5 +180,3 @@ class ProxyFactory extends AbstractProxyFactory
         };
     }
 }
-
-interface_exists(ClassMetadata::class);

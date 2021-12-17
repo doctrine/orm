@@ -1,13 +1,9 @@
 Working with Indexed Associations
 =================================
 
-.. note::
-
-    This feature is available from version 2.1 of Doctrine.
-
-Doctrine 2 collections are modelled after PHPs native arrays. PHP arrays are an ordered hashmap, but in
+Doctrine ORM collections are modelled after PHPs native arrays. PHP arrays are an ordered hashmap, but in
 the first version of Doctrine keys retrieved from the database were always numerical unless ``INDEX BY``
-was used. Starting with Doctrine 2.1 you can index your collections by a value in the related entity.
+was used. You can index your collections by a value in the related entity.
 This is a first step towards full ordered hashmap support through the Doctrine ORM.
 The feature works like an implicit ``INDEX BY`` for the selected association but has several
 downsides also:
@@ -104,9 +100,9 @@ The code and mappings for the Market entity looks like this:
     .. code-block:: xml
 
         <?xml version="1.0" encoding="UTF-8"?>
-        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        <doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+              xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
                                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
             <entity name="Doctrine\Tests\Models\StockExchange\Market">
@@ -190,9 +186,9 @@ here are the code and mappings for it:
     .. code-block:: xml
 
         <?xml version="1.0" encoding="UTF-8"?>
-        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        <doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+              xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
                                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
             <entity name="Doctrine\Tests\Models\StockExchange\Stock">
@@ -291,6 +287,5 @@ Outlook into the Future
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 For the inverse side of a many-to-many associations there will be a way to persist the keys and the order
-as a third and fourth parameter into the join table. This feature is discussed in `DDC-213 <http://www.doctrine-project.org/jira/browse/DDC-213>`_
+as a third and fourth parameter into the join table. This feature is discussed in `#2817 <https://github.com/doctrine/orm/issues/2817>`_
 This feature cannot be implemented for one-to-many associations, because they are never the owning side.
-

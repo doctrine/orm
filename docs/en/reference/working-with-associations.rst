@@ -291,7 +291,7 @@ example that encapsulate much of the association management code:
     <?php
     class User
     {
-        //...
+        // ...
         public function markCommentRead(Comment $comment) {
             // Collections implement ArrayAccess
             $this->commentsRead[] = $comment;
@@ -407,7 +407,7 @@ There are two approaches to handle this problem in your code:
 Transitive persistence / Cascade Operations
 -------------------------------------------
 
-Doctrine 2 provides a mechanism for transitive persistence through cascading of certain operations.
+Doctrine ORM provides a mechanism for transitive persistence through cascading of certain operations.
 Each association to another entity or a collection of
 entities can be configured to automatically cascade the following operations to the associated entities:
 ``persist``, ``remove``, ``merge``, ``detach``, ``refresh`` or ``all``.
@@ -463,14 +463,14 @@ If you then set up the cascading to the ``User#commentsAuthored`` property...
     <?php
     class User
     {
-        //...
+        // ...
         /**
          * Bidirectional - One-To-Many (INVERSE SIDE)
          *
          * @OneToMany(targetEntity="Comment", mappedBy="author", cascade={"persist", "remove"})
          */
         private $commentsAuthored;
-        //...
+        // ...
     }
 
 ...you can now create a user and an associated comment like this:

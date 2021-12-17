@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Cache;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
 use function assert;
 
 final class GH7735Test extends OrmFunctionalTestCase
 {
-    public function setUp() : void
+    protected function setUp(): void
     {
         $this->enableSecondLevelCache();
         parent::setUp();
@@ -31,7 +39,7 @@ final class GH7735Test extends OrmFunctionalTestCase
      * @test
      * @group GH7735
      */
-    public function findByReturnsCachedEntity() : void
+    public function findByReturnsCachedEntity(): void
     {
         $this->_em->getCache()->evictEntityRegion(GH7735Power::class);
 
@@ -69,12 +77,12 @@ class GH7735Car
         $this->engine = $engine;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getEngine() : GH7735Engine
+    public function getEngine(): GH7735Engine
     {
         return $this->engine;
     }
@@ -94,9 +102,9 @@ class GH7735Engine
     private $id;
 
     /**
+     * @var GH7735Power
      * @OneToOne(targetEntity=GH7735Power::class, mappedBy="engine", cascade={"all"})
      * @Cache("READ_ONLY")
-     * @var GH7735Power
      */
     private $power;
 
@@ -115,17 +123,17 @@ class GH7735Engine
         $power->setEngine($this);
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getPower() : GH7735Power
+    public function getPower(): GH7735Power
     {
         return $this->power;
     }
 
-    public function getModel() : string
+    public function getModel(): string
     {
         return $this->model;
     }
@@ -138,15 +146,16 @@ class GH7735Engine
 class GH7735Power
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
     private $id;
 
     /**
+     * @var GH7735Engine
      * @OneToOne(targetEntity=GH7735Engine::class, inversedBy="power")
      * @Cache("READ_ONLY")
-     * @var GH7735Engine
      */
     private $engine;
 
@@ -155,17 +164,17 @@ class GH7735Power
         $this->id = $id;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setEngine(GH7735Engine $engine) : void
+    public function setEngine(GH7735Engine $engine): void
     {
         $this->engine = $engine;
     }
 
-    public function getEngine() : GH7735Engine
+    public function getEngine(): GH7735Engine
     {
         return $this->engine;
     }

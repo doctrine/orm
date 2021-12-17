@@ -3,7 +3,7 @@ Validation of Entities
 
 .. sectionauthor:: Benjamin Eberlei <kontakt@beberlei.de>
 
-Doctrine 2 does not ship with any internal validators, the reason
+Doctrine ORM does not ship with any internal validators, the reason
 being that we think all the frameworks out there already ship with
 quite decent ones that can be integrated into your Domain easily.
 What we offer are hooks to execute any kind of validation.

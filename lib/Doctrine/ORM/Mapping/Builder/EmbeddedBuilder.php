@@ -1,47 +1,24 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
 /**
  * Embedded Builder
  *
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        www.doctrine-project.com
- * @since       2.5
- * @author      Guido Contreras Woda <guiwoda@gmail.com>
  */
 class EmbeddedBuilder
 {
-    /**
-     * @var ClassMetadataBuilder
-     */
+    /** @var ClassMetadataBuilder */
     private $builder;
 
-    /**
-     * @var array
-     */
+    /** @var mixed[] */
     private $mapping;
 
     /**
-     * @param ClassMetadataBuilder $builder
-     * @param array                $mapping
+     * @param mixed[] $mapping
      */
     public function __construct(ClassMetadataBuilder $builder, array $mapping)
     {
@@ -53,6 +30,7 @@ class EmbeddedBuilder
      * Sets the column prefix for all of the embedded columns.
      *
      * @param string $columnPrefix
+     *
      * @return $this
      */
     public function setColumnPrefix($columnPrefix)

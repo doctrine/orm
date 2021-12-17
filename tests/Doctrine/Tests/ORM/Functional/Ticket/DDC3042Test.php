@@ -1,7 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -9,21 +15,21 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC3042Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC3042Foo::class),
-            $this->_em->getClassMetadata(DDC3042Bar::class),
+                $this->_em->getClassMetadata(DDC3042Foo::class),
+                $this->_em->getClassMetadata(DDC3042Bar::class),
             ]
         );
     }
 
-    public function testSQLGenerationDoesNotProvokeAliasCollisions()
+    public function testSQLGenerationDoesNotProvokeAliasCollisions(): void
     {
-        $this->assertStringNotMatchesFormat(
+        self::assertStringNotMatchesFormat(
             '%sfield11%sfield11%s',
             $this
                 ->_em
@@ -40,27 +46,62 @@ class DDC3042Test extends OrmFunctionalTestCase
  */
 class DDC3042Foo
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $field;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $field1;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $field2;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $field3;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $field4;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $field5;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $field6;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $field7;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $field8;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $field9;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $field10;
 }
 
@@ -69,6 +110,11 @@ class DDC3042Foo
  */
 class DDC3042Bar
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $field;
 }

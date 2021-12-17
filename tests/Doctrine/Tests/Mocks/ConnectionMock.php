@@ -1,64 +1,64 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
+use BadMethodCallException;
+use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Cache\QueryCacheProfile;
+use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Result;
+use Exception;
+
+use function is_string;
+use function sprintf;
 
 /**
  * Mock class for Connection.
  */
 class ConnectionMock extends Connection
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     private $_fetchOneResult;
 
-    /**
-     * @var \Exception|null
-     */
+    /** @var Exception|null */
     private $_fetchOneException;
 
-    /**
-     * @var Statement|null
-     */
+    /** @var Result|null */
     private $_queryResult;
 
-    /**
-     * @var DatabasePlatformMock
-     */
+    /** @var DatabasePlatformMock */
     private $_platformMock;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $_lastInsertId = 0;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $_inserts = [];
 
-    /**
-     * @var array
-     */
-    private $_executeUpdates = [];
+    /** @var array */
+    private $_executeStatements = [];
 
-    /**
-     * @param array                              $params
-     * @param \Doctrine\DBAL\Driver              $driver
-     * @param \Doctrine\DBAL\Configuration|null  $config
-     * @param \Doctrine\Common\EventManager|null $eventManager
-     */
-    public function __construct(array $params, $driver, $config = null, $eventManager = null)
+    /** @var array */
+    private $_deletes = [];
+
+    public function __construct(array $params = [], ?Driver $driver = null, ?Configuration $config = null, ?EventManager $eventManager = null)
     {
         $this->_platformMock = new DatabasePlatformMock();
 
-        parent::__construct($params, $driver, $config, $eventManager);
+        parent::__construct($params, $driver ?? new DriverMock(), $config, $eventManager);
 
         // Override possible assignment of platform to database platform mock
         $this->_platform = $this->_platformMock;
+    }
+
+    public function getDatabase(): string
+    {
+        return 'mock';
     }
 
     /**
@@ -80,9 +80,27 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function executeUpdate($query, array $params = [], array $types = [])
+    public function executeUpdate($query, array $params = [], array $types = []): int
     {
-        $this->_executeUpdates[] = ['query' => $query, 'params' => $params, 'types' => $types];
+        throw new BadMethodCallException(sprintf('Call to deprecated method %s().', __METHOD__));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function executeStatement($sql, array $params = [], array $types = []): int
+    {
+        $this->_executeStatements[] = ['sql' => $sql, 'params' => $params, 'types' => $types];
+
+        return 1;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete($table, array $criteria, array $types = [])
+    {
+        $this->_deletes[] = ['table' => $table, 'criteria' => $criteria, 'types' => $types];
     }
 
     /**
@@ -96,9 +114,9 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function fetchColumn($statement, array $params = [], $colnum = 0, array $types = [])
+    public function fetchOne(string $sql, array $params = [], array $types = [])
     {
-        if (null !== $this->_fetchOneException) {
+        if ($this->_fetchOneException !== null) {
             throw $this->_fetchOneException;
         }
 
@@ -108,9 +126,19 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function query() : Statement
+    public function fetchColumn($statement, array $params = [], $colunm = 0, array $types = [])
     {
-        return $this->_queryResult;
+        throw new BadMethodCallException('Call to deprecated method.');
+    }
+
+    public function query(?string $sql = null): Result
+    {
+        throw new BadMethodCallException('Call to deprecated method.');
+    }
+
+    public function executeQuery($sql, array $params = [], $types = [], ?QueryCacheProfile $qcp = null): Result
+    {
+        return $this->_queryResult ?? parent::executeQuery($sql, $params, $types, $qcp);
     }
 
     /**
@@ -121,6 +149,7 @@ class ConnectionMock extends Connection
         if (is_string($input)) {
             return "'" . $input . "'";
         }
+
         return $input;
     }
 
@@ -128,48 +157,28 @@ class ConnectionMock extends Connection
 
     /**
      * @param mixed $fetchOneResult
-     *
-     * @return void
      */
-    public function setFetchOneResult($fetchOneResult)
+    public function setFetchOneResult($fetchOneResult): void
     {
         $this->_fetchOneResult = $fetchOneResult;
     }
 
-    /**
-     * @param \Exception|null $exception
-     *
-     * @return void
-     */
-    public function setFetchOneException(\Exception $exception = null)
+    public function setFetchOneException(?Exception $exception = null): void
     {
         $this->_fetchOneException = $exception;
     }
 
-    /**
-     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     *
-     * @return void
-     */
-    public function setDatabasePlatform($platform)
+    public function setDatabasePlatform(AbstractPlatform $platform): void
     {
         $this->_platformMock = $platform;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return void
-     */
-    public function setLastInsertId($id)
+    public function setLastInsertId(int $id): void
     {
         $this->_lastInsertId = $id;
     }
 
-    /**
-     * @param Statement $result
-     */
-    public function setQueryResult(Statement $result)
+    public function setQueryResult(Result $result): void
     {
         $this->_queryResult = $result;
     }
@@ -177,7 +186,7 @@ class ConnectionMock extends Connection
     /**
      * @return array
      */
-    public function getInserts()
+    public function getInserts(): array
     {
         return $this->_inserts;
     }
@@ -185,17 +194,22 @@ class ConnectionMock extends Connection
     /**
      * @return array
      */
-    public function getExecuteUpdates()
+    public function getExecuteStatements(): array
     {
-        return $this->_executeUpdates;
+        return $this->_executeStatements;
     }
 
     /**
-     * @return void
+     * @return array
      */
-    public function reset()
+    public function getDeletes(): array
     {
-        $this->_inserts = [];
+        return $this->_deletes;
+    }
+
+    public function reset(): void
+    {
+        $this->_inserts      = [];
         $this->_lastInsertId = 0;
     }
 }

@@ -9,9 +9,11 @@ use Doctrine\Tests\Models\OneToOneInverseSideLoad\InverseSide;
 use Doctrine\Tests\Models\OneToOneInverseSideLoad\OwningSide;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function assert;
+
 class OneToOneInverseSideLoadAfterDqlQueryTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -20,13 +22,13 @@ class OneToOneInverseSideLoadAfterDqlQueryTest extends OrmFunctionalTestCase
                 $this->_em->getClassMetadata(OwningSide::class),
                 $this->_em->getClassMetadata(InverseSide::class),
             ]);
-        } catch(ToolsException $e) {
+        } catch (ToolsException $e) {
             // ignored
         }
     }
 
     /**
-     * @group 6759
+     * @group GH-6759
      */
     public function testInverseSideOneToOneLoadedAfterDqlQuery(): void
     {
@@ -43,7 +45,6 @@ class OneToOneInverseSideLoadAfterDqlQueryTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        /* @var $fetchedInverse InverseSide */
         $fetchedInverse = $this
             ->_em
             ->createQueryBuilder()
@@ -53,6 +54,7 @@ class OneToOneInverseSideLoadAfterDqlQueryTest extends OrmFunctionalTestCase
             ->setParameter('id', 'inverse')
             ->getQuery()
             ->getSingleResult();
+        assert($fetchedInverse instanceof InverseSide);
 
         self::assertInstanceOf(InverseSide::class, $fetchedInverse);
         self::assertInstanceOf(OwningSide::class, $fetchedInverse->owning);

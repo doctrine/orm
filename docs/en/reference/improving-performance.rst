@@ -11,7 +11,7 @@ request and can greatly improve performance.
     "If you care about performance and don't use a bytecode
     cache then you don't really care about performance. Please get one
     and start using it."
-    
+
     *Stas Malyshev, Core Contributor to PHP and Zend Employee*
 
 
@@ -20,13 +20,20 @@ Metadata and Query caches
 
 As already mentioned earlier in the chapter about configuring
 Doctrine, it is strongly discouraged to use Doctrine without a
-Metadata and Query cache (preferably with APC or Memcache as the
-cache driver). Operating Doctrine without these caches means
+Metadata and Query cache.
+
+Operating Doctrine without these caches means
 Doctrine will need to load your mapping information on every single
 request and has to parse each DQL query on every single request.
 This is a waste of resources.
 
-See :ref:`integrating-with-the-orm`
+The preferred cache adapter for metadata and query caches is a PHP file
+cache like Symfony's
+`PHP files adapter <https://symfony.com/doc/current/components/cache/adapters/php_files_adapter.html>`_.
+This kind of cache serializes cache items and writes them to a file.
+This allows for opcode caching to be used and provides high performance in most scenarios.
+
+See :ref:`types-of-caches`
 
 Alternative Query Result Formats
 --------------------------------
@@ -38,13 +45,35 @@ in scenarios where data is loaded for read-only purposes.
 Read-Only Entities
 ------------------
 
-Starting with Doctrine 2.1 you can mark entities as read only (See metadata mapping
-references for details). This means that the entity marked as read only is never considered
-for updates, which means when you call flush on the EntityManager these entities are skipped
-even if properties changed. Read-Only allows to persist new entities of a kind and remove existing
-ones, they are just not considered for updates.
+You can mark entities as read only (See metadata mapping
+references for details).
+
+This means that the entity marked as read only is never considered for updates.
+During flush on the EntityManager these entities are skipped even if properties
+changed.
+
+Read-Only allows to persist new entities of a kind and remove existing ones,
+they are just not considered for updates.
 
 See :ref:`annref_entity`
+
+You can also explicitly mark individual entities read only directly on the
+UnitOfWork via a call to ``markReadOnly()``:
+
+.. code-block:: php
+
+   $user = $entityManager->find(User::class, $id);
+   $entityManager->getUnitOfWork()->markReadOnly($user);
+
+Or you can set all objects that are the result of a query hydration to be
+marked as read only with the following query hint:
+
+.. code-block:: php
+
+   $query = $entityManager->createQuery('SELECT u FROM App\\Entity\\User u');
+   $query->setHint(Query::HINT_READ_ONLY, true);
+
+   $users = $query->getResult();
 
 Extra-Lazy Collections
 ----------------------
@@ -70,4 +99,4 @@ See :doc:`Best Practices <reference/best-practices>`
 Change Tracking policies
 ------------------------
 
-See: :doc:`Change Tracking Policies <reference/change-tracking-policies>`
+See: :doc:`Change Tracking Policies <change-tracking-policies>`

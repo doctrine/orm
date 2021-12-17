@@ -14,6 +14,7 @@ metadata:
 
 -  **XML files** (XmlDriver)
 -  **Class DocBlock Annotations** (AnnotationDriver)
+-  **Attributes** (AttributeDriver)
 -  **YAML files** (YamlDriver)
 -  **PHP Code in files or static functions** (PhpDriver)
 
@@ -38,8 +39,9 @@ an entity.
         $em->getConfiguration()->setMetadataCacheImpl(new ApcuCache());
 
 
-If you want to use one of the included core metadata drivers you
-just need to configure it. All the drivers are in the
+If you want to use one of the included core metadata drivers you need to
+configure it. If you pick the annotation driver, you will additionally
+need to install ``doctrine/annotations``. All the drivers are in the
 ``Doctrine\ORM\Mapping\Driver`` namespace:
 
 .. code-block:: php
@@ -147,7 +149,7 @@ ClassMetadata
 -------------
 
 The last piece you need to know and understand about metadata in
-Doctrine 2 is the API of the ``ClassMetadata`` classes. You need to
+Doctrine ORM is the API of the ``ClassMetadata`` classes. You need to
 be familiar with them in order to implement your own drivers but
 more importantly to retrieve mapping information for a certain
 entity when needed.

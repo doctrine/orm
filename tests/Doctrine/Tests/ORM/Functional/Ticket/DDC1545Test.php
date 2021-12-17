@@ -1,42 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1545
  */
-class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1545Test extends OrmFunctionalTestCase
 {
+    /** @var int */
     private $articleId;
 
+    /** @var int */
     private $userId;
 
+    /** @var int */
     private $user2Id;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    private function initDb($link)
+    private function initDb(bool $link): void
     {
-        $article = new CmsArticle();
+        $article        = new CmsArticle();
         $article->topic = 'foo';
-        $article->text = 'foo';
+        $article->text  = 'foo';
 
-        $user = new CmsUser();
-        $user->status = 'foo';
+        $user           = new CmsUser();
+        $user->status   = 'foo';
         $user->username = 'foo';
-        $user->name = 'foo';
+        $user->name     = 'foo';
 
-        $user2 = new CmsUser();
-        $user2->status = 'bar';
+        $user2           = new CmsUser();
+        $user2->status   = 'bar';
         $user2->username = 'bar';
-        $user2->name = 'bar';
+        $user2->name     = 'bar';
 
         if ($link) {
             $article->user = $user;
@@ -49,11 +55,11 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $this->articleId = $article->id;
-        $this->userId = $user->id;
-        $this->user2Id = $user2->id;
+        $this->userId    = $user->id;
+        $this->user2Id   = $user2->id;
     }
 
-    public function testLinkObjects()
+    public function testLinkObjects(): void
     {
         $this->initDb(false);
 
@@ -72,11 +78,11 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($article->user);
-        $this->assertEquals($user->id, $article->user->id);
+        self::assertNotNull($article->user);
+        self::assertEquals($user->id, $article->user->id);
     }
 
-    public function testLinkObjectsWithAssociationLoaded()
+    public function testLinkObjectsWithAssociationLoaded(): void
     {
         $this->initDb(false);
 
@@ -98,11 +104,11 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($article->user);
-        $this->assertEquals($user->id, $article->user->id);
+        self::assertNotNull($article->user);
+        self::assertEquals($user->id, $article->user->id);
     }
 
-    public function testUnlinkObjects()
+    public function testUnlinkObjects(): void
     {
         $this->initDb(true);
 
@@ -119,10 +125,10 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNull($article->user);
+        self::assertNull($article->user);
     }
 
-    public function testUnlinkObjectsWithAssociationLoaded()
+    public function testUnlinkObjectsWithAssociationLoaded(): void
     {
         $this->initDb(true);
 
@@ -142,10 +148,10 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNull($article->user);
+        self::assertNull($article->user);
     }
 
-    public function testChangeLink()
+    public function testChangeLink(): void
     {
         $this->initDb(false);
 
@@ -164,11 +170,11 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($article->user);
-        $this->assertEquals($user2->id, $article->user->id);
+        self::assertNotNull($article->user);
+        self::assertEquals($user2->id, $article->user->id);
     }
 
-    public function testChangeLinkWithAssociationLoaded()
+    public function testChangeLinkWithAssociationLoaded(): void
     {
         $this->initDb(false);
 
@@ -190,7 +196,7 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($article->user);
-        $this->assertEquals($user2->id, $article->user->id);
+        self::assertNotNull($article->user);
+        self::assertEquals($user2->id, $article->user->id);
     }
 }

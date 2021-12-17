@@ -1,13 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-1400
  */
-class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1400Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -19,32 +31,32 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
                     $this->_em->getClassMetadata(DDC1400UserState::class),
                 ]
             );
-        } catch (\Exception $ignored) {
+        } catch (Exception $ignored) {
         }
     }
 
-    public function testFailingCase()
+    public function testFailingCase(): void
     {
-        $article = new DDC1400Article;
-        $user1 = new DDC1400User;
-        $user2 = new DDC1400User;
+        $article = new DDC1400Article();
+        $user1   = new DDC1400User();
+        $user2   = new DDC1400User();
 
         $this->_em->persist($article);
         $this->_em->persist($user1);
         $this->_em->persist($user2);
         $this->_em->flush();
 
-        $userState1 = new DDC1400UserState;
-        $userState1->article = $article;
+        $userState1            = new DDC1400UserState();
+        $userState1->article   = $article;
         $userState1->articleId = $article->id;
-        $userState1->user = $user1;
-        $userState1->userId = $user1->id;
+        $userState1->user      = $user1;
+        $userState1->userId    = $user1->id;
 
-        $userState2 = new DDC1400UserState;
-        $userState2->article = $article;
+        $userState2            = new DDC1400UserState();
+        $userState2->article   = $article;
         $userState2->articleId = $article->id;
-        $userState2->user = $user2;
-        $userState2->userId = $user2->id;
+        $userState2->user      = $user2;
+        $userState2->userId    = $user2->id;
 
         $this->_em->persist($userState1);
         $this->_em->persist($userState2);
@@ -71,6 +83,7 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC1400Article
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -78,6 +91,7 @@ class DDC1400Article
     public $id;
 
     /**
+     * @psalm-var Collection<int, DDC1400UserState>
      * @OneToMany(targetEntity="DDC1400UserState", mappedBy="article", indexBy="userId", fetch="EXTRA_LAZY")
      */
     public $userStates;
@@ -88,8 +102,8 @@ class DDC1400Article
  */
 class DDC1400User
 {
-
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -97,6 +111,7 @@ class DDC1400User
     public $id;
 
     /**
+     * @psalm-var Collection<int, DDC1400UserState>
      * @OneToMany(targetEntity="DDC1400UserState", mappedBy="user", indexBy="articleId", fetch="EXTRA_LAZY")
      */
     public $userStates;
@@ -107,27 +122,29 @@ class DDC1400User
  */
 class DDC1400UserState
 {
-
     /**
-      * @Id
-     *  @ManyToOne(targetEntity="DDC1400Article", inversedBy="userStates")
+     * @var DDC1400Article
+     * @Id
+     * @ManyToOne(targetEntity="DDC1400Article", inversedBy="userStates")
      */
     public $article;
 
     /**
-      * @Id
-     *  @ManyToOne(targetEntity="DDC1400User", inversedBy="userStates")
+     * @var DDC1400User
+     * @Id
+     * @ManyToOne(targetEntity="DDC1400User", inversedBy="userStates")
      */
     public $user;
 
     /**
+     * @var int
      * @Column(name="user_id", type="integer")
      */
     public $userId;
 
     /**
+     * @var int
      * @Column(name="article_id", type="integer")
      */
     public $articleId;
-
 }

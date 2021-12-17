@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Query;
 
-use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query;
-use Doctrine\Tests\OrmTestCase;
 use Doctrine\ORM\Query\ParserResult;
+use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Tests for {@see \Doctrine\ORM\Query\SqlWalker}
@@ -14,44 +16,39 @@ use Doctrine\ORM\Query\ParserResult;
  */
 class SqlWalkerTest extends OrmTestCase
 {
-    /**
-     * @var SqlWalker
-     */
+    /** @var SqlWalker */
     private $sqlWalker;
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->sqlWalker = new SqlWalker(new Query($this->_getTestEntityManager()), new ParserResult(), []);
+        $this->sqlWalker = new SqlWalker(new Query($this->getTestEntityManager()), new ParserResult(), []);
     }
 
     /**
      * @dataProvider getColumnNamesAndSqlAliases
      */
-    public function testGetSQLTableAlias($tableName, $expectedAlias)
+    public function testGetSQLTableAlias($tableName, $expectedAlias): void
     {
-        $this->assertSame($expectedAlias, $this->sqlWalker->getSQLTableAlias($tableName));
+        self::assertSame($expectedAlias, $this->sqlWalker->getSQLTableAlias($tableName));
     }
 
     /**
      * @dataProvider getColumnNamesAndSqlAliases
      */
-    public function testGetSQLTableAliasIsSameForMultipleCalls($tableName)
+    public function testGetSQLTableAliasIsSameForMultipleCalls($tableName): void
     {
-        $this->assertSame(
+        self::assertSame(
             $this->sqlWalker->getSQLTableAlias($tableName),
             $this->sqlWalker->getSQLTableAlias($tableName)
         );
     }
 
     /**
-     * @private data provider
-     *
      * @return string[][]
+     *
+     * @private data provider
      */
-    public function getColumnNamesAndSqlAliases()
+    public function getColumnNamesAndSqlAliases(): array
     {
         return [
             ['aaaaa', 'a0_'],

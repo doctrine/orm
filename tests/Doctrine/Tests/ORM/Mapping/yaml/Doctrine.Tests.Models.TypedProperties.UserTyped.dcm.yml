@@ -1,0 +1,28 @@
+Doctrine\Tests\Models\TypedProperties\UserTyped:
+    type: entity
+    table: cms_users_typed
+    id:
+        id:
+            generator:
+                strategy: AUTO
+    fields:
+        status:
+            length: 50
+        username:
+            length: 255
+            unique: true
+        dateInterval: ~
+        dateTime: ~
+        dateTimeImmutable: ~
+        array: ~
+        boolean: ~
+        float: ~
+    oneToOne:
+        email:
+            cascade: [ persist ]
+            orphanRemoval: true
+            joinColumn: []
+    manyToOne:
+        mainEmail: []
+    embedded:
+        contact: ~

@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\OneToOneInverseSideLoad;
 
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity()
@@ -13,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 class OwningSide
 {
     /**
+     * @var string
      * @Id()
      * @Column(type="string")
      * @GeneratedValue(strategy="NONE")
@@ -22,6 +29,7 @@ class OwningSide
     /**
      * Owning side
      *
+     * @var InverseSide
      * @OneToOne(targetEntity=InverseSide::class, inversedBy="owning")
      * @JoinColumn(nullable=false, name="inverse")
      */

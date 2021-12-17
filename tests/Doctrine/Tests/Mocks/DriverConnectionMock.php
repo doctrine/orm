@@ -1,62 +1,51 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Driver\Result;
+use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\ParameterType;
 
 /**
  * Mock class for DriverConnection.
  */
 class DriverConnectionMock implements Connection
 {
-    /**
-     * @var \Doctrine\DBAL\Driver\Statement
-     */
-    private $statementMock;
+    /** @var Result|null */
+    private $resultMock;
 
-    /**
-     * @return \Doctrine\DBAL\Driver\Statement
-     */
-    public function getStatementMock()
+    public function setResultMock(?Result $resultMock): void
     {
-        return $this->statementMock;
-    }
-
-    /**
-     * @param \Doctrine\DBAL\Driver\Statement $statementMock
-     */
-    public function setStatementMock($statementMock)
-    {
-        $this->statementMock = $statementMock;
+        $this->resultMock = $resultMock;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function prepare($prepareString)
+    public function prepare($prepareString): Statement
     {
-        return $this->statementMock ?: new StatementMock();
+        return new StatementMock();
+    }
+
+    public function query(?string $sql = null): Result
+    {
+        return $this->resultMock ?? new DriverResultMock();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function query()
-    {
-        return $this->statementMock ?: new StatementMock();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function quote($input, $type=\PDO::PARAM_STR)
+    public function quote($input, $type = ParameterType::STRING)
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function exec($statement)
+    public function exec($statement): int
     {
     }
 

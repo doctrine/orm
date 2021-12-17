@@ -17,7 +17,7 @@ final class GH7829Test extends OrmFunctionalTestCase
     /** @var DebugStack */
     private $logger;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -34,7 +34,7 @@ final class GH7829Test extends OrmFunctionalTestCase
         $this->_em->getConnection()->getConfiguration()->setSQLLogger($this->logger = new DebugStack());
     }
 
-    public function testPaginatorWithLimitSubquery() : void
+    public function testPaginatorWithLimitSubquery(): void
     {
         $query = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a');
         $query->setMaxResults(1);
@@ -45,10 +45,10 @@ final class GH7829Test extends OrmFunctionalTestCase
         $paginator->count();
         $paginator->getIterator();
 
-        $this->assertCount(3, $this->logger->queries);
+        self::assertCount(3, $this->logger->queries);
     }
 
-    public function testPaginatorWithLimitSubquerySkipped() : void
+    public function testPaginatorWithLimitSubquerySkipped(): void
     {
         $query = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a');
 
@@ -58,6 +58,6 @@ final class GH7829Test extends OrmFunctionalTestCase
         $paginator->count();
         $paginator->getIterator();
 
-        $this->assertCount(2, $this->logger->queries);
+        self::assertCount(2, $this->logger->queries);
     }
 }

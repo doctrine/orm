@@ -1,10 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -12,16 +23,16 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC3644Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->setUpEntitySchema(
             [
-            DDC3644User::class,
-            DDC3644Address::class,
-            DDC3644Animal::class,
-            DDC3644Pet::class,
+                DDC3644User::class,
+                DDC3644Address::class,
+                DDC3644Animal::class,
+                DDC3644Pet::class,
             ]
         );
     }
@@ -29,7 +40,7 @@ class DDC3644Test extends OrmFunctionalTestCase
     /**
      * @group DDC-3644
      */
-    public function testIssueWithRegularEntity()
+    public function testIssueWithRegularEntity(): void
     {
         // Define initial dataset
         $current   = new DDC3644Address('Sao Paulo, SP, Brazil');
@@ -69,19 +80,19 @@ class DDC3644Test extends OrmFunctionalTestCase
         // We should only have 1 item in the collection list now
         $user = $this->_em->find(DDC3644User::class, $userId);
 
-        $this->assertCount(1, $user->addresses);
+        self::assertCount(1, $user->addresses);
 
         // We should only have 1 item in the addresses table too
         $repository = $this->_em->getRepository(DDC3644Address::class);
         $addresses  = $repository->findAll();
 
-        $this->assertCount(1, $addresses);
+        self::assertCount(1, $addresses);
     }
 
     /**
      * @group DDC-3644
      */
-    public function testIssueWithJoinedEntity()
+    public function testIssueWithJoinedEntity(): void
     {
         // Define initial dataset
         $actual = new DDC3644Pet('Catharina');
@@ -119,13 +130,13 @@ class DDC3644Test extends OrmFunctionalTestCase
         // We should only have 1 item in the collection list now
         $user = $this->_em->find(DDC3644User::class, $userId);
 
-        $this->assertCount(1, $user->pets);
+        self::assertCount(1, $user->pets);
 
         // We should only have 1 item in the pets table too
         $repository = $this->_em->getRepository(DDC3644Pet::class);
         $pets       = $repository->findAll();
 
-        $this->assertCount(1, $pets);
+        self::assertCount(1, $pets);
     }
 }
 
@@ -135,6 +146,7 @@ class DDC3644Test extends OrmFunctionalTestCase
 class DDC3644User
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer", name="hash_id")
@@ -142,39 +154,38 @@ class DDC3644User
     public $id;
 
     /**
+     * @var string
      * @Column(type="string")
      */
     public $name;
 
     /**
+     * @psalm-var Collection<int, DDC3644Address>
      * @OneToMany(targetEntity="DDC3644Address", mappedBy="user", orphanRemoval=true)
      */
     public $addresses = [];
 
     /**
+     * @psalm-var Collection<int, DDC3644Pet>
      * @OneToMany(targetEntity="DDC3644Pet", mappedBy="owner", orphanRemoval=true)
      */
     public $pets = [];
 
-    public function setAddresses(Collection $addresses)
+    public function setAddresses(Collection $addresses): void
     {
-        $self = $this;
-
         $this->addresses = $addresses;
 
-        $addresses->map(function ($address) use ($self) {
-            $address->user = $self;
+        $addresses->map(function ($address): void {
+            $address->user = $this;
         });
     }
 
-    public function setPets(Collection $pets)
+    public function setPets(Collection $pets): void
     {
-        $self = $this;
-
         $this->pets = $pets;
 
-        $pets->map(function ($pet) use ($self) {
-            $pet->owner = $self;
+        $pets->map(function ($pet): void {
+            $pet->owner = $this;
         });
     }
 }
@@ -185,6 +196,7 @@ class DDC3644User
 class DDC3644Address
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -192,12 +204,14 @@ class DDC3644Address
     public $id;
 
     /**
+     * @var DDC3644User
      * @ManyToOne(targetEntity="DDC3644User", inversedBy="addresses")
      * @JoinColumn(referencedColumnName="hash_id")
      */
     public $user;
 
     /**
+     * @var string
      * @Column(type="string")
      */
     public $address;
@@ -217,6 +231,7 @@ class DDC3644Address
 abstract class DDC3644Animal
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -224,6 +239,7 @@ abstract class DDC3644Animal
     public $id;
 
     /**
+     * @var string
      * @Column(type="string")
      */
     public $name;
@@ -240,6 +256,7 @@ abstract class DDC3644Animal
 class DDC3644Pet extends DDC3644Animal
 {
     /**
+     * @var DDC3644User
      * @ManyToOne(targetEntity="DDC3644User", inversedBy="pets")
      * @JoinColumn(referencedColumnName="hash_id")
      */

@@ -31,30 +31,46 @@ Example:
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Mapping\Column;
+    use Doctrine\ORM\Mapping\JoinColumn;
+    use Doctrine\ORM\Mapping\OneToOne;
+    use Doctrine\ORM\Mapping\Id;
+    use Doctrine\ORM\Mapping\MappedSuperclass;
+    use Doctrine\ORM\Mapping\Entity;
+
     /** @MappedSuperclass */
-    class MappedSuperclassBase
+    class Person
     {
         /** @Column(type="integer") */
         protected $mapped1;
         /** @Column(type="string") */
         protected $mapped2;
         /**
-         * @OneToOne(targetEntity="MappedSuperclassRelated1")
-         * @JoinColumn(name="related1_id", referencedColumnName="id")
+         * @OneToOne(targetEntity="Toothbrush")
+         * @JoinColumn(name="toothbrush_id", referencedColumnName="id")
          */
-        protected $mappedRelated1;
-    
+        protected $toothbrush;
+
         // ... more fields and methods
     }
     
     /** @Entity */
-    class EntitySubClass extends MappedSuperclassBase
+    class Employee extends Person
     {
         /** @Id @Column(type="integer") */
         private $id;
         /** @Column(type="string") */
         private $name;
     
+        // ... more fields and methods
+    }
+
+    /** @Entity */
+    class Toothbrush
+    {
+        /** @Id @Column(type="integer") */
+        private $id;
+
         // ... more fields and methods
     }
 
@@ -73,7 +89,7 @@ defined on that class directly.
 Single Table Inheritance
 ------------------------
 
-`Single Table Inheritance <http://martinfowler.com/eaaCatalog/singleTableInheritance.html>`_
+`Single Table Inheritance <https://martinfowler.com/eaaCatalog/singleTableInheritance.html>`_
 is an inheritance mapping strategy where all classes of a hierarchy
 are mapped to a single database table. In order to distinguish
 which row represents which type in the hierarchy a so-called
@@ -181,11 +197,11 @@ the root entity of the single-table inheritance hierarchy.
 Class Table Inheritance
 -----------------------
 
-`Class Table Inheritance <http://martinfowler.com/eaaCatalog/classTableInheritance.html>`_
+`Class Table Inheritance <https://martinfowler.com/eaaCatalog/classTableInheritance.html>`_
 is an inheritance mapping strategy where each class in a hierarchy
 is mapped to several tables: its own table and the tables of all
 parent classes. The table of a child class is linked to the table
-of a parent class through a foreign key constraint. Doctrine 2
+of a parent class through a foreign key constraint. Doctrine ORM
 implements this strategy through the use of a discriminator column
 in the topmost table of the hierarchy because this is the easiest
 way to achieve polymorphic queries with Class Table Inheritance.
@@ -274,6 +290,9 @@ be a leaf entity in the inheritance hierarchy, (ie. have no subclasses).
 Otherwise Doctrine *CANNOT* create proxy instances
 of this entity and will *ALWAYS* load the entity eagerly.
 
+There is also another important performance consideration that it is *NOT POSSIBLE* 
+to query for the base entity without any LEFT JOINs to the sub-types.
+
 SQL Schema considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -289,9 +308,15 @@ column and cascading on delete.
 
 Overrides
 ---------
-Used to override a mapping for an entity field or relationship.
-May be applied to an entity that extends a mapped superclass
-to override a relationship or field mapping defined by the mapped superclass.
+
+Used to override a mapping for an entity field or relationship.  Can only be
+applied to an entity that extends a mapped superclass or uses a trait to
+override a relationship or field mapping defined by the mapped superclass or
+trait.
+
+It is not possible to override attributes or associations in entity to entity
+inheritance scenarios, because this can cause unforseen edge case behavior and
+increases complexity in ORM internal classes.
 
 
 Association Override
@@ -315,7 +340,7 @@ Example:
          */
         class User
         {
-            //other fields mapping
+            // other fields mapping
 
             /**
              * @ManyToMany(targetEntity="Group", inversedBy="users")
@@ -454,7 +479,7 @@ Things to note:
 -  This feature is available for all kind of associations. (OneToOne, OneToMany, ManyToOne, ManyToMany)
 -  The association type *CANNOT* be changed.
 -  The override could redefine the joinTables or joinColumns depending on the association type.
--  The override could redefine inversedBy to reference more than one extended entity.
+-  The override could redefine ``inversedBy`` to reference more than one extended entity.
 -  The override could redefine fetch to modify the fetch strategy of the extended entity.
 
 Attribute Override
@@ -584,7 +609,7 @@ Things to note:
 
 -  The "attribute override" specifies the overrides base on the property name.
 -  The column type *CANNOT* be changed. If the column type is not equal you get a ``MappingException``
--  The override can redefine all the columns except the type.
+-  The override can redefine all the attributes except the type.
 
 Query the Type
 --------------

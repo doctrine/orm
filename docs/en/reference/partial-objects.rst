@@ -1,6 +1,14 @@
 Partial Objects
 ===============
 
+
+.. note::
+
+    Creating Partial Objects through DQL is deprecated and
+    will be removed in the future, use data transfer object
+    support in DQL instead. (`Details
+    <https://github.com/doctrine/orm/issues/8471>`_)
+
 A partial object is an object whose state is not fully initialized
 after being reconstituted from the database and that is
 disconnected from the rest of its data. The following section will

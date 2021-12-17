@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache\Persister\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
+use Doctrine\ORM\Cache\Persister\Entity\AbstractEntityPersister;
 use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManager;
@@ -20,385 +23,370 @@ use Doctrine\Tests\OrmTestCase;
  */
 abstract class AbstractEntityPersisterTest extends OrmTestCase
 {
-    /**
-     * @var \Doctrine\ORM\Cache\Region
-     */
+    /** @var Region */
     protected $region;
 
-    /**
-     * @var \Doctrine\ORM\Persisters\Entity\EntityPersister
-     */
+    /** @var EntityPersister */
     protected $entityPersister;
 
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
+    /** @var EntityManager */
     protected $em;
 
-    /**
-     * @param \Doctrine\ORM\EntityManager                     $em
-     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister $persister
-     * @param \Doctrine\ORM\Cache\Region                      $region
-     * @param \Doctrine\ORM\Mapping\ClassMetadata             $metadata
-     *
-     * @return \Doctrine\ORM\Cache\Persister\Entity\AbstractEntityPersister
-     */
-    abstract protected function createPersister(EntityManager $em, EntityPersister $persister, Region $region, ClassMetadata $metadata);
+    abstract protected function createPersister(EntityManager $em, EntityPersister $persister, Region $region, ClassMetadata $metadata): AbstractEntityPersister;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->getSharedSecondLevelCacheDriverImpl()->flushAll();
         $this->enableSecondLevelCache();
         parent::setUp();
 
-        $this->em              = $this->_getTestEntityManager();
+        $this->em              = $this->getTestEntityManager();
         $this->region          = $this->createRegion();
         $this->entityPersister = $this->createMock(EntityPersister::class);
     }
 
-    /**
-     * @return \Doctrine\ORM\Cache\Region
-     */
-    protected function createRegion()
+    protected function createRegion(): Region
     {
         return $this->createMock(Region::class);
     }
 
-    /**
-     * @return \Doctrine\ORM\Cache\Persister\AbstractEntityPersister
-     */
-    protected function createPersisterDefault()
+    protected function createPersisterDefault(): AbstractEntityPersister
     {
         return $this->createPersister($this->em, $this->entityPersister, $this->region, $this->em->getClassMetadata(Country::class));
     }
 
-    public function testImplementsEntityPersister()
+    public function testImplementsEntityPersister(): void
     {
         $persister = $this->createPersisterDefault();
 
-        $this->assertInstanceOf(EntityPersister::class, $persister);
-        $this->assertInstanceOf(CachedPersister::class, $persister);
-        $this->assertInstanceOf(CachedEntityPersister::class, $persister);
+        self::assertInstanceOf(EntityPersister::class, $persister);
+        self::assertInstanceOf(CachedPersister::class, $persister);
+        self::assertInstanceOf(CachedEntityPersister::class, $persister);
     }
 
-    public function testInvokeAddInsert()
+    public function testInvokeAddInsert(): void
     {
         $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('addInsert')
-            ->with($this->equalTo($entity));
+            ->with(self::equalTo($entity));
 
-        $this->assertNull($persister->addInsert($entity));
+        self::assertNull($persister->addInsert($entity));
     }
 
-    public function testInvokeGetInserts()
+    public function testInvokeGetInserts(): void
     {
         $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('getInserts')
-            ->will($this->returnValue([$entity]));
+            ->will(self::returnValue([$entity]));
 
-        $this->assertEquals([$entity], $persister->getInserts());
+        self::assertEquals([$entity], $persister->getInserts());
     }
 
-    public function testInvokeGetSelectSQL()
+    public function testInvokeGetSelectSQL(): void
     {
         $persister = $this->createPersisterDefault();
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('getSelectSQL')
-            ->with($this->equalTo(['name'=>'Foo']), $this->equalTo([0]), $this->equalTo(1), $this->equalTo(2), $this->equalTo(3), $this->equalTo(
+            ->with(self::equalTo(['name' => 'Foo']), self::equalTo([0]), self::equalTo(1), self::equalTo(2), self::equalTo(3), self::equalTo(
                 [4]
             ))
-            ->will($this->returnValue('SELECT * FROM foo WERE name = ?'));
+            ->will(self::returnValue('SELECT * FROM foo WERE name = ?'));
 
-        $this->assertEquals('SELECT * FROM foo WERE name = ?', $persister->getSelectSQL(
-            ['name'=>'Foo'], [0], 1, 2, 3, [4]
+        self::assertEquals('SELECT * FROM foo WERE name = ?', $persister->getSelectSQL(
+            ['name' => 'Foo'],
+            [0],
+            1,
+            2,
+            3,
+            [4]
         ));
     }
 
-    public function testInvokeGetInsertSQL()
+    public function testInvokeGetInsertSQL(): void
     {
         $persister = $this->createPersisterDefault();
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('getInsertSQL')
-            ->will($this->returnValue('INSERT INTO foo (?)'));
+            ->will(self::returnValue('INSERT INTO foo (?)'));
 
-        $this->assertEquals('INSERT INTO foo (?)', $persister->getInsertSQL());
+        self::assertEquals('INSERT INTO foo (?)', $persister->getInsertSQL());
     }
 
-    public function testInvokeExpandParameters()
+    public function testInvokeExpandParameters(): void
     {
         $persister = $this->createPersisterDefault();
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('expandParameters')
-            ->with($this->equalTo(['name'=>'Foo']))
-            ->will($this->returnValue(['name'=>'Foo']));
+            ->with(self::equalTo(['name' => 'Foo']))
+            ->will(self::returnValue(['name' => 'Foo']));
 
-        $this->assertEquals(['name'=>'Foo'], $persister->expandParameters(['name'=>'Foo']));
+        self::assertEquals(['name' => 'Foo'], $persister->expandParameters(['name' => 'Foo']));
     }
 
-    public function testInvokeExpandCriteriaParameters()
+    public function testInvokeExpandCriteriaParameters(): void
     {
         $persister = $this->createPersisterDefault();
         $criteria  = new Criteria();
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('expandCriteriaParameters')
-            ->with($this->equalTo($criteria))
-            ->will($this->returnValue(['name'=>'Foo']));
+            ->with(self::equalTo($criteria))
+            ->will(self::returnValue(['name' => 'Foo']));
 
-        $this->assertEquals(['name'=>'Foo'], $persister->expandCriteriaParameters($criteria));
+        self::assertEquals(['name' => 'Foo'], $persister->expandCriteriaParameters($criteria));
     }
 
-    public function testInvokeSelectConditionStatementSQL()
+    public function testInvokeSelectConditionStatementSQL(): void
     {
         $persister = $this->createPersisterDefault();
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('getSelectConditionStatementSQL')
-            ->with($this->equalTo('id'), $this->equalTo(1), $this->equalTo([]), $this->equalTo('='))
-            ->will($this->returnValue('name = 1'));
+            ->with(self::equalTo('id'), self::equalTo(1), self::equalTo([]), self::equalTo('='))
+            ->will(self::returnValue('name = 1'));
 
-        $this->assertEquals('name = 1', $persister->getSelectConditionStatementSQL('id', 1, [], '='));
+        self::assertEquals('name = 1', $persister->getSelectConditionStatementSQL('id', 1, [], '='));
     }
 
-    public function testInvokeExecuteInserts()
+    public function testInvokeExecuteInserts(): void
     {
         $persister = $this->createPersisterDefault();
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('executeInserts')
-            ->will($this->returnValue(['id' => 1]));
+            ->will(self::returnValue(['id' => 1]));
 
-        $this->assertEquals(['id' => 1], $persister->executeInserts());
+        self::assertEquals(['id' => 1], $persister->executeInserts());
     }
 
-    public function testInvokeUpdate()
+    public function testInvokeUpdate(): void
     {
         $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('update')
-            ->with($this->equalTo($entity));
+            ->with(self::equalTo($entity));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
-        $this->assertNull($persister->update($entity));
+        self::assertNull($persister->update($entity));
     }
 
-    public function testInvokeDelete()
+    public function testInvokeDelete(): void
     {
         $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('delete')
-            ->with($this->equalTo($entity));
+            ->with(self::equalTo($entity));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
-        $this->assertNull($persister->delete($entity));
+        self::assertNull($persister->delete($entity));
     }
 
-    public function testInvokeGetOwningTable()
+    public function testInvokeGetOwningTable(): void
     {
         $persister = $this->createPersisterDefault();
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('getOwningTable')
-            ->with($this->equalTo('name'))
-            ->will($this->returnValue('t'));
+            ->with(self::equalTo('name'))
+            ->will(self::returnValue('t'));
 
-        $this->assertEquals('t', $persister->getOwningTable('name'));
+        self::assertEquals('t', $persister->getOwningTable('name'));
     }
 
-    public function testInvokeLoad()
+    public function testInvokeLoad(): void
     {
         $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('load')
-            ->with($this->equalTo(['id' => 1]), $this->equalTo($entity), $this->equalTo([0]), $this->equalTo(
+            ->with(self::equalTo(['id' => 1]), self::equalTo($entity), self::equalTo([0]), self::equalTo(
                 [1]
-            ), $this->equalTo(2), $this->equalTo(3), $this->equalTo(
+            ), self::equalTo(2), self::equalTo(3), self::equalTo(
                 [4]
             ))
-            ->will($this->returnValue($entity));
+            ->will(self::returnValue($entity));
 
-        $this->assertEquals($entity, $persister->load(['id' => 1], $entity, [0], [1], 2, 3, [4]));
+        self::assertEquals($entity, $persister->load(['id' => 1], $entity, [0], [1], 2, 3, [4]));
     }
 
-    public function testInvokeLoadAll()
+    public function testInvokeLoadAll(): void
     {
         $rsm       = new ResultSetMappingBuilder($this->em);
         $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
 
         $rsm->addEntityResult(Country::class, 'c');
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('loadAll')
-            ->with($this->equalTo(['id' => 1]), $this->equalTo([0]), $this->equalTo(1), $this->equalTo(2))
-            ->will($this->returnValue([$entity]));
+            ->with(self::equalTo(['id' => 1]), self::equalTo([0]), self::equalTo(1), self::equalTo(2))
+            ->will(self::returnValue([$entity]));
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('getResultSetMapping')
-            ->will($this->returnValue($rsm));
+            ->will(self::returnValue($rsm));
 
-        $this->assertEquals([$entity], $persister->loadAll(['id' => 1], [0], 1, 2));
+        self::assertEquals([$entity], $persister->loadAll(['id' => 1], [0], 1, 2));
     }
 
-    public function testInvokeLoadById()
+    public function testInvokeLoadById(): void
     {
         $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('loadById')
-            ->with($this->equalTo(['id' => 1]), $this->equalTo($entity))
-            ->will($this->returnValue($entity));
+            ->with(self::equalTo(['id' => 1]), self::equalTo($entity))
+            ->will(self::returnValue($entity));
 
-        $this->assertEquals($entity, $persister->loadById(['id' => 1], $entity));
+        self::assertEquals($entity, $persister->loadById(['id' => 1], $entity));
     }
 
-    public function testInvokeLoadOneToOneEntity()
+    public function testInvokeLoadOneToOneEntity(): void
     {
         $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('loadOneToOneEntity')
-            ->with($this->equalTo([]), $this->equalTo('foo'), $this->equalTo(['id' => 11]))
-            ->will($this->returnValue($entity));
+            ->with(self::equalTo([]), self::equalTo('foo'), self::equalTo(['id' => 11]))
+            ->will(self::returnValue($entity));
 
-        $this->assertEquals($entity, $persister->loadOneToOneEntity([], 'foo', ['id' => 11]));
+        self::assertEquals($entity, $persister->loadOneToOneEntity([], 'foo', ['id' => 11]));
     }
 
-    public function testInvokeRefresh()
+    public function testInvokeRefresh(): void
     {
         $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('refresh')
-            ->with($this->equalTo(['id' => 1]), $this->equalTo($entity), $this->equalTo(0))
-            ->will($this->returnValue($entity));
+            ->with(self::equalTo(['id' => 1]), self::equalTo($entity), self::equalTo(0))
+            ->will(self::returnValue($entity));
 
-        $this->assertNull($persister->refresh(['id' => 1], $entity), 0);
+        self::assertNull($persister->refresh(['id' => 1], $entity));
     }
 
-    public function testInvokeLoadCriteria()
+    public function testInvokeLoadCriteria(): void
     {
         $rsm       = new ResultSetMappingBuilder($this->em);
         $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
         $criteria  = new Criteria();
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
         $rsm->addEntityResult(Country::class, 'c');
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('getResultSetMapping')
-            ->will($this->returnValue($rsm));
+            ->will(self::returnValue($rsm));
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('loadCriteria')
-            ->with($this->equalTo($criteria))
-            ->will($this->returnValue([$entity]));
+            ->with(self::equalTo($criteria))
+            ->will(self::returnValue([$entity]));
 
-        $this->assertEquals([$entity], $persister->loadCriteria($criteria));
+        self::assertEquals([$entity], $persister->loadCriteria($criteria));
     }
 
-    public function testInvokeGetManyToManyCollection()
+    public function testInvokeGetManyToManyCollection(): void
     {
         $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('getManyToManyCollection')
-            ->with($this->equalTo([]), $this->equalTo('Foo'), $this->equalTo(1), $this->equalTo(2))
-            ->will($this->returnValue([$entity]));
+            ->with(self::equalTo([]), self::equalTo('Foo'), self::equalTo(1), self::equalTo(2))
+            ->will(self::returnValue([$entity]));
 
-        $this->assertEquals([$entity], $persister->getManyToManyCollection([], 'Foo', 1 ,2));
+        self::assertEquals([$entity], $persister->getManyToManyCollection([], 'Foo', 1, 2));
     }
 
-    public function testInvokeGetOneToManyCollection()
+    public function testInvokeGetOneToManyCollection(): void
     {
         $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('getOneToManyCollection')
-            ->with($this->equalTo([]), $this->equalTo('Foo'), $this->equalTo(1), $this->equalTo(2))
-            ->will($this->returnValue([$entity]));
+            ->with(self::equalTo([]), self::equalTo('Foo'), self::equalTo(1), self::equalTo(2))
+            ->will(self::returnValue([$entity]));
 
-        $this->assertEquals([$entity], $persister->getOneToManyCollection([], 'Foo', 1 ,2));
+        self::assertEquals([$entity], $persister->getOneToManyCollection([], 'Foo', 1, 2));
     }
 
-    public function testInvokeLoadManyToManyCollection()
+    public function testInvokeLoadManyToManyCollection(): void
     {
         $mapping   = $this->em->getClassMetadata(Country::class);
         $assoc     = ['type' => 1];
         $coll      = new PersistentCollection($this->em, $mapping, new ArrayCollection());
         $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('loadManyToManyCollection')
-            ->with($this->equalTo($assoc), $this->equalTo('Foo'), $coll)
-            ->will($this->returnValue([$entity]));
+            ->with(self::equalTo($assoc), self::equalTo('Foo'), $coll)
+            ->will(self::returnValue([$entity]));
 
-        $this->assertEquals([$entity], $persister->loadManyToManyCollection($assoc, 'Foo', $coll));
+        self::assertEquals([$entity], $persister->loadManyToManyCollection($assoc, 'Foo', $coll));
     }
 
-    public function testInvokeLoadOneToManyCollection()
+    public function testInvokeLoadOneToManyCollection(): void
     {
         $mapping   = $this->em->getClassMetadata(Country::class);
         $assoc     = ['type' => 1];
         $coll      = new PersistentCollection($this->em, $mapping, new ArrayCollection());
         $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('loadOneToManyCollection')
-            ->with($this->equalTo($assoc), $this->equalTo('Foo'), $coll)
-            ->will($this->returnValue([$entity]));
+            ->with(self::equalTo($assoc), self::equalTo('Foo'), $coll)
+            ->will(self::returnValue([$entity]));
 
-        $this->assertEquals([$entity], $persister->loadOneToManyCollection($assoc, 'Foo', $coll));
+        self::assertEquals([$entity], $persister->loadOneToManyCollection($assoc, 'Foo', $coll));
     }
 
-    public function testInvokeLock()
+    public function testInvokeLock(): void
     {
         $identifier = ['id' => 1];
         $persister  = $this->createPersisterDefault();
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($identifier), $this->equalTo(1));
+            ->with(self::equalTo($identifier), self::equalTo(1));
 
-        $this->assertNull($persister->lock($identifier, 1));
+        self::assertNull($persister->lock($identifier, 1));
     }
 
-    public function testInvokeExists()
+    public function testInvokeExists(): void
     {
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();
 
-        $this->entityPersister->expects($this->once())
+        $this->entityPersister->expects(self::once())
             ->method('exists')
-            ->with($this->equalTo($entity), $this->equalTo(null));
+            ->with(self::equalTo($entity), self::equalTo(null));
 
-        $this->assertNull($persister->exists($entity));
+        self::assertNull($persister->exists($entity));
     }
 }

@@ -1,33 +1,41 @@
 Annotations Reference
 =====================
 
+.. note::
+
+    To be able to use annotations, you will have to install an extra
+    package called ``doctrine/annotations``.
+
 You've probably used docblock annotations in some form already,
 most likely to provide documentation metadata for a tool like
 ``PHPDocumentor`` (@author, @link, ...). Docblock annotations are a
 tool to embed metadata inside the documentation section which can
-then be processed by some tool. Doctrine 2 generalizes the concept
+then be processed by some tool. Doctrine ORM generalizes the concept
 of docblock annotations so that they can be used for any kind of
 metadata and so that it is easy to define new docblock annotations.
 In order to allow more involved annotation values and to reduce the
-chances of clashes with other docblock annotations, the Doctrine 2
+chances of clashes with other docblock annotations, the Doctrine ORM
 docblock annotations feature an alternative syntax that is heavily
 inspired by the Annotation syntax introduced in Java 5.
 
-The implementation of these enhanced docblock annotations is
-located in the ``Doctrine\Common\Annotations`` namespace and
-therefore part of the Common package. Doctrine 2 docblock
-annotations support namespaces and nested annotations among other
-things. The Doctrine 2 ORM defines its own set of docblock
-annotations for supplying object-relational mapping metadata.
+The implementation of these enhanced docblock annotations is located in
+the ``doctrine/annotations`` package, but in the
+``Doctrine\Common\Annotations`` namespace for backwards compatibility
+reasons. Note that ``doctrine/annotations`` is not required by Doctrine
+ORM, and you will need to require that package if you want to use
+annotations. Doctrine ORM docblock annotations support namespaces and
+nested annotations among other things. The Doctrine ORM defines its
+own set of docblock annotations for supplying object-relational mapping
+metadata.
 
 .. note::
 
     If you're not comfortable with the concept of docblock
-    annotations, don't worry, as mentioned earlier Doctrine 2 provides
+    annotations, don't worry, as mentioned earlier Doctrine ORM provides
     XML and YAML alternatives and you could easily implement your own
     favourite mechanism for defining ORM metadata.
 
-In this chapter a reference of every Doctrine 2 Annotation is given
+In this chapter a reference of every Doctrine ORM Annotation is given
 with short explanations on their context and usage.
 
 Index
@@ -89,7 +97,7 @@ as part of the lifecycle of the instance variables entity-class.
 Required attributes:
 
 -  **type**: Name of the Doctrine Type which is converted between PHP
-   and Database representation.
+   and Database representation. Default to ``string`` or :ref:`Type from PHP property type <reference-php-mapping-types>`
 
 Optional attributes:
 
@@ -213,7 +221,7 @@ Optional attributes:
 ~~~~~~~~~~~~~~~~~~~~~
 
 The Change Tracking Policy annotation allows to specify how the
-Doctrine 2 UnitOfWork should detect changes in properties of
+Doctrine ORM UnitOfWork should detect changes in properties of
 entities during flush. By default each entity is checked according
 to a deferred implicit strategy, which means upon flush UnitOfWork
 compares all the properties of an entity to a previously stored
@@ -254,7 +262,7 @@ Example:
 
     <?php
     /**
-     * @Id 
+     * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="CUSTOM")
      * @CustomIdGenerator(class="My\Namespace\MyIdGenerator")
@@ -350,7 +358,7 @@ in order to specify that it is an embedded class.
 
 Required attributes:
 
--  **class**: The embeddable class
+-  **class**: The embeddable class. You can omit this value if you use a PHP property type instead.
 
 
 .. code-block:: php
@@ -388,7 +396,7 @@ Optional attributes:
    EntityRepository. Use of repositories for entities is encouraged to keep
    specialized DQL and SQL operations separated from the Model/Domain
    Layer.
--  **readOnly**: (>= 2.1) Specifies that this entity is marked as read only and not
+-  **readOnly**: Specifies that this entity is marked as read only and not
    considered for change-tracking. Entities of this type can be persisted
    and removed though.
 
@@ -398,11 +406,11 @@ Example:
 
     <?php
     /**
-     * @Entity(repositoryClass="MyProject\UserRepository")
+     * @Entity(repositoryClass="MyProject\UserRepository", readOnly=true)
      */
     class User
     {
-        //...
+        // ...
     }
 
 .. _annref_entity_result:
@@ -455,7 +463,8 @@ Optional attributes:
 
 
 -  **strategy**: Set the name of the identifier generation strategy.
-   Valid values are AUTO, SEQUENCE, TABLE, IDENTITY, UUID, CUSTOM and NONE.
+   Valid values are ``AUTO``, ``SEQUENCE``, ``IDENTITY``, ``UUID`` (deprecated), ``CUSTOM`` and ``NONE``, explained
+   in the :ref:`Identifier Generation Strategies <identifier-generation-strategies>` section.
    If not specified, default value is AUTO.
 
 Example:
@@ -513,7 +522,8 @@ Required attributes:
 
 
 -  **name**: Name of the Index
--  **columns**: Array of columns.
+-  **fields**: Array of fields. Exactly one of **fields**, **columns** is required.
+-  **columns**: Array of columns. Exactly one of **fields**, **columns** is required.
 
 Optional attributes:
 
@@ -530,6 +540,19 @@ Basic example:
     /**
      * @Entity
      * @Table(name="ecommerce_products",indexes={@Index(name="search_idx", columns={"name", "email"})})
+     */
+    class ECommerceProduct
+    {
+    }
+
+Basic example using fields:
+
+.. code-block:: php
+
+    <?php
+    /**
+     * @Entity
+     * @Table(name="ecommerce_products",indexes={@Index(name="search_idx", fields={"name", "email"})})
      */
     class ECommerceProduct
     {
@@ -715,6 +738,7 @@ Required attributes:
 
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
+   You can omit this value if you use a PHP property type instead.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
@@ -812,7 +836,7 @@ The @MappedSuperclass annotation cannot be used in conjunction with
 Optional attributes:
 
 
--  **repositoryClass**: (>= 2.2) Specifies the FQCN of a subclass of the EntityRepository.
+-  **repositoryClass**: Specifies the FQCN of a subclass of the EntityRepository.
    That will be inherited for all subclasses of that Mapped Superclass.
 
 Example:
@@ -840,6 +864,11 @@ Example:
 
 @NamedNativeQuery
 ~~~~~~~~~~~~~~~~~
+
+.. note::
+
+    Named Native Queries are deprecated as of version 2.9 and will be removed in ORM 3.0
+
 Is used to specify a native SQL named query.
 The NamedNativeQuery annotation can be applied to an entity or mapped superclass.
 
@@ -923,6 +952,7 @@ Required attributes:
 
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
+   When typed properties are used it is inherited from PHP type.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
@@ -1231,7 +1261,7 @@ Optional attributes:
 
 -  **indexes**: Array of @Index annotations
 -  **uniqueConstraints**: Array of @UniqueConstraint annotations.
--  **schema**: (>= 2.5) Name of the schema the table lies in.
+-  **schema**: Name of the schema the table lies in.
 
 Example:
 
@@ -1263,7 +1293,8 @@ Required attributes:
 
 
 -  **name**: Name of the Index
--  **columns**: Array of columns.
+-  **fields**: Array of fields. Exactly one of **fields**, **columns** is required.
+-  **columns**: Array of columns. Exactly one of **fields**, **columns** is required.
 
 Optional attributes:
 
@@ -1280,6 +1311,19 @@ Basic example:
     /**
      * @Entity
      * @Table(name="ecommerce_products",uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "email"})})
+     */
+    class ECommerceProduct
+    {
+    }
+
+Basic example using fields:
+
+.. code-block:: php
+
+    <?php
+    /**
+     * @Entity
+     * @Table(name="ecommerce_products",uniqueConstraints={@UniqueConstraint(name="search_idx", fields={"name", "email"})})
      */
     class ECommerceProduct
     {

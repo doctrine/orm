@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\EmbeddedBuilder;
 use Doctrine\ORM\Mapping\Builder\FieldBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -17,52 +20,50 @@ use Doctrine\Tests\OrmTestCase;
  */
 class ClassMetadataBuilderTest extends OrmTestCase
 {
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $cm;
-    /**
-     * @var ClassMetadataBuilder
-     */
+    /** @var ClassMetadataBuilder */
     private $builder;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->cm = new ClassMetadata(CmsUser::class);
         $this->cm->initializeReflection(new RuntimeReflectionService());
         $this->builder = new ClassMetadataBuilder($this->cm);
     }
 
-    public function testSetMappedSuperClass()
+    public function testSetMappedSuperClass(): void
     {
         $this->assertIsFluent($this->builder->setMappedSuperClass());
-        $this->assertTrue($this->cm->isMappedSuperclass);
-        $this->assertFalse($this->cm->isEmbeddedClass);
+        self::assertTrue($this->cm->isMappedSuperclass);
+        self::assertFalse($this->cm->isEmbeddedClass);
     }
 
-    public function testSetEmbedable()
+    public function testSetEmbedable(): void
     {
         $this->assertIsFluent($this->builder->setEmbeddable());
-        $this->assertTrue($this->cm->isEmbeddedClass);
-        $this->assertFalse($this->cm->isMappedSuperclass);
+        self::assertTrue($this->cm->isEmbeddedClass);
+        self::assertFalse($this->cm->isMappedSuperclass);
     }
 
-    public function testAddEmbeddedWithOnlyRequiredParams()
+    public function testAddEmbeddedWithOnlyRequiredParams(): void
     {
         $this->assertIsFluent($this->builder->addEmbedded('name', Name::class));
 
-        $this->assertEquals(
+        self::assertEquals(
             [
-            'name' => [
-                'class' => Name::class,
-                'columnPrefix' => null,
-                'declaredField' => null,
-                'originalField' => null,
-            ]
-            ], $this->cm->embeddedClasses);
+                'name' => [
+                    'class' => Name::class,
+                    'columnPrefix' => null,
+                    'declaredField' => null,
+                    'originalField' => null,
+                ],
+            ],
+            $this->cm->embeddedClasses
+        );
     }
 
-    public function testAddEmbeddedWithPrefix()
+    public function testAddEmbeddedWithPrefix(): void
     {
         $this->assertIsFluent(
             $this->builder->addEmbedded(
@@ -72,92 +73,94 @@ class ClassMetadataBuilderTest extends OrmTestCase
             )
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
-            'name' => [
-                'class' => Name::class,
-                'columnPrefix' => 'nm_',
-                'declaredField' => null,
-                'originalField' => null,
-            ]
-            ], $this->cm->embeddedClasses);
+                'name' => [
+                    'class' => Name::class,
+                    'columnPrefix' => 'nm_',
+                    'declaredField' => null,
+                    'originalField' => null,
+                ],
+            ],
+            $this->cm->embeddedClasses
+        );
     }
 
-    public function testCreateEmbeddedWithoutExtraParams()
+    public function testCreateEmbeddedWithoutExtraParams(): void
     {
-        $embeddedBuilder = ($this->builder->createEmbedded('name', Name::class));
-        $this->assertInstanceOf(EmbeddedBuilder::class, $embeddedBuilder);
+        $embeddedBuilder = $this->builder->createEmbedded('name', Name::class);
+        self::assertInstanceOf(EmbeddedBuilder::class, $embeddedBuilder);
 
-        $this->assertFalse(isset($this->cm->embeddedClasses['name']));
+        self::assertFalse(isset($this->cm->embeddedClasses['name']));
 
         $this->assertIsFluent($embeddedBuilder->build());
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'class' => Name::class,
                 'columnPrefix' => null,
                 'declaredField' => null,
-                'originalField' => null
+                'originalField' => null,
             ],
             $this->cm->embeddedClasses['name']
         );
     }
 
-    public function testCreateEmbeddedWithColumnPrefix()
+    public function testCreateEmbeddedWithColumnPrefix(): void
     {
-        $embeddedBuilder = ($this->builder->createEmbedded('name', Name::class));
+        $embeddedBuilder = $this->builder->createEmbedded('name', Name::class);
 
-        $this->assertEquals($embeddedBuilder, $embeddedBuilder->setColumnPrefix('nm_'));
+        self::assertEquals($embeddedBuilder, $embeddedBuilder->setColumnPrefix('nm_'));
 
         $this->assertIsFluent($embeddedBuilder->build());
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'class' => Name::class,
                 'columnPrefix' => 'nm_',
                 'declaredField' => null,
-                'originalField' => null
+                'originalField' => null,
             ],
             $this->cm->embeddedClasses['name']
         );
     }
 
-    public function testSetCustomRepositoryClass()
+    public function testSetCustomRepositoryClass(): void
     {
         $this->assertIsFluent($this->builder->setCustomRepositoryClass(CmsGroup::class));
-        $this->assertEquals(CmsGroup::class, $this->cm->customRepositoryClassName);
+        self::assertEquals(CmsGroup::class, $this->cm->customRepositoryClassName);
     }
 
-    public function testSetReadOnly()
+    public function testSetReadOnly(): void
     {
         $this->assertIsFluent($this->builder->setReadOnly());
-        $this->assertTrue($this->cm->isReadOnly);
+        self::assertTrue($this->cm->isReadOnly);
     }
 
-    public function testSetTable()
+    public function testSetTable(): void
     {
         $this->assertIsFluent($this->builder->setTable('users'));
-        $this->assertEquals('users', $this->cm->table['name']);
+        self::assertEquals('users', $this->cm->table['name']);
     }
 
-    public function testAddIndex()
+    public function testAddIndex(): void
     {
         $this->assertIsFluent($this->builder->addIndex(['username', 'name'], 'users_idx'));
-        $this->assertEquals(['users_idx' => ['columns' => ['username', 'name']]], $this->cm->table['indexes']);
+        self::assertEquals(['users_idx' => ['columns' => ['username', 'name']]], $this->cm->table['indexes']);
     }
 
-    public function testAddUniqueConstraint()
+    public function testAddUniqueConstraint(): void
     {
         $this->assertIsFluent($this->builder->addUniqueConstraint(['username', 'name'], 'users_idx'));
-        $this->assertEquals(['users_idx' => ['columns' => ['username', 'name']]], $this->cm->table['uniqueConstraints']);
+        self::assertEquals(['users_idx' => ['columns' => ['username', 'name']]], $this->cm->table['uniqueConstraints']);
     }
 
-    public function testSetPrimaryTableRelated()
+    public function testSetPrimaryTableRelated(): void
     {
         $this->builder->addUniqueConstraint(['username', 'name'], 'users_idx');
         $this->builder->addIndex(['username', 'name'], 'users_idx');
         $this->builder->setTable('users');
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'name' => 'users',
                 'indexes' => ['users_idx' => ['columns' => ['username', 'name']]],
@@ -167,102 +170,108 @@ class ClassMetadataBuilderTest extends OrmTestCase
         );
     }
 
-    public function testSetInheritanceJoined()
+    public function testSetInheritanceJoined(): void
     {
         $this->assertIsFluent($this->builder->setJoinedTableInheritance());
-        $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_JOINED, $this->cm->inheritanceType);
+        self::assertEquals(ClassMetadata::INHERITANCE_TYPE_JOINED, $this->cm->inheritanceType);
     }
 
-    public function testSetInheritanceSingleTable()
+    public function testSetInheritanceSingleTable(): void
     {
         $this->assertIsFluent($this->builder->setSingleTableInheritance());
-        $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE, $this->cm->inheritanceType);
+        self::assertEquals(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE, $this->cm->inheritanceType);
     }
 
-    public function testSetDiscriminatorColumn()
+    public function testSetDiscriminatorColumn(): void
     {
         $this->assertIsFluent($this->builder->setDiscriminatorColumn('discr', 'string', '124'));
-        $this->assertEquals(['fieldName' => 'discr', 'name' => 'discr', 'type' => 'string', 'length' => '124'], $this->cm->discriminatorColumn);
+        self::assertEquals(['fieldName' => 'discr', 'name' => 'discr', 'type' => 'string', 'length' => '124'], $this->cm->discriminatorColumn);
     }
 
-    public function testAddDiscriminatorMapClass()
+    public function testAddDiscriminatorMapClass(): void
     {
         $this->assertIsFluent($this->builder->addDiscriminatorMapClass('test', CmsUser::class));
         $this->assertIsFluent($this->builder->addDiscriminatorMapClass('test2', CmsGroup::class));
 
-        $this->assertEquals(
-            ['test' => CmsUser::class, 'test2' => CmsGroup::class], $this->cm->discriminatorMap);
-        $this->assertEquals('test', $this->cm->discriminatorValue);
+        self::assertEquals(
+            ['test' => CmsUser::class, 'test2' => CmsGroup::class],
+            $this->cm->discriminatorMap
+        );
+        self::assertEquals('test', $this->cm->discriminatorValue);
     }
 
-    public function testChangeTrackingPolicyExplicit()
+    public function testChangeTrackingPolicyExplicit(): void
     {
         $this->assertIsFluent($this->builder->setChangeTrackingPolicyDeferredExplicit());
-        $this->assertEquals(ClassMetadata::CHANGETRACKING_DEFERRED_EXPLICIT, $this->cm->changeTrackingPolicy);
+        self::assertEquals(ClassMetadata::CHANGETRACKING_DEFERRED_EXPLICIT, $this->cm->changeTrackingPolicy);
     }
 
-    public function testChangeTrackingPolicyNotify()
+    public function testChangeTrackingPolicyNotify(): void
     {
         $this->assertIsFluent($this->builder->setChangeTrackingPolicyNotify());
-        $this->assertEquals(ClassMetadata::CHANGETRACKING_NOTIFY, $this->cm->changeTrackingPolicy);
+        self::assertEquals(ClassMetadata::CHANGETRACKING_NOTIFY, $this->cm->changeTrackingPolicy);
     }
 
-    public function testAddField()
+    public function testAddField(): void
     {
         $this->assertIsFluent($this->builder->addField('name', 'string'));
-        $this->assertEquals(['columnName' => 'name', 'fieldName' => 'name', 'type' => 'string'], $this->cm->fieldMappings['name']);
+        self::assertEquals(['columnName' => 'name', 'fieldName' => 'name', 'type' => 'string'], $this->cm->fieldMappings['name']);
     }
 
-    public function testCreateField()
+    public function testCreateField(): void
     {
-        $fieldBuilder = ($this->builder->createField('name', 'string'));
-        $this->assertInstanceOf(FieldBuilder::class, $fieldBuilder);
+        $fieldBuilder = $this->builder->createField('name', 'string');
+        self::assertInstanceOf(FieldBuilder::class, $fieldBuilder);
 
-        $this->assertFalse(isset($this->cm->fieldMappings['name']));
+        self::assertFalse(isset($this->cm->fieldMappings['name']));
         $this->assertIsFluent($fieldBuilder->build());
-        $this->assertEquals(['columnName' => 'name', 'fieldName' => 'name', 'type' => 'string'], $this->cm->fieldMappings['name']);
+        self::assertEquals(['columnName' => 'name', 'fieldName' => 'name', 'type' => 'string'], $this->cm->fieldMappings['name']);
     }
 
-    public function testCreateVersionedField()
+    public function testCreateVersionedField(): void
     {
         $this->builder->createField('name', 'integer')->columnName('username')->length(124)->nullable()->columnDefinition('foobar')->unique()->isVersionField()->build();
-        $this->assertEquals(
+        self::assertEquals(
             [
-            'columnDefinition' => 'foobar',
-            'columnName' => 'username',
-            'default' => 1,
-            'fieldName' => 'name',
-            'length' => 124,
-            'type' => 'integer',
-            'nullable' => true,
-            'unique' => true,
-            ], $this->cm->fieldMappings['name']);
+                'columnDefinition' => 'foobar',
+                'columnName' => 'username',
+                'default' => 1,
+                'fieldName' => 'name',
+                'length' => 124,
+                'type' => 'integer',
+                'nullable' => true,
+                'unique' => true,
+            ],
+            $this->cm->fieldMappings['name']
+        );
     }
 
-    public function testCreatePrimaryField()
+    public function testCreatePrimaryField(): void
     {
         $this->builder->createField('id', 'integer')->makePrimaryKey()->generatedValue()->build();
 
-        $this->assertEquals(['id'], $this->cm->identifier);
-        $this->assertEquals(['columnName' => 'id', 'fieldName' => 'id', 'id' => true, 'type' => 'integer'], $this->cm->fieldMappings['id']);
+        self::assertEquals(['id'], $this->cm->identifier);
+        self::assertEquals(['columnName' => 'id', 'fieldName' => 'id', 'id' => true, 'type' => 'integer'], $this->cm->fieldMappings['id']);
     }
 
-    public function testCreateUnsignedOptionField()
+    public function testCreateUnsignedOptionField(): void
     {
         $this->builder->createField('state', 'integer')->option('unsigned', true)->build();
 
-        $this->assertEquals(
-            ['fieldName' => 'state', 'type' => 'integer', 'options' => ['unsigned' => true], 'columnName' => 'state'], $this->cm->fieldMappings['state']);
+        self::assertEquals(
+            ['fieldName' => 'state', 'type' => 'integer', 'options' => ['unsigned' => true], 'columnName' => 'state'],
+            $this->cm->fieldMappings['state']
+        );
     }
 
-    public function testAddLifecycleEvent()
+    public function testAddLifecycleEvent(): void
     {
         $this->builder->addLifecycleEvent('getStatus', 'postLoad');
 
-        $this->assertEquals(['postLoad' => ['getStatus']], $this->cm->lifecycleCallbacks);
+        self::assertEquals(['postLoad' => ['getStatus']], $this->cm->lifecycleCallbacks);
     }
 
-    public function testCreateManyToOne()
+    public function testCreateManyToOne(): void
     {
         $this->assertIsFluent(
             $this->builder->createManyToOne('groups', CmsGroup::class)
@@ -272,58 +281,54 @@ class ClassMetadataBuilderTest extends OrmTestCase
                               ->build()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'groups' => [
-                'fieldName' => 'groups',
-                'targetEntity' => CmsGroup::class,
-                'cascade' => [
-                  0 => 'remove',
-                  1 => 'persist',
-                  2 => 'refresh',
-                  3 => 'merge',
-                  4 => 'detach',
+                    'fieldName' => 'groups',
+                    'targetEntity' => CmsGroup::class,
+                    'cascade' => [
+                        0 => 'remove',
+                        1 => 'persist',
+                        2 => 'refresh',
+                        3 => 'merge',
+                        4 => 'detach',
+                    ],
+                    'fetch' => 4,
+                    'joinColumns' => [
+                        0 =>
+                        [
+                            'name' => 'group_id',
+                            'referencedColumnName' => 'id',
+                            'nullable' => true,
+                            'unique' => false,
+                            'onDelete' => 'CASCADE',
+                            'columnDefinition' => null,
+                        ],
+                    ],
+                    'type' => 2,
+                    'mappedBy' => null,
+                    'inversedBy' => null,
+                    'isOwningSide' => true,
+                    'sourceEntity' => CmsUser::class,
+                    'isCascadeRemove' => true,
+                    'isCascadePersist' => true,
+                    'isCascadeRefresh' => true,
+                    'isCascadeMerge' => true,
+                    'isCascadeDetach' => true,
+                    'sourceToTargetKeyColumns' =>
+                    ['group_id' => 'id'],
+                    'joinColumnFieldNames' =>
+                    ['group_id' => 'group_id'],
+                    'targetToSourceKeyColumns' =>
+                    ['id' => 'group_id'],
+                    'orphanRemoval' => false,
                 ],
-                'fetch' => 4,
-                'joinColumns' => [
-                  0 =>
-                  [
-                    'name' => 'group_id',
-                    'referencedColumnName' => 'id',
-                    'nullable' => true,
-                    'unique' => false,
-                    'onDelete' => 'CASCADE',
-                    'columnDefinition' => NULL,
-                  ],
-                ],
-                'type' => 2,
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
-                'isOwningSide' => true,
-                'sourceEntity' => CmsUser::class,
-                'isCascadeRemove' => true,
-                'isCascadePersist' => true,
-                'isCascadeRefresh' => true,
-                'isCascadeMerge' => true,
-                'isCascadeDetach' => true,
-                'sourceToTargetKeyColumns' =>
-                [
-                  'group_id' => 'id',
-                ],
-                'joinColumnFieldNames' =>
-                [
-                  'group_id' => 'group_id',
-                ],
-                'targetToSourceKeyColumns' =>
-                [
-                  'id' => 'group_id',
-                ],
-                'orphanRemoval' => false,
-                ],
-            ], $this->cm->associationMappings);
+            ],
+            $this->cm->associationMappings
+        );
     }
 
-    public function testCreateManyToOneWithIdentity()
+    public function testCreateManyToOneWithIdentity(): void
     {
         $this->assertIsFluent(
             $this
@@ -336,7 +341,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 ->build()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'groups' => [
                     'fieldName' => 'groups',
@@ -357,12 +362,12 @@ class ClassMetadataBuilderTest extends OrmTestCase
                                 'nullable' => true,
                                 'unique' => false,
                                 'onDelete' => 'CASCADE',
-                                'columnDefinition' => NULL,
+                                'columnDefinition' => null,
                             ],
                     ],
                     'type' => 2,
-                    'mappedBy' => NULL,
-                    'inversedBy' => NULL,
+                    'mappedBy' => null,
+                    'inversedBy' => null,
                     'isOwningSide' => true,
                     'sourceEntity' => CmsUser::class,
                     'isCascadeRemove' => true,
@@ -371,26 +376,20 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'isCascadeMerge' => true,
                     'isCascadeDetach' => true,
                     'sourceToTargetKeyColumns' =>
-                        [
-                            'group_id' => 'id',
-                        ],
+                        ['group_id' => 'id'],
                     'joinColumnFieldNames' =>
-                        [
-                            'group_id' => 'group_id',
-                        ],
+                        ['group_id' => 'group_id'],
                     'targetToSourceKeyColumns' =>
-                        [
-                            'id' => 'group_id',
-                        ],
+                        ['id' => 'group_id'],
                     'orphanRemoval' => false,
-                    'id' => true
+                    'id' => true,
                 ],
             ],
             $this->cm->associationMappings
         );
     }
 
-    public function testCreateOneToOne()
+    public function testCreateOneToOne(): void
     {
         $this->assertIsFluent(
             $this->builder->createOneToOne('groups', CmsGroup::class)
@@ -400,58 +399,54 @@ class ClassMetadataBuilderTest extends OrmTestCase
                               ->build()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'groups' => [
-                'fieldName' => 'groups',
-                'targetEntity' => CmsGroup::class,
-                'cascade' => [
-                  0 => 'remove',
-                  1 => 'persist',
-                  2 => 'refresh',
-                  3 => 'merge',
-                  4 => 'detach',
+                    'fieldName' => 'groups',
+                    'targetEntity' => CmsGroup::class,
+                    'cascade' => [
+                        0 => 'remove',
+                        1 => 'persist',
+                        2 => 'refresh',
+                        3 => 'merge',
+                        4 => 'detach',
+                    ],
+                    'fetch' => 4,
+                    'joinColumns' => [
+                        0 =>
+                        [
+                            'name' => 'group_id',
+                            'referencedColumnName' => 'id',
+                            'nullable' => true,
+                            'unique' => true,
+                            'onDelete' => 'CASCADE',
+                            'columnDefinition' => null,
+                        ],
+                    ],
+                    'type' => 1,
+                    'mappedBy' => null,
+                    'inversedBy' => null,
+                    'isOwningSide' => true,
+                    'sourceEntity' => CmsUser::class,
+                    'isCascadeRemove' => true,
+                    'isCascadePersist' => true,
+                    'isCascadeRefresh' => true,
+                    'isCascadeMerge' => true,
+                    'isCascadeDetach' => true,
+                    'sourceToTargetKeyColumns' =>
+                    ['group_id' => 'id'],
+                    'joinColumnFieldNames' =>
+                    ['group_id' => 'group_id'],
+                    'targetToSourceKeyColumns' =>
+                    ['id' => 'group_id'],
+                    'orphanRemoval' => false,
                 ],
-                'fetch' => 4,
-                'joinColumns' => [
-                  0 =>
-                  [
-                    'name' => 'group_id',
-                    'referencedColumnName' => 'id',
-                    'nullable' => true,
-                    'unique' => true,
-                    'onDelete' => 'CASCADE',
-                    'columnDefinition' => NULL,
-                  ],
-                ],
-                'type' => 1,
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
-                'isOwningSide' => true,
-                'sourceEntity' => CmsUser::class,
-                'isCascadeRemove' => true,
-                'isCascadePersist' => true,
-                'isCascadeRefresh' => true,
-                'isCascadeMerge' => true,
-                'isCascadeDetach' => true,
-                'sourceToTargetKeyColumns' =>
-                [
-                  'group_id' => 'id',
-                ],
-                'joinColumnFieldNames' =>
-                [
-                  'group_id' => 'group_id',
-                ],
-                'targetToSourceKeyColumns' =>
-                [
-                  'id' => 'group_id',
-                ],
-                'orphanRemoval' => false
-                ],
-            ], $this->cm->associationMappings);
+            ],
+            $this->cm->associationMappings
+        );
     }
 
-    public function testCreateOneToOneWithIdentity()
+    public function testCreateOneToOneWithIdentity(): void
     {
         $this->assertIsFluent(
             $this
@@ -464,7 +459,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 ->build()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'groups' => [
                     'fieldName' => 'groups',
@@ -486,12 +481,12 @@ class ClassMetadataBuilderTest extends OrmTestCase
                                 'nullable' => true,
                                 'unique' => false,
                                 'onDelete' => 'CASCADE',
-                                'columnDefinition' => NULL,
+                                'columnDefinition' => null,
                             ],
                     ],
                     'type' => 1,
-                    'mappedBy' => NULL,
-                    'inversedBy' => NULL,
+                    'mappedBy' => null,
+                    'inversedBy' => null,
                     'isOwningSide' => true,
                     'sourceEntity' => CmsUser::class,
                     'isCascadeRemove' => true,
@@ -500,27 +495,21 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'isCascadeMerge' => true,
                     'isCascadeDetach' => true,
                     'sourceToTargetKeyColumns' =>
-                        [
-                            'group_id' => 'id',
-                        ],
+                        ['group_id' => 'id'],
                     'joinColumnFieldNames' =>
-                        [
-                            'group_id' => 'group_id',
-                        ],
+                        ['group_id' => 'group_id'],
                     'targetToSourceKeyColumns' =>
-                        [
-                            'id' => 'group_id',
-                        ],
-                    'orphanRemoval' => false
+                        ['id' => 'group_id'],
+                    'orphanRemoval' => false,
                 ],
             ],
             $this->cm->associationMappings
         );
     }
 
-    public function testThrowsExceptionOnCreateOneToOneWithIdentityOnInverseSide()
+    public function testThrowsExceptionOnCreateOneToOneWithIdentityOnInverseSide(): void
     {
-        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
+        $this->expectException(MappingException::class);
 
         $this
             ->builder
@@ -531,7 +520,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->build();
     }
 
-    public function testCreateManyToMany()
+    public function testCreateManyToMany(): void
     {
         $this->assertIsFluent(
             $this->builder->createManyToMany('groups', CmsGroup::class)
@@ -543,81 +532,79 @@ class ClassMetadataBuilderTest extends OrmTestCase
                               ->build()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
-            'groups' =>
-            [
-                'fieldName' => 'groups',
-                'targetEntity' => CmsGroup::class,
-                'cascade' =>
+                'groups' =>
                 [
-                    0 => 'remove',
-                    1 => 'persist',
-                    2 => 'refresh',
-                    3 => 'merge',
-                    4 => 'detach',
-                ],
-                'fetch' => 4,
-                'joinTable' =>
-                [
-                    'joinColumns' =>
+                    'fieldName' => 'groups',
+                    'targetEntity' => CmsGroup::class,
+                    'cascade' =>
                     [
-                        0 =>
-                        [
-                            'name' => 'group_id',
-                            'referencedColumnName' => 'id',
-                            'nullable' => true,
-                            'unique' => false,
-                            'onDelete' => 'CASCADE',
-                            'columnDefinition' => NULL,
-                        ],
+                        0 => 'remove',
+                        1 => 'persist',
+                        2 => 'refresh',
+                        3 => 'merge',
+                        4 => 'detach',
                     ],
-                    'inverseJoinColumns' =>
+                    'fetch' => 4,
+                    'joinTable' =>
                     [
-                        0 =>
+                        'joinColumns' =>
                         [
-                            'name' => 'user_id',
-                            'referencedColumnName' => 'id',
-                            'nullable' => true,
-                            'unique' => false,
-                            'onDelete' => NULL,
-                            'columnDefinition' => NULL,
+                            0 =>
+                            [
+                                'name' => 'group_id',
+                                'referencedColumnName' => 'id',
+                                'nullable' => true,
+                                'unique' => false,
+                                'onDelete' => 'CASCADE',
+                                'columnDefinition' => null,
+                            ],
                         ],
+                        'inverseJoinColumns' =>
+                        [
+                            0 =>
+                            [
+                                'name' => 'user_id',
+                                'referencedColumnName' => 'id',
+                                'nullable' => true,
+                                'unique' => false,
+                                'onDelete' => null,
+                                'columnDefinition' => null,
+                            ],
+                        ],
+                        'name' => 'groups_users',
                     ],
-                    'name' => 'groups_users',
+                    'type' => 8,
+                    'mappedBy' => null,
+                    'inversedBy' => null,
+                    'isOwningSide' => true,
+                    'sourceEntity' => CmsUser::class,
+                    'isCascadeRemove' => true,
+                    'isCascadePersist' => true,
+                    'isCascadeRefresh' => true,
+                    'isCascadeMerge' => true,
+                    'isCascadeDetach' => true,
+                    'isOnDeleteCascade' => true,
+                    'relationToSourceKeyColumns' =>
+                    ['group_id' => 'id'],
+                    'joinTableColumns' =>
+                    [
+                        0 => 'group_id',
+                        1 => 'user_id',
+                    ],
+                    'relationToTargetKeyColumns' =>
+                    ['user_id' => 'id'],
+                    'orphanRemoval' => false,
                 ],
-                'type' => 8,
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
-                'isOwningSide' => true,
-                'sourceEntity' => CmsUser::class,
-                'isCascadeRemove' => true,
-                'isCascadePersist' => true,
-                'isCascadeRefresh' => true,
-                'isCascadeMerge' => true,
-                'isCascadeDetach' => true,
-                'isOnDeleteCascade' => true,
-                'relationToSourceKeyColumns' =>
-                [
-                    'group_id' => 'id',
-                ],
-                'joinTableColumns' =>
-                [
-                    0 => 'group_id',
-                    1 => 'user_id',
-                ],
-                'relationToTargetKeyColumns' =>
-                [
-                    'user_id' => 'id',
-                ],
-                'orphanRemoval' => false,
             ],
-            ], $this->cm->associationMappings);
+            $this->cm->associationMappings
+        );
     }
 
-    public function testThrowsExceptionOnCreateManyToManyWithIdentity()
+    public function testThrowsExceptionOnCreateManyToManyWithIdentity(): void
     {
-        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
+        $this->expectException(MappingException::class);
 
         $this->builder->createManyToMany('groups', CmsGroup::class)
                           ->makePrimaryKey()
@@ -629,49 +616,48 @@ class ClassMetadataBuilderTest extends OrmTestCase
                           ->build();
     }
 
-    public function testCreateOneToMany()
+    public function testCreateOneToMany(): void
     {
         $this->assertIsFluent(
-                $this->builder->createOneToMany('groups', CmsGroup::class)
+            $this->builder->createOneToMany('groups', CmsGroup::class)
                         ->mappedBy('test')
                         ->setOrderBy(['test'])
                         ->setIndexBy('test')
                         ->build()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
-            'groups' =>
-            [
-                'fieldName' => 'groups',
-                'targetEntity' => CmsGroup::class,
-                'mappedBy' => 'test',
-                'orderBy' =>
+                'groups' =>
                 [
-                    0 => 'test',
+                    'fieldName' => 'groups',
+                    'targetEntity' => CmsGroup::class,
+                    'mappedBy' => 'test',
+                    'orderBy' =>
+                [0 => 'test'],
+                    'indexBy' => 'test',
+                    'type' => 4,
+                    'inversedBy' => null,
+                    'isOwningSide' => false,
+                    'sourceEntity' => CmsUser::class,
+                    'fetch' => 2,
+                    'cascade' =>
+                [],
+                    'isCascadeRemove' => false,
+                    'isCascadePersist' => false,
+                    'isCascadeRefresh' => false,
+                    'isCascadeMerge' => false,
+                    'isCascadeDetach' => false,
+                    'orphanRemoval' => false,
                 ],
-                'indexBy' => 'test',
-                'type' => 4,
-                'inversedBy' => NULL,
-                'isOwningSide' => false,
-                'sourceEntity' => CmsUser::class,
-                'fetch' => 2,
-                'cascade' =>
-                [
-                ],
-                'isCascadeRemove' => false,
-                'isCascadePersist' => false,
-                'isCascadeRefresh' => false,
-                'isCascadeMerge' => false,
-                'isCascadeDetach' => false,
-                'orphanRemoval' => false,
             ],
-            ], $this->cm->associationMappings);
+            $this->cm->associationMappings
+        );
     }
 
-    public function testThrowsExceptionOnCreateOneToManyWithIdentity()
+    public function testThrowsExceptionOnCreateOneToManyWithIdentity(): void
     {
-        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
+        $this->expectException(MappingException::class);
 
         $this->builder->createOneToMany('groups', CmsGroup::class)
                 ->makePrimaryKey()
@@ -681,7 +667,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 ->build();
     }
 
-    public function testOrphanRemovalOnCreateOneToOne()
+    public function testOrphanRemovalOnCreateOneToOne(): void
     {
         $this->assertIsFluent(
             $this->builder
@@ -691,52 +677,48 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 ->build()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
-            'groups' => [
-                'fieldName' => 'groups',
-                'targetEntity' => CmsGroup::class,
-                'cascade' => [],
-                'fetch' => 2,
-                'joinColumns' => [
-                  0 =>
-                  [
-                    'name' => 'group_id',
-                    'referencedColumnName' => 'id',
-                    'nullable' => true,
-                    'unique' => true,
-                    'onDelete' => 'CASCADE',
-                    'columnDefinition' => NULL,
-                  ],
+                'groups' => [
+                    'fieldName' => 'groups',
+                    'targetEntity' => CmsGroup::class,
+                    'cascade' => [],
+                    'fetch' => 2,
+                    'joinColumns' => [
+                        0 =>
+                        [
+                            'name' => 'group_id',
+                            'referencedColumnName' => 'id',
+                            'nullable' => true,
+                            'unique' => true,
+                            'onDelete' => 'CASCADE',
+                            'columnDefinition' => null,
+                        ],
+                    ],
+                    'type' => 1,
+                    'mappedBy' => null,
+                    'inversedBy' => null,
+                    'isOwningSide' => true,
+                    'sourceEntity' => CmsUser::class,
+                    'isCascadeRemove' => true,
+                    'isCascadePersist' => false,
+                    'isCascadeRefresh' => false,
+                    'isCascadeMerge' => false,
+                    'isCascadeDetach' => false,
+                    'sourceToTargetKeyColumns' =>
+                    ['group_id' => 'id'],
+                    'joinColumnFieldNames' =>
+                    ['group_id' => 'group_id'],
+                    'targetToSourceKeyColumns' =>
+                    ['id' => 'group_id'],
+                    'orphanRemoval' => true,
                 ],
-                'type' => 1,
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
-                'isOwningSide' => true,
-                'sourceEntity' => CmsUser::class,
-                'isCascadeRemove' => true,
-                'isCascadePersist' => false,
-                'isCascadeRefresh' => false,
-                'isCascadeMerge' => false,
-                'isCascadeDetach' => false,
-                'sourceToTargetKeyColumns' =>
-                [
-                  'group_id' => 'id',
-                ],
-                'joinColumnFieldNames' =>
-                [
-                  'group_id' => 'group_id',
-                ],
-                'targetToSourceKeyColumns' =>
-                [
-                  'id' => 'group_id',
-                ],
-                'orphanRemoval' => true
             ],
-            ], $this->cm->associationMappings);
+            $this->cm->associationMappings
+        );
     }
 
-    public function testOrphanRemovalOnCreateOneToMany()
+    public function testOrphanRemovalOnCreateOneToMany(): void
     {
         $this->assertIsFluent(
             $this->builder
@@ -746,32 +728,34 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 ->build()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
-            'groups' =>
-            [
-                'fieldName' => 'groups',
-                'targetEntity' => CmsGroup::class,
-                'mappedBy' => 'test',
-                'type' => 4,
-                'inversedBy' => NULL,
-                'isOwningSide' => false,
-                'sourceEntity' => CmsUser::class,
-                'fetch' => 2,
-                'cascade' => [],
-                'isCascadeRemove' => true,
-                'isCascadePersist' => false,
-                'isCascadeRefresh' => false,
-                'isCascadeMerge' => false,
-                'isCascadeDetach' => false,
-                'orphanRemoval' => true,
+                'groups' =>
+                [
+                    'fieldName' => 'groups',
+                    'targetEntity' => CmsGroup::class,
+                    'mappedBy' => 'test',
+                    'type' => 4,
+                    'inversedBy' => null,
+                    'isOwningSide' => false,
+                    'sourceEntity' => CmsUser::class,
+                    'fetch' => 2,
+                    'cascade' => [],
+                    'isCascadeRemove' => true,
+                    'isCascadePersist' => false,
+                    'isCascadeRefresh' => false,
+                    'isCascadeMerge' => false,
+                    'isCascadeDetach' => false,
+                    'orphanRemoval' => true,
+                ],
             ],
-            ], $this->cm->associationMappings);
+            $this->cm->associationMappings
+        );
     }
 
-    public function testExceptionOnOrphanRemovalOnManyToOne()
+    public function testExceptionOnOrphanRemovalOnManyToOne(): void
     {
-        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
+        $this->expectException(MappingException::class);
 
         $this->builder
             ->createManyToOne('groups', CmsGroup::class)
@@ -780,7 +764,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->build();
     }
 
-    public function testOrphanRemovalOnManyToMany()
+    public function testOrphanRemovalOnManyToMany(): void
     {
         $this->builder
             ->createManyToMany('groups', CmsGroup::class)
@@ -788,61 +772,59 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->orphanRemoval()
             ->build();
 
-        $this->assertEquals(
+        self::assertEquals(
             [
-            'groups' => [
-                'fieldName' => 'groups',
-                'targetEntity' => CmsGroup::class,
-                'cascade' => [],
-                'fetch' => 2,
-                'joinTable' => [
-                    'joinColumns' => [
-                        0 => [
-                            'name' => 'group_id',
-                            'referencedColumnName' => 'id',
-                            'nullable' => true,
-                            'unique' => false,
-                            'onDelete' => 'CASCADE',
-                            'columnDefinition' => NULL,
+                'groups' => [
+                    'fieldName' => 'groups',
+                    'targetEntity' => CmsGroup::class,
+                    'cascade' => [],
+                    'fetch' => 2,
+                    'joinTable' => [
+                        'joinColumns' => [
+                            0 => [
+                                'name' => 'group_id',
+                                'referencedColumnName' => 'id',
+                                'nullable' => true,
+                                'unique' => false,
+                                'onDelete' => 'CASCADE',
+                                'columnDefinition' => null,
+                            ],
                         ],
+                        'inverseJoinColumns' => [
+                            0 => [
+                                'name' => 'cmsgroup_id',
+                                'referencedColumnName' => 'id',
+                                'onDelete' => 'CASCADE',
+                            ],
+                        ],
+                        'name' => 'cmsuser_cmsgroup',
                     ],
-                    'inverseJoinColumns' => [
-                        0 => [
-                            'name' => 'cmsgroup_id',
-                            'referencedColumnName' => 'id',
-                            'onDelete' => 'CASCADE'
-                        ]
+                    'type' => 8,
+                    'mappedBy' => null,
+                    'inversedBy' => null,
+                    'isOwningSide' => true,
+                    'sourceEntity' => CmsUser::class,
+                    'isCascadeRemove' => false,
+                    'isCascadePersist' => false,
+                    'isCascadeRefresh' => false,
+                    'isCascadeMerge' => false,
+                    'isCascadeDetach' => false,
+                    'isOnDeleteCascade' => true,
+                    'relationToSourceKeyColumns' => ['group_id' => 'id'],
+                    'joinTableColumns' => [
+                        0 => 'group_id',
+                        1 => 'cmsgroup_id',
                     ],
-                    'name' => 'cmsuser_cmsgroup',
+                    'relationToTargetKeyColumns' => ['cmsgroup_id' => 'id'],
+                    'orphanRemoval' => true,
                 ],
-                'type' => 8,
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
-                'isOwningSide' => true,
-                'sourceEntity' => CmsUser::class,
-                'isCascadeRemove' => false,
-                'isCascadePersist' => false,
-                'isCascadeRefresh' => false,
-                'isCascadeMerge' => false,
-                'isCascadeDetach' => false,
-                'isOnDeleteCascade' => true,
-                'relationToSourceKeyColumns' => [
-                    'group_id' => 'id',
-                ],
-                'joinTableColumns' => [
-                    0 => 'group_id',
-                    1 => 'cmsgroup_id',
-                ],
-                'relationToTargetKeyColumns' => [
-                    'cmsgroup_id' => 'id',
-                ],
-                'orphanRemoval' => true,
             ],
-            ], $this->cm->associationMappings);
+            $this->cm->associationMappings
+        );
     }
 
-    public function assertIsFluent($ret)
+    public function assertIsFluent($ret): void
     {
-        $this->assertSame($this->builder, $ret, "Return Value has to be same instance as used builder");
+        self::assertSame($this->builder, $ret, 'Return Value has to be same instance as used builder');
     }
 }

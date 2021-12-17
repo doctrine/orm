@@ -51,7 +51,7 @@ internally but also mean more work during ``flush``.
             $em->clear(); // Detaches all objects from Doctrine!
         }
     }
-    $em->flush(); //Persist objects that did not make up an entire batch
+    $em->flush(); // Persist objects that did not make up an entire batch
     $em->clear();
 
 Bulk Updates
@@ -75,7 +75,7 @@ Iterating results
 ~~~~~~~~~~~~~~~~~
 
 An alternative solution for bulk updates is to use the
-``Query#iterate()`` facility to iterate over the query results step
+``Query#toIterable()`` facility to iterate over the query results step
 by step instead of loading the whole result into memory at once.
 The following example shows how to do this, combining the iteration
 with the batching strategy that was already used for bulk inserts:
@@ -86,16 +86,14 @@ with the batching strategy that was already used for bulk inserts:
     $batchSize = 20;
     $i = 1;
     $q = $em->createQuery('select u from MyProject\Model\User u');
-    $iterableResult = $q->iterate();
-    foreach ($iterableResult as $row) {
-        $user = $row[0];
+    foreach ($q->toIterable() as $user) {
         $user->increaseCredit();
         $user->calculateNewBonuses();
+        ++$i;
         if (($i % $batchSize) === 0) {
             $em->flush(); // Executes all updates.
             $em->clear(); // Detaches all objects from Doctrine!
         }
-        ++$i;
     }
     $em->flush();
 
@@ -137,7 +135,7 @@ Iterating results
 ~~~~~~~~~~~~~~~~~
 
 An alternative solution for bulk deletes is to use the
-``Query#iterate()`` facility to iterate over the query results step
+``Query#toIterable()`` facility to iterate over the query results step
 by step instead of loading the whole result into memory at once.
 The following example shows how to do this:
 
@@ -147,14 +145,13 @@ The following example shows how to do this:
     $batchSize = 20;
     $i = 1;
     $q = $em->createQuery('select u from MyProject\Model\User u');
-    $iterableResult = $q->iterate();
-    while (($row = $iterableResult->next()) !== false) {
-        $em->remove($row[0]);
+    foreach($q->toIterable() as $row) {
+        $em->remove($row);
+        ++$i;
         if (($i % $batchSize) === 0) {
             $em->flush(); // Executes all deletions.
             $em->clear(); // Detaches all objects from Doctrine!
         }
-        ++$i;
     }
     $em->flush();
 
@@ -168,20 +165,18 @@ The following example shows how to do this:
 Iterating Large Results for Data-Processing
 -------------------------------------------
 
-You can use the ``iterate()`` method just to iterate over a large
-result and no UPDATE or DELETE intention. The ``IterableResult``
-instance returned from ``$query->iterate()`` implements the
-Iterator interface so you can process a large result without memory
+You can use the ``toIterable()`` method just to iterate over a large
+result and no UPDATE or DELETE intention. ``$query->toIterable()`` returns ``iterable``
+so you can process a large result without memory
 problems using the following approach:
 
 .. code-block:: php
 
     <?php
     $q = $this->_em->createQuery('select u from MyProject\Model\User u');
-    $iterableResult = $q->iterate();
-    foreach ($iterableResult as $row) {
-        // do stuff with the data in the row, $row[0] is always the object
-    
+    foreach ($q->toIterable() as $row) {
+        // do stuff with the data in the row
+
         // detach from Doctrine, so that it can be Garbage-Collected immediately
         $this->_em->detach($row[0]);
     }

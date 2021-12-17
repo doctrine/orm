@@ -1,5 +1,5 @@
 Doctrine Query Language
-===========================
+=======================
 
 DQL stands for Doctrine Query Language and is an Object
 Query Language derivative that is very similar to the Hibernate
@@ -458,8 +458,6 @@ Get all users that have no phonenumber
 Get all instances of a specific type, for use with inheritance
 hierarchies:
 
-.. versionadded:: 2.1
-
 .. code-block:: php
 
     <?php
@@ -469,29 +467,45 @@ hierarchies:
 
 Get all users visible on a given website that have chosen certain gender:
 
-.. versionadded:: 2.2
-
 .. code-block:: php
 
     <?php
     $query = $em->createQuery('SELECT u FROM User u WHERE u.gender IN (SELECT IDENTITY(agl.gender) FROM Site s JOIN s.activeGenderList agl WHERE s.id = ?1)');
 
-.. versionadded:: 2.4
-
-Starting with 2.4, the IDENTITY() DQL function also works for composite primary keys:
+The IDENTITY() DQL function also works for composite primary keys
 
 .. code-block:: php
 
     <?php
     $query = $em->createQuery("SELECT IDENTITY(c.location, 'latitude') AS latitude, IDENTITY(c.location, 'longitude') AS longitude FROM Checkpoint c WHERE c.user = ?1");
 
-Joins between entities without associations were not possible until version
-2.4, where you can generate an arbitrary join with the following syntax:
+Joins between entities without associations are available,
+where you can generate an arbitrary join with the following syntax:
 
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT u FROM User u JOIN Blacklist b WITH u.email = b.email');
+    $query = $em->createQuery('SELECT u FROM User u JOIN Banlist b WITH u.email = b.email');
+
+With an arbitrary join the result differs from the joins using a mapped property.
+The result of an arbitrary join is an one dimensional array with a mix of the entity from the ``SELECT``
+and the joined entity fitting to the filtering of the query. In case of the example with ``User``
+and ``Banlist``, it can look like this:
+
+- User
+- Banlist
+- Banlist
+- User
+- Banlist
+- User
+- Banlist
+- Banlist
+- Banlist
+
+In this form of join, the ``Banlist`` entities found by the filtering in the ``WITH`` part are not fetched by an accessor
+method on ``User``, but are already part of the result. In case the accessor method for Banlists is invoked on a User instance,
+it loads all the related ``Banlist`` objects corresponding to this ``User``. This change of behaviour needs to be considered
+when the DQL is switched to an arbitrary join.
 
 .. note::
     The differences between WHERE, WITH and HAVING clauses may be
@@ -533,8 +547,6 @@ You use the partial syntax when joining as well:
 
 "NEW" Operator Syntax
 ^^^^^^^^^^^^^^^^^^^^^
-
-.. versionadded:: 2.4
 
 Using the ``NEW`` operator you can construct Data Transfer Objects (DTOs) directly from DQL queries.
 
@@ -611,6 +623,13 @@ then phonenumber-id:
               ...
           'nameUpper' => string 'JWAGE' (length=5)
 
+You can also index by a to-one association, which will use the id of
+the associated entity (the join column) as the key in the result set:
+
+.. code-block:: sql
+
+    SELECT p, u FROM Participant INDEX BY p.user JOIN p.user u WHERE p.event = 3
+
 UPDATE queries
 --------------
 
@@ -657,6 +676,16 @@ The same restrictions apply for the reference of related entities.
     of the query. Additionally Deletes of specified entities are *NOT*
     cascaded to related entities even if specified in the metadata.
 
+Comments in queries
+-------------------
+
+We can use comments with the SQL syntax of comments.
+
+.. code-block:: sql
+
+    SELECT u FROM MyProject\Model\User u
+    -- my comment
+    WHERE u.age > 20 -- comment at the end of a line
 
 Functions, Operators, Aggregates
 --------------------------------
@@ -671,29 +700,35 @@ The following functions are supported in SELECT, WHERE and HAVING
 clauses:
 
 
--  IDENTITY(single\_association\_path\_expression [, fieldMapping]) - Retrieve the foreign key column of association of the owning side
--  ABS(arithmetic\_expression)
--  CONCAT(str1, str2)
--  CURRENT\_DATE() - Return the current date
--  CURRENT\_TIME() - Returns the current time
--  CURRENT\_TIMESTAMP() - Returns a timestamp of the current date
+-  ``IDENTITY(single_association_path_expression [, fieldMapping])`` -
+   Retrieve the foreign key column of association of the owning side
+-  ``ABS(arithmetic_expression)``
+-  ``CONCAT(str1, str2)``
+-  ``CURRENT_DATE()`` - Return the current date
+-  ``CURRENT_TIME()`` - Returns the current time
+-  ``CURRENT_TIMESTAMP()`` - Returns a timestamp of the current date
    and time.
--  LENGTH(str) - Returns the length of the given string
--  LOCATE(needle, haystack [, offset]) - Locate the first
+-  ``LENGTH(str)`` - Returns the length of the given string
+-  ``LOCATE(needle, haystack [, offset])`` - Locate the first
    occurrence of the substring in the string.
--  LOWER(str) - returns the string lowercased.
--  MOD(a, b) - Return a MOD b.
--  SIZE(collection) - Return the number of elements in the
+-  ``LOWER(str)`` - returns the string lowercased.
+-  ``MOD(a, b)`` - Return a MOD b.
+-  ``SIZE(collection)`` - Return the number of elements in the
    specified collection
--  SQRT(q) - Return the square-root of q.
--  SUBSTRING(str, start [, length]) - Return substring of given
+-  ``SQRT(q)`` - Return the square-root of q.
+-  ``SUBSTRING(str, start [, length])`` - Return substring of given
    string.
--  TRIM([LEADING \| TRAILING \| BOTH] ['trchar' FROM] str) - Trim
+-  ``TRIM([LEADING \| TRAILING \| BOTH] ['trchar' FROM] str)`` - Trim
    the string by the given trim char, defaults to whitespaces.
--  UPPER(str) - Return the upper-case of the given string.
--  DATE_ADD(date, value, unit) - Add the given time to a given date. (Supported units are SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR)
--  DATE_SUB(date, value, unit) - Subtract the given time from a given date. (Supported units are SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR)
--  DATE_DIFF(date1, date2) - Calculate the difference in days between date1-date2.
+-  ``UPPER(str)`` - Return the upper-case of the given string.
+-  ``DATE_ADD(date, value, unit)`` - Add the given time to a given date.
+   (Supported units are ``SECOND``, ``MINUTE``, ``HOUR``, ``DAY``,
+   ``WEEK``, ``MONTH``, ``YEAR``)
+-  ``DATE_SUB(date, value, unit)`` - Subtract the given time from a
+   given date. (Supported units are ``SECOND``, ``MINUTE``, ``HOUR``,
+   ``DAY``, ``WEEK``, ``MONTH``, ``YEAR``)
+-  ``DATE_DIFF(date1, date2)`` - Calculate the difference in days
+   between date1-date2.
 
 Arithmetic operators
 ~~~~~~~~~~~~~~~~~~~~
@@ -803,7 +838,7 @@ what type of results to expect.
 Single Table
 ~~~~~~~~~~~~
 
-`Single Table Inheritance <http://martinfowler.com/eaaCatalog/singleTableInheritance.html>`_
+`Single Table Inheritance <https://martinfowler.com/eaaCatalog/singleTableInheritance.html>`_
 is an inheritance mapping strategy where all classes of a hierarchy
 are mapped to a single database table. In order to distinguish
 which row represents which type in the hierarchy a so-called
@@ -896,11 +931,11 @@ entities:
 Class Table Inheritance
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-`Class Table Inheritance <http://martinfowler.com/eaaCatalog/classTableInheritance.html>`_
+`Class Table Inheritance <https://martinfowler.com/eaaCatalog/classTableInheritance.html>`_
 is an inheritance mapping strategy where each class in a hierarchy
 is mapped to several tables: its own table and the tables of all
 parent classes. The table of a child class is linked to the table
-of a parent class through a foreign key constraint. Doctrine 2
+of a parent class through a foreign key constraint. Doctrine ORM
 implements this strategy through the use of a discriminator column
 in the topmost table of the hierarchy because this is the easiest
 way to achieve polymorphic queries with Class Table Inheritance.
@@ -1145,10 +1180,11 @@ make best use of the different result formats:
 The constants for the different hydration modes are:
 
 
--  Query::HYDRATE\_OBJECT
--  Query::HYDRATE\_ARRAY
--  Query::HYDRATE\_SCALAR
--  Query::HYDRATE\_SINGLE\_SCALAR
+-  ``Query::HYDRATE_OBJECT``
+-  ``Query::HYDRATE_ARRAY``
+-  ``Query::HYDRATE_SCALAR``
+-  ``Query::HYDRATE_SINGLE_SCALAR``
+-  ``Query::HYDRATE_SCALAR_COLUMN``
 
 Object Hydration
 ^^^^^^^^^^^^^^^^
@@ -1214,7 +1250,7 @@ Scalar Hydration:
 
 
 1. Fields from classes are prefixed by the DQL alias in the result.
-   A query of the kind 'SELECT u.name ..' returns a key 'u\_name' in
+   A query of the kind 'SELECT u.name ..' returns a key 'u_name' in
    the result rows.
 
 Single Scalar Hydration
@@ -1237,6 +1273,25 @@ You can use the ``getSingleScalarResult()`` shortcut as well:
     <?php
     $numArticles = $query->getSingleScalarResult();
 
+Scalar Column Hydration
+^^^^^^^^^^^^^^^^^^^^^^^
+
+If you have a query which returns a one-dimensional array of scalar values
+you can use scalar column hydration:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT a.id FROM CmsUser u');
+    $ids = $query->getResult(Query::HYDRATE_SCALAR_COLUMN);
+
+You can use the ``getSingleColumnResult()`` shortcut as well:
+
+.. code-block:: php
+
+    <?php
+    $ids = $query->getSingleColumnResult();
+
 Custom Hydration Modes
 ^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1248,13 +1303,14 @@ creating a class which extends ``AbstractHydrator``:
     <?php
     namespace MyProject\Hydrators;
 
+    use Doctrine\DBAL\FetchMode;
     use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 
     class CustomHydrator extends AbstractHydrator
     {
         protected function _hydrateAll()
         {
-            return $this->_stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $this->_stmt->fetchAll(FetchMode::FETCH_ASSOC);
         }
     }
 
@@ -1362,21 +1418,22 @@ userland. However the following few hints are to be used in
 userland:
 
 
--  Query::HINT\_FORCE\_PARTIAL\_LOAD - Allows to hydrate objects
+-  ``Query::HINT_FORCE_PARTIAL_LOAD`` - Allows to hydrate objects
    although not all their columns are fetched. This query hint can be
    used to handle memory consumption problems with large result-sets
    that contain char or binary data. Doctrine has no way of implicitly
    reloading this data. Partially loaded objects have to be passed to
    ``EntityManager::refresh()`` if they are to be reloaded fully from
-   the database.
--  Query::HINT\_REFRESH - This query is used internally by
+   the database. This query hint is deprecated and will be removed
+   in the future (`Details <https://github.com/doctrine/orm/issues/8471>`_)
+-  ``Query::HINT_REFRESH`` - This query is used internally by
    ``EntityManager::refresh()`` and can be used in userland as well.
    If you specify this hint and a query returns the data for an entity
    that is already managed by the UnitOfWork, the fields of the
    existing entity will be refreshed. In normal operation a result-set
    that loads data of an already existing entity is discarded in favor
    of the already existing entity.
--  Query::HINT\_CUSTOM\_TREE\_WALKERS - An array of additional
+-  ``Query::HINT_CUSTOM_TREE_WALKERS`` - An array of additional
    ``Doctrine\ORM\Query\TreeWalker`` instances that are attached to
    the DQL query parsing process.
 
@@ -1490,7 +1547,6 @@ Terminals
 
 -  identifier (name, email, ...) must match ``[a-z_][a-z0-9_]*``
 -  fully_qualified_name (Doctrine\Tests\Models\CMS\CmsUser) matches PHP's fully qualified class names
--  aliased_name (CMS:CmsUser) uses two identifiers, one for the namespace alias and one for the class inside it
 -  string ('foo', 'bar''s house', '%ninja%', ...)
 -  char ('/', '\\', ' ', ...)
 -  integer (-1, 0, 1, 34, ...)
@@ -1613,7 +1669,7 @@ From, Join and Index by
     RangeVariableDeclaration                   ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
     JoinAssociationDeclaration                 ::= JoinAssociationPathExpression ["AS"] AliasIdentificationVariable [IndexBy]
     Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" (JoinAssociationDeclaration | RangeVariableDeclaration) ["WITH" ConditionalExpression]
-    IndexBy                                    ::= "INDEX" "BY" StateFieldPathExpression
+    IndexBy                                    ::= "INDEX" "BY" SingleValuedPathExpression
 
 Select Expressions
 ~~~~~~~~~~~~~~~~~~
@@ -1731,7 +1787,7 @@ QUANTIFIED/BETWEEN/COMPARISON/LIKE/NULL/EXISTS
     QuantifiedExpression     ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"
     BetweenExpression        ::= ArithmeticExpression ["NOT"] "BETWEEN" ArithmeticExpression "AND" ArithmeticExpression
     ComparisonExpression     ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression )
-    InExpression             ::= SingleValuedPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
+    InExpression             ::= ArithmeticExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
     InstanceOfExpression     ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (InstanceOfParameter | "(" InstanceOfParameter {"," InstanceOfParameter}* ")")
     InstanceOfParameter      ::= AbstractSchemaName | InputParameter
     LikeExpression           ::= StringExpression ["NOT"] "LIKE" StringPrimary ["ESCAPE" char]
