@@ -28,6 +28,13 @@ final class AssociationOverride implements Annotation
     public $joinColumns;
 
     /**
+     * The join column that is being mapped to the persistent attribute.
+     *
+     * @var array<\Doctrine\ORM\Mapping\JoinColumn>|null
+     */
+    public $inverseJoinColumns;
+
+    /**
      * The join table that maps the relationship.
      *
      * @var \Doctrine\ORM\Mapping\JoinTable|null
@@ -55,6 +62,7 @@ final class AssociationOverride implements Annotation
     public function __construct(
         string $name,
         $joinColumns = null,
+        $inverseJoinColumns = null,
         ?JoinTable $joinTable = null,
         ?string $inversedBy = null,
         ?string $fetch = null
@@ -65,6 +73,7 @@ final class AssociationOverride implements Annotation
 
         $this->name        = $name;
         $this->joinColumns = $joinColumns;
+        $this->inverseJoinColumns = $inverseJoinColumns;
         $this->joinTable   = $joinTable;
         $this->inversedBy  = $inversedBy;
         $this->fetch       = $fetch;

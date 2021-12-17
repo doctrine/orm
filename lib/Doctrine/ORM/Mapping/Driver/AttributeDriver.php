@@ -94,14 +94,6 @@ class AttributeDriver extends AnnotationDriver
             if ($tableAnnot->options) {
                 $primaryTable['options'] = $tableAnnot->options;
             }
-
-            if ($tableAnnot->indexes) {
-                $classAttributes[Mapping\Index::class] = $tableAnnot->indexes;
-            }
-
-            if ($tableAnnot->uniqueConstraints) {
-                $classAttributes[Mapping\UniqueConstraint::class] = $tableAnnot->uniqueConstraints;
-            }
         }
 
         if (isset($classAttributes[Mapping\Index::class])) {
@@ -371,18 +363,6 @@ class AttributeDriver extends AnnotationDriver
                         'name' => $joinTableAttribute->name,
                         'schema' => $joinTableAttribute->schema,
                     ];
-
-                    if ($joinTableAttribute->joinColumns) {
-                        foreach ($joinTableAttribute->joinColumns as $joinColumn) {
-                            $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
-                        }
-                    }
-
-                    if ($joinTableAttribute->inverseJoinColumns) {
-                        foreach ($joinTableAttribute->inverseJoinColumns as $joinColumn) {
-                            $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumn);
-                        }
-                    }
                 }
 
                 foreach ($this->reader->getPropertyAnnotation($property, Mapping\JoinColumn::class) as $joinColumn) {
@@ -436,21 +416,27 @@ class AttributeDriver extends AnnotationDriver
                     $override['joinColumns'] = $joinColumns;
                 }
 
+                if ($associationOverride->inverseJoinColumns) {
+                    $joinColumns = [];
+
+                    foreach ($associationOverride->inverseJoinColumns as $joinColumn) {
+                        $joinColumns[] = $this->joinColumnToArray($joinColumn);
+                    }
+
+                    $override['inverseJoinColumns'] = $joinColumns;
+                }
+
                 // Check for JoinTable attributes
                 if ($associationOverride->joinTable) {
                     $joinTableAnnot = $associationOverride->joinTable;
                     $joinTable      = [
                         'name'      => $joinTableAnnot->name,
                         'schema'    => $joinTableAnnot->schema,
+                        'joinColumns' => $override['joinColumns'] ?? [],
+                        'inverseJoinColumns' => $override['inverseJoinColumns'] ?? [],
                     ];
 
-                    foreach ($joinTableAnnot->joinColumns as $joinColumn) {
-                        $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
-                    }
-
-                    foreach ($joinTableAnnot->inverseJoinColumns as $joinColumn) {
-                        $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumn);
-                    }
+                    unset($override['joinColumns'], $override['inverseJoinColumns']);
 
                     $override['joinTable'] = $joinTable;
                 }

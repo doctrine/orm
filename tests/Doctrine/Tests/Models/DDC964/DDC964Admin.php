@@ -29,7 +29,7 @@ use Doctrine\ORM\Mapping\JoinTable;
  * })
  */
 #[Entity]
-#[AssociationOverrides([new AssociationOverride(name: "groups", joinTable: new JoinTable(name: "ddc964_users_admingroups", joinColumns: [new JoinColumn(name: "adminuser_id")], inverseJoinColumns: [new JoinColumn(name: "admingroup_id")])), new AssociationOverride(name: "address", joinColumns: [new JoinColumn(name: "adminaddress_id", referencedColumnName: "id")])])]
+#[AssociationOverrides([new AssociationOverride(name: "groups", joinTable: new JoinTable(name: "ddc964_users_admingroups"), joinColumns: [new JoinColumn(name: "adminuser_id")], inverseJoinColumns: [new JoinColumn(name: "admingroup_id")]), new AssociationOverride(name: "address", joinColumns: [new JoinColumn(name: "adminaddress_id", referencedColumnName: "id")])])]
 class DDC964Admin extends DDC964User
 {
     public static function loadMetadata(ClassMetadataInfo $metadata): void

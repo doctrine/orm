@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -48,7 +49,9 @@ class DDC964User
      * )
      */
     #[ManyToMany(targetEntity: DDC964Group::class, inversedBy: "users", cascade: ["persist", "merge", "detach"])]
-    #[JoinTable(name: "ddc964_users_groups", joinColumns: [new JoinColumn(name: "user_id", referencedColumnName: "id")], inverseJoinColumns: [new JoinColumn(name: "group_id", referencedColumnName: "id")])]
+    #[JoinTable(name: "ddc964_users_groups")]
+    #[JoinColumn(name: "user_id", referencedColumnName: "id")]
+    #[InverseJoinColumn(name: "group_id", referencedColumnName: "id")]
     protected $groups;
 
     /**

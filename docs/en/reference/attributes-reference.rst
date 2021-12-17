@@ -86,9 +86,9 @@ Examples:
             name: "groups",
             joinTable: new JoinTable(
                 name: "ddc964_users_admingroups",
-                joinColumns: [new JoinColumn(name: "adminuser_id")],
-                inverseJoinColumns: [new JoinColumn(name: "admingroup_id")]
-            )
+            ),
+            joinColumns: [new JoinColumn(name: "adminuser_id")],
+            inverseJoinColumns: [new JoinColumn(name: "admingroup_id")]
         ),
         new AssociationOverride(
             name: "address",
@@ -687,21 +687,11 @@ using the affected table and the column names.
 
 A notable difference to the annotation metadata support, ``#[JoinColumn]``
 and ``#[InverseJoinColumn]`` can be specified at the property level and are not
-nested within the ``#[JoinTable]`` attribute. This is required for PHP 8.0 support,
-but can be replaced with PHP 8.1 using nested attributes.
+nested within the ``#[JoinTable]`` attribute.
 
 Required attribute:
 
 -  **name**: Database name of the join-table
-
-Optional parameters:
-
--  **joinColumns**: An array of #[JoinColumn] attributes describing the
-   join-relation between the owning entities table and the join table.
-   Requires PHP 8.1 for nested attributes support.
--  **inverseJoinColumns**: An array of #[JoinColumn] attributes
-   describing the join-relation between the inverse entities table and
-   the join table. Requires PHP 8.1 for nested attributes support.
 
 Example:
 
@@ -1061,8 +1051,6 @@ Required parameters:
 Optional parameters:
 
 -  **schema**: Name of the schema the table lies in.
--  **indexes**: An array of nested #[Index] attributes (requires PHP 8.1)
--  **uniqueConstraints**: An array of nested #[UniqueConstraint] attributes (requires PHP 8.1)
 
 Example:
 
