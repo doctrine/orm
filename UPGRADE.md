@@ -20,6 +20,11 @@ _before_ upgrading to 3.0:
 php doctrine orm:convert-mapping xml /path/to/mapping-path-converted-to-xml
 ```
 
+## BC BREAK: Remove the `orm:ensure-production-settings` console command
+
+The `orm:ensure-production-settings` console command and its implementation
+`Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand` have been removed.
+
 ## BC BREAK: Remove code generators and related console commands
 
 These console commands have been removed:
