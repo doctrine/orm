@@ -26,7 +26,7 @@ final class AttributeOverrides implements Annotation
     public $overrides = [];
 
     /**
-     * @param array|AttributeOverride $overrides
+     * @param array<mixed>|AttributeOverride $overrides
      */
     public function __construct($overrides)
     {

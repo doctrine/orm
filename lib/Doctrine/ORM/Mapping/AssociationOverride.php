@@ -72,6 +72,10 @@ final class AssociationOverride implements Annotation
             $joinColumns = [$joinColumns];
         }
 
+        if ($inverseJoinColumns instanceof JoinColumn) {
+            $inverseJoinColumns = [$inverseJoinColumns];
+        }
+
         $this->name               = $name;
         $this->joinColumns        = $joinColumns;
         $this->inverseJoinColumns = $inverseJoinColumns;

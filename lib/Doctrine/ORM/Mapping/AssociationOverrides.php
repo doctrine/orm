@@ -26,7 +26,7 @@ final class AssociationOverrides implements Annotation
     public $overrides = [];
 
     /**
-     * @param array|AssociationOverride $overrides
+     * @param array<mixed>|AssociationOverride $overrides
      */
     public function __construct($overrides)
     {
