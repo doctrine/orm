@@ -40,13 +40,13 @@ class UuidGenerator extends AbstractIdGenerator
      */
     public function generate(EntityManager $em, $entity)
     {
-        $conn = $em->getConnection();
-        $sql  = 'SELECT ' . $conn->getDatabasePlatform()->getGuidExpression();
+        $connection = $em->getConnection();
+        $sql        = 'SELECT ' . $connection->getDatabasePlatform()->getGuidExpression();
 
-        if ($conn instanceof PrimaryReadReplicaConnection) {
-            $conn->ensureConnectedToPrimary();
+        if ($connection instanceof PrimaryReadReplicaConnection) {
+            $connection->ensureConnectedToPrimary();
         }
 
-        return $conn->executeQuery($sql)->fetchOne();
+        return $connection->executeQuery($sql)->fetchOne();
     }
 }
