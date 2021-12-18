@@ -11,9 +11,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
-
-use function is_numeric;
 
 class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
 {
@@ -59,7 +56,10 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity @Table(name="seq_identity") */
+/**
+ * @Entity
+ * @Table(name="seq_identity")
+ */
 class SequenceEmulatedIdentityEntity
 {
     /**

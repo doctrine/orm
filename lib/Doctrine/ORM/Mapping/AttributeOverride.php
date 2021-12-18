@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-use Attribute;
-
 /**
  * This annotation is used to override the mapping of a entity property.
  *

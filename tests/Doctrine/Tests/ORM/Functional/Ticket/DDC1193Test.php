@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
 use function get_class;
 
 class DDC1193Test extends OrmFunctionalTestCase
@@ -69,7 +68,8 @@ class DDC1193Company
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
@@ -86,7 +86,8 @@ class DDC1193Person
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
@@ -103,7 +104,8 @@ class DDC1193Account
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;

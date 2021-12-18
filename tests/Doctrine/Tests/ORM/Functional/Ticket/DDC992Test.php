@@ -17,11 +17,9 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
-use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-use function count;
 use function get_class;
 
 /**
@@ -165,17 +163,17 @@ class DDC992Role
 
     /**
      * @psalm-var Collection<int, DDC992Role>
-     * @ManyToMany (targetEntity="DDC992Role", mappedBy="extends")
+     * @ManyToMany(targetEntity="DDC992Role", mappedBy="extends")
      */
     public $extendedBy;
 
     /**
      * @psalm-var Collection<int, DDC992Role>
      * @ManyToMany (targetEntity="DDC992Role", inversedBy="extendedBy")
-     * @JoinTable (name="RoleRelations",
-     *      joinColumns={@JoinColumn(name="roleID", referencedColumnName="roleID")},
-     *      inverseJoinColumns={@JoinColumn(name="extendsRoleID", referencedColumnName="roleID")}
-     *      )
+     * @JoinTable(name="RoleRelations",
+     *     joinColumns={@JoinColumn(name="roleID", referencedColumnName="roleID")},
+     *     inverseJoinColumns={@JoinColumn(name="extendsRoleID", referencedColumnName="roleID")},
+     * )
      */
     public $extends;
 

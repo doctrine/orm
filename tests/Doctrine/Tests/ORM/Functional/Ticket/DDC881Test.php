@@ -19,8 +19,6 @@ use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-use function count;
-
 class DDC881Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

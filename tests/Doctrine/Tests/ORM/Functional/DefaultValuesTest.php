@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function get_class;
 
@@ -102,13 +101,15 @@ class DefaultValuesTest extends OrmFunctionalTestCase
 
 
 /**
- * @Entity @Table(name="defaultvalueuser")
+ * @Entity
+ * @Table(name="defaultvalueuser")
  */
 class DefaultValueUser
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
@@ -137,14 +138,16 @@ class DefaultValueUser
 /**
  * CmsAddress
  *
- * @Entity @Table(name="defaultvalueaddresses")
+ * @Entity
+ * @Table(name="defaultvalueaddresses")
  */
 class DefaultValueAddress
 {
     /**
      * @var int
      * @Column(type="integer")
-     * @Id @GeneratedValue(strategy="AUTO")
+     * @Id
+     * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 

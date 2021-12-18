@@ -14,9 +14,6 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\Tests\OrmTestCase;
 
-use function assert;
-use function count;
-
 final class GH8914Test extends OrmTestCase
 {
     /**

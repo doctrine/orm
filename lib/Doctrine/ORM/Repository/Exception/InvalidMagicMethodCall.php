@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Repository\Exception;
 
-use BadMethodCallException;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\RepositoryException;
 

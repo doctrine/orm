@@ -12,8 +12,6 @@ use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\CustomType\CustomTypeUpperCase;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 class TypeValueSqlTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

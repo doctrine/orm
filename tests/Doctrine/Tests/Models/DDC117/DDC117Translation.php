@@ -29,7 +29,8 @@ class DDC117Translation
 
     /**
      * @var string
-     * @Id @Column(type="string")
+     * @Id
+     * @Column(type="string")
      */
     private $language;
 

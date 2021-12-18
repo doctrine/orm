@@ -12,8 +12,6 @@ use Doctrine\Tests\Models\Tweet\Tweet;
 use Doctrine\Tests\Models\Tweet\User;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

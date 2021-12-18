@@ -20,7 +20,6 @@ use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
-use function count;
 
 final class GH8443Test extends OrmFunctionalTestCase
 {

@@ -322,7 +322,10 @@ class MappedSuperclassBaseIndex
     private $mapped2;
 }
 
-/** @Entity @Table(uniqueConstraints={@UniqueConstraint(name="IDX_NAME_INDEX",columns={"name"})}) */
+/**
+ * @Entity
+ * @Table(uniqueConstraints={@UniqueConstraint(name="IDX_NAME_INDEX",columns={"name"})})
+ */
 class EntityIndexSubClass extends MappedSuperclassBaseIndex
 {
     /**
@@ -352,7 +355,9 @@ class EntityIndexSubClass extends MappedSuperclassBaseIndex
 abstract class HierarchyBase
 {
     /**
-     * @Column(type="integer") @Id @GeneratedValue(strategy="SEQUENCE")
+     * @Column(type="integer")
+     * @Id
+     * @GeneratedValue(strategy="SEQUENCE")
      * @SequenceGenerator(sequenceName="foo", initialValue=10)
      * @var int
      */

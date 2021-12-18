@@ -99,7 +99,8 @@ class GH7079CmsUser
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
@@ -120,7 +121,8 @@ class GH7079CmsAddress
     /**
      * @var int
      * @Column(type="integer")
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      */
     public $id;
 

@@ -10,7 +10,6 @@ use Doctrine\ORM\AbstractQuery;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
 use function round;
 use function sprintf;
 

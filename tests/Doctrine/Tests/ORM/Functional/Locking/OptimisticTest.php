@@ -18,7 +18,6 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function date;
 use function strtotime;
@@ -317,7 +316,8 @@ class OptimisticJoinedParent
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
@@ -358,7 +358,8 @@ class OptimisticStandard
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
@@ -390,7 +391,8 @@ class OptimisticTimestamp
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;

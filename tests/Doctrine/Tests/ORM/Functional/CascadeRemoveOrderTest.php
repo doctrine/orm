@@ -92,7 +92,8 @@ class CascadeRemoveOrderEntityO
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     private $id;
@@ -155,7 +156,8 @@ class CascadeRemoveOrderEntityG
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     private $id;

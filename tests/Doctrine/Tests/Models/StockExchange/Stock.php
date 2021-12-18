@@ -18,7 +18,9 @@ use Doctrine\ORM\Mapping\Table;
 class Stock
 {
     /**
-     * @Id @GeneratedValue @Column(type="integer")
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
      * @var int
      */
     private $id;

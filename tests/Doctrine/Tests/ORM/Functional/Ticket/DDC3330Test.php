@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
 use function iterator_to_array;
 
 /**
@@ -75,13 +74,15 @@ class DDC3330Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity @Table(name="ddc3330_building")
+ * @Entity
+ * @Table(name="ddc3330_building")
  */
 class DDC3330Building
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
@@ -100,13 +101,15 @@ class DDC3330Building
 }
 
 /**
- * @Entity @Table(name="ddc3330_hall")
+ * @Entity
+ * @Table(name="ddc3330_hall")
  */
 class DDC3330Hall
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;

@@ -79,7 +79,8 @@ class DDC1548Rel
 {
     /**
      * @var int
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      * @Column(type="integer")
      */
     public $id;

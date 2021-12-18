@@ -52,7 +52,8 @@ final class GH7735Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity @Cache(usage="READ_ONLY")
+ * @Entity
+ * @Cache(usage="READ_ONLY")
  */
 class GH7735Car
 {

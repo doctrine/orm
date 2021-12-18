@@ -55,7 +55,8 @@ class DDC2692Test extends OrmFunctionalTestCase
     }
 }
 /**
- * @Entity @Table(name="ddc_2692_foo")
+ * @Entity
+ * @Table(name="ddc_2692_foo")
  */
 class DDC2692Foo
 {

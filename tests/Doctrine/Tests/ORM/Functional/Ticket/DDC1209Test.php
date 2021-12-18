@@ -82,7 +82,8 @@ class DDC1209One
     /**
      * @var int
      * @Id
-     * @GeneratedValue @Column(type="integer")
+     * @GeneratedValue
+     * @Column(type="integer")
      */
     private $id;
 

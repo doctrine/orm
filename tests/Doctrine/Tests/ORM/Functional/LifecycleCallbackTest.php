@@ -29,7 +29,6 @@ use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function count;
 use function current;
@@ -434,7 +433,10 @@ DQL;
     }
 }
 
-/** @Entity @HasLifecycleCallbacks */
+/**
+ * @Entity
+ * @HasLifecycleCallbacks
+ */
 class LifecycleCallbackTestUser
 {
     /**
@@ -577,7 +579,8 @@ class LifecycleCallbackTestEntity
 }
 
 /**
- * @Entity @HasLifecycleCallbacks
+ * @Entity
+ * @HasLifecycleCallbacks
  * @Table(name="lc_cb_test_cascade")
  */
 class LifecycleCallbackCascader
@@ -621,7 +624,10 @@ class LifecycleCallbackCascader
     }
 }
 
-/** @MappedSuperclass @HasLifecycleCallbacks */
+/**
+ * @MappedSuperclass
+ * @HasLifecycleCallbacks
+ */
 class LifecycleCallbackParentEntity
 {
     /** @PrePersist */
@@ -630,7 +636,10 @@ class LifecycleCallbackParentEntity
     }
 }
 
-/** @Entity @Table(name="lc_cb_childentity") */
+/**
+ * @Entity
+ * @Table(name="lc_cb_childentity")
+ */
 class LifecycleCallbackChildEntity extends LifecycleCallbackParentEntity
 {
     /**
@@ -650,12 +659,17 @@ class LifecycleListenerPreUpdate
     }
 }
 
-/** @Entity @HasLifecycleCallbacks */
+/**
+ * @Entity
+ * @HasLifecycleCallbacks
+ */
 class LifecycleCallbackEventArgEntity
 {
     /**
      * @var int
-     * @Id @Column(type="integer") @GeneratedValue
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      */
     public $id;
 

@@ -33,8 +33,6 @@ use Doctrine\Tests\Models\DDC753\DDC753InvalidRepository;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_pop;
-use function count;
-use function in_array;
 use function reset;
 
 class EntityRepositoryTest extends OrmFunctionalTestCase

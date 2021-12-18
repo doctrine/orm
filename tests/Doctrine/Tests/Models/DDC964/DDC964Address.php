@@ -17,7 +17,8 @@ class DDC964Address
     /**
      * @var int
      * @GeneratedValue
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      */
     private $id;
 

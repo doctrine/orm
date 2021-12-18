@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 class Ticket2481Test extends OrmFunctionalTestCase
 {
@@ -43,7 +42,8 @@ class Ticket2481Product
 {
   /**
    * @var int
-   * @Id @Column(type="integer")
+   * @Id
+   * @Column(type="integer")
    * @GeneratedValue(strategy="AUTO")
    */
     public $id;

@@ -11,8 +11,6 @@ use Doctrine\Tests\Models\Routing\RoutingRoute;
 use Doctrine\Tests\Models\Routing\RoutingRouteBooking;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 class OrderedCollectionTest extends OrmFunctionalTestCase
 {
     /** @psalm-var array<string, RoutingLocation> */

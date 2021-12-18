@@ -88,7 +88,8 @@ class DDC2660Test extends OrmFunctionalTestCase
     }
 }
 /**
- * @Entity @Table(name="ddc_2660_product")
+ * @Entity
+ * @Table(name="ddc_2660_product")
  */
 class DDC2660Product
 {
@@ -101,7 +102,10 @@ class DDC2660Product
     public $id;
 }
 
-/** @Entity  @Table(name="ddc_2660_customer") */
+/**
+ * @Entity
+ * @Table(name="ddc_2660_customer")
+ */
 class DDC2660Customer
 {
     /**
@@ -113,7 +117,10 @@ class DDC2660Customer
     public $id;
 }
 
-/** @Entity @Table(name="ddc_2660_customer_order") */
+/**
+ * @Entity
+ * @Table(name="ddc_2660_customer_order")
+ */
 class DDC2660CustomerOrder
 {
     /**

@@ -12,7 +12,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
 use function array_filter;
-use function count;
 use function implode;
 use function method_exists;
 use function strpos;

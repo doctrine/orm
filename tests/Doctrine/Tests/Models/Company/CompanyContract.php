@@ -26,7 +26,6 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\NamedNativeQueries;
 use Doctrine\ORM\Mapping\NamedNativeQuery;
-use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\SqlResultSetMapping;
 use Doctrine\ORM\Mapping\SqlResultSetMappings;
 use Doctrine\ORM\Mapping\Table;

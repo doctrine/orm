@@ -15,8 +15,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 class DDC512Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

@@ -9,8 +9,6 @@ use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 /**
  * Tests a bidirectional one-to-one association mapping with orphan removal.
  */
