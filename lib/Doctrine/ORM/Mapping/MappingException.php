@@ -11,6 +11,7 @@ use ReflectionException;
 use function array_keys;
 use function array_map;
 use function array_values;
+use function get_debug_type;
 use function get_parent_class;
 use function implode;
 use function sprintf;
@@ -940,5 +941,17 @@ class MappingException extends ORMException
                 $className
             )
         );
+    }
+
+    /**
+     * @param mixed $givenValue
+     */
+    public static function invalidOverrideType(string $expectdType, $givenValue): self
+    {
+        return new self(sprintf(
+            'Expected %s, but %s was given.',
+            $expectdType,
+            get_debug_type($givenValue)
+        ));
     }
 }

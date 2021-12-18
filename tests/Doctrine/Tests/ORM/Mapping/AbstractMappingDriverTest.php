@@ -762,6 +762,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testAssociationOverridesMapping(): void
     {
+        if (PHP_VERSION_ID >= 80000 && PHP_VERSION_ID < 80100) {
+            $this->markTestSkipped('Does not work on PHP 8.0.* due to nested attributes missing.');
+        }
+
         $factory       = $this->createClassMetadataFactory();
         $adminMetadata = $factory->getMetadataFor(DDC964Admin::class);
         $guestMetadata = $factory->getMetadataFor(DDC964Guest::class);
@@ -840,6 +844,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testInversedByOverrideMapping(): void
     {
+        if (PHP_VERSION_ID >= 80000 && PHP_VERSION_ID < 80100) {
+            $this->markTestSkipped('Does not work on PHP 8.0.* due to nested attributes missing.');
+        }
+
         $factory       = $this->createClassMetadataFactory();
         $adminMetadata = $factory->getMetadataFor(DDC3579Admin::class);
 
@@ -856,6 +864,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testFetchOverrideMapping(): void
     {
+        if (PHP_VERSION_ID >= 80000 && PHP_VERSION_ID < 80100) {
+            $this->markTestSkipped('Does not work on PHP 8.0.* due to nested attributes missing.');
+        }
+
         // check override metadata
         $contractMetadata = $this->createClassMetadataFactory()->getMetadataFor(DDC5934Contract::class);
 
@@ -868,6 +880,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testAttributeOverridesMapping(): void
     {
+        if (PHP_VERSION_ID >= 80000 && PHP_VERSION_ID < 80100) {
+            $this->markTestSkipped('Does not work on PHP 8.0.* due to nested attributes missing.');
+        }
+
         $factory       = $this->createClassMetadataFactory();
         $guestMetadata = $factory->getMetadataFor(DDC964Guest::class);
         $adminMetadata = $factory->getMetadataFor(DDC964Admin::class);

@@ -39,7 +39,6 @@ use function strtoupper;
 use function unserialize;
 
 use const CASE_UPPER;
-
 use const PHP_VERSION_ID;
 
 require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
@@ -1147,6 +1146,10 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testInvalidPropertyAssociationOverrideNameException(): void
     {
+        if (PHP_VERSION_ID >= 80000 && PHP_VERSION_ID < 80100) {
+            $this->markTestSkipped('Does not work on PHP 8.0.* due to nested attributes missing.');
+        }
+
         $this->expectException('Doctrine\ORM\Mapping\MappingException');
         $this->expectExceptionMessage('Invalid field override named \'invalidPropertyName\' for class \'Doctrine\Tests\Models\DDC964\DDC964Admin');
         $cm = new ClassMetadata(DDC964Admin::class);
@@ -1161,6 +1164,10 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testInvalidPropertyAttributeOverrideNameException(): void
     {
+        if (PHP_VERSION_ID >= 80000 && PHP_VERSION_ID < 80100) {
+            $this->markTestSkipped('Does not work on PHP 8.0.* due to nested attributes missing.');
+        }
+
         $this->expectException('Doctrine\ORM\Mapping\MappingException');
         $this->expectExceptionMessage('Invalid field override named \'invalidPropertyName\' for class \'Doctrine\Tests\Models\DDC964\DDC964Guest\'.');
         $cm = new ClassMetadata(DDC964Guest::class);
@@ -1175,6 +1182,10 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testInvalidOverrideAttributeFieldTypeException(): void
     {
+        if (PHP_VERSION_ID >= 80000 && PHP_VERSION_ID < 80100) {
+            $this->markTestSkipped('Does not work on PHP 8.0.* due to nested attributes missing.');
+        }
+
         $this->expectException('Doctrine\ORM\Mapping\MappingException');
         $this->expectExceptionMessage('The column type of attribute \'name\' on class \'Doctrine\Tests\Models\DDC964\DDC964Guest\' could not be changed.');
         $cm = new ClassMetadata(DDC964Guest::class);

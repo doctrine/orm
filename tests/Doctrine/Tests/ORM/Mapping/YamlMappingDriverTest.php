@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Tests\Models\DDC3711\DDC3711EntityA;
 use Doctrine\Tests\Models\DirectoryTree\Directory;
 use Doctrine\Tests\Models\DirectoryTree\File;
 use Doctrine\Tests\Models\Generic\SerializationModel;
@@ -82,6 +83,22 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
 
         self::assertEquals(255, $nameField['length']);
         self::assertEquals(255, $valueField['length']);
+    }
+
+    public function testCompositeKeyForJoinTableInManyToManyCreation(): void
+    {
+        $yamlDriver = $this->loadDriver();
+
+        $em = $this->getTestEntityManager();
+        $em->getConfiguration()->setMetadataDriverImpl($yamlDriver);
+        $factory = new ClassMetadataFactory();
+        $factory->setEntityManager($em);
+
+        $entityA = new ClassMetadata(DDC3711EntityA::class);
+        $entityA = $factory->getMetadataFor(DDC3711EntityA::class);
+
+        self::assertEquals(['link_a_id1' => 'id1', 'link_a_id2' => 'id2'], $entityA->associationMappings['entityB']['relationToSourceKeyColumns']);
+        self::assertEquals(['link_b_id1' => 'id1', 'link_b_id2' => 'id2'], $entityA->associationMappings['entityB']['relationToTargetKeyColumns']);
     }
 }
 
