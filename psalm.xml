@@ -20,8 +20,6 @@
             <errorLevel type="suppress">
                 <!-- The exception is thrown by a deprecated method. -->
                 <referencedClass name="Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver"/>
-                <!-- Remove on 3.0.x -->
-                <referencedClass name="Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand"/>
             </errorLevel>
         </DeprecatedClass>
         <DeprecatedMethod>

@@ -77,8 +77,6 @@ The following Commands are currently available:
    cache drivers.
 -  ``orm:clear-cache:result`` Clear result cache of the various
    cache drivers.
--  ``orm:ensure-production-settings`` Verify that Doctrine is
-   properly configured for a production environment.
 -  ``orm:generate-proxies`` Generates proxy classes for entity
    classes.
 -  ``orm:run-dql`` Executes arbitrary DQL directly from the command

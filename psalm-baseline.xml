@@ -3153,11 +3153,6 @@
       <code>$cacheDriver</code>
     </PossiblyNullArgument>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/EnsureProductionSettingsCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/GenerateProxiesCommand.php">
     <DeprecatedMethod occurrences="2">
       <code>getProxyDir</code>
