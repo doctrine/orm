@@ -717,31 +717,6 @@
       <code>$class-&gt;fieldMappings[$fieldName]['columnName']</code>
     </PossiblyUndefinedArrayOffset>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/AssociationOverride.php">
-    <MissingConstructor occurrences="5">
-      <code>$fetch</code>
-      <code>$inversedBy</code>
-      <code>$joinColumns</code>
-      <code>$joinTable</code>
-      <code>$name</code>
-    </MissingConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/AssociationOverrides.php">
-    <MissingConstructor occurrences="1">
-      <code>$value</code>
-    </MissingConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/AttributeOverride.php">
-    <MissingConstructor occurrences="2">
-      <code>$column</code>
-      <code>$name</code>
-    </MissingConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/AttributeOverrides.php">
-    <MissingConstructor occurrences="1">
-      <code>$value</code>
-    </MissingConstructor>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php">
     <ArgumentTypeCoercion occurrences="2">
       <code>$class</code>
@@ -814,10 +789,9 @@
     <DeprecatedConstant occurrences="1">
       <code>ClassMetadata::GENERATOR_TYPE_UUID</code>
     </DeprecatedConstant>
-    <DeprecatedMethod occurrences="3">
+    <DeprecatedMethod occurrences="2">
       <code>addNamedNativeQuery</code>
       <code>addNamedQuery</code>
-      <code>getName</code>
     </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="2">
       <code>! $definition</code>
@@ -887,10 +861,6 @@
     <PropertyTypeCoercion occurrences="1">
       <code>$subClass-&gt;table</code>
     </PropertyTypeCoercion>
-    <RedundantConditionGivenDocblockType occurrences="2">
-      <code>$parent-&gt;idGenerator</code>
-      <code>$parent-&gt;idGenerator</code>
-    </RedundantConditionGivenDocblockType>
     <UndefinedInterfaceMethod occurrences="17">
       <code>inlineEmbeddable</code>
       <code>isInheritanceTypeNone</code>
@@ -2171,7 +2141,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/LocateFunction.php">
-    <InvalidScalarArgument occurrences="1"/>
+    <InvalidScalarArgument occurrences="1">
+      <code>$sqlWalker-&gt;walkSimpleArithmeticExpression($this-&gt;simpleArithmeticExpression)</code>
+    </InvalidScalarArgument>
     <PossiblyInvalidArgument occurrences="1">
       <code>$this-&gt;simpleArithmeticExpression</code>
     </PossiblyInvalidArgument>
@@ -2837,13 +2809,11 @@
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
-    <DocblockTypeContradiction occurrences="8">
+    <DocblockTypeContradiction occurrences="6">
       <code>$likeExpr-&gt;stringPattern instanceof AST\Functions\FunctionNode</code>
       <code>$likeExpr-&gt;stringPattern instanceof AST\PathExpression</code>
       <code>$this-&gt;queryComponents[$dqlAlias]['relation'] === null</code>
       <code>''</code>
-      <code>is_numeric($leftExpr)</code>
-      <code>is_numeric($rightExpr)</code>
       <code>is_string($expression)</code>
       <code>is_string($stringExpr)</code>
     </DocblockTypeContradiction>
@@ -2924,12 +2894,8 @@
       <code>$this-&gt;queryComponents</code>
       <code>$this-&gt;selectedClasses</code>
     </PropertyTypeCoercion>
-    <RedundantConditionGivenDocblockType occurrences="7">
-      <code>$leftExpr instanceof AST\Node</code>
+    <RedundantConditionGivenDocblockType occurrences="3">
       <code>$likeExpr-&gt;stringPattern instanceof AST\InputParameter</code>
-      <code>$rightExpr instanceof AST\Node</code>
-      <code>$this-&gt;conn-&gt;quote($leftExpr)</code>
-      <code>$this-&gt;conn-&gt;quote($rightExpr)</code>
       <code>$whereClause !== null</code>
       <code>($factor-&gt;not ? 'NOT ' : '') . $this-&gt;walkConditionalPrimary($factor-&gt;conditionalPrimary)</code>
     </RedundantConditionGivenDocblockType>
