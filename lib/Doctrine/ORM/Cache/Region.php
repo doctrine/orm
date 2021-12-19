@@ -45,6 +45,8 @@ interface Region extends MultiGetRegion
      * @param CacheEntry $entry The entry to cache.
      * @param Lock|null  $lock  The lock previously obtained.
      *
+     * @return bool
+     *
      * @throws CacheException Indicates a problem accessing the region.
      */
     public function put(CacheKey $key, CacheEntry $entry, ?Lock $lock = null);
@@ -54,12 +56,16 @@ interface Region extends MultiGetRegion
      *
      * @param CacheKey $key The key under which to cache the item.
      *
+     * @return bool
+     *
      * @throws CacheException Indicates a problem accessing the region.
      */
     public function evict(CacheKey $key);
 
     /**
      * Remove all contents of this particular cache region.
+     *
+     * @return bool
      *
      * @throws CacheException Indicates problem accessing the region.
      */

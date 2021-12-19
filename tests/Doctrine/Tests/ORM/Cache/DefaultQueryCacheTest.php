@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use ArrayObject;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\DefaultQueryCache;
@@ -17,6 +16,7 @@ use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheRegionMock;
 use Doctrine\Tests\Mocks\TimestampRegionMock;
 use Doctrine\Tests\Models\Cache\City;
@@ -540,12 +540,10 @@ class DefaultQueryCacheTest extends OrmTestCase
     {
         $rsm   = new ResultSetMappingBuilder($this->em);
         $key   = new QueryCacheKey('query.key1', 0);
-        $entry = new ArrayObject(
-            [
-                ['identifier' => ['id' => 1]],
-                ['identifier' => ['id' => 2]],
-            ]
-        );
+        $entry = new CacheEntryMock([
+            ['identifier' => ['id' => 1]],
+            ['identifier' => ['id' => 2]],
+        ]);
 
         $data = [
             ['id' => 1, 'name' => 'Foo'],
