@@ -7,8 +7,8 @@ namespace Doctrine\Tests\ORM\Tools;
 use DateTime;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
@@ -84,11 +84,11 @@ class EntityGeneratorTest extends OrmTestCase
     }
 
     /**
-     * @param ClassMetadataInfo[] $embeddedClasses
+     * @param ClassMetadata[] $embeddedClasses
      */
-    public function generateBookEntityFixture(array $embeddedClasses = []): ClassMetadataInfo
+    public function generateBookEntityFixture(array $embeddedClasses = []): ClassMetadata
     {
-        $metadata                            = new ClassMetadataInfo($this->namespace . '\EntityGeneratorBook');
+        $metadata                            = new ClassMetadata($this->namespace . '\EntityGeneratorBook');
         $metadata->namespace                 = $this->namespace;
         $metadata->customRepositoryClassName = $this->namespace . '\EntityGeneratorBookRepository';
 
@@ -101,14 +101,11 @@ class EntityGeneratorTest extends OrmTestCase
         $metadata->mapOneToOne(
             ['fieldName' => 'author', 'targetEntity' => EntityGeneratorAuthor::class, 'mappedBy' => 'book']
         );
-        $joinColumns = [
-            ['name' => 'author_id', 'referencedColumnName' => 'id'],
-        ];
         $metadata->mapManyToMany(
             [
                 'fieldName' => 'comments',
                 'targetEntity' => EntityGeneratorComment::class,
-                'fetch' => ClassMetadataInfo::FETCH_EXTRA_LAZY,
+                'fetch' => ClassMetadata::FETCH_EXTRA_LAZY,
                 'joinTable' => [
                     'name' => 'book_comment',
                     'joinColumns' => [['name' => 'book_id', 'referencedColumnName' => 'id']],
@@ -118,7 +115,7 @@ class EntityGeneratorTest extends OrmTestCase
         );
         $metadata->addLifecycleCallback('loading', 'postLoad');
         $metadata->addLifecycleCallback('willBeRemoved', 'preRemove');
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
         foreach ($embeddedClasses as $fieldName => $embeddedClass) {
             $this->mapNestedEmbedded($fieldName, $metadata, $embeddedClass);
@@ -130,14 +127,14 @@ class EntityGeneratorTest extends OrmTestCase
         return $metadata;
     }
 
-    private function generateEntityTypeFixture(array $field): ClassMetadataInfo
+    private function generateEntityTypeFixture(array $field): ClassMetadata
     {
-        $metadata            = new ClassMetadataInfo($this->namespace . '\EntityType');
+        $metadata            = new ClassMetadata($this->namespace . '\EntityType');
         $metadata->namespace = $this->namespace;
 
         $metadata->table['name'] = 'entity_type';
         $metadata->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
         $name = $field['fieldName'];
         $type = $field['dbType'];
@@ -148,9 +145,9 @@ class EntityGeneratorTest extends OrmTestCase
         return $metadata;
     }
 
-    private function generateIsbnEmbeddableFixture(array $embeddedClasses = [], $columnPrefix = null): ClassMetadataInfo
+    private function generateIsbnEmbeddableFixture(array $embeddedClasses = [], $columnPrefix = null): ClassMetadata
     {
-        $metadata                  = new ClassMetadataInfo($this->namespace . '\EntityGeneratorIsbn');
+        $metadata                  = new ClassMetadata($this->namespace . '\EntityGeneratorIsbn');
         $metadata->namespace       = $this->namespace;
         $metadata->isEmbeddedClass = true;
         $metadata->mapField(['fieldName' => 'prefix', 'type' => 'integer']);
@@ -168,9 +165,9 @@ class EntityGeneratorTest extends OrmTestCase
         return $metadata;
     }
 
-    private function generateTestEmbeddableFixture(): ClassMetadataInfo
+    private function generateTestEmbeddableFixture(): ClassMetadata
     {
-        $metadata                  = new ClassMetadataInfo($this->namespace . '\EntityGeneratorTestEmbeddable');
+        $metadata                  = new ClassMetadata($this->namespace . '\EntityGeneratorTestEmbeddable');
         $metadata->namespace       = $this->namespace;
         $metadata->isEmbeddedClass = true;
         $metadata->mapField(['fieldName' => 'field1', 'type' => 'integer']);
@@ -188,8 +185,8 @@ class EntityGeneratorTest extends OrmTestCase
      */
     private function mapEmbedded(
         string $fieldName,
-        ClassMetadataInfo $classMetadata,
-        ClassMetadataInfo $embeddableMetadata,
+        ClassMetadata $classMetadata,
+        ClassMetadata $embeddableMetadata,
         $columnPrefix = false
     ): void {
         $classMetadata->mapEmbedded(
@@ -199,8 +196,8 @@ class EntityGeneratorTest extends OrmTestCase
 
     private function mapNestedEmbedded(
         string $fieldName,
-        ClassMetadataInfo $classMetadata,
-        ClassMetadataInfo $embeddableMetadata
+        ClassMetadata $classMetadata,
+        ClassMetadata $embeddableMetadata
     ): void {
         foreach ($embeddableMetadata->embeddedClasses as $property => $embeddableClass) {
             $classMetadata->mapEmbedded(
@@ -217,7 +214,7 @@ class EntityGeneratorTest extends OrmTestCase
         }
     }
 
-    private function loadEntityClass(ClassMetadataInfo $metadata): void
+    private function loadEntityClass(ClassMetadata $metadata): void
     {
         $className = basename(str_replace('\\', '/', $metadata->name));
         $path      = $this->tmpDir . '/' . $this->namespace . '/' . $className . '.php';
@@ -230,7 +227,7 @@ class EntityGeneratorTest extends OrmTestCase
     /**
      * @return mixed An instance of the given metadata's class.
      */
-    public function newInstance(ClassMetadataInfo $metadata)
+    public function newInstance(ClassMetadata $metadata)
     {
         $this->loadEntityClass($metadata);
 
@@ -481,7 +478,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $reflectionService = new RuntimeReflectionService();
 
-        $cm = new ClassMetadataInfo($metadata->name);
+        $cm = new ClassMetadata($metadata->name);
         $cm->initializeReflection($reflectionService);
 
         $driver = $this->createAnnotationDriver();
@@ -496,11 +493,11 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertEquals($cm->embeddedClasses, $metadata->embeddedClasses);
         self::assertEquals($cm->isEmbeddedClass, $metadata->isEmbeddedClass);
 
-        self::assertEquals(ClassMetadataInfo::FETCH_EXTRA_LAZY, $cm->associationMappings['comments']['fetch']);
+        self::assertEquals(ClassMetadata::FETCH_EXTRA_LAZY, $cm->associationMappings['comments']['fetch']);
 
-        $isbn = $this->newInstance($embeddedMetadata);
+        $this->newInstance($embeddedMetadata);
 
-        $cm = new ClassMetadataInfo($embeddedMetadata->name);
+        $cm = new ClassMetadata($embeddedMetadata->name);
         $cm->initializeReflection($reflectionService);
 
         $driver->loadMetadataForClass($cm->name, $cm);
@@ -523,7 +520,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $reflectionService = new RuntimeReflectionService();
 
-        $cm = new ClassMetadataInfo($metadata->name);
+        $cm = new ClassMetadata($metadata->name);
         $cm->initializeReflection($reflectionService);
 
         $driver->loadMetadataForClass($cm->name, $cm);
@@ -535,9 +532,9 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertEquals($cm->idGenerator, $metadata->idGenerator);
         self::assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);
 
-        $isbn = $this->newInstance($embeddedMetadata);
+        $this->newInstance($embeddedMetadata);
 
-        $cm = new ClassMetadataInfo($embeddedMetadata->name);
+        $cm = new ClassMetadata($embeddedMetadata->name);
         $cm->initializeReflection($reflectionService);
 
         $driver->loadMetadataForClass($cm->name, $cm);
@@ -552,7 +549,7 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testMappedSuperclassAnnotationGeneration(): void
     {
-        $metadata                     = new ClassMetadataInfo($this->namespace . '\EntityGeneratorBook');
+        $metadata                     = new ClassMetadata($this->namespace . '\EntityGeneratorBook');
         $metadata->namespace          = $this->namespace;
         $metadata->isMappedSuperclass = true;
 
@@ -561,7 +558,7 @@ class EntityGeneratorTest extends OrmTestCase
         $this->newInstance($metadata); // force instantiation (causes autoloading to kick in)
 
         $driver = new AnnotationDriver(new AnnotationReader(), []);
-        $cm     = new ClassMetadataInfo($metadata->name);
+        $cm     = new ClassMetadata($metadata->name);
 
         $cm->initializeReflection(new RuntimeReflectionService());
         $driver->loadMetadataForClass($cm->name, $cm);
@@ -590,10 +587,10 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testGenerateEntityWithSequenceGenerator(): void
     {
-        $metadata            = new ClassMetadataInfo($this->namespace . '\DDC1784Entity');
+        $metadata            = new ClassMetadata($this->namespace . '\DDC1784Entity');
         $metadata->namespace = $this->namespace;
         $metadata->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
         $metadata->setSequenceGeneratorDefinition(
             [
                 'sequenceName'      => 'DDC1784_ID_SEQ',
@@ -626,10 +623,10 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testGenerateEntityWithMultipleInverseJoinColumns(): void
     {
-        $metadata            = new ClassMetadataInfo($this->namespace . '\DDC2079Entity');
+        $metadata            = new ClassMetadata($this->namespace . '\DDC2079Entity');
         $metadata->namespace = $this->namespace;
         $metadata->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
         $metadata->mapManyToMany(
             [
                 'fieldName'     => 'centroCustos',
@@ -683,7 +680,7 @@ class EntityGeneratorTest extends OrmTestCase
       */
     public function testGetInheritanceTypeString(): void
     {
-        $reflection = new ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadataInfo');
+        $reflection = new ReflectionClass(ClassMetadata::class);
         $method     = new ReflectionMethod($this->generator, 'getInheritanceTypeString');
         $constants  = $reflection->getConstants();
         $pattern    = '/^INHERITANCE_TYPE_/';
@@ -741,7 +738,7 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testGetIdGeneratorTypeString(): void
     {
-        $reflection = new ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadataInfo');
+        $reflection = new ReflectionClass(ClassMetadata::class);
         $method     = new ReflectionMethod($this->generator, 'getIdGeneratorTypeString');
         $constants  = $reflection->getConstants();
         $pattern    = '/^GENERATOR_TYPE_/';
@@ -1231,11 +1228,11 @@ class
      */
     public function testOptionsAreGeneratedProperly(string $expectedAnnotation, array $fieldConfiguration): void
     {
-        $metadata            = new ClassMetadataInfo($this->namespace . '\GH6703Options');
+        $metadata            = new ClassMetadata($this->namespace . '\GH6703Options');
         $metadata->namespace = $this->namespace;
         $metadata->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
         $metadata->mapField(['fieldName' => 'test'] + $fieldConfiguration);
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
         $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
         $filename = $this->tmpDir . DIRECTORY_SEPARATOR . $this->namespace . DIRECTORY_SEPARATOR . 'GH6703Options.php';
