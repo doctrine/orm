@@ -218,6 +218,7 @@ class TestUtil
                 'ssl_capath',
                 'ssl_cipher',
                 'unix_socket',
+                'charset',
             ] as $parameter
         ) {
             if (! isset($configuration[$prefix . $parameter])) {

@@ -144,6 +144,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Company\CompanyCar::class,
             Models\Company\CompanyContract::class,
         ],
+        'diacritics' => [
+            Models\Diacritics\NuméroDeTéléphone::class,
+        ],
         'ecommerce' => [
             Models\ECommerce\ECommerceCart::class,
             Models\ECommerce\ECommerceCustomer::class,

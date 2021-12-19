@@ -225,6 +225,80 @@ class LexerTest extends OrmTestCase
         self::assertFalse($lexer->moveNext());
     }
 
+    public function testScannerTokenizesASimpleQueryWithNonAsciiCharactersCorrectly(): void
+    {
+        $dql   = 'SELECT société FROM Domain\Société société WHERE société.représentant = :représentant_société';
+        $lexer = new Lexer($dql);
+
+        $tokens = [
+            [
+                'value' => 'SELECT',
+                'type'  => Lexer::T_SELECT,
+                'position' => 0,
+            ],
+            [
+                'value' => 'société',
+                'type'  => Lexer::T_IDENTIFIER,
+                'position' => 7,
+            ],
+            [
+                'value' => 'FROM',
+                'type'  => Lexer::T_FROM,
+                'position' => 17,
+            ],
+            [
+                'value' => 'Domain\Société',
+                'type'  => Lexer::T_FULLY_QUALIFIED_NAME,
+                'position' => 22,
+            ],
+            [
+                'value' => 'société',
+                'type'  => Lexer::T_IDENTIFIER,
+                'position' => 39,
+            ],
+            [
+                'value' => 'WHERE',
+                'type'  => Lexer::T_WHERE,
+                'position' => 49,
+            ],
+            [
+                'value' => 'société',
+                'type'  => Lexer::T_IDENTIFIER,
+                'position' => 55,
+            ],
+            [
+                'value' => '.',
+                'type'  => Lexer::T_DOT,
+                'position' => 64,
+            ],
+            [
+                'value' => 'représentant',
+                'type'  => Lexer::T_IDENTIFIER,
+                'position' => 65,
+            ],
+            [
+                'value' => '=',
+                'type'  => Lexer::T_EQUALS,
+                'position' => 79,
+            ],
+            [
+                'value' => ':représentant_société',
+                'type'  => Lexer::T_INPUT_PARAMETER,
+                'position' => 81,
+            ],
+        ];
+
+        foreach ($tokens as $expected) {
+            $lexer->moveNext();
+            $actual = $lexer->lookahead;
+            self::assertEquals($expected['value'], $actual['value']);
+            self::assertEquals($expected['type'], $actual['type']);
+            self::assertEquals($expected['position'], $actual['position']);
+        }
+
+        self::assertFalse($lexer->moveNext());
+    }
+
     /** @psalm-return list<array{int, string}> */
     public static function provideTokens(): array
     {

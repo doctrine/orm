@@ -266,4 +266,18 @@
         <!-- https://github.com/doctrine/orm/issues/8537 -->
         <exclude-pattern>lib/Doctrine/ORM/QueryBuilder.php</exclude-pattern>
     </rule>
+
+    <!-- see https://github.com/squizlabs/PHP_CodeSniffer/pull/3532 -->
+    <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
+        <exclude-pattern>tests/Doctrine/Tests/Models/Diacritics/NuméroDeTéléphone.php</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps">
+        <exclude-pattern>tests/Doctrine/Tests/Models/Diacritics/NuméroDeTéléphone.php</exclude-pattern>
+    </rule>
+    <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
+        <exclude-pattern>tests/Doctrine/Tests/Models/Diacritics/NuméroDeTéléphone.php</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps">
+        <exclude-pattern>tests/Doctrine/Tests/Models/Diacritics/NuméroDeTéléphone.php</exclude-pattern>
+    </rule>
 </ruleset>

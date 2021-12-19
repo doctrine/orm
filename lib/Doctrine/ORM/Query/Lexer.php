@@ -127,11 +127,11 @@ class Lexer extends AbstractLexer
     protected function getCatchablePatterns()
     {
         return [
-            '[a-z_][a-z0-9_]*\:[a-z_][a-z0-9_]*(?:\\\[a-z_][a-z0-9_]*)*', // aliased name
-            '[a-z_\\\][a-z0-9_]*(?:\\\[a-z_][a-z0-9_]*)*', // identifier or qualified name
+            '[[:alpha:]_][[:alpha:]0-9_]*\:[[:alpha:]_][[:alpha:]0-9_]*(?:\\\[[:alpha:]_][[:alpha:]0-9_]*)*', // aliased name
+            '[[:alpha:]_\\\][[:alpha:]0-9_]*(?:\\\[[:alpha:]_][[:alpha:]0-9_]*)*', // identifier or qualified name
             '(?:[0-9]+(?:[\.][0-9]+)*)(?:e[+-]?[0-9]+)?', // numbers
             "'(?:[^']|'')*'", // quoted strings
-            '\?[0-9]*|:[a-z_][a-z0-9_]*', // parameters
+            '\?[0-9]*|:[[:alpha:]_][[:alpha:]0-9_]*', // parameters
         ];
     }
 
