@@ -1498,7 +1498,7 @@ parameters:
 
 		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
-			count: 5
+			count: 1
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-

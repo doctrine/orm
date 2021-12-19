@@ -32,14 +32,20 @@ class LocateFunction extends FunctionNode
      */
     public function getSql(SqlWalker $sqlWalker)
     {
-        return $sqlWalker->getConnection()->getDatabasePlatform()->getLocateExpression(
-            $sqlWalker->walkStringPrimary($this->secondStringPrimary), // its the other way around in platform
-            $sqlWalker->walkStringPrimary($this->firstStringPrimary),
-            ($this->simpleArithmeticExpression
-                ? $sqlWalker->walkSimpleArithmeticExpression($this->simpleArithmeticExpression)
-                : false
-            )
-        );
+        $platform = $sqlWalker->getConnection()->getDatabasePlatform();
+
+        $firstString  = $sqlWalker->walkStringPrimary($this->firstStringPrimary);
+        $secondString = $sqlWalker->walkStringPrimary($this->secondStringPrimary);
+
+        if ($this->simpleArithmeticExpression) {
+            return $platform->getLocateExpression(
+                $secondString,
+                $firstString,
+                $sqlWalker->walkSimpleArithmeticExpression($this->simpleArithmeticExpression)
+            );
+        }
+
+        return $platform->getLocateExpression($secondString, $firstString);
     }
 
     /**
