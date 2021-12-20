@@ -88,7 +88,7 @@ API would look for this use-case:
     $pageNum = 1;
     $query = $em->createQuery($dql);
     $query->setFirstResult( ($pageNum-1) * 20)->setMaxResults(20);
-    
+
     $totalResults = Paginate::count($query);
     $results = $query->getResult();
 
@@ -101,12 +101,12 @@ The ``Paginate::count(Query $query)`` looks like:
     {
         static public function count(Query $query)
         {
-            /* @var $countQuery Query */
+            /** @var Query $countQuery */
             $countQuery = clone $query;
-    
+
             $countQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('DoctrineExtensions\Paginate\CountSqlWalker'));
             $countQuery->setFirstResult(null)->setMaxResults(null);
-    
+
             return $countQuery->getSingleScalarResult();
         }
     }
@@ -137,13 +137,13 @@ implementation is:
                     break;
                 }
             }
-    
+
             $pathExpression = new PathExpression(
                 PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $parentName,
                 $parent['metadata']->getSingleIdentifierFieldName()
             );
             $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
-    
+
             $AST->selectClause->selectExpressions = array(
                 new SelectExpression(
                     new AggregateExpression('count', $pathExpression, true), null
@@ -196,7 +196,7 @@ modify the generation of the SELECT clause, adding the
         public function walkSelectClause($selectClause)
         {
             $sql = parent::walkSelectClause($selectClause);
-    
+
             if ($this->getQuery()->getHint('mysqlWalker.sqlNoCache') === true) {
                 if ($selectClause->isDistinct) {
                     $sql = str_replace('SELECT DISTINCT', 'SELECT DISTINCT SQL_NO_CACHE', $sql);
@@ -204,7 +204,7 @@ modify the generation of the SELECT clause, adding the
                     $sql = str_replace('SELECT', 'SELECT SQL_NO_CACHE', $sql);
                 }
             }
-    
+
             return $sql;
         }
     }
