@@ -225,17 +225,6 @@ class SchemaValidatorTest extends OrmTestCase
 
         $this->assertEquals([], $ce);
     }
-
-    /**
-     * @group 9095
-     */
-    public function testAbstractChildClassNotPresentInDiscriminator(): void
-    {
-        $class1 = $this->em->getClassMetadata(Issue9095AbstractChild::class);
-        $ce     = $this->validator->validateClass($class1);
-
-        $this->assertEquals([], $ce);
-    }
 }
 
 /**
@@ -264,35 +253,6 @@ abstract class ParentEntity
  * @Entity
  */
 class ChildEntity extends MappedSuperclassEntity
-{
-}
-
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"child" = Issue9095Child::class})
- */
-abstract class Issue9095Parent
-{
-    /**
-     * @var mixed
-     * @Id
-     * @Column
-     */
-    protected $key;
-}
-
-/**
- * @Entity
- */
-abstract class Issue9095AbstractChild extends Issue9095Parent
-{
-}
-
-/**
- * @Entity
- */
-class Issue9095Child extends Issue9095AbstractChild
 {
 }
 
