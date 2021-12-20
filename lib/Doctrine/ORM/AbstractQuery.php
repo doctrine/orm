@@ -22,6 +22,7 @@ use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\Mapping\MappingException;
+use LogicException;
 use Psr\Cache\CacheItemPoolInterface;
 use Traversable;
 
@@ -91,7 +92,7 @@ abstract class AbstractQuery
     /**
      * The user-specified ResultSetMapping to use.
      *
-     * @var ResultSetMapping
+     * @var ResultSetMapping|null
      */
     protected $_resultSetMapping;
 
@@ -113,6 +114,7 @@ abstract class AbstractQuery
      * The hydration mode.
      *
      * @var string|int
+     * @psalm-var string|AbstractQuery::HYDRATE_*
      */
     protected $_hydrationMode = self::HYDRATE_OBJECT;
 
@@ -150,6 +152,7 @@ abstract class AbstractQuery
      * Second level query cache mode.
      *
      * @var int|null
+     * @psalm-var Cache::MODE_*|null
      */
     protected $cacheMode;
 
@@ -251,7 +254,8 @@ abstract class AbstractQuery
     }
 
     /**
-     * @return int
+     * @return int|null
+     * @psalm-return Cache::MODE_*|null
      */
     public function getCacheMode()
     {
@@ -260,6 +264,7 @@ abstract class AbstractQuery
 
     /**
      * @param int $cacheMode
+     * @psalm-param Cache::MODE_* $cacheMode
      *
      * @return $this
      */
@@ -492,7 +497,7 @@ abstract class AbstractQuery
     /**
      * Gets the ResultSetMapping used for hydration.
      *
-     * @return ResultSetMapping
+     * @return ResultSetMapping|null
      */
     protected function getResultSetMapping()
     {
@@ -829,6 +834,7 @@ abstract class AbstractQuery
      *
      * @param string|int $hydrationMode Doctrine processing mode to be used during hydration process.
      *                                  One of the Query::HYDRATE_* constants.
+     * @psalm-param string|AbstractQuery::HYDRATE_* $hydrationMode
      *
      * @return $this
      */
@@ -843,6 +849,7 @@ abstract class AbstractQuery
      * Gets the hydration mode currently used by the query.
      *
      * @return string|int
+     * @psalm-return string|AbstractQuery::HYDRATE_*
      */
     public function getHydrationMode()
     {
@@ -855,6 +862,7 @@ abstract class AbstractQuery
      * Alias for execute(null, $hydrationMode = HYDRATE_OBJECT).
      *
      * @param string|int $hydrationMode
+     * @psalm-param string|AbstractQuery::HYDRATE_* $hydrationMode
      *
      * @return mixed
      */
@@ -902,7 +910,8 @@ abstract class AbstractQuery
     /**
      * Get exactly one result or null.
      *
-     * @param string|int $hydrationMode
+     * @param string|int|null $hydrationMode
+     * @psalm-param string|AbstractQuery::HYDRATE_*|null $hydrationMode
      *
      * @return mixed
      *
@@ -939,7 +948,8 @@ abstract class AbstractQuery
      * If the result is not unique, a NonUniqueResultException is thrown.
      * If there is no result, a NoResultException is thrown.
      *
-     * @param string|int $hydrationMode
+     * @param string|int|null $hydrationMode
+     * @psalm-param string|AbstractQuery::HYDRATE_*|null $hydrationMode
      *
      * @return mixed
      *
@@ -1037,6 +1047,7 @@ abstract class AbstractQuery
      *
      * @param ArrayCollection|mixed[]|null $parameters    The query parameters.
      * @param string|int|null              $hydrationMode The hydration mode to use.
+     * @psalm-param string|AbstractQuery::HYDRATE_*|null $hydrationMode The hydration mode to use.
      *
      * @return IterableResult
      */
@@ -1057,7 +1068,11 @@ abstract class AbstractQuery
             $this->setParameters($parameters);
         }
 
-        $rsm  = $this->getResultSetMapping();
+        $rsm = $this->getResultSetMapping();
+        if ($rsm === null) {
+            throw new LogicException('Uninitialized result set mapping.');
+        }
+
         $stmt = $this->_doExecute();
 
         return $this->_em->newHydrator($this->_hydrationMode)->iterate($stmt, $rsm, $this->_hints);
@@ -1070,6 +1085,7 @@ abstract class AbstractQuery
      * @param ArrayCollection|array|mixed[] $parameters    The query parameters.
      * @param string|int|null               $hydrationMode The hydration mode to use.
      * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
+     * @psalm-param string|AbstractQuery::HYDRATE_*|null    $hydrationMode
      *
      * @return iterable<mixed>
      */
@@ -1087,6 +1103,9 @@ abstract class AbstractQuery
         }
 
         $rsm = $this->getResultSetMapping();
+        if ($rsm === null) {
+            throw new LogicException('Uninitialized result set mapping.');
+        }
 
         if ($rsm->isMixed && count($rsm->scalarMappings) > 0) {
             throw QueryException::iterateWithMixedResultNotAllowed();
@@ -1103,6 +1122,7 @@ abstract class AbstractQuery
      * @param ArrayCollection|mixed[]|null $parameters    Query parameters.
      * @param string|int|null              $hydrationMode Processing mode to be used during the hydration process.
      * @psalm-param ArrayCollection<int, Parameter>|mixed[]|null $parameters
+     * @psalm-param string|AbstractQuery::HYDRATE_*|null         $hydrationMode
      *
      * @return mixed
      */
@@ -1121,6 +1141,7 @@ abstract class AbstractQuery
      * @param ArrayCollection|mixed[]|null $parameters
      * @param string|int|null              $hydrationMode
      * @psalm-param ArrayCollection<int, Parameter>|mixed[]|null $parameters
+     * @psalm-param string|AbstractQuery::HYDRATE_*|null         $hydrationMode
      *
      * @return mixed
      */
@@ -1165,7 +1186,11 @@ abstract class AbstractQuery
             return $stmt;
         }
 
-        $rsm  = $this->getResultSetMapping();
+        $rsm = $this->getResultSetMapping();
+        if ($rsm === null) {
+            throw new LogicException('Uninitialized result set mapping.');
+        }
+
         $data = $this->_em->newHydrator($this->_hydrationMode)->hydrateAll($stmt, $rsm, $this->_hints);
 
         $setCacheEntry($data);
@@ -1197,12 +1222,17 @@ abstract class AbstractQuery
      * @param ArrayCollection|mixed[]|null $parameters
      * @param string|int|null              $hydrationMode
      * @psalm-param ArrayCollection<int, Parameter>|mixed[]|null $parameters
+     * @psalm-param string|AbstractQuery::HYDRATE_*|null         $hydrationMode
      *
      * @return mixed
      */
     private function executeUsingQueryCache($parameters = null, $hydrationMode = null)
     {
-        $rsm        = $this->getResultSetMapping();
+        $rsm = $this->getResultSetMapping();
+        if ($rsm === null) {
+            throw new LogicException('Uninitialized result set mapping.');
+        }
+
         $queryCache = $this->_em->getCache()->getQueryCache($this->cacheRegion);
         $queryKey   = new QueryCacheKey(
             $this->getHash(),
@@ -1237,6 +1267,7 @@ abstract class AbstractQuery
 
     private function getTimestampKey(): ?TimestampCacheKey
     {
+        assert($this->_resultSetMapping !== null);
         $entityName = reset($this->_resultSetMapping->aliasMap);
 
         if (empty($entityName)) {

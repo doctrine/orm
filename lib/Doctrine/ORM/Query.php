@@ -23,6 +23,7 @@ use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use Psr\Cache\CacheItemPoolInterface;
 
@@ -210,6 +211,8 @@ final class Query extends AbstractQuery
 
     /**
      * {@inheritdoc}
+     *
+     * @return ResultSetMapping
      */
     protected function getResultSetMapping()
     {
@@ -441,8 +444,6 @@ final class Query extends AbstractQuery
         $originalValue = $parameter->getValue();
         $value         = $originalValue;
         $rsm           = $this->getResultSetMapping();
-
-        assert($rsm !== null);
 
         if ($value instanceof ClassMetadata && isset($rsm->metadataParameterMapping[$key])) {
             $value = $value->getMetadataValue($rsm->metadataParameterMapping[$key]);
@@ -709,6 +710,7 @@ final class Query extends AbstractQuery
      * @param ArrayCollection|mixed[]|null $parameters    The query parameters.
      * @param string|int                   $hydrationMode The hydration mode to use.
      * @psalm-param ArrayCollection<int, Parameter>|array<string, mixed>|null $parameters
+     * @psalm-param string|AbstractQuery::HYDRATE_*|null                      $hydrationMode
      */
     public function iterate($parameters = null, $hydrationMode = self::HYDRATE_OBJECT): IterableResult
     {
