@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Logging\DebugStack;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
@@ -22,7 +23,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
 
 use function get_class;
-use function in_array;
 
 class BasicFunctionalTest extends OrmFunctionalTestCase
 {
@@ -717,7 +717,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $user->setAddress($address);
 
-        $this->_em->transactional(static function ($em) use ($user): void {
+        $this->_em->wrapInTransaction(static function (EntityManagerInterface $em) use ($user): void {
             $em->persist($user);
         });
         $this->_em->clear();

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
-use BadMethodCallException;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Util\ClassUtils;
@@ -32,11 +31,9 @@ use InvalidArgumentException;
 use Throwable;
 
 use function array_keys;
-use function call_user_func;
 use function get_class;
 use function gettype;
 use function is_array;
-use function is_callable;
 use function is_object;
 use function is_string;
 use function ltrim;
@@ -219,32 +216,6 @@ use function sprintf;
     public function getCache()
     {
         return $this->cache;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function transactional($func)
-    {
-        if (! is_callable($func)) {
-            throw new InvalidArgumentException('Expected argument of type "callable", got "' . gettype($func) . '"');
-        }
-
-        $this->conn->beginTransaction();
-
-        try {
-            $return = call_user_func($func, $this);
-
-            $this->flush();
-            $this->conn->commit();
-
-            return $return ?: true;
-        } catch (Throwable $e) {
-            $this->close();
-            $this->conn->rollBack();
-
-            throw $e;
-        }
     }
 
     /**

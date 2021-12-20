@@ -1,5 +1,9 @@
 # Upgrade to 3.0
 
+## BC BREAK: Remove `Doctrine\ORM\EntityManagerInterface#transactional()`
+
+This method has been replaced by `Doctrine\ORM\EntityManagerInterface#wrapInTransaction()`.
+
 ## BC BREAK: Removed support for schema emulation.
 
 The ORM no longer attempts to emulate schemas on SQLite.
