@@ -18,6 +18,7 @@ use Doctrine\ORM\Exception\MissingIdentifierField;
 use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
+use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\ProxyFactory;
@@ -67,80 +68,58 @@ use function sprintf;
 {
     /**
      * The used Configuration.
-     *
-     * @var Configuration
      */
-    private $config;
+    private Configuration $config;
 
     /**
      * The database connection used by the EntityManager.
-     *
-     * @var Connection
      */
-    private $conn;
+    private Connection $conn;
 
     /**
      * The metadata factory, used to retrieve the ORM metadata of entity classes.
-     *
-     * @var ClassMetadataFactory
      */
-    private $metadataFactory;
+    private ClassMetadataFactory $metadataFactory;
 
     /**
      * The UnitOfWork used to coordinate object-level transactions.
-     *
-     * @var UnitOfWork
      */
-    private $unitOfWork;
+    private UnitOfWork $unitOfWork;
 
     /**
      * The event manager that is the central point of the event system.
-     *
-     * @var EventManager
      */
-    private $eventManager;
+    private EventManager $eventManager;
 
     /**
      * The proxy factory used to create dynamic proxies.
-     *
-     * @var ProxyFactory
      */
-    private $proxyFactory;
+    private ProxyFactory $proxyFactory;
 
     /**
      * The repository factory used to create dynamic repositories.
-     *
-     * @var RepositoryFactory
      */
-    private $repositoryFactory;
+    private RepositoryFactory $repositoryFactory;
 
     /**
      * The expression builder instance used to generate query expressions.
-     *
-     * @var Expr|null
      */
-    private $expressionBuilder;
+    private ?Expr $expressionBuilder = null;
 
     /**
      * Whether the EntityManager is closed or not.
-     *
-     * @var bool
      */
-    private $closed = false;
+    private bool $closed = false;
 
     /**
      * Collection of query filters.
-     *
-     * @var FilterCollection|null
      */
-    private $filterCollection;
+    private ?FilterCollection $filterCollection = null;
 
     /**
      * The second level cache regions API.
-     *
-     * @var Cache|null
      */
-    private $cache;
+    private ?Cache $cache = null;
 
     /**
      * Creates a new EntityManager that operates on the given database connection
@@ -175,48 +154,27 @@ use function sprintf;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getConnection()
+    public function getConnection(): Connection
     {
         return $this->conn;
     }
 
-    /**
-     * Gets the metadata factory used to gather the metadata of classes.
-     *
-     * @return ClassMetadataFactory
-     */
-    public function getMetadataFactory()
+    public function getMetadataFactory(): ClassMetadataFactory
     {
         return $this->metadataFactory;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getExpressionBuilder()
+    public function getExpressionBuilder(): Expr
     {
-        if ($this->expressionBuilder === null) {
-            $this->expressionBuilder = new Query\Expr();
-        }
-
-        return $this->expressionBuilder;
+        return $this->expressionBuilder ??= new Expr();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function beginTransaction()
+    public function beginTransaction(): void
     {
         $this->conn->beginTransaction();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getCache()
+    public function getCache(): ?Cache
     {
         return $this->cache;
     }
@@ -243,18 +201,12 @@ use function sprintf;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function commit()
+    public function commit(): void
     {
         $this->conn->commit();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function rollback()
+    public function rollback(): void
     {
         $this->conn->rollBack();
     }
@@ -273,15 +225,12 @@ use function sprintf;
      *
      * {@inheritDoc}
      */
-    public function getClassMetadata($className)
+    public function getClassMetadata($className): Mapping\ClassMetadata
     {
         return $this->metadataFactory->getMetadataFor($className);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function createQuery($dql = '')
+    public function createQuery(string $dql = ''): Query
     {
         $query = new Query($this);
 
@@ -292,18 +241,12 @@ use function sprintf;
         return $query;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function createNamedQuery($name)
+    public function createNamedQuery(string $name): Query
     {
         return $this->createQuery($this->config->getNamedQuery($name));
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function createNativeQuery($sql, ResultSetMapping $rsm)
+    public function createNativeQuery(string $sql, ResultSetMapping $rsm): NativeQuery
     {
         $query = new NativeQuery($this);
 
@@ -313,20 +256,14 @@ use function sprintf;
         return $query;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function createNamedNativeQuery($name)
+    public function createNamedNativeQuery(string $name): NativeQuery
     {
         [$sql, $rsm] = $this->config->getNamedNativeQuery($name);
 
         return $this->createNativeQuery($sql, $rsm);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function createQueryBuilder()
+    public function createQueryBuilder(): QueryBuilder
     {
         return new QueryBuilder($this);
     }
@@ -341,13 +278,11 @@ use function sprintf;
      *
      * @param object|mixed[]|null $entity
      *
-     * @return void
-     *
      * @throws OptimisticLockException If a version check on an entity that
      * makes use of optimistic locking fails.
      * @throws ORMException
      */
-    public function flush($entity = null)
+    public function flush($entity = null): void
     {
         if ($entity !== null) {
             Deprecation::trigger(
@@ -364,29 +299,9 @@ use function sprintf;
     }
 
     /**
-     * Finds an Entity by its identifier.
-     *
-     * @param string   $className   The class name of the entity to find.
-     * @param mixed    $id          The identity of the entity to find.
-     * @param int|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
-     *    or NULL if no specific lock mode should be used
-     *    during the search.
-     * @param int|null $lockVersion The version of the entity to find when using
-     * optimistic locking.
-     * @psalm-param class-string<T> $className
-     * @psalm-param LockMode::*|null $lockMode
-     *
-     * @return object|null The entity instance or NULL if the entity can not be found.
-     * @psalm-return ?T
-     *
-     * @throws OptimisticLockException
-     * @throws ORMInvalidArgumentException
-     * @throws TransactionRequiredException
-     * @throws ORMException
-     *
-     * @template T
+     * {@inheritdoc}
      */
-    public function find($className, $id, $lockMode = null, $lockVersion = null)
+    public function find($className, mixed $id, ?int $lockMode = null, ?int $lockVersion = null): ?object
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($className, '\\'));
 
@@ -477,7 +392,7 @@ use function sprintf;
     /**
      * {@inheritDoc}
      */
-    public function getReference($entityName, $id)
+    public function getReference(string $entityName, $id): ?object
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
@@ -521,7 +436,7 @@ use function sprintf;
     /**
      * {@inheritDoc}
      */
-    public function getPartialReference($entityName, $identifier)
+    public function getPartialReference(string $entityName, $identifier): ?object
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
@@ -552,13 +467,11 @@ use function sprintf;
      *
      * @param string|null $entityName if given, only entities of this type will get detached
      *
-     * @return void
-     *
      * @throws ORMInvalidArgumentException If a non-null non-string value is given.
      * @throws MappingException            If a $entityName is given, but that entity is not
      *                                     found in the mappings.
      */
-    public function clear($entityName = null)
+    public function clear($entityName = null): void
     {
         if ($entityName !== null && ! is_string($entityName)) {
             throw ORMInvalidArgumentException::invalidEntityName($entityName);
@@ -580,10 +493,7 @@ use function sprintf;
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function close()
+    public function close(): void
     {
         $this->clear();
 
@@ -601,12 +511,10 @@ use function sprintf;
      *
      * @param object $entity The instance to make managed and persistent.
      *
-     * @return void
-     *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    public function persist($entity)
+    public function persist($entity): void
     {
         if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#persist()', $entity);
@@ -625,12 +533,10 @@ use function sprintf;
      *
      * @param object $entity The entity instance to remove.
      *
-     * @return void
-     *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    public function remove($entity)
+    public function remove($entity): void
     {
         if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#remove()', $entity);
@@ -647,12 +553,10 @@ use function sprintf;
      *
      * @param object $entity The entity to refresh.
      *
-     * @return void
-     *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    public function refresh($entity)
+    public function refresh($entity): void
     {
         if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#refresh()', $entity);
@@ -672,11 +576,9 @@ use function sprintf;
      *
      * @param object $entity The entity to detach.
      *
-     * @return void
-     *
      * @throws ORMInvalidArgumentException
      */
-    public function detach($entity)
+    public function detach($entity): void
     {
         if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()', $entity);
@@ -699,7 +601,7 @@ use function sprintf;
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    public function merge($entity)
+    public function merge($entity): object
     {
         Deprecation::trigger(
             'doctrine/orm',
@@ -720,7 +622,7 @@ use function sprintf;
     /**
      * {@inheritDoc}
      */
-    public function lock($entity, $lockMode, $lockVersion = null)
+    public function lock(object $entity, int $lockMode, $lockVersion = null): void
     {
         $this->unitOfWork->lock($entity, $lockMode, $lockVersion);
     }
@@ -736,7 +638,7 @@ use function sprintf;
      *
      * @template T
      */
-    public function getRepository($entityName)
+    public function getRepository($entityName): EntityRepository
     {
         return $this->repositoryFactory->getRepository($this, $entityName);
     }
@@ -748,25 +650,19 @@ use function sprintf;
      *
      * @return bool TRUE if this EntityManager currently manages the given entity, FALSE otherwise.
      */
-    public function contains($entity)
+    public function contains($entity): bool
     {
         return $this->unitOfWork->isScheduledForInsert($entity)
             || $this->unitOfWork->isInIdentityMap($entity)
             && ! $this->unitOfWork->isScheduledForDelete($entity);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getEventManager()
+    public function getEventManager(): EventManager
     {
         return $this->eventManager;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getConfiguration()
+    public function getConfiguration(): Configuration
     {
         return $this->config;
     }
@@ -783,18 +679,12 @@ use function sprintf;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function isOpen()
+    public function isOpen(): bool
     {
         return ! $this->closed;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getUnitOfWork()
+    public function getUnitOfWork(): UnitOfWork
     {
         return $this->unitOfWork;
     }
@@ -802,15 +692,7 @@ use function sprintf;
     /**
      * {@inheritDoc}
      */
-    public function getHydrator($hydrationMode)
-    {
-        return $this->newHydrator($hydrationMode);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function newHydrator($hydrationMode)
+    public function newHydrator($hydrationMode): AbstractHydrator
     {
         switch ($hydrationMode) {
             case Query::HYDRATE_OBJECT:
@@ -842,10 +724,7 @@ use function sprintf;
         throw InvalidHydrationMode::fromMode((string) $hydrationMode);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getProxyFactory()
+    public function getProxyFactory(): ProxyFactory
     {
         return $this->proxyFactory;
     }
@@ -853,7 +732,7 @@ use function sprintf;
     /**
      * {@inheritDoc}
      */
-    public function initializeObject($obj)
+    public function initializeObject($obj): void
     {
         $this->unitOfWork->initializeObject($obj);
     }
@@ -871,7 +750,7 @@ use function sprintf;
      * @throws InvalidArgumentException
      * @throws ORMException
      */
-    public static function create($connection, Configuration $config, ?EventManager $eventManager = null)
+    public static function create($connection, Configuration $config, ?EventManager $eventManager = null): EntityManager
     {
         if (! $config->getMetadataDriverImpl()) {
             throw MissingMappingDriverImplementation::create();
@@ -890,12 +769,10 @@ use function sprintf;
      * @param EventManager|null  $eventManager The EventManager instance to use.
      * @psalm-param array<string, mixed>|Connection $connection
      *
-     * @return Connection
-     *
      * @throws InvalidArgumentException
      * @throws ORMException
      */
-    protected static function createConnection($connection, Configuration $config, ?EventManager $eventManager = null)
+    protected static function createConnection($connection, Configuration $config, ?EventManager $eventManager = null): Connection
     {
         if (is_array($connection)) {
             return DriverManager::getConnection($connection, $config, $eventManager ?: new EventManager());
@@ -918,30 +795,17 @@ use function sprintf;
         return $connection;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getFilters()
+    public function getFilters(): FilterCollection
     {
-        if ($this->filterCollection === null) {
-            $this->filterCollection = new FilterCollection($this);
-        }
-
-        return $this->filterCollection;
+        return $this->filterCollection ??= new FilterCollection($this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function isFiltersStateClean()
+    public function isFiltersStateClean(): bool
     {
         return $this->filterCollection === null || $this->filterCollection->isClean();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function hasFilters()
+    public function hasFilters(): bool
     {
         return $this->filterCollection !== null;
     }

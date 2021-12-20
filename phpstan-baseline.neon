@@ -121,7 +121,17 @@ parameters:
 			path: lib/Doctrine/ORM/Configuration.php
 
 		-
-			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:find\\(\\) invoked with 4 parameters, 2 required\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getClassMetadata\\(\\) should return Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata but returns Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<T of object\\>\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
+
+		-
+			message: "#^Method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getMetadataFactory\\(\\) should return Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory but returns Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
+
+		-
+			message: "#^Method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getRepository\\(\\) should return Doctrine\\\\ORM\\\\EntityRepository but returns Doctrine\\\\Persistence\\\\ObjectRepository\\<T\\>\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
 
@@ -131,37 +141,47 @@ parameters:
 			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
 
 		-
+			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
+			count: 1
+			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
+
+		-
+			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManagerDecorator\\:\\:getMetadataFactory\\(\\)$#"
+			count: 1
+			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
+
+		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:find\\(\\) should return T\\|null but returns object\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:find\\(\\) should return T of object\\|null but returns object\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:find\\(\\) should return T\\|null but returns object\\|null\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:find\\(\\) should return T of object\\|null but returns object\\|null\\.$#"
 			count: 3
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getPartialReference\\(\\) should return T\\|null but returns object\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getPartialReference\\(\\) should return T of object\\|null but returns object\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getPartialReference\\(\\) should return T\\|null but returns object\\|null\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getPartialReference\\(\\) should return T of object\\|null but returns object\\|null\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getReference\\(\\) should return T\\|null but returns Doctrine\\\\Common\\\\Proxy\\\\Proxy\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getReference\\(\\) should return T of object\\|null but returns Doctrine\\\\Common\\\\Proxy\\\\Proxy\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getReference\\(\\) should return T\\|null but returns object\\|null\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getReference\\(\\) should return T of object\\|null but returns object\\|null\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
 
@@ -172,8 +192,13 @@ parameters:
 
 		-
 			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ORM\\\\EntityManager\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
-			count: 2
+			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
+
+		-
+			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
+			count: 1
+			path: lib/Doctrine/ORM/EntityManagerInterface.php
 
 		-
 			message: "#^Template type T of method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:getClassMetadata\\(\\) is not referenced in a parameter\\.$#"
@@ -1554,3 +1579,4 @@ parameters:
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$subClasses\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Utility/HierarchyDiscriminatorResolver.php
+
