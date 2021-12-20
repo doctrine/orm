@@ -447,11 +447,8 @@
       <code>getProxyNamespace</code>
       <code>merge</code>
     </DeprecatedMethod>
-    <DocblockTypeContradiction occurrences="9">
+    <DocblockTypeContradiction occurrences="6">
       <code>$entityName !== null &amp;&amp; ! is_string($entityName)</code>
-      <code>$this-&gt;expressionBuilder === null</code>
-      <code>$this-&gt;filterCollection === null</code>
-      <code>$this-&gt;filterCollection === null</code>
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
@@ -507,11 +504,6 @@
       <code>createCache</code>
       <code>getCacheFactory</code>
     </PossiblyNullReference>
-    <PropertyNotSetInConstructor occurrences="3">
-      <code>$cache</code>
-      <code>$expressionBuilder</code>
-      <code>$filterCollection</code>
-    </PropertyNotSetInConstructor>
     <PropertyTypeCoercion occurrences="1">
       <code>new $metadataFactoryClassName()</code>
     </PropertyTypeCoercion>
@@ -519,9 +511,6 @@
       <code>is_object($connection)</code>
       <code>is_object($connection)</code>
     </RedundantCondition>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>$this-&gt;filterCollection !== null</code>
-    </RedundantConditionGivenDocblockType>
     <TypeDoesNotContainType occurrences="2">
       <code>': "' . $connection . '"'</code>
       <code>gettype($connection)</code>
