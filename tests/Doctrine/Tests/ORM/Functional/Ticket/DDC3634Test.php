@@ -146,7 +146,7 @@ final class LastInsertIdMockConnection extends AbstractConnectionMiddleware
     /**
      * {@inheritdoc}
      */
-    public function lastInsertId($name = null)
+    public function lastInsertId($name = null): int|string
     {
         return $this->idMocker->mockedId ?? parent::lastInsertId($name);
     }

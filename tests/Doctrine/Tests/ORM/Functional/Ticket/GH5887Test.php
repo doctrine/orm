@@ -185,7 +185,7 @@ class GH5887CustomIdObjectType extends StringType
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         return $value->getId();
     }
@@ -193,15 +193,12 @@ class GH5887CustomIdObjectType extends StringType
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): GH5887CustomIdObject
     {
         return new GH5887CustomIdObject((int) $value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::NAME;
     }

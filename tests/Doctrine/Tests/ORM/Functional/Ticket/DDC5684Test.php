@@ -66,12 +66,12 @@ class DDC5684Test extends OrmFunctionalTestCase
     }
 }
 
-class DDC5684ObjectIdType extends DBALTypes\IntegerType
+class DDC5684ObjectIdType extends DBALTypes\BigIntType
 {
     /**
      * {@inheritDoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): DDC5684ObjectId
     {
         return new DDC5684ObjectId($value);
     }
@@ -79,23 +79,17 @@ class DDC5684ObjectIdType extends DBALTypes\IntegerType
     /**
      * {@inheritDoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         return $value->value;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function requiresSQLCommentHint(AbstractPlatform $platform)
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;
     }
