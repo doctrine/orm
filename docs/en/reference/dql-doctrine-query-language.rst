@@ -670,11 +670,23 @@ The same restrictions apply for the reference of related entities.
 
 .. warning::
 
-    DQL DELETE statements are ported directly into a
-    Database DELETE statement and therefore bypass any events and checks for the
-    version column if they are not explicitly added to the WHERE clause
-    of the query. Additionally Deletes of specified entities are *NOT*
-    cascaded to related entities even if specified in the metadata.
+    DQL DELETE statements are ported directly into an SQL DELETE statement.
+    Therefore, some limitations apply:
+    
+    - Lifecycle events for the affected entities are not executed.
+    - A cascading ``remove`` operation (as indicated e. g. by ``cascade={"remove"}`` 
+      or ``cascade={"all"}`` in the mapping configuration) is not being performed 
+      for associated entities. You can rely on database level cascade operations by
+      configuring each join column with the ``onDelete`` option.
+    - Checks for the version column are bypassed if they are not explicitly added
+      to the WHERE clause of the query.
+      
+    When you rely on one of these features, one option is to use the 
+    ``EntityManager#remove($entity)`` method. This, however, is costly performance-wise: 
+    It means collections and related entities are fetched into memory 
+    (even if they are marked as lazy). Pulling object graphs into memory on cascade
+    can cause considerable performance overhead, especially when the cascaded collections
+    are large. Make sure to weigh the benefits and downsides.
 
 Comments in queries
 -------------------
