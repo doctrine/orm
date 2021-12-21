@@ -515,9 +515,23 @@ Thanks to ``cascade: remove``, you can easily delete a user and all linked comme
     overhead, especially when the cascaded collections are large. Make sure
     to weigh the benefits and downsides of each cascade operation that you define.
 
-    To rely on the database level cascade operations for the delete operation instead, you can
-    configure each join column with :doc:`the onDelete option <working-with-objects>`.
+    If you can go without lifecycle events, you can rely on database-level foreign keys
+    with cascade operations instead. To do so, configure each join column with 
+    :doc:`the onDelete option <working-with-objects>` and remove the ``cascade: remove`` setting.
+    
+    Contrary to in-memory cascade operations, those at the database level are also applied 
+    when using :doc:`DQL DELETE statements<dql-doctrine-query-language#delete-queries>`.
 
+.. warning::
+
+    For many-to-many associations, ``cascade: remove`` means that the associated entities
+    will be removed. 
+    
+    Consider an example where you have a many-to-many association between
+    a ``Book`` and an ``Author`` entity. When you use ``cascade: remove`` on the ``Book``
+    side and remove a ``Book`` entity, the corresponding ``Author`` will be removed as
+    well – even if there are other ``Book`` entities referring to it.
+    
 Even though automatic cascading is convenient, it should be used
 with care. Do not blindly apply ``cascade=all`` to all associations as
 it will unnecessarily degrade the performance of your application.
