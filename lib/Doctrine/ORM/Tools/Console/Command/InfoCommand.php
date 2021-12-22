@@ -20,13 +20,15 @@ use function sprintf;
  */
 class InfoCommand extends AbstractEntityManagerCommand
 {
+    /** @var string|null */
+    protected static $defaultName = 'orm:info';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('orm:info')
-             ->setDescription('Show basic information about all mapped entities')
+        $this->setDescription('Show basic information about all mapped entities')
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->setHelp(<<<'EOT'
 The <info>%command.name%</info> shows basic information about which

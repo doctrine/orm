@@ -19,13 +19,15 @@ use function sprintf;
  */
 class CreateCommand extends AbstractCommand
 {
+    /** @var string|null */
+    protected static $defaultName = 'orm:schema-tool:create';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('orm:schema-tool:create')
-             ->setDescription('Processes the schema and either create it directly on EntityManager Storage Connection or generate the SQL output')
+        $this->setDescription('Processes the schema and either create it directly on EntityManager Storage Connection or generate the SQL output')
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('dump-sql', null, InputOption::VALUE_NONE, 'Instead of trying to apply generated SQLs into EntityManager Storage Connection, output them.')
              ->setHelp(<<<'EOT'

@@ -27,13 +27,15 @@ use function strtoupper;
  */
 class RunDqlCommand extends AbstractEntityManagerCommand
 {
+    /** @var string|null */
+    protected static $defaultName = 'orm:run-dql';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('orm:run-dql')
-             ->setDescription('Executes arbitrary DQL directly from the command line')
+        $this->setDescription('Executes arbitrary DQL directly from the command line')
              ->addArgument('dql', InputArgument::REQUIRED, 'The DQL to execute.')
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('hydrate', null, InputOption::VALUE_REQUIRED, 'Hydration mode of result set. Should be either: object, array, scalar or single-scalar.', 'object')

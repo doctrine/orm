@@ -42,10 +42,12 @@ use const JSON_UNESCAPED_UNICODE;
  */
 final class MappingDescribeCommand extends AbstractEntityManagerCommand
 {
+    /** @var string|null */
+    protected static $defaultName = 'orm:mapping:describe';
+
     protected function configure(): void
     {
-        $this->setName('orm:mapping:describe')
-             ->addArgument('entityName', InputArgument::REQUIRED, 'Full or partial name of entity')
+        $this->addArgument('entityName', InputArgument::REQUIRED, 'Full or partial name of entity')
              ->setDescription('Display information about mapped objects')
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->setHelp(<<<'EOT'

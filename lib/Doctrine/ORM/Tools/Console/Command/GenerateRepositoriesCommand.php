@@ -27,13 +27,15 @@ use function sprintf;
  */
 class GenerateRepositoriesCommand extends AbstractEntityManagerCommand
 {
+    /** @var string|null */
+    protected static $defaultName = 'orm:generate-repositories';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('orm:generate-repositories')
-             ->setAliases(['orm:generate:repositories'])
+        $this->setAliases(['orm:generate:repositories'])
              ->setDescription('Generate repository classes from your mapping information')
              ->addArgument('dest-path', InputArgument::REQUIRED, 'The path to generate your repository classes.')
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')

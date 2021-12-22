@@ -34,6 +34,9 @@ use const PHP_EOL;
  */
 class ConvertDoctrine1SchemaCommand extends Command
 {
+    /** @var string|null */
+    protected static $defaultName = 'orm:convert-d1-schema';
+
     /** @var EntityGenerator|null */
     private $entityGenerator = null;
 
@@ -85,8 +88,7 @@ class ConvertDoctrine1SchemaCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('orm:convert-d1-schema')
-             ->setAliases(['orm:convert:d1-schema'])
+        $this->setAliases(['orm:convert:d1-schema'])
              ->setDescription('Converts Doctrine 1.x schema into a Doctrine 2.x schema')
              ->addArgument('from-path', InputArgument::REQUIRED, 'The path of Doctrine 1.X schema information.')
              ->addArgument('to-type', InputArgument::REQUIRED, 'The destination Doctrine 2.X mapping type.')

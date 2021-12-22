@@ -24,13 +24,15 @@ use function sprintf;
  */
 class EntityRegionCommand extends AbstractEntityManagerCommand
 {
+    /** @var string|null */
+    protected static $defaultName = 'orm:clear-cache:region:entity';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('orm:clear-cache:region:entity')
-             ->setDescription('Clear a second-level cache entity region')
+        $this->setDescription('Clear a second-level cache entity region')
              ->addArgument('entity-class', InputArgument::OPTIONAL, 'The entity name.')
              ->addArgument('entity-id', InputArgument::OPTIONAL, 'The entity identifier.')
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')

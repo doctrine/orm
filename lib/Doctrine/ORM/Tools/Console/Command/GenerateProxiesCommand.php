@@ -26,13 +26,15 @@ use function sprintf;
  */
 class GenerateProxiesCommand extends AbstractEntityManagerCommand
 {
+    /** @var string|null */
+    protected static $defaultName = 'orm:generate-proxies';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('orm:generate-proxies')
-             ->setAliases(['orm:generate:proxies'])
+        $this->setAliases(['orm:generate:proxies'])
              ->setDescription('Generates proxy classes for entity classes')
              ->addArgument('dest-path', InputArgument::OPTIONAL, 'The path to generate your proxy classes. If none is provided, it will attempt to grab from configuration.')
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')

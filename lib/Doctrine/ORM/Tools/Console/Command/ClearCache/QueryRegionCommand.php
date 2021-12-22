@@ -24,13 +24,15 @@ use function sprintf;
  */
 class QueryRegionCommand extends AbstractEntityManagerCommand
 {
+    /** @var string|null */
+    protected static $defaultName = 'orm:clear-cache:region:query';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('orm:clear-cache:region:query')
-             ->setDescription('Clear a second-level cache query region')
+        $this->setDescription('Clear a second-level cache query region')
              ->addArgument('region-name', InputArgument::OPTIONAL, 'The query region to clear.')
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('all', null, InputOption::VALUE_NONE, 'If defined, all query regions will be deleted/invalidated.')

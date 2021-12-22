@@ -24,13 +24,15 @@ use function sprintf;
  */
 class CollectionRegionCommand extends AbstractEntityManagerCommand
 {
+    /** @var string|null */
+    protected static $defaultName = 'orm:clear-cache:region:collection';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('orm:clear-cache:region:collection')
-             ->setDescription('Clear a second-level cache collection region')
+        $this->setDescription('Clear a second-level cache collection region')
              ->addArgument('owner-class', InputArgument::OPTIONAL, 'The owner entity name.')
              ->addArgument('association', InputArgument::OPTIONAL, 'The association collection name.')
              ->addArgument('owner-id', InputArgument::OPTIONAL, 'The owner identifier.')

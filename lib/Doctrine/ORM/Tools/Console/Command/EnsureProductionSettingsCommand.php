@@ -17,13 +17,15 @@ use Throwable;
  */
 class EnsureProductionSettingsCommand extends AbstractEntityManagerCommand
 {
+    /** @var string|null */
+    protected static $defaultName = 'orm:ensure-production-settings';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('orm:ensure-production-settings')
-             ->setDescription('Verify that Doctrine is properly configured for a production environment')
+        $this->setDescription('Verify that Doctrine is properly configured for a production environment')
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('complete', null, InputOption::VALUE_NONE, 'Flag to also inspect database connection existence.')
              ->setHelp('Verify that Doctrine is properly configured for a production environment.');

@@ -27,13 +27,15 @@ use function sprintf;
  */
 class QueryCommand extends AbstractEntityManagerCommand
 {
+    /** @var string|null */
+    protected static $defaultName = 'orm:clear-cache:query';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('orm:clear-cache:query')
-             ->setDescription('Clear all query cache of the various cache drivers')
+        $this->setDescription('Clear all query cache of the various cache drivers')
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, cache entries will be flushed instead of deleted/invalidated.')
              ->setHelp(<<<'EOT'
