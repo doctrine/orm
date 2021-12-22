@@ -25,6 +25,8 @@ interface EntityHydrator
      * @param EntityCacheKey   $key      The entity cache key.
      * @param EntityCacheEntry $entry    The entity cache entry.
      * @param object           $entity   The entity to load the cache into. If not specified, a new entity is created.
+     *
+     * @return object|null
      */
     public function loadCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, EntityCacheEntry $entry, $entity = null);
 }

@@ -90,18 +90,7 @@
       <code>(string) $fileLockRegionDirectory</code>
     </RedundantCastGivenDocblockType>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/DefaultCollectionHydrator.php">
-    <InvalidNullableReturnType occurrences="1">
-      <code>loadCacheEntry</code>
-    </InvalidNullableReturnType>
-    <NullableReturnStatement occurrences="1">
-      <code>null</code>
-    </NullableReturnStatement>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultEntityHydrator.php">
-    <MissingReturnType occurrences="1">
-      <code>loadCacheEntry</code>
-    </MissingReturnType>
     <PossiblyUndefinedArrayOffset occurrences="1">
       <code>$fieldMapping['columnName']</code>
     </PossiblyUndefinedArrayOffset>
@@ -127,9 +116,6 @@
       <code>$assocEntry-&gt;class</code>
       <code>$assocEntry-&gt;class</code>
     </NoInterfaceProperties>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$cacheConfig-&gt;getCacheLogger()</code>
-    </PossiblyNullPropertyAssignmentValue>
     <PossiblyNullReference occurrences="1">
       <code>getCacheLogger</code>
     </PossiblyNullReference>
@@ -148,11 +134,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$value-&gt;class</code>
     </ArgumentTypeCoercion>
-  </file>
-  <file src="lib/Doctrine/ORM/Cache/EntityHydrator.php">
-    <MissingReturnType occurrences="1">
-      <code>loadCacheEntry</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Cache/Logging/CacheLogger.php">
     <MissingReturnType occurrences="9">
@@ -304,13 +285,6 @@
       <code>lock</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/Region.php">
-    <MissingReturnType occurrences="3">
-      <code>evict</code>
-      <code>evictAll</code>
-      <code>put</code>
-    </MissingReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/Region/DefaultMultiGetRegion.php">
     <DeprecatedClass occurrences="2">
       <code>MultiGetCache</code>
@@ -338,23 +312,6 @@
       <code>(int) $lifetime</code>
       <code>(string) $name</code>
     </RedundantCastGivenDocblockType>
-  </file>
-  <file src="lib/Doctrine/ORM/Cache/Region/FileLockRegion.php">
-    <ImplementedReturnTypeMismatch occurrences="1">
-      <code>bool</code>
-    </ImplementedReturnTypeMismatch>
-    <InvalidNullableReturnType occurrences="1">
-      <code>lock</code>
-    </InvalidNullableReturnType>
-    <MissingReturnType occurrences="3">
-      <code>evict</code>
-      <code>evictAll</code>
-      <code>put</code>
-    </MissingReturnType>
-    <NullableReturnStatement occurrences="2">
-      <code>null</code>
-      <code>null</code>
-    </NullableReturnStatement>
   </file>
   <file src="lib/Doctrine/ORM/Cache/Region/UpdateTimestampCache.php">
     <MissingReturnType occurrences="1">

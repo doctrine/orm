@@ -45,7 +45,7 @@ class DefaultQueryCache implements QueryCache
     /** @var QueryCacheValidator */
     private $validator;
 
-    /** @var CacheLogger */
+    /** @var CacheLogger|null */
     protected $cacheLogger;
 
     /** @var array<string,mixed> */
