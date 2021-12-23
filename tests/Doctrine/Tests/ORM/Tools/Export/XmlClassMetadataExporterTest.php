@@ -103,4 +103,46 @@ XML;
 
         self::assertXmlStringEqualsXmlString($expectedFileContent, $exporter->exportClassMetadata($metadata));
     }
+
+    public function testPolicyExport(): void
+    {
+        $exporter = new XmlExporter();
+        $metadata = new ClassMetadata('entityTest');
+
+        // DEFERRED_IMPLICIT
+        $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
+
+        $expectedFileContent = <<<'XML'
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="entityTest"/>
+</doctrine-mapping>
+XML;
+
+        self::assertXmlStringEqualsXmlString($expectedFileContent, $exporter->exportClassMetadata($metadata));
+
+        // DEFERRED_EXPLICIT
+        $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_EXPLICIT);
+
+        $expectedFileContent = <<<'XML'
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="entityTest" change-tracking-policy="DEFERRED_EXPLICIT"/>
+</doctrine-mapping>
+XML;
+
+        self::assertXmlStringEqualsXmlString($expectedFileContent, $exporter->exportClassMetadata($metadata));
+
+        // NOTIFY
+        $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_NOTIFY);
+
+        $expectedFileContent = <<<'XML'
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="entityTest" change-tracking-policy="NOTIFY"/>
+</doctrine-mapping>
+XML;
+
+        self::assertXmlStringEqualsXmlString($expectedFileContent, $exporter->exportClassMetadata($metadata));
+    }
 }
