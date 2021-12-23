@@ -90,7 +90,7 @@ class XmlExporter extends AbstractExporter
         $trackingPolicy = $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy);
 
         if ($trackingPolicy !== 'DEFERRED_IMPLICIT') {
-            $root->addChild('change-tracking-policy', $trackingPolicy);
+            $root->addAttribute('change-tracking-policy', $trackingPolicy);
         }
 
         if (isset($metadata->table['indexes'])) {
