@@ -14,7 +14,6 @@ use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function count;
 use function in_array;
@@ -103,7 +102,10 @@ class NotifyBaseEntity implements NotifyPropertyChanged
     }
 }
 
-/** @Entity @ChangeTrackingPolicy("NOTIFY") */
+/**
+ * @Entity
+ * @ChangeTrackingPolicy("NOTIFY")
+ */
 class DDC1690Parent extends NotifyBaseEntity
 {
     /**

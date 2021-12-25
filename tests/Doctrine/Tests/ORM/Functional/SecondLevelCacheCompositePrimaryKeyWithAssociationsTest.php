@@ -10,8 +10,6 @@ use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctionalTestCase
 {
     /** @var Cache */

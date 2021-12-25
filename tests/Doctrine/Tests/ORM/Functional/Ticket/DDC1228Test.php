@@ -90,7 +90,9 @@ class DDC1228Test extends OrmFunctionalTestCase
 class DDC1228User
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      * @var int
      */
     public $id;

@@ -16,7 +16,6 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function date;
 use function strtotime;

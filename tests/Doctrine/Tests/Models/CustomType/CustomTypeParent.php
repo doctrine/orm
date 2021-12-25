@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 
 /**
@@ -25,7 +24,8 @@ class CustomTypeParent
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;

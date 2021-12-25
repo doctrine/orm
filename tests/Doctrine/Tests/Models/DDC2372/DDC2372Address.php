@@ -11,12 +11,16 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/** @Entity @Table(name="addresses") */
+/**
+ * @Entity
+ * @Table(name="addresses")
+ */
 class DDC2372Address
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;

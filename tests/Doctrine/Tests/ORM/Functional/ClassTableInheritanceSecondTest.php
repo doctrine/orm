@@ -97,7 +97,8 @@ class ClassTableInheritanceSecondTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity @Table(name="cti_parents")
+ * @Entity
+ * @Table(name="cti_parents")
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="type", type="string")
  * @DiscriminatorMap({"parent" = "CTIParent", "child" = "CTIChild"})
@@ -106,7 +107,8 @@ class CTIParent
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
@@ -135,7 +137,8 @@ class CTIParent
 }
 
 /**
- * @Entity @Table(name="cti_children")
+ * @Entity
+ * @Table(name="cti_children")
  */
 class CTIChild extends CTIParent
 {
@@ -161,7 +164,8 @@ class CTIRelated
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;

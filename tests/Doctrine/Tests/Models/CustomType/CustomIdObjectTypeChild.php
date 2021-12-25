@@ -18,7 +18,8 @@ use Doctrine\Tests\DbalTypes\CustomIdObject;
 class CustomIdObjectTypeChild
 {
     /**
-     * @Id @Column(type="CustomIdObject")
+     * @Id
+     * @Column(type="CustomIdObject")
      * @var CustomIdObject
      */
     public $id;

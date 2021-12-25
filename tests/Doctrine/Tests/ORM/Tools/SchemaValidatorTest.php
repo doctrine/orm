@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
@@ -320,7 +321,8 @@ class DDC1587ValidEntity1
 {
     /**
      * @var int
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      * @Column(name="pk", type="integer")
      */
     private $pk;

@@ -69,7 +69,8 @@ class DDC2996User
 }
 
 /**
- * @Entity @HasLifecycleCallbacks
+ * @Entity
+ * @HasLifecycleCallbacks
  */
 class DDC2996UserPreference
 {

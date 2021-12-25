@@ -94,7 +94,8 @@ abstract class DDC258Super
 {
     /**
      * @var int
-     * @Id @Column(name="id", type="integer")
+     * @Id
+     * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;

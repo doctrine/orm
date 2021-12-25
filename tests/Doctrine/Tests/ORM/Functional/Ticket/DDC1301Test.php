@@ -8,8 +8,6 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 /**
  * @group non-cacheable
  * @group DDC-1301

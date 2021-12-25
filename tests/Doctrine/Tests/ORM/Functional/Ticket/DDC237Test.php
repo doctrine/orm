@@ -76,7 +76,8 @@ class DDC237Test extends OrmFunctionalTestCase
 
 
 /**
- * @Entity @Table(name="ddc237_x")
+ * @Entity
+ * @Table(name="ddc237_x")
  */
 class DDC237EntityX
 {
@@ -101,7 +102,10 @@ class DDC237EntityX
 }
 
 
-/** @Entity @Table(name="ddc237_y") */
+/**
+ * @Entity
+ * @Table(name="ddc237_y")
+ */
 class DDC237EntityY
 {
     /**
@@ -118,7 +122,10 @@ class DDC237EntityY
     public $data;
 }
 
-/** @Entity @Table(name="ddc237_z") */
+/**
+ * @Entity
+ * @Table(name="ddc237_z")
+ */
 class DDC237EntityZ
 {
     /**

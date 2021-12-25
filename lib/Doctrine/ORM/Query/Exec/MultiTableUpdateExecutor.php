@@ -12,7 +12,6 @@ use Doctrine\ORM\Query\AST\UpdateStatement;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Utility\PersisterHelper;
-use Throwable;
 
 use function array_merge;
 use function array_reverse;

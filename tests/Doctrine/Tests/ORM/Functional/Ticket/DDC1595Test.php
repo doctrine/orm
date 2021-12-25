@@ -16,7 +16,6 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
-use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -95,7 +94,8 @@ class DDC1595Test extends OrmFunctionalTestCase
 abstract class DDC1595BaseInheritance
 {
     /**
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      * @Column(type="integer")
      * @var int
      */

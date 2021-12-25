@@ -20,7 +20,8 @@ class DDC3346Author
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;

@@ -8,8 +8,6 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 /**
  * Tests a bidirectional one-to-many association mapping with orphan removal.
  */

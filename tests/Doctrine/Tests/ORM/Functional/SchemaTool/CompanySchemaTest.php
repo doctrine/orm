@@ -8,8 +8,6 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
  */

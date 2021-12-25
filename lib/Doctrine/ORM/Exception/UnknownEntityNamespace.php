@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Exception;
 
-use LogicException;
-
 use function sprintf;
 
 final class UnknownEntityNamespace extends ORMException implements ConfigurationException

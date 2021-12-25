@@ -54,7 +54,10 @@ class DDC2231Test extends OrmFunctionalTestCase
 }
 
 
-/** @Entity @Table(name="ddc2231_y") */
+/**
+ * @Entity
+ * @Table(name="ddc2231_y")
+ */
 class DDC2231EntityY implements ObjectManagerAware
 {
     /**

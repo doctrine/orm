@@ -11,7 +11,10 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/** @Entity @Table(name="explicit_table", schema="explicit_schema") */
+/**
+ * @Entity
+ * @Table(name="explicit_table", schema="explicit_schema")
+ */
 #[ORM\Entity, ORM\Table(name: 'explicit_table', schema: 'explicit_schema')]
 class ExplicitSchemaAndTable
 {

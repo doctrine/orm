@@ -76,7 +76,10 @@ class DDC2759Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity  @Table(name="ddc_2759_qualification") */
+/**
+ * @Entity
+ * @Table(name="ddc_2759_qualification")
+ */
 class DDC2759Qualification
 {
     /**
@@ -94,7 +97,10 @@ class DDC2759Qualification
     public $metadata;
 }
 
-/** @Entity  @Table(name="ddc_2759_category") */
+/**
+ * @Entity
+ * @Table(name="ddc_2759_category")
+ */
 class DDC2759Category
 {
     /**
@@ -112,7 +118,10 @@ class DDC2759Category
     public $metadataCategories;
 }
 
-/** @Entity  @Table(name="ddc_2759_qualification_metadata") */
+/**
+ * @Entity
+ * @Table(name="ddc_2759_qualification_metadata")
+ */
 class DDC2759QualificationMetadata
 {
     /**
@@ -141,7 +150,10 @@ class DDC2759QualificationMetadata
     }
 }
 
-/** @Entity  @Table(name="ddc_2759_metadata_category") */
+/**
+ * @Entity
+ * @Table(name="ddc_2759_metadata_category")
+ */
 class DDC2759MetadataCategory
 {
     /**

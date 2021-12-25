@@ -27,7 +27,6 @@ use Symfony\Component\Yaml\Parser;
 
 use function count;
 use function current;
-use function file_exists;
 use function file_get_contents;
 use function glob;
 use function is_array;

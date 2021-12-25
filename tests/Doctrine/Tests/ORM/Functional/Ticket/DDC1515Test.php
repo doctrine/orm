@@ -51,7 +51,8 @@ class DDC1515Foo
 {
     /**
      * @var DDC1515Bar
-     * @OneToOne(targetEntity="DDC1515Bar", inversedBy="foo") @Id
+     * @OneToOne(targetEntity="DDC1515Bar", inversedBy="foo")
+     * @Id
      */
     public $bar;
 }

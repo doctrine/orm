@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Mapping\Exception;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Exception\ORMException;
-use LogicException;
 
 use function get_class;
 use function sprintf;

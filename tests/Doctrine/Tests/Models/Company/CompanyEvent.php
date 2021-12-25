@@ -16,7 +16,8 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
 /**
- * @Entity @Table(name="company_events")
+ * @Entity
+ * @Table(name="company_events")
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="event_type", type="string")
  * @DiscriminatorMap({"auction"="CompanyAuction", "raffle"="CompanyRaffle"})

@@ -15,7 +15,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_shift;
 use function assert;
-use function count;
 
 /**
  * Description of ExtraLazyCollectionTest

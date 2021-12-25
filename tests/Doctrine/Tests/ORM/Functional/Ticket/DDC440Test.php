@@ -17,7 +17,6 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 class DDC440Test extends OrmFunctionalTestCase
 {

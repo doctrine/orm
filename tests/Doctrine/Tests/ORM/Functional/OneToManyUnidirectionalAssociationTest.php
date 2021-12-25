@@ -11,8 +11,6 @@ use Doctrine\Tests\Models\Routing\RoutingRoute;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-use function count;
-
 /**
  * Tests a bidirectional one-to-one association mapping (without inheritance).
  */

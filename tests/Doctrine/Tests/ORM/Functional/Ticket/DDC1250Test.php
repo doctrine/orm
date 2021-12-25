@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use PDOException;
 
 /**
  * @group DDC-1250
@@ -54,7 +53,9 @@ class DDC1250ClientHistory
 {
     /**
      * @var int
-     * @Id @GeneratedValue @Column(type="integer")
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
      */
     public $id;
 

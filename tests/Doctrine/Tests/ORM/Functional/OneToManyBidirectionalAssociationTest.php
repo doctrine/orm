@@ -11,8 +11,6 @@ use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 /**
  * Tests a bidirectional one-to-one association mapping (without inheritance).
  */

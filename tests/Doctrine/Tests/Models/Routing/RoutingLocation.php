@@ -16,7 +16,8 @@ class RoutingLocation
 {
     /**
      * @var int
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      * @Column(type="integer")
      */
     public $id;

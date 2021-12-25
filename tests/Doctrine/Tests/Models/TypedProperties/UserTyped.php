@@ -28,7 +28,8 @@ use Doctrine\Tests\Models\CMS\CmsEmail;
 class UserTyped
 {
     /**
-     * @Id @Column
+     * @Id
+     * @Column
      * @GeneratedValue
      */
     #[ORM\Id, ORM\Column, ORM\GeneratedValue]

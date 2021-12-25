@@ -22,7 +22,8 @@ class Logo
 {
     /**
      * @var int
-     * @Column(type="integer") @Id
+     * @Column(type="integer")
+     * @Id
      * @GeneratedValue
      */
     public $id;

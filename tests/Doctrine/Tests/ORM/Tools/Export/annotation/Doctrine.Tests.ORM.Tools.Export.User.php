@@ -37,7 +37,8 @@ class User
     /**
      * @var int
      * @Id
-     * @Column(type="integer") @GeneratedValue(strategy="AUTO")
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 

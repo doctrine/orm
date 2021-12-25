@@ -28,7 +28,6 @@ use Doctrine\Tests\Models\Hydration\EntityWithArrayDefaultArrayValueM2M;
 use Doctrine\Tests\Models\Hydration\SimpleEntity;
 
 use function count;
-use function is_array;
 
 class ObjectHydratorTest extends HydrationTestCase
 {

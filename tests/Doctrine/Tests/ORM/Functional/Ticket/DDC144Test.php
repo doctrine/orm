@@ -54,7 +54,9 @@ class DDC144Test extends OrmFunctionalTestCase
 class DDC144FlowElement
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      * @var int
      */
     public $id;
@@ -71,7 +73,10 @@ abstract class DDC144Expression extends DDC144FlowElement
     abstract public function method(): void;
 }
 
-/** @Entity @Table(name="ddc144_operands") */
+/**
+ * @Entity
+ * @Table(name="ddc144_operands")
+ */
 class DDC144Operand extends DDC144Expression
 {
     /**

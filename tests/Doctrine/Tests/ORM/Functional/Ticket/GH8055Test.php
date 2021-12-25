@@ -58,7 +58,8 @@ class GH8055BaseClass
 {
     /**
      * @var int
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      * @Column(type="integer")
      */
     public $id;

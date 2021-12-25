@@ -11,8 +11,6 @@ use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 /**
  * Tests capabilities of the persister.
  */

@@ -5,17 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\Filter;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use InvalidArgumentException;
-use RuntimeException;
 
 use function array_map;
 use function implode;
-use function is_array;
 use function ksort;
 use function serialize;
 

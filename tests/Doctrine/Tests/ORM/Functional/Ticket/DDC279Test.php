@@ -15,8 +15,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 class DDC279Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -116,7 +114,8 @@ class DDC279EntityY
 {
     /**
      * @var int
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      * @Column(name="id", type="integer")
      */
     public $id;
@@ -142,7 +141,8 @@ class DDC279EntityZ
 {
     /**
      * @var int
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      * @Column(name="id", type="integer")
      */
     public $id;

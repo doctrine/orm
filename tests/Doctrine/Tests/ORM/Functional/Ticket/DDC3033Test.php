@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
-use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\PostUpdate;
 use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\ORM\Mapping\Table;
@@ -71,7 +70,8 @@ class DDC3033Test extends OrmFunctionalTestCase
 
 /**
  * @Table
- * @Entity @HasLifecycleCallbacks
+ * @Entity
+ * @HasLifecycleCallbacks
  */
 class DDC3033Product
 {
@@ -135,7 +135,8 @@ class DDC3033Product
 
 /**
  * @Table
- * @Entity @HasLifecycleCallbacks
+ * @Entity
+ * @HasLifecycleCallbacks
  */
 class DDC3033User
 {

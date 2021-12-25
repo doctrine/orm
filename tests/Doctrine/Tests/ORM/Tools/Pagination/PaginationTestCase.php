@@ -16,7 +16,6 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmTestCase;
 
@@ -180,7 +179,10 @@ class Category
 }
 
 
-/** @Entity @Table(name="groups") */
+/**
+ * @Entity
+ * @Table(name="groups")
+ */
 class Group
 {
     /**

@@ -112,7 +112,9 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
 class PersistentCollectionHolder extends PersistentObject
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      * @var int
      */
     protected $id;
@@ -156,7 +158,9 @@ class PersistentCollectionHolder extends PersistentObject
 class PersistentCollectionContent extends PersistentObject
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      * @var int
      */
     protected $id;
