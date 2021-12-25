@@ -13,6 +13,10 @@
         {"name": "Marco Pivetta", "email": "ocramius@gmail.com"}
     ],
     "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
         "sort-packages": true
     },
     "require": {
