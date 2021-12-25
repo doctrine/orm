@@ -409,19 +409,14 @@
     </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php">
-    <DeprecatedMethod occurrences="3">
+    <DeprecatedMethod occurrences="1">
       <code>getHydrator</code>
-      <code>transactional</code>
-      <code>transactional</code>
     </DeprecatedMethod>
     <MissingParamType occurrences="3">
       <code>$entity</code>
       <code>$lockMode</code>
       <code>$lockVersion</code>
     </MissingParamType>
-    <MissingReturnType occurrences="1">
-      <code>wrapInTransaction</code>
-    </MissingReturnType>
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$wrapped</code>
     </NonInvariantDocblockPropertyType>
@@ -479,9 +474,6 @@
       <code>$this-&gt;repositoryFactory-&gt;getRepository($this, $entityName)</code>
       <code>new $class($this)</code>
     </LessSpecificReturnStatement>
-    <MissingReturnType occurrences="1">
-      <code>wrapInTransaction</code>
-    </MissingReturnType>
     <MoreSpecificReturnType occurrences="2">
       <code>EntityRepository&lt;T&gt;</code>
       <code>newHydrator</code>
@@ -773,10 +765,9 @@
       <code>$parent</code>
       <code>new $definition['class']()</code>
     </ArgumentTypeCoercion>
-    <DeprecatedMethod occurrences="3">
+    <DeprecatedMethod occurrences="2">
       <code>addNamedNativeQuery</code>
       <code>addNamedQuery</code>
-      <code>getName</code>
     </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="2">
       <code>! $definition</code>
@@ -875,9 +866,6 @@
       <code>$class</code>
       <code>$subclass</code>
     </ArgumentTypeCoercion>
-    <DeprecatedMethod occurrences="1">
-      <code>canEmulateSchemas</code>
-    </DeprecatedMethod>
     <DeprecatedProperty occurrences="4">
       <code>$this-&gt;columnNames</code>
       <code>$this-&gt;columnNames</code>
@@ -1040,10 +1028,6 @@
     </PossiblyFalseOperand>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DefaultQuoteStrategy.php">
-    <DeprecatedMethod occurrences="2">
-      <code>canEmulateSchemas</code>
-      <code>canEmulateSchemas</code>
-    </DeprecatedMethod>
     <MissingClosureParamType occurrences="1">
       <code>$joinColumn</code>
     </MissingClosureParamType>
@@ -3312,9 +3296,6 @@
     <RedundantConditionGivenDocblockType occurrences="1"/>
   </file>
   <file src="lib/Doctrine/ORM/Tools/SchemaTool.php">
-    <DeprecatedMethod occurrences="1">
-      <code>canEmulateSchemas</code>
-    </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="2">
       <code>! $definingClass</code>
       <code>$definingClass</code>
