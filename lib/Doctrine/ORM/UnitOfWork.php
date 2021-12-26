@@ -1166,14 +1166,16 @@ class UnitOfWork implements PropertyChangedListener
         $identifier = [];
 
         foreach ($class->getIdentifierFieldNames() as $idField) {
-            $value = $class->getFieldValue($entity, $idField);
+            $origValue = $class->getFieldValue($entity, $idField);
 
+            $value = null;
             if (isset($class->associationMappings[$idField])) {
                 // NOTE: Single Columns as associated identifiers only allowed - this constraint it is enforced.
-                $value = $this->getSingleIdentifierValue($value);
+                $value = $this->getSingleIdentifierValue($origValue);
             }
 
-            $identifier[$idField] = $this->originalEntityData[$oid][$idField] = $value;
+            $identifier[$idField]                     = $value ?? $origValue;
+            $this->originalEntityData[$oid][$idField] = $origValue;
         }
 
         $this->entityStates[$oid]      = self::STATE_MANAGED;
