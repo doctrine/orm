@@ -406,7 +406,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($classAnnotations[Mapping\AssociationOverrides::class])) {
             $associationOverridesAnnot = $classAnnotations[Mapping\AssociationOverrides::class];
 
-            foreach ($associationOverridesAnnot->value as $associationOverride) {
+            foreach ($associationOverridesAnnot->overrides as $associationOverride) {
                 $override  = [];
                 $fieldName = $associationOverride->name;
 
@@ -458,7 +458,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($classAnnotations[Mapping\AttributeOverrides::class])) {
             $attributeOverridesAnnot = $classAnnotations[Mapping\AttributeOverrides::class];
 
-            foreach ($attributeOverridesAnnot->value as $attributeOverrideAnnot) {
+            foreach ($attributeOverridesAnnot->overrides as $attributeOverrideAnnot) {
                 $attributeOverride = $this->columnToArray($attributeOverrideAnnot->name, $attributeOverrideAnnot->column);
 
                 $metadata->setAttributeOverride($attributeOverrideAnnot->name, $attributeOverride);

@@ -88,18 +88,7 @@
       <code>(string) $fileLockRegionDirectory</code>
     </RedundantCastGivenDocblockType>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/DefaultCollectionHydrator.php">
-    <InvalidNullableReturnType occurrences="1">
-      <code>loadCacheEntry</code>
-    </InvalidNullableReturnType>
-    <NullableReturnStatement occurrences="1">
-      <code>null</code>
-    </NullableReturnStatement>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultEntityHydrator.php">
-    <MissingReturnType occurrences="1">
-      <code>loadCacheEntry</code>
-    </MissingReturnType>
     <PossiblyUndefinedArrayOffset occurrences="1">
       <code>$fieldMapping['columnName']</code>
     </PossiblyUndefinedArrayOffset>
@@ -125,9 +114,6 @@
       <code>$assocEntry-&gt;class</code>
       <code>$assocEntry-&gt;class</code>
     </NoInterfaceProperties>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$cacheConfig-&gt;getCacheLogger()</code>
-    </PossiblyNullPropertyAssignmentValue>
     <PossiblyNullReference occurrences="1">
       <code>getCacheLogger</code>
     </PossiblyNullReference>
@@ -146,11 +132,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$value-&gt;class</code>
     </ArgumentTypeCoercion>
-  </file>
-  <file src="lib/Doctrine/ORM/Cache/EntityHydrator.php">
-    <MissingReturnType occurrences="1">
-      <code>loadCacheEntry</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Cache/Logging/CacheLogger.php">
     <MissingReturnType occurrences="9">
@@ -302,13 +283,6 @@
       <code>lock</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/Region.php">
-    <MissingReturnType occurrences="3">
-      <code>evict</code>
-      <code>evictAll</code>
-      <code>put</code>
-    </MissingReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/Region/DefaultMultiGetRegion.php">
     <DeprecatedClass occurrences="2">
       <code>MultiGetCache</code>
@@ -336,23 +310,6 @@
       <code>(int) $lifetime</code>
       <code>(string) $name</code>
     </RedundantCastGivenDocblockType>
-  </file>
-  <file src="lib/Doctrine/ORM/Cache/Region/FileLockRegion.php">
-    <ImplementedReturnTypeMismatch occurrences="1">
-      <code>bool</code>
-    </ImplementedReturnTypeMismatch>
-    <InvalidNullableReturnType occurrences="1">
-      <code>lock</code>
-    </InvalidNullableReturnType>
-    <MissingReturnType occurrences="3">
-      <code>evict</code>
-      <code>evictAll</code>
-      <code>put</code>
-    </MissingReturnType>
-    <NullableReturnStatement occurrences="2">
-      <code>null</code>
-      <code>null</code>
-    </NullableReturnStatement>
   </file>
   <file src="lib/Doctrine/ORM/Cache/Region/UpdateTimestampCache.php">
     <MissingReturnType occurrences="1">
@@ -439,11 +396,8 @@
       <code>getProxyNamespace</code>
       <code>merge</code>
     </DeprecatedMethod>
-    <DocblockTypeContradiction occurrences="9">
+    <DocblockTypeContradiction occurrences="6">
       <code>$entityName !== null &amp;&amp; ! is_string($entityName)</code>
-      <code>$this-&gt;expressionBuilder === null</code>
-      <code>$this-&gt;filterCollection === null</code>
-      <code>$this-&gt;filterCollection === null</code>
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
@@ -496,11 +450,6 @@
       <code>createCache</code>
       <code>getCacheFactory</code>
     </PossiblyNullReference>
-    <PropertyNotSetInConstructor occurrences="3">
-      <code>$cache</code>
-      <code>$expressionBuilder</code>
-      <code>$filterCollection</code>
-    </PropertyNotSetInConstructor>
     <PropertyTypeCoercion occurrences="1">
       <code>new $metadataFactoryClassName()</code>
     </PropertyTypeCoercion>
@@ -508,9 +457,6 @@
       <code>is_object($connection)</code>
       <code>is_object($connection)</code>
     </RedundantCondition>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>$this-&gt;filterCollection !== null</code>
-    </RedundantConditionGivenDocblockType>
     <TypeDoesNotContainType occurrences="2">
       <code>': "' . $connection . '"'</code>
       <code>gettype($connection)</code>
@@ -673,31 +619,6 @@
     <PossiblyUndefinedArrayOffset occurrences="1">
       <code>$class-&gt;fieldMappings[$fieldName]['columnName']</code>
     </PossiblyUndefinedArrayOffset>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/AssociationOverride.php">
-    <MissingConstructor occurrences="5">
-      <code>$fetch</code>
-      <code>$inversedBy</code>
-      <code>$joinColumns</code>
-      <code>$joinTable</code>
-      <code>$name</code>
-    </MissingConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/AssociationOverrides.php">
-    <MissingConstructor occurrences="1">
-      <code>$value</code>
-    </MissingConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/AttributeOverride.php">
-    <MissingConstructor occurrences="2">
-      <code>$column</code>
-      <code>$name</code>
-    </MissingConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/AttributeOverrides.php">
-    <MissingConstructor occurrences="1">
-      <code>$value</code>
-    </MissingConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php">
     <ArgumentTypeCoercion occurrences="2">
@@ -2009,7 +1930,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/LocateFunction.php">
-    <InvalidScalarArgument occurrences="1"/>
+    <InvalidScalarArgument occurrences="1">
+      <code>$sqlWalker-&gt;walkSimpleArithmeticExpression($this-&gt;simpleArithmeticExpression)</code>
+    </InvalidScalarArgument>
     <PossiblyInvalidArgument occurrences="1">
       <code>$this-&gt;simpleArithmeticExpression</code>
     </PossiblyInvalidArgument>
@@ -2675,13 +2598,11 @@
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
-    <DocblockTypeContradiction occurrences="8">
+    <DocblockTypeContradiction occurrences="6">
       <code>$likeExpr-&gt;stringPattern instanceof AST\Functions\FunctionNode</code>
       <code>$likeExpr-&gt;stringPattern instanceof AST\PathExpression</code>
       <code>$this-&gt;queryComponents[$dqlAlias]['relation'] === null</code>
       <code>''</code>
-      <code>is_numeric($leftExpr)</code>
-      <code>is_numeric($rightExpr)</code>
       <code>is_string($expression)</code>
       <code>is_string($stringExpr)</code>
     </DocblockTypeContradiction>
@@ -2762,12 +2683,8 @@
       <code>$this-&gt;queryComponents</code>
       <code>$this-&gt;selectedClasses</code>
     </PropertyTypeCoercion>
-    <RedundantConditionGivenDocblockType occurrences="7">
-      <code>$leftExpr instanceof AST\Node</code>
+    <RedundantConditionGivenDocblockType occurrences="3">
       <code>$likeExpr-&gt;stringPattern instanceof AST\InputParameter</code>
-      <code>$rightExpr instanceof AST\Node</code>
-      <code>$this-&gt;conn-&gt;quote($leftExpr)</code>
-      <code>$this-&gt;conn-&gt;quote($rightExpr)</code>
       <code>$whereClause !== null</code>
       <code>($factor-&gt;not ? 'NOT ' : '') . $this-&gt;walkConditionalPrimary($factor-&gt;conditionalPrimary)</code>
     </RedundantConditionGivenDocblockType>

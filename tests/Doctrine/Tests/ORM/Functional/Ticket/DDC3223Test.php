@@ -54,13 +54,17 @@ class DDC3223Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity @Table(name="ddc3223_journalist") */
+/**
+ * @Entity
+ * @Table(name="ddc3223_journalist")
+ */
 class Journalist extends Participant
 {
 }
 
 /**
- * @Entity @Table(name="ddc3223_participant")
+ * @Entity
+ * @Table(name="ddc3223_participant")
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({
@@ -86,7 +90,8 @@ class Participant
 }
 
 /**
- * @Entity @Table(name="ddc3223_status")
+ * @Entity
+ * @Table(name="ddc3223_status")
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({

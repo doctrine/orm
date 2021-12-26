@@ -30,6 +30,8 @@ use Doctrine\ORM\Mapping\Entity;
  *      )
  * })
  */
+#[Entity]
+#[AttributeOverrides([new AttributeOverride(name: 'id', column: new Column(name: 'guest_id', type: 'integer', length: 140)), new AttributeOverride(name: 'name', column: new Column(name: 'guest_name', nullable: false, unique: true, length: 240))])]
 class DDC964Guest extends DDC964User
 {
     public static function loadMetadata(ClassMetadataInfo $metadata): void

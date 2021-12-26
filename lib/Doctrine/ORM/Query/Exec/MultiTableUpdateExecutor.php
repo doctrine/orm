@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Query\AST\UpdateStatement;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Utility\PersisterHelper;
-use Throwable;
 
 use function array_merge;
 use function array_reverse;
@@ -54,6 +54,10 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         $conn          = $em->getConnection();
         $platform      = $conn->getDatabasePlatform();
         $quoteStrategy = $em->getConfiguration()->getQuoteStrategy();
+
+        if ($conn instanceof PrimaryReadReplicaConnection) {
+            $conn->ensureConnectedToPrimary();
+        }
 
         $updateClause = $AST->updateClause;
         $primaryClass = $sqlWalker->getEntityManager()->getClassMetadata($updateClause->abstractSchemaName);

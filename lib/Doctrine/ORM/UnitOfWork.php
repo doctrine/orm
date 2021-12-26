@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Proxy\Proxy;
+use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
@@ -339,6 +340,12 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function commit($entity = null)
     {
+        $connection = $this->em->getConnection();
+
+        if ($connection instanceof PrimaryReadReplicaConnection) {
+            $connection->ensureConnectedToPrimary();
+        }
+
         // Raise preFlush
         if ($this->evm->hasListeners(Events::preFlush)) {
             $this->evm->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em));
@@ -1160,14 +1167,16 @@ class UnitOfWork implements PropertyChangedListener
         $identifier = [];
 
         foreach ($class->getIdentifierFieldNames() as $idField) {
-            $value = $class->getFieldValue($entity, $idField);
+            $origValue = $class->getFieldValue($entity, $idField);
 
+            $value = null;
             if (isset($class->associationMappings[$idField])) {
                 // NOTE: Single Columns as associated identifiers only allowed - this constraint it is enforced.
-                $value = $this->getSingleIdentifierValue($value);
+                $value = $this->getSingleIdentifierValue($origValue);
             }
 
-            $identifier[$idField] = $this->originalEntityData[$oid][$idField] = $value;
+            $identifier[$idField]                     = $value ?? $origValue;
+            $this->originalEntityData[$oid][$idField] = $origValue;
         }
 
         $this->entityStates[$oid]      = self::STATE_MANAGED;

@@ -15,7 +15,6 @@ use RuntimeException;
 use function array_combine;
 use function array_diff_key;
 use function array_map;
-use function array_udiff_assoc;
 use function array_values;
 use function array_walk;
 use function get_class;

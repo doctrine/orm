@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
@@ -225,17 +226,6 @@ class SchemaValidatorTest extends OrmTestCase
 
         $this->assertEquals([], $ce);
     }
-
-    /**
-     * @group 9095
-     */
-    public function testAbstractChildClassNotPresentInDiscriminator(): void
-    {
-        $class1 = $this->em->getClassMetadata(Issue9095AbstractChild::class);
-        $ce     = $this->validator->validateClass($class1);
-
-        $this->assertEquals([], $ce);
-    }
 }
 
 /**
@@ -264,35 +254,6 @@ abstract class ParentEntity
  * @Entity
  */
 class ChildEntity extends MappedSuperclassEntity
-{
-}
-
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"child" = Issue9095Child::class})
- */
-abstract class Issue9095Parent
-{
-    /**
-     * @var mixed
-     * @Id
-     * @Column
-     */
-    protected $key;
-}
-
-/**
- * @Entity
- */
-abstract class Issue9095AbstractChild extends Issue9095Parent
-{
-}
-
-/**
- * @Entity
- */
-class Issue9095Child extends Issue9095AbstractChild
 {
 }
 
@@ -360,7 +321,8 @@ class DDC1587ValidEntity1
 {
     /**
      * @var int
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      * @Column(name="pk", type="integer")
      */
     private $pk;

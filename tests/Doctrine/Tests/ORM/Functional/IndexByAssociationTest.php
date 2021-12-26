@@ -10,7 +10,6 @@ use Doctrine\Tests\Models\StockExchange\Stock;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
-use function count;
 
 /**
  * @group DDC-250

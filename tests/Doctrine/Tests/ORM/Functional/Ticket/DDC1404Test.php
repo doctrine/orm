@@ -14,8 +14,6 @@ use Doctrine\ORM\Mapping\NamedQueries;
 use Doctrine\ORM\Mapping\NamedQuery;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 /**
  * @group DDC-1404
  */

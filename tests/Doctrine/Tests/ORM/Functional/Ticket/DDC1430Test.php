@@ -16,8 +16,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-use function count;
-
 /**
  * @group DDC-1430
  */

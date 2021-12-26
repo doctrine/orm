@@ -67,14 +67,16 @@ class DDC444Test extends OrmFunctionalTestCase
 
 
 /**
- * @Entity @Table(name="ddc444")
+ * @Entity
+ * @Table(name="ddc444")
  * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class DDC444User
 {
     /**
      * @var int
-     * @Id @Column(name="id", type="integer")
+     * @Id
+     * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;

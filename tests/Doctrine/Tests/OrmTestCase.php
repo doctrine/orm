@@ -20,7 +20,6 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-use function class_exists;
 use function is_array;
 use function realpath;
 

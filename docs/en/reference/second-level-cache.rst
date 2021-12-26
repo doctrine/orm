@@ -31,31 +31,31 @@ Each cache region resides in a specific cache namespace and has its own lifetime
 Notice that when caching collection and queries only identifiers are stored.
 The entity values will be stored in its own region
 
-Something like below for an entity region :
+Something like below for an entity region:
 
 .. code-block:: php
 
     <?php
     [
-      'region_name:entity_1_hash' => ['id'=> 1, 'name' => 'FooBar', 'associationName'=>null],
-      'region_name:entity_2_hash' => ['id'=> 2, 'name' => 'Foo', 'associationName'=>['id'=>11]],
-      'region_name:entity_3_hash' => ['id'=> 3, 'name' => 'Bar', 'associationName'=>['id'=>22]]
+      'region_name:entity_1_hash' => ['id' => 1, 'name' => 'FooBar', 'associationName' => null],
+      'region_name:entity_2_hash' => ['id' => 2, 'name' => 'Foo', 'associationName' => ['id' => 11]],
+      'region_name:entity_3_hash' => ['id' => 3, 'name' => 'Bar', 'associationName' => ['id' => 22]]
     ];
 
 
 If the entity holds a collection that also needs to be cached.
-An collection region could look something like :
+An collection region could look something like:
 
 .. code-block:: php
 
     <?php
     [
-      'region_name:entity_1_coll_assoc_name_hash' => ['ownerId'=> 1, 'list' => [1, 2, 3]],
-      'region_name:entity_2_coll_assoc_name_hash' => ['ownerId'=> 2, 'list' => [2, 3]],
-      'region_name:entity_3_coll_assoc_name_hash' => ['ownerId'=> 3, 'list' => [2, 4]]
+      'region_name:entity_1_coll_assoc_name_hash' => ['ownerId' => 1, 'list' => [1, 2, 3]],
+      'region_name:entity_2_coll_assoc_name_hash' => ['ownerId' => 2, 'list' => [2, 3]],
+      'region_name:entity_3_coll_assoc_name_hash' => ['ownerId' => 3, 'list' => [2, 4]]
     ];
 
-A query region might be something like :
+A query region might be something like:
 
 .. code-block:: php
 
@@ -93,8 +93,6 @@ Cache region
 ``Doctrine\ORM\Cache\Region`` defines a contract for accessing a particular
 cache region.
 
-`See API Doc <https://www.doctrine-project.org/api/orm/current/Doctrine/ORM/Cache/Region.html>`_.
-
 Concurrent cache region
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -105,16 +103,12 @@ If you want to use an ``READ_WRITE`` cache, you should consider providing your o
 
 ``Doctrine\ORM\Cache\ConcurrentRegion`` defines a contract for concurrently managed data region.
 
-`See API Doc <https://www.doctrine-project.org/api/orm/current/Doctrine/ORM/Cache/ConcurrentRegion.html>`_.
-
 Timestamp region
 ~~~~~~~~~~~~~~~~
 
 ``Doctrine\ORM\Cache\TimestampRegion``
 
 Tracks the timestamps of the most recent updates to particular entity.
-
-`See API Doc <https://www.doctrine-project.org/api/orm/current/Doctrine/ORM/Cache/TimestampRegion.html>`_.
 
 .. _reference-second-level-cache-mode:
 
@@ -132,7 +126,7 @@ Caching mode
 
   * Read Write Cache doesn’t employ any locks but can do reads, inserts, updates and deletes.
   * Good if the application needs to update data rarely.
-    
+
 
 * ``READ_WRITE``
 
@@ -147,21 +141,21 @@ Built-in cached persisters
 
 Cached persisters are responsible to access cache regions.
 
-    +-----------------------+-------------------------------------------------------------------------------------------+
-    | Cache Usage           | Persister                                                                                 |
-    +=======================+===========================================================================================+
-    | READ_ONLY             | Doctrine\\ORM\\Cache\\Persister\\Entity\\ReadOnlyCachedEntityPersister                    |
-    +-----------------------+-------------------------------------------------------------------------------------------+
-    | READ_WRITE            | Doctrine\\ORM\\Cache\\Persister\\Entity\\ReadWriteCachedEntityPersister                   |
-    +-----------------------+-------------------------------------------------------------------------------------------+
-    | NONSTRICT_READ_WRITE  | Doctrine\\ORM\\Cache\\Persister\\Entity\\NonStrictReadWriteCachedEntityPersister          |
-    +-----------------------+-------------------------------------------------------------------------------------------+
-    | READ_ONLY             | Doctrine\\ORM\\Cache\\Persister\\Collection\\ReadOnlyCachedCollectionPersister            |
-    +-----------------------+-------------------------------------------------------------------------------------------+
-    | READ_WRITE            | Doctrine\\ORM\\Cache\\Persister\\Collection\\ReadWriteCachedCollectionPersister           |
-    +-----------------------+-------------------------------------------------------------------------------------------+
-    | NONSTRICT_READ_WRITE  | Doctrine\\ORM\\Cache\\Persister\\Collection\\NonStrictReadWriteCachedCollectionPersister  |
-    +-----------------------+-------------------------------------------------------------------------------------------+
+    +-----------------------+------------------------------------------------------------------------------------------+
+    | Cache Usage           | Persister                                                                                |
+    +=======================+==========================================================================================+
+    | READ_ONLY             | ``Doctrine\ORM\Cache\Persister\Entity\ReadOnlyCachedEntityPersister``                    |
+    +-----------------------+------------------------------------------------------------------------------------------+
+    | READ_WRITE            | ``Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister``                   |
+    +-----------------------+------------------------------------------------------------------------------------------+
+    | NONSTRICT_READ_WRITE  | ``Doctrine\ORM\Cache\Persister\Entity\NonStrictReadWriteCachedEntityPersister``          |
+    +-----------------------+------------------------------------------------------------------------------------------+
+    | READ_ONLY             | ``Doctrine\ORM\Cache\Persister\Collection\ReadOnlyCachedCollectionPersister``            |
+    +-----------------------+------------------------------------------------------------------------------------------+
+    | READ_WRITE            | ``Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister``           |
+    +-----------------------+------------------------------------------------------------------------------------------+
+    | NONSTRICT_READ_WRITE  | ``Doctrine\ORM\Cache\Persister\Collection\NonStrictReadWriteCachedCollectionPersister``  |
+    +-----------------------+------------------------------------------------------------------------------------------+
 
 Configuration
 -------------
@@ -172,7 +166,7 @@ Enable Second Level Cache
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To enable the second-level-cache, you should provide a cache factory.
-``\Doctrine\ORM\Cache\DefaultCacheFactory`` is the default implementation.
+``Doctrine\ORM\Cache\DefaultCacheFactory`` is the default implementation.
 
 .. code-block:: php
 
@@ -196,7 +190,7 @@ Cache Factory
 
 Cache Factory is the main point of extension.
 
-It allows you to provide a specific implementation of the following components :
+It allows you to provide a specific implementation of the following components:
 
 ``QueryCache``
     stores and retrieves query cache results.
@@ -208,8 +202,6 @@ It allows you to provide a specific implementation of the following components :
     transforms entities into a cache entries and cache entries into entities
 ``CollectionHydrator``
     transforms collections into cache entries and cache entries into collections
-
-`See API Doc <https://www.doctrine-project.org/api/orm/current/Doctrine/ORM/Cache/DefaultCacheFactory.html>`_.
 
 Region Lifetime
 ~~~~~~~~~~~~~~~
@@ -234,12 +226,12 @@ Cache Log
 ~~~~~~~~~
 By providing a cache logger you should be able to get information about all cache operations such as hits, misses and puts.
 
-``\Doctrine\ORM\Cache\Logging\StatisticsCacheLogger`` is a built-in implementation that provides basic statistics.
+``Doctrine\ORM\Cache\Logging\StatisticsCacheLogger`` is a built-in implementation that provides basic statistics.
 
  .. code-block:: php
 
     <?php
-    /* @var $config \Doctrine\ORM\Configuration */
+    /** @var \Doctrine\ORM\Configuration $config */
     $logger = new \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger();
 
     // Cache logger
@@ -269,11 +261,8 @@ By providing a cache logger you should be able to get information about all cach
     $logger->getMissCount();
 
 If you want to get more information you should implement
-``\Doctrine\ORM\Cache\Logging\CacheLogger`` and collect
+``Doctrine\ORM\Cache\Logging\CacheLogger`` and collect
 all the information you want.
-
-`See API Doc <https://www.doctrine-project.org/api/orm/current/Doctrine/ORM/Cache/Logging/CacheLogger.html>`_.
-
 
 Entity cache definition
 -----------------------
@@ -383,7 +372,7 @@ It caches the primary keys of association and cache each element will be cached 
             </id>
 
             <field name="name" type="string" column="name"/>
-            
+
             <many-to-one field="country" target-entity="Country">
               <cache usage="NONSTRICT_READ_WRITE" />
 
@@ -398,7 +387,9 @@ It caches the primary keys of association and cache each element will be cached 
           </entity>
         </doctrine-mapping>
 
-> Note: for this to work, the target entity must also be marked as cacheable.
+.. note::
+
+    for this to work, the target entity must also be marked as cacheable.
 
 Cache usage
 ~~~~~~~~~~~
@@ -415,8 +406,8 @@ Basic entity cache
 
     $country1  = $em->find('Country', 1); // Retrieve item from cache
 
-    $country1->setName("New Name");
-    
+    $country1->setName('New Name');
+
     $em->flush();                         // Hit database to update the row and update cache
 
     $em->clear();                         // Clear entity manager
@@ -441,7 +432,7 @@ Association cache
     $state = $em->find('State', 1);
 
     // Hit database to update the row and update cache entry
-    $state->setName("New Name");
+    $state->setName('New Name');
     $em->persist($state);
     $em->flush();
 
@@ -492,14 +483,14 @@ The query cache stores the results of the query but as identifiers, entity value
 .. code-block:: php
 
     <?php
-    /* @var $em \Doctrine\ORM\EntityManager */
+    /** @var \Doctrine\ORM\EntityManager $em */
 
     // Execute database query, store query cache and entity cache
     $result1 = $em->createQuery('SELECT c FROM Country c ORDER BY c.name')
         ->setCacheable(true)
         ->getResult();
 
-    $em->clear()
+    $em->clear();
 
     // Check if query result is valid and load entities from cache
     $result2 = $em->createQuery('SELECT c FROM Country c ORDER BY c.name')
@@ -519,10 +510,10 @@ The Cache Mode controls how a particular query interacts with the second-level c
 .. code-block:: php
 
     <?php
-    /* @var $em \Doctrine\ORM\EntityManager */
+    /** @var \Doctrine\ORM\EntityManager $em */
     // Will refresh the query cache and all entities the cache as it reads from the database.
     $result1 = $em->createQuery('SELECT c FROM Country c ORDER BY c.name')
-        ->setCacheMode(Cache::MODE_GET)
+        ->setCacheMode(\Doctrine\ORM\Cache::MODE_GET)
         ->setCacheable(true)
         ->getResult();
 
@@ -546,7 +537,7 @@ Execute the ``UPDATE`` and invalidate ``all cache entries`` using ``Query::HINT_
     <?php
     // Execute and invalidate
     $this->_em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
-        ->setHint(Query::HINT_CACHE_EVICT, true)
+        ->setHint(\Doctrine\ORM\Query::HINT_CACHE_EVICT, true)
         ->execute();
 
 
@@ -608,7 +599,7 @@ However, you can use the cache API to check / invalidate cache entries.
 .. code-block:: php
 
     <?php
-    /* @var $cache \Doctrine\ORM\Cache */
+    /** @var \Doctrine\ORM\Cache $cache */
     $cache = $em->getCache();
 
     $cache->containsEntity('Entity\State', 1)      // Check if the cache exists
@@ -653,19 +644,19 @@ For performance reasons the cache API does not extract from composite primary ke
     }
 
     // Supported
-    /* @var $article Article */
+    /** @var Article $article */
     $article = $em->find('Article', 1);
 
     // Supported
-    /* @var $article Article */
+    /** @var Article $article */
     $article = $em->find('Article', $article);
 
     // Supported
-    $id        = array('source' => 1, 'target' => 2);
+    $id        = ['source' => 1, 'target' => 2];
     $reference = $em->find('Reference', $id);
 
     // NOT Supported
-    $id        = array('source' => new Article(1), 'target' => new Article(2));
+    $id        = ['source' => new Article(1), 'target' => new Article(2)];
     $reference = $em->find('Reference', $id);
 
 Distributed environments

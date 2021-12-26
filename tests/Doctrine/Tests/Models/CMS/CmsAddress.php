@@ -86,7 +86,8 @@ class CmsAddress
     /**
      * @var int
      * @Column(type="integer")
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      */
     #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
     public $id;

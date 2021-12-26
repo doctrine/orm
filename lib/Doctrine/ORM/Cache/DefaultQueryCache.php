@@ -18,7 +18,6 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\UnitOfWork;
 
-use function array_key_exists;
 use function array_map;
 use function array_shift;
 use function array_unshift;
@@ -45,7 +44,7 @@ class DefaultQueryCache implements QueryCache
     /** @var QueryCacheValidator */
     private $validator;
 
-    /** @var CacheLogger */
+    /** @var CacheLogger|null */
     protected $cacheLogger;
 
     /** @var array<string,mixed> */

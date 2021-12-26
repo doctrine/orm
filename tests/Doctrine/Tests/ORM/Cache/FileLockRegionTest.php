@@ -17,7 +17,6 @@ use RecursiveIteratorIterator;
 use ReflectionMethod;
 use ReflectionProperty;
 
-use function file_get_contents;
 use function file_put_contents;
 use function is_dir;
 use function restore_error_handler;

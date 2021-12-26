@@ -18,7 +18,7 @@ interface ConcurrentRegion extends Region
      *
      * @param CacheKey $key The key of the item to lock.
      *
-     * @return Lock A lock instance or NULL if the lock already exists.
+     * @return Lock|null A lock instance or NULL if the lock already exists.
      *
      * @throws LockException Indicates a problem accessing the region.
      */
@@ -30,7 +30,7 @@ interface ConcurrentRegion extends Region
      * @param CacheKey $key  The key of the item to unlock.
      * @param Lock     $lock The lock previously obtained from {@link readLock}
      *
-     * @return void
+     * @return bool
      *
      * @throws LockException Indicates a problem accessing the region.
      */

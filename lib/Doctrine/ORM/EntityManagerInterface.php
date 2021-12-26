@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
-use BadMethodCallException;
 use DateTimeInterface;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;

@@ -233,7 +233,8 @@ class GH6531OrderItem
 
     /**
      * @var GH6531Product
-     * @Id @ManyToOne(targetEntity=GH6531Product::class)
+     * @Id
+     * @ManyToOne(targetEntity=GH6531Product::class)
      */
     public $product;
 

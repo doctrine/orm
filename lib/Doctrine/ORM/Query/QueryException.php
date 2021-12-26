@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Exception;
-use LogicException;
 
 /**
  * Description of QueryException.

@@ -8,7 +8,6 @@ use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Driver\Statement;
 use EmptyIterator;
 use IteratorAggregate;
-use PDO;
 use Traversable;
 
 /**

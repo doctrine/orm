@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity()
  */
+#[ORM\Entity]
 class DDC5934Member
 {
     /**
@@ -17,6 +18,7 @@ class DDC5934Member
      *
      * @var ArrayCollection
      */
+    #[ORM\ManyToMany(targetEntity: DDC5934BaseContract::class, mappedBy: 'members')]
     public $contracts;
 
     public function __construct()

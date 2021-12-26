@@ -18,8 +18,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 class DDC199Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -68,7 +66,8 @@ class DDC199Test extends OrmFunctionalTestCase
 
 
 /**
- * @Entity @Table(name="ddc199_entities")
+ * @Entity
+ * @Table(name="ddc199_entities")
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({"parent" = "DDC199ParentClass", "child" = "DDC199ChildClass"})
@@ -77,7 +76,8 @@ class DDC199ParentClass
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
@@ -106,7 +106,10 @@ class DDC199ChildClass extends DDC199ParentClass
     public $childData;
 }
 
-/** @Entity @Table(name="ddc199_relatedclass") */
+/**
+ * @Entity
+ * @Table(name="ddc199_relatedclass")
+ */
 class DDC199RelatedClass
 {
     /**

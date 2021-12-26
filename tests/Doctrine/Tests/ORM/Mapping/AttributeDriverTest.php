@@ -47,22 +47,38 @@ class AttributeDriverTest extends AbstractMappingDriverTest
 
     public function testAssociationOverridesMapping(): void
     {
-        self::markTestSkipped('AttributeDriver does not support association overrides.');
+        if (PHP_VERSION_ID < 80100) {
+            self::markTestSkipped('AttributeDriver does not support association overrides.');
+        } else {
+            parent::testAssociationOverridesMapping();
+        }
     }
 
     public function testInversedByOverrideMapping(): void
     {
-        self::markTestSkipped('AttributeDriver does not support association overrides.');
+        if (PHP_VERSION_ID < 80100) {
+            self::markTestSkipped('AttributeDriver does not support association overrides.');
+        } else {
+            parent::testInversedByOverrideMapping();
+        }
     }
 
     public function testFetchOverrideMapping(): void
     {
-        self::markTestSkipped('AttributeDriver does not support association overrides.');
+        if (PHP_VERSION_ID < 80100) {
+            self::markTestSkipped('AttributeDriver does not support association overrides.');
+        } else {
+            parent::testFetchOverrideMapping();
+        }
     }
 
     public function testAttributeOverridesMapping(): void
     {
-        self::markTestSkipped('AttributeDriver does not support association overrides.');
+        if (PHP_VERSION_ID < 80100) {
+            self::markTestSkipped('AttributeDriver does not support association overrides.');
+        } else {
+            parent::testAttributeOverridesMapping();
+        }
     }
 
     public function testOriginallyNestedAttributesDeclaredWithoutOriginalParent(): void

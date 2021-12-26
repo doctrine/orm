@@ -15,8 +15,6 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Helper\HelperSet;
 
-use function class_exists;
-
 /**
  * Handles running the Console Tools inside Symfony Console context.
  */

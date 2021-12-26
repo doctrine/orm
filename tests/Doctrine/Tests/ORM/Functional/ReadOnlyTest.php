@@ -153,7 +153,9 @@ class ReadOnlyTest extends OrmFunctionalTestCase
 class ReadOnlyEntity
 {
     /**
-     * @Id @GeneratedValue @Column(type="integer")
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
      * @var int
      */
     public $id;

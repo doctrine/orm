@@ -18,9 +18,7 @@ use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\Company\CompanyRaffle;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
 use function get_class;
-use function is_numeric;
 use function sprintf;
 
 /**

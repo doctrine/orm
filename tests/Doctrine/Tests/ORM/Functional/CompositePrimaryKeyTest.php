@@ -15,8 +15,6 @@ use Doctrine\Tests\Models\Navigation\NavTour;
 use Doctrine\Tests\Models\Navigation\NavUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

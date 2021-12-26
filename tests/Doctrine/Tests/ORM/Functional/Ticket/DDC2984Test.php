@@ -70,11 +70,15 @@ class DDC2984Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity @Table(name="users") */
+/**
+ * @Entity
+ * @Table(name="users")
+ */
 class DDC2984User
 {
     /**
-     * @Id @Column(type="ddc2984_domain_user_id")
+     * @Id
+     * @Column(type="ddc2984_domain_user_id")
      * @GeneratedValue(strategy="NONE")
      * @var DDC2984DomainUserId
      */

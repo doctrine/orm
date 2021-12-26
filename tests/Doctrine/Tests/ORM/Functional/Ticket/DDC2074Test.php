@@ -10,8 +10,6 @@ use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 /**
  * @group DDC-2074
  */

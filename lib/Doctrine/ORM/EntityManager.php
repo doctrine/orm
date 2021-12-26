@@ -118,7 +118,7 @@ use function sprintf;
     /**
      * The expression builder instance used to generate query expressions.
      *
-     * @var Expr
+     * @var Expr|null
      */
     private $expressionBuilder;
 
@@ -132,11 +132,15 @@ use function sprintf;
     /**
      * Collection of query filters.
      *
-     * @var FilterCollection
+     * @var FilterCollection|null
      */
     private $filterCollection;
 
-    /** @var Cache The second level cache regions API. */
+    /**
+     * The second level cache regions API.
+     *
+     * @var Cache|null
+     */
     private $cache;
 
     /**

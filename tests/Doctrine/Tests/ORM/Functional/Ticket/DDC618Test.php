@@ -16,8 +16,6 @@ use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-use function count;
-
 /**
  * @group DDC-618
  */

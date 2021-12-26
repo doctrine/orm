@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Persisters\Exception;
 
 use Doctrine\ORM\Exception\PersisterException;
-use LogicException;
 
 class InvalidOrientation extends PersisterException
 {

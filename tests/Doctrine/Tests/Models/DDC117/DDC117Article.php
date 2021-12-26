@@ -20,7 +20,9 @@ class DDC117Article
 {
     /**
      * @var int
-     * @Id @Column(type="integer", name="article_id") @GeneratedValue
+     * @Id
+     * @Column(type="integer", name="article_id")
+     * @GeneratedValue
      */
     private $id;
 

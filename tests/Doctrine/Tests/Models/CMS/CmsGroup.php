@@ -13,7 +13,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 use IteratorAggregate;
-use Traversable;
 
 /**
  * Description of CmsGroup

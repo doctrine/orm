@@ -42,7 +42,6 @@ use function assert;
 use function count;
 use function gc_collect_cycles;
 use function get_class;
-use function is_numeric;
 use function random_int;
 use function uniqid;
 
@@ -975,7 +974,8 @@ class VersionedAssignedIdentifierEntity
 class EntityWithStringIdentifier
 {
     /**
-     * @Id @Column(type="string")
+     * @Id
+     * @Column(type="string")
      * @var string|null
      */
     public $id;
@@ -985,7 +985,8 @@ class EntityWithStringIdentifier
 class EntityWithBooleanIdentifier
 {
     /**
-     * @Id @Column(type="boolean")
+     * @Id
+     * @Column(type="boolean")
      * @var bool|null
      */
     public $id;
@@ -995,13 +996,15 @@ class EntityWithBooleanIdentifier
 class EntityWithCompositeStringIdentifier
 {
     /**
-     * @Id @Column(type="string")
+     * @Id
+     * @Column(type="string")
      * @var string|null
      */
     public $id1;
 
     /**
-     * @Id @Column(type="string")
+     * @Id
+     * @Column(type="string")
      * @var string|null
      */
     public $id2;

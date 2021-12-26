@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
-use Doctrine\Common\Cache\ApcCache;
-use Doctrine\Common\Cache\XcacheCache;
 use Doctrine\ORM\Tools\Console\Command\AbstractEntityManagerCommand;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-
-use function get_class;
-use function sprintf;
 
 /**
  * Command to clear the metadata cache of the various cache drivers.

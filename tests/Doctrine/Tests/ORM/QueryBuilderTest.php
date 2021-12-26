@@ -21,7 +21,6 @@ use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
 
 use function array_filter;
-use function count;
 use function get_class;
 
 /**

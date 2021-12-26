@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Exception;
 
-use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\SchemaToolException;
 use LogicException;
 

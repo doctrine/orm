@@ -42,7 +42,6 @@ use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
 
 use function class_exists;
-use function method_exists;
 use function strtolower;
 use function trim;
 

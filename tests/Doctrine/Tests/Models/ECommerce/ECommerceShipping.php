@@ -21,7 +21,8 @@ class ECommerceShipping
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     private $id;

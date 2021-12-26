@@ -1,11 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Cache\\\\DefaultCollectionHydrator\\:\\:loadCacheEntry\\(\\) should return array but returns null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/DefaultCollectionHydrator.php
-
-		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\EntityPersister\\:\\:getCacheRegion\\(\\)\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/DefaultEntityHydrator.php
@@ -109,11 +104,6 @@ parameters:
 			message: "#^Method Doctrine\\\\ORM\\\\Cache\\\\Region\\\\DefaultRegion\\:\\:getCache\\(\\) should return Doctrine\\\\Common\\\\Cache\\\\CacheProvider but returns Doctrine\\\\Common\\\\Cache\\\\Cache\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Region/DefaultRegion.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Cache\\\\Region\\\\FileLockRegion\\:\\:lock\\(\\) should return Doctrine\\\\ORM\\\\Cache\\\\Lock but returns null\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/Cache/Region/FileLockRegion.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Cache\\\\CacheEntry\\:\\:\\$time\\.$#"
@@ -1328,7 +1318,7 @@ parameters:
 
 		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
-			count: 5
+			count: 1
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-

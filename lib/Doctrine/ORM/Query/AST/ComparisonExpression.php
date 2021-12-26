@@ -16,19 +16,19 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ComparisonExpression extends Node
 {
-    /** @var Node */
+    /** @var Node|string */
     public $leftExpression;
 
-    /** @var Node */
+    /** @var Node|string */
     public $rightExpression;
 
     /** @var string */
     public $operator;
 
     /**
-     * @param Node   $leftExpr
-     * @param string $operator
-     * @param Node   $rightExpr
+     * @param Node|string $leftExpr
+     * @param string      $operator
+     * @param Node|string $rightExpr
      */
     public function __construct($leftExpr, $operator, $rightExpr)
     {

@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
-use BadMethodCallException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\API\ExceptionConverter;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
-use Exception;
 
 /**
  * Mock class for Driver.

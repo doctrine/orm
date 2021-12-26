@@ -8,8 +8,6 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 class DDC849Test extends OrmFunctionalTestCase
 {
     /** @var CmsUser */

@@ -6,7 +6,6 @@ namespace Doctrine\ORM;
 
 use Countable;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
@@ -34,7 +33,6 @@ use function is_scalar;
 use function iterator_count;
 use function iterator_to_array;
 use function ksort;
-use function method_exists;
 use function reset;
 use function serialize;
 use function sha1;

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Cache\Exception;
 
 use Doctrine\Common\Cache\Cache;
-use LogicException;
 
 use function get_class;
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\Deprecations\Deprecation;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;

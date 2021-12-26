@@ -436,7 +436,8 @@ abstract class DDC93Vehicle
     /**
      * @var int
      * @Id
-     * @GeneratedValue(strategy = "AUTO") @Column(type = "integer")
+     * @GeneratedValue(strategy = "AUTO")
+     * @Column(type = "integer")
      */
     public $id;
 
@@ -524,7 +525,8 @@ class DDC93Customer
     /**
      * @var int
      * @Id
-     * @GeneratedValue @Column(type="integer")
+     * @GeneratedValue
+     * @Column(type="integer")
      */
     private $id;
 

@@ -239,9 +239,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(Action::class, $action3->name));
 
         $queryCount = $this->getCurrentQueryCount();
-        /**
-         * @var $entity Token
-         */
+
         $entity = $this->_em->find(Token::class, $token->token);
 
         self::assertInstanceOf(Token::class, $entity);
