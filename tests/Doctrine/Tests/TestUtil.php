@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests;
 
 use Doctrine\Common\EventSubscriber;
+use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use UnexpectedValueException;
@@ -48,14 +49,14 @@ class TestUtil
      *
      * @return Connection The database connection instance.
      */
-    public static function getConnection(): Connection
+    public static function getConnection(?Configuration $config = null): Connection
     {
         if (! self::$initialized) {
             self::initializeDatabase();
             self::$initialized = true;
         }
 
-        $conn = DriverManager::getConnection(self::getTestConnectionParameters());
+        $conn = DriverManager::getConnection(self::getTestConnectionParameters(), $config);
 
         self::addDbEventSubscribers($conn);
 

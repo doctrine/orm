@@ -736,16 +736,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/AST/Functions/LowerFunction.php
 
 		-
-			message: "#^Parameter \\#2 \\$start of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getSubstringExpression\\(\\) expects int, string given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/SubstringFunction.php
-
-		-
-			message: "#^Parameter \\#3 \\$length of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getSubstringExpression\\(\\) expects int\\|null, string\\|null given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/SubstringFunction.php
-
-		-
 			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/AST/Functions/UpperFunction.php
