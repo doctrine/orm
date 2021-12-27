@@ -2758,9 +2758,9 @@ class Parser
     }
 
     /**
-     * InParameter ::= Literal | InputParameter
+     * InParameter ::= ArithmeticExpression | InputParameter
      *
-     * @return AST\InputParameter|AST\Literal
+     * @return AST\InputParameter|AST\ArithmeticExpression
      */
     public function InParameter()
     {
@@ -2768,7 +2768,7 @@ class Parser
             return $this->InputParameter();
         }
 
-        return $this->Literal();
+        return $this->ArithmeticExpression();
     }
 
     /**

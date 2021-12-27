@@ -420,6 +420,39 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEquals($result[3][0]['salary'] / 100000 & 2, $result[3]['salary_bit_and']);
     }
 
+    public function testInArithmeticExpression1(): void
+    {
+        $dql = <<<'SQL'
+            SELECT m, m.name AS m_name
+            FROM Doctrine\Tests\Models\Company\CompanyManager m
+            WHERE m.salary IN (800000 / 8, 100000 * 2)
+SQL;
+
+        $result = $this->_em->createQuery($dql)->getArrayResult();
+
+        self::assertCount(2, $result);
+        self::assertEquals('Roman B.', $result[0]['m_name']);
+        self::assertEquals('Benjamin E.', $result[1]['m_name']);
+    }
+
+    public function testInArithmeticExpression2(): void
+    {
+        $this->_em->getConfiguration()->addCustomStringFunction('FOO', static function ($funcName) {
+            return new NoOp($funcName); // See Doctrine/Tests/ORM/Functional/CustomFunctionsTest
+        });
+
+        $dql = <<<'SQL'
+            SELECT m, m.name AS m_name
+            FROM Doctrine\Tests\Models\Company\CompanyManager m
+            WHERE m.department IN (FOO('Administration'))
+SQL;
+
+        $result = $this->_em->createQuery($dql)->getArrayResult();
+
+        self::assertCount(1, $result);
+        self::assertEquals('Jonathan W.', $result[0]['m_name']);
+    }
+
     protected function generateFixture(): void
     {
         $manager1 = new CompanyManager();

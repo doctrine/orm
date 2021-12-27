@@ -643,6 +643,20 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
+    public function testInExpressionWithArithmeticExpression(): void
+    {
+        $this->entityManager->getConfiguration()->addCustomStringFunction('FOO', MyAbsFunction::class);
+
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u WHERE u.username IN (FOO('Lo'), 'Lo', :name)",
+            "SELECT f0_.id AS id_0, f0_.username AS username_1 FROM forum_users f0_ WHERE f0_.username IN (ABS('Lo'), 'Lo', ?)"
+        );
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u WHERE u.id IN (1 + 1)',
+            'SELECT f0_.id AS id_0, f0_.username AS username_1 FROM forum_users f0_ WHERE f0_.id IN (1 + 1)'
+        );
+    }
+
     public function testSupportsConcatFunctionForMysqlAndPostgresql(): void
     {
         $connMock    = $this->entityManager->getConnection();
