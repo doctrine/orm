@@ -20,7 +20,7 @@
         "sort-packages": true
     },
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.0",
         "ext-ctype": "*",
         "ext-pdo": "*",
         "composer/package-versions-deprecated": "^1.8",
@@ -35,8 +35,7 @@
         "doctrine/lexer": "^1.0",
         "doctrine/persistence": "^2.2",
         "psr/cache": "^1 || ^2 || ^3",
-        "symfony/console": "^3.0 || ^4.0 || ^5.0 || ^6.0",
-        "symfony/polyfill-php80": "^1.15"
+        "symfony/console": "^3.0 || ^4.0 || ^5.0 || ^6.0"
     },
     "require-dev": {
         "doctrine/annotations": "^1.13",
