@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-use function get_class;
+use function get_debug_type;
 
 /**
  * @group DDC-1383
@@ -59,13 +59,13 @@ class DDC1383Test extends OrmFunctionalTestCase
         // Parent is not instance of the abstract class
         self::assertTrue(
             $parent instanceof DDC1383AbstractEntity,
-            'Entity class is ' . get_class($parent) . ', "DDC1383AbstractEntity" was expected'
+            'Entity class is ' . get_debug_type($parent) . ', "DDC1383AbstractEntity" was expected'
         );
 
         // Parent is NOT instance of entity
         self::assertTrue(
             $parent instanceof DDC1383Entity,
-            'Entity class is ' . get_class($parent) . ', "DDC1383Entity" was expected'
+            'Entity class is ' . get_debug_type($parent) . ', "DDC1383Entity" was expected'
         );
     }
 }

@@ -275,7 +275,7 @@ class EntityManagerTest extends OrmTestCase
     public function testCreateInvalidConnection(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid $connection argument of type integer given: "1".');
+        $this->expectExceptionMessage('Invalid $connection argument of type int given: "1".');
 
         $config = new Configuration();
         $config->setMetadataDriverImpl($this->createMock(MappingDriver::class));
