@@ -223,12 +223,10 @@ class EntityManagerTest extends OrmTestCase
     }
 
     /**
-     * @param mixed $expectedValue
-     *
      * @dataProvider dataToBeReturnedByWrapInTransaction
      * @group DDC-1125
      */
-    public function testWrapInTransactionAcceptsReturn($expectedValue): void
+    public function testWrapInTransactionAcceptsReturn(mixed $expectedValue): void
     {
         $return = $this->entityManager->wrapInTransaction(
             /** @return mixed */

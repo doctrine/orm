@@ -72,13 +72,10 @@ abstract class OrmTestCase extends DoctrineTestCase
      * mocked out using a DriverMock, ConnectionMock, etc. These mocks can then
      * be configured in the tests to simulate the DBAL behavior that is desired
      * for a particular test,
-     *
-     * @param Connection|array $conn
-     * @param mixed            $conf
      */
     protected function getTestEntityManager(
-        $conn = null,
-        $conf = null,
+        Connection|array|null $conn = null,
+        mixed $conf = null,
         ?EventManager $eventManager = null,
         bool $withSharedMetadata = true
     ): EntityManagerMock {

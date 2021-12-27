@@ -106,8 +106,7 @@ class DDC5684ObjectId
     /** @var mixed */
     public $value;
 
-    /** @param mixed $value */
-    public function __construct($value)
+    public function __construct(mixed $value)
     {
         $this->value = $value;
     }

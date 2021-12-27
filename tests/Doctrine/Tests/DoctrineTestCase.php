@@ -25,10 +25,8 @@ abstract class DoctrineTestCase extends TestCase
 
     /**
      * @param array<mixed> $arguments
-     *
-     * @return mixed
      */
-    public static function __callStatic(string $method, array $arguments)
+    public static function __callStatic(string $method, array $arguments): mixed
     {
         if (isset(self::$phpunitMethodRenames[$method])) {
             $method = self::$phpunitMethodRenames[$method];
@@ -41,10 +39,8 @@ abstract class DoctrineTestCase extends TestCase
 
     /**
      * @param array<mixed> $arguments
-     *
-     * @return mixed
      */
-    public function __call(string $method, array $arguments)
+    public function __call(string $method, array $arguments): mixed
     {
         if ($method === 'createStub') {
             return $this->getMockBuilder(...$arguments)

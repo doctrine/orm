@@ -28,22 +28,16 @@ class CacheRegionMock implements Region
 
     /**
      * Queue a return value for a specific method invocation
-     *
-     * @param mixed $value
      */
-    public function addReturn(string $method, $value): void
+    public function addReturn(string $method, mixed $value): void
     {
         $this->returns[$method][] = $value;
     }
 
     /**
      * Dequeue a value for a specific method invocation
-     *
-     * @param mixed $default
-     *
-     * @return mixed
      */
-    private function getReturn(string $method, $default)
+    private function getReturn(string $method, mixed $default): mixed
     {
         if (isset($this->returns[$method]) && ! empty($this->returns[$method])) {
             return array_shift($this->returns[$method]);

@@ -61,10 +61,7 @@ class GH5762Test extends OrmFunctionalTestCase
         self::assertContains('Volvo', $cars);
     }
 
-    /**
-     * @return mixed
-     */
-    private function fetchData()
+    private function fetchData(): mixed
     {
         $this->createData();
 

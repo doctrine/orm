@@ -38,18 +38,12 @@ class ECommerceShipping
         return $this->id;
     }
 
-    /**
-     * @return int|string
-     */
-    public function getDays()
+    public function getDays(): int|string
     {
         return $this->days;
     }
 
-    /**
-     * @param int|string $days
-     */
-    public function setDays($days): void
+    public function setDays(int|string $days): void
     {
         $this->days = $days;
     }

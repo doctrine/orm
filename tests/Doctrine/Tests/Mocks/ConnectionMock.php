@@ -145,12 +145,7 @@ class ConnectionMock extends Connection
         return $input;
     }
 
-    /* Mock API */
-
-    /**
-     * @param mixed $fetchOneResult
-     */
-    public function setFetchOneResult($fetchOneResult): void
+    public function setFetchOneResult(mixed $fetchOneResult): void
     {
         $this->_fetchOneResult = $fetchOneResult;
     }
