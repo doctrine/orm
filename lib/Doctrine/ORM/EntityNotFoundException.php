@@ -37,8 +37,6 @@ class EntityNotFoundException extends ORMException
 
     /**
      * Instance for which no identifier can be found
-     *
-     * @psalm-param class-string $className
      */
     public static function noIdentifierFound(string $className): self
     {

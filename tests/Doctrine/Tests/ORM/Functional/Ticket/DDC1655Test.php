@@ -19,6 +19,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
 use function get_class;
+use function get_debug_type;
 
 /**
  * @group DDC-1655
@@ -65,7 +66,7 @@ class DDC1655Test extends OrmFunctionalTestCase
 
         $baz = $this->_em->find(get_class($baz), $baz->id);
         foreach ($baz->foos as $foo) {
-            self::assertEquals(1, $foo->loaded, 'should have loaded callback counter incremented for ' . get_class($foo));
+            self::assertEquals(1, $foo->loaded, 'should have loaded callback counter incremented for ' . get_debug_type($foo));
         }
     }
 

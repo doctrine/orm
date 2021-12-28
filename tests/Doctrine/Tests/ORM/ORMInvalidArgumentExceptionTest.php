@@ -35,11 +35,11 @@ class ORMInvalidArgumentExceptionTest extends TestCase
     public function invalidEntityNames(): array
     {
         return [
-            [null, 'Entity name must be a string, NULL given'],
-            [true, 'Entity name must be a string, boolean given'],
-            [123, 'Entity name must be a string, integer given'],
-            [123.45, 'Entity name must be a string, double given'],
-            [new stdClass(), 'Entity name must be a string, object given'],
+            [null, 'Entity name must be a string, null given'],
+            [true, 'Entity name must be a string, bool given'],
+            [123, 'Entity name must be a string, int given'],
+            [123.45, 'Entity name must be a string, float given'],
+            [new stdClass(), 'Entity name must be a string, stdClass given'],
         ];
     }
 

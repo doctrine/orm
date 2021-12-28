@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ObjectManagerDecorator;
 
-use function get_class;
+use function get_debug_type;
 use function method_exists;
 use function sprintf;
 use function trigger_error;
@@ -67,7 +67,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     {
         if (! method_exists($this->wrapped, 'wrapInTransaction')) {
             trigger_error(
-                sprintf('Calling `transactional()` instead of `wrapInTransaction()` which is not implemented on %s', get_class($this->wrapped)),
+                sprintf('Calling `transactional()` instead of `wrapInTransaction()` which is not implemented on %s', get_debug_type($this->wrapped)),
                 E_USER_NOTICE
             );
 

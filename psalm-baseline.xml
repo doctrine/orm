@@ -464,13 +464,11 @@
     <PropertyTypeCoercion occurrences="1">
       <code>new $metadataFactoryClassName()</code>
     </PropertyTypeCoercion>
-    <RedundantCondition occurrences="2">
-      <code>is_object($connection)</code>
+    <RedundantCondition occurrences="1">
       <code>is_object($connection)</code>
     </RedundantCondition>
-    <TypeDoesNotContainType occurrences="2">
+    <TypeDoesNotContainType occurrences="1">
       <code>': "' . $connection . '"'</code>
-      <code>gettype($connection)</code>
     </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ORM/EntityManagerInterface.php">
@@ -3190,23 +3188,14 @@
     </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryRegionCommand.php">
-    <DocblockTypeContradiction occurrences="1">
-      <code>gettype($queryRegion)</code>
-    </DocblockTypeContradiction>
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>is_object($queryRegion)</code>
-    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php">
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
-    <PossiblyNullArgument occurrences="1">
-      <code>$cacheDriver</code>
-    </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ConvertDoctrine1SchemaCommand.php">
     <ArgumentTypeCoercion occurrences="1">

@@ -19,6 +19,7 @@ use Doctrine\Tests\Models\Company\CompanyRaffle;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function get_class;
+use function get_debug_type;
 use function sprintf;
 
 /**
@@ -280,7 +281,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $result = $q->getResult();
         self::assertCount(1, $result);
-        self::assertInstanceOf(CompanyAuction::class, $result[0], sprintf('Is of class %s', get_class($result[0])));
+        self::assertInstanceOf(CompanyAuction::class, $result[0], sprintf('Is of class %s', get_debug_type($result[0])));
 
         $this->_em->clear();
 

@@ -19,7 +19,7 @@ use function array_map;
 use function array_merge;
 use function count;
 use function current;
-use function get_class;
+use function get_debug_type;
 use function implode;
 use function is_array;
 use function is_bool;
@@ -214,7 +214,7 @@ EOT
         }
 
         if (is_object($value)) {
-            return sprintf('<%s>', get_class($value));
+            return sprintf('<%s>', get_debug_type($value));
         }
 
         if (is_scalar($value)) {

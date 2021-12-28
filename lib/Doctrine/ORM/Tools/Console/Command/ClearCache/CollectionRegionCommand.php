@@ -14,9 +14,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use function get_class;
-use function gettype;
-use function is_object;
+use function get_debug_type;
 use function sprintf;
 
 /**
@@ -93,7 +91,7 @@ EOT
             if (! $collectionRegion instanceof DefaultRegion) {
                 throw new InvalidArgumentException(sprintf(
                     'The option "--flush" expects a "Doctrine\ORM\Cache\Region\DefaultRegion", but got "%s".',
-                    is_object($collectionRegion) ? get_class($collectionRegion) : gettype($collectionRegion)
+                    get_debug_type($collectionRegion)
                 ));
             }
 

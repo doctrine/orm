@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Query\AST;
 
 use Doctrine\ORM\Query\SqlWalker;
 
-use function get_class;
+use function get_debug_type;
 use function get_object_vars;
 use function is_array;
 use function is_object;
@@ -60,7 +60,7 @@ abstract class Node
         $str = '';
 
         if ($obj instanceof Node) {
-            $str  .= get_class($obj) . '(' . PHP_EOL;
+            $str  .= get_debug_type($obj) . '(' . PHP_EOL;
             $props = get_object_vars($obj);
 
             foreach ($props as $name => $prop) {
@@ -85,7 +85,7 @@ abstract class Node
             $ident -= 4;
             $str   .= ($some ? PHP_EOL . str_repeat(' ', $ident) : '') . ')';
         } elseif (is_object($obj)) {
-            $str .= 'instanceof(' . get_class($obj) . ')';
+            $str .= 'instanceof(' . get_debug_type($obj) . ')';
         } else {
             $str .= var_export($obj, true);
         }

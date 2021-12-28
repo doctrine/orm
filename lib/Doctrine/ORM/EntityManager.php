@@ -32,7 +32,7 @@ use Throwable;
 
 use function array_keys;
 use function call_user_func;
-use function get_class;
+use function get_debug_type;
 use function gettype;
 use function is_array;
 use function is_callable;
@@ -948,7 +948,7 @@ use function sprintf;
             throw new InvalidArgumentException(
                 sprintf(
                     'Invalid $connection argument of type %s given%s.',
-                    is_object($connection) ? get_class($connection) : gettype($connection),
+                    get_debug_type($connection),
                     is_object($connection) ? '' : ': "' . $connection . '"'
                 )
             );
