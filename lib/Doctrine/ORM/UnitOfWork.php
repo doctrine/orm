@@ -57,6 +57,7 @@ use function array_values;
 use function count;
 use function current;
 use function get_class;
+use function get_debug_type;
 use function implode;
 use function in_array;
 use function is_array;
@@ -913,7 +914,7 @@ class UnitOfWork implements PropertyChangedListener
                 throw UnexpectedAssociationValue::create(
                     $assoc['sourceEntity'],
                     $assoc['fieldName'],
-                    get_class($entry),
+                    get_debug_type($entry),
                     $assoc['targetEntity']
                 );
             }
@@ -3062,7 +3063,7 @@ class UnitOfWork implements PropertyChangedListener
     public function getEntityIdentifier($entity)
     {
         if (! isset($this->entityIdentifiers[spl_object_id($entity)])) {
-            throw EntityNotFoundException::noIdentifierFound(get_class($entity));
+            throw EntityNotFoundException::noIdentifierFound(get_debug_type($entity));
         }
 
         return $this->entityIdentifiers[spl_object_id($entity)];
@@ -3371,7 +3372,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private static function objToStr($obj): string
     {
-        return method_exists($obj, '__toString') ? (string) $obj : get_class($obj) . '@' . spl_object_id($obj);
+        return method_exists($obj, '__toString') ? (string) $obj : get_debug_type($obj) . '@' . spl_object_id($obj);
     }
 
     /**

@@ -132,7 +132,7 @@ parameters:
 
 		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
-			count: 2
+			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
@@ -1865,11 +1865,6 @@ parameters:
 			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\XcacheCache not found\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryCommand.php
-
-		-
-			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryRegionCommand.php
 
 		-
 			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\ApcCache not found\\.$#"

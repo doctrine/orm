@@ -70,7 +70,7 @@ use Doctrine\Tests\OrmTestCase;
 
 use function assert;
 use function count;
-use function get_class;
+use function get_debug_type;
 use function sprintf;
 use function strpos;
 use function strtolower;
@@ -631,7 +631,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $driver = $this->loadDriver();
         $class  = $this->createClassMetadata(User::class);
 
-        self::assertCount(1, $class->getNamedQueries(), sprintf('Named queries not processed correctly by driver %s', get_class($driver)));
+        self::assertCount(1, $class->getNamedQueries(), sprintf('Named queries not processed correctly by driver %s', get_debug_type($driver)));
     }
 
     /**

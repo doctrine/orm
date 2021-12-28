@@ -8,7 +8,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Exception\ORMException;
 use LogicException;
 
-use function get_class;
+use function get_debug_type;
 use function sprintf;
 
 final class CannotGenerateIds extends LogicException implements ORMException
@@ -17,7 +17,7 @@ final class CannotGenerateIds extends LogicException implements ORMException
     {
         return new self(sprintf(
             'Platform %s does not support generating identifiers',
-            get_class($platform)
+            get_debug_type($platform)
         ));
     }
 }

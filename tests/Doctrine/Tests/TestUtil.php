@@ -11,7 +11,7 @@ use UnexpectedValueException;
 
 use function explode;
 use function fwrite;
-use function get_class;
+use function get_debug_type;
 use function sprintf;
 use function strlen;
 use function strpos;
@@ -76,7 +76,7 @@ class TestUtil
 
         // Note, writes direct to STDERR to prevent phpunit detecting output - otherwise this would cause either an
         // "unexpected output" warning or a failure on the first test case to call this method.
-        fwrite(STDERR, sprintf("\nUsing DB driver %s\n", get_class($testConn->getDriver())));
+        fwrite(STDERR, sprintf("\nUsing DB driver %s\n", get_debug_type($testConn->getDriver())));
 
         // Connect as a privileged user to create and drop the test database.
         $privConn = DriverManager::getConnection($privConnParams);
