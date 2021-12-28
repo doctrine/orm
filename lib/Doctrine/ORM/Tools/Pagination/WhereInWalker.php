@@ -28,7 +28,7 @@ use function is_array;
 use function reset;
 
 /**
- * Appends to the whereClause of the AST a Condition "id IN (:foo_1, :foo_2)".
+ * Appends a condition "id IN (:foo_1, :foo_2)" to the whereClause of the AST.
  */
 class WhereInWalker extends TreeWalkerAdapter
 {
