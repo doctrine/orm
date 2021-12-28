@@ -730,7 +730,7 @@ clauses:
 -  ``SQRT(q)`` - Return the square-root of q.
 -  ``SUBSTRING(str, start [, length])`` - Return substring of given
    string.
--  ``TRIM([LEADING \| TRAILING \| BOTH] ['trchar' FROM] str)`` - Trim
+-  ``TRIM([LEADING | TRAILING | BOTH] ['trchar' FROM] str)`` - Trim
    the string by the given trim char, defaults to whitespaces.
 -  ``UPPER(str)`` - Return the upper-case of the given string.
 -  ``DATE_ADD(date, value, unit)`` - Add the given time to a given date.
