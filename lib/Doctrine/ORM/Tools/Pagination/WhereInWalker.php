@@ -43,7 +43,7 @@ class WhereInWalker extends TreeWalkerAdapter
     public const PAGINATOR_ID_ALIAS = 'dpid';
 
     /**
-     * Appends to the whereClause of the AST a Condition equivalent to WHERE IN (:dpid_1, :dpid_2, ...)
+     * Appends a condition equivalent to "WHERE IN (:dpid_1, :dpid_2, ...)" to the whereClause of the AST.
      *
      * The parameter namespace (dpid) is defined by
      * the PAGINATOR_ID_ALIAS
