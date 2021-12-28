@@ -3654,11 +3654,6 @@
       <code>$indexName</code>
     </TypeDoesNotContainType>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/SchemaValidator.php">
-    <PossiblyNullReference occurrences="1">
-      <code>isAbstract</code>
-    </PossiblyNullReference>
-  </file>
   <file src="lib/Doctrine/ORM/Tools/Setup.php">
     <DeprecatedClass occurrences="3">
       <code>new ClassLoader('Doctrine', $directory)</code>

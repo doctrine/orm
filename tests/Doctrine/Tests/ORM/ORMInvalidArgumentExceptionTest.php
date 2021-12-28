@@ -30,7 +30,7 @@ class ORMInvalidArgumentExceptionTest extends TestCase
     }
 
     /**
-     * @return string[][]
+     * @psalm-return list<array{mixed, string}>
      */
     public function invalidEntityNames(): array
     {

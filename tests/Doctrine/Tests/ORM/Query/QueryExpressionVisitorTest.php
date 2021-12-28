@@ -27,7 +27,7 @@ class QueryExpressionVisitorTest extends TestCase
     }
 
     /**
-     * @param QueryBuilder\Comparison|string $queryExpr
+     * @param QueryBuilder\Comparison|QueryBuilder\Func|string $queryExpr
      *
      * @dataProvider comparisonData
      */
@@ -39,7 +39,13 @@ class QueryExpressionVisitorTest extends TestCase
         }
     }
 
-    /** @psalm-return list<array{CriteriaComparison, QueryBuilder\Comparison|string, ?Parameter} */
+    /**
+     * @psalm-return list<array{
+     *                   0: CriteriaComparison,
+     *                   1: QueryBuilder\Comparison|QueryBuilder\Func|string,
+     *                   2?: Parameter,
+     *               }>
+     */
     public function comparisonData(): array
     {
         $cb = new CriteriaBuilder();
