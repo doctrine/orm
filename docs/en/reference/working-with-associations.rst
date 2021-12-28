@@ -521,6 +521,8 @@ For each cascade operation that gets activated, Doctrine also
 applies that operation to the association, be it single or
 collection valued.
 
+.. _persistence-by-reachability:
+
 Persistence by Reachability: Cascade Persist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
