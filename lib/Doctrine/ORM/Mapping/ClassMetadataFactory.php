@@ -45,9 +45,7 @@ use function substr;
  * metadata mapping information of a class which describes how a class should be mapped
  * to a relational database.
  *
- * @method ClassMetadata[] getAllMetadata()
- * @method ClassMetadata[] getLoadedMetadata()
- * @method ClassMetadata getMetadataFor($className)
+ * @extends AbstractClassMetadataFactory<ClassMetadata>
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
@@ -90,14 +88,16 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function onNotFoundMetadata($className)
     {
         if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
-            return;
+            return null;
         }
 
         $eventArgs = new OnClassMetadataNotFoundEventArgs($className, $this->em);
 
         $this->evm->dispatchEvent(Events::onClassMetadataNotFound, $eventArgs);
+        $classMetadata = $eventArgs->getFoundMetadata();
+        assert($classMetadata instanceof ClassMetadata);
 
-        return $eventArgs->getFoundMetadata();
+        return $classMetadata;
     }
 
     /**
@@ -642,6 +642,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
     }
 
+    /**
+     * @psalm-return ClassMetadata::GENERATOR_TYPE_SEQUENCE|ClassMetadata::GENERATOR_TYPE_IDENTITY
+     */
     private function determineIdGeneratorStrategy(AbstractPlatform $platform): int
     {
         if (
@@ -736,7 +739,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function isEntity(ClassMetadataInterface $class)
     {
-        return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false;
+        return ! $class->isMappedSuperclass;
     }
 
     private function getTargetPlatform(): Platforms\AbstractPlatform

@@ -25,6 +25,7 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use InvalidArgumentException;
 use LogicException;
 
+use function assert;
 use function sprintf;
 
 use const DIRECTORY_SEPARATOR;
@@ -91,6 +92,7 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function buildCachedEntityPersister(EntityManagerInterface $em, EntityPersister $persister, ClassMetadata $metadata)
     {
+        assert($metadata->cache !== null);
         $region = $this->getRegion($metadata->cache);
         $usage  = $metadata->cache['usage'];
 
