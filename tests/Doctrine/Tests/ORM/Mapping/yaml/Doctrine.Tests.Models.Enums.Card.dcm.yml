@@ -1,0 +1,11 @@
+Doctrine\Tests\Models\Enums\Card:
+  type: entity
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    suit:
+      type: string
+      enumType: Doctrine\Tests\Models\Enums\Suit

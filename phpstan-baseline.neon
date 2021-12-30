@@ -1746,7 +1746,7 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
 		-
-			message: "#^Offset 'version' on array\\{type\\: string, fieldName\\: string, columnName\\?\\: string, length\\?\\: int, id\\?\\: bool, nullable\\?\\: bool, columnDefinition\\?\\: string, precision\\?\\: int, \\.\\.\\.\\} in isset\\(\\) does not exist\\.$#"
+			message: "#^Offset 'version' on array\\{type\\: string, fieldName\\: string, columnName\\?\\: string, length\\?\\: int, id\\?\\: bool, nullable\\?\\: bool, enumType\\?\\: class\\-string\\<BackedEnum\\>, columnDefinition\\?\\: string, \\.\\.\\.\\} in isset\\(\\) does not exist\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
