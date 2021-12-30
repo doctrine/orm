@@ -15,6 +15,7 @@ use Doctrine\Deprecations\Deprecation;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
@@ -281,7 +282,7 @@ class ClassMetadataInfo implements ClassMetadata
      * (Optional).
      *
      * @var string|null
-     * @psalm-var ?class-string
+     * @psalm-var ?class-string<EntityRepository>
      */
     public $customRepositoryClassName;
 
@@ -376,7 +377,7 @@ class ClassMetadataInfo implements ClassMetadata
      * READ-ONLY: The inheritance mapping type used by the class.
      *
      * @var int
-     * @psalm-var self::$INHERITANCE_TYPE_*
+     * @psalm-var self::INHERITANCE_TYPE_*
      */
     public $inheritanceType = self::INHERITANCE_TYPE_NONE;
 
@@ -384,6 +385,7 @@ class ClassMetadataInfo implements ClassMetadata
      * READ-ONLY: The Id generator type used by the class.
      *
      * @var int
+     * @psalm-var self::GENERATOR_TYPE_*
      */
     public $generatorType = self::GENERATOR_TYPE_NONE;
 
@@ -649,8 +651,8 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public $versionField;
 
-    /** @var mixed[] */
-    public $cache = null;
+    /** @var mixed[]|null */
+    public $cache;
 
     /**
      * The ReflectionClass instance of the mapped class.
@@ -2130,6 +2132,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Sets the type of Id generator to use for the mapped class.
      *
      * @param int $generatorType
+     * @psalm-param self::GENERATOR_TYPE_* $generatorType
      *
      * @return void
      */
@@ -2318,6 +2321,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Sets the inheritance type used by the class and its subclasses.
      *
      * @param int $type
+     * @psalm-param self::INHERITANCE_TYPE_* $type
      *
      * @return void
      *
@@ -2863,8 +2867,8 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Registers a custom repository class for the entity class.
      *
-     * @param string $repositoryClassName The class name of the custom mapper.
-     * @psalm-param class-string $repositoryClassName
+     * @param string|null $repositoryClassName The class name of the custom mapper.
+     * @psalm-param class-string<EntityRepository>|null $repositoryClassName
      *
      * @return void
      */
@@ -3531,9 +3535,10 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * @param string|null $className
-     * @psalm-param ?class-string $className
+     * @psalm-param string|class-string|null $className
      *
      * @return string|null null if the input value is null
+     * @psalm-return class-string|null
      */
     public function fullyQualifiedClassName($className)
     {
@@ -3541,7 +3546,7 @@ class ClassMetadataInfo implements ClassMetadata
             return $className;
         }
 
-        if ($className !== null && strpos($className, '\\') === false && $this->namespace) {
+        if (strpos($className, '\\') === false && $this->namespace) {
             return $this->namespace . '\\' . $className;
         }
 

@@ -21,12 +21,12 @@ final class AttributeOverrides implements Annotation
     /**
      * One or more field or property mapping overrides.
      *
-     * @var array<\Doctrine\ORM\Mapping\AttributeOverride>
+     * @var array<AttributeOverride>
      */
     public $overrides = [];
 
     /**
-     * @param array<mixed>|AttributeOverride $overrides
+     * @param array<AttributeOverride>|AttributeOverride $overrides
      */
     public function __construct($overrides)
     {

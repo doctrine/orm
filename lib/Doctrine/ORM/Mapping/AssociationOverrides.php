@@ -21,12 +21,12 @@ final class AssociationOverrides implements Annotation
     /**
      * Mapping overrides of relationship properties.
      *
-     * @var array<\Doctrine\ORM\Mapping\AssociationOverride>
+     * @var array<AssociationOverride>
      */
     public $overrides = [];
 
     /**
-     * @param array<mixed>|AssociationOverride $overrides
+     * @param array<AssociationOverride>|AssociationOverride $overrides
      */
     public function __construct($overrides)
     {

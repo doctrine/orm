@@ -54,7 +54,7 @@ class MappingException extends Exception implements ORMException
 
     /**
      * @param string $entityName
-     * @param string $type
+     * @param int    $type
      *
      * @return MappingException
      */
