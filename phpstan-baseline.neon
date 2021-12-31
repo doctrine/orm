@@ -131,11 +131,6 @@ parameters:
 			path: lib/Doctrine/ORM/Configuration.php
 
 		-
-			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:find\\(\\) invoked with 4 parameters, 2 required\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
-
-		-
 			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:flush\\(\\) invoked with 1 parameter, 0 required\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php

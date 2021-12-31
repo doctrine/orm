@@ -18,11 +18,36 @@ use Doctrine\Persistence\ObjectManager;
 /**
  * EntityManager interface
  *
+ * @method object|null find(string $className, $id, ?int $lockMode = null, ?int $lockVersion = null)
  * @method Mapping\ClassMetadataFactory getMetadataFactory()
  * @method mixed wrapInTransaction(callable $func)
  */
 interface EntityManagerInterface extends ObjectManager
 {
+    /**
+     * Finds an Entity by its identifier.
+     *
+     * @param string   $className   The class name of the entity to find.
+     * @param mixed    $id          The identity of the entity to find.
+     * @param int|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
+     *    or NULL if no specific lock mode should be used
+     *    during the search.
+     * @param int|null $lockVersion The version of the entity to find when using
+     * optimistic locking.
+     * @psalm-param class-string<T> $className
+     *
+     * @return object|null The entity instance or NULL if the entity can not be found.
+     * @psalm-return ?T
+     *
+     * @throws OptimisticLockException
+     * @throws ORMInvalidArgumentException
+     * @throws TransactionRequiredException
+     * @throws ORMException
+     *
+     * @template T
+     */
+    // public function find($className, $id, $lockMode = null, $lockVersion = null);
+
     /**
      * {@inheritdoc}
      *

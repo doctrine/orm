@@ -271,9 +271,9 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function find($className, $id)
+    public function find($className, $id, $lockMode = null, $lockVersion = null)
     {
-        return $this->realEntityManager->find($className, $id);
+        return $this->realEntityManager->find($className, $id, $lockMode, $lockVersion);
     }
 
     /**
