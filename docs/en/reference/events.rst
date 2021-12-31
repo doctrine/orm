@@ -133,6 +133,8 @@ see
 * For *some events* (see table below), you can create a *Lifecycle Callback* method in the
 entity, see :ref:`Lifecycle Callbacks<lifecycle-callbacks>`.
 
+.. _reference-events-lifecycle-events:
+
 Events Overview
 ---------------
 
@@ -166,7 +168,7 @@ Events Overview
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
 | :ref:`postFlush<reference-events-post-flush>`                   | ``$em->flush()``      | No        | `_PostFlushEventArgs`               |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| ``onClear``                                                     | ``$em->clear()``      | No        | `_OnClearEventArgs`                 |
+| :ref:`onClear<reference-events-on-clear>`                       | ``$em->clear()``      | No        | `_OnClearEventArgs`                 |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
 
 Naming convention
@@ -187,91 +189,6 @@ several reasons:
 
 An example for a correct notation can be found in the example
 ``TestEvent`` above.
-
-.. _reference-events-lifecycle-events:
-
-Lifecycle Events
-----------------
-
-The ``EntityManager`` and ``UnitOfWork`` classes trigger a bunch of
-events during the life-time of their registered entities.
-
-
-
--  ``preRemove`` - The ``preRemove`` event occurs for a given entity
-   before the respective ``EntityManager`` remove operation for that
-   entity is executed.  It is not called for a DQL ``DELETE`` statement.
--  ``postRemove`` - The ``postRemove`` event occurs for an entity after the
-   entity has been deleted. It will be invoked after the database
-   delete operations. It is not called for a DQL ``DELETE`` statement.
--  ``prePersist`` - The ``prePersist`` event occurs for a given entity
-   before the respective ``EntityManager`` persist operation for that
-   entity is executed. It should be noted that this event is only triggered on
-   *initial* persist of an entity (i.e. it does not trigger on future updates).
--  ``postPersist`` - The ``postPersist`` event occurs for an entity after
-   the entity has been made persistent. It will be invoked after the
-   database insert operations. Generated primary key values are
-   available in the postPersist event.
--  ``preUpdate`` - The ``preUpdate`` event occurs before the database
-   update operations to entity data. It is not called for a DQL
-   ``UPDATE`` statement nor when the computed changeset is empty.
--  ``postUpdate`` - The ``postUpdate`` event occurs after the database
-   update operations to entity data. It is not called for a DQL
-   ``UPDATE`` statement.
--  ``postLoad`` - The postLoad event occurs for an entity after the
-   entity has been loaded into the current ``EntityManager`` from the
-   database or after the refresh operation has been applied to it.
--  ``loadClassMetadata`` - The ``loadClassMetadata`` event occurs after the
-   mapping metadata for a class has been loaded from a mapping source
-   (annotations/xml/yaml). This event is not a lifecycle callback.
--  ``onClassMetadataNotFound`` - Loading class metadata for a particular
-   requested class name failed. Manipulating the given event args instance
-   allows providing fallback metadata even when no actual metadata exists
-   or could be found. This event is not a lifecycle callback.
--  ``preFlush`` - The ``preFlush`` event occurs at the very beginning of
-   a flush operation.
--  ``onFlush`` - The ``onFlush`` event occurs after the change-sets of all
-   managed entities are computed. This event is not a lifecycle
-   callback.
--  ``postFlush`` - The ``postFlush`` event occurs at the end of a flush operation. This
-   event is not a lifecycle callback.
--  ``onClear`` - The ``onClear`` event occurs when the
-   ``EntityManager#clear()`` operation is invoked, after all references
-   to entities have been removed from the unit of work. This event is not
-   a lifecycle callback.
-
-
-.. warning::
-
-    Note that, when using ``Doctrine\ORM\AbstractQuery#toIterable()``, ``postLoad``
-    events will be executed immediately after objects are being hydrated, and therefore
-    associations are not guaranteed to be initialized. It is not safe to combine
-    usage of ``Doctrine\ORM\AbstractQuery#toIterable()`` and ``postLoad`` event
-    handlers.
-
-.. warning::
-
-    Note that the ``postRemove`` event or any events triggered after an entity removal
-    can receive an uninitializable proxy in case you have configured an entity to
-    cascade remove relations. In this case, you should load yourself the proxy in
-    the associated pre event.
-
-You can access the Event constants from the ``Events`` class in the
-ORM package.
-
-.. code-block:: php
-
-    <?php
-    use Doctrine\ORM\Events;
-    echo Events::preUpdate;
-
-.. note::
-
-    All Lifecycle events that happen during the ``flush()`` of
-    an ``EntityManager`` have very specific constraints on the allowed
-    operations that can be executed. Please read the
-    :ref:`reference-events-implementing-listeners` section very carefully
-    to understand which operations are allowed in which lifecycle event.
 
 .. _lifecycle-callbacks:
 
@@ -298,10 +215,8 @@ specific to a particular entity class's lifecycle.
         use Doctrine\DBAL\Types\Types;
         use Doctrine\Persistence\Event\LifecycleEventArgs;
 
-        /**
-         * #[Entity]
-         * #[HasLifecycleCallbacks]
-         */
+        #[Entity]
+        #[HasLifecycleCallbacks]
         class User
         {
             // ...
@@ -536,21 +451,23 @@ that (prior to version 2.4) you do not have access to the
 prePersist
 ~~~~~~~~~~
 
-There are two ways for the ``prePersist`` event to be triggered.
-One is obviously when you call ``EntityManager#persist()``. The
-event is also called for all cascaded associations.
+There are two ways for the ``prePersist`` event to be triggered:
 
-There is another way for ``prePersist`` to be called, inside the
+- One is obviously when you call ``EntityManager::persist()``. The
+event is also called for all :ref:`cascaded associations<transitive-persistence>`.
+- The other is inside the
 ``flush()`` method when changes to associations are computed and
-this association is marked as cascade persist. Any new entity found
+this association is marked as :ref:`cascade: persist<transitive-persistence>`. Any new entity found
 during this operation is also persisted and ``prePersist`` called
-on it. This is called "persistence by reachability".
+on it. This is called :ref:`persistence by reachability<persistence-by-reachability>`.
 
 In both cases you get passed a ``LifecycleEventArgs`` instance
 which has access to the entity and the entity manager.
 
-The following restrictions apply to ``prePersist``:
+This event is only triggered on *initial* persist of an entity
+(i.e. it does not trigger on future updates).
 
+The following restrictions apply to ``prePersist``:
 
 -  If you are using a PrePersist Identity Generator such as
    sequences the ID value will *NOT* be available within any
@@ -558,15 +475,17 @@ The following restrictions apply to ``prePersist``:
 -  Doctrine will not recognize changes made to relations in a prePersist
    event. This includes modifications to
    collections such as additions, removals or replacement.
-   
+
 .. _reference-events-pre-remove:
 
 preRemove
 ~~~~~~~~~
 
-The ``preRemove`` event is called on every entity when its passed
-to the ``EntityManager#remove()`` method. It is cascaded for all
-associations that are marked as cascade delete.
+The ``preRemove`` event is called on every entity immediately when it is passed
+to the ``EntityManager::remove()`` method. It is cascaded for all
+associations that are marked as :ref:`cascade: remove<transitive-persistence>`
+
+It is not called for a DQL ``DELETE`` statement.
 
 There are no restrictions to what methods can be called inside the
 ``preRemove`` event, except when the remove method itself was
@@ -577,10 +496,10 @@ called during a flush operation.
 preFlush
 ~~~~~~~~
 
-``preFlush`` is called at ``EntityManager#flush()`` before
-anything else. ``EntityManager#flush()`` should not be called inside
-its listeners, since `preFlush` event is dispatched in it, which would
-result in infinite loop.
+``preFlush`` is called inside ``EntityManager::flush()`` before
+anything else. ``EntityManager::flush()`` must not be called inside
+its listeners, since it would fire the ``preFlush`` event again, which would
+result in an infinite loop.
 
 .. code-block:: php
 
@@ -601,11 +520,10 @@ result in infinite loop.
 onFlush
 ~~~~~~~
 
-OnFlush is a very powerful event. It is called inside
-``EntityManager#flush()`` after the changes to all the managed
+``onFlush`` is a very powerful event. It is called inside
+``EntityManager::flush()`` after the changes to all the managed
 entities and their associations have been computed. This means, the
 ``onFlush`` event has access to the sets of:
-
 
 -  Entities scheduled for insert
 -  Entities scheduled for update
@@ -614,7 +532,7 @@ entities and their associations have been computed. This means, the
 -  Collections scheduled for removal
 
 To make use of the ``onFlush`` event you have to be familiar with the
-internal ``UnitOfWork`` API, which grants you access to the previously
+internal :ref:`UnitOfWork<unit-of-work>` API, which grants you access to the previously
 mentioned sets. See this example:
 
 .. code-block:: php
@@ -649,11 +567,10 @@ mentioned sets. See this example:
         }
     }
 
-The following restrictions apply to the onFlush event:
-
+The following restrictions apply to the ``onFlush`` event:
 
 -  If you create and persist a new entity in ``onFlush``, then
-   calling ``EntityManager#persist()`` is not enough.
+   calling ``EntityManager::persist()`` is not enough.
    You have to execute an additional call to
    ``$unitOfWork->computeChangeSet($classMetadata, $entity)``.
 -  Changing primitive fields or associations requires you to
@@ -666,8 +583,9 @@ The following restrictions apply to the onFlush event:
 postFlush
 ~~~~~~~~~
 
-``postFlush`` is called at the end of ``EntityManager#flush()``.
-``EntityManager#flush()`` can **NOT** be called safely inside its listeners.
+``postFlush`` is called at the end of ``EntityManager::flush()``.
+``EntityManager::flush()`` can **NOT** be called safely inside its listeners.
+This event is not a lifecycle callback.
 
 .. code-block:: php
 
@@ -688,21 +606,21 @@ postFlush
 preUpdate
 ~~~~~~~~~
 
-PreUpdate is called inside the ``EntityManager#flush()`` method,
+PreUpdate is called inside the ``EntityManager::flush()`` method,
 right before an SQL ``UPDATE`` statement. This event is not
-triggered when the computed changeset is empty.
+triggered when the computed changeset is empty, nor for a DQL
+   ``UPDATE`` statement.
 
 Changes to associations of the updated entity are never allowed in
 this event, since Doctrine cannot guarantee to correctly handle
 referential integrity at this point of the flush operation. This
 event has a powerful feature however, it is executed with a
-``PreUpdateEventArgs`` instance, which contains a reference to the
+`_PreUpdateEventArgs`_ instance, which contains a reference to the
 computed change-set of this entity.
 
 This means you have access to all the fields that have changed for
 this entity with their old and new value. The following methods are
 available on the ``PreUpdateEventArgs``:
-
 
 -  ``getEntity()`` to get access to the actual entity.
 -  ``getEntityChangeSet()`` to get a copy of the changeset array.
@@ -757,15 +675,14 @@ lifecycle callback when there are expensive validations to call:
 
 Restrictions for this event:
 
-
 -  Changes to associations of the passed entities are not
    recognized by the flush operation anymore.
 -  Changes to fields of the passed entities are not recognized by
    the flush operation anymore, use the computed change-set passed to
    the event to modify primitive field values, e.g. use
    ``$eventArgs->setNewValue($field, $value);`` as in the Alice to Bob example above.
--  Any calls to ``EntityManager#persist()`` or
-   ``EntityManager#remove()``, even in combination with the ``UnitOfWork``
+-  Any calls to ``EntityManager::persist()`` or
+   ``EntityManager::remove()``, even in combination with the ``UnitOfWork``
    API are strongly discouraged and don't work as expected outside the
    flush operation.
 
@@ -774,19 +691,54 @@ Restrictions for this event:
 postUpdate, postRemove, postPersist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The three post events are called inside ``EntityManager#flush()``.
+These three post* events are called inside ``EntityManager::flush()``.
 Changes in here are not relevant to the persistence in the
 database, but you can use these events to alter non-persistable items,
 like non-mapped fields, logging or even associated classes that are
 not directly mapped by Doctrine.
+
+-  The ``postUpdate`` event occurs after the database
+   update operations to entity data. It is not called for a DQL
+   ``UPDATE`` statement.
+-  The ``postPersist`` event occurs for an entity after
+   the entity has been made persistent. It will be invoked after the
+   database insert operations. Generated primary key values are
+   available in the postPersist event.
+-  The ``postRemove`` event occurs for an entity after the
+   entity has been deleted. It will be invoked after the database
+   delete operations. It is not called for a DQL ``DELETE`` statement.
+
+.. warning::
+
+    The ``postRemove`` event or any events triggered after an entity removal
+    can receive an uninitializable proxy in case you have configured an entity to
+    cascade remove relations. In this case, you should load yourself the proxy in
+    the associated ``pre*`` event.
 
 .. _reference-events-post-load:
 
 postLoad
 ~~~~~~~~
 
-This event is called after an entity is constructed by the
-EntityManager.
+The postLoad event occurs after the entity has been loaded into the current
+``EntityManager`` from the database or after ``refresh()`` has been applied to it.
+
+.. warning::
+
+    When using ``Doctrine\ORM\AbstractQuery::toIterable()``, ``postLoad``
+    events will be executed immediately after objects are being hydrated, and therefore
+    associations are not guaranteed to be initialized. It is not safe to combine
+    usage of ``Doctrine\ORM\AbstractQuery::toIterable()`` and ``postLoad`` event
+    handlers.
+
+.. _reference-events-on-clear:
+
+onClear
+~~~~~~~~
+
+The ``onClear`` event occurs when the ``EntityManager::clear()`` operation is invoked,
+after all references to entities have been removed from the unit of work.
+This event is not a lifecycle callback.
 
 Entity listeners
 ----------------
@@ -1011,9 +963,11 @@ Implementing your own resolver :
 Load ClassMetadata Event
 ------------------------
 
-When the mapping information for an entity is read, it is populated
-in to a ``Doctrine\ORM\Mapping\ClassMetadata`` instance. You can hook in to this
-process and manipulate the instance.
+``loadClassMetadata`` - The ``loadClassMetadata`` event occurs after the
+mapping metadata for a class has been loaded from a mapping source
+(annotations/xml/yaml) in to a ``Doctrine\ORM\Mapping\ClassMetadata`` instance.
+You can hook in to this process and manipulate the instance.
+This event is not a lifecycle callback.
 
 .. code-block:: php
 
@@ -1035,6 +989,11 @@ process and manipulate the instance.
             $classMetadata->mapField($fieldMapping);
         }
     }
+
+If not class metadata can be found, an ``onClassMetadataNotFound`` event is dispatched.
+Manipulating the given event args instance
+allows providing fallback metadata even when no actual metadata exists
+or could be found. This event is not a lifecycle callback.
 
 SchemaTool Events
 -----------------

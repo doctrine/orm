@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="v4.15.0@a1b5e489e6fcebe40cb804793d964e99fc347820">
+<files psalm-version="4.16.1@aa7e400908833b10c0333861f86cd48c510b60eb">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass occurrences="1">
       <code>IterableResult</code>
@@ -3467,17 +3467,12 @@
     <DeprecatedMethod occurrences="1">
       <code>canEmulateSchemas</code>
     </DeprecatedMethod>
-    <DocblockTypeContradiction occurrences="2">
-      <code>! $definingClass</code>
-      <code>$definingClass</code>
-    </DocblockTypeContradiction>
     <MissingClosureParamType occurrences="1">
       <code>$asset</code>
     </MissingClosureParamType>
-    <PossiblyNullArrayAccess occurrences="2">
-      <code>$definingClass</code>
+    <PossiblyNullArgument occurrences="1">
       <code>$referencedFieldName</code>
-    </PossiblyNullArrayAccess>
+    </PossiblyNullArgument>
     <PossiblyNullReference occurrences="1">
       <code>getColumns</code>
     </PossiblyNullReference>

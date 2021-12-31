@@ -9,56 +9,54 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsUser;
-
-use function in_array;
+use Generator;
 
 class SingleScalarHydratorTest extends HydrationTestCase
 {
-    /** Result set provider for the HYDRATE_SINGLE_SCALAR tests */
-    public static function singleScalarResultSetProvider(): array
+    /**
+     * @return Generator<int, array{list<array<string,mixed>>,mixed}>
+     */
+    public static function validResultSetProvider(): Generator
     {
-        return [
-            // valid
-            'valid' => [
-                'name'      => 'result1',
-                'resultSet' => [
-                    ['u__name' => 'romanb'],
-                ],
-            ],
-            // valid
+        // SELECT u.name FROM CmsUser u WHERE u.id = 1
+        yield [
             [
-                'name'      => 'result2',
-                'resultSet' => [
-                    ['u__id' => '1'],
-                ],
+                ['u__name' => 'romanb'],
             ],
-            // invalid
+            'romanb',
+        ];
+
+        // SELECT u.id FROM CmsUser u WHERE u.id = 1
+        yield [
             [
-                'name'      => 'result3',
-                'resultSet' => [
-                    [
-                        'u__id'   => '1',
-                        'u__name' => 'romanb',
-                    ],
-                ],
+                ['u__id' => '1'],
             ],
-            // invalid
+            1,
+        ];
+
+        // SELECT
+        //   u.id,
+        //   COUNT(u.postsCount + u.likesCount) AS HIDDEN score
+        // FROM CmsUser u
+        // WHERE u.id = 1
+        yield [
             [
-                'name'      => 'result4',
-                'resultSet' => [
-                    ['u__id' => '1'],
-                    ['u__id' => '2'],
+                [
+                    'u__id' => '1',
+                    'score' => 10, // Ignored since not part of ResultSetMapping (cf. HIDDEN keyword)
                 ],
             ],
+            1,
         ];
     }
 
     /**
-     * select u.name from CmsUser u where u.id = 1
+     * @param list<array<string, mixed>> $resultSet
+     * @param mixed                      $expectedResult
      *
-     * @dataProvider singleScalarResultSetProvider
+     * @dataProvider validResultSetProvider
      */
-    public function testHydrateSingleScalar($name, $resultSet): void
+    public function testHydrateSingleScalarFromFieldMappingWithValidResultSet(array $resultSet, $expectedResult): void
     {
         $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
@@ -68,23 +66,116 @@ class SingleScalarHydratorTest extends HydrationTestCase
         $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new SingleScalarHydrator($this->entityManager);
 
-        if ($name === 'result1') {
-            $result = $hydrator->hydrateAll($stmt, $rsm);
-            self::assertEquals('romanb', $result);
+        $result = $hydrator->hydrateAll($stmt, $rsm);
+        $this->assertEquals($expectedResult, $result);
+    }
 
-            return;
-        }
+    /**
+     * @param list<array<string, mixed>> $resultSet
+     * @param mixed                      $expectedResult
+     *
+     * @dataProvider validResultSetProvider
+     */
+    public function testHydrateSingleScalarFromScalarMappingWithValidResultSet(array $resultSet, $expectedResult): void
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('u__id', 'id', 'string');
+        $rsm->addScalarResult('u__name', 'name', 'string');
 
-        if ($name === 'result2') {
-            $result = $hydrator->hydrateAll($stmt, $rsm);
-            self::assertEquals(1, $result);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $hydrator = new SingleScalarHydrator($this->entityManager);
 
-            return;
-        }
+        $result = $hydrator->hydrateAll($stmt, $rsm);
+        $this->assertEquals($expectedResult, $result);
+    }
 
-        if (in_array($name, ['result3', 'result4'], true)) {
-            $this->expectException(NonUniqueResultException::class);
-            $hydrator->hydrateAll($stmt, $rsm);
-        }
+    /**
+     * @return Generator<int, array{list<array<string,mixed>>}>
+     */
+    public static function invalidResultSetProvider(): Generator
+    {
+        // Single row (OK), multiple columns (NOT OK)
+        yield [
+            [
+                [
+                    'u__id'   => '1',
+                    'u__name' => 'romanb',
+                ],
+            ],
+        ];
+
+        // Multiple rows (NOT OK), single column (OK)
+        yield [
+            [
+                ['u__id' => '1'],
+                ['u__id' => '2'],
+            ],
+        ];
+
+        // Multiple rows (NOT OK), single column with HIDDEN result (OK)
+        yield [
+            [
+                [
+                    'u__id' => '1',
+                    'score' => 10, // Ignored since not part of ResultSetMapping
+                ],
+                [
+                    'u__id' => '2',
+                    'score' => 10, // Ignored since not part of ResultSetMapping
+                ],
+            ],
+            1,
+        ];
+
+        // Multiple row (NOT OK), multiple columns (NOT OK)
+        yield [
+            [
+                [
+                    'u__id'   => '1',
+                    'u__name' => 'romanb',
+                ],
+                [
+                    'u__id'   => '2',
+                    'u__name' => 'romanb',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @param list<array<string, mixed>> $resultSet
+     *
+     * @dataProvider invalidResultSetProvider
+     */
+    public function testHydrateSingleScalarFromFieldMappingWithInvalidResultSet(array $resultSet): void
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addEntityResult(CmsUser::class, 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $hydrator = new SingleScalarHydrator($this->entityManager);
+
+        $this->expectException(NonUniqueResultException::class);
+        $hydrator->hydrateAll($stmt, $rsm);
+    }
+
+    /**
+     * @param list<array<string, mixed>> $resultSet
+     *
+     * @dataProvider invalidResultSetProvider
+     */
+    public function testHydrateSingleScalarFromScalarMappingWithInvalidResultSet(array $resultSet): void
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('u__id', 'id', 'string');
+        $rsm->addScalarResult('u__name', 'name', 'string');
+
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $hydrator = new SingleScalarHydrator($this->entityManager);
+
+        $this->expectException(NonUniqueResultException::class);
+        $hydrator->hydrateAll($stmt, $rsm);
     }
 }
