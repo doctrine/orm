@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.16.1@aa7e400908833b10c0333861f86cd48c510b60eb">
+<files psalm-version="4.17.0@6f4707aa41c9174353a6434bba3fc8840f981d9c">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass occurrences="1">
       <code>IterableResult</code>
@@ -3595,10 +3595,6 @@
     <DeprecatedClass occurrences="1">
       <code>AbstractExporter</code>
     </DeprecatedClass>
-    <MissingClosureParamType occurrences="2">
-      <code>$m1</code>
-      <code>$m2</code>
-    </MissingClosureParamType>
     <MissingPropertyType occurrences="1">
       <code>$metadata-&gt;inheritanceType</code>
     </MissingPropertyType>
