@@ -9,6 +9,11 @@ the code in PHP files or inside of a static function named
 PHP Files
 ---------
 
+.. note::
+
+   PHPDriver is deprecated and will be removed in 3.0, use StaticPHPDriver
+   instead.
+
 If you wish to write your mapping information inside PHP files that
 are named after the entity and included to populate the metadata
 for an entity you can do so by using the ``PHPDriver``:
