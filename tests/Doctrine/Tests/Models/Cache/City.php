@@ -164,7 +164,6 @@ class City
             ]
         );
 
-
         $metadata->mapOneToOne(
             [
                 'fieldName'      => 'state',
