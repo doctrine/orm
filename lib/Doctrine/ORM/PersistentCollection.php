@@ -10,12 +10,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use ReturnTypeWillChange;
 use RuntimeException;
 
 use function array_combine;
 use function array_diff_key;
 use function array_map;
-use function array_udiff_assoc;
 use function array_values;
 use function array_walk;
 use function get_class;
@@ -505,6 +505,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return object|null
      */
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         return $this->remove($offset);

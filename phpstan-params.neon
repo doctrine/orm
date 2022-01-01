@@ -8,4 +8,4 @@ parameters:
     earlyTerminatingMethodCalls:
         Doctrine\ORM\Query\Parser:
             - syntaxError
-    phpVersion: 70100
+    phpVersion: 80100
