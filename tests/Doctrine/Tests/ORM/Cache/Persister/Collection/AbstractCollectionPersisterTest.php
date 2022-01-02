@@ -14,13 +14,14 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * @group DDC-2183
  */
 abstract class AbstractCollectionPersisterTest extends OrmTestCase
 {
-    /** @var Region */
+    /** @var Region&MockObject */
     protected $region;
 
     /** @var CollectionPersister */
@@ -70,6 +71,9 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
                                            ->getMock();
     }
 
+    /**
+     * @return Region&MockObject
+     */
     protected function createRegion(): Region
     {
         return $this->getMockBuilder(Region::class)

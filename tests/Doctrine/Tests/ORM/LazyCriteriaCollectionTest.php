@@ -17,7 +17,7 @@ use stdClass;
  */
 class LazyCriteriaCollectionTest extends TestCase
 {
-    /** @var EntityPersister|MockObject */
+    /** @var EntityPersister&MockObject */
     private $persister;
 
     /** @var Criteria */

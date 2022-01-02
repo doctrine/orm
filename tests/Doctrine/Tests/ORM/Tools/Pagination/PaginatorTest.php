@@ -13,14 +13,15 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class PaginatorTest extends OrmTestCase
 {
-    /** @var Connection */
+    /** @var Connection&MockObject */
     private $connection;
-    /** @var EntityManagerInterface */
+    /** @var EntityManagerInterface&MockObject */
     private $em;
-    /** @var AbstractHydrator */
+    /** @var AbstractHydrator&MockObject */
     private $hydrator;
 
     protected function setUp(): void
