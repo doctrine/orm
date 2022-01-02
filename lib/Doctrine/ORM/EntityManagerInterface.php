@@ -8,6 +8,7 @@ use BadMethodCallException;
 use DateTimeInterface;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\Expr;
@@ -237,6 +238,7 @@ interface EntityManagerInterface extends ObjectManager
      * @param object                     $entity
      * @param int                        $lockMode
      * @param int|DateTimeInterface|null $lockVersion
+     * @psalm-param LockMode::* $lockMode
      *
      * @return void
      *

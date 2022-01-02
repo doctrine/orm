@@ -751,6 +751,7 @@ final class Query extends AbstractQuery
      * @see \Doctrine\DBAL\LockMode
      *
      * @param int $lockMode
+     * @psalm-param LockMode::* $lockMode
      *
      * @throws TransactionRequiredException
      */
