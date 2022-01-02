@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -28,6 +27,7 @@ use Doctrine\Tests\Models\Company\CompanyOrganization;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
+use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionMethod;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
@@ -221,7 +221,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         self::assertFalse($em->getFilters()->isEnabled('foo_filter'));
     }
 
-    protected function configureFilters($em): void
+    private function configureFilters(EntityManagerInterface $em): void
     {
         // Add filters to the configuration of the EM
         $config = $em->getConfiguration();
@@ -229,23 +229,30 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $config->addFilter('soft_delete', '\Doctrine\Tests\ORM\Functional\MySoftDeleteFilter');
     }
 
-    protected function getMockConnection(): Connection
+    /**
+     * @return Connection&MockObject
+     */
+    private function getMockConnection(): Connection
     {
-        // Setup connection mock
         return $this->createMock(Connection::class);
     }
 
-    protected function getMockEntityManager(): EntityManagerInterface
+    /**
+     * @return EntityManagerInterface&MockObject
+     */
+    private function getMockEntityManager(): EntityManagerInterface
     {
-        // Setup entity manager mock
-        return $this->createMock(EntityManager::class);
+        return $this->createMock(EntityManagerInterface::class);
     }
 
-    protected function addMockFilterCollection(EntityManagerInterface $em): FilterCollection
+    /**
+     * @psalm-param EntityManagerInterface&MockObject $em
+     *
+     * @return FilterCollection&MockObject
+     */
+    private function addMockFilterCollection(EntityManagerInterface $em): FilterCollection
     {
-        $filterCollection = $this->getMockBuilder(FilterCollection::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $filterCollection = $this->createMock(FilterCollection::class);
 
         $em->expects(self::any())
             ->method('getFilters')

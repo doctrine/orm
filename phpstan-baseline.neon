@@ -256,16 +256,6 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
-			message: "#^Call to an undefined method ReflectionProperty\\:\\:getType\\(\\)\\.$#"
-			count: 3
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
-
-		-
-			message: "#^Call to an undefined method ReflectionProperty\\:\\:hasType\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
-
-		-
 			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\NamingStrategy\\:\\:joinColumnName\\(\\) invoked with 2 parameters, 1 required\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
@@ -821,18 +811,17 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
-			message:
-				"""
-					#^PHPDoc tag @return has invalid value \\(AST\\\\BetweenExpression\\|
-					        AST\\\\CollectionMemberExpression\\|
-					        AST\\\\ComparisonExpression\\|
-					        AST\\\\EmptyCollectionComparisonExpression\\|
-					        AST\\\\ExistsExpression\\|
-					        AST\\\\InExpression\\|
-					        AST\\\\InstanceOfExpression\\|
-					        AST\\\\LikeExpression\\|
-					        AST\\\\NullComparisonExpression\\)\\: Unexpected token "\\\\n     \\* ", expected type at offset 344$#
-				"""
+			message: """
+				#^PHPDoc tag @return has invalid value \\(AST\\\\BetweenExpression\\|
+				        AST\\\\CollectionMemberExpression\\|
+				        AST\\\\ComparisonExpression\\|
+				        AST\\\\EmptyCollectionComparisonExpression\\|
+				        AST\\\\ExistsExpression\\|
+				        AST\\\\InExpression\\|
+				        AST\\\\InstanceOfExpression\\|
+				        AST\\\\LikeExpression\\|
+				        AST\\\\NullComparisonExpression\\)\\: Unexpected token "\\\\n     \\* ", expected type at offset 344$#
+			"""
 			count: 1
 			path: lib/Doctrine/ORM/Query/Parser.php
 

@@ -17,16 +17,17 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * @group DDC-2183
  */
 abstract class AbstractEntityPersisterTest extends OrmTestCase
 {
-    /** @var Region */
+    /** @var Region&MockObject */
     protected $region;
 
-    /** @var EntityPersister */
+    /** @var EntityPersister&MockObject */
     protected $entityPersister;
 
     /** @var EntityManager */
@@ -45,6 +46,9 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         $this->entityPersister = $this->createMock(EntityPersister::class);
     }
 
+    /**
+     * @return Region&MockObject
+     */
     protected function createRegion(): Region
     {
         return $this->createMock(Region::class);

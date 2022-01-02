@@ -7,6 +7,7 @@ namespace Doctrine\ORM;
 use DateTimeInterface;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Proxy\ProxyFactory;
@@ -204,6 +205,7 @@ interface EntityManagerInterface extends ObjectManager
      * @param object                     $entity
      * @param int                        $lockMode
      * @param int|DateTimeInterface|null $lockVersion
+     * @psalm-param LockMode::* $lockMode
      *
      * @return void
      *

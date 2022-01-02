@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <psalm
     errorLevel="2"
+    phpVersion="8.1"
     resolveFromConfigFile="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
@@ -79,25 +80,12 @@
                 <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
             </errorLevel>
         </RedundantCastGivenDocblockType>
-        <!-- Workaround for https://github.com/vimeo/psalm/issues/7026 -->
-        <ReservedWord>
-            <errorLevel type="suppress">
-                <directory name="lib"/>
-                <directory name="tests"/>
-            </errorLevel>
-        </ReservedWord>
         <TypeDoesNotContainType>
             <errorLevel type="suppress">
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
                 <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
             </errorLevel>
         </TypeDoesNotContainType>
-        <UndefinedAttributeClass>
-            <errorLevel type="suppress">
-                <!-- The class was added in PHP 8.1 -->
-                <referencedClass name="ReturnTypeWillChange"/>
-            </errorLevel>
-        </UndefinedAttributeClass>
         <UndefinedClass>
             <errorLevel type="suppress">
                 <referencedClass name="Doctrine\Common\Cache\ApcCache"/>

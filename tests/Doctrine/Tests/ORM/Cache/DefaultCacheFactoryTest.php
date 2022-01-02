@@ -31,6 +31,7 @@ use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
 use LogicException;
+use PHPUnit\Framework\MockObject\MockObject;
 
 use function assert;
 
@@ -39,7 +40,7 @@ use function assert;
  */
 class DefaultCacheFactoryTest extends OrmTestCase
 {
-    /** @var CacheFactory */
+    /** @var CacheFactory&MockObject */
     private $factory;
 
     /** @var EntityManager */

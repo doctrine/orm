@@ -8,6 +8,7 @@ use BadMethodCallException;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
+use Doctrine\DBAL\LockMode;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
@@ -164,6 +165,7 @@ class EntityRepository implements ObjectRepository, Selectable
      *                              or NULL if no specific lock mode should be used
      *                              during the search.
      * @param int|null $lockVersion The lock version.
+     * @psalm-param LockMode::*|null $lockMode
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
      * @psalm-return ?T
