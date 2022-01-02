@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister;
@@ -16,7 +14,6 @@ use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\Cache\Persister\Entity\NonStrictReadWriteCachedEntityPersister;
 use Doctrine\ORM\Cache\Persister\Entity\ReadOnlyCachedEntityPersister;
 use Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister;
-use Doctrine\ORM\Cache\Region\DefaultMultiGetRegion;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\RegionsConfiguration;
 use Doctrine\ORM\EntityManager;
@@ -32,8 +29,7 @@ use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
 use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
-
-use function assert;
+use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * @group DDC-2183
@@ -56,7 +52,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $this->em            = $this->getTestEntityManager();
         $this->regionsConfig = new RegionsConfiguration();
-        $arguments           = [$this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl()];
+        $arguments           = [$this->regionsConfig, $this->getSharedSecondLevelCache()];
         $this->factory       = $this->getMockBuilder(DefaultCacheFactory::class)
                                     ->setMethods(['getRegion'])
                                     ->setConstructorArgs($arguments)
@@ -73,7 +69,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $em        = $this->em;
         $metadata  = clone $em->getClassMetadata(State::class);
         $persister = new BasicEntityPersister($em, $metadata);
-        $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl()));
+        $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCache()));
 
         $metadata->cache['usage'] = ClassMetadata::CACHE_USAGE_READ_ONLY;
 
@@ -93,7 +89,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $em        = $this->em;
         $metadata  = clone $em->getClassMetadata(State::class);
         $persister = new BasicEntityPersister($em, $metadata);
-        $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl()));
+        $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCache()));
 
         $metadata->cache['usage'] = ClassMetadata::CACHE_USAGE_READ_WRITE;
 
@@ -113,7 +109,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $em        = $this->em;
         $metadata  = clone $em->getClassMetadata(State::class);
         $persister = new BasicEntityPersister($em, $metadata);
-        $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl()));
+        $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCache()));
 
         $metadata->cache['usage'] = ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE;
 
@@ -134,7 +130,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $metadata  = $em->getClassMetadata(State::class);
         $mapping   = $metadata->associationMappings['cities'];
         $persister = new OneToManyPersister($em);
-        $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl()));
+        $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCache()));
 
         $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_READ_ONLY;
 
@@ -155,7 +151,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $metadata  = $em->getClassMetadata(State::class);
         $mapping   = $metadata->associationMappings['cities'];
         $persister = new OneToManyPersister($em);
-        $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl()));
+        $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCache()));
 
         $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_READ_WRITE;
 
@@ -176,7 +172,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $metadata  = $em->getClassMetadata(State::class);
         $mapping   = $metadata->associationMappings['cities'];
         $persister = new OneToManyPersister($em);
-        $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl()));
+        $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCache()));
 
         $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE;
 
@@ -198,7 +194,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $metadata2  = clone $em->getClassMetadata(AttractionLocationInfo::class);
         $persister1 = new BasicEntityPersister($em, $metadata1);
         $persister2 = new BasicEntityPersister($em, $metadata2);
-        $factory    = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
+        $factory    = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCache());
 
         $cachedPersister1 = $factory->buildCachedEntityPersister($em, $persister1, $metadata1);
         $cachedPersister2 = $factory->buildCachedEntityPersister($em, $persister2, $metadata2);
@@ -217,7 +213,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $metadata2  = clone $em->getClassMetadata(City::class);
         $persister1 = new BasicEntityPersister($em, $metadata1);
         $persister2 = new BasicEntityPersister($em, $metadata2);
-        $factory    = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
+        $factory    = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCache());
 
         $cachedPersister1 = $factory->buildCachedEntityPersister($em, $persister1, $metadata1);
         $cachedPersister2 = $factory->buildCachedEntityPersister($em, $persister2, $metadata2);
@@ -260,7 +256,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
     public function testInvalidFileLockRegionDirectoryException(): void
     {
-        $factory = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
+        $factory = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCache());
 
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage(
@@ -279,7 +275,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
     public function testInvalidFileLockRegionDirectoryExceptionWithEmptyString(): void
     {
-        $factory = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
+        $factory = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCache());
 
         $factory->setFileLockRegionDirectory('');
 
@@ -298,78 +294,12 @@ class DefaultCacheFactoryTest extends OrmTestCase
         );
     }
 
-    public function testBuildsNewNamespacedCacheInstancePerRegionInstance(): void
-    {
-        $factory = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
-
-        $fooRegion = $factory->getRegion(
-            [
-                'region' => 'foo',
-                'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
-            ]
-        );
-        $barRegion = $factory->getRegion(
-            [
-                'region' => 'bar',
-                'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
-            ]
-        );
-
-        self::assertSame('foo', $fooRegion->getCache()->getNamespace());
-        self::assertSame('bar', $barRegion->getCache()->getNamespace());
-    }
-
-    public function testAppendsNamespacedCacheInstancePerRegionInstanceWhenItsAlreadySet(): void
-    {
-        $cache = clone $this->getSharedSecondLevelCacheDriverImpl();
-        $cache->setNamespace('testing');
-
-        $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
-
-        $fooRegion = $factory->getRegion(
-            [
-                'region' => 'foo',
-                'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
-            ]
-        );
-        $barRegion = $factory->getRegion(
-            [
-                'region' => 'bar',
-                'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
-            ]
-        );
-
-        self::assertSame('testing:foo', $fooRegion->getCache()->getNamespace());
-        self::assertSame('testing:bar', $barRegion->getCache()->getNamespace());
-    }
-
     public function testBuildsDefaultCacheRegionFromGenericCacheRegion(): void
     {
-        $cache = $this->createMock(Cache::class);
-        assert($cache instanceof Cache);
-
-        $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
+        $factory = new DefaultCacheFactory($this->regionsConfig, $this->createMock(CacheItemPoolInterface::class));
 
         self::assertInstanceOf(
             DefaultRegion::class,
-            $factory->getRegion(
-                [
-                    'region' => 'bar',
-                    'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
-                ]
-            )
-        );
-    }
-
-    public function testBuildsMultiGetCacheRegionFromGenericCacheRegion(): void
-    {
-        $cache = $this->getMockForAbstractClass(CacheProvider::class);
-        assert($cache instanceof CacheProvider);
-
-        $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
-
-        self::assertInstanceOf(
-            DefaultMultiGetRegion::class,
             $factory->getRegion(
                 [
                     'region' => 'bar',

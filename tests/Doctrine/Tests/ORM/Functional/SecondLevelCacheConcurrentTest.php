@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\EntityCacheKey;
@@ -15,6 +14,7 @@ use Doctrine\Tests\Mocks\ConcurrentRegionMock;
 use Doctrine\Tests\Mocks\TimestampRegionMock;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
+use Psr\Cache\CacheItemPoolInterface;
 
 use function assert;
 
@@ -34,7 +34,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         $this->enableSecondLevelCache();
         parent::setUp();
 
-        $this->cacheFactory = new CacheFactorySecondLevelCacheConcurrentTest($this->getSharedSecondLevelCacheDriverImpl());
+        $this->cacheFactory = new CacheFactorySecondLevelCacheConcurrentTest($this->getSharedSecondLevelCache());
 
         $this->_em->getConfiguration()
             ->getSecondLevelCacheConfiguration()
@@ -133,7 +133,10 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
 
 class CacheFactorySecondLevelCacheConcurrentTest extends DefaultCacheFactory
 {
-    public function __construct(Cache $cache)
+    /** @var CacheItemPoolInterface */
+    private $cache;
+
+    public function __construct(CacheItemPoolInterface $cache)
     {
         $this->cache = $cache;
     }
