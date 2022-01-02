@@ -276,7 +276,7 @@ class BasicEntityPersister implements EntityPersister
             $stmt->executeStatement();
 
             if ($isPostInsertId) {
-                $generatedId     = $idGenerator->generate($this->em, $entity);
+                $generatedId     = $idGenerator->generateId($this->em, $entity);
                 $id              = [$this->class->identifier[0] => $generatedId];
                 $postInsertIds[] = [
                     'generatedId' => $generatedId,

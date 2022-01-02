@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Event;
 
 use Doctrine\Common\EventArgs;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -15,7 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class PreFlushEventArgs extends EventArgs
 {
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     private $em;
 
     public function __construct(EntityManagerInterface $em)
@@ -24,7 +23,7 @@ class PreFlushEventArgs extends EventArgs
     }
 
     /**
-     * @return EntityManager
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {

@@ -10,7 +10,7 @@ use Doctrine\ORM\Cache\DefaultEntityHydrator;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\EntityHydrator;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
@@ -24,7 +24,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
     /** @var EntityHydrator */
     private $structure;
 
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     private $em;
 
     protected function setUp(): void

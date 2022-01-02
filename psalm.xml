@@ -46,6 +46,7 @@
                 <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\ORM\Internal\Hydration\AbstractHydrator::hydrateRow"/>
                 <referencedMethod name="Doctrine\ORM\Configuration::ensureProductionSettings"/>
+                <referencedMethod name="Doctrine\ORM\Id\AbstractIdGenerator::generate"/>
             </errorLevel>
         </DeprecatedMethod>
         <DeprecatedProperty>

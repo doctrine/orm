@@ -7,7 +7,7 @@ namespace Doctrine\ORM\Id;
 use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\Deprecations\Deprecation;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\NotSupported;
 
 use function method_exists;
@@ -38,7 +38,7 @@ class UuidGenerator extends AbstractIdGenerator
      *
      * @throws NotSupported
      */
-    public function generate(EntityManager $em, $entity)
+    public function generateId(EntityManagerInterface $em, $entity)
     {
         $connection = $em->getConnection();
         $sql        = 'SELECT ' . $connection->getDatabasePlatform()->getGuidExpression();

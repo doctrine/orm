@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Embeddable;
@@ -29,7 +29,7 @@ use Doctrine\Tests\OrmTestCase;
 
 class SchemaValidatorTest extends OrmTestCase
 {
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     private $em = null;
 
     /** @var SchemaValidator */

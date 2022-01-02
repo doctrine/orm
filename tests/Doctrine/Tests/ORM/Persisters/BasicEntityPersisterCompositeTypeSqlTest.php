@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Persisters;
 
 use Doctrine\Common\Collections\Expr\Comparison;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Exception\CantUseInOperatorOnCompositeKeys;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
@@ -16,7 +16,7 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
     /** @var BasicEntityPersister */
     protected $persister;
 
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     protected $entityManager;
 
     protected function setUp(): void

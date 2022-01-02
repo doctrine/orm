@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -100,10 +100,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         return $class;
     }
 
-    protected function createClassMetadataFactory(?EntityManager $em = null): ClassMetadataFactory
+    protected function createClassMetadataFactory(?EntityManagerInterface $em = null): ClassMetadataFactory
     {
         $driver  = $this->loadDriver();
-        $em      = $em ?: $this->getTestEntityManager();
+        $em      = $em ?? $this->getTestEntityManager();
         $factory = new ClassMetadataFactory();
         $em->getConfiguration()->setMetadataDriverImpl($driver);
         $factory->setEntityManager($em);

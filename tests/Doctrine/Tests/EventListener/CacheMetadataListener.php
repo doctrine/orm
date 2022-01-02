@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\EventListener;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\Event\LoadClassMetadataEventArgs;
 
@@ -46,7 +46,7 @@ class CacheMetadataListener
         $this->enabledItems[$metadata->getName()] = true;
     }
 
-    protected function enableCaching(ClassMetadata $metadata, EntityManager $em): void
+    protected function enableCaching(ClassMetadata $metadata, EntityManagerInterface $em): void
     {
         if ($this->isVisited($metadata)) {
             return; // Already handled in the past
