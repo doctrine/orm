@@ -75,6 +75,12 @@
                 <referencedClass name="Doctrine\DBAL\Platforms\PostgreSQLPlatform" />
             </errorLevel>
         </InvalidClass>
+        <MethodSignatureMismatch>
+            <errorLevel type="suppress">
+                <!-- See https://github.com/vimeo/psalm/issues/7357 -->
+                <file name="lib/Doctrine/ORM/Mapping/ReflectionReadonlyProperty.php"/>
+            </errorLevel>
+        </MethodSignatureMismatch>
         <MissingDependency>
             <errorLevel type="suppress">
                 <!-- DBAL 3.2 forward compatibility -->
