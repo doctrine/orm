@@ -403,6 +403,7 @@ use function sprintf;
      * @param int|null $lockVersion The version of the entity to find when using
      * optimistic locking.
      * @psalm-param class-string<T> $className
+     * @psalm-param LockMode::*|null $lockMode
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
      * @psalm-return ?T
@@ -990,6 +991,8 @@ use function sprintf;
     }
 
     /**
+     * @psalm-param LockMode::* $lockMode
+     *
      * @throws OptimisticLockException
      * @throws TransactionRequiredException
      */
