@@ -27,11 +27,9 @@ class QueryExpressionVisitorTest extends TestCase
     }
 
     /**
-     * @param QueryBuilder\Comparison|QueryBuilder\Func|string $queryExpr
-     *
      * @dataProvider comparisonData
      */
-    public function testWalkComparison(CriteriaComparison $criteriaExpr, $queryExpr, ?Parameter $parameter = null): void
+    public function testWalkComparison(CriteriaComparison $criteriaExpr, QueryBuilder\Comparison|QueryBuilder\Func|string $queryExpr, ?Parameter $parameter = null): void
     {
         self::assertEquals($queryExpr, $this->visitor->walkComparison($criteriaExpr));
         if ($parameter) {

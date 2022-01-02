@@ -52,11 +52,10 @@ class SingleScalarHydratorTest extends HydrationTestCase
 
     /**
      * @param list<array<string, mixed>> $resultSet
-     * @param mixed                      $expectedResult
      *
      * @dataProvider validResultSetProvider
      */
-    public function testHydrateSingleScalarFromFieldMappingWithValidResultSet(array $resultSet, $expectedResult): void
+    public function testHydrateSingleScalarFromFieldMappingWithValidResultSet(array $resultSet, mixed $expectedResult): void
     {
         $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
@@ -72,11 +71,10 @@ class SingleScalarHydratorTest extends HydrationTestCase
 
     /**
      * @param list<array<string, mixed>> $resultSet
-     * @param mixed                      $expectedResult
      *
      * @dataProvider validResultSetProvider
      */
-    public function testHydrateSingleScalarFromScalarMappingWithValidResultSet(array $resultSet, $expectedResult): void
+    public function testHydrateSingleScalarFromScalarMappingWithValidResultSet(array $resultSet, mixed $expectedResult): void
     {
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('u__id', 'id', 'string');
