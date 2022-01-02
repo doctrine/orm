@@ -24,10 +24,10 @@ use function in_array;
  */
 class HydrationCompleteHandlerTest extends TestCase
 {
-    /** @var ListenersInvoker|MockObject */
+    /** @var ListenersInvoker&MockObject */
     private $listenersInvoker;
 
-    /** @var EntityManagerInterface|MockObject */
+    /** @var EntityManagerInterface&MockObject */
     private $entityManager;
 
     /** @var HydrationCompleteHandler */

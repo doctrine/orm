@@ -23,16 +23,16 @@ use function iterator_to_array;
  */
 class AbstractHydratorTest extends OrmFunctionalTestCase
 {
-    /** @var EventManager|MockObject */
+    /** @var EventManager&MockObject */
     private $mockEventManager;
 
-    /** @var Result|MockObject */
+    /** @var Result&MockObject */
     private $mockResult;
 
-    /** @var ResultSetMapping|MockObject */
+    /** @var ResultSetMapping&MockObject */
     private $mockResultMapping;
 
-    /** @var AbstractHydrator */
+    /** @var AbstractHydrator&MockObject */
     private $hydrator;
 
     protected function setUp(): void
@@ -43,7 +43,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
         $mockEntityManagerInterface = $this->createMock(EntityManagerInterface::class);
         $this->mockEventManager     = $this->createMock(EventManager::class);
         $this->mockResult           = $this->createMock(Result::class);
-        $this->mockResultMapping    = $this->getMockBuilder(ResultSetMapping::class);
+        $this->mockResultMapping    = $this->createMock(ResultSetMapping::class);
 
         $mockEntityManagerInterface
             ->expects(self::any())

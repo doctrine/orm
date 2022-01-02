@@ -33,7 +33,7 @@ class EntityManagerDecoratorTest extends TestCase
         'lock',
     ];
 
-    /** @var EntityManagerInterface|MockObject */
+    /** @var EntityManagerInterface&MockObject */
     private $wrapped;
 
     protected function setUp(): void
