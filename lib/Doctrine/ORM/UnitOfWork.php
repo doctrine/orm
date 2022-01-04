@@ -951,8 +951,6 @@ class UnitOfWork implements PropertyChangedListener
                     // so the exception will be raised from the DBAL layer (constraint violation).
                     throw ORMInvalidArgumentException::detachedEntityFoundThroughRelationship($assoc, $entry);
 
-                    break;
-
                 default:
                     // MANAGED associated entities are already taken into account
                     // during changeset calculation anyway, since they are in the identity map.
@@ -1568,8 +1566,10 @@ class UnitOfWork implements PropertyChangedListener
      *                         This parameter can be set to improve performance of entity state detection
      *                         by potentially avoiding a database lookup if the distinction between NEW and DETACHED
      *                         is either known or does not matter for the caller of the method.
+     * @psalm-param self::STATE_*|null $assume
      *
      * @return int The entity state.
+     * @psalm-return self::STATE_*
      */
     public function getEntityState($entity, $assume = null)
     {
