@@ -369,19 +369,33 @@
     </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php">
-    <DeprecatedMethod occurrences="1">
-      <code>getHydrator</code>
-    </DeprecatedMethod>
-    <MissingParamType occurrences="3">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$className</code>
+    </ArgumentTypeCoercion>
+    <DeprecatedClass occurrences="1">
+      <code>ProxyFactory</code>
+    </DeprecatedClass>
+    <InvalidReturnStatement occurrences="1">
+      <code>parent::getMetadataFactory()</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>ClassMetadataFactory</code>
+    </InvalidReturnType>
+    <LessSpecificReturnStatement occurrences="2">
+      <code>parent::getClassMetadata($className)</code>
+      <code>parent::getRepository($className)</code>
+    </LessSpecificReturnStatement>
+    <MissingParamType occurrences="1">
       <code>$entity</code>
-      <code>$lockMode</code>
-      <code>$lockVersion</code>
     </MissingParamType>
+    <MoreSpecificReturnType occurrences="2">
+      <code>ClassMetadata</code>
+      <code>EntityRepository</code>
+    </MoreSpecificReturnType>
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$wrapped</code>
     </NonInvariantDocblockPropertyType>
-    <TooManyArguments occurrences="2">
-      <code>find</code>
+    <TooManyArguments occurrences="1">
       <code>flush</code>
     </TooManyArguments>
   </file>
@@ -389,7 +403,8 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$connection</code>
     </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="2">
+    <DeprecatedClass occurrences="3">
+      <code>ProxyFactory</code>
       <code>ProxyFactory</code>
     </DeprecatedClass>
     <DeprecatedMethod occurrences="5">
@@ -407,10 +422,7 @@
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
     </DocblockTypeContradiction>
-    <ImplementedReturnTypeMismatch occurrences="1">
-      <code>ClassMetadataFactory</code>
-    </ImplementedReturnTypeMismatch>
-    <InvalidReturnStatement occurrences="9">
+    <InvalidReturnStatement occurrences="10">
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity</code>
@@ -419,13 +431,15 @@
       <code>$entity instanceof $class-&gt;name ? $entity : null</code>
       <code>$persister-&gt;load($sortedId, null, null, [], $lockMode)</code>
       <code>$persister-&gt;loadById($sortedId)</code>
+      <code>$this-&gt;metadataFactory</code>
       <code>$this-&gt;metadataFactory-&gt;getMetadataFor($className)</code>
     </InvalidReturnStatement>
-    <InvalidReturnType occurrences="4">
-      <code>?T</code>
-      <code>getClassMetadata</code>
-      <code>getPartialReference</code>
-      <code>getReference</code>
+    <InvalidReturnType occurrences="5">
+      <code>?object</code>
+      <code>?object</code>
+      <code>?object</code>
+      <code>ClassMetadataFactory</code>
+      <code>Mapping\ClassMetadata</code>
     </InvalidReturnType>
     <InvalidScalarArgument occurrences="1">
       <code>$hydrationMode</code>
@@ -435,8 +449,8 @@
       <code>new $class($this)</code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType occurrences="2">
+      <code>AbstractHydrator</code>
       <code>EntityRepository&lt;T&gt;</code>
-      <code>newHydrator</code>
     </MoreSpecificReturnType>
     <ParamNameMismatch occurrences="8">
       <code>$entity</code>
