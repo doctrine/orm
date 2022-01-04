@@ -399,6 +399,8 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->persist($entity2);
         self::assertTrue($this->_unitOfWork->isInIdentityMap($entity2));
 
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8460');
+
         $this->_unitOfWork->clear(Country::class);
         self::assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
         self::assertFalse($this->_unitOfWork->isInIdentityMap($entity2));
