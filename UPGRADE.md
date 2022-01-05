@@ -1,5 +1,10 @@
 # Upgrade to 2.11
 
+## Deprecated: `Doctrine\ORM\Mapping\Driver\PHPDriver`
+
+Use `StaticPHPDriver` instead when you want to programmatically configure
+entity metadata.
+
 ## Deprecated: `Setup::registerAutoloadDirectory()`
 
 Use Composer's autoloader instead.

@@ -25,6 +25,6 @@ class PHPDriver extends CommonPHPDriver
             'PHPDriver is deprecated, use StaticPHPDriver or other mapping drivers instead.'
         );
 
-        parent::__construct($locator, '.php');
+        parent::__construct($locator);
     }
 }
