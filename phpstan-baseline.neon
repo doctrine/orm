@@ -1891,11 +1891,6 @@ parameters:
 			path: lib/Doctrine/ORM/UnitOfWork.php
 
 		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/UnitOfWork.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$name\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Utility/HierarchyDiscriminatorResolver.php
@@ -1904,3 +1899,4 @@ parameters:
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$subClasses\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Utility/HierarchyDiscriminatorResolver.php
+

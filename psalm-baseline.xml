@@ -3218,6 +3218,9 @@
       <code>$entity</code>
       <code>$entity</code>
     </PossiblyNullArgument>
+    <RedundantConditionGivenDocblockType occurrences="1">
+      <code>$state === UnitOfWork::STATE_DETACHED</code>
+    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/EntityGenerator.php">
     <ArgumentTypeCoercion occurrences="4">
