@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Deprecations\Deprecation;
+use Doctrine\Persistence\Mapping\Driver\FileLocator;
 use Doctrine\Persistence\Mapping\Driver\PHPDriver as CommonPHPDriver;
 
 /**
@@ -15,7 +16,7 @@ use Doctrine\Persistence\Mapping\Driver\PHPDriver as CommonPHPDriver;
 class PHPDriver extends CommonPHPDriver
 {
     /**
-     * {@inheritDoc}
+     * @param string|string[]|FileLocator $locator
      */
     public function __construct($locator)
     {
