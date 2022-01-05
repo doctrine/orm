@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -50,6 +51,8 @@ use function uniqid;
  */
 class UnitOfWorkTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     /**
      * SUT
      *
@@ -226,6 +229,9 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->_unitOfWork->persist($entity);
         $this->_unitOfWork->persist($entity2);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8459');
+
         $this->_unitOfWork->commit($entity);
         $this->_unitOfWork->commit();
 
@@ -393,6 +399,8 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->persist($entity2);
         self::assertTrue($this->_unitOfWork->isInIdentityMap($entity2));
 
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8460');
+
         $this->_unitOfWork->clear(Country::class);
         self::assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
         self::assertFalse($this->_unitOfWork->isInIdentityMap($entity2));
@@ -413,6 +421,8 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->_unitOfWork->persist($entity1);
         $this->_unitOfWork->persist($entity2);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8459');
 
         $this->_unitOfWork->commit($entity1);
         self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity1));
@@ -435,6 +445,8 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->persist($entity1);
         $this->_unitOfWork->persist($entity2);
         $this->_unitOfWork->persist($entity3);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8459');
 
         $this->_unitOfWork->commit([$entity1, $entity3]);
 

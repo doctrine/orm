@@ -340,6 +340,15 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function commit($entity = null)
     {
+        if ($entity !== null) {
+            Deprecation::triggerIfCalledFromOutside(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8459',
+                'Calling %s() with any arguments to commit specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
+                __METHOD__
+            );
+        }
+
         $connection = $this->em->getConnection();
 
         if ($connection instanceof PrimaryReadReplicaConnection) {
@@ -2554,6 +2563,13 @@ class UnitOfWork implements PropertyChangedListener
             $this->eagerLoadingEntities           =
             $this->orphanRemovals                 = [];
         } else {
+            Deprecation::triggerIfCalledFromOutside(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8460',
+                'Calling %s() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
+                __METHOD__
+            );
+
             $this->clearIdentityMapForEntityName($entityName);
             $this->clearEntityInsertionsForEntityName($entityName);
         }
