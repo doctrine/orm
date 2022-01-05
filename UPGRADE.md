@@ -5,6 +5,10 @@
 Use `StaticPHPDriver` instead when you want to programmatically configure
 entity metadata.
 
+You can convert mappings with the `orm:convert-mapping` command or more simply
+in this case, `include` the metadata file from the `loadMetadata` static method
+used by the `StaticPHPDriver`.
+
 ## Deprecated: `Setup::registerAutoloadDirectory()`
 
 Use Composer's autoloader instead.
