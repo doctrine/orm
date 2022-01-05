@@ -3116,11 +3116,9 @@
       <code>$commitOrder[$i]</code>
       <code>$this-&gt;em</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="4">
-      <code>! is_object($object)</code>
+    <DocblockTypeContradiction occurrences="2">
       <code>$association['type'] === ClassMetadata::ONE_TO_MANY</code>
       <code>$association['type'] === ClassMetadata::ONE_TO_MANY</code>
-      <code>is_object($object)</code>
     </DocblockTypeContradiction>
     <InvalidArgument occurrences="1">
       <code>$em-&gt;getMetadataFactory()</code>
@@ -3136,17 +3134,12 @@
       <code>$this-&gt;entityChangeSets</code>
     </InvalidPropertyAssignmentValue>
     <MissingClosureReturnType occurrences="5">
-      <code>static function ($assoc) {</code>
-      <code>static function ($assoc) {</code>
-      <code>static function ($assoc) {</code>
-      <code>static function ($assoc) {</code>
-      <code>static function ($assoc) {</code>
+      <code>static function (array $assoc) {</code>
+      <code>static function (array $assoc) {</code>
+      <code>static function (array $assoc) {</code>
+      <code>static function (array $assoc) {</code>
+      <code>static function (array $assoc) {</code>
     </MissingClosureReturnType>
-    <MissingParamType occurrences="3">
-      <code>$managedCopy</code>
-      <code>$prevManagedCopy</code>
-      <code>$previousManagedCopy</code>
-    </MissingParamType>
     <NullableReturnStatement occurrences="1">
       <code>$this-&gt;identityMap[$rootClassName][$idHash]</code>
     </NullableReturnStatement>
@@ -3210,9 +3203,6 @@
       <code>unwrap</code>
       <code>unwrap</code>
     </PossiblyUndefinedMethod>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>is_array($entity)</code>
-    </RedundantConditionGivenDocblockType>
     <ReferenceConstraintViolation occurrences="1">
       <code>$visited</code>
     </ReferenceConstraintViolation>
