@@ -128,11 +128,6 @@
         <exclude-pattern>lib/Doctrine/ORM/Cache/DefaultQueryCache.php</exclude-pattern>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.Commenting.UselessInheritDocComment.UselessInheritDocComment">
-        <!-- Workaround for https://github.com/slevomat/coding-standard/issues/1233 -->
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/ReflectionEmbeddedProperty.php</exclude-pattern>
-    </rule>
-
     <rule ref="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming">
         <exclude-pattern>lib/Doctrine/ORM/EntityManagerInterface.php</exclude-pattern>
     </rule>
@@ -256,14 +251,6 @@
         <!-- Using @group and Group entity in the same file -->
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1885Test.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1843Test.php</exclude-pattern>
-    </rule>
-
-    <rule ref="PSR2.ControlStructures.SwitchDeclaration.TerminatingComment">
-        <!--
-            Remove when upgrading to squizlabs/php_codesniffer 3.6.0
-            https://github.com/squizlabs/PHP_CodeSniffer/pull/3186
-        -->
-        <exclude-pattern>lib/Doctrine/ORM/Query/Parser.php</exclude-pattern>
     </rule>
 
     <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedElse">

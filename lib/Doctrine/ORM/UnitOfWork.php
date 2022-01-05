@@ -325,6 +325,15 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function commit(object|array|null $entity = null): void
     {
+        if ($entity !== null) {
+            Deprecation::triggerIfCalledFromOutside(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8459',
+                'Calling %s() with any arguments to commit specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
+                __METHOD__
+            );
+        }
+
         $connection = $this->em->getConnection();
 
         if ($connection instanceof PrimaryReadReplicaConnection) {
@@ -928,8 +937,6 @@ class UnitOfWork implements PropertyChangedListener
                     // so the exception will be raised from the DBAL layer (constraint violation).
                     throw ORMInvalidArgumentException::detachedEntityFoundThroughRelationship($assoc, $entry);
 
-                    break;
-
                 default:
                     // MANAGED associated entities are already taken into account
                     // during changeset calculation anyway, since they are in the identity map.
@@ -1503,6 +1510,9 @@ class UnitOfWork implements PropertyChangedListener
      *                         This parameter can be set to improve performance of entity state detection
      *                         by potentially avoiding a database lookup if the distinction between NEW and DETACHED
      *                         is either known or does not matter for the caller of the method.
+     * @psalm-param self::STATE_*|null $assume
+     *
+     * @psalm-return self::STATE_*
      */
     public function getEntityState(object $entity, ?int $assume = null): int
     {
@@ -2418,6 +2428,13 @@ class UnitOfWork implements PropertyChangedListener
             $this->eagerLoadingEntities           =
             $this->orphanRemovals                 = [];
         } else {
+            Deprecation::triggerIfCalledFromOutside(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8460',
+                'Calling %s() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
+                __METHOD__
+            );
+
             $this->clearIdentityMapForEntityName($entityName);
             $this->clearEntityInsertionsForEntityName($entityName);
         }
