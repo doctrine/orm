@@ -1,5 +1,10 @@
 # Upgrade to 3.0
 
+## BC Break: Remove `Doctrine\ORM\Mapping\Driver\PHPDriver`
+
+Use `StaticPHPDriver` instead when you want to programmatically configure
+entity metadata.
+
 ## BC BREAK: Remove `Doctrine\ORM\EntityManagerInterface#transactional()`
 
 This method has been replaced by `Doctrine\ORM\EntityManagerInterface#wrapInTransaction()`.
