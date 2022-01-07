@@ -38,8 +38,3 @@ parameters:
             message: '/^Call to an undefined method Doctrine\\Common\\Cache\\Cache::deleteAll\(\)\.$/'
             count: 1
             path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php
-        # See https://github.com/doctrine/dbal/pull/5129
-        -
-            message: '/^Parameter #3 \$startPos of method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getLocateExpression\(\) expects int\|false, string given\.$/'
-            count: 1
-            path: lib/Doctrine/ORM/Query/AST/Functions/LocateFunction.php

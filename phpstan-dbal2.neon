@@ -30,3 +30,14 @@ parameters:
             message: '/^Parameter #3 \$startPos of method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getLocateExpression\(\) expects int\|false, string given\.$/'
             count: 1
             path: lib/Doctrine/ORM/Query/AST/Functions/LocateFunction.php
+
+        # Won't get fixed in DBAL 2
+        -
+            message: "#^Parameter \\#2 \\$start of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getSubstringExpression\\(\\) expects int, string given\\.$#"
+            count: 1
+            path: lib/Doctrine/ORM/Query/AST/Functions/SubstringFunction.php
+
+        -
+            message: "#^Parameter \\#3 \\$length of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getSubstringExpression\\(\\) expects int\\|null, string\\|null given\\.$#"
+            count: 1
+            path: lib/Doctrine/ORM/Query/AST/Functions/SubstringFunction.php
