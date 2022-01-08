@@ -19,7 +19,9 @@ use Doctrine\ORM\Mapping\Table;
 class Market
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      * @var int
      */
     private $id;

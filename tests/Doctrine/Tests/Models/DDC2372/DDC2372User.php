@@ -11,14 +11,18 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\Models\DDC2372\Traits\DDC2372AddressAndAccessors;
 
-/** @Entity @Table(name="users") */
+/**
+ * @Entity
+ * @Table(name="users")
+ */
 class DDC2372User
 {
     use DDC2372AddressAndAccessors;
 
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;

@@ -20,7 +20,8 @@ class DDC2504OtherClass
     /**
      * @var int
      * @Column(type="integer")
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      */
     public $id;
 

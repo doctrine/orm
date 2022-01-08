@@ -14,7 +14,6 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
-use function count;
 use function get_class;
 
 /**

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
@@ -115,7 +114,10 @@ abstract class DDC6303BaseClass
     public $id;
 }
 
-/** @Entity @Table */
+/**
+ * @Entity
+ * @Table
+ */
 class DDC6303ChildA extends DDC6303BaseClass
 {
     /**
@@ -134,7 +136,10 @@ class DDC6303ChildA extends DDC6303BaseClass
     }
 }
 
-/** @Entity @Table */
+/**
+ * @Entity
+ * @Table
+ */
 class DDC6303ChildB extends DDC6303BaseClass
 {
     /**

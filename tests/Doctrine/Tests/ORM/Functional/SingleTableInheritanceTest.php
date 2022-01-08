@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\MatchingAssociationFieldRequiresObject;
-use Doctrine\ORM\Persisters\PersisterException;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
@@ -17,7 +16,6 @@ use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_map;
-use function count;
 use function get_class;
 use function sort;
 

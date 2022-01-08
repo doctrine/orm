@@ -12,7 +12,10 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/** @Entity @Table(name="ddc3699_child") */
+/**
+ * @Entity
+ * @Table(name="ddc3699_child")
+ */
 class DDC3699Child extends DDC3699Parent
 {
     /**

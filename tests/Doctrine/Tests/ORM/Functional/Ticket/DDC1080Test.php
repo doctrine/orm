@@ -17,8 +17,6 @@ use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 /**
  * @group DDC-1080
  */

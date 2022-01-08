@@ -23,7 +23,8 @@ class Company
 {
     /**
      * @var int
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;

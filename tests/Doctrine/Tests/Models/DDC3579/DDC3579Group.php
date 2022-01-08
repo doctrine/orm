@@ -20,7 +20,8 @@ class DDC3579Group
     /**
      * @var int
      * @GeneratedValue
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      */
     private $id;
 

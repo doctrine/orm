@@ -43,7 +43,8 @@ class DDC1360Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity @Table(name="`user`.`user`")
+ * @Entity
+ * @Table(name="`user`.`user`")
  */
 class DDC1360DoubleQuote
 {

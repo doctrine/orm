@@ -15,7 +15,8 @@ use Doctrine\ORM\Mapping\Table;
  * Quoted column name to check that sequence names are
  * correctly handled
  *
- * @Entity @Table(name="implicit_schema.implicit_table")
+ * @Entity
+     * @Table(name="implicit_schema.implicit_table")
  */
 #[ORM\Entity, ORM\Table(name: 'implicit_schema.implicit_table')]
 class SchemaAndTableInTableName

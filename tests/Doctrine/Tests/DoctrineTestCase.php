@@ -7,7 +7,6 @@ namespace Doctrine\Tests;
 use BadMethodCallException;
 use PHPUnit\Framework\TestCase;
 
-use function get_called_class;
 use function sprintf;
 
 /**

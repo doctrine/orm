@@ -25,7 +25,6 @@ use DOMDocument;
 use function array_filter;
 use function array_map;
 use function assert;
-use function count;
 use function glob;
 use function in_array;
 use function is_array;

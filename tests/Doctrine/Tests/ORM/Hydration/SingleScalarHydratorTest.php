@@ -11,8 +11,6 @@ use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Generator;
 
-use function in_array;
-
 class SingleScalarHydratorTest extends HydrationTestCase
 {
     /**

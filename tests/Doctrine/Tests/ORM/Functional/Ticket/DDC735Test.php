@@ -15,8 +15,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-use function count;
-
 class DDC735Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

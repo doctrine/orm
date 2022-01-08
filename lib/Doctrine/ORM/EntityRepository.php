@@ -14,7 +14,6 @@ use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall;
-use Doctrine\ORM\Repository\InvalidFindByCall;
 use Doctrine\Persistence\ObjectRepository;
 
 use function array_slice;

@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Persisters;
 
 use Doctrine\ORM\Exception\PersisterException;
-use Doctrine\ORM\ORMException;
-use LogicException;
 
 use function sprintf;
 

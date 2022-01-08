@@ -16,9 +16,6 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
-
-use function count;
 
 /**
  * NativeQueryTest
@@ -120,7 +117,10 @@ class NotifyBaseEntity implements NotifyPropertyChanged
     }
 }
 
-/** @Entity @ChangeTrackingPolicy("NOTIFY") */
+/**
+ * @Entity
+ * @ChangeTrackingPolicy("NOTIFY")
+ */
 class NotifyUser extends NotifyBaseEntity
 {
     /**

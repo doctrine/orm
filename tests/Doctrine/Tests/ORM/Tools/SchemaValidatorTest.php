@@ -320,7 +320,8 @@ class DDC1587ValidEntity1
 {
     /**
      * @var int
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      * @Column(name="pk", type="integer")
      */
     private $pk;
@@ -381,7 +382,8 @@ class DDC1649Two
 {
     /**
      * @var DDC1649One
-     * @Id @ManyToOne(targetEntity="DDC1649One")@JoinColumn(name="id", referencedColumnName="id")
+     * @Id
+     * @ManyToOne(targetEntity="DDC1649One")@JoinColumn(name="id", referencedColumnName="id")
      */
     public $one;
 }

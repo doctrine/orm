@@ -12,7 +12,6 @@ use Doctrine\ORM\Tools;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_filter;
-use function count;
 use function strpos;
 
 class DBAL483Test extends OrmFunctionalTestCase

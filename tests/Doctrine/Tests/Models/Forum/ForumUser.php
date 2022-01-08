@@ -21,7 +21,8 @@ class ForumUser
     /**
      * @var int
      * @Column(type="integer")
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      */
     public $id;
 

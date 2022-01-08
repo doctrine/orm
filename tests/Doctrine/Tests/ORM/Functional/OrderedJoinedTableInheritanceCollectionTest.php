@@ -18,9 +18,6 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
-
-use function count;
 
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.

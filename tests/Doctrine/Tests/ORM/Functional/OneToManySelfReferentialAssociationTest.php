@@ -8,7 +8,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
 use function strstr;
 
 /**

@@ -27,7 +27,8 @@ class DDC2504RootClass
     /**
      * @var int
      * @Column(type="integer")
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      */
     public $id;
 

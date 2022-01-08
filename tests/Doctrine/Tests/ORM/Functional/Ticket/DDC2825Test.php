@@ -104,7 +104,8 @@ class DDC2825Test extends OrmFunctionalTestCase
 class DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName
 {
     /**
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      * @Column(type="integer")
      * @var int
      */

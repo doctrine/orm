@@ -100,7 +100,9 @@ class PersistentObjectTest extends OrmFunctionalTestCase
 class PersistentEntity extends PersistentObject
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      * @var int
      */
     protected $id;

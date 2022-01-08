@@ -182,7 +182,8 @@ class DDC2602PostLoadListener
 class DDC2602User
 {
     /**
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      * @Column(type="integer")
      * @var int
      */
@@ -212,7 +213,8 @@ class DDC2602User
 class DDC2602Biography
 {
     /**
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      * @Column(type="integer")
      * @var int
      */
@@ -244,7 +246,8 @@ class DDC2602Biography
 class DDC2602BiographyField
 {
     /**
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      * @Column(type="integer")
      * @var int
      */
@@ -284,7 +287,8 @@ class DDC2602BiographyField
 class DDC2602BiographyFieldChoice
 {
     /**
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      * @Column(type="integer")
      * @var int
      */

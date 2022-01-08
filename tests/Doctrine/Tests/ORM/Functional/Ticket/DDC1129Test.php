@@ -7,8 +7,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 /**
  * @group DDC-1129
  */

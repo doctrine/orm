@@ -7,8 +7,6 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 
-use function count;
-
 /**
  * Tests a bidirectional many-to-many association mapping (without inheritance).
  * Owning side is ECommerceProduct, inverse side is ECommerceCategory.

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\ORM\Exception\ORMException;
-use LogicException;
 use ReflectionException;
 
 use function array_keys;

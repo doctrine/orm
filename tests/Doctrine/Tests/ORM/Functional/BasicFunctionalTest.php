@@ -22,7 +22,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
 
 use function get_class;
-use function in_array;
 
 class BasicFunctionalTest extends OrmFunctionalTestCase
 {

@@ -14,7 +14,10 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/** @Entity @Table(name="company_organizations") */
+/**
+ * @Entity
+ * @Table(name="company_organizations")
+ */
 class CompanyOrganization
 {
     /**

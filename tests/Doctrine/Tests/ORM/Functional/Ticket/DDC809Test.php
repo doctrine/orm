@@ -14,8 +14,6 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 class DDC809Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

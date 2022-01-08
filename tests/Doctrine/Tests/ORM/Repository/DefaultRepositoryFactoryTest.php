@@ -14,8 +14,6 @@ use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-use function assert;
-
 /**
  * Tests for {@see \Doctrine\ORM\Repository\DefaultRepositoryFactory}
  *

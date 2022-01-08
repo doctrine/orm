@@ -9,8 +9,6 @@ use DateTimeZone;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function is_array;
-
 /**
  * @group DDC-657
  */

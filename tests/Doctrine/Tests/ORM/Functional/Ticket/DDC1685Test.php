@@ -10,8 +10,6 @@ use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use RuntimeException;
 
-use function count;
-
 /**
  * @group DDC-1685
  */

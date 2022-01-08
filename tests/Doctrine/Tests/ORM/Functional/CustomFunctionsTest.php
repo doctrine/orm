@@ -13,8 +13,6 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 require_once __DIR__ . '/../../TestInit.php';
 
 class CustomFunctionsTest extends OrmFunctionalTestCase

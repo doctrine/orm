@@ -60,7 +60,10 @@ final class GH6217Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
+/**
+ * @Entity
+ * @Cache(usage="NONSTRICT_READ_WRITE")
+ */
 class GH6217AssociatedEntity
 {
     /**
@@ -77,7 +80,10 @@ class GH6217AssociatedEntity
     }
 }
 
-/** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
+/**
+ * @Entity
+ * @Cache(usage="NONSTRICT_READ_WRITE")
+ */
 class GH6217FetchedEntity
 {
     /**

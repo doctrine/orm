@@ -17,8 +17,6 @@ use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 /**
  * @group DDC-371
  */
@@ -83,7 +81,8 @@ class DDC371Child
     public $data;
     /**
      * @var DDC371Parent
-     * @ManyToOne(targetEntity="DDC371Parent", inversedBy="children") @JoinColumn(name="parentId")
+     * @ManyToOne(targetEntity="DDC371Parent", inversedBy="children")
+     * @JoinColumn(name="parentId")
      */
     public $parent;
 }

@@ -7,8 +7,6 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 
-use function count;
-
 /**
  * Tests a self referential many-to-many association mapping (from a model to the same model, without inheritance).
  * For simplicity the relation duplicates entries in the association table

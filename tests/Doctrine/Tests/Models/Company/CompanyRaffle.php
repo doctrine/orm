@@ -8,7 +8,10 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 
-/** @Entity @Table(name="company_raffles") */
+/**
+ * @Entity
+ * @Table(name="company_raffles")
+ */
 class CompanyRaffle extends CompanyEvent
 {
     /**
