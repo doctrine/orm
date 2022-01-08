@@ -228,7 +228,7 @@ abstract class AbstractHydrator
      * Hydrates all rows returned by the passed statement instance at once.
      *
      * @param Result|ResultStatement $stmt
-     * @param object                 $resultSetMapping
+     * @param ResultSetMapping       $resultSetMapping
      * @psalm-param array<string, string> $hints
      *
      * @return mixed[]

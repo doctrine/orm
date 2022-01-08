@@ -74,6 +74,7 @@ class QueryBuilder
      * The type of query this is. Can be select, update or delete.
      *
      * @var int
+     * @psalm-var self::SELECT|self::DELETE|self::UPDATE
      */
     private $_type = self::SELECT;
 
@@ -81,13 +82,14 @@ class QueryBuilder
      * The state of the query object. Can be dirty or clean.
      *
      * @var int
+     * @psalm-var self::STATE_*
      */
     private $_state = self::STATE_CLEAN;
 
     /**
      * The complete DQL string for this query.
      *
-     * @var string
+     * @var string|null
      */
     private $_dql;
 
@@ -138,6 +140,7 @@ class QueryBuilder
      * Second level query cache mode.
      *
      * @var int|null
+     * @psalm-var Cache::MODE_*|null
      */
     protected $cacheMode;
 
@@ -244,7 +247,8 @@ class QueryBuilder
     }
 
     /**
-     * @return int
+     * @return int|null
+     * @psalm-return Cache::MODE_*|null
      */
     public function getCacheMode()
     {
@@ -253,6 +257,7 @@ class QueryBuilder
 
     /**
      * @param int $cacheMode
+     * @psalm-param Cache::MODE_* $cacheMode
      *
      * @return $this
      */
@@ -267,6 +272,7 @@ class QueryBuilder
      * Gets the type of the currently built query.
      *
      * @return int
+     * @psalm-return self::SELECT|self::DELETE|self::UPDATE
      */
     public function getType()
     {
@@ -287,6 +293,7 @@ class QueryBuilder
      * Gets the state of this query builder instance.
      *
      * @return int Either QueryBuilder::STATE_DIRTY or QueryBuilder::STATE_CLEAN.
+     * @psalm-return self::STATE_*
      */
     public function getState()
     {

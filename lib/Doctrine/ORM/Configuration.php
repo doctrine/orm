@@ -25,6 +25,7 @@ use Doctrine\ORM\Exception\NamedNativeQueryNotFound;
 use Doctrine\ORM\Exception\NamedQueryNotFound;
 use Doctrine\ORM\Exception\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Exception\UnknownEntityNamespace;
+use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
@@ -712,7 +713,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Sets the custom hydrator modes in one pass.
      *
-     * @param array<string, class-string> $modes An array of ($modeName => $hydrator).
+     * @param array<string, class-string<AbstractHydrator>> $modes An array of ($modeName => $hydrator).
      *
      * @return void
      */
@@ -731,7 +732,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string $modeName The hydration mode name.
      *
      * @return string|null The hydrator class name.
-     * @psalm-return ?class-string
+     * @psalm-return class-string<AbstractHydrator>|null
      */
     public function getCustomHydrationMode($modeName)
     {
@@ -743,7 +744,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $modeName The hydration mode name.
      * @param string $hydrator The hydrator class name.
-     * @psalm-param class-string $hydrator
+     * @psalm-param class-string<AbstractHydrator> $hydrator
      *
      * @return void
      */

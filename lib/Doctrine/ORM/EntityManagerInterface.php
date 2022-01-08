@@ -284,6 +284,7 @@ interface EntityManagerInterface extends ObjectManager
      * @deprecated
      *
      * @param string|int $hydrationMode
+     * @psalm-param string|AbstractQuery::HYDRATE_* $hydrationMode
      *
      * @return AbstractHydrator
      */
@@ -293,6 +294,7 @@ interface EntityManagerInterface extends ObjectManager
      * Create a new instance for the given hydration mode.
      *
      * @param string|int $hydrationMode
+     * @psalm-param string|AbstractQuery::HYDRATE_* $hydrationMode
      *
      * @return AbstractHydrator
      *

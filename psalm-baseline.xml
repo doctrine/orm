@@ -13,9 +13,8 @@
     <InvalidFalsableReturnType occurrences="1">
       <code>Parameter|null</code>
     </InvalidFalsableReturnType>
-    <InvalidNullableReturnType occurrences="2">
+    <InvalidNullableReturnType occurrences="1">
       <code>\Doctrine\Common\Cache\Cache</code>
-      <code>int</code>
     </InvalidNullableReturnType>
     <InvalidScalarArgument occurrences="1">
       <code>$key</code>
@@ -25,10 +24,9 @@
       <code>$data</code>
       <code>$data</code>
     </MissingClosureParamType>
-    <NullableReturnStatement occurrences="3">
+    <NullableReturnStatement occurrences="2">
       <code>$this-&gt;_em-&gt;getConfiguration()-&gt;getResultCacheImpl()</code>
       <code>$this-&gt;_queryCacheProfile-&gt;getResultCacheDriver()</code>
-      <code>$this-&gt;cacheMode</code>
     </NullableReturnStatement>
     <PossiblyInvalidArgument occurrences="2">
       <code>$stmt</code>
@@ -38,9 +36,6 @@
       <code>getCacheLogger</code>
       <code>getQueryCache</code>
     </PossiblyNullReference>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$_resultSetMapping</code>
-    </PropertyNotSetInConstructor>
     <RedundantCastGivenDocblockType occurrences="4">
       <code>(bool) $cacheable</code>
       <code>(int) $cacheMode</code>
@@ -435,19 +430,14 @@
       <code>getPartialReference</code>
       <code>getReference</code>
     </InvalidReturnType>
-    <InvalidScalarArgument occurrences="1">
-      <code>$hydrationMode</code>
-    </InvalidScalarArgument>
-    <LessSpecificReturnStatement occurrences="2">
+    <LessSpecificReturnStatement occurrences="1">
       <code>$this-&gt;repositoryFactory-&gt;getRepository($this, $entityName)</code>
-      <code>new $class($this)</code>
     </LessSpecificReturnStatement>
     <MissingReturnType occurrences="1">
       <code>wrapInTransaction</code>
     </MissingReturnType>
-    <MoreSpecificReturnType occurrences="2">
+    <MoreSpecificReturnType occurrences="1">
       <code>EntityRepository&lt;T&gt;</code>
-      <code>newHydrator</code>
     </MoreSpecificReturnType>
     <ParamNameMismatch occurrences="8">
       <code>$entity</code>
@@ -470,12 +460,18 @@
     <PropertyTypeCoercion occurrences="1">
       <code>new $metadataFactoryClassName()</code>
     </PropertyTypeCoercion>
+    <RedundantCastGivenDocblockType occurrences="1">
+      <code>(string) $hydrationMode</code>
+    </RedundantCastGivenDocblockType>
     <RedundantCondition occurrences="1">
       <code>is_object($connection)</code>
     </RedundantCondition>
     <TypeDoesNotContainType occurrences="1">
       <code>': "' . $connection . '"'</code>
     </TypeDoesNotContainType>
+    <UnsafeInstantiation occurrences="1">
+      <code>new $class($this)</code>
+    </UnsafeInstantiation>
   </file>
   <file src="lib/Doctrine/ORM/EntityManagerInterface.php">
     <DeprecatedClass occurrences="1">
@@ -575,9 +571,6 @@
       <code>IterableResult</code>
       <code>new IterableResult($this)</code>
     </DeprecatedClass>
-    <PropertyTypeCoercion occurrences="1">
-      <code>$resultSetMapping</code>
-    </PropertyTypeCoercion>
     <ReferenceConstraintViolation occurrences="1">
       <code>return $rowData;</code>
     </ReferenceConstraintViolation>
@@ -1353,9 +1346,8 @@
     <LessSpecificImplementedReturnType occurrences="1">
       <code>mixed</code>
     </LessSpecificImplementedReturnType>
-    <PropertyNotSetInConstructor occurrences="2">
+    <PropertyNotSetInConstructor occurrences="1">
       <code>$sql</code>
-      <code>NativeQuery</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/ORMInvalidArgumentException.php">
@@ -1708,10 +1700,6 @@
     <DeprecatedMethod occurrences="1">
       <code>parent::iterate($parameters, $hydrationMode)</code>
     </DeprecatedMethod>
-    <DocblockTypeContradiction occurrences="2">
-      <code>$this-&gt;_resultSetMapping === null</code>
-      <code>$this-&gt;_resultSetMapping === null</code>
-    </DocblockTypeContradiction>
     <InvalidScalarArgument occurrences="1">
       <code>$sqlParams</code>
     </InvalidScalarArgument>
@@ -1722,8 +1710,7 @@
       <code>parent::setHint($name, $value)</code>
       <code>parent::setHydrationMode($hydrationMode)</code>
     </LessSpecificReturnStatement>
-    <MoreSpecificImplementedParamType occurrences="2">
-      <code>$hydrationMode</code>
+    <MoreSpecificImplementedParamType occurrences="1">
       <code>$parameters</code>
     </MoreSpecificImplementedParamType>
     <MoreSpecificReturnType occurrences="2">
@@ -1739,16 +1726,13 @@
     <PossiblyNullReference occurrences="1">
       <code>evictEntityRegion</code>
     </PossiblyNullReference>
-    <PropertyNotSetInConstructor occurrences="3">
+    <PropertyNotSetInConstructor occurrences="2">
       <code>$parserResult</code>
       <code>$queryCacheTTL</code>
-      <code>Query</code>
     </PropertyNotSetInConstructor>
-    <RedundantConditionGivenDocblockType occurrences="4">
+    <RedundantConditionGivenDocblockType occurrences="2">
       <code>$dqlQuery !== null</code>
-      <code>$rsm !== null</code>
       <code>$timeToLive !== null</code>
-      <code>assert($rsm !== null)</code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/ArithmeticFactor.php">
@@ -2995,15 +2979,9 @@
     <InvalidFalsableReturnType occurrences="1">
       <code>Parameter|null</code>
     </InvalidFalsableReturnType>
-    <InvalidNullableReturnType occurrences="1">
-      <code>int</code>
-    </InvalidNullableReturnType>
     <InvalidScalarArgument occurrences="1">
       <code>$key</code>
     </InvalidScalarArgument>
-    <NullableReturnStatement occurrences="1">
-      <code>$this-&gt;cacheMode</code>
-    </NullableReturnStatement>
     <PossiblyFalseArgument occurrences="2">
       <code>$spacePos</code>
       <code>$spacePos</code>
@@ -3019,12 +2997,7 @@
       <code>$alias</code>
       <code>$alias</code>
     </PossiblyNullArgument>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$_dql</code>
-    </PropertyNotSetInConstructor>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>$this-&gt;_dql !== null</code>
-    </RedundantConditionGivenDocblockType>
+    <RedundantConditionGivenDocblockType occurrences="1"/>
   </file>
   <file src="lib/Doctrine/ORM/Repository/DefaultRepositoryFactory.php">
     <LessSpecificReturnStatement occurrences="1">
