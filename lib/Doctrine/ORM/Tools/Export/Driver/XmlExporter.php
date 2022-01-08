@@ -178,10 +178,7 @@ class XmlExporter extends AbstractExporter
                 $fieldXml = $root->addChild('field');
                 $fieldXml->addAttribute('name', $field['fieldName']);
                 $fieldXml->addAttribute('type', $field['type']);
-
-                if (isset($field['columnName'])) {
-                    $fieldXml->addAttribute('column', $field['columnName']);
-                }
+                $fieldXml->addAttribute('column', $field['columnName']);
 
                 if (isset($field['length'])) {
                     $fieldXml->addAttribute('length', (string) $field['length']);
