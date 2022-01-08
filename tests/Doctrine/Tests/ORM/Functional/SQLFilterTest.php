@@ -22,6 +22,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\Company\CompanyEvent;
+use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
 use Doctrine\Tests\Models\Company\CompanyManager;
@@ -531,6 +532,32 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $this->_em->getFilters()->enable('country')->setParameterList('country', ['Germany', 'France'], Types::STRING);
 
         $this->assertEquals(2, count($query->getResult()));
+    }
+
+    public function testToOneFilterOnJoinedClassHierarchyAndWithoutWithCondition(): void
+    {
+        $manager = new CompanyManager();
+        $manager->setName('John');
+        $manager->setTitle('developer');
+        $manager->setSalary(1000);
+        $manager->setDepartment('IT');
+
+        $contract = new CompanyFixContract();
+        $contract->setFixPrice(500);
+        $contract->setSalesPerson($manager);
+
+        $this->_em->persist($manager);
+        $this->_em->persist($contract);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $this->usePersonNameFilter('Jo%');
+
+        $result = $this->_em->createQuery('select p.name name, cfc.fixPrice price from Doctrine\Tests\Models\Company\CompanyFixContract cfc LEFT JOIN Doctrine\Tests\Models\Company\CompanyPerson p')->getResult();
+
+        $this->assertEquals(1, count($result));
+        $this->assertEquals('John', $result[0]['name']);
+        $this->assertEquals(500, $result[0]['price']);
     }
 
     public function testManyToManyFilter(): void
