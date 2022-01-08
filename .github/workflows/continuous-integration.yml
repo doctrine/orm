@@ -59,6 +59,48 @@ jobs:
           path: "coverage*.xml"
 
 
+  phpunit-oracle:
+    name: "PHPUnit with Oracle"
+    runs-on: "ubuntu-20.04"
+    # needs: "phpunit-smoke-check"
+
+    strategy:
+      matrix:
+        php-version:
+          - "7.4"
+
+    services:
+      oracle:
+        image: "wnameless/oracle-xe-11g-r2"
+        ports:
+          - "1521:1521"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+        with:
+          fetch-depth: 2
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          extensions: "oci8"
+          coverage: "pcov"
+          ini-values: "zend.assertions=1"
+
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v1"
+
+      - name: "Run PHPUnit"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/oci8.xml --coverage-clover=coverage.xml"
+
+      - name: "Upload coverage file"
+        uses: "actions/upload-artifact@v2"
+        with:
+          name: "${{ github.job }}-${{ matrix.php-version }}-coverage"
+          path: "coverage.xml"
+
   phpunit-postgres:
     name: "PHPUnit with PostgreSQL"
     runs-on: "ubuntu-20.04"
