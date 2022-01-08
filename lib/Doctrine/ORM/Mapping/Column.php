@@ -44,6 +44,9 @@ final class Column implements Annotation
     /** @var bool */
     public $nullable = false;
 
+    /** @var class-string<\BackedEnum>|null */
+    public $enumType = null;
+
     /** @var array<string,mixed> */
     public $options = [];
 
@@ -51,7 +54,8 @@ final class Column implements Annotation
     public $columnDefinition;
 
     /**
-     * @param array<string,mixed> $options
+     * @param class-string<\BackedEnum>|null $enumType
+     * @param array<string,mixed>            $options
      */
     public function __construct(
         ?string $name = null,
@@ -61,6 +65,7 @@ final class Column implements Annotation
         ?int $scale = null,
         bool $unique = false,
         bool $nullable = false,
+        ?string $enumType = null,
         array $options = [],
         ?string $columnDefinition = null
     ) {
@@ -71,6 +76,7 @@ final class Column implements Annotation
         $this->scale            = $scale;
         $this->unique           = $unique;
         $this->nullable         = $nullable;
+        $this->enumType         = $enumType;
         $this->options          = $options;
         $this->columnDefinition = $columnDefinition;
     }

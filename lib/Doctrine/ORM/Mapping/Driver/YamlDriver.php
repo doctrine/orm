@@ -786,6 +786,7 @@ class YamlDriver extends FileDriver
      *                   unique?: mixed,
      *                   options?: mixed,
      *                   nullable?: mixed,
+     *                   enumType?: class-string,
      *                   version?: mixed,
      *                   columnDefinition?: mixed
      *              }|null $column
@@ -801,6 +802,7 @@ class YamlDriver extends FileDriver
      *                   unique?: bool,
      *                   options?: mixed,
      *                   nullable?: mixed,
+     *                   enumType?: class-string,
      *                   version?: mixed,
      *                   columnDefinition?: mixed
      *               }
@@ -854,6 +856,10 @@ class YamlDriver extends FileDriver
 
         if (isset($column['columnDefinition'])) {
             $mapping['columnDefinition'] = $column['columnDefinition'];
+        }
+
+        if (isset($column['enumType'])) {
+            $mapping['enumType'] = $column['enumType'];
         }
 
         return $mapping;
