@@ -73,7 +73,7 @@ use const PHP_VERSION_ID;
  * @psalm-type FieldMapping = array{
  *      type: string,
  *      fieldName: string,
- *      columnName?: string,
+ *      columnName: string,
  *      length?: int,
  *      id?: bool,
  *      nullable?: bool,

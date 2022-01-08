@@ -102,9 +102,6 @@
     <MissingReturnType occurrences="1">
       <code>loadCacheEntry</code>
     </MissingReturnType>
-    <PossiblyUndefinedArrayOffset occurrences="1">
-      <code>$fieldMapping['columnName']</code>
-    </PossiblyUndefinedArrayOffset>
     <UndefinedInterfaceMethod occurrences="1">
       <code>getCacheRegion</code>
     </UndefinedInterfaceMethod>
@@ -712,11 +709,6 @@
       <code>matching</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/AnsiQuoteStrategy.php">
-    <PossiblyUndefinedArrayOffset occurrences="1">
-      <code>$class-&gt;fieldMappings[$fieldName]['columnName']</code>
-    </PossiblyUndefinedArrayOffset>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/AssociationOverride.php">
     <MissingConstructor occurrences="5">
       <code>$fetch</code>
@@ -1009,18 +1001,10 @@
       <code>setValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
-    <PossiblyUndefinedArrayOffset occurrences="11">
-      <code>$fieldMapping['columnName']</code>
-      <code>$fieldMapping['columnName']</code>
-      <code>$mapping['columnName']</code>
+    <PossiblyUndefinedArrayOffset occurrences="3">
       <code>$mapping['originalClass']</code>
       <code>$mapping['originalField']</code>
       <code>$mapping['targetEntity']</code>
-      <code>$this-&gt;fieldMappings[$field]['columnName']</code>
-      <code>$this-&gt;fieldMappings[$field]['columnName']</code>
-      <code>$this-&gt;fieldMappings[$idProperty]['columnName']</code>
-      <code>$this-&gt;fieldMappings[$idProperty]['columnName']</code>
-      <code>$this-&gt;fieldMappings[$idProperty]['columnName']</code>
     </PossiblyUndefinedArrayOffset>
     <PropertyNotSetInConstructor occurrences="6">
       <code>$idGenerator</code>
@@ -1091,10 +1075,6 @@
     <MissingClosureParamType occurrences="1">
       <code>$joinColumn</code>
     </MissingClosureParamType>
-    <PossiblyUndefinedArrayOffset occurrences="2">
-      <code>$class-&gt;fieldMappings[$fieldName]['columnName']</code>
-      <code>$class-&gt;fieldMappings[$fieldName]['columnName']</code>
-    </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DiscriminatorColumn.php">
     <PossiblyNullPropertyAssignmentValue occurrences="4">
@@ -1779,11 +1759,6 @@
       <code>$targetClass-&gt;associationMappings</code>
     </PossiblyNullArrayOffset>
   </file>
-  <file src="lib/Doctrine/ORM/Persisters/Entity/AbstractEntityInheritancePersister.php">
-    <PossiblyUndefinedArrayOffset occurrences="1">
-      <code>$fieldMapping['columnName']</code>
-    </PossiblyUndefinedArrayOffset>
-  </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php">
     <ArgumentTypeCoercion occurrences="1">
       <code>$this-&gt;em</code>
@@ -1839,10 +1814,6 @@
       <code>getValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
-    <PossiblyUndefinedArrayOffset occurrences="2">
-      <code>$fieldMapping['columnName']</code>
-      <code>$fieldMapping['columnName']</code>
-    </PossiblyUndefinedArrayOffset>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$insertSql</code>
     </PropertyNotSetInConstructor>
@@ -2151,9 +2122,6 @@
     <PossiblyNullArrayOffset occurrences="1">
       <code>$class-&gt;associationMappings</code>
     </PossiblyNullArrayOffset>
-    <PossiblyUndefinedArrayOffset occurrences="1">
-      <code>$field['columnName']</code>
-    </PossiblyUndefinedArrayOffset>
     <PropertyNotSetInConstructor occurrences="2">
       <code>$fieldMapping</code>
       <code>$pathExpression</code>
@@ -2841,9 +2809,6 @@
       <code>getShortName</code>
       <code>getShortName</code>
     </PossiblyNullReference>
-    <PossiblyUndefinedArrayOffset occurrences="1">
-      <code>$class-&gt;fieldMappings[$this-&gt;fieldMappings[$columnName]]['columnName']</code>
-    </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
     <DocblockTypeContradiction occurrences="8">
@@ -2923,11 +2888,6 @@
     <PossiblyNullReference occurrences="1">
       <code>dispatch</code>
     </PossiblyNullReference>
-    <PossiblyUndefinedArrayOffset occurrences="3">
-      <code>$fieldMapping['columnName']</code>
-      <code>$mapping['columnName']</code>
-      <code>$mapping['columnName']</code>
-    </PossiblyUndefinedArrayOffset>
     <PropertyTypeCoercion occurrences="3">
       <code>$query</code>
       <code>$this-&gt;queryComponents</code>
@@ -3640,9 +3600,6 @@
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$_extension</code>
     </NonInvariantDocblockPropertyType>
-    <PossiblyUndefinedArrayOffset occurrences="1">
-      <code>$fieldMapping['columnName']</code>
-    </PossiblyUndefinedArrayOffset>
     <RedundantConditionGivenDocblockType occurrences="2">
       <code>$metadata-&gt;table</code>
       <code>isset($metadata-&gt;lifecycleCallbacks)</code>
