@@ -15,15 +15,13 @@ use function strtolower;
 class EntityCacheKey extends CacheKey
 {
     /**
-     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
-     *
+     * @readonly Public only for performance reasons, it should be considered immutable.
      * @var array<string, mixed> The entity identifier
      */
     public $identifier;
 
     /**
-     * READ-ONLY: Public only for performance reasons, it should be considered immutable.
-     *
+     * @readonly Public only for performance reasons, it should be considered immutable.
      * @var string The entity class name
      */
     public $entityClass;
