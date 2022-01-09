@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\Internal\SQLResultCasing;
@@ -13,6 +14,7 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\Tests\DbalTypes\UpperCaseStringType;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
@@ -22,6 +24,7 @@ use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\Models\CustomType\CustomTypeUpperCase;
 use Doctrine\Tests\Models\DDC3899\DDC3899FixContract;
 use Doctrine\Tests\Models\DDC3899\DDC3899User;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -795,5 +798,39 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $selectClause = $rsm->generateSelectClause(['u' => 'u1', 'c' => 'c1']);
 
         $this->assertSQLEquals('u1.id as id, c1.discr as discr', $selectClause);
+    }
+
+    public function testGenerateSelectClauseWithCustomTypeUsingEntityFromClassMetadata(): void
+    {
+        if (DBALType::hasType('upper_case_string')) {
+            DBALType::overrideType('upper_case_string', UpperCaseStringType::class);
+        } else {
+            DBALType::addType('upper_case_string', UpperCaseStringType::class);
+        }
+
+        $rsm = new ResultSetMappingBuilder($this->_em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
+
+        $rsm->addRootEntityFromClassMetadata(CustomTypeUpperCase::class, 'ct');
+
+        $selectClause = $rsm->generateSelectClause(['ct' => 'ct1']);
+
+        $this->assertSQLEquals('ct1.id as id0, lower(ct1.lowercasestring) as lowercasestring1, lower(ct1.named_lower_case_string) as named_lower_case_string2', $selectClause);
+    }
+
+    public function testGenerateSelectClauseWithCustomTypeUsingAddFieldResult(): void
+    {
+        if (DBALType::hasType('upper_case_string')) {
+            DBALType::overrideType('upper_case_string', UpperCaseStringType::class);
+        } else {
+            DBALType::addType('upper_case_string', UpperCaseStringType::class);
+        }
+
+        $rsm = new ResultSetMappingBuilder($this->_em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
+        $rsm->addEntityResult(CustomTypeUpperCase::class, 'ct');
+        $rsm->addFieldResult('ct', $this->getSQLResultCasing($this->platform, 'lowercasestring'), 'lowerCaseString');
+
+        $selectClause = $rsm->generateSelectClause(['ct' => 'ct1']);
+
+        $this->assertSQLEquals('lower(ct1.lowercasestring) as lowercasestring', $selectClause);
     }
 }
