@@ -86,9 +86,6 @@
     <InvalidArgument occurrences="1">
       <code>$em-&gt;getMetadataFactory()</code>
     </InvalidArgument>
-    <MissingReturnType occurrences="1">
-      <code>loadCacheEntry</code>
-    </MissingReturnType>
     <UndefinedInterfaceMethod occurrences="1">
       <code>getCacheRegion</code>
     </UndefinedInterfaceMethod>
@@ -629,36 +626,6 @@
       <code>matching</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/AnsiQuoteStrategy.php">
-    <PossiblyUndefinedArrayOffset occurrences="1">
-      <code>$class-&gt;fieldMappings[$fieldName]['columnName']</code>
-    </PossiblyUndefinedArrayOffset>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/AssociationOverride.php">
-    <MissingConstructor occurrences="5">
-      <code>$fetch</code>
-      <code>$inversedBy</code>
-      <code>$joinColumns</code>
-      <code>$joinTable</code>
-      <code>$name</code>
-    </MissingConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/AssociationOverrides.php">
-    <MissingConstructor occurrences="1">
-      <code>$value</code>
-    </MissingConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/AttributeOverride.php">
-    <MissingConstructor occurrences="2">
-      <code>$column</code>
-      <code>$name</code>
-    </MissingConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/AttributeOverrides.php">
-    <MissingConstructor occurrences="1">
-      <code>$value</code>
-    </MissingConstructor>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php">
     <ArgumentTypeCoercion occurrences="2">
       <code>$class</code>
@@ -862,11 +829,7 @@
       <code>$this-&gt;table</code>
       <code>$this-&gt;table</code>
     </PropertyTypeCoercion>
-    <RedundantCast occurrences="1">
-      <code>array_values</code>
-    </RedundantCast>
-    <RedundantConditionGivenDocblockType occurrences="3">
-      <code>$className !== null</code>
+    <RedundantConditionGivenDocblockType occurrences="2">
       <code>$mapping !== false</code>
       <code>$mapping !== false</code>
     </RedundantConditionGivenDocblockType>
@@ -2964,7 +2927,9 @@
       <code>$alias</code>
       <code>$alias</code>
     </PossiblyNullArgument>
-    <RedundantConditionGivenDocblockType occurrences="1"/>
+    <RedundantConditionGivenDocblockType occurrences="1">
+      <code>self::SELECT</code>
+    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Repository/DefaultRepositoryFactory.php">
     <LessSpecificReturnStatement occurrences="1">
