@@ -557,9 +557,6 @@
     <InvalidScalarArgument occurrences="1">
       <code>array_keys($discrMap)</code>
     </InvalidScalarArgument>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$class</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/LazyCriteriaCollection.php">
     <MoreSpecificImplementedParamType occurrences="1">

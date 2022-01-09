@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
@@ -23,16 +24,16 @@ use function iterator_to_array;
 class AbstractHydratorTest extends OrmFunctionalTestCase
 {
     /** @var EventManager&MockObject */
-    private $mockEventManager;
+    private EventManager $mockEventManager;
 
     /** @var Result&MockObject */
-    private $mockResult;
+    private Result $mockResult;
 
     /** @var ResultSetMapping&MockObject */
-    private $mockResultMapping;
+    private ResultSetMapping $mockResultMapping;
 
     /** @var AbstractHydrator&MockObject */
-    private $hydrator;
+    private AbstractHydrator $hydrator;
 
     protected function setUp(): void
     {
@@ -44,16 +45,16 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
         $this->mockResult           = $this->createMock(Result::class);
         $this->mockResultMapping    = $this->createMock(ResultSetMapping::class);
 
+        $mockConnection
+            ->method('getDatabasePlatform')
+            ->willReturn($this->createMock(AbstractPlatform::class));
         $mockEntityManagerInterface
-            ->expects(self::any())
             ->method('getEventManager')
             ->willReturn($this->mockEventManager);
         $mockEntityManagerInterface
-            ->expects(self::any())
             ->method('getConnection')
             ->willReturn($mockConnection);
         $this->mockResult
-            ->expects(self::any())
             ->method('fetchAssociative')
             ->willReturn(false);
 

@@ -9,8 +9,7 @@ use Doctrine\Tests\OrmTestCase;
 
 class HydrationTestCase extends OrmTestCase
 {
-    /** @var EntityManagerInterface */
-    protected $entityManager;
+    protected EntityManagerInterface $entityManager;
 
     protected function setUp(): void
     {
