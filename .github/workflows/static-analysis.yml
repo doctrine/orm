@@ -84,3 +84,8 @@ jobs:
 
       - name: "Run a static analysis with vimeo/psalm"
         run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc)"
+        if: "${{ matrix.dbal-version == 'default' }}"
+
+      - name: "Run a static analysis with phpstan/phpstan"
+        run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc) --config=psalm-dbal2.xml"
+        if: "${{ matrix.dbal-version == '2.13' }}"

@@ -2139,7 +2139,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/LocateFunction.php">
-    <InvalidScalarArgument occurrences="1"/>
     <PossiblyInvalidArgument occurrences="1">
       <code>$this-&gt;simpleArithmeticExpression</code>
     </PossiblyInvalidArgument>
@@ -2192,10 +2191,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/SubstringFunction.php">
-    <InvalidScalarArgument occurrences="2">
-      <code>$optionalSecondSimpleArithmeticExpression</code>
-      <code>$sqlWalker-&gt;walkSimpleArithmeticExpression($this-&gt;firstSimpleArithmeticExpression)</code>
-    </InvalidScalarArgument>
     <PropertyNotSetInConstructor occurrences="2">
       <code>$firstSimpleArithmeticExpression</code>
       <code>$stringPrimary</code>

@@ -18,4 +18,13 @@
         </ignoreFiles>
     </projectFiles>
     <xi:include href="psalm-issue-handlers.xml"/>
+    <issueHandlers>
+        <!-- Issues that will not be fixed on DBAL 2.x -->
+        <InvalidScalarArgument>
+            <errorLevel type="suppress">
+                <file name="lib/Doctrine/ORM/Query/AST/Functions/LocateFunction.php"/>
+                <file name="lib/Doctrine/ORM/Query/AST/Functions/SubstringFunction.php"/>
+            </errorLevel>
+        </InvalidScalarArgument>
+    </issueHandlers>
 </psalm>
