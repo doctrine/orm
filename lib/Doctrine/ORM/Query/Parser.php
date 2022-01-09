@@ -87,8 +87,7 @@ use function substr;
 class Parser
 {
     /**
-     * READ-ONLY: Maps BUILT-IN string function names to AST class names.
-     *
+     * @readonly Maps BUILT-IN string function names to AST class names.
      * @psalm-var array<string, class-string<Functions\FunctionNode>>
      */
     private static $stringFunctions = [
@@ -101,8 +100,7 @@ class Parser
     ];
 
     /**
-     * READ-ONLY: Maps BUILT-IN numeric function names to AST class names.
-     *
+     * @readonly Maps BUILT-IN numeric function names to AST class names.
      * @psalm-var array<string, class-string<Functions\FunctionNode>>
      */
     private static $numericFunctions = [
@@ -125,8 +123,7 @@ class Parser
     ];
 
     /**
-     * READ-ONLY: Maps BUILT-IN datetime function names to AST class names.
-     *
+     * @readonly Maps BUILT-IN datetime function names to AST class names.
      * @psalm-var array<string, class-string<Functions\FunctionNode>>
      */
     private static $datetimeFunctions = [
