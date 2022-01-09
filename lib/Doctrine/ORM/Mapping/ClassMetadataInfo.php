@@ -705,7 +705,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * The ReflectionProperty instances of the mapped class.
      *
-     * @var ReflectionProperty[]|null[]
+     * @var array<string, ReflectionProperty|null>
      */
     public $reflFields = [];
 
@@ -993,7 +993,8 @@ class ClassMetadataInfo implements ClassMetadata
 
         foreach ($this->embeddedClasses as $property => $embeddedClass) {
             if (isset($embeddedClass['declaredField'])) {
-                $childProperty = $reflService->getAccessibleProperty(
+                $childProperty = $this->getAccessibleProperty(
+                    $reflService,
                     $this->embeddedClasses[$embeddedClass['declaredField']]['class'],
                     $embeddedClass['originalField']
                 );
@@ -1007,7 +1008,8 @@ class ClassMetadataInfo implements ClassMetadata
                 continue;
             }
 
-            $fieldRefl = $reflService->getAccessibleProperty(
+            $fieldRefl = $this->getAccessibleProperty(
+                $reflService,
                 $embeddedClass['declared'] ?? $this->name,
                 $property
             );
@@ -1020,15 +1022,15 @@ class ClassMetadataInfo implements ClassMetadata
             if (isset($mapping['declaredField']) && isset($parentReflFields[$mapping['declaredField']])) {
                 $this->reflFields[$field] = new ReflectionEmbeddedProperty(
                     $parentReflFields[$mapping['declaredField']],
-                    $reflService->getAccessibleProperty($mapping['originalClass'], $mapping['originalField']),
+                    $this->getAccessibleProperty($reflService, $mapping['originalClass'], $mapping['originalField']),
                     $mapping['originalClass']
                 );
                 continue;
             }
 
             $this->reflFields[$field] = isset($mapping['declared'])
-                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
-                : $reflService->getAccessibleProperty($this->name, $field);
+                ? $this->getAccessibleProperty($reflService, $mapping['declared'], $field)
+                : $this->getAccessibleProperty($reflService, $this->name, $field);
 
             if (isset($mapping['enumType']) && $this->reflFields[$field] !== null) {
                 $this->reflFields[$field] = new ReflectionEnumProperty(
@@ -1040,8 +1042,8 @@ class ClassMetadataInfo implements ClassMetadata
 
         foreach ($this->associationMappings as $field => $mapping) {
             $this->reflFields[$field] = isset($mapping['declared'])
-                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
-                : $reflService->getAccessibleProperty($this->name, $field);
+                ? $this->getAccessibleProperty($reflService, $mapping['declared'], $field)
+                : $this->getAccessibleProperty($reflService, $this->name, $field);
         }
     }
 
@@ -3778,5 +3780,18 @@ class ClassMetadataInfo implements ClassMetadata
         if (isset($mapping['orderBy']) && ! is_array($mapping['orderBy'])) {
             throw new InvalidArgumentException("'orderBy' is expected to be an array, not " . gettype($mapping['orderBy']));
         }
+    }
+
+    /**
+     * @psalm-param class-string $class
+     */
+    private function getAccessibleProperty(ReflectionService $reflService, string $class, string $field): ?ReflectionProperty
+    {
+        $reflectionProperty = $reflService->getAccessibleProperty($class, $field);
+        if ($reflectionProperty !== null && PHP_VERSION_ID >= 80100 && $reflectionProperty->isReadOnly()) {
+            $reflectionProperty = new ReflectionReadonlyProperty($reflectionProperty);
+        }
+
+        return $reflectionProperty;
     }
 }

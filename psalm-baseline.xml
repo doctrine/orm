@@ -820,7 +820,7 @@
       <code>$parentReflFields[$embeddedClass['declaredField']]</code>
       <code>$parentReflFields[$mapping['declaredField']]</code>
       <code>$queryMapping['resultClass']</code>
-      <code>$reflService-&gt;getAccessibleProperty($mapping['originalClass'], $mapping['originalField'])</code>
+      <code>$this-&gt;getAccessibleProperty($reflService, $mapping['originalClass'], $mapping['originalField'])</code>
     </PossiblyNullArgument>
     <PossiblyNullPropertyFetch occurrences="2">
       <code>$embeddable-&gt;reflClass-&gt;name</code>
