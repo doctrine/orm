@@ -17,12 +17,11 @@ use const E_USER_NOTICE;
 
 /**
  * Base class for EntityManager decorators
+ *
+ * @extends ObjectManagerDecorator<EntityManagerInterface>
  */
 abstract class EntityManagerDecorator extends ObjectManagerDecorator implements EntityManagerInterface
 {
-    /** @var EntityManagerInterface */
-    protected $wrapped;
-
     public function __construct(EntityManagerInterface $wrapped)
     {
         $this->wrapped = $wrapped;
