@@ -357,9 +357,6 @@
     <MissingReturnType occurrences="1">
       <code>wrapInTransaction</code>
     </MissingReturnType>
-    <NonInvariantDocblockPropertyType occurrences="1">
-      <code>$wrapped</code>
-    </NonInvariantDocblockPropertyType>
     <TooManyArguments occurrences="2">
       <code>find</code>
       <code>flush</code>
@@ -476,6 +473,9 @@
       <code>?T</code>
       <code>Collection&lt;int, T&gt;</code>
     </InvalidReturnType>
+    <LessSpecificImplementedReturnType occurrences="1">
+      <code>string</code>
+    </LessSpecificImplementedReturnType>
     <PropertyTypeCoercion occurrences="1">
       <code>$em</code>
     </PropertyTypeCoercion>
