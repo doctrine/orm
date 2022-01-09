@@ -111,21 +111,6 @@ parameters:
 			path: lib/Doctrine/ORM/Configuration.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getClassMetadata\\(\\) should return Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata but returns Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<T of object\\>\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getMetadataFactory\\(\\) should return Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory but returns Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getRepository\\(\\) should return Doctrine\\\\ORM\\\\EntityRepository but returns Doctrine\\\\Persistence\\\\ObjectRepository\\<T\\>\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
-
-		-
 			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:flush\\(\\) invoked with 1 parameter, 0 required\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
@@ -136,7 +121,7 @@ parameters:
 			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
 
 		-
-			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManagerDecorator\\:\\:getMetadataFactory\\(\\)$#"
+			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManagerDecorator\\<Doctrine\\\\ORM\\\\EntityManagerInterface\\>\\:\\:getMetadataFactory\\(\\)$#"
 			count: 1
 			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
 

@@ -330,32 +330,12 @@
     </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$className</code>
-    </ArgumentTypeCoercion>
     <DeprecatedClass occurrences="1">
       <code>ProxyFactory</code>
     </DeprecatedClass>
-    <InvalidReturnStatement occurrences="1">
-      <code>parent::getMetadataFactory()</code>
-    </InvalidReturnStatement>
-    <InvalidReturnType occurrences="1">
-      <code>ClassMetadataFactory</code>
-    </InvalidReturnType>
-    <LessSpecificReturnStatement occurrences="2">
-      <code>parent::getClassMetadata($className)</code>
-      <code>parent::getRepository($className)</code>
-    </LessSpecificReturnStatement>
     <MissingParamType occurrences="1">
       <code>$entity</code>
     </MissingParamType>
-    <MoreSpecificReturnType occurrences="2">
-      <code>ClassMetadata</code>
-      <code>EntityRepository</code>
-    </MoreSpecificReturnType>
-    <NonInvariantDocblockPropertyType occurrences="1">
-      <code>$wrapped</code>
-    </NonInvariantDocblockPropertyType>
     <TooManyArguments occurrences="1">
       <code>flush</code>
     </TooManyArguments>
@@ -468,6 +448,9 @@
       <code>?T</code>
       <code>Collection&lt;int, T&gt;</code>
     </InvalidReturnType>
+    <LessSpecificImplementedReturnType occurrences="1">
+      <code>string</code>
+    </LessSpecificImplementedReturnType>
     <PropertyTypeCoercion occurrences="1">
       <code>$em</code>
     </PropertyTypeCoercion>
@@ -749,7 +732,7 @@
       <code>$parentReflFields[$embeddedClass['declaredField']]</code>
       <code>$parentReflFields[$mapping['declaredField']]</code>
       <code>$queryMapping['resultClass']</code>
-      <code>$reflService-&gt;getAccessibleProperty($mapping['originalClass'], $mapping['originalField'])</code>
+      <code>$this-&gt;getAccessibleProperty($reflService, $mapping['originalClass'], $mapping['originalField'])</code>
     </PossiblyNullArgument>
     <PossiblyNullPropertyFetch occurrences="2">
       <code>$embeddable-&gt;reflClass-&gt;name</code>
