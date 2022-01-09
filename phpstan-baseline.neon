@@ -136,7 +136,7 @@ parameters:
 			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
 
 		-
-			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManagerDecorator\\:\\:getMetadataFactory\\(\\)$#"
+			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManagerDecorator\\<Doctrine\\\\ORM\\\\EntityManagerInterface\\>\\:\\:getMetadataFactory\\(\\)$#"
 			count: 1
 			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
 

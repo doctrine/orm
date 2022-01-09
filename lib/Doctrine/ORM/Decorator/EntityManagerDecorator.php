@@ -25,12 +25,11 @@ use Doctrine\Persistence\ObjectManagerDecorator;
 
 /**
  * Base class for EntityManager decorators
+ *
+ * @extends ObjectManagerDecorator<EntityManagerInterface>
  */
 abstract class EntityManagerDecorator extends ObjectManagerDecorator implements EntityManagerInterface
 {
-    /** @var EntityManagerInterface */
-    protected $wrapped;
-
     public function __construct(EntityManagerInterface $wrapped)
     {
         $this->wrapped = $wrapped;
@@ -38,12 +37,12 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
 
     public function getRepository($className): EntityRepository
     {
-        return parent::getRepository($className);
+        return $this->wrapped->getRepository($className);
     }
 
     public function getMetadataFactory(): ClassMetadataFactory
     {
-        return parent::getMetadataFactory();
+        return $this->wrapped->getMetadataFactory();
     }
 
     /**
@@ -51,7 +50,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
      */
     public function getClassMetadata($className): ClassMetadata
     {
-        return parent::getClassMetadata($className);
+        return $this->wrapped->getClassMetadata($className);
     }
 
     public function getConnection(): Connection
