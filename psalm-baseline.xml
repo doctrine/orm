@@ -275,14 +275,6 @@
       <code>lock</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/Region/DefaultRegion.php">
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$this-&gt;cache</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
-      <code>CacheProvider</code>
-    </MoreSpecificReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/Region/UpdateTimestampCache.php">
     <MissingReturnType occurrences="1">
       <code>update</code>

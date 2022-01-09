@@ -96,11 +96,6 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/Persister/Entity/ReadWriteCachedEntityPersister.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Cache\\\\Region\\\\DefaultRegion\\:\\:getCache\\(\\) should return Doctrine\\\\Common\\\\Cache\\\\CacheProvider but returns Doctrine\\\\Common\\\\Cache\\\\Cache\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Region/DefaultRegion.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Cache\\\\CacheEntry\\:\\:\\$time\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/TimestampQueryCacheValidator.php
@@ -1569,3 +1564,4 @@ parameters:
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$subClasses\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Utility/HierarchyDiscriminatorResolver.php
+

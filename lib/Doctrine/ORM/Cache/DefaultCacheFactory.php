@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\Common\Cache\Cache as LegacyCache;
-use Doctrine\Common\Cache\Psr6\CacheAdapter;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Persister\Collection\NonStrictReadWriteCachedCollectionPersister;
 use Doctrine\ORM\Cache\Persister\Collection\ReadOnlyCachedCollectionPersister;
@@ -24,58 +21,26 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use InvalidArgumentException;
 use LogicException;
 use Psr\Cache\CacheItemPoolInterface;
-use TypeError;
 
 use function assert;
-use function get_debug_type;
 use function sprintf;
 
 use const DIRECTORY_SEPARATOR;
 
 class DefaultCacheFactory implements CacheFactory
 {
-    /** @var CacheItemPoolInterface */
-    private $cacheItemPool;
-
-    /** @var RegionsConfiguration */
-    private $regionsConfig;
-
-    /** @var TimestampRegion|null */
-    private $timestampRegion;
+    private CacheItemPoolInterface $cacheItemPool;
+    private RegionsConfiguration $regionsConfig;
+    private ?TimestampRegion $timestampRegion = null;
 
     /** @var Region[] */
-    private $regions = [];
+    private array $regions = [];
 
-    /** @var string|null */
-    private $fileLockRegionDirectory;
+    private ?string $fileLockRegionDirectory = null;
 
-    /**
-     * @param CacheItemPoolInterface $cacheItemPool
-     */
-    public function __construct(RegionsConfiguration $cacheConfig, $cacheItemPool)
+    public function __construct(RegionsConfiguration $cacheConfig, CacheItemPoolInterface $cacheItemPool)
     {
-        if ($cacheItemPool instanceof LegacyCache) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/9322',
-                'Passing an instance of %s to %s is deprecated, pass a %s instead.',
-                get_debug_type($cacheItemPool),
-                __METHOD__,
-                CacheItemPoolInterface::class
-            );
-
-            $this->cacheItemPool = CacheAdapter::wrap($cacheItemPool);
-        } elseif (! $cacheItemPool instanceof CacheItemPoolInterface) {
-            throw new TypeError(sprintf(
-                '%s: Parameter #2 is expected to be an instance of %s, got %s.',
-                __METHOD__,
-                CacheItemPoolInterface::class,
-                get_debug_type($cacheItemPool)
-            ));
-        } else {
-            $this->cacheItemPool = $cacheItemPool;
-        }
-
+        $this->cacheItemPool = $cacheItemPool;
         $this->regionsConfig = $cacheConfig;
     }
 
