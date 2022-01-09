@@ -256,6 +256,11 @@ Optional attributes:
    table? Defaults to false.
 -  nullable - Should this field allow NULL as a value? Defaults to
    false.
+-  insertable - Should this field be inserted? Defaults to true.
+-  updatable - Should this field be updated? Defaults to true.
+-  generated - Enum of the values ALWAYS, INSERT, NEVER that determines if
+   generated value must be fetched from database after INSERT or UPDATE.
+   Defaults to "NEVER".
 -  version - Should this field be used for optimistic locking? Only
    works on fields with type integer or datetime.
 -  scale - Scale of a decimal type.

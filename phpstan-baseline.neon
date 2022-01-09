@@ -761,16 +761,6 @@ parameters:
 			path: lib/Doctrine/ORM/Persisters/Entity/CachedPersisterContext.php
 
 		-
-			message: "#^If condition is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
-
-		-
-			message: "#^Left side of && is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
-
-		-
 			message: "#^Parameter \\#1 \\$em of method Doctrine\\\\ORM\\\\Id\\\\AbstractIdGenerator\\:\\:generate\\(\\) expects Doctrine\\\\ORM\\\\EntityManager, Doctrine\\\\ORM\\\\EntityManagerInterface given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
@@ -1741,7 +1731,7 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
 		-
-			message: "#^Offset 'version' on array\\{type\\: string, fieldName\\: string, columnName\\: string, length\\?\\: int, id\\?\\: bool, nullable\\?\\: bool, enumType\\?\\: class\\-string\\<BackedEnum\\>, columnDefinition\\?\\: string, \\.\\.\\.\\} in isset\\(\\) does not exist\\.$#"
+			message: "#^Offset 'version' on array\\{type\\: string, fieldName\\: string, columnName\\: string, length\\?\\: int, id\\?\\: bool, nullable\\?\\: bool, notInsertable\\?\\: bool, notUpdatable\\?\\: bool, \\.\\.\\.\\} in isset\\(\\) does not exist\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 

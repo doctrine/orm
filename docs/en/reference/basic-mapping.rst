@@ -199,6 +199,10 @@ list:
   unique key.
 - ``nullable``: (optional, default FALSE) Whether the database
   column is nullable.
+- ``insertable``: (optional, default TRUE) Whether the database
+  column should be inserted.
+- ``updatable``: (optional, default TRUE) Whether the database
+  column should be updated.
 - ``enumType``: (optional, requires PHP 8.1 and ORM 2.11) The PHP enum type
   name to convert the database value into.
 - ``precision``: (optional, default 0) The precision for a decimal

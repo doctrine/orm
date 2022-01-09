@@ -825,6 +825,11 @@ class MappingException extends ORMException
         return new self("Entity '" . $className . "' has a mapping with invalid fetch mode '" . $annotation . "'");
     }
 
+    public static function invalidGeneratedMode(string $annotation): MappingException
+    {
+        return new self("Invalid generated mode '" . $annotation . "'");
+    }
+
     /**
      * @param string $className
      *

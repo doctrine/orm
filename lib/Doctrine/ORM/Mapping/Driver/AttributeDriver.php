@@ -529,6 +529,20 @@ class AttributeDriver extends AnnotationDriver
     }
 
     /**
+     * Attempts to resolve the generated mode.
+     *
+     * @throws MappingException If the fetch mode is not valid.
+     */
+    private function getGeneratedMode(string $generatedMode): int
+    {
+        if (! defined('Doctrine\ORM\Mapping\ClassMetadata::GENERATED_' . $generatedMode)) {
+            throw MappingException::invalidGeneratedMode($generatedMode);
+        }
+
+        return constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATED_' . $generatedMode);
+    }
+
+    /**
      * Parses the given method.
      *
      * @return callable[]
@@ -642,6 +656,18 @@ class AttributeDriver extends AnnotationDriver
 
         if (isset($column->columnDefinition)) {
             $mapping['columnDefinition'] = $column->columnDefinition;
+        }
+
+        if ($column->updatable === false) {
+            $mapping['notUpdatable'] = true;
+        }
+
+        if ($column->insertable === false) {
+            $mapping['notInsertable'] = true;
+        }
+
+        if ($column->generated !== null) {
+            $mapping['generated'] = $this->getGeneratedMode($column->generated);
         }
 
         if ($column->enumType) {
