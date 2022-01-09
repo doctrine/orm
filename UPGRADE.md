@@ -1,5 +1,22 @@
 # Upgrade to 3.0
 
+## BC BREAK: PSR-6-based second level cache
+
+The second level cache has been reworked to consume a PSR-6 cache. Using a
+Doctrine Cache instance is not supported anymore.
+
+* `DefaultCacheFactory`: The constructor expects a PSR-6 cache item pool as
+  second argument now.
+* `DefaultMultiGetRegion`: This class has been removed.
+* `DefaultRegion`:
+    * The constructor expects a PSR-6 cache item pool as second argument now.
+    * The protected `$cache` property is removed.
+    * The properties `$name` and `$lifetime` as well as the constant
+      `REGION_KEY_SEPARATOR` and the method `getCacheEntryKey()` are
+      `private` now.
+    * The method `getCache()` has been removed.
+
+
 ## BC Break: Remove `Doctrine\ORM\Mapping\Driver\PHPDriver`
 
 Use `StaticPHPDriver` instead when you want to programmatically configure

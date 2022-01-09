@@ -31,11 +31,6 @@
                 <referencedMethod name="Doctrine\ORM\Configuration::ensureProductionSettings"/>
             </errorLevel>
         </DeprecatedMethod>
-        <DeprecatedProperty>
-            <errorLevel type="suppress">
-                <referencedProperty name="Doctrine\ORM\Cache\Region\DefaultRegion::$cache"/>
-            </errorLevel>
-        </DeprecatedProperty>
         <DocblockTypeContradiction>
             <errorLevel type="suppress">
                 <!-- We're catching invalid input here. -->
