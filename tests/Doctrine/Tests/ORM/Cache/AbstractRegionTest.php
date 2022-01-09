@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
+use Doctrine\ORM\Cache\CacheEntry;
+use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
@@ -20,15 +21,15 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
     /** @var Region */
     protected $region;
 
-    /** @var Cache */
-    protected $cache;
+    /** @var CacheItemPoolInterface */
+    protected $cacheItemPool;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->cache  = DoctrineProvider::wrap(new ArrayAdapter());
-        $this->region = $this->createRegion();
+        $this->cacheItemPool = new ArrayAdapter();
+        $this->region        = $this->createRegion();
     }
 
     abstract protected function createRegion(): Region;
@@ -45,7 +46,7 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
     /**
      * @dataProvider dataProviderCacheValues
      */
-    public function testPutGetContainsEvict($key, $value): void
+    public function testPutGetContainsEvict(CacheKey $key, CacheEntry $value): void
     {
         self::assertFalse($this->region->contains($key));
 

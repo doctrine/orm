@@ -4,19 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use BadMethodCallException;
-use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
-use Psr\Cache\CacheItemInterface;
-use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-use function assert;
+use function array_map;
 
 /**
  * @group DDC-2183
@@ -25,22 +21,21 @@ class DefaultRegionTest extends AbstractRegionTest
 {
     protected function createRegion(): Region
     {
-        return new DefaultRegion('default.region.test', $this->cache);
+        return new DefaultRegion('default.region.test', $this->cacheItemPool);
     }
 
     public function testGetters(): void
     {
         self::assertEquals('default.region.test', $this->region->getName());
-        self::assertSame($this->cache, $this->region->getCache());
+        self::assertSame($this->cacheItemPool, $this->region->getCache()->getPool());
     }
 
     public function testSharedRegion(): void
     {
-        $cache   = new SharedArrayCache();
         $key     = new CacheKeyMock('key');
         $entry   = new CacheEntryMock(['value' => 'foo']);
-        $region1 = new DefaultRegion('region1', DoctrineProvider::wrap($cache->createChild()));
-        $region2 = new DefaultRegion('region2', DoctrineProvider::wrap($cache->createChild()));
+        $region1 = new DefaultRegion('region1', $this->cacheItemPool);
+        $region2 = new DefaultRegion('region2', $this->cacheItemPool);
 
         self::assertFalse($region1->contains($key));
         self::assertFalse($region2->contains($key));
@@ -69,18 +64,6 @@ class DefaultRegionTest extends AbstractRegionTest
         self::assertSame('foo', $cache->getNamespace());
     }
 
-    public function testEvictAllWithGenericCacheThrowsUnsupportedException(): void
-    {
-        $cache = $this->createMock(Cache::class);
-        assert($cache instanceof Cache);
-
-        $region = new DefaultRegion('foo', $cache);
-
-        $this->expectException(BadMethodCallException::class);
-
-        $region->evictAll();
-    }
-
     public function testGetMulti(): void
     {
         $key1   = new CacheKeyMock('key.1');
@@ -104,6 +87,28 @@ class DefaultRegionTest extends AbstractRegionTest
         self::assertEquals($value2, $actual[1]);
     }
 
+    public function testGetMultiPreservesOrderAndKeys(): void
+    {
+        $key1   = new CacheKeyMock('key.1');
+        $value1 = new CacheEntryMock(['id' => 1]);
+
+        $key2   = new CacheKeyMock('key.2');
+        $value2 = new CacheEntryMock(['id' => 2]);
+
+        $this->region->put($key1, $value1);
+        $this->region->put($key2, $value2);
+
+        $actual = array_map(
+            'iterator_to_array',
+            $this->region->getMultiple(new CollectionCacheEntry(['one' => $key1, 'two' => $key2]))
+        );
+
+        self::assertSame([
+            'one' => ['id' => 1],
+            'two' => ['id' => 2],
+        ], $actual);
+    }
+
     /**
      * @test
      * @group GH7266
@@ -111,7 +116,11 @@ class DefaultRegionTest extends AbstractRegionTest
     public function corruptedDataDoesNotLeakIntoApplicationWhenGettingSingleEntry(): void
     {
         $key1 = new CacheKeyMock('key.1');
-        $this->cache->save($this->region->getName() . '_' . $key1->hash, 'a-very-invalid-value');
+        $this->cacheItemPool->save(
+            $this->cacheItemPool
+                ->getItem('DC2_REGION_' . $this->region->getName() . '_' . $key1->hash)
+                ->set('a-very-invalid-value')
+        );
 
         self::assertTrue($this->region->contains($key1));
         self::assertNull($this->region->get($key1));
@@ -124,78 +133,13 @@ class DefaultRegionTest extends AbstractRegionTest
     public function corruptedDataDoesNotLeakIntoApplicationWhenGettingMultipleEntries(): void
     {
         $key1 = new CacheKeyMock('key.1');
-        $this->cache->save($this->region->getName() . '_' . $key1->hash, 'a-very-invalid-value');
+        $this->cacheItemPool->save(
+            $this->cacheItemPool
+                ->getItem('DC2_REGION_' . $this->region->getName() . '_' . $key1->hash)
+                ->set('a-very-invalid-value')
+        );
 
         self::assertTrue($this->region->contains($key1));
         self::assertNull($this->region->getMultiple(new CollectionCacheEntry([$key1])));
-    }
-}
-
-/**
- * Cache provider that offers child cache items (sharing the same array)
- *
- * Declared as a different class for readability purposes and kept in this file
- * to keep its monstrosity contained.
- *
- * @internal
- */
-final class SharedArrayCache extends ArrayAdapter
-{
-    public function createChild(): CacheItemPoolInterface
-    {
-        return new class ($this) implements CacheItemPoolInterface {
-            /** @var CacheItemPoolInterface */
-            private $parent;
-
-            public function __construct(CacheItemPoolInterface $parent)
-            {
-                $this->parent = $parent;
-            }
-
-            public function getItem($key): CacheItemInterface
-            {
-                return $this->parent->getItem($key);
-            }
-
-            public function getItems(array $keys = []): iterable
-            {
-                return $this->parent->getItems($keys);
-            }
-
-            public function hasItem($key): bool
-            {
-                return $this->parent->hasItem($key);
-            }
-
-            public function clear(): bool
-            {
-                return $this->parent->clear();
-            }
-
-            public function deleteItem($key): bool
-            {
-                return $this->parent->deleteItem($key);
-            }
-
-            public function deleteItems(array $keys): bool
-            {
-                return $this->parent->deleteItems($keys);
-            }
-
-            public function save(CacheItemInterface $item): bool
-            {
-                return $this->parent->save($item);
-            }
-
-            public function saveDeferred(CacheItemInterface $item): bool
-            {
-                return $this->parent->saveDeferred($item);
-            }
-
-            public function commit(): bool
-            {
-                return $this->parent->commit();
-            }
-        };
     }
 }

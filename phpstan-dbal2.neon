@@ -41,3 +41,6 @@ parameters:
             message: "#^Parameter \\#3 \\$length of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getSubstringExpression\\(\\) expects int\\|null, string\\|null given\\.$#"
             count: 1
             path: lib/Doctrine/ORM/Query/AST/Functions/SubstringFunction.php
+
+        # Symfony cache supports passing a key prefix to the clear method.
+        - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'

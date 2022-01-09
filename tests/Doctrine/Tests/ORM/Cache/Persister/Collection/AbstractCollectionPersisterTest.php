@@ -60,7 +60,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
 
     protected function setUp(): void
     {
-        $this->getSharedSecondLevelCacheDriverImpl()->flushAll();
+        $this->getSharedSecondLevelCache()->clear();
         $this->enableSecondLevelCache();
         parent::setUp();
 

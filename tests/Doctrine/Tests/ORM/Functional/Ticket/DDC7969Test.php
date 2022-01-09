@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace tests\Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Cache\Region\DefaultMultiGetRegion;
 use Doctrine\Tests\Models\Cache\Attraction;
 use Doctrine\Tests\Models\Cache\Bar;
 use Doctrine\Tests\ORM\Functional\SecondLevelCacheAbstractTest;
@@ -21,11 +20,7 @@ class DDC7969Test extends SecondLevelCacheAbstractTest
         $this->loadFixturesAttractions();
 
         // Entities are already cached due to fixtures - hence flush before testing
-        $region = $this->cache->getEntityCacheRegion(Attraction::class);
-
-        if ($region instanceof DefaultMultiGetRegion) {
-            $region->getCache()->flushAll();
-        }
+        $this->cache->getEntityCacheRegion(Attraction::class)->evictAll();
 
         $bar = $this->attractions[0];
         assert($bar instanceof Bar);

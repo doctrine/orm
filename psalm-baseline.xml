@@ -78,9 +78,6 @@
     <NullableReturnStatement occurrences="1">
       <code>$this-&gt;fileLockRegionDirectory</code>
     </NullableReturnStatement>
-    <ParamNameMismatch occurrences="1">
-      <code>$em</code>
-    </ParamNameMismatch>
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(string) $fileLockRegionDirectory</code>
     </RedundantCastGivenDocblockType>
@@ -283,22 +280,6 @@
       <code>lock</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/Region/DefaultMultiGetRegion.php">
-    <DeprecatedClass occurrences="2">
-      <code>MultiGetCache</code>
-      <code>MultiGetCache|Cache</code>
-    </DeprecatedClass>
-    <MissingParamType occurrences="2">
-      <code>$lifetime</code>
-      <code>$name</code>
-    </MissingParamType>
-    <NonInvariantDocblockPropertyType occurrences="1">
-      <code>$cache</code>
-    </NonInvariantDocblockPropertyType>
-    <PossiblyUndefinedMethod occurrences="1">
-      <code>fetchMultiple</code>
-    </PossiblyUndefinedMethod>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/Region/DefaultRegion.php">
     <LessSpecificReturnStatement occurrences="1">
       <code>$this-&gt;cache</code>
@@ -306,10 +287,6 @@
     <MoreSpecificReturnType occurrences="1">
       <code>CacheProvider</code>
     </MoreSpecificReturnType>
-    <RedundantCastGivenDocblockType occurrences="2">
-      <code>(int) $lifetime</code>
-      <code>(string) $name</code>
-    </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Cache/Region/UpdateTimestampCache.php">
     <MissingReturnType occurrences="1">
@@ -3001,11 +2978,17 @@
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
+    <PossiblyNullReference occurrences="1">
+      <code>evictAll</code>
+    </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/EntityRegionCommand.php">
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
+    <PossiblyNullReference occurrences="1">
+      <code>evictAll</code>
+    </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/MetadataCommand.php">
     <MissingReturnType occurrences="1">
