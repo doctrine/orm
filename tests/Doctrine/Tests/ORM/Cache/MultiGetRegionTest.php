@@ -14,7 +14,7 @@ class MultiGetRegionTest extends AbstractRegionTest
 {
     protected function createRegion(): Region
     {
-        return new DefaultMultiGetRegion('default.region.test', $this->cache);
+        return new DefaultMultiGetRegion('default.region.test', $this->cacheItemPool);
     }
 
     public function testGetMulti(): void
@@ -47,7 +47,11 @@ class MultiGetRegionTest extends AbstractRegionTest
     public function corruptedDataDoesNotLeakIntoApplication(): void
     {
         $key1 = new CacheKeyMock('key.1');
-        $this->cache->save($this->region->getName() . '_' . $key1->hash, 'a-very-invalid-value');
+        $this->cacheItemPool->save(
+            $this->cacheItemPool
+                ->getItem('DC2_REGION_' . $this->region->getName() . '_' . $key1->hash)
+                ->set('a-very-invalid-value')
+        );
 
         self::assertTrue($this->region->contains($key1));
         self::assertNull($this->region->getMultiple(new CollectionCacheEntry([$key1])));

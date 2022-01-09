@@ -21,6 +21,7 @@ use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use Psr\Cache\CacheItemPoolInterface;
 
@@ -208,6 +209,8 @@ final class Query extends AbstractQuery
 
     /**
      * {@inheritdoc}
+     *
+     * @return ResultSetMapping
      */
     protected function getResultSetMapping()
     {
@@ -439,8 +442,6 @@ final class Query extends AbstractQuery
         $originalValue = $parameter->getValue();
         $value         = $originalValue;
         $rsm           = $this->getResultSetMapping();
-
-        assert($rsm !== null);
 
         if ($value instanceof ClassMetadata && isset($rsm->metadataParameterMapping[$key])) {
             $value = $value->getMetadataValue($rsm->metadataParameterMapping[$key]);

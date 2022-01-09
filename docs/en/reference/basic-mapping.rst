@@ -172,6 +172,8 @@ list:
   unique key.
 - ``nullable``: (optional, default FALSE) Whether the database
   column is nullable.
+- ``enumType``: (optional, requires PHP 8.1 and ORM 2.11) The PHP enum type
+  name to convert the database value into.
 - ``precision``: (optional, default 0) The precision for a decimal
   (exact numeric) column (applies only for decimal column),
   which is the maximum number of digits that are stored for the values.
@@ -205,6 +207,9 @@ Additionally, Doctrine will map PHP types to ``type`` attribute as follows:
 - ``float``: ``float``
 - ``int``: ``integer``
 - ``string`` or any other type: ``string``
+
+As of version 2.11 Doctrine can also automatically map typed properties using a
+PHP 8.1 enum to set the right ``type`` and ``enumType``.
 
 .. _reference-mapping-types:
 

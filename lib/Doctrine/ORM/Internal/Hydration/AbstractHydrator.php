@@ -169,7 +169,7 @@ abstract class AbstractHydrator
      *
      * @return mixed[]
      */
-    public function hydrateAll(Result $stmt, object $resultSetMapping, array $hints = [])
+    public function hydrateAll(Result $stmt, ResultSetMapping $resultSetMapping, array $hints = [])
     {
         $this->_stmt  = $stmt;
         $this->_rsm   = $resultSetMapping;

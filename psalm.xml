@@ -31,6 +31,11 @@
                 <referencedMethod name="Doctrine\ORM\Configuration::ensureProductionSettings"/>
             </errorLevel>
         </DeprecatedMethod>
+        <DeprecatedProperty>
+            <errorLevel type="suppress">
+                <referencedProperty name="Doctrine\ORM\Cache\Region\DefaultRegion::$cache"/>
+            </errorLevel>
+        </DeprecatedProperty>
         <DocblockTypeContradiction>
             <errorLevel type="suppress">
                 <!-- We're catching invalid input here. -->
@@ -80,6 +85,12 @@
                 <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
             </errorLevel>
         </RedundantCastGivenDocblockType>
+        <TooManyArguments>
+            <errorLevel type="suppress">
+                <!-- Symfony cache supports passing a key prefix to the clear method. -->
+                <referencedFunction name="Psr\Cache\CacheItemPoolInterface::clear"/>
+            </errorLevel>
+        </TooManyArguments>
         <TypeDoesNotContainType>
             <errorLevel type="suppress">
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>

@@ -107,6 +107,31 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.11
 
+## PSR-6-based second level cache
+
+The second level cache has been reworked to consume a PSR-6 cache. Using a
+Doctrine Cache instance is deprecated.
+
+* `DefaultCacheFactory`: The constructor expects a PSR-6 cache item pool as
+  second argument now.
+* `DefaultMultiGetRegion`: This class is deprecated in favor of `DefaultRegion`.
+* `DefaultRegion`:
+  * The constructor expects a PSR-6 cache item pool as second argument now.
+  * The protected `$cache` property is deprecated.
+  * The properties `$name` and `$lifetime` as well as the constant
+   `REGION_KEY_SEPARATOR` and the method `getCacheEntryKey()` are flagged as
+   `@internal` now. They all will become `private` in 3.0.
+  * The method `getCache()` is deprecated without replacement.
+
+## Deprecated: `Doctrine\ORM\Mapping\Driver\PHPDriver`
+
+Use `StaticPHPDriver` instead when you want to programmatically configure
+entity metadata.
+
+You can convert mappings with the `orm:convert-mapping` command or more simply
+in this case, `include` the metadata file from the `loadMetadata` static method
+used by the `StaticPHPDriver`.
+
 ## Deprecated: `Setup::registerAutoloadDirectory()`
 
 Use Composer's autoloader instead.

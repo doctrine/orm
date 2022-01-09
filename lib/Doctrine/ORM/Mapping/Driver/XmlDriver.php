@@ -800,6 +800,7 @@ class XmlDriver extends FileDriver
       *                   scale?: int,
       *                   unique?: bool,
       *                   nullable?: bool,
+      *                   enumType?: string,
       *                   version?: bool,
       *                   columnDefinition?: string,
       *                   options?: array
@@ -845,6 +846,10 @@ class XmlDriver extends FileDriver
 
         if (isset($fieldMapping['column-definition'])) {
             $mapping['columnDefinition'] = (string) $fieldMapping['column-definition'];
+        }
+
+        if (isset($fieldMapping['enum-type'])) {
+            $mapping['enumType'] = (string) $fieldMapping['enum-type'];
         }
 
         if (isset($fieldMapping->options)) {

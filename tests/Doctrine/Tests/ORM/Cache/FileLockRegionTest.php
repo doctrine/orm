@@ -58,7 +58,7 @@ class FileLockRegionTest extends AbstractRegionTest
     {
         $this->directory = sys_get_temp_dir() . '/doctrine_lock_' . uniqid();
 
-        $region = new DefaultRegion('concurren_region_test', $this->cache);
+        $region = new DefaultRegion('concurren_region_test', $this->cacheItemPool);
 
         return new FileLockRegion($region, $this->directory, 60);
     }

@@ -614,6 +614,7 @@ class AttributeDriver extends AnnotationDriver
      *                   unique: bool,
      *                   nullable: bool,
      *                   precision: int,
+     *                   enumType?: class-string,
      *                   options?: mixed[],
      *                   columnName?: string,
      *                   columnDefinition?: string
@@ -641,6 +642,10 @@ class AttributeDriver extends AnnotationDriver
 
         if (isset($column->columnDefinition)) {
             $mapping['columnDefinition'] = $column->columnDefinition;
+        }
+
+        if ($column->enumType) {
+            $mapping['enumType'] = $column->enumType;
         }
 
         return $mapping;

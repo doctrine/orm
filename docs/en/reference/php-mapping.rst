@@ -249,5 +249,3 @@ themselves.
 -  ``setIdentifierValues($entity, $id)``
 -  ``setFieldValue($entity, $field, $value)``
 -  ``getFieldValue($entity, $field)``
-
-

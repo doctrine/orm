@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use BackedEnum;
 use BadMethodCallException;
 use DateInterval;
 use DateTime;
@@ -22,6 +23,7 @@ use Doctrine\Persistence\Mapping\ReflectionService;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
+use ReflectionEnum;
 use ReflectionNamedType;
 use ReflectionProperty;
 use RuntimeException;
@@ -37,6 +39,7 @@ use function array_values;
 use function assert;
 use function class_exists;
 use function count;
+use function enum_exists;
 use function explode;
 use function gettype;
 use function in_array;
@@ -51,6 +54,8 @@ use function strpos;
 use function strtolower;
 use function trait_exists;
 use function trim;
+
+use const PHP_VERSION_ID;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -71,10 +76,11 @@ use function trim;
  * @psalm-type FieldMapping = array{
  *      type: string,
  *      fieldName: string,
- *      columnName?: string,
+ *      columnName: string,
  *      length?: int,
  *      id?: bool,
  *      nullable?: bool,
+ *      enumType?: class-string<BackedEnum>,
  *      columnDefinition?: string,
  *      precision?: int,
  *      scale?: int,
@@ -1006,6 +1012,13 @@ class ClassMetadataInfo implements ClassMetadata
             $this->reflFields[$field] = isset($mapping['declared'])
                 ? $reflService->getAccessibleProperty($mapping['declared'], $field)
                 : $reflService->getAccessibleProperty($this->name, $field);
+
+            if (isset($mapping['enumType']) && $this->reflFields[$field] !== null) {
+                $this->reflFields[$field] = new ReflectionEnumProperty(
+                    $this->reflFields[$field],
+                    $mapping['enumType']
+                );
+            }
         }
 
         foreach ($this->associationMappings as $field => $mapping) {
@@ -1448,6 +1461,15 @@ class ClassMetadataInfo implements ClassMetadata
                 ! isset($mapping['type'])
                 && ($type instanceof ReflectionNamedType)
             ) {
+                if (PHP_VERSION_ID >= 80100 && ! $type->isBuiltin() && enum_exists($type->getName(), false)) {
+                    $mapping['enumType'] = $type->getName();
+
+                    $reflection = new ReflectionEnum($type->getName());
+                    $type       = $reflection->getBackingType();
+
+                    assert($type instanceof ReflectionNamedType);
+                }
+
                 switch ($type->getName()) {
                     case DateInterval::class:
                         $mapping['type'] = Types::DATEINTERVAL;
@@ -1567,6 +1589,16 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             $mapping['requireSQLConversion'] = true;
+        }
+
+        if (isset($mapping['enumType'])) {
+            if (PHP_VERSION_ID < 80100) {
+                throw MappingException::enumsRequirePhp81($this->name, $mapping['fieldName']);
+            }
+
+            if (! enum_exists($mapping['enumType'])) {
+                throw MappingException::nonEnumTypeMapped($this->name, $mapping['fieldName'], $mapping['enumType']);
+            }
         }
 
         return $mapping;

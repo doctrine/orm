@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests;
 
 use Doctrine\Common\Annotations;
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -54,8 +52,8 @@ abstract class OrmTestCase extends DoctrineTestCase
     /** @var StatisticsCacheLogger */
     protected $secondLevelCacheLogger;
 
-    /** @var Cache|null */
-    protected $secondLevelCacheDriverImpl = null;
+    /** @var CacheItemPoolInterface|null */
+    protected $secondLevelCache = null;
 
     protected function createAnnotationDriver(array $paths = []): AnnotationDriver
     {
@@ -99,8 +97,10 @@ abstract class OrmTestCase extends DoctrineTestCase
 
         if ($this->isSecondLevelCacheEnabled) {
             $cacheConfig = new CacheConfiguration();
-            $cache       = $this->getSharedSecondLevelCacheDriverImpl();
-            $factory     = new DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cache);
+            $factory     = new DefaultCacheFactory(
+                $cacheConfig->getRegionsConfiguration(),
+                $this->getSharedSecondLevelCache()
+            );
 
             $this->secondLevelCacheFactory = $factory;
 
@@ -149,12 +149,9 @@ abstract class OrmTestCase extends DoctrineTestCase
         return self::$queryCache;
     }
 
-    protected function getSharedSecondLevelCacheDriverImpl(): Cache
+    protected function getSharedSecondLevelCache(): CacheItemPoolInterface
     {
-        if ($this->secondLevelCacheDriverImpl === null) {
-            $this->secondLevelCacheDriverImpl = DoctrineProvider::wrap(new ArrayAdapter());
-        }
-
-        return $this->secondLevelCacheDriverImpl;
+        return $this->secondLevelCache
+            ?? $this->secondLevelCache = new ArrayAdapter();
     }
 }

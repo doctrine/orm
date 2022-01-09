@@ -54,8 +54,6 @@ jobs:
       matrix:
         php-version:
           - "8.1"
-        dbal-version:
-          - "default"
 
     steps:
       - name: "Checkout code"
@@ -66,10 +64,6 @@ jobs:
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
-
-      - name: "Require specific DBAL version"
-        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
-        if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"

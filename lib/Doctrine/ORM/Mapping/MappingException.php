@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use BackedEnum;
 use Doctrine\ORM\Exception\ORMException;
 use Exception;
 use ReflectionException;
+use ValueError;
 
 use function array_keys;
 use function array_map;
@@ -953,5 +955,45 @@ class MappingException extends Exception implements ORMException
             $expectdType,
             get_debug_type($givenValue)
         ));
+    }
+
+    public static function enumsRequirePhp81(string $className, string $fieldName): self
+    {
+        return new self(sprintf('Enum types require PHP 8.1 in %s::$%s', $className, $fieldName));
+    }
+
+    public static function nonEnumTypeMapped(string $className, string $fieldName, string $enumType): self
+    {
+        return new self(sprintf(
+            'Attempting to map non-enum type %s as enum in entity %s::$%s',
+            $enumType,
+            $className,
+            $fieldName
+        ));
+    }
+
+    /**
+     * @param class-string             $className
+     * @param class-string<BackedEnum> $enumType
+     */
+    public static function invalidEnumValue(
+        string $className,
+        string $fieldName,
+        string $value,
+        string $enumType,
+        ValueError $previous
+    ): self {
+        return new self(sprintf(
+            <<<'EXCEPTION'
+Context: Trying to hydrate enum property "%s::$%s"
+Problem: Case "%s" is not listed in enum "%s"
+Solution: Either add the case to the enum type or migrate the database column to use another case of the enum
+EXCEPTION
+            ,
+            $className,
+            $fieldName,
+            $value,
+            $enumType
+        ), 0, $previous);
     }
 }

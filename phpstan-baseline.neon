@@ -96,11 +96,6 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/Persister/Entity/ReadWriteCachedEntityPersister.php
 
 		-
-			message: "#^PHPDoc type Doctrine\\\\Common\\\\Cache\\\\Cache\\|Doctrine\\\\Common\\\\Cache\\\\MultiGetCache of property Doctrine\\\\ORM\\\\Cache\\\\Region\\\\DefaultMultiGetRegion\\:\\:\\$cache is not covariant with PHPDoc type Doctrine\\\\Common\\\\Cache\\\\Cache of overridden property Doctrine\\\\ORM\\\\Cache\\\\Region\\\\DefaultRegion\\:\\:\\$cache\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Region/DefaultMultiGetRegion.php
-
-		-
 			message: "#^Method Doctrine\\\\ORM\\\\Cache\\\\Region\\\\DefaultRegion\\:\\:getCache\\(\\) should return Doctrine\\\\Common\\\\Cache\\\\CacheProvider but returns Doctrine\\\\Common\\\\Cache\\\\Cache\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Region/DefaultRegion.php
@@ -1574,4 +1569,3 @@ parameters:
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$subClasses\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Utility/HierarchyDiscriminatorResolver.php
-
