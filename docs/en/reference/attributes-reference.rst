@@ -260,6 +260,15 @@ Examples:
     )]
     protected $loginCount;
 
+    // MySQL example: full_name char(41) GENERATED ALWAYS AS (concat(firstname,' ',lastname)),
+    #[Column(
+        type: "string",
+        name: "user_fullname",
+        insertable: false,
+        updatable: false
+    )]
+    protected $fullname;
+
 .. _attrref_cache:
 
 #[Cache]

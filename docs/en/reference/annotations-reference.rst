@@ -208,6 +208,7 @@ Examples:
     /**
      * Generated column
      * @Column(type="string", name="user_fullname", insertable=false, updatable=false)
+     * MySQL example: full_name char(41) GENERATED ALWAYS AS (concat(firstname,' ',lastname)),
      */
     protected $fullname;
 
