@@ -1,5 +1,15 @@
 # Upgrade to 3.0
 
+## BC BREAK: Remove cache settings inspection
+
+Doctrine does not provide its own cache implementation anymore and relies on
+the PSR-6 standard instead. As a consequence, we cannot determine anymore
+whether a given cache adapter is suitable for a production environment.
+Because of that, functionality that aims to do so has been removed:
+
+* `Configuration::ensureProductionSettings()`
+* the `orm:ensure-production-settings` console command
+
 ## BC BREAK: PSR-6-based second level cache
 
 The second level cache has been reworked to consume a PSR-6 cache. Using a
@@ -45,11 +55,6 @@ _before_ upgrading to 3.0:
 ```sh
 php doctrine orm:convert-mapping xml /path/to/mapping-path-converted-to-xml
 ```
-
-## BC BREAK: Remove the `orm:ensure-production-settings` console command
-
-The `orm:ensure-production-settings` console command and its implementation
-`Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand` have been removed.
 
 ## BC BREAK: Remove code generators and related console commands
 

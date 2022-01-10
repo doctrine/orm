@@ -101,11 +101,6 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/TimestampQueryCacheValidator.php
 
 		-
-			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\ArrayCache not found\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/Configuration.php
-
-		-
 			message: "#^Parameter \\#2 \\$cache of class Doctrine\\\\Common\\\\Annotations\\\\CachedReader constructor expects Doctrine\\\\Common\\\\Cache\\\\Cache, Doctrine\\\\Common\\\\Cache\\\\ArrayCache given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Configuration.php
