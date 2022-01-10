@@ -1,5 +1,20 @@
 # Upgrade to 3.0
 
+## BC BREAK: Remove support for Doctrine Cache
+
+The Doctrine Cache library is not supported anymore. The following methods
+have been removed from `Doctrine\ORM\Configuration`:
+
+* `getQueryCacheImpl()`
+* `setQueryCacheImpl()`
+* `getHydrationCacheImpl()`
+* `setHydrationCacheImpl()`
+* `getMetadataCacheImpl()`
+* `setMetadataCacheImpl()`
+
+The methods have been replaced by PSR-6 compatible counterparts
+(just strip the `Impl` suffix from the old name to get the new one).
+
 ## BC BREAK: Remove `Doctrine\ORM\Configuration::newDefaultAnnotationDriver`
 
 This functionality has been moved to the new `DoctrineSetup` class. Call

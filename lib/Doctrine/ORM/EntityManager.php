@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
@@ -805,22 +804,9 @@ use function ltrim;
     {
         $metadataCache = $this->config->getMetadataCache();
         if (! $metadataCache) {
-            $this->configureLegacyMetadataCache();
-
             return;
         }
 
         $this->metadataFactory->setCache($metadataCache);
-    }
-
-    private function configureLegacyMetadataCache(): void
-    {
-        $metadataCache = $this->config->getMetadataCacheImpl();
-        if (! $metadataCache) {
-            return;
-        }
-
-        // Wrap doctrine/cache to provide PSR-6 interface
-        $this->metadataFactory->setCache(CacheAdapter::wrap($metadataCache));
     }
 }

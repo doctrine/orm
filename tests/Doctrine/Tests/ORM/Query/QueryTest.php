@@ -6,8 +6,6 @@ namespace Doctrine\Tests\ORM\Query;
 
 use DateTime;
 use DateTimeImmutable;
-use Doctrine\Common\Cache\Psr6\CacheAdapter;
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Types;
@@ -137,17 +135,6 @@ class QueryTest extends OrmTestCase
         self::assertEquals(['foo' => 'bar', 'bar' => 'baz'], $q->getHints());
         self::assertTrue($q->hasHint('foo'));
         self::assertFalse($q->hasHint('barFooBaz'));
-    }
-
-    /**
-     * @group DDC-1588
-     */
-    public function testQueryDefaultResultCacheLegacy(): void
-    {
-        $this->entityManager->getConfiguration()->setResultCacheImpl(DoctrineProvider::wrap(new ArrayAdapter()));
-        $q = $this->entityManager->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
-        $q->enableResultCache();
-        self::assertSame($this->entityManager->getConfiguration()->getResultCache(), CacheAdapter::wrap($q->getQueryCacheProfile()->getResultCacheDriver()));
     }
 
     public function testToIterableWithNoDistinctAndWrongSelectClause(): void

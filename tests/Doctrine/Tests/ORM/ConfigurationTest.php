@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache\CacheConfiguration;
@@ -89,32 +87,12 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->getEntityNamespace('NonExistingNamespace');
     }
 
-    public function testSetGetQueryCacheImpl(): void
-    {
-        self::assertNull($this->configuration->getQueryCacheImpl()); // defaults
-        self::assertNull($this->configuration->getQueryCache()); // defaults
-        $queryCacheImpl = $this->createMock(Cache::class);
-        $this->configuration->setQueryCacheImpl($queryCacheImpl);
-        self::assertSame($queryCacheImpl, $this->configuration->getQueryCacheImpl());
-        self::assertNotNull($this->configuration->getQueryCache());
-    }
-
     public function testSetGetQueryCache(): void
     {
         self::assertNull($this->configuration->getQueryCache()); // defaults
         $queryCache = $this->createMock(CacheItemPoolInterface::class);
         $this->configuration->setQueryCache($queryCache);
         self::assertSame($queryCache, $this->configuration->getQueryCache());
-        self::assertSame($queryCache, CacheAdapter::wrap($this->configuration->getQueryCacheImpl()));
-    }
-
-    public function testSetGetHydrationCacheImpl(): void
-    {
-        self::assertNull($this->configuration->getHydrationCacheImpl()); // defaults
-        $hydrationCacheImpl = $this->createMock(Cache::class);
-        $this->configuration->setHydrationCacheImpl($hydrationCacheImpl);
-        self::assertSame($hydrationCacheImpl, $this->configuration->getHydrationCacheImpl());
-        self::assertNotNull($this->configuration->getHydrationCache());
     }
 
     public function testSetGetHydrationCache(): void
@@ -123,16 +101,6 @@ class ConfigurationTest extends DoctrineTestCase
         $hydrationCache = $this->createStub(CacheItemPoolInterface::class);
         $this->configuration->setHydrationCache($hydrationCache);
         self::assertSame($hydrationCache, $this->configuration->getHydrationCache());
-        self::assertSame($hydrationCache, CacheAdapter::wrap($this->configuration->getHydrationCacheImpl()));
-    }
-
-    public function testSetGetMetadataCacheImpl(): void
-    {
-        self::assertNull($this->configuration->getMetadataCacheImpl()); // defaults
-        $queryCacheImpl = $this->createMock(Cache::class);
-        $this->configuration->setMetadataCacheImpl($queryCacheImpl);
-        self::assertSame($queryCacheImpl, $this->configuration->getMetadataCacheImpl());
-        self::assertNotNull($this->configuration->getMetadataCache());
     }
 
     public function testSetGetMetadataCache(): void
@@ -141,7 +109,6 @@ class ConfigurationTest extends DoctrineTestCase
         $cache = $this->createStub(CacheItemPoolInterface::class);
         $this->configuration->setMetadataCache($cache);
         self::assertSame($cache, $this->configuration->getMetadataCache());
-        self::assertSame($cache, CacheAdapter::wrap($this->configuration->getMetadataCacheImpl()));
     }
 
     public function testAddGetCustomStringFunction(): void

@@ -24,7 +24,6 @@
         "composer-runtime-api": "^2",
         "ext-ctype": "*",
         "ext-pdo": "*",
-        "doctrine/cache": "^1.12.1 || ^2.1.1",
         "doctrine/collections": "^1.5",
         "doctrine/common": "^3.0.3",
         "doctrine/dbal": "^3.3",

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\NativeQuery;
@@ -344,7 +343,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
     private static function assertCacheHasItem(string $key, CacheItemPoolInterface $cache): void
     {
         self::assertTrue(
-            $cache->hasItem($key) || DoctrineProvider::wrap($cache)->contains($key),
+            $cache->hasItem($key),
             sprintf('Failed asserting that a given cache contains the key "%s".', $key)
         );
     }
@@ -357,7 +356,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
     private static function assertCacheDoesNotHaveItem(string $key, CacheItemPoolInterface $cache): void
     {
         self::assertFalse(
-            $cache->hasItem($key) || DoctrineProvider::wrap($cache)->contains($key),
+            $cache->hasItem($key),
             sprintf('Failed asserting that a given cache does not contain the key "%s".', $key)
         );
     }
