@@ -301,7 +301,7 @@ class BasicEntityPersister implements EntityPersister
      * by the preceding INSERT statement and assigns it back in to the
      * entities version field if the given entity is versioned.
      * Also retrieves values of columns marked as 'non insertable' and / or
-     * 'not updatetable' and assigns them back to the entities corresponding fields.
+     * 'not updatable' and assigns them back to the entities corresponding fields.
      *
      * @param object  $entity
      * @param mixed[] $id
@@ -623,7 +623,7 @@ class BasicEntityPersister implements EntityPersister
      * @return mixed[][] The prepared data.
      * @psalm-return array<string, array<array-key, mixed|null>>
      */
-    protected function prepareUpdateData($entity, $isInsert = false)
+    protected function prepareUpdateData($entity, bool $isInsert = false)
     {
         $versionField = null;
         $result       = [];

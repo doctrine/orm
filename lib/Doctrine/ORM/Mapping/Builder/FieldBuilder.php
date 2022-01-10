@@ -115,7 +115,7 @@ class FieldBuilder
      *
      * @return $this
      */
-    public function insertable(bool $flag = true)
+    public function insertable(bool $flag = true): self
     {
         if (! $flag) {
             $this->mapping['notInsertable'] = true;
@@ -129,7 +129,7 @@ class FieldBuilder
      *
      * @return $this
      */
-    public function updatable(bool $flag = true)
+    public function updatable(bool $flag = true): self
     {
         if (! $flag) {
             $this->mapping['notUpdatable'] = true;
