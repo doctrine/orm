@@ -228,8 +228,7 @@ These methods have been deprecated:
 ## Deprecated `Doctrine\ORM\Version`
 
 The `Doctrine\ORM\Version` class is now deprecated and will be removed in Doctrine ORM 3.0:
-please refrain from checking the ORM version at runtime or use
-[ocramius/package-versions](https://github.com/Ocramius/PackageVersions/).
+please refrain from checking the ORM version at runtime or use Composer's [runtime API](https://getcomposer.org/doc/07-runtime.md#knowing-whether-package-x-is-installed-in-version-y).
 
 ## Deprecated `EntityManager#merge()` method
 
