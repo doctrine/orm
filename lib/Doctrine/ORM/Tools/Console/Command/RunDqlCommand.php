@@ -27,10 +27,7 @@ use function strtoupper;
  */
 class RunDqlCommand extends AbstractEntityManagerCommand
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('orm:run-dql')
              ->setDescription('Executes arbitrary DQL directly from the command line')
@@ -44,12 +41,7 @@ class RunDqlCommand extends AbstractEntityManagerCommand
              ->setHelp('Executes arbitrary DQL directly from the command line.');
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);
 

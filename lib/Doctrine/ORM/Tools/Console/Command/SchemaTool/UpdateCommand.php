@@ -24,10 +24,7 @@ class UpdateCommand extends AbstractCommand
     /** @var string */
     protected $name = 'orm:schema-tool:update';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName($this->name)
              ->setDescription('Executes (or dumps) the SQL needed to update the database schema to match the current mapping metadata')
@@ -71,7 +68,7 @@ EOT
     /**
      * {@inheritdoc}
      */
-    protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas, SymfonyStyle $ui)
+    protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas, SymfonyStyle $ui): int
     {
         // Defining if update is complete or not (--complete not defined means $saveMode = true)
         $saveMode = ! $input->getOption('complete');

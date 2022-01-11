@@ -19,10 +19,7 @@ use function sprintf;
  */
 class ValidateSchemaCommand extends AbstractEntityManagerCommand
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('orm:validate-schema')
              ->setDescription('Validate the mapping files')
@@ -32,12 +29,7 @@ class ValidateSchemaCommand extends AbstractEntityManagerCommand
              ->setHelp('Validate that the mapping files are correct and in sync with the database.');
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);
 

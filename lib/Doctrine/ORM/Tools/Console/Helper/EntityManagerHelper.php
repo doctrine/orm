@@ -16,10 +16,8 @@ class EntityManagerHelper extends Helper
 {
     /**
      * Doctrine ORM EntityManagerInterface.
-     *
-     * @var EntityManagerInterface
      */
-    protected $_em;
+    protected EntityManagerInterface $_em;
 
     public function __construct(EntityManagerInterface $em)
     {
@@ -28,20 +26,13 @@ class EntityManagerHelper extends Helper
 
     /**
      * Retrieves Doctrine ORM EntityManager.
-     *
-     * @return EntityManagerInterface
      */
-    public function getEntityManager()
+    public function getEntityManager(): EntityManagerInterface
     {
         return $this->_em;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return 'entityManager';
     }
