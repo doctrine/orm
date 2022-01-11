@@ -31,10 +31,9 @@ final class ConsoleRunner
     /**
      * Runs console with the given helper set.
      *
-     * @param HelperSet|EntityManagerProvider $helperSetOrProvider
-     * @param SymfonyCommand[]                $commands
+     * @param SymfonyCommand[] $commands
      */
-    public static function run($helperSetOrProvider, array $commands = []): void
+    public static function run(HelperSet|EntityManagerProvider $helperSetOrProvider, array $commands = []): void
     {
         $cli = self::createApplication($helperSetOrProvider, $commands);
         $cli->run();
@@ -44,13 +43,14 @@ final class ConsoleRunner
      * Creates a console application with the given helperset and
      * optional commands.
      *
-     * @param HelperSet|EntityManagerProvider $helperSetOrProvider
-     * @param SymfonyCommand[]                $commands
+     * @param SymfonyCommand[] $commands
      *
      * @throws OutOfBoundsException
      */
-    public static function createApplication($helperSetOrProvider, array $commands = []): Application
-    {
+    public static function createApplication(
+        HelperSet|EntityManagerProvider $helperSetOrProvider,
+        array $commands = []
+    ): Application {
         $cli = new Application('Doctrine Command Line Interface', Versions::getVersion('doctrine/orm'));
         $cli->setCatchExceptions(true);
 

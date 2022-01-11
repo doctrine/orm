@@ -2775,55 +2775,30 @@
     </MoreSpecificReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/CollectionRegionCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
     <PossiblyNullReference occurrences="1">
       <code>evictAll</code>
     </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/EntityRegionCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
     <PossiblyNullReference occurrences="1">
       <code>evictAll</code>
     </PossiblyNullReference>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/MetadataCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryCommand.php">
     <DeprecatedMethod occurrences="1">
       <code>getQueryCacheImpl</code>
     </DeprecatedMethod>
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryRegionCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php">
     <DeprecatedMethod occurrences="1">
       <code>getResultCacheImpl</code>
     </DeprecatedMethod>
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/GenerateProxiesCommand.php">
     <DeprecatedMethod occurrences="2">
       <code>getProxyDir</code>
       <code>getProxyDir</code>
     </DeprecatedMethod>
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
     <NoInterfaceProperties occurrences="1">
       <code>$metadata-&gt;name</code>
     </NoInterfaceProperties>
@@ -2832,9 +2807,6 @@
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/InfoCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
     <PossiblyNullReference occurrences="1">
       <code>getAllClassNames</code>
     </PossiblyNullReference>
@@ -2851,45 +2823,18 @@
     <DeprecatedClass occurrences="1">
       <code>Debug::dump($resultSet, (int) $input-&gt;getOption('depth'), true, false)</code>
     </DeprecatedClass>
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/AbstractCommand.php">
-    <InvalidNullableReturnType occurrences="1">
-      <code>int</code>
-    </InvalidNullableReturnType>
-    <NullableReturnStatement occurrences="1">
-      <code>$this-&gt;executeSchemaCommand($input, $output, new SchemaTool($em), $metadatas, $ui)</code>
-    </NullableReturnStatement>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/CreateCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/DropCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
     <PossiblyNullArgument occurrences="2">
       <code>$this-&gt;getName()</code>
       <code>$this-&gt;getName()</code>
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/UpdateCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
     <PossiblyNullArgument occurrences="2">
       <code>$this-&gt;getName()</code>
       <code>$this-&gt;getName()</code>
     </PossiblyNullArgument>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/ValidateSchemaCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php">
     <DeprecatedClass occurrences="1">

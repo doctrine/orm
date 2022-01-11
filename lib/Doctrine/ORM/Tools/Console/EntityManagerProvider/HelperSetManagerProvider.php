@@ -14,13 +14,8 @@ use function assert;
 
 final class HelperSetManagerProvider implements EntityManagerProvider
 {
-    /** @var HelperSet */
-    private $helperSet;
-
-    public function __construct(HelperSet $helperSet)
+    public function __construct(private HelperSet $helperSet)
     {
-        $this->helperSet = $helperSet;
-
         Deprecation::trigger(
             'doctrine/orm',
             'https://github.com/doctrine/orm/issues/8327',

@@ -20,10 +20,7 @@ use function sprintf;
  */
 class EntityRegionCommand extends AbstractEntityManagerCommand
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('orm:clear-cache:region:entity')
              ->setDescription('Clear a second-level cache entity region')
@@ -59,12 +56,7 @@ EOT
              );
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);
 

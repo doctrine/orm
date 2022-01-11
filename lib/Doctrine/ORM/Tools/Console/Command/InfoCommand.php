@@ -20,10 +20,7 @@ use function sprintf;
  */
 class InfoCommand extends AbstractEntityManagerCommand
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('orm:info')
              ->setDescription('Show basic information about all mapped entities')
@@ -36,12 +33,7 @@ EOT
              );
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);
 

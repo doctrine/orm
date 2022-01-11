@@ -20,10 +20,7 @@ use function sprintf;
  */
 class CollectionRegionCommand extends AbstractEntityManagerCommand
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('orm:clear-cache:region:collection')
              ->setDescription('Clear a second-level cache collection region')
@@ -60,12 +57,7 @@ EOT
              );
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);
 

@@ -188,10 +188,8 @@ EOT
 
     /**
      * Format the given value for console output
-     *
-     * @param mixed $value
      */
-    private function formatValue($value): string
+    private function formatValue(mixed $value): string
     {
         if ($value === '') {
             return '';
@@ -233,7 +231,7 @@ EOT
      * @return string[]
      * @psalm-return array{0: string, 1: string}
      */
-    private function formatField(string $label, $value): array
+    private function formatField(string $label, mixed $value): array
     {
         if ($value === null) {
             $value = '<comment>None</comment>';
