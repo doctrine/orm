@@ -1336,6 +1336,11 @@ parameters:
 			path: lib/Doctrine/ORM/Query/AST/Functions/LowerFunction.php
 
 		-
+			message: "#^Property Doctrine\\\\ORM\\\\Query\\\\AST\\\\Functions\\\\TrimFunction\\:\\:\\$trimChar \\(bool\\) does not accept string\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Query/AST/Functions/TrimFunction.php
+
+		-
 			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/AST/Functions/UpperFunction.php
@@ -1421,6 +1426,16 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
+			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticTerm\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor\\|string\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Query/Parser.php
+
+		-
+			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:SimpleArithmeticExpression\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm\\|string\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Query/Parser.php
+
+		-
 			message: """
 				#^PHPDoc tag @return has invalid value \\(AST\\\\BetweenExpression\\|
 				        AST\\\\CollectionMemberExpression\\|
@@ -1433,6 +1448,11 @@ parameters:
 				        AST\\\\NullComparisonExpression\\)\\: Unexpected token "\\\\n     \\* ", expected type at offset 344$#
 			"""
 			count: 1
+			path: lib/Doctrine/ORM/Query/Parser.php
+
+		-
+			message: "#^Parameter \\#1 \\$tokenType of method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:isAggregateFunction\\(\\) expects 1\\|2\\|3\\|4\\|5\\|6\\|7\\|8\\|9\\|10\\|11\\|12\\|13\\|14\\|15\\|16\\|17\\|18\\|19\\|100\\|101\\|102\\|200\\|201\\|202\\|203\\|204\\|205\\|206\\|207\\|208\\|209\\|210\\|211\\|212\\|213\\|214\\|215\\|216\\|217\\|218\\|219\\|220\\|221\\|222\\|223\\|224\\|225\\|226\\|227\\|228\\|229\\|230\\|231\\|232\\|233\\|234\\|235\\|236\\|237\\|238\\|239\\|240\\|241\\|242\\|243\\|244\\|245\\|246\\|247\\|248\\|249\\|250\\|251\\|252\\|253\\|254\\|255\\|256, int\\|string\\|null given\\.$#"
+			count: 2
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
