@@ -16,7 +16,7 @@ class BigIntegerIdentityGenerator extends AbstractIdGenerator
     /**
      * The name of the sequence to pass to lastInsertId(), if any.
      *
-     * @var string
+     * @var string|null
      */
     private $sequenceName;
 
