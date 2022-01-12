@@ -90,6 +90,12 @@
                 <file name="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php"/>
             </errorLevel>
         </MissingDependency>
+        <NoInterfaceProperties>
+            <errorLevel type="suppress">
+                <!-- see https://github.com/vimeo/psalm/issues/7364 -->
+                <referencedClass name="BackedEnum"/>
+            </errorLevel>
+        </NoInterfaceProperties>
         <ParadoxicalCondition>
             <errorLevel type="suppress">
                 <!-- See https://github.com/vimeo/psalm/issues/3381 -->
