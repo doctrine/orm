@@ -1,7 +1,7 @@
-| [3.0.x][3.0] | [2.11.x][2.11] | [2.10.x][2.10] |
+| [3.0.x][3.0] | [2.12.x][2.12] | [2.11.x][2.11] |
 |:----------------:|:----------------:|:----------:|
-| [![Build status][3.0 image]][3.0] | [![Build status][2.11 image]][2.11] | [![Build status][2.10 image]][2.10] |
-| [![Coverage Status][3.0 coverage image]][3.0 coverage]| [![Coverage Status][2.11 coverage image]][2.11 coverage] | [![Coverage Status][2.10 coverage image]][2.10 coverage]  |
+| [![Build status][3.0 image]][3.0] | [![Build status][2.12 image]][2.12] | [![Build status][2.11 image]][2.11] |
+| [![Coverage Status][3.0 coverage image]][3.0 coverage]| [![Coverage Status][2.12 coverage image]][2.12 coverage] | [![Coverage Status][2.11 coverage image]][2.11 coverage]  |
 
 Doctrine 2 is an object-relational mapper (ORM) for PHP 7.1+ that provides transparent persistence
 for PHP objects. It sits on top of a powerful database abstraction layer (DBAL). One of its key features
@@ -20,10 +20,10 @@ without requiring unnecessary code duplication.
   [3.0]: https://github.com/doctrine/orm/tree/3.0.x
   [3.0 coverage image]: https://codecov.io/gh/doctrine/orm/branch/3.0.x/graph/badge.svg
   [3.0 coverage]: https://codecov.io/gh/doctrine/orm/branch/3.0.x
-  [2.10 image]: https://github.com/doctrine/orm/actions/workflows/continuous-integration.yml/badge.svg?branch=2.10.x
-  [2.10]: https://github.com/doctrine/orm/tree/2.10.x
-  [2.10 coverage image]: https://codecov.io/gh/doctrine/orm/branch/2.10.x/graph/badge.svg
-  [2.10 coverage]: https://codecov.io/gh/doctrine/orm/branch/2.10.x
+  [2.12 image]: https://github.com/doctrine/orm/actions/workflows/continuous-integration.yml/badge.svg?branch=2.12.x
+  [2.12]: https://github.com/doctrine/orm/tree/2.12.x
+  [2.12 coverage image]: https://codecov.io/gh/doctrine/orm/branch/2.12.x/graph/badge.svg
+  [2.12 coverage]: https://codecov.io/gh/doctrine/orm/branch/2.12.x
   [2.11 image]: https://github.com/doctrine/orm/actions/workflows/continuous-integration.yml/badge.svg?branch=2.11.x
   [2.11]: https://github.com/doctrine/orm/tree/2.11.x
   [2.11 coverage image]: https://codecov.io/gh/doctrine/orm/branch/2.11.x/graph/badge.svg
