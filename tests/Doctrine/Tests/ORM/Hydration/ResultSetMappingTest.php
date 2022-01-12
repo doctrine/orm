@@ -21,11 +21,8 @@ use Doctrine\Tests\OrmTestCase;
  */
 class ResultSetMappingTest extends OrmTestCase
 {
-    /** @var ResultSetMapping */
-    private $_rsm;
-
-    /** @var EntityManagerInterface */
-    private $entityManager;
+    private ResultSetMapping $_rsm;
+    private EntityManagerInterface $entityManager;
 
     protected function setUp(): void
     {

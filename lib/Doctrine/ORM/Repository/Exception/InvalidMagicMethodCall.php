@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Repository\Exception;
 
-use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\RepositoryException;
+use LogicException;
 
-final class InvalidMagicMethodCall extends ORMException implements RepositoryException
+final class InvalidMagicMethodCall extends LogicException implements RepositoryException
 {
     public static function becauseFieldNotFoundIn(
         string $entityName,

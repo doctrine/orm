@@ -314,12 +314,10 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @param mixed $invalidValue
-     *
      * @group DDC-3490
      * @dataProvider invalidAssociationValuesDataProvider
      */
-    public function testRejectsPersistenceOfObjectsWithInvalidAssociationValue($invalidValue): void
+    public function testRejectsPersistenceOfObjectsWithInvalidAssociationValue(mixed $invalidValue): void
     {
         $this->_unitOfWork->setEntityPersister(
             ForumUser::class,
@@ -339,12 +337,10 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @param mixed $invalidValue
-     *
      * @group DDC-3490
      * @dataProvider invalidAssociationValuesDataProvider
      */
-    public function testRejectsChangeSetComputationForObjectsWithInvalidAssociationValue($invalidValue): void
+    public function testRejectsChangeSetComputationForObjectsWithInvalidAssociationValue(mixed $invalidValue): void
     {
         $metadata = $this->_emMock->getClassMetadata(ForumUser::class);
 
@@ -473,11 +469,9 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @param object $entity
-     *
      * @dataProvider entitiesWithValidIdentifiersProvider
      */
-    public function testAddToIdentityMapValidIdentifiers($entity, string $idHash): void
+    public function testAddToIdentityMapValidIdentifiers(object $entity, string $idHash): void
     {
         $this->_unitOfWork->persist($entity);
         $this->_unitOfWork->addToIdentityMap($entity);
@@ -534,12 +528,11 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @param object               $entity
      * @param array<string, mixed> $identifier
      *
      * @dataProvider entitiesWithInvalidIdentifiersProvider
      */
-    public function testAddToIdentityMapInvalidIdentifiers($entity, array $identifier): void
+    public function testAddToIdentityMapInvalidIdentifiers(object $entity, array $identifier): void
     {
         $this->expectException(ORMInvalidArgumentException::class);
 
@@ -895,18 +888,12 @@ class NotifyChangedEntity implements NotifyPropertyChanged
         }
     }
 
-    /**
-     * @return mixed
-     */
-    public function getData()
+    public function getData(): mixed
     {
         return $this->data;
     }
 
-    /**
-     * @param mixed $data
-     */
-    public function setData($data): void
+    public function setData(mixed $data): void
     {
         if ($data !== $this->data) {
             $this->onPropertyChanged('data', $this->data, $data);
@@ -919,12 +906,7 @@ class NotifyChangedEntity implements NotifyPropertyChanged
         $this->_listeners[] = $listener;
     }
 
-    /**
-     * @param mixed $propName
-     * @param mixed $oldValue
-     * @param mixed $newValue
-     */
-    protected function onPropertyChanged($propName, $oldValue, $newValue): void
+    protected function onPropertyChanged(mixed $propName, mixed $oldValue, mixed $newValue): void
     {
         if ($this->_listeners) {
             foreach ($this->_listeners as $listener) {

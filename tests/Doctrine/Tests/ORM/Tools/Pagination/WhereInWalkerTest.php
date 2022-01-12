@@ -266,8 +266,7 @@ class WhereInWalkerTest extends PaginationTestCase
         );
     }
 
-    /** @param mixed $parameter */
-    private function assertPaginatorWhereInParameterToBe(Query $query, $parameter): void
+    private function assertPaginatorWhereInParameterToBe(Query $query, mixed $parameter): void
     {
         $query->getSQL(); // forces walker to process the query
 

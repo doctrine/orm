@@ -15,16 +15,10 @@ use Doctrine\ORM\UnitOfWork;
  */
 class EntityManagerMock extends EntityManager
 {
-    /** @var UnitOfWork|null */
-    private $_uowMock;
+    private ?UnitOfWork $_uowMock            = null;
+    private ?ProxyFactory $_proxyFactoryMock = null;
 
-    /** @var ProxyFactory|null */
-    private $_proxyFactoryMock;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getUnitOfWork()
+    public function getUnitOfWork(): UnitOfWork
     {
         return $this->_uowMock ?? parent::getUnitOfWork();
     }
@@ -54,7 +48,7 @@ class EntityManagerMock extends EntityManager
      *
      * {@inheritdoc}
      */
-    public static function create($conn, ?Configuration $config = null, ?EventManager $eventManager = null)
+    public static function create($conn, ?Configuration $config = null, ?EventManager $eventManager = null): self
     {
         if ($config === null) {
             $config = new Configuration();
@@ -63,9 +57,7 @@ class EntityManagerMock extends EntityManager
             $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], false));
         }
 
-        if ($eventManager === null) {
-            $eventManager = new EventManager();
-        }
+        $eventManager ??= new EventManager();
 
         return new EntityManagerMock($conn, $config, $eventManager);
     }

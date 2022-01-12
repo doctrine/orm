@@ -26,10 +26,7 @@ use function sprintf;
  */
 class GenerateProxiesCommand extends AbstractEntityManagerCommand
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('orm:generate-proxies')
              ->setAliases(['orm:generate:proxies'])
@@ -40,12 +37,7 @@ class GenerateProxiesCommand extends AbstractEntityManagerCommand
              ->setHelp('Generates proxy classes for entity classes.');
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);
 

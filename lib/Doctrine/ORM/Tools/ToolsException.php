@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\Exception\ORMException;
+use RuntimeException;
 use Throwable;
 
 use function sprintf;
@@ -12,7 +13,7 @@ use function sprintf;
 /**
  * Tools related Exceptions.
  */
-class ToolsException extends ORMException
+class ToolsException extends RuntimeException implements ORMException
 {
     public static function schemaToolFailure(string $sql, Throwable $e): self
     {

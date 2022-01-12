@@ -8,7 +8,6 @@ use ArrayIterator;
 use Countable;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use FilterIterator;
-use ReturnTypeWillChange;
 use RuntimeException;
 
 use function assert;
@@ -25,7 +24,7 @@ use function sprintf;
 class MetadataFilter extends FilterIterator implements Countable
 {
     /** @var mixed[] */
-    private $filter = [];
+    private array $filter = [];
 
     /**
      * Filter Metadatas by one or more filter options.
@@ -35,7 +34,7 @@ class MetadataFilter extends FilterIterator implements Countable
      *
      * @return ClassMetadata[]
      */
-    public static function filter(array $metadatas, $filter)
+    public static function filter(array $metadatas, array|string $filter)
     {
         $metadatas = new MetadataFilter(new ArrayIterator($metadatas), $filter);
 
@@ -45,18 +44,14 @@ class MetadataFilter extends FilterIterator implements Countable
     /**
      * @param mixed[]|string $filter
      */
-    public function __construct(ArrayIterator $metadata, $filter)
+    public function __construct(ArrayIterator $metadata, array|string $filter)
     {
         $this->filter = (array) $filter;
 
         parent::__construct($metadata);
     }
 
-    /**
-     * @return bool
-     */
-    #[ReturnTypeWillChange]
-    public function accept()
+    public function accept(): bool
     {
         if (count($this->filter) === 0) {
             return true;
@@ -85,8 +80,7 @@ class MetadataFilter extends FilterIterator implements Countable
     /**
      * @return ArrayIterator<int, ClassMetadata>
      */
-    #[ReturnTypeWillChange]
-    public function getInnerIterator()
+    public function getInnerIterator(): ArrayIterator
     {
         $innerIterator = parent::getInnerIterator();
 
@@ -95,11 +89,7 @@ class MetadataFilter extends FilterIterator implements Countable
         return $innerIterator;
     }
 
-    /**
-     * @return int
-     */
-    #[ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return count($this->getInnerIterator());
     }

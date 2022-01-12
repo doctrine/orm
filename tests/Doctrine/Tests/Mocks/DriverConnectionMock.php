@@ -22,15 +22,12 @@ class DriverConnectionMock implements Connection
         $this->resultMock = $resultMock;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function prepare($prepareString): Statement
+    public function prepare(string $sql): Statement
     {
         return new StatementMock();
     }
 
-    public function query(?string $sql = null): Result
+    public function query(string $sql): Result
     {
         return $this->resultMock ?? new DriverResultMock();
     }
@@ -38,14 +35,11 @@ class DriverConnectionMock implements Connection
     /**
      * {@inheritdoc}
      */
-    public function quote($input, $type = ParameterType::STRING)
+    public function quote($value, $type = ParameterType::STRING)
     {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function exec($statement): int
+    public function exec(string $sql): int
     {
     }
 

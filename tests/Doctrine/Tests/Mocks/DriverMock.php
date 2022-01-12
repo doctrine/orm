@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
-use BadMethodCallException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\API\ExceptionConverter;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
-use Exception;
 
 /**
  * Mock class for Driver.
@@ -43,9 +41,9 @@ class DriverMock implements Driver
         return $this->_platformMock;
     }
 
-    public function getSchemaManager(Connection $conn, ?AbstractPlatform $platform = null): AbstractSchemaManager
+    public function getSchemaManager(Connection $conn, AbstractPlatform $platform): AbstractSchemaManager
     {
-        return $this->_schemaManagerMock ?? new SchemaManagerMock($conn, $platform ?? new DatabasePlatformMock());
+        return $this->_schemaManagerMock ?? new SchemaManagerMock($conn, $platform);
     }
 
     public function getExceptionConverter(): ExceptionConverter
@@ -63,26 +61,5 @@ class DriverMock implements Driver
     public function setSchemaManager(AbstractSchemaManager $sm): void
     {
         $this->_schemaManagerMock = $sm;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        throw new BadMethodCallException('Call to deprecated method.');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDatabase(Connection $conn)
-    {
-        return 'not implemented';
-    }
-
-    public function convertExceptionCode(Exception $exception): int
-    {
-        return 0;
     }
 }

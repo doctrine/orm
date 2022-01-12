@@ -74,12 +74,7 @@ final class GH7079Test extends OrmFunctionalTestCase
 
     private function getTableFullName(array $table): string
     {
-        $join = '.';
-        if (! $this->platform->supportsSchemas() && $this->platform->canEmulateSchemas()) {
-            $join = '__';
-        }
-
-        return $table['schema'] . $join . $table['name'];
+        return $table['schema'] . '.' . $table['name'];
     }
 
     private function createClassMetadata(string $className): ClassMetadata

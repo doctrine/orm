@@ -211,7 +211,7 @@ specific to a particular entity class's lifecycle.
     .. code-block:: attribute
 
         <?php
-        
+
         use Doctrine\DBAL\Types\Types;
         use Doctrine\Persistence\Event\LifecycleEventArgs;
 
@@ -245,7 +245,7 @@ specific to a particular entity class's lifecycle.
     .. code-block:: annotation
 
         <?php
-        
+
         use Doctrine\Persistence\Event\LifecycleEventArgs;
 
         /**
@@ -294,17 +294,6 @@ specific to a particular entity class's lifecycle.
                 </lifecycle-callbacks>
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          fields:
-            # ...
-            value:
-              type: string(255)
-          lifecycleCallbacks:
-            prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersist ]
-            preUpdate: [ doStuffOnPreUpdate ]
 
 Lifecycle Callbacks Event Argument
 ----------------------------------
@@ -782,13 +771,6 @@ An entity listener is a lifecycle listener class used for an entity.
                 <!-- .... -->
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        MyProject\Entity\User:
-          type: entity
-          entityListeners:
-            UserListener:
-          # ....
 
 .. _reference-entity-listeners:
 
@@ -871,24 +853,6 @@ you need to map the listener method using the event type mapping:
                 <!-- .... -->
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        MyProject\Entity\User:
-          type: entity
-          entityListeners:
-            UserListener:
-              preFlush: [preFlushHandler]
-              postLoad: [postLoadHandler]
-
-              postPersist: [postPersistHandler]
-              prePersist: [prePersistHandler]
-
-              postUpdate: [postUpdateHandler]
-              preUpdate: [preUpdateHandler]
-
-              postRemove: [postRemoveHandler]
-              preRemove: [preRemoveHandler]
-          # ....
 
 .. note::
 

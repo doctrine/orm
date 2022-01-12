@@ -126,10 +126,7 @@ class DDC6303ChildA extends DDC6303BaseClass
      */
     private $originalData;
 
-    /**
-     * @param mixed $originalData
-     */
-    public function __construct(string $id, $originalData)
+    public function __construct(string $id, mixed $originalData)
     {
         $this->id           = $id;
         $this->originalData = $originalData;

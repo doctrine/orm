@@ -12,14 +12,9 @@ use Symfony\Component\Console\Input\InputInterface;
 
 abstract class AbstractEntityManagerCommand extends Command
 {
-    /** @var EntityManagerProvider|null */
-    private $entityManagerProvider;
-
-    public function __construct(?EntityManagerProvider $entityManagerProvider = null)
+    public function __construct(private ?EntityManagerProvider $entityManagerProvider = null)
     {
         parent::__construct();
-
-        $this->entityManagerProvider = $entityManagerProvider;
     }
 
     final protected function getEntityManager(InputInterface $input): EntityManagerInterface

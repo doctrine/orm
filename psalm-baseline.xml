@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="4.18.1@dda05fa913f4dc6eb3386f2f7ce5a45d37a71bcb">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
-    <DeprecatedClass occurrences="1">
-      <code>IterableResult</code>
-    </DeprecatedClass>
-    <DeprecatedMethod occurrences="1">
-      <code>iterate</code>
+    <DeprecatedMethod occurrences="3">
+      <code>getResultCacheDriver</code>
+      <code>getResultCacheDriver</code>
+      <code>getResultCacheImpl</code>
     </DeprecatedMethod>
     <FalsableReturnStatement occurrences="1">
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
@@ -28,8 +27,7 @@
       <code>$this-&gt;_em-&gt;getConfiguration()-&gt;getResultCacheImpl()</code>
       <code>$this-&gt;_queryCacheProfile-&gt;getResultCacheDriver()</code>
     </NullableReturnStatement>
-    <PossiblyInvalidArgument occurrences="2">
-      <code>$stmt</code>
+    <PossiblyInvalidArgument occurrences="1">
       <code>$stmt</code>
     </PossiblyInvalidArgument>
     <PossiblyNullReference occurrences="2">
@@ -277,14 +275,6 @@
       <code>lock</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/Region/DefaultRegion.php">
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$this-&gt;cache</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
-      <code>CacheProvider</code>
-    </MoreSpecificReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/Region/UpdateTimestampCache.php">
     <MissingReturnType occurrences="1">
       <code>update</code>
@@ -329,33 +319,21 @@
       <code>new CachedReader($reader, new ArrayCache())</code>
       <code>new SimpleAnnotationReader()</code>
     </DeprecatedClass>
-    <DeprecatedMethod occurrences="4">
+    <DeprecatedMethod occurrences="1">
       <code>AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php')</code>
-      <code>getAutoGenerateProxyClasses</code>
-      <code>getMetadataCacheImpl</code>
-      <code>getQueryCacheImpl</code>
     </DeprecatedMethod>
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(bool) $flag</code>
     </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php">
-    <DeprecatedMethod occurrences="4">
-      <code>copy</code>
-      <code>getHydrator</code>
-      <code>transactional</code>
-      <code>transactional</code>
-    </DeprecatedMethod>
-    <MissingParamType occurrences="3">
+    <DeprecatedClass occurrences="1">
+      <code>ProxyFactory</code>
+    </DeprecatedClass>
+    <MissingParamType occurrences="1">
       <code>$entity</code>
-      <code>$lockMode</code>
-      <code>$lockVersion</code>
     </MissingParamType>
-    <MissingReturnType occurrences="1">
-      <code>wrapInTransaction</code>
-    </MissingReturnType>
-    <TooManyArguments occurrences="2">
-      <code>find</code>
+    <TooManyArguments occurrences="1">
       <code>flush</code>
     </TooManyArguments>
   </file>
@@ -363,7 +341,8 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$connection</code>
     </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="2">
+    <DeprecatedClass occurrences="3">
+      <code>ProxyFactory</code>
       <code>ProxyFactory</code>
     </DeprecatedClass>
     <DeprecatedMethod occurrences="5">
@@ -381,10 +360,7 @@
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
     </DocblockTypeContradiction>
-    <ImplementedReturnTypeMismatch occurrences="1">
-      <code>ClassMetadataFactory</code>
-    </ImplementedReturnTypeMismatch>
-    <InvalidReturnStatement occurrences="9">
+    <InvalidReturnStatement occurrences="10">
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity</code>
@@ -393,20 +369,19 @@
       <code>$entity instanceof $class-&gt;name ? $entity : null</code>
       <code>$persister-&gt;load($sortedId, null, null, [], $lockMode)</code>
       <code>$persister-&gt;loadById($sortedId)</code>
+      <code>$this-&gt;metadataFactory</code>
       <code>$this-&gt;metadataFactory-&gt;getMetadataFor($className)</code>
     </InvalidReturnStatement>
-    <InvalidReturnType occurrences="4">
-      <code>?T</code>
-      <code>getClassMetadata</code>
-      <code>getPartialReference</code>
-      <code>getReference</code>
+    <InvalidReturnType occurrences="5">
+      <code>?object</code>
+      <code>?object</code>
+      <code>?object</code>
+      <code>ClassMetadataFactory</code>
+      <code>Mapping\ClassMetadata</code>
     </InvalidReturnType>
     <LessSpecificReturnStatement occurrences="1">
       <code>$this-&gt;repositoryFactory-&gt;getRepository($this, $entityName)</code>
     </LessSpecificReturnStatement>
-    <MissingReturnType occurrences="1">
-      <code>wrapInTransaction</code>
-    </MissingReturnType>
     <MoreSpecificReturnType occurrences="1">
       <code>EntityRepository&lt;T&gt;</code>
     </MoreSpecificReturnType>
@@ -473,9 +448,6 @@
     <LessSpecificImplementedReturnType occurrences="1">
       <code>string</code>
     </LessSpecificImplementedReturnType>
-    <TooManyArguments occurrences="1">
-      <code>find</code>
-    </TooManyArguments>
   </file>
   <file src="lib/Doctrine/ORM/Event/LifecycleEventArgs.php">
     <LessSpecificReturnStatement occurrences="1">
@@ -498,26 +470,10 @@
       <code>(string) $className</code>
     </RedundantCastGivenDocblockType>
   </file>
-  <file src="lib/Doctrine/ORM/Exception/ORMException.php">
-    <DeprecatedClass occurrences="1">
-      <code>BaseORMException</code>
-    </DeprecatedClass>
-  </file>
   <file src="lib/Doctrine/ORM/Id/AssignedGenerator.php">
     <PossiblyNullArgument occurrences="1">
       <code>$entity</code>
     </PossiblyNullArgument>
-  </file>
-  <file src="lib/Doctrine/ORM/Id/TableGenerator.php">
-    <PossiblyFalseOperand occurrences="3">
-      <code>$currentLevel</code>
-      <code>$this-&gt;_nextValue</code>
-      <code>$this-&gt;_nextValue</code>
-    </PossiblyFalseOperand>
-    <UndefinedMethod occurrences="2">
-      <code>getTableHiLoCurrentValSql</code>
-      <code>getTableHiLoUpdateNextValSql</code>
-    </UndefinedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Internal/CommitOrderCalculator.php">
     <RedundantCondition occurrences="2">
@@ -526,10 +482,6 @@
     </RedundantCondition>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php">
-    <DeprecatedClass occurrences="2">
-      <code>IterableResult</code>
-      <code>new IterableResult($this)</code>
-    </DeprecatedClass>
     <ReferenceConstraintViolation occurrences="1">
       <code>return $rowData;</code>
     </ReferenceConstraintViolation>
@@ -548,18 +500,6 @@
     <ReferenceConstraintViolation occurrences="1">
       <code>$result</code>
     </ReferenceConstraintViolation>
-  </file>
-  <file src="lib/Doctrine/ORM/Internal/Hydration/IterableResult.php">
-    <ImplementedReturnTypeMismatch occurrences="1">
-      <code>mixed[]|false</code>
-    </ImplementedReturnTypeMismatch>
-    <PossiblyFalsePropertyAssignmentValue occurrences="2">
-      <code>$this-&gt;_hydrator-&gt;hydrateRow()</code>
-      <code>$this-&gt;next()</code>
-    </PossiblyFalsePropertyAssignmentValue>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>$this-&gt;_current !== false</code>
-    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php">
     <InvalidScalarArgument occurrences="1">
@@ -596,9 +536,6 @@
     <InvalidScalarArgument occurrences="1">
       <code>array_keys($discrMap)</code>
     </InvalidScalarArgument>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$class</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/LazyCriteriaCollection.php">
     <MoreSpecificImplementedParamType occurrences="1">
@@ -653,12 +590,6 @@
       <code>$nonSuperclassParents</code>
       <code>new $definition['class']()</code>
     </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="1">
-      <code>new UuidGenerator()</code>
-    </DeprecatedClass>
-    <DeprecatedConstant occurrences="1">
-      <code>ClassMetadata::GENERATOR_TYPE_UUID</code>
-    </DeprecatedConstant>
     <DeprecatedMethod occurrences="2">
       <code>addNamedNativeQuery</code>
       <code>addNamedQuery</code>
@@ -698,13 +629,18 @@
     <PropertyTypeCoercion occurrences="1">
       <code>$subClass-&gt;table</code>
     </PropertyTypeCoercion>
+    <RedundantConditionGivenDocblockType occurrences="6">
+      <code>$parent-&gt;generatorType</code>
+      <code>$parent-&gt;generatorType</code>
+      <code>$parent-&gt;idGenerator</code>
+      <code>$parent-&gt;idGenerator</code>
+      <code>assert($class instanceof ClassMetadata)</code>
+      <code>assert($class instanceof ClassMetadata)</code>
+    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php">
-    <DeprecatedConstant occurrences="1">
-      <code>self::GENERATOR_TYPE_UUID</code>
-    </DeprecatedConstant>
     <DeprecatedMethod occurrences="1">
-      <code>canEmulateSchemas</code>
+      <code>canRequireSQLConversion</code>
     </DeprecatedMethod>
     <DeprecatedProperty occurrences="4">
       <code>$this-&gt;columnNames</code>
@@ -852,10 +788,6 @@
     </PossiblyFalseOperand>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DefaultQuoteStrategy.php">
-    <DeprecatedMethod occurrences="2">
-      <code>canEmulateSchemas</code>
-      <code>canEmulateSchemas</code>
-    </DeprecatedMethod>
     <MissingClosureParamType occurrences="1">
       <code>$joinColumn</code>
     </MissingClosureParamType>
@@ -974,22 +906,7 @@
       <code>mapManyToMany</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/Driver/PHPDriver.php">
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>PHPDriver</code>
-    </PropertyNotSetInConstructor>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/SimplifiedXmlDriver.php">
-    <MissingParamType occurrences="2">
-      <code>$fileExtension</code>
-      <code>$prefixes</code>
-    </MissingParamType>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/Driver/SimplifiedYamlDriver.php">
-    <DeprecatedClass occurrences="2">
-      <code>YamlDriver</code>
-      <code>parent::__construct($locator, $fileExtension)</code>
-    </DeprecatedClass>
     <MissingParamType occurrences="2">
       <code>$fileExtension</code>
       <code>$prefixes</code>
@@ -1085,91 +1002,6 @@
       <code>setPrimaryTable</code>
       <code>setSequenceGeneratorDefinition</code>
       <code>setVersionMapping</code>
-      <code>setVersionMapping</code>
-    </UndefinedInterfaceMethod>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/Driver/YamlDriver.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$metadata</code>
-    </ArgumentTypeCoercion>
-    <InvalidDocblock occurrences="1">
-      <code>private function cacheToArray(array $cacheMapping): array</code>
-    </InvalidDocblock>
-    <MissingParamType occurrences="2">
-      <code>$fileExtension</code>
-      <code>$locator</code>
-    </MissingParamType>
-    <NoInterfaceProperties occurrences="6">
-      <code>$metadata-&gt;inheritanceType</code>
-      <code>$metadata-&gt;isEmbeddedClass</code>
-      <code>$metadata-&gt;isMappedSuperclass</code>
-      <code>$metadata-&gt;table</code>
-      <code>$metadata-&gt;table</code>
-      <code>$metadata-&gt;table</code>
-    </NoInterfaceProperties>
-    <PossiblyUndefinedMethod occurrences="18">
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-    </PossiblyUndefinedMethod>
-    <UndefinedInterfaceMethod occurrences="43">
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>$element</code>
-      <code>addEntityListener</code>
-      <code>addLifecycleCallback</code>
-      <code>addNamedNativeQuery</code>
-      <code>addNamedQuery</code>
-      <code>addSqlResultSetMapping</code>
-      <code>enableCache</code>
-      <code>getAssociationCacheDefaults</code>
-      <code>getAssociationCacheDefaults</code>
-      <code>getAssociationCacheDefaults</code>
-      <code>getAssociationCacheDefaults</code>
-      <code>mapEmbedded</code>
-      <code>mapField</code>
-      <code>mapField</code>
-      <code>mapManyToMany</code>
-      <code>mapManyToOne</code>
-      <code>mapOneToMany</code>
-      <code>mapOneToOne</code>
-      <code>markReadOnly</code>
-      <code>setAssociationOverride</code>
-      <code>setAttributeOverride</code>
-      <code>setChangeTrackingPolicy</code>
-      <code>setCustomGeneratorDefinition</code>
-      <code>setCustomRepositoryClass</code>
-      <code>setCustomRepositoryClass</code>
-      <code>setDiscriminatorColumn</code>
-      <code>setDiscriminatorColumn</code>
-      <code>setDiscriminatorMap</code>
-      <code>setIdGeneratorType</code>
-      <code>setIdGeneratorType</code>
-      <code>setInheritanceType</code>
-      <code>setPrimaryTable</code>
-      <code>setSequenceGeneratorDefinition</code>
       <code>setVersionMapping</code>
     </UndefinedInterfaceMethod>
   </file>
@@ -1615,11 +1447,8 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Query.php">
-    <DeprecatedClass occurrences="1">
-      <code>IterableResult</code>
-    </DeprecatedClass>
     <DeprecatedMethod occurrences="1">
-      <code>parent::iterate($parameters, $hydrationMode)</code>
+      <code>getResultCacheDriver</code>
     </DeprecatedMethod>
     <InvalidScalarArgument occurrences="1">
       <code>$sqlParams</code>
@@ -1631,9 +1460,6 @@
       <code>parent::setHint($name, $value)</code>
       <code>parent::setHydrationMode($hydrationMode)</code>
     </LessSpecificReturnStatement>
-    <MoreSpecificImplementedParamType occurrences="1">
-      <code>$parameters</code>
-    </MoreSpecificImplementedParamType>
     <MoreSpecificReturnType occurrences="2">
       <code>self</code>
       <code>self</code>
@@ -2931,107 +2757,30 @@
     </MoreSpecificReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/CollectionRegionCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
     <PossiblyNullReference occurrences="1">
       <code>evictAll</code>
     </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/EntityRegionCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
     <PossiblyNullReference occurrences="1">
       <code>evictAll</code>
     </PossiblyNullReference>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/MetadataCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryCommand.php">
     <DeprecatedMethod occurrences="1">
       <code>getQueryCacheImpl</code>
     </DeprecatedMethod>
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryRegionCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/ConvertDoctrine1SchemaCommand.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$metadata</code>
-    </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="10">
-      <code>ClassMetadataExporter</code>
-      <code>ClassMetadataExporter</code>
-      <code>ClassMetadataExporter|null</code>
-      <code>EntityGenerator</code>
-      <code>EntityGenerator</code>
-      <code>EntityGenerator|null</code>
-      <code>new ClassMetadataExporter()</code>
-      <code>new EntityGenerator()</code>
-      <code>private $entityGenerator = null;</code>
-      <code>private $metadataExporter = null;</code>
-    </DeprecatedClass>
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$metadata</code>
-    </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="3">
-      <code>AbstractExporter</code>
-      <code>new ClassMetadataExporter()</code>
-      <code>new EntityGenerator()</code>
-    </DeprecatedClass>
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
-    <NoInterfaceProperties occurrences="1">
-      <code>$class-&gt;name</code>
-    </NoInterfaceProperties>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/EnsureProductionSettingsCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/GenerateEntitiesCommand.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$metadatas</code>
-    </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="1">
-      <code>new EntityGenerator()</code>
-    </DeprecatedClass>
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
-    <NoInterfaceProperties occurrences="1">
-      <code>$metadata-&gt;name</code>
-    </NoInterfaceProperties>
+    <DeprecatedMethod occurrences="1">
+      <code>getResultCacheImpl</code>
+    </DeprecatedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/GenerateProxiesCommand.php">
     <DeprecatedMethod occurrences="2">
       <code>getProxyDir</code>
       <code>getProxyDir</code>
     </DeprecatedMethod>
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
     <NoInterfaceProperties occurrences="1">
       <code>$metadata-&gt;name</code>
     </NoInterfaceProperties>
@@ -3039,21 +2788,7 @@
       <code>$em-&gt;getConfiguration()-&gt;getProxyDir()</code>
     </PossiblyNullArgument>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/GenerateRepositoriesCommand.php">
-    <DeprecatedClass occurrences="1">
-      <code>new EntityRepositoryGenerator()</code>
-    </DeprecatedClass>
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
-    <NoInterfaceProperties occurrences="1">
-      <code>$metadata-&gt;customRepositoryClassName</code>
-    </NoInterfaceProperties>
-  </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/InfoCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
     <PossiblyNullReference occurrences="1">
       <code>getAllClassNames</code>
     </PossiblyNullReference>
@@ -3070,45 +2805,18 @@
     <DeprecatedClass occurrences="1">
       <code>Debug::dump($resultSet, (int) $input-&gt;getOption('depth'), true, false)</code>
     </DeprecatedClass>
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/AbstractCommand.php">
-    <InvalidNullableReturnType occurrences="1">
-      <code>int</code>
-    </InvalidNullableReturnType>
-    <NullableReturnStatement occurrences="1">
-      <code>$this-&gt;executeSchemaCommand($input, $output, new SchemaTool($em), $metadatas, $ui)</code>
-    </NullableReturnStatement>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/CreateCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/DropCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
     <PossiblyNullArgument occurrences="2">
       <code>$this-&gt;getName()</code>
       <code>$this-&gt;getName()</code>
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/UpdateCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
     <PossiblyNullArgument occurrences="2">
       <code>$this-&gt;getName()</code>
       <code>$this-&gt;getName()</code>
     </PossiblyNullArgument>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/ValidateSchemaCommand.php">
-    <MissingReturnType occurrences="1">
-      <code>configure</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/DebugUnitOfWorkListener.php">
     <PossiblyNullArgument occurrences="2">
@@ -3117,174 +2825,6 @@
     </PossiblyNullArgument>
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>$state === UnitOfWork::STATE_DETACHED</code>
-    </RedundantConditionGivenDocblockType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/EntityGenerator.php">
-    <ArgumentTypeCoercion occurrences="4">
-      <code>$this-&gt;getClassToExtend()</code>
-      <code>$this-&gt;getClassToExtend() ?: $metadata-&gt;name</code>
-      <code>$this-&gt;getClassToExtend() ?: $metadata-&gt;name</code>
-      <code>array_map('strlen', $paramTypes)</code>
-    </ArgumentTypeCoercion>
-    <DeprecatedConstant occurrences="1">
-      <code>ClassMetadataInfo::GENERATOR_TYPE_UUID</code>
-    </DeprecatedConstant>
-    <DocblockTypeContradiction occurrences="1">
-      <code>class_exists($metadata-&gt;name)</code>
-    </DocblockTypeContradiction>
-    <InvalidDocblock occurrences="1">
-      <code>public function setFieldVisibility($visibility)</code>
-    </InvalidDocblock>
-    <MissingParamType occurrences="1">
-      <code>$visibility</code>
-    </MissingParamType>
-    <MissingReturnType occurrences="1">
-      <code>setFieldVisibility</code>
-    </MissingReturnType>
-    <PossiblyFalseArgument occurrences="2">
-      <code>$last</code>
-      <code>strrpos($metadata-&gt;name, '\\')</code>
-    </PossiblyFalseArgument>
-    <PossiblyNullArgument occurrences="1">
-      <code>$variableType</code>
-    </PossiblyNullArgument>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$classToExtend</code>
-    </PropertyNotSetInConstructor>
-    <RedundantCastGivenDocblockType occurrences="2">
-      <code>(array) $metadata-&gt;table['options']</code>
-      <code>(bool) $embeddablesImmutable</code>
-    </RedundantCastGivenDocblockType>
-    <RedundantConditionGivenDocblockType occurrences="3">
-      <code>$metadata-&gt;sequenceGeneratorDefinition</code>
-      <code>$metadata-&gt;sequenceGeneratorDefinition</code>
-      <code>isset($metadata-&gt;lifecycleCallbacks)</code>
-    </RedundantConditionGivenDocblockType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/EntityRepositoryGenerator.php">
-    <ArgumentTypeCoercion occurrences="3">
-      <code>$fullClassName</code>
-      <code>$fullClassName</code>
-      <code>$fullClassName</code>
-    </ArgumentTypeCoercion>
-    <PossiblyFalseOperand occurrences="1">
-      <code>strrpos($fullClassName, '\\')</code>
-    </PossiblyFalseOperand>
-    <PropertyTypeCoercion occurrences="1">
-      <code>$repositoryName</code>
-    </PropertyTypeCoercion>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Export/ClassMetadataExporter.php">
-    <DeprecatedClass occurrences="7">
-      <code>Driver\AbstractExporter</code>
-      <code>Driver\AnnotationExporter::class</code>
-      <code>Driver\PhpExporter::class</code>
-      <code>Driver\XmlExporter::class</code>
-      <code>Driver\YamlExporter::class</code>
-      <code>Driver\YamlExporter::class</code>
-      <code>ExportException::invalidExporterDriverType($type)</code>
-    </DeprecatedClass>
-    <InvalidStringClass occurrences="1">
-      <code>new $class($dest)</code>
-    </InvalidStringClass>
-    <LessSpecificReturnStatement occurrences="1">
-      <code>new $class($dest)</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
-      <code>Driver\AbstractExporter</code>
-    </MoreSpecificReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php">
-    <DeprecatedClass occurrences="1">
-      <code>ExportException::attemptOverwriteExistingFile($path)</code>
-    </DeprecatedClass>
-    <DeprecatedConstant occurrences="1">
-      <code>ClassMetadataInfo::GENERATOR_TYPE_UUID</code>
-    </DeprecatedConstant>
-    <InvalidNullableReturnType occurrences="1">
-      <code>string</code>
-    </InvalidNullableReturnType>
-    <PossiblyNullArgument occurrences="1">
-      <code>$this-&gt;_outputDir</code>
-    </PossiblyNullArgument>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Export/Driver/AnnotationExporter.php">
-    <DeprecatedClass occurrences="3">
-      <code>AbstractExporter</code>
-      <code>EntityGenerator</code>
-      <code>EntityGenerator|null</code>
-    </DeprecatedClass>
-    <NonInvariantDocblockPropertyType occurrences="1">
-      <code>$_extension</code>
-    </NonInvariantDocblockPropertyType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$metadata-&gt;changeTrackingPolicy</code>
-    </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="1">
-      <code>AbstractExporter</code>
-    </DeprecatedClass>
-    <NonInvariantDocblockPropertyType occurrences="1">
-      <code>$_extension</code>
-    </NonInvariantDocblockPropertyType>
-    <RedundantConditionGivenDocblockType occurrences="4">
-      <code>$metadata-&gt;inheritanceType</code>
-      <code>$metadata-&gt;inheritanceType</code>
-      <code>$metadata-&gt;table</code>
-      <code>$metadata-&gt;table</code>
-    </RedundantConditionGivenDocblockType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$metadata-&gt;changeTrackingPolicy</code>
-    </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="1">
-      <code>AbstractExporter</code>
-    </DeprecatedClass>
-    <NonInvariantDocblockPropertyType occurrences="1">
-      <code>$_extension</code>
-    </NonInvariantDocblockPropertyType>
-    <PossiblyFalseArgument occurrences="1">
-      <code>$simpleXml-&gt;asXML()</code>
-    </PossiblyFalseArgument>
-    <PossiblyNullReference occurrences="1">
-      <code>addAttribute</code>
-    </PossiblyNullReference>
-    <RedundantCondition occurrences="2">
-      <code>$field['associationKey']</code>
-      <code>isset($field['associationKey']) &amp;&amp; $field['associationKey']</code>
-    </RedundantCondition>
-    <RedundantConditionGivenDocblockType occurrences="4">
-      <code>$metadata-&gt;inheritanceType</code>
-      <code>$metadata-&gt;inheritanceType</code>
-      <code>$sequenceDefinition</code>
-      <code>isset($metadata-&gt;lifecycleCallbacks)</code>
-    </RedundantConditionGivenDocblockType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php">
-    <ArgumentTypeCoercion occurrences="2">
-      <code>$array</code>
-      <code>$metadata-&gt;changeTrackingPolicy</code>
-    </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="1">
-      <code>AbstractExporter</code>
-    </DeprecatedClass>
-    <DocblockTypeContradiction occurrences="1">
-      <code>['name' =&gt; null]</code>
-    </DocblockTypeContradiction>
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$array</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
-      <code>array&lt;string, mixed&gt;&amp;array{entityListeners: array&lt;class-string, array&lt;string, array{string}&gt;&gt;}</code>
-    </MoreSpecificReturnType>
-    <NonInvariantDocblockPropertyType occurrences="1">
-      <code>$_extension</code>
-    </NonInvariantDocblockPropertyType>
-    <RedundantConditionGivenDocblockType occurrences="2">
-      <code>$metadata-&gt;table</code>
-      <code>isset($metadata-&gt;lifecycleCallbacks)</code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/CountOutputWalker.php">
@@ -3357,9 +2897,6 @@
     <RedundantConditionGivenDocblockType occurrences="1"/>
   </file>
   <file src="lib/Doctrine/ORM/Tools/SchemaTool.php">
-    <DeprecatedMethod occurrences="1">
-      <code>canEmulateSchemas</code>
-    </DeprecatedMethod>
     <MissingClosureParamType occurrences="1">
       <code>$asset</code>
     </MissingClosureParamType>
@@ -3384,16 +2921,6 @@
       <code>$indexName</code>
     </TypeDoesNotContainType>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Setup.php">
-    <DeprecatedClass occurrences="3">
-      <code>new ClassLoader('Doctrine', $directory)</code>
-      <code>new ClassLoader('Symfony\Component', $directory . '/Doctrine')</code>
-      <code>new YamlDriver($paths)</code>
-    </DeprecatedClass>
-    <UnresolvableInclude occurrences="1">
-      <code>require_once $directory . '/Doctrine/Common/ClassLoader.php'</code>
-    </UnresolvableInclude>
-  </file>
   <file src="lib/Doctrine/ORM/UnitOfWork.php">
     <ArgumentTypeCoercion occurrences="5">
       <code>$class</code>
@@ -3402,11 +2929,9 @@
       <code>$collectionToUpdate</code>
       <code>$commitOrder[$i]</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="4">
-      <code>! is_object($object)</code>
+    <DocblockTypeContradiction occurrences="2">
       <code>$association['type'] === ClassMetadata::ONE_TO_MANY</code>
       <code>$association['type'] === ClassMetadata::ONE_TO_MANY</code>
-      <code>is_object($object)</code>
     </DocblockTypeContradiction>
     <InvalidArgument occurrences="1">
       <code>$em-&gt;getMetadataFactory()</code>
@@ -3422,17 +2947,12 @@
       <code>$this-&gt;entityChangeSets</code>
     </InvalidPropertyAssignmentValue>
     <MissingClosureReturnType occurrences="5">
-      <code>static function ($assoc) {</code>
-      <code>static function ($assoc) {</code>
-      <code>static function ($assoc) {</code>
-      <code>static function ($assoc) {</code>
-      <code>static function ($assoc) {</code>
+      <code>static function (array $assoc) {</code>
+      <code>static function (array $assoc) {</code>
+      <code>static function (array $assoc) {</code>
+      <code>static function (array $assoc) {</code>
+      <code>static function (array $assoc) {</code>
     </MissingClosureReturnType>
-    <MissingParamType occurrences="3">
-      <code>$managedCopy</code>
-      <code>$prevManagedCopy</code>
-      <code>$previousManagedCopy</code>
-    </MissingParamType>
     <NullableReturnStatement occurrences="1">
       <code>$this-&gt;identityMap[$rootClassName][$idHash]</code>
     </NullableReturnStatement>
@@ -3496,9 +3016,6 @@
       <code>unwrap</code>
       <code>unwrap</code>
     </PossiblyUndefinedMethod>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>is_array($entity)</code>
-    </RedundantConditionGivenDocblockType>
     <ReferenceConstraintViolation occurrences="1">
       <code>$visited</code>
     </ReferenceConstraintViolation>

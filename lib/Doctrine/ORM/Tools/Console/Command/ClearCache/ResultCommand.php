@@ -29,10 +29,7 @@ use function sprintf;
  */
 class ResultCommand extends AbstractEntityManagerCommand
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('orm:clear-cache:result')
              ->setDescription('Clear all result cache of the various cache drivers')
@@ -58,12 +55,7 @@ EOT
              );
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);
 

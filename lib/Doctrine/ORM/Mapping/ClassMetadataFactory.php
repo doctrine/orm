@@ -17,7 +17,6 @@ use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
 use Doctrine\ORM\Id\IdentityGenerator;
 use Doctrine\ORM\Id\SequenceGenerator;
-use Doctrine\ORM\Id\UuidGenerator;
 use Doctrine\ORM\Mapping\Exception\CannotGenerateIds;
 use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
 use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
@@ -614,16 +613,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $class->setIdGenerator(new AssignedGenerator());
                 break;
 
-            case ClassMetadata::GENERATOR_TYPE_UUID:
-                Deprecation::trigger(
-                    'doctrine/orm',
-                    'https://github.com/doctrine/orm/issues/7312',
-                    'Mapping for %s: the "UUID" id generator strategy is deprecated with no replacement',
-                    $class->name
-                );
-                $class->setIdGenerator(new UuidGenerator());
-                break;
-
             case ClassMetadata::GENERATOR_TYPE_CUSTOM:
                 $definition = $class->customGeneratorDefinition;
                 if ($definition === null) {
@@ -668,7 +657,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function truncateSequenceName(string $schemaElementName): string
     {
         $platform = $this->getTargetPlatform();
-        if (! $platform instanceof Platforms\OraclePlatform && ! $platform instanceof Platforms\SQLAnywherePlatform) {
+        if (! $platform instanceof Platforms\OraclePlatform) {
             return $schemaElementName;
         }
 

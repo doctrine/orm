@@ -6,17 +6,14 @@ namespace Doctrine\ORM;
 
 use Countable;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Result;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
-use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
@@ -37,7 +34,6 @@ use function is_scalar;
 use function iterator_count;
 use function iterator_to_array;
 use function ksort;
-use function method_exists;
 use function reset;
 use function serialize;
 use function sha1;
@@ -545,15 +541,7 @@ abstract class AbstractQuery
             return $this;
         }
 
-        // DBAL 2
-        if (! method_exists(QueryCacheProfile::class, 'setResultCache')) {
-            if (! $profile->getResultCacheDriver()) {
-                $defaultHydrationCacheImpl = $this->_em->getConfiguration()->getHydrationCache();
-                if ($defaultHydrationCacheImpl) {
-                    $profile = $profile->setResultCacheDriver(DoctrineProvider::wrap($defaultHydrationCacheImpl));
-                }
-            }
-        } elseif (! $profile->getResultCache()) {
+        if (! $profile->getResultCache()) {
             $defaultHydrationCacheImpl = $this->_em->getConfiguration()->getHydrationCache();
             if ($defaultHydrationCacheImpl) {
                 $profile = $profile->setResultCache($defaultHydrationCacheImpl);
@@ -589,15 +577,7 @@ abstract class AbstractQuery
             return $this;
         }
 
-        // DBAL 2
-        if (! method_exists(QueryCacheProfile::class, 'setResultCache')) {
-            if (! $profile->getResultCacheDriver()) {
-                $defaultResultCacheDriver = $this->_em->getConfiguration()->getResultCache();
-                if ($defaultResultCacheDriver) {
-                    $profile = $profile->setResultCacheDriver(DoctrineProvider::wrap($defaultResultCacheDriver));
-                }
-            }
-        } elseif (! $profile->getResultCache()) {
+        if (! $profile->getResultCache()) {
             $defaultResultCache = $this->_em->getConfiguration()->getResultCache();
             if ($defaultResultCache) {
                 $profile = $profile->setResultCache($defaultResultCache);
@@ -641,17 +621,6 @@ abstract class AbstractQuery
             if ($this->_queryCacheProfile) {
                 $this->_queryCacheProfile = new QueryCacheProfile($this->_queryCacheProfile->getLifetime(), $this->_queryCacheProfile->getCacheKey());
             }
-
-            return $this;
-        }
-
-        // DBAL 2
-        if (! method_exists(QueryCacheProfile::class, 'setResultCache')) {
-            $resultCacheDriver = DoctrineProvider::wrap($resultCache);
-
-            $this->_queryCacheProfile = $this->_queryCacheProfile
-                ? $this->_queryCacheProfile->setResultCacheDriver($resultCacheDriver)
-                : new QueryCacheProfile(0, null, $resultCacheDriver);
 
             return $this;
         }
@@ -748,13 +717,6 @@ abstract class AbstractQuery
 
         $cache = $this->_em->getConfiguration()->getResultCache();
         if (! $cache) {
-            return $this;
-        }
-
-        // Compatibility for DBAL 2
-        if (! method_exists($this->_queryCacheProfile, 'setResultCache')) {
-            $this->_queryCacheProfile = $this->_queryCacheProfile->setResultCacheDriver(DoctrineProvider::wrap($cache));
-
             return $this;
         }
 
@@ -1040,45 +1002,6 @@ abstract class AbstractQuery
     }
 
     /**
-     * Executes the query and returns an IterableResult that can be used to incrementally
-     * iterate over the result.
-     *
-     * @deprecated 2.8 Use {@see toIterable} instead. See https://github.com/doctrine/orm/issues/8463
-     *
-     * @param ArrayCollection|mixed[]|null $parameters    The query parameters.
-     * @param string|int|null              $hydrationMode The hydration mode to use.
-     * @psalm-param string|AbstractQuery::HYDRATE_*|null $hydrationMode The hydration mode to use.
-     *
-     * @return IterableResult
-     */
-    public function iterate($parameters = null, $hydrationMode = null)
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/8463',
-            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use toIterable() instead.',
-            __METHOD__
-        );
-
-        if ($hydrationMode !== null) {
-            $this->setHydrationMode($hydrationMode);
-        }
-
-        if (! empty($parameters)) {
-            $this->setParameters($parameters);
-        }
-
-        $rsm = $this->getResultSetMapping();
-        if ($rsm === null) {
-            throw new LogicException('Uninitialized result set mapping.');
-        }
-
-        $stmt = $this->_doExecute();
-
-        return $this->_em->newHydrator($this->_hydrationMode)->iterate($stmt, $rsm, $this->_hints);
-    }
-
-    /**
      * Executes the query and returns an iterable that can be used to incrementally
      * iterate over the result.
      *
@@ -1201,14 +1124,6 @@ abstract class AbstractQuery
     private function getHydrationCache(): CacheItemPoolInterface
     {
         assert($this->_hydrationCacheProfile !== null);
-
-        // Support for DBAL 2
-        if (! method_exists($this->_hydrationCacheProfile, 'getResultCache')) {
-            $cacheDriver = $this->_hydrationCacheProfile->getResultCacheDriver();
-            assert($cacheDriver !== null);
-
-            return CacheAdapter::wrap($cacheDriver);
-        }
 
         $cache = $this->_hydrationCacheProfile->getResultCache();
         assert($cache !== null);

@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
-use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
@@ -36,7 +34,6 @@ use function implode;
 use function in_array;
 use function is_array;
 use function is_numeric;
-use function method_exists;
 use function strtolower;
 
 /**
@@ -74,9 +71,7 @@ class SchemaTool
         $this->em            = $em;
         $this->platform      = $em->getConnection()->getDatabasePlatform();
         $this->quoteStrategy = $em->getConfiguration()->getQuoteStrategy();
-        $this->schemaManager = method_exists(Connection::class, 'createSchemaManager')
-            ? $em->getConnection()->createSchemaManager()
-            : $em->getConnection()->getSchemaManager();
+        $this->schemaManager = $em->getConnection()->createSchemaManager();
     }
 
     /**
@@ -398,7 +393,7 @@ class SchemaTool
             }
         }
 
-        if (! $this->platform->supportsSchemas() && ! $this->platform->canEmulateSchemas()) {
+        if (! $this->platform->supportsSchemas()) {
             $schema->visit(new RemoveNamespacedAssets());
         }
 
@@ -929,13 +924,7 @@ class SchemaTool
     {
         $toSchema   = $this->getSchemaFromMetadata($classes);
         $fromSchema = $this->createSchemaForComparison($toSchema);
-
-        if (method_exists($this->schemaManager, 'createComparator')) {
-            $comparator = $this->schemaManager->createComparator();
-        } else {
-            $comparator = new Comparator();
-        }
-
+        $comparator = $this->schemaManager->createComparator();
         $schemaDiff = $comparator->compareSchemas($fromSchema, $toSchema);
 
         if ($saveMode) {

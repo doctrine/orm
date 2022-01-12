@@ -15,15 +15,9 @@ use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
-use Doctrine\ORM\Cache\Exception\CacheException;
-use Doctrine\ORM\Cache\Exception\MetadataCacheNotConfigured;
-use Doctrine\ORM\Cache\Exception\MetadataCacheUsesNonPersistentCache;
-use Doctrine\ORM\Cache\Exception\QueryCacheNotConfigured;
-use Doctrine\ORM\Cache\Exception\QueryCacheUsesNonPersistentCache;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Exception\NamedNativeQueryNotFound;
 use Doctrine\ORM\Exception\NamedQueryNotFound;
-use Doctrine\ORM\Exception\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Exception\UnknownEntityNamespace;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -43,7 +37,6 @@ use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
 
 use function class_exists;
-use function method_exists;
 use function strtolower;
 use function trim;
 
@@ -250,36 +243,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function getMetadataDriverImpl()
     {
         return $this->_attributes['metadataDriverImpl'] ?? null;
-    }
-
-    /**
-     * Gets the cache driver implementation that is used for query result caching.
-     */
-    public function getResultCache(): ?CacheItemPoolInterface
-    {
-        // Compatibility with DBAL 2
-        if (! method_exists(parent::class, 'getResultCache')) {
-            $cacheImpl = $this->getResultCacheImpl();
-
-            return $cacheImpl ? CacheAdapter::wrap($cacheImpl) : null;
-        }
-
-        return parent::getResultCache();
-    }
-
-    /**
-     * Sets the cache driver implementation that is used for query result caching.
-     */
-    public function setResultCache(CacheItemPoolInterface $cache): void
-    {
-        // Compatibility with DBAL 2
-        if (! method_exists(parent::class, 'setResultCache')) {
-            $this->setResultCacheImpl(DoctrineProvider::wrap($cache));
-
-            return;
-        }
-
-        parent::setResultCache($cache);
     }
 
     /**
@@ -505,52 +468,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         return $this->_attributes['namedNativeQueries'][$name];
-    }
-
-    /**
-     * Ensures that this Configuration instance contains settings that are
-     * suitable for a production environment.
-     *
-     * @deprecated
-     *
-     * @return void
-     *
-     * @throws ProxyClassesAlwaysRegenerating
-     * @throws CacheException If a configuration setting has a value that is not
-     *                        suitable for a production environment.
-     */
-    public function ensureProductionSettings()
-    {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/9074',
-            '%s is deprecated',
-            __METHOD__
-        );
-
-        $queryCacheImpl = $this->getQueryCacheImpl();
-
-        if (! $queryCacheImpl) {
-            throw QueryCacheNotConfigured::create();
-        }
-
-        if ($queryCacheImpl instanceof ArrayCache) {
-            throw QueryCacheUsesNonPersistentCache::fromDriver($queryCacheImpl);
-        }
-
-        if ($this->getAutoGenerateProxyClasses()) {
-            throw ProxyClassesAlwaysRegenerating::create();
-        }
-
-        if (! $this->getMetadataCache()) {
-            throw MetadataCacheNotConfigured::create();
-        }
-
-        $metadataCacheImpl = $this->getMetadataCacheImpl();
-
-        if ($metadataCacheImpl instanceof ArrayCache) {
-            throw MetadataCacheUsesNonPersistentCache::fromDriver($metadataCacheImpl);
-        }
     }
 
     /**

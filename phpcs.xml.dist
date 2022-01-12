@@ -9,7 +9,7 @@
     <!-- Ignore warnings, show progress of the run and show sniff names -->
     <arg value="nps"/>
 
-    <config name="php_version" value="70100"/>
+    <config name="php_version" value="80000"/>
 
     <file>lib</file>
     <file>tests</file>
@@ -26,6 +26,7 @@
         <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit"/>
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming"/>
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming"/>
+        <exclude name="SlevomatCodingStandard.Classes.ModernClassNameReference.ClassNameReferencedViaFunctionCall"/>
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint">
@@ -231,7 +232,6 @@
         <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AnnotationExporter.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php</exclude-pattern>
         <!-- the impact of changing this would be too big -->
         <exclude-pattern>tests/Doctrine/Tests/OrmFunctionalTestCase.php</exclude-pattern>
     </rule>

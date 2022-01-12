@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Repository\Exception;
 
-use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\RepositoryException;
+use LogicException;
 
-final class InvalidFindByCall extends ORMException implements RepositoryException
+final class InvalidFindByCall extends LogicException implements RepositoryException
 {
     public static function fromInverseSideUsage(
         string $entityName,

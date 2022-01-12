@@ -103,7 +103,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     protected function createClassMetadataFactory(?EntityManagerInterface $em = null): ClassMetadataFactory
     {
         $driver  = $this->loadDriver();
-        $em      = $em ?? $this->getTestEntityManager();
+        $em    ??= $this->getTestEntityManager();
         $factory = new ClassMetadataFactory();
         $em->getConfiguration()->setMetadataDriverImpl($driver);
         $factory->setEntityManager($em);
@@ -291,10 +291,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
     public function testFieldTypeFromReflection(): void
     {
-        if (PHP_VERSION_ID < 70400) {
-            self::markTestSkipped('requies PHP 7.4');
-        }
-
         $class = $this->createClassMetadata(UserTyped::class);
 
         self::assertEquals('integer', $class->getTypeOfField('id'));

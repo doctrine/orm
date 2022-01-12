@@ -19,16 +19,11 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.2"
-          - "7.3"
-          - "7.4"
           - "8.0"
           - "8.1"
         dbal-version:
           - "default"
         include:
-          - php-version: "8.0"
-            dbal-version: "2.13"
           - php-version: "8.1"
             dbal-version: "3.2@dev"
 
@@ -78,16 +73,12 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.4"
+          - "8.0"
         dbal-version:
           - "default"
         postgres-version:
           - "9.6"
           - "13"
-        include:
-          - php-version: "8.0"
-            dbal-version: "2.13"
-            postgres-version: "13"
 
     services:
       postgres:
@@ -139,7 +130,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.4"
+          - "8.0"
         dbal-version:
           - "default"
         mariadb-version:
@@ -147,11 +138,6 @@ jobs:
         extension:
           - "mysqli"
           - "pdo_mysql"
-        include:
-          - php-version: "8.0"
-            dbal-version: "2.13"
-            mariadb-version: "10.5"
-            extension: "pdo_mysql"
 
     services:
       mariadb:
@@ -205,7 +191,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.4"
+          - "8.0"
         dbal-version:
           - "default"
         mysql-version:
@@ -214,11 +200,6 @@ jobs:
         extension:
           - "mysqli"
           - "pdo_mysql"
-        include:
-          - php-version: "8.0"
-            dbal-version: "2.13"
-            mysql-version: "8.0"
-            extension: "pdo_mysql"
 
     services:
       mysql:
@@ -268,39 +249,6 @@ jobs:
         with:
           name: "${{ github.job }}-${{ matrix.mysql-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage*.xml"
-
-
-  phpunit-lower-php-versions:
-    name: "PHPUnit with SQLite"
-    runs-on: "ubuntu-20.04"
-
-    strategy:
-      matrix:
-        php-version:
-          - "7.1"
-        deps:
-          - "highest"
-          - "lowest"
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v2"
-        with:
-          fetch-depth: 2
-
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          php-version: "${{ matrix.php-version }}"
-          ini-values: "zend.assertions=1"
-
-      - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v1"
-        with:
-          dependency-versions: "${{ matrix.deps }}"
-
-      - name: "Run PHPUnit"
-        run: "vendor/bin/phpunit -c ci/github/phpunit/sqlite.xml"
 
 
   upload_coverage:

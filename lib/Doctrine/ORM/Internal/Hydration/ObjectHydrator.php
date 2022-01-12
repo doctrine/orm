@@ -47,10 +47,7 @@ class ObjectHydrator extends AbstractHydrator
     /** @var mixed[] */
     private $existingCollections = [];
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function prepare()
+    protected function prepare(): void
     {
         if (! isset($this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD])) {
             $this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD] = true;
@@ -103,10 +100,7 @@ class ObjectHydrator extends AbstractHydrator
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function cleanup()
+    protected function cleanup(): void
     {
         $eagerLoad = isset($this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD]) && $this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD] === true;
 
@@ -135,7 +129,7 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    protected function hydrateAllData()
+    protected function hydrateAllData(): array
     {
         $result = [];
 
@@ -302,10 +296,8 @@ class ObjectHydrator extends AbstractHydrator
      *
      * @param mixed[] $row    The data of the row to process.
      * @param mixed[] $result The result array to fill.
-     *
-     * @return void
      */
-    protected function hydrateRowData(array $row, array &$result)
+    protected function hydrateRowData(array $row, array &$result): void
     {
         // Initialize
         $id                 = $this->idTemplate; // initialize the id-memory
@@ -561,12 +553,8 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * When executed in a hydrate() loop we may have to clear internal state to
      * decrease memory consumption.
-     *
-     * @param mixed $eventArgs
-     *
-     * @return void
      */
-    public function onClear($eventArgs)
+    public function onClear(mixed $eventArgs): void
     {
         parent::onClear($eventArgs);
 

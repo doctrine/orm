@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
-use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function array_map;
 
@@ -27,7 +25,6 @@ class DefaultRegionTest extends AbstractRegionTest
     public function testGetters(): void
     {
         self::assertEquals('default.region.test', $this->region->getName());
-        self::assertSame($this->cacheItemPool, $this->region->getCache()->getPool());
     }
 
     public function testSharedRegion(): void
@@ -50,18 +47,6 @@ class DefaultRegionTest extends AbstractRegionTest
 
         self::assertFalse($region1->contains($key));
         self::assertTrue($region2->contains($key));
-    }
-
-    public function testDoesNotModifyCacheNamespace(): void
-    {
-        $cache = DoctrineProvider::wrap(new ArrayAdapter());
-
-        $cache->setNamespace('foo');
-
-        new DefaultRegion('bar', $cache);
-        new DefaultRegion('baz', $cache);
-
-        self::assertSame('foo', $cache->getNamespace());
     }
 
     public function testGetMulti(): void

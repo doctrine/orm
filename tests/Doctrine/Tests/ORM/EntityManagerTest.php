@@ -223,12 +223,10 @@ class EntityManagerTest extends OrmTestCase
     }
 
     /**
-     * @param mixed $expectedValue
-     *
      * @dataProvider dataToBeReturnedByWrapInTransaction
      * @group DDC-1125
      */
-    public function testWrapInTransactionAcceptsReturn($expectedValue): void
+    public function testWrapInTransactionAcceptsReturn(mixed $expectedValue): void
     {
         $return = $this->entityManager->wrapInTransaction(
             /** @return mixed */
@@ -240,38 +238,6 @@ class EntityManagerTest extends OrmTestCase
         $this->assertSame($expectedValue, $return);
     }
 
-    /**
-     * @group DDC-1125
-     */
-    public function testTransactionalAcceptsReturn(): void
-    {
-        $return = $this->entityManager->transactional(static function ($em) {
-            return 'foo';
-        });
-
-        self::assertEquals('foo', $return);
-    }
-
-    public function testTransactionalAcceptsVariousCallables(): void
-    {
-        self::assertSame('callback', $this->entityManager->transactional([$this, 'transactionalCallback']));
-    }
-
-    public function testTransactionalThrowsInvalidArgumentExceptionIfNonCallablePassed(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected argument of type "callable", got "object"');
-
-        $this->entityManager->transactional($this);
-    }
-
-    public function transactionalCallback($em): string
-    {
-        self::assertSame($this->entityManager, $em);
-
-        return 'callback';
-    }
-
     public function testCreateInvalidConnection(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -280,24 +246,6 @@ class EntityManagerTest extends OrmTestCase
         $config = new Configuration();
         $config->setMetadataDriverImpl($this->createMock(MappingDriver::class));
         EntityManager::create(1, $config);
-    }
-
-    /**
-     * @group #5796
-     */
-    public function testTransactionalReThrowsThrowables(): void
-    {
-        try {
-            $this->entityManager->transactional(static function (): void {
-                (static function (array $value): void {
-                    // this only serves as an IIFE that throws a `TypeError`
-                })(null);
-            });
-
-            self::fail('TypeError expected to be thrown');
-        } catch (TypeError $ignored) {
-            self::assertFalse($this->entityManager->isOpen());
-        }
     }
 
     /**

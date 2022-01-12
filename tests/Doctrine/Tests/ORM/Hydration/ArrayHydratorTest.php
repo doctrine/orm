@@ -17,7 +17,7 @@ use Doctrine\Tests\Models\Forum\ForumCategory;
 class ArrayHydratorTest extends HydrationTestCase
 {
     /**
-     * @psalm-return list<array{mixed}>
+     * @psalm-return list<array{int|string}>
      */
     public function provideDataForUserEntityResult(): array
     {
@@ -73,7 +73,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testSimpleEntityWithScalarQuery($userEntityKey): void
+    public function testSimpleEntityWithScalarQuery(int|string $userEntityKey): void
     {
         $alias = $userEntityKey ?: 'u';
         $rsm   = new ResultSetMapping();
@@ -381,7 +381,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryNormalJoin($userEntityKey): void
+    public function testMixedQueryNormalJoin(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
 
@@ -430,7 +430,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryFetchJoin($userEntityKey): void
+    public function testMixedQueryFetchJoin(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
 
@@ -501,7 +501,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryFetchJoinCustomIndex($userEntityKey): void
+    public function testMixedQueryFetchJoinCustomIndex(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
 
@@ -931,7 +931,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testChainedJoinWithScalars($entityKey): void
+    public function testChainedJoinWithScalars(int|string $entityKey): void
     {
         $rsm = new ResultSetMapping();
 
@@ -1023,19 +1023,16 @@ class ArrayHydratorTest extends HydrationTestCase
 
         $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
-        $iterator = $hydrator->iterate($stmt, $rsm);
+        $iterator = $hydrator->toIterable($stmt, $rsm);
         $rowNum   = 0;
 
-        while (($row = $iterator->next()) !== false) {
-            self::assertCount(1, $row);
-            self::assertIsArray($row[0]);
-
+        foreach ($iterator as $row) {
             if ($rowNum === 0) {
-                self::assertEquals(1, $row[0]['id']);
-                self::assertEquals('romanb', $row[0]['name']);
+                self::assertEquals(1, $row['id']);
+                self::assertEquals('romanb', $row['name']);
             } elseif ($rowNum === 1) {
-                self::assertEquals(2, $row[0]['id']);
-                self::assertEquals('jwage', $row[0]['name']);
+                self::assertEquals(2, $row['id']);
+                self::assertEquals('jwage', $row['name']);
             }
 
             ++$rowNum;
@@ -1068,20 +1065,18 @@ class ArrayHydratorTest extends HydrationTestCase
 
         $stmt     = ArrayResultFactory::createFromArray($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
-        $iterator = $hydrator->iterate($stmt, $rsm);
+        $iterator = $hydrator->toIterable($stmt, $rsm);
         $rowNum   = 0;
 
-        while (($row = $iterator->next()) !== false) {
-            self::assertCount(1, $row);
-            self::assertArrayHasKey(0, $row);
-            self::assertArrayHasKey('user', $row[0]);
+        foreach ($iterator as $row) {
+            self::assertArrayHasKey('user', $row);
 
             if ($rowNum === 0) {
-                self::assertEquals(1, $row[0]['user']['id']);
-                self::assertEquals('romanb', $row[0]['user']['name']);
+                self::assertEquals(1, $row['user']['id']);
+                self::assertEquals('romanb', $row['user']['name']);
             } elseif ($rowNum === 1) {
-                self::assertEquals(2, $row[0]['user']['id']);
-                self::assertEquals('jwage', $row[0]['user']['name']);
+                self::assertEquals(2, $row['user']['id']);
+                self::assertEquals('jwage', $row['user']['name']);
             }
 
             ++$rowNum;
@@ -1128,7 +1123,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * @group DDC-1358
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMissingIdForRootEntity($userEntityKey): void
+    public function testMissingIdForRootEntity(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
 
@@ -1187,7 +1182,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * @group DDC-1385
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testIndexByAndMixedResult($userEntityKey): void
+    public function testIndexByAndMixedResult(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
 

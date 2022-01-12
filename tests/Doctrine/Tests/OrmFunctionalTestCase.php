@@ -41,7 +41,6 @@ use function get_debug_type;
 use function getenv;
 use function implode;
 use function is_object;
-use function method_exists;
 use function realpath;
 use function sprintf;
 use function strpos;
@@ -807,9 +806,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
     final protected function createSchemaManager(): AbstractSchemaManager
     {
-        return method_exists(Connection::class, 'createSchemaManager')
-            ? $this->_em->getConnection()->createSchemaManager()
-            : $this->_em->getConnection()->getSchemaManager();
+        return $this->_em->getConnection()->createSchemaManager();
     }
 
     /**

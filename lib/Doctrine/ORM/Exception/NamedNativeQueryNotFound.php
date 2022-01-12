@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Exception;
 
+use LogicException;
+
 use function sprintf;
 
-final class NamedNativeQueryNotFound extends ORMException implements ConfigurationException
+final class NamedNativeQueryNotFound extends LogicException implements ConfigurationException
 {
     public static function fromName(string $name): self
     {

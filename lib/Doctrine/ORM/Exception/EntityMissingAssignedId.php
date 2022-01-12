@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Exception;
 
+use LogicException;
+
 use function get_debug_type;
 
-final class EntityMissingAssignedId extends ORMException
+final class EntityMissingAssignedId extends LogicException implements ORMException
 {
     /**
      * @param object $entity

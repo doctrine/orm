@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -16,7 +15,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_filter;
 use function current;
-use function method_exists;
 use function sprintf;
 use function strpos;
 
@@ -75,28 +73,11 @@ final class GH7875Test extends OrmFunctionalTestCase
         self::assertCount(1, $this->filterCreateTable($sqls, 'gh7875_my_other_entity'));
     }
 
-    /**
-     * @return array<array<string|callable|null>>
-     */
-    public function provideUpdateSchemaSqlWithSchemaAssetFilter(): array
+    public function testUpdateSchemaSqlWithSchemaAssetFilter(): void
     {
-        return [
-            ['/^(?!my_enti)/', null],
-            [
-                null,
-                static function ($assetName): bool {
-                    return $assetName !== 'gh7875_my_entity';
-                },
-            ],
-        ];
-    }
-
-    /** @dataProvider provideUpdateSchemaSqlWithSchemaAssetFilter */
-    public function testUpdateSchemaSqlWithSchemaAssetFilter(?string $filterRegex, ?callable $filterCallback): void
-    {
-        if ($filterRegex && ! method_exists(Configuration::class, 'setFilterSchemaAssetsExpression')) {
-            self::markTestSkipped(sprintf('Test require %s::setFilterSchemaAssetsExpression method', Configuration::class));
-        }
+        $filterCallback = static function ($assetName): bool {
+            return $assetName !== 'gh7875_my_entity';
+        };
 
         $classes = [$this->_em->getClassMetadata(GH7875MyEntity::class)];
 
@@ -104,11 +85,7 @@ final class GH7875Test extends OrmFunctionalTestCase
         $tool->createSchema($classes);
 
         $config = $this->_em->getConnection()->getConfiguration();
-        if ($filterRegex) {
-            $config->setFilterSchemaAssetsExpression($filterRegex);
-        } else {
-            $config->setSchemaAssetsFilter($filterCallback);
-        }
+        $config->setSchemaAssetsFilter($filterCallback);
 
         $previousFilter = $config->getSchemaAssetsFilter();
 

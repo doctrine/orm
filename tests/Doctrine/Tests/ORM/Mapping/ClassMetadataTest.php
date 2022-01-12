@@ -118,10 +118,6 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testFieldIsNullableByType(): void
     {
-        if (PHP_VERSION_ID < 70400) {
-            self::markTestSkipped('requies PHP 7.4');
-        }
-
         $cm = new ClassMetadata(TypedProperties\UserTyped::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
@@ -137,10 +133,6 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testFieldTypeFromReflection(): void
     {
-        if (PHP_VERSION_ID < 70400) {
-            self::markTestSkipped('requies PHP 7.4');
-        }
-
         $cm = new ClassMetadata(TypedProperties\UserTyped::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 

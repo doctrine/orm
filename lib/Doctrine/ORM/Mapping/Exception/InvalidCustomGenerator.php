@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\Exception;
 
 use Doctrine\ORM\Exception\ORMException;
+use LogicException;
 
 use function sprintf;
 use function var_export;
 
-final class InvalidCustomGenerator extends ORMException
+final class InvalidCustomGenerator extends LogicException implements ORMException
 {
     public static function onClassNotConfigured(): self
     {

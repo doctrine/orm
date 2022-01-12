@@ -78,7 +78,7 @@ class ReadonlyPropertiesTest extends OrmFunctionalTestCase
         [$book] = $this->_em->createQueryBuilder()
             ->from(SimpleBook::class, 'b')
             ->join('b.author', 'a')
-            ->select(['b', 'a'])
+            ->select('b', 'a')
             ->where('b.id = :id')
             ->setParameter('id', $bookId)
             ->getQuery()

@@ -140,15 +140,6 @@ class ClassMetadataInfo implements ClassMetadata
     public const GENERATOR_TYPE_SEQUENCE = 2;
 
     /**
-     * TABLE means a separate table is used for id generation.
-     * Offers full portability (in that it results in an exception being thrown
-     * no matter the platform).
-     *
-     * @deprecated no replacement planned
-     */
-    public const GENERATOR_TYPE_TABLE = 3;
-
-    /**
      * IDENTITY means an identity column is used for id generation. The database
      * will fill in the id column on insertion. Platforms that do not support
      * native identity columns may emulate them. Full portability is currently
@@ -161,14 +152,6 @@ class ClassMetadataInfo implements ClassMetadata
      * must have a natural, manually assigned id.
      */
     public const GENERATOR_TYPE_NONE = 5;
-
-    /**
-     * UUID means that a UUID/GUID expression is used for id generation. Full
-     * portability is currently not guaranteed.
-     *
-     * @deprecated use an application-side generator instead
-     */
-    public const GENERATOR_TYPE_UUID = 6;
 
     /**
      * CUSTOM means that customer will use own ID generator that supposedly work
@@ -1495,8 +1478,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     private function isTypedProperty(string $name): bool
     {
-        return PHP_VERSION_ID >= 70400
-               && isset($this->reflClass)
+        return isset($this->reflClass)
                && $this->reflClass->hasProperty($name)
                && $this->reflClass->getProperty($name)->hasType();
     }
@@ -2311,25 +2293,6 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Checks whether the class uses a table for id generation.
-     *
-     * @deprecated
-     *
-     * @return false
-     */
-    public function isIdGeneratorTable()
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/9046',
-            '%s is deprecated',
-            __METHOD__
-        );
-
-        return false;
-    }
-
-    /**
      * Checks whether the class has a natural identifier/pk (which means it does
      * not use any Id generator.
      *
@@ -2338,25 +2301,6 @@ class ClassMetadataInfo implements ClassMetadata
     public function isIdentifierNatural()
     {
         return $this->generatorType === self::GENERATOR_TYPE_NONE;
-    }
-
-    /**
-     * Checks whether the class use a UUID for id generation.
-     *
-     * @deprecated
-     *
-     * @return bool
-     */
-    public function isIdentifierUuid()
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/9046',
-            '%s is deprecated',
-            __METHOD__
-        );
-
-        return $this->generatorType === self::GENERATOR_TYPE_UUID;
     }
 
     /**
@@ -3750,12 +3694,12 @@ class ClassMetadataInfo implements ClassMetadata
     public function inlineEmbeddable($property, ClassMetadataInfo $embeddable)
     {
         foreach ($embeddable->fieldMappings as $fieldMapping) {
-            $fieldMapping['originalClass'] = $fieldMapping['originalClass'] ?? $embeddable->name;
-            $fieldMapping['declaredField'] = isset($fieldMapping['declaredField'])
+            $fieldMapping['originalClass'] ??= $embeddable->name;
+            $fieldMapping['declaredField']   = isset($fieldMapping['declaredField'])
                 ? $property . '.' . $fieldMapping['declaredField']
                 : $property;
-            $fieldMapping['originalField'] = $fieldMapping['originalField'] ?? $fieldMapping['fieldName'];
-            $fieldMapping['fieldName']     = $property . '.' . $fieldMapping['fieldName'];
+            $fieldMapping['originalField'] ??= $fieldMapping['fieldName'];
+            $fieldMapping['fieldName']       = $property . '.' . $fieldMapping['fieldName'];
 
             if (! empty($this->embeddedClasses[$property]['columnPrefix'])) {
                 $fieldMapping['columnName'] = $this->embeddedClasses[$property]['columnPrefix'] . $fieldMapping['columnName'];
@@ -3818,10 +3762,6 @@ class ClassMetadataInfo implements ClassMetadata
         $schemaName = $this->getSchemaName();
         if ($schemaName) {
             $sequencePrefix = $schemaName . '.' . $tableName;
-
-            if (! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
-                $sequencePrefix = $schemaName . '__' . $tableName;
-            }
         }
 
         return $sequencePrefix;

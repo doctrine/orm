@@ -83,7 +83,6 @@ that directory with the following contents:
         "require": {
             "doctrine/orm": "^2.10.2",
             "doctrine/dbal": "^3.1.1",
-            "symfony/yaml": "2.*",
             "symfony/cache": "^5.3"
         },
         "autoload": {
@@ -107,12 +106,8 @@ Add the following directories:
     doctrine2-tutorial
     |-- config
     |   `-- xml
-    |   `-- yaml
     `-- src
 
-.. note::
-    The YAML driver is deprecated and will be removed in version 3.0.
-    It is strongly recommended to switch to one of the other mappings.
 .. note::
     It is strongly recommended that you require ``doctrine/dbal`` in your
     ``composer.json`` as well, because using the ORM means mapping objects
@@ -147,9 +142,8 @@ step:
     $cache = null;
     $useSimpleAnnotationReader = false;
     $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
-    // or if you prefer yaml or XML
+    // or if you prefer XML
     // $config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
-    // $config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
 
     // database configuration parameters
     $conn = array(
@@ -159,10 +153,6 @@ step:
 
     // obtaining the entity manager
     $entityManager = EntityManager::create($conn, $config);
-
-.. note::
-    The YAML driver is deprecated and will be removed in version 3.0.
-    It is strongly recommended to switch to one of the other mappings.
 
 .. note::
     It is recommended not to use the SimpleAnnotationReader because its
@@ -487,7 +477,7 @@ language describes how entities, their properties and references should be
 persisted and what constraints should be applied to them.
 
 Metadata for an Entity can be configured using DocBlock annotations directly
-in the Entity class itself, or in an external XML or YAML file. This Getting
+in the Entity class itself, or in an external XML file. This Getting
 Started guide will demonstrate metadata mappings using all three methods,
 but you only need to choose one.
 
@@ -536,25 +526,6 @@ but you only need to choose one.
                   <field name="name" type="string" />
               </entity>
         </doctrine-mapping>
-
-.. note::
-    The YAML driver is deprecated and will be removed in version 3.0.
-    It is strongly recommended to switch to one of the other mappings.
-
-    .. code-block:: yaml
-
-        # config/yaml/Product.dcm.yml
-        Product:
-          type: entity
-          table: products
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            name:
-              type: string
 
 The top-level ``entity`` definition specifies information about
 the class and table name. The primitive type ``Product#name`` is
@@ -1109,40 +1080,6 @@ the ``Product`` before:
             </entity>
         </doctrine-mapping>
 
-.. note::
-    The YAML driver is deprecated and will be removed in version 3.0.
-    It is strongly recommended to switch to one of the other mappings.
-
-    .. code-block:: yaml
-
-        # config/yaml/Bug.dcm.yml
-        Bug:
-          type: entity
-          table: bugs
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            description:
-              type: text
-            created:
-              type: datetime
-            status:
-              type: string
-          manyToOne:
-            reporter:
-              targetEntity: User
-              inversedBy: reportedBugs
-            engineer:
-              targetEntity: User
-              inversedBy: assignedBugs
-          manyToMany:
-            products:
-              targetEntity: Product
-
-
 Here we have the entity, id and primitive type definitions.
 For the "created" field we have used the ``datetime`` type,
 which translates the YYYY-mm-dd HH:mm:ss database format
@@ -1230,32 +1167,6 @@ Finally, we'll add metadata mappings for the ``User`` entity.
                  <one-to-many target-entity="Bug" field="assignedBugs" mapped-by="engineer" />
              </entity>
         </doctrine-mapping>
-
-.. note::
-    The YAML driver is deprecated and will be removed in version 3.0.
-    It is strongly recommended to switch to one of the other mappings.
-
-    .. code-block:: yaml
-
-        # config/yaml/User.dcm.yml
-        User:
-          type: entity
-          table: users
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            name:
-              type: string
-          oneToMany:
-            reportedBugs:
-              targetEntity: Bug
-              mappedBy: reporter
-            assignedBugs:
-              targetEntity: Bug
-              mappedBy: engineer
 
 Here are some new things to mention about the ``one-to-many`` tags.
 Remember that we discussed about the inverse and owning side. Now
@@ -1766,16 +1677,6 @@ we have to adjust the metadata slightly.
 
               </entity>
         </doctrine-mapping>
-
-.. note::
-    The YAML driver is deprecated and will be removed in version 3.0.
-    It is strongly recommended to switch to one of the other mappings.
-
-    .. code-block:: yaml
-
-        Bug:
-          type: entity
-          repositoryClass: BugRepository
 
 Now we can remove our query logic in all the places and instead use them through the EntityRepository.
 As an example here is the code of the first use case "List of Bugs":

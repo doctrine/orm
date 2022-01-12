@@ -9,7 +9,6 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
-use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\Tests\OrmTestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -51,13 +50,6 @@ class SetupTest extends OrmTestCase
         }
     }
 
-    public function testDirectoryAutoload(): void
-    {
-        Setup::registerAutoloadDirectory(__DIR__ . '/../../../../../vendor/doctrine/common/lib');
-
-        self::assertCount($this->originalAutoloaderCount + 2, spl_autoload_functions());
-    }
-
     public function testAnnotationConfiguration(): void
     {
         $config = Setup::createAnnotationMetadataConfiguration([], true);
@@ -87,14 +79,6 @@ class SetupTest extends OrmTestCase
 
         self::assertInstanceOf(Configuration::class, $config);
         self::assertInstanceOf(XmlDriver::class, $config->getMetadataDriverImpl());
-    }
-
-    public function testYAMLConfiguration(): void
-    {
-        $config = Setup::createYAMLMetadataConfiguration([], true);
-
-        self::assertInstanceOf(Configuration::class, $config);
-        self::assertInstanceOf(YamlDriver::class, $config->getMetadataDriverImpl());
     }
 
     /**

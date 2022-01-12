@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Exception;
 
+use LogicException;
+
 use function implode;
 use function sprintf;
 
-final class UnrecognizedIdentifierFields extends ORMException implements ManagerException
+final class UnrecognizedIdentifierFields extends LogicException implements ManagerException
 {
     /**
      * @param string[] $fieldNames

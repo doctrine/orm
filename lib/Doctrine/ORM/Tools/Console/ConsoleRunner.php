@@ -16,7 +16,6 @@ use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Helper\HelperSet;
 
 use function assert;
-use function class_exists;
 
 /**
  * Handles running the Console Tools inside Symfony Console context.
@@ -28,22 +27,15 @@ final class ConsoleRunner
      */
     public static function createHelperSet(EntityManagerInterface $entityManager): HelperSet
     {
-        $helpers = ['em' => new EntityManagerHelper($entityManager)];
-
-        if (class_exists(DBALConsole\Helper\ConnectionHelper::class)) {
-            $helpers['db'] = new DBALConsole\Helper\ConnectionHelper($entityManager->getConnection());
-        }
-
-        return new HelperSet($helpers);
+        return new HelperSet(['em' => new EntityManagerHelper($entityManager)]);
     }
 
     /**
      * Runs console with the given helper set.
      *
-     * @param HelperSet|EntityManagerProvider $helperSetOrProvider
-     * @param SymfonyCommand[]                $commands
+     * @param SymfonyCommand[] $commands
      */
-    public static function run($helperSetOrProvider, array $commands = []): void
+    public static function run(HelperSet|EntityManagerProvider $helperSetOrProvider, array $commands = []): void
     {
         $cli = self::createApplication($helperSetOrProvider, $commands);
         $cli->run();
@@ -53,13 +45,14 @@ final class ConsoleRunner
      * Creates a console application with the given helperset and
      * optional commands.
      *
-     * @param HelperSet|EntityManagerProvider $helperSetOrProvider
-     * @param SymfonyCommand[]                $commands
+     * @param SymfonyCommand[] $commands
      *
      * @throws OutOfBoundsException
      */
-    public static function createApplication($helperSetOrProvider, array $commands = []): Application
-    {
+    public static function createApplication(
+        HelperSet|EntityManagerProvider $helperSetOrProvider,
+        array $commands = []
+    ): Application {
         $version = InstalledVersions::getVersion('doctrine/orm');
         assert($version !== null);
 
@@ -86,10 +79,6 @@ final class ConsoleRunner
 
         $connectionProvider = new ConnectionFromManagerProvider($entityManagerProvider);
 
-        if (class_exists(DBALConsole\Command\ImportCommand::class)) {
-            $cli->add(new DBALConsole\Command\ImportCommand());
-        }
-
         $cli->addCommands(
             [
                 // DBAL Commands
@@ -106,12 +95,7 @@ final class ConsoleRunner
                 new Command\SchemaTool\CreateCommand($entityManagerProvider),
                 new Command\SchemaTool\UpdateCommand($entityManagerProvider),
                 new Command\SchemaTool\DropCommand($entityManagerProvider),
-                new Command\EnsureProductionSettingsCommand($entityManagerProvider),
-                new Command\ConvertDoctrine1SchemaCommand(),
-                new Command\GenerateRepositoriesCommand($entityManagerProvider),
-                new Command\GenerateEntitiesCommand($entityManagerProvider),
                 new Command\GenerateProxiesCommand($entityManagerProvider),
-                new Command\ConvertMappingCommand($entityManagerProvider),
                 new Command\RunDqlCommand($entityManagerProvider),
                 new Command\ValidateSchemaCommand($entityManagerProvider),
                 new Command\InfoCommand($entityManagerProvider),

@@ -19,27 +19,22 @@ use function reset;
 class ArrayHydrator extends AbstractHydrator
 {
     /** @var array<string,bool> */
-    private $_rootAliases = [];
+    private array $_rootAliases = [];
 
-    /** @var bool */
-    private $_isSimpleQuery = false;
-
-    /** @var mixed[] */
-    private $_identifierMap = [];
+    private bool $_isSimpleQuery = false;
 
     /** @var mixed[] */
-    private $_resultPointers = [];
+    private array $_identifierMap = [];
+
+    /** @var mixed[] */
+    private array $_resultPointers = [];
 
     /** @var array<string,string> */
-    private $_idTemplate = [];
+    private array $_idTemplate = [];
 
-    /** @var int */
-    private $_resultCounter = 0;
+    private int $_resultCounter = 0;
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function prepare()
+    protected function prepare(): void
     {
         $this->_isSimpleQuery = count($this->resultSetMapping()->aliasMap) <= 1;
 
@@ -53,7 +48,7 @@ class ArrayHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    protected function hydrateAllData()
+    protected function hydrateAllData(): array
     {
         $result = [];
 
@@ -67,7 +62,7 @@ class ArrayHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    protected function hydrateRowData(array $row, array &$result)
+    protected function hydrateRowData(array $row, array &$result): void
     {
         // 1) Initialize
         $id                 = $this->_idTemplate; // initialize the id-memory
@@ -242,13 +237,13 @@ class ArrayHydrator extends AbstractHydrator
      * Updates the result pointer for an Entity. The result pointers point to the
      * last seen instance of each Entity type. This is used for graph construction.
      *
-     * @param mixed[]|null $coll     The element.
-     * @param bool|int     $index    Index of the element in the collection.
-     * @param bool         $oneToOne Whether it is a single-valued association or not.
+     * @param mixed[]|null     $coll     The element.
+     * @param string|int|false $index    Index of the element in the collection.
+     * @param bool             $oneToOne Whether it is a single-valued association or not.
      */
     private function updateResultPointer(
         ?array &$coll,
-        $index,
+        string|int|false $index,
         string $dqlAlias,
         bool $oneToOne
     ): void {

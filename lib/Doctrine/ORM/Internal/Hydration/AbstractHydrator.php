@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\ForwardCompatibility\Result as ForwardCompatibilityResult;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -19,15 +16,12 @@ use Doctrine\ORM\UnitOfWork;
 use Generator;
 use LogicException;
 use ReflectionClass;
-use TypeError;
 
 use function array_map;
 use function array_merge;
 use function count;
 use function end;
-use function get_debug_type;
 use function in_array;
-use function sprintf;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
@@ -37,64 +31,52 @@ abstract class AbstractHydrator
 {
     /**
      * The ResultSetMapping.
-     *
-     * @var ResultSetMapping|null
      */
-    protected $_rsm;
+    protected ?ResultSetMapping $_rsm = null;
 
     /**
      * The EntityManager instance.
-     *
-     * @var EntityManagerInterface
      */
-    protected $_em;
+    protected EntityManagerInterface $_em;
 
     /**
      * The dbms Platform instance.
-     *
-     * @var AbstractPlatform
      */
-    protected $_platform;
+    protected AbstractPlatform $_platform;
 
     /**
      * The UnitOfWork of the associated EntityManager.
-     *
-     * @var UnitOfWork
      */
-    protected $_uow;
+    protected UnitOfWork $_uow;
 
     /**
      * Local ClassMetadata cache to avoid going to the EntityManager all the time.
      *
      * @var array<string, ClassMetadata<object>>
      */
-    protected $_metadataCache = [];
+    protected array $_metadataCache = [];
 
     /**
      * The cache used during row-by-row hydration.
      *
      * @var array<string, mixed[]|null>
      */
-    protected $_cache = [];
+    protected array $_cache = [];
 
     /**
      * The statement that provides the data to hydrate.
-     *
-     * @var Result|null
      */
-    protected $_stmt;
+    protected ?Result $_stmt = null;
 
     /**
      * The query hints.
      *
      * @var array<string, mixed>
      */
-    protected $_hints = [];
+    protected array $_hints = [];
 
     /**
      * Initializes a new instance of a class derived from <tt>AbstractHydrator</tt>.
-     *
-     * @param EntityManagerInterface $em The EntityManager to use.
      */
     public function __construct(EntityManagerInterface $em)
     {
@@ -106,70 +88,14 @@ abstract class AbstractHydrator
     /**
      * Initiates a row-by-row hydration.
      *
-     * @deprecated
-     *
-     * @param Result|ResultStatement $stmt
-     * @param ResultSetMapping       $resultSetMapping
-     * @psalm-param array<string, mixed> $hints
-     *
-     * @return IterableResult
-     */
-    public function iterate($stmt, $resultSetMapping, array $hints = [])
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/8463',
-            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use toIterable() instead.',
-            __METHOD__
-        );
-
-        $this->_stmt  = $stmt instanceof ResultStatement ? ForwardCompatibilityResult::ensure($stmt) : $stmt;
-        $this->_rsm   = $resultSetMapping;
-        $this->_hints = $hints;
-
-        $evm = $this->_em->getEventManager();
-
-        $evm->addEventListener([Events::onClear], $this);
-
-        $this->prepare();
-
-        return new IterableResult($this);
-    }
-
-    /**
-     * Initiates a row-by-row hydration.
-     *
-     * @param Result|ResultStatement $stmt
      * @psalm-param array<string, mixed> $hints
      *
      * @return Generator<array-key, mixed>
      *
      * @final
      */
-    public function toIterable($stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
+    final public function toIterable(Result $stmt, ResultSetMapping $resultSetMapping, array $hints = []): Generator
     {
-        if (! $stmt instanceof Result) {
-            if (! $stmt instanceof ResultStatement) {
-                throw new TypeError(sprintf(
-                    '%s: Expected parameter $stmt to be an instance of %s or %s, got %s',
-                    __METHOD__,
-                    Result::class,
-                    ResultStatement::class,
-                    get_debug_type($stmt)
-                ));
-            }
-
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/8796',
-                '%s: Passing a result as $stmt that does not implement %s is deprecated and will cause a TypeError on 3.0',
-                __METHOD__,
-                Result::class
-            );
-
-            $stmt = ForwardCompatibilityResult::ensure($stmt);
-        }
-
         $this->_stmt  = $stmt;
         $this->_rsm   = $resultSetMapping;
         $this->_hints = $hints;
@@ -227,36 +153,10 @@ abstract class AbstractHydrator
     /**
      * Hydrates all rows returned by the passed statement instance at once.
      *
-     * @param Result|ResultStatement $stmt
-     * @param ResultSetMapping       $resultSetMapping
      * @psalm-param array<string, string> $hints
-     *
-     * @return mixed[]
      */
-    public function hydrateAll($stmt, $resultSetMapping, array $hints = [])
+    public function hydrateAll(Result $stmt, ResultSetMapping $resultSetMapping, array $hints = []): mixed
     {
-        if (! $stmt instanceof Result) {
-            if (! $stmt instanceof ResultStatement) {
-                throw new TypeError(sprintf(
-                    '%s: Expected parameter $stmt to be an instance of %s or %s, got %s',
-                    __METHOD__,
-                    Result::class,
-                    ResultStatement::class,
-                    get_debug_type($stmt)
-                ));
-            }
-
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/8796',
-                '%s: Passing a result as $stmt that does not implement %s is deprecated and will cause a TypeError on 3.0',
-                __METHOD__,
-                Result::class
-            );
-
-            $stmt = ForwardCompatibilityResult::ensure($stmt);
-        }
-
         $this->_stmt  = $stmt;
         $this->_rsm   = $resultSetMapping;
         $this->_hints = $hints;
@@ -274,66 +174,26 @@ abstract class AbstractHydrator
     }
 
     /**
-     * Hydrates a single row returned by the current statement instance during
-     * row-by-row hydration with {@link iterate()} or {@link toIterable()}.
-     *
-     * @deprecated
-     *
-     * @return mixed[]|false
-     */
-    public function hydrateRow()
-    {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/9072',
-            '%s is deprecated.',
-            __METHOD__
-        );
-
-        $row = $this->statement()->fetchAssociative();
-
-        if ($row === false) {
-            $this->cleanup();
-
-            return false;
-        }
-
-        $result = [];
-
-        $this->hydrateRowData($row, $result);
-
-        return $result;
-    }
-
-    /**
      * When executed in a hydrate() loop we have to clear internal state to
      * decrease memory consumption.
-     *
-     * @param mixed $eventArgs
-     *
-     * @return void
      */
-    public function onClear($eventArgs)
+    public function onClear(mixed $eventArgs): void
     {
     }
 
     /**
      * Executes one-time preparation tasks, once each time hydration is started
-     * through {@link hydrateAll} or {@link iterate()}.
-     *
-     * @return void
+     * through {@link hydrateAll} or {@link toIterable()}.
      */
-    protected function prepare()
+    protected function prepare(): void
     {
     }
 
     /**
      * Executes one-time cleanup tasks at the end of a hydration that was initiated
-     * through {@link hydrateAll} or {@link iterate()}.
-     *
-     * @return void
+     * through {@link hydrateAll} or {@link toIterable()}.
      */
-    protected function cleanup()
+    protected function cleanup(): void
     {
         $this->statement()->free();
 
@@ -360,21 +220,17 @@ abstract class AbstractHydrator
      * @param mixed[] $row    The row data.
      * @param mixed[] $result The result to fill.
      *
-     * @return void
-     *
      * @throws HydrationException
      */
-    protected function hydrateRowData(array $row, array &$result)
+    protected function hydrateRowData(array $row, array &$result): void
     {
         throw new HydrationException('hydrateRowData() not implemented by this hydrator.');
     }
 
     /**
      * Hydrates all rows from the current statement instance at once.
-     *
-     * @return mixed[]
      */
-    abstract protected function hydrateAllData();
+    abstract protected function hydrateAllData(): mixed;
 
     /**
      * Processes a row of the result set.
@@ -402,7 +258,7 @@ abstract class AbstractHydrator
      *                   scalars?: array
      *               }
      */
-    protected function gatherRowData(array $data, array &$id, array &$nonemptyComponents)
+    protected function gatherRowData(array $data, array &$id, array &$nonemptyComponents): array
     {
         $rowData = ['data' => []];
 
@@ -483,7 +339,7 @@ abstract class AbstractHydrator
      * @return mixed[] The processed row.
      * @psalm-return array<string, mixed>
      */
-    protected function gatherScalarRowData(&$data)
+    protected function gatherScalarRowData(array &$data): array
     {
         $rowData = [];
 
@@ -518,7 +374,7 @@ abstract class AbstractHydrator
      * @return mixed[]|null
      * @psalm-return array<string, mixed>|null
      */
-    protected function hydrateColumnInfo($key)
+    protected function hydrateColumnInfo(string $key): ?array
     {
         if (isset($this->_cache[$key])) {
             return $this->_cache[$key];
@@ -626,12 +482,8 @@ abstract class AbstractHydrator
 
     /**
      * Retrieve ClassMetadata associated to entity class name.
-     *
-     * @param string $className
-     *
-     * @return ClassMetadata
      */
-    protected function getClassMetadata($className)
+    protected function getClassMetadata(string $className): ClassMetadata
     {
         if (! isset($this->_metadataCache[$className])) {
             $this->_metadataCache[$className] = $this->_em->getClassMetadata($className);
@@ -643,14 +495,11 @@ abstract class AbstractHydrator
     /**
      * Register entity as managed in UnitOfWork.
      *
-     * @param object  $entity
      * @param mixed[] $data
-     *
-     * @return void
      *
      * @todo The "$id" generation is the same of UnitOfWork#createEntity. Remove this duplication somehow
      */
-    protected function registerManaged(ClassMetadata $class, $entity, array $data)
+    protected function registerManaged(ClassMetadata $class, object $entity, array $data): void
     {
         if ($class->isIdentifierComposite) {
             $id = [];

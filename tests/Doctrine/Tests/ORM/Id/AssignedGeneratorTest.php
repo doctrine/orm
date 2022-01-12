@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Id;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\ORMException;
 use Doctrine\Tests\OrmTestCase;
 
 /**

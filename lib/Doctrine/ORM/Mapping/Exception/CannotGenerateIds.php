@@ -6,11 +6,12 @@ namespace Doctrine\ORM\Mapping\Exception;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Exception\ORMException;
+use LogicException;
 
 use function get_debug_type;
 use function sprintf;
 
-final class CannotGenerateIds extends ORMException
+final class CannotGenerateIds extends LogicException implements ORMException
 {
     public static function withPlatform(AbstractPlatform $platform): self
     {
