@@ -67,7 +67,10 @@ class ClassMetadataTest extends OrmTestCase
         $cm->setDiscriminatorColumn(['name' => 'disc', 'type' => 'integer']);
         $cm->mapOneToOne(['fieldName' => 'phonenumbers', 'targetEntity' => 'CmsAddress', 'mappedBy' => 'foo']);
         $cm->markReadOnly();
+        $cm->mapField(['fieldName' => 'status', 'notInsertable' => true, 'generated' => ClassMetadata::GENERATED_ALWAYS]);
         $cm->addNamedQuery(['name' => 'dql', 'query' => 'foo']);
+
+        self::assertTrue($cm->requiresFetchAfterChange);
         self::assertEquals(1, count($cm->associationMappings));
 
         $serialized = serialize($cm);
@@ -92,6 +95,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals(CMS\CmsAddress::class, $oneOneMapping['targetEntity']);
         self::assertTrue($cm->isReadOnly);
         self::assertEquals(['dql' => ['name' => 'dql', 'query' => 'foo', 'dql' => 'foo']], $cm->namedQueries);
+        self::assertTrue($cm->requiresFetchAfterChange);
     }
 
     public function testFieldIsNullable(): void

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Id;
 
 use BadMethodCallException;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Id\SequenceGenerator;
 use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Mocks\ConnectionMock;
@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmTestCase;
 
 class SequenceGeneratorTest extends OrmTestCase
 {
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     private $entityManager;
 
     /** @var SequenceGenerator */
@@ -45,7 +45,7 @@ class SequenceGeneratorTest extends OrmTestCase
                 $this->connection->setQueryResult(ArrayResultFactory::createFromArray([[(int) ($i / 10) * 10]]));
             }
 
-            $id = $this->sequenceGenerator->generate($this->entityManager, null);
+            $id = $this->sequenceGenerator->generateId($this->entityManager, null);
 
             self::assertSame($i, $id);
             self::assertSame((int) ($i / 10) * 10 + 10, $this->sequenceGenerator->getCurrentMaxValue());

@@ -123,6 +123,18 @@ Optional attributes:
 
 -  **nullable**: Determines if NULL values allowed for this column. If not specified, default value is false.
 
+-  **insertable**: Boolean value to determine if the column should be
+   included when inserting a new row into the underlying entities table. 
+   If not specified, default value is true.
+
+-  **updatable**: Boolean value to determine if the column should be
+   included when updating the row of the underlying entities table.
+   If not specified, default value is true.
+
+-  **generated**: An enum with the possible values ALWAYS, INSERT, NEVER.  Is
+   used after an INSERT or UPDATE statement to determine if the database
+   generated this value and it needs to be fetched using a SELECT statement.
+
 -  **options**: Array of additional options:
 
    -  ``default``: The default value to set for the column if no value
@@ -192,6 +204,13 @@ Examples:
      * @Column(type="integer", name="login_count", nullable=false, options={"unsigned":true, "default":0})
      */
     protected $loginCount;
+
+    /**
+     * Generated column
+     * @Column(type="string", name="user_fullname", insertable=false, updatable=false)
+     * MySQL example: full_name char(41) GENERATED ALWAYS AS (concat(firstname,' ',lastname)),
+     */
+    protected $fullname;
 
 .. _annref_column_result:
 

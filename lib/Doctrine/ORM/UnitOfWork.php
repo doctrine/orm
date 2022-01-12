@@ -962,7 +962,7 @@ class UnitOfWork implements PropertyChangedListener
         $idGen = $class->idGenerator;
 
         if (! $idGen->isPostInsertGenerator()) {
-            $idValue = $idGen->generate($this->em, $entity);
+            $idValue = $idGen->generateId($this->em, $entity);
 
             if (! $idGen instanceof AssignedGenerator) {
                 $idValue = [$class->getSingleIdentifierFieldName() => $this->convertSingleFieldIdentifierToPHPValue($class, $idValue)];

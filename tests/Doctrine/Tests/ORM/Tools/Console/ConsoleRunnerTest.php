@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Console;
 
+use Composer\InstalledVersions;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 use Doctrine\Tests\DoctrineTestCase;
-use PackageVersions\Versions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\HelperSet;
 
@@ -28,7 +28,7 @@ final class ConsoleRunnerTest extends DoctrineTestCase
         $app       = ConsoleRunner::createApplication($helperSet);
 
         self::assertSame($helperSet, $app->getHelperSet());
-        self::assertSame(Versions::getVersion('doctrine/orm'), $app->getVersion());
+        self::assertSame(InstalledVersions::getVersion('doctrine/orm'), $app->getVersion());
 
         self::assertTrue($app->has('dbal:reserved-words'));
         self::assertTrue($app->has('dbal:run-sql'));

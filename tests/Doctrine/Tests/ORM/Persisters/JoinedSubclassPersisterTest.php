@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Persisters;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\Tests\Models\JoinedInheritanceType\RootClass;
 use Doctrine\Tests\OrmTestCase;
@@ -19,7 +19,7 @@ class JoinedSubClassPersisterTest extends OrmTestCase
     /** @var JoinedSubclassPersister */
     protected $persister;
 
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     protected $em;
 
     protected function setUp(): void

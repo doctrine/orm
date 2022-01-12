@@ -181,34 +181,24 @@ parameters:
 			path: lib/Doctrine/ORM/EntityManagerInterface.php
 
 		-
+			message: "#^Method Doctrine\\\\ORM\\\\EntityRepository\\:\\:find\\(\\) should return T\\|null but returns object\\|null\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/EntityRepository.php
+
+		-
 			message: "#^Method Doctrine\\\\ORM\\\\EntityRepository\\:\\:findOneBy\\(\\) should return T\\|null but returns object\\|null\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityRepository.php
 
 		-
-			message: "#^Property Doctrine\\\\ORM\\\\EntityRepository\\<T\\>\\:\\:\\$_em \\(Doctrine\\\\ORM\\\\EntityManager\\) does not accept Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityRepository.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Event\\\\LifecycleEventArgs\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManager but returns Doctrine\\\\Persistence\\\\ObjectManager\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\Event\\\\LifecycleEventArgs\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManagerInterface but returns Doctrine\\\\Persistence\\\\ObjectManager\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Event/LifecycleEventArgs.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Event\\\\LoadClassMetadataEventArgs\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManager but returns Doctrine\\\\Persistence\\\\ObjectManager\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\Event\\\\LoadClassMetadataEventArgs\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManagerInterface but returns Doctrine\\\\Persistence\\\\ObjectManager\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Event/LoadClassMetadataEventArgs.php
-
-		-
-			message: "#^Property Doctrine\\\\ORM\\\\Event\\\\PostFlushEventArgs\\:\\:\\$em \\(Doctrine\\\\ORM\\\\EntityManager\\) does not accept Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Event/PostFlushEventArgs.php
-
-		-
-			message: "#^Property Doctrine\\\\ORM\\\\Event\\\\PreFlushEventArgs\\:\\:\\$em \\(Doctrine\\\\ORM\\\\EntityManager\\) does not accept Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Event/PreFlushEventArgs.php
 
 		-
 			message: "#^Parameter \\#2 \\$discrMap of static method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\HydrationException\\:\\:invalidDiscriminatorValue\\(\\) expects array\\<string, string\\>, array\\<int, int\\|string\\> given\\.$#"
@@ -571,11 +561,6 @@ parameters:
 			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: "#^Parameter \\#1 \\$em of method Doctrine\\\\ORM\\\\Id\\\\AbstractIdGenerator\\:\\:generate\\(\\) expects Doctrine\\\\ORM\\\\EntityManager, Doctrine\\\\ORM\\\\EntityManagerInterface given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: "#^Parameter \\#3 \\$hints of method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\AbstractHydrator\\:\\:hydrateAll\\(\\) expects array\\<string, string\\>, array\\<string, Doctrine\\\\ORM\\\\PersistentCollection\\|true\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
@@ -594,21 +579,6 @@ parameters:
 			message: "#^Property Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\CachedPersisterContext\\:\\:\\$class \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata\\) does not accept Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Persisters/Entity/CachedPersisterContext.php
-
-		-
-			message: "#^If condition is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
-
-		-
-			message: "#^Left side of && is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
-
-		-
-			message: "#^Parameter \\#1 \\$em of method Doctrine\\\\ORM\\\\Id\\\\AbstractIdGenerator\\:\\:generate\\(\\) expects Doctrine\\\\ORM\\\\EntityManager, Doctrine\\\\ORM\\\\EntityManagerInterface given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$isEmbeddedClass\\.$#"
@@ -791,11 +761,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Expr/Select.php
 
 		-
-			message: "#^Property Doctrine\\\\ORM\\\\Query\\\\FilterCollection\\:\\:\\$em \\(Doctrine\\\\ORM\\\\EntityManager\\) does not accept Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/FilterCollection.php
-
-		-
 			message: "#^Property Doctrine\\\\ORM\\\\Query\\\\FilterCollection\\:\\:\\$filterHash is never written, only read\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/FilterCollection.php
@@ -807,6 +772,16 @@ parameters:
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticFactor\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\|string\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Query/Parser.php
+
+		-
+			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticTerm\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor\\|string\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Query/Parser.php
+
+		-
+			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:SimpleArithmeticExpression\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm\\|string\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/Parser.php
 
@@ -823,6 +798,11 @@ parameters:
 				        AST\\\\NullComparisonExpression\\)\\: Unexpected token "\\\\n     \\* ", expected type at offset 344$#
 			"""
 			count: 1
+			path: lib/Doctrine/ORM/Query/Parser.php
+
+		-
+			message: "#^Parameter \\#1 \\$tokenType of method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:isAggregateFunction\\(\\) expects 1\\|2\\|3\\|4\\|5\\|6\\|7\\|8\\|9\\|10\\|11\\|12\\|13\\|14\\|15\\|16\\|17\\|18\\|19\\|100\\|101\\|102\\|200\\|201\\|202\\|203\\|204\\|205\\|206\\|207\\|208\\|209\\|210\\|211\\|212\\|213\\|214\\|215\\|216\\|217\\|218\\|219\\|220\\|221\\|222\\|223\\|224\\|225\\|226\\|227\\|228\\|229\\|230\\|231\\|232\\|233\\|234\\|235\\|236\\|237\\|238\\|239\\|240\\|241\\|242\\|243\\|244\\|245\\|246\\|247\\|248\\|249\\|250\\|251\\|252\\|253\\|254\\|255\\|256, int\\|string\\|null given\\.$#"
+			count: 2
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
@@ -1522,11 +1502,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$collection of method Doctrine\\\\ORM\\\\Persisters\\\\Collection\\\\CollectionPersister\\:\\:update\\(\\) expects Doctrine\\\\ORM\\\\PersistentCollection, Doctrine\\\\Common\\\\Collections\\\\Collection\\<\\(int\\|string\\), object\\> given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/UnitOfWork.php
-
-		-
-			message: "#^Parameter \\#1 \\$em of method Doctrine\\\\ORM\\\\Id\\\\AbstractIdGenerator\\:\\:generate\\(\\) expects Doctrine\\\\ORM\\\\EntityManager, Doctrine\\\\ORM\\\\EntityManagerInterface given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/UnitOfWork.php
 

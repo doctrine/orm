@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\Tests\OrmTestCase;
@@ -14,7 +14,7 @@ use Doctrine\Tests\OrmTestCase;
  */
 class FilterCollectionTest extends OrmTestCase
 {
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     private $em;
 
     protected function setUp(): void

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -68,6 +68,8 @@ use Doctrine\Tests\Models\Enums\Card;
 use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\TypedProperties\Contact;
 use Doctrine\Tests\Models\TypedProperties\UserTyped;
+use Doctrine\Tests\Models\Upsertable\Insertable;
+use Doctrine\Tests\Models\Upsertable\Updatable;
 use Doctrine\Tests\OrmTestCase;
 
 use function assert;
@@ -98,10 +100,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         return $class;
     }
 
-    protected function createClassMetadataFactory(?EntityManager $em = null): ClassMetadataFactory
+    protected function createClassMetadataFactory(?EntityManagerInterface $em = null): ClassMetadataFactory
     {
         $driver  = $this->loadDriver();
-        $em      = $em ?: $this->getTestEntityManager();
+        $em    ??= $this->getTestEntityManager();
         $factory = new ClassMetadataFactory();
         $em->getConfiguration()->setMetadataDriverImpl($driver);
         $factory->setEntityManager($em);
@@ -1139,6 +1141,30 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $metadata = $this->createClassMetadata(ReservedWordInTableColumn::class);
 
         self::assertSame('count', $metadata->getFieldMapping('count')['columnName']);
+    }
+
+    public function testInsertableColumn(): void
+    {
+        $metadata = $this->createClassMetadata(Insertable::class);
+
+        $mapping = $metadata->getFieldMapping('nonInsertableContent');
+
+        self::assertArrayHasKey('notInsertable', $mapping);
+        self::assertArrayHasKey('generated', $mapping);
+        self::assertSame(ClassMetadataInfo::GENERATED_INSERT, $mapping['generated']);
+        self::assertArrayNotHasKey('notInsertable', $metadata->getFieldMapping('insertableContent'));
+    }
+
+    public function testUpdatableColumn(): void
+    {
+        $metadata = $this->createClassMetadata(Updatable::class);
+
+        $mapping = $metadata->getFieldMapping('nonUpdatableContent');
+
+        self::assertArrayHasKey('notUpdatable', $mapping);
+        self::assertArrayHasKey('generated', $mapping);
+        self::assertSame(ClassMetadataInfo::GENERATED_ALWAYS, $mapping['generated']);
+        self::assertArrayNotHasKey('notUpdatable', $metadata->getFieldMapping('updatableContent'));
     }
 
     /**

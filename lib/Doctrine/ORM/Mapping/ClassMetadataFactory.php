@@ -94,7 +94,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         $this->evm->dispatchEvent(Events::onClassMetadataNotFound, $eventArgs);
         $classMetadata = $eventArgs->getFoundMetadata();
-        assert($classMetadata instanceof ClassMetadata);
+        assert($classMetadata instanceof ClassMetadata || $classMetadata === null);
 
         return $classMetadata;
     }

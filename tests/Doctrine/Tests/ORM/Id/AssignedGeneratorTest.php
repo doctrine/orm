@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Id;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Mapping\Column;
@@ -35,7 +36,7 @@ class AssignedGeneratorTest extends OrmTestCase
     {
         $this->expectException(ORMException::class);
 
-        $this->assignedGen->generate($this->entityManager, $entity);
+        $this->assignedGen->generateId($this->entityManager, $entity);
     }
 
     public function entitiesWithoutId(): array
@@ -50,13 +51,13 @@ class AssignedGeneratorTest extends OrmTestCase
     {
         $entity       = new AssignedSingleIdEntity();
         $entity->myId = 1;
-        $id           = $this->assignedGen->generate($this->entityManager, $entity);
+        $id           = $this->assignedGen->generateId($this->entityManager, $entity);
         self::assertEquals(['myId' => 1], $id);
 
         $entity        = new AssignedCompositeIdEntity();
         $entity->myId2 = 2;
         $entity->myId1 = 4;
-        $id            = $this->assignedGen->generate($this->entityManager, $entity);
+        $id            = $this->assignedGen->generateId($this->entityManager, $entity);
         self::assertEquals(['myId1' => 4, 'myId2' => 2], $id);
     }
 }

@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
@@ -589,7 +588,11 @@ class TestEntity1
 
 class CustomIdGenerator extends AbstractIdGenerator
 {
-    public function generate(EntityManager $em, $entity): void
+    /**
+     * {@inheritdoc}
+     */
+    public function generateId(EntityManagerInterface $em, $entity): string
     {
+        return 'foo';
     }
 }
