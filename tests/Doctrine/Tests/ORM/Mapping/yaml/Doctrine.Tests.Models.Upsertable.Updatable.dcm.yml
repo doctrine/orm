@@ -1,0 +1,17 @@
+Doctrine\Tests\Models\Upsertable\Updatable:
+  type: entity
+  table: updatable_column
+  id:
+    id:
+      generator:
+        strategy: AUTO
+  fields:
+    nonUpdatableContent:
+      type: string
+      updatable: false
+      generated: ALWAYS
+      options:
+        default: 1234
+    updatableContent:
+      type: string
+      updatable: true

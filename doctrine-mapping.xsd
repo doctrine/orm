@@ -288,6 +288,14 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="generated-type">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="NEVER"/>
+      <xs:enumeration value="INSERT"/>
+      <xs:enumeration value="ALWAYS"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:complexType name="field">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element name="options" type="orm:options" minOccurs="0" />
@@ -299,6 +307,9 @@
     <xs:attribute name="length" type="xs:NMTOKEN" />
     <xs:attribute name="unique" type="xs:boolean" default="false" />
     <xs:attribute name="nullable" type="xs:boolean" default="false" />
+    <xs:attribute name="insertable" type="xs:boolean" default="true" />
+    <xs:attribute name="updatable" type="xs:boolean" default="true" />
+    <xs:attribute name="generated" type="orm:generated-type" default="NEVER" />
     <xs:attribute name="enum-type" type="xs:string" />
     <xs:attribute name="version" type="xs:boolean" />
     <xs:attribute name="column-definition" type="xs:string" />
@@ -623,6 +634,8 @@
     <xs:attribute name="length" type="xs:NMTOKEN" />
     <xs:attribute name="unique" type="xs:boolean" default="false" />
     <xs:attribute name="nullable" type="xs:boolean" default="false" />
+    <xs:attribute name="insertable" type="xs:boolean" default="true" />
+    <xs:attribute name="updateable" type="xs:boolean" default="true" />
     <xs:attribute name="version" type="xs:boolean" />
     <xs:attribute name="column-definition" type="xs:string" />
     <xs:attribute name="precision" type="xs:integer" use="optional" />

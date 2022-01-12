@@ -786,6 +786,9 @@ class YamlDriver extends FileDriver
      *                   unique?: mixed,
      *                   options?: mixed,
      *                   nullable?: mixed,
+     *                   insertable?: mixed,
+     *                   updatable?: mixed,
+     *                   generated?: mixed,
      *                   enumType?: class-string,
      *                   version?: mixed,
      *                   columnDefinition?: mixed
@@ -802,6 +805,9 @@ class YamlDriver extends FileDriver
      *                   unique?: bool,
      *                   options?: mixed,
      *                   nullable?: mixed,
+     *                   notInsertable?: mixed,
+     *                   notUpdatable?: mixed,
+     *                   generated?: mixed,
      *                   enumType?: class-string,
      *                   version?: mixed,
      *                   columnDefinition?: mixed
@@ -848,6 +854,18 @@ class YamlDriver extends FileDriver
 
         if (isset($column['nullable'])) {
             $mapping['nullable'] = $column['nullable'];
+        }
+
+        if (isset($column['insertable']) && ! (bool) $column['insertable']) {
+            $mapping['notInsertable'] = true;
+        }
+
+        if (isset($column['updatable']) && ! (bool) $column['updatable']) {
+            $mapping['notUpdatable'] = true;
+        }
+
+        if (isset($column['generated'])) {
+            $mapping['generated'] = constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATED_' . $column['generated']);
         }
 
         if (isset($column['version']) && $column['version']) {

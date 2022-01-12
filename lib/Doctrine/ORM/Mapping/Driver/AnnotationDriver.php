@@ -634,6 +634,22 @@ class AnnotationDriver extends AbstractAnnotationDriver
     }
 
     /**
+     * Attempts to resolve the generated mode.
+     *
+     * @psalm-return ClassMetadataInfo::GENERATED_*
+     *
+     * @throws MappingException If the fetch mode is not valid.
+     */
+    private function getGeneratedMode(string $generatedMode): int
+    {
+        if (! defined('Doctrine\ORM\Mapping\ClassMetadata::GENERATED_' . $generatedMode)) {
+            throw MappingException::invalidGeneratedMode($generatedMode);
+        }
+
+        return constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATED_' . $generatedMode);
+    }
+
+    /**
      * Parses the given method.
      *
      * @return callable[]
@@ -718,6 +734,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
      *                   unique: bool,
      *                   nullable: bool,
      *                   precision: int,
+     *                   notInsertable?: bool,
+     *                   notUpdateble?: bool,
+     *                   generated?: ClassMetadataInfo::GENERATED_*,
      *                   enumType?: class-string,
      *                   options?: mixed[],
      *                   columnName?: string,
@@ -727,14 +746,26 @@ class AnnotationDriver extends AbstractAnnotationDriver
     private function columnToArray(string $fieldName, Mapping\Column $column): array
     {
         $mapping = [
-            'fieldName' => $fieldName,
-            'type'      => $column->type,
-            'scale'     => $column->scale,
-            'length'    => $column->length,
-            'unique'    => $column->unique,
-            'nullable'  => $column->nullable,
-            'precision' => $column->precision,
+            'fieldName'     => $fieldName,
+            'type'          => $column->type,
+            'scale'         => $column->scale,
+            'length'        => $column->length,
+            'unique'        => $column->unique,
+            'nullable'      => $column->nullable,
+            'precision'     => $column->precision,
         ];
+
+        if (! $column->insertable) {
+            $mapping['notInsertable'] = true;
+        }
+
+        if (! $column->updatable) {
+            $mapping['notUpdatable'] = true;
+        }
+
+        if ($column->generated) {
+            $mapping['generated'] = $this->getGeneratedMode($column->generated);
+        }
 
         if ($column->options) {
             $mapping['options'] = $column->options;

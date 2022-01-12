@@ -1,0 +1,17 @@
+Doctrine\Tests\Models\Upsertable\Insertable:
+  type: entity
+  table: insertable_column
+  id:
+    id:
+      generator:
+        strategy: AUTO
+  fields:
+    nonInsertableContent:
+      type: string
+      insertable: false
+      generated: INSERT
+      options:
+        default: 1234
+    insertableContent:
+      type: string
+      insertable: true

@@ -111,6 +111,34 @@ class FieldBuilder
     }
 
     /**
+     * Sets insertable.
+     *
+     * @return $this
+     */
+    public function insertable(bool $flag = true): self
+    {
+        if (! $flag) {
+            $this->mapping['notInsertable'] = true;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Sets updatable.
+     *
+     * @return $this
+     */
+    public function updatable(bool $flag = true): self
+    {
+        if (! $flag) {
+            $this->mapping['notUpdatable'] = true;
+        }
+
+        return $this;
+    }
+
+    /**
      * Sets scale.
      *
      * @param int $s
