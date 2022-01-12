@@ -17,7 +17,7 @@ use Doctrine\Tests\Models\Forum\ForumCategory;
 class ArrayHydratorTest extends HydrationTestCase
 {
     /**
-     * @psalm-return list<array{mixed}>
+     * @psalm-return list<array{int|string}>
      */
     public function provideDataForUserEntityResult(): array
     {
@@ -73,7 +73,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testSimpleEntityWithScalarQuery($userEntityKey): void
+    public function testSimpleEntityWithScalarQuery(int|string $userEntityKey): void
     {
         $alias = $userEntityKey ?: 'u';
         $rsm   = new ResultSetMapping();
@@ -381,7 +381,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryNormalJoin($userEntityKey): void
+    public function testMixedQueryNormalJoin(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
 
@@ -430,7 +430,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryFetchJoin($userEntityKey): void
+    public function testMixedQueryFetchJoin(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
 
@@ -501,7 +501,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryFetchJoinCustomIndex($userEntityKey): void
+    public function testMixedQueryFetchJoinCustomIndex(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
 
@@ -931,7 +931,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testChainedJoinWithScalars($entityKey): void
+    public function testChainedJoinWithScalars(int|string $entityKey): void
     {
         $rsm = new ResultSetMapping();
 
@@ -1123,7 +1123,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * @group DDC-1358
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMissingIdForRootEntity($userEntityKey): void
+    public function testMissingIdForRootEntity(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
 
@@ -1182,7 +1182,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * @group DDC-1385
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testIndexByAndMixedResult($userEntityKey): void
+    public function testIndexByAndMixedResult(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
 

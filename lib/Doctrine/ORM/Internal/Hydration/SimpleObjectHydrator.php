@@ -12,6 +12,7 @@ use RuntimeException;
 
 use function array_keys;
 use function array_search;
+use function assert;
 use function count;
 use function in_array;
 use function key;
@@ -22,13 +23,9 @@ class SimpleObjectHydrator extends AbstractHydrator
 {
     use SQLResultCasing;
 
-    /** @var ClassMetadata */
-    private $class;
+    private ?ClassMetadata $class = null;
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function prepare()
+    protected function prepare(): void
     {
         if (count($this->resultSetMapping()->aliasMap) !== 1) {
             throw new RuntimeException('Cannot use SimpleObjectHydrator with a ResultSetMapping that contains more than one object result.');
@@ -41,10 +38,7 @@ class SimpleObjectHydrator extends AbstractHydrator
         $this->class = $this->getClassMetadata(reset($this->resultSetMapping()->aliasMap));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function cleanup()
+    protected function cleanup(): void
     {
         parent::cleanup();
 
@@ -55,7 +49,7 @@ class SimpleObjectHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    protected function hydrateAllData()
+    protected function hydrateAllData(): array
     {
         $result = [];
 
@@ -71,8 +65,9 @@ class SimpleObjectHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    protected function hydrateRowData(array $row, array &$result)
+    protected function hydrateRowData(array $row, array &$result): void
     {
+        assert($this->class !== null);
         $entityName       = $this->class->name;
         $data             = [];
         $discrColumnValue = null;

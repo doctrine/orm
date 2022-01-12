@@ -31,64 +31,52 @@ abstract class AbstractHydrator
 {
     /**
      * The ResultSetMapping.
-     *
-     * @var ResultSetMapping|null
      */
-    protected $_rsm;
+    protected ?ResultSetMapping $_rsm = null;
 
     /**
      * The EntityManager instance.
-     *
-     * @var EntityManagerInterface
      */
-    protected $_em;
+    protected EntityManagerInterface $_em;
 
     /**
      * The dbms Platform instance.
-     *
-     * @var AbstractPlatform
      */
-    protected $_platform;
+    protected AbstractPlatform $_platform;
 
     /**
      * The UnitOfWork of the associated EntityManager.
-     *
-     * @var UnitOfWork
      */
-    protected $_uow;
+    protected UnitOfWork $_uow;
 
     /**
      * Local ClassMetadata cache to avoid going to the EntityManager all the time.
      *
      * @var array<string, ClassMetadata<object>>
      */
-    protected $_metadataCache = [];
+    protected array $_metadataCache = [];
 
     /**
      * The cache used during row-by-row hydration.
      *
      * @var array<string, mixed[]|null>
      */
-    protected $_cache = [];
+    protected array $_cache = [];
 
     /**
      * The statement that provides the data to hydrate.
-     *
-     * @var Result|null
      */
-    protected $_stmt;
+    protected ?Result $_stmt = null;
 
     /**
      * The query hints.
      *
      * @var array<string, mixed>
      */
-    protected $_hints = [];
+    protected array $_hints = [];
 
     /**
      * Initializes a new instance of a class derived from <tt>AbstractHydrator</tt>.
-     *
-     * @param EntityManagerInterface $em The EntityManager to use.
      */
     public function __construct(EntityManagerInterface $em)
     {
@@ -166,10 +154,8 @@ abstract class AbstractHydrator
      * Hydrates all rows returned by the passed statement instance at once.
      *
      * @psalm-param array<string, string> $hints
-     *
-     * @return mixed[]
      */
-    public function hydrateAll(Result $stmt, ResultSetMapping $resultSetMapping, array $hints = [])
+    public function hydrateAll(Result $stmt, ResultSetMapping $resultSetMapping, array $hints = []): mixed
     {
         $this->_stmt  = $stmt;
         $this->_rsm   = $resultSetMapping;
@@ -190,32 +176,24 @@ abstract class AbstractHydrator
     /**
      * When executed in a hydrate() loop we have to clear internal state to
      * decrease memory consumption.
-     *
-     * @param mixed $eventArgs
-     *
-     * @return void
      */
-    public function onClear($eventArgs)
+    public function onClear(mixed $eventArgs): void
     {
     }
 
     /**
      * Executes one-time preparation tasks, once each time hydration is started
      * through {@link hydrateAll} or {@link toIterable()}.
-     *
-     * @return void
      */
-    protected function prepare()
+    protected function prepare(): void
     {
     }
 
     /**
      * Executes one-time cleanup tasks at the end of a hydration that was initiated
      * through {@link hydrateAll} or {@link toIterable()}.
-     *
-     * @return void
      */
-    protected function cleanup()
+    protected function cleanup(): void
     {
         $this->statement()->free();
 
@@ -242,21 +220,17 @@ abstract class AbstractHydrator
      * @param mixed[] $row    The row data.
      * @param mixed[] $result The result to fill.
      *
-     * @return void
-     *
      * @throws HydrationException
      */
-    protected function hydrateRowData(array $row, array &$result)
+    protected function hydrateRowData(array $row, array &$result): void
     {
         throw new HydrationException('hydrateRowData() not implemented by this hydrator.');
     }
 
     /**
      * Hydrates all rows from the current statement instance at once.
-     *
-     * @return mixed[]
      */
-    abstract protected function hydrateAllData();
+    abstract protected function hydrateAllData(): mixed;
 
     /**
      * Processes a row of the result set.
@@ -284,7 +258,7 @@ abstract class AbstractHydrator
      *                   scalars?: array
      *               }
      */
-    protected function gatherRowData(array $data, array &$id, array &$nonemptyComponents)
+    protected function gatherRowData(array $data, array &$id, array &$nonemptyComponents): array
     {
         $rowData = ['data' => []];
 
@@ -365,7 +339,7 @@ abstract class AbstractHydrator
      * @return mixed[] The processed row.
      * @psalm-return array<string, mixed>
      */
-    protected function gatherScalarRowData(&$data)
+    protected function gatherScalarRowData(array &$data): array
     {
         $rowData = [];
 
@@ -400,7 +374,7 @@ abstract class AbstractHydrator
      * @return mixed[]|null
      * @psalm-return array<string, mixed>|null
      */
-    protected function hydrateColumnInfo($key)
+    protected function hydrateColumnInfo(string $key): ?array
     {
         if (isset($this->_cache[$key])) {
             return $this->_cache[$key];
@@ -508,12 +482,8 @@ abstract class AbstractHydrator
 
     /**
      * Retrieve ClassMetadata associated to entity class name.
-     *
-     * @param string $className
-     *
-     * @return ClassMetadata
      */
-    protected function getClassMetadata($className)
+    protected function getClassMetadata(string $className): ClassMetadata
     {
         if (! isset($this->_metadataCache[$className])) {
             $this->_metadataCache[$className] = $this->_em->getClassMetadata($className);
@@ -525,14 +495,11 @@ abstract class AbstractHydrator
     /**
      * Register entity as managed in UnitOfWork.
      *
-     * @param object  $entity
      * @param mixed[] $data
-     *
-     * @return void
      *
      * @todo The "$id" generation is the same of UnitOfWork#createEntity. Remove this duplication somehow
      */
-    protected function registerManaged(ClassMetadata $class, $entity, array $data)
+    protected function registerManaged(ClassMetadata $class, object $entity, array $data): void
     {
         if ($class->isIdentifierComposite) {
             $id = [];

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Hydration;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
@@ -21,11 +21,8 @@ use Doctrine\Tests\OrmTestCase;
  */
 class ResultSetMappingTest extends OrmTestCase
 {
-    /** @var ResultSetMapping */
-    private $_rsm;
-
-    /** @var EntityManager */
-    private $entityManager;
+    private ResultSetMapping $_rsm;
+    private EntityManagerInterface $entityManager;
 
     protected function setUp(): void
     {
