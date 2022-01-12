@@ -49,6 +49,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $conn          = $em->getConnection();
         $platform      = $conn->getDatabasePlatform();
         $quoteStrategy = $em->getConfiguration()->getQuoteStrategy();
+        $schemaConfig  = $conn->getSchemaManager()->createSchemaConfig();
 
         if ($conn instanceof PrimaryReadReplicaConnection) {
             $conn->ensureConnectedToPrimary();
@@ -89,11 +90,16 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         }
 
         // 4. Store DDL for temporary identifier table.
+        $schemaOptions = $schemaConfig->getDefaultTableOptions();
+        $columnsCharset = $schemaOptions['charset'] ?? null;
+        $columnsCollation = $schemaOptions['collate'] ?? null;
         $columnDefinitions = [];
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = [
                 'notnull' => true,
                 'type'    => Type::getType(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
+                'charset' => $columnsCharset,
+                'collation' => $columnsCollation,
             ];
         }
 
