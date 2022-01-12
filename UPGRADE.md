@@ -1,5 +1,11 @@
 # Upgrade to 3.0
 
+## BC BREAK: Rename `AbstractIdGenerator::generate()` to `generateId()`
+
+* Implementations of `AbstractIdGenerator` have to implement the method
+  `generateId()`.
+* The method `generate()` has been removed from `AbstractIdGenerator`.
+
 ## BC BREAK: Remove cache settings inspection
 
 Doctrine does not provide its own cache implementation anymore and relies on

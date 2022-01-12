@@ -21,7 +21,7 @@ class AssignedGenerator extends AbstractIdGenerator
      *
      * @throws EntityMissingAssignedId
      */
-    public function generateId(EntityManagerInterface $em, $entity)
+    public function generateId(EntityManagerInterface $em, ?object $entity): array
     {
         $class      = $em->getClassMetadata(get_class($entity));
         $idFields   = $class->getIdentifierFieldNames();

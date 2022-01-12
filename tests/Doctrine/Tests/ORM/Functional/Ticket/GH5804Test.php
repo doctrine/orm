@@ -51,10 +51,7 @@ final class GH5804Test extends OrmFunctionalTestCase
 
 final class GH5804Generator extends AbstractIdGenerator
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function generateId(EntityManagerInterface $em, $entity)
+    public function generateId(EntityManagerInterface $em, ?object $entity): string
     {
         return 'test5804';
     }

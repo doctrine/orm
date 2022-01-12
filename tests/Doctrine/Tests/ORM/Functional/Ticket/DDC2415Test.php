@@ -108,7 +108,7 @@ class DDC2415ChildEntity extends DDC2415ParentEntity
 
 class DDC2415Generator extends AbstractIdGenerator
 {
-    public function generateId(EntityManagerInterface $em, $entity): string
+    public function generateId(EntityManagerInterface $em, ?object $entity): string
     {
         return md5($entity->getName());
     }
