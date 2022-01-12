@@ -508,11 +508,6 @@
       <code>$entity</code>
     </PossiblyNullArgument>
   </file>
-  <file src="lib/Doctrine/ORM/Id/BigIntegerIdentityGenerator.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$sequenceName</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
   <file src="lib/Doctrine/ORM/Id/TableGenerator.php">
     <PossiblyFalseOperand occurrences="3">
       <code>$currentLevel</code>
