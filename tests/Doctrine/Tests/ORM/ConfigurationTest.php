@@ -4,20 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache\CacheConfiguration;
-use Doctrine\ORM\Cache\Exception\MetadataCacheNotConfigured;
-use Doctrine\ORM\Cache\Exception\MetadataCacheUsesNonPersistentCache;
-use Doctrine\ORM\Cache\Exception\QueryCacheNotConfigured;
-use Doctrine\ORM\Cache\Exception\QueryCacheUsesNonPersistentCache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\Exception\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Mapping as AnnotationNamespace;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
@@ -29,9 +23,6 @@ use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
 use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
-use Symfony\Component\Cache\Adapter\ArrayAdapter;
-
-use function class_exists;
 
 /**
  * Tests for the Configuration object
@@ -40,8 +31,7 @@ class ConfigurationTest extends DoctrineTestCase
 {
     use VerifyDeprecations;
 
-    /** @var Configuration */
-    private $configuration;
+    private Configuration $configuration;
 
     protected function setUp(): void
     {
@@ -199,127 +189,6 @@ class ConfigurationTest extends DoctrineTestCase
         $this->expectException(ORMException::class);
         $this->expectExceptionMessage('a named native query');
         $this->configuration->getNamedNativeQuery('NonExistingQuery');
-    }
-
-    /**
-     * Configures $this->configuration to use production settings.
-     *
-     * @param string|null $skipCache Do not configure a cache of this type, either "query" or "metadata".
-     */
-    protected function setProductionSettings(?string $skipCache = null): void
-    {
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_NEVER);
-
-        $cache = $this->createMock(Cache::class);
-
-        if ($skipCache !== 'query') {
-            $this->configuration->setQueryCacheImpl($cache);
-        }
-
-        if ($skipCache !== 'metadata') {
-            $this->configuration->setMetadataCacheImpl($cache);
-        }
-    }
-
-    public function testEnsureProductionSettings(): void
-    {
-        $this->setProductionSettings();
-        $this->configuration->ensureProductionSettings();
-
-        $this->addToAssertionCount(1);
-    }
-
-    public function testEnsureProductionSettingsWithNewMetadataCache(): void
-    {
-        $this->setProductionSettings('metadata');
-        $this->configuration->setMetadataCache(new ArrayAdapter());
-
-        $this->configuration->ensureProductionSettings();
-
-        $this->addToAssertionCount(1);
-    }
-
-    public function testEnsureProductionSettingsMissingQueryCache(): void
-    {
-        $this->setProductionSettings('query');
-
-        $this->expectException(QueryCacheNotConfigured::class);
-        $this->expectExceptionMessage('Query Cache is not configured.');
-
-        $this->configuration->ensureProductionSettings();
-    }
-
-    public function testEnsureProductionSettingsMissingMetadataCache(): void
-    {
-        $this->setProductionSettings('metadata');
-
-        $this->expectException(MetadataCacheNotConfigured::class);
-        $this->expectExceptionMessage('Metadata Cache is not configured.');
-
-        $this->configuration->ensureProductionSettings();
-    }
-
-    public function testEnsureProductionSettingsQueryArrayCache(): void
-    {
-        if (! class_exists(ArrayCache::class)) {
-            self::markTestSkipped('Test only applies with doctrine/cache 1.x');
-        }
-
-        $this->setProductionSettings();
-        $this->configuration->setQueryCacheImpl(new ArrayCache());
-
-        $this->expectException(QueryCacheUsesNonPersistentCache::class);
-        $this->expectExceptionMessage('Query Cache uses a non-persistent cache driver, Doctrine\Common\Cache\ArrayCache.');
-
-        $this->configuration->ensureProductionSettings();
-    }
-
-    public function testEnsureProductionSettingsLegacyMetadataArrayCache(): void
-    {
-        if (! class_exists(ArrayCache::class)) {
-            self::markTestSkipped('Test only applies with doctrine/cache 1.x');
-        }
-
-        $this->setProductionSettings();
-        $this->configuration->setMetadataCacheImpl(new ArrayCache());
-
-        $this->expectException(MetadataCacheUsesNonPersistentCache::class);
-        $this->expectExceptionMessage('Metadata Cache uses a non-persistent cache driver, Doctrine\Common\Cache\ArrayCache.');
-
-        $this->configuration->ensureProductionSettings();
-    }
-
-    public function testEnsureProductionSettingsAutoGenerateProxyClassesAlways(): void
-    {
-        $this->setProductionSettings();
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_ALWAYS);
-
-        $this->expectException(ProxyClassesAlwaysRegenerating::class);
-        $this->expectExceptionMessage('Proxy Classes are always regenerating.');
-
-        $this->configuration->ensureProductionSettings();
-    }
-
-    public function testEnsureProductionSettingsAutoGenerateProxyClassesFileNotExists(): void
-    {
-        $this->setProductionSettings();
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
-
-        $this->expectException(ORMException::class);
-        $this->expectExceptionMessage('Proxy Classes are always regenerating.');
-
-        $this->configuration->ensureProductionSettings();
-    }
-
-    public function testEnsureProductionSettingsAutoGenerateProxyClassesEval(): void
-    {
-        $this->setProductionSettings();
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_EVAL);
-
-        $this->expectException(ORMException::class);
-        $this->expectExceptionMessage('Proxy Classes are always regenerating.');
-
-        $this->configuration->ensureProductionSettings();
     }
 
     public function testAddGetCustomStringFunction(): void
