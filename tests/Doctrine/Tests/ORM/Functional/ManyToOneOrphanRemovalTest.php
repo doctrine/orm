@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Models\OrnementalOrphanRemoval\Person;
@@ -87,7 +87,7 @@ class ManyToOneOrphanRemovalTest extends OrmFunctionalTestCase
     protected function getEntityManager(
         ?Connection $connection = null,
         ?MappingDriver $mappingDriver = null
-    ): EntityManager {
+    ): EntityManagerInterface {
         return parent::getEntityManager($connection, new XmlDriver(
             __DIR__ . DIRECTORY_SEPARATOR . 'xml'
         ));

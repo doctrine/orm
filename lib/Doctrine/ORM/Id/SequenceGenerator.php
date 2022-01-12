@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Id;
 
 use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Serializable;
 
 use function serialize;
@@ -51,7 +51,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     /**
      * {@inheritDoc}
      */
-    public function generate(EntityManager $em, $entity)
+    public function generateId(EntityManagerInterface $em, $entity)
     {
         if ($this->_maxValue === null || $this->_nextValue === $this->_maxValue) {
             // Allocate new values

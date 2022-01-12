@@ -17,6 +17,7 @@ use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -75,7 +76,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      */
     protected static $sharedConn;
 
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     protected $_em;
 
     /** @var SchemaTool */
@@ -706,7 +707,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     protected function getEntityManager(
         ?Connection $connection = null,
         ?MappingDriver $mappingDriver = null
-    ): EntityManager {
+    ): EntityManagerInterface {
         // NOTE: Functional tests use their own shared metadata cache, because
         // the actual database platform used during execution has effect on some
         // metadata mapping behaviors (like the choice of the ID generation).

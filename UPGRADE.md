@@ -1,5 +1,12 @@
 # Upgrade to 2.11
 
+## Rename `AbstractIdGenerator::generate()` to `generateId()`
+
+Implementations of `AbstractIdGenerator` have to override the method
+`generateId()` without calling the parent implementation. Not doing so is
+deprecated. Calling `generate()` on any `AbstractIdGenerator` implementation
+is deprecated.
+
 ## PSR-6-based second level cache
 
 The second level cache has been reworked to consume a PSR-6 cache. Using a

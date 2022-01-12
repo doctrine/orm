@@ -9,7 +9,7 @@ use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister;
 use Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister;
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\Tests\Models\Cache\State;
@@ -27,7 +27,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     /** @var CollectionPersister */
     protected $collectionPersister;
 
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     protected $em;
 
     /** @var array */
@@ -56,7 +56,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         'loadCriteria',
     ];
 
-    abstract protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister;
+    abstract protected function createPersister(EntityManagerInterface $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister;
 
     protected function setUp(): void
     {

@@ -473,16 +473,16 @@
     <LessSpecificImplementedReturnType occurrences="1">
       <code>string</code>
     </LessSpecificImplementedReturnType>
-    <PropertyTypeCoercion occurrences="1">
-      <code>$em</code>
-    </PropertyTypeCoercion>
+    <TooManyArguments occurrences="1">
+      <code>find</code>
+    </TooManyArguments>
   </file>
   <file src="lib/Doctrine/ORM/Event/LifecycleEventArgs.php">
     <LessSpecificReturnStatement occurrences="1">
       <code>$this-&gt;getObjectManager()</code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType occurrences="1">
-      <code>EntityManager</code>
+      <code>EntityManagerInterface</code>
     </MoreSpecificReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Event/LoadClassMetadataEventArgs.php">
@@ -490,23 +490,13 @@
       <code>$this-&gt;getObjectManager()</code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType occurrences="1">
-      <code>EntityManager</code>
+      <code>EntityManagerInterface</code>
     </MoreSpecificReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Event/OnClassMetadataNotFoundEventArgs.php">
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(string) $className</code>
     </RedundantCastGivenDocblockType>
-  </file>
-  <file src="lib/Doctrine/ORM/Event/PostFlushEventArgs.php">
-    <PropertyTypeCoercion occurrences="1">
-      <code>$em</code>
-    </PropertyTypeCoercion>
-  </file>
-  <file src="lib/Doctrine/ORM/Event/PreFlushEventArgs.php">
-    <PropertyTypeCoercion occurrences="1">
-      <code>$em</code>
-    </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Exception/ORMException.php">
     <DeprecatedClass occurrences="1">
@@ -1514,9 +1504,6 @@
     </PossiblyNullArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$this-&gt;em</code>
-    </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="1">
       <code>$value === null</code>
     </DocblockTypeContradiction>
@@ -1593,9 +1580,6 @@
     </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$this-&gt;em</code>
-    </ArgumentTypeCoercion>
     <LessSpecificReturnStatement occurrences="1">
       <code>$postInsertIds</code>
     </LessSpecificReturnStatement>
@@ -2314,8 +2298,7 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>$filterHash</code>
     </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="2">
-      <code>$em</code>
+    <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;enabledFilters</code>
     </PropertyTypeCoercion>
   </file>
@@ -3417,13 +3400,12 @@
     </UnresolvableInclude>
   </file>
   <file src="lib/Doctrine/ORM/UnitOfWork.php">
-    <ArgumentTypeCoercion occurrences="6">
+    <ArgumentTypeCoercion occurrences="5">
       <code>$class</code>
       <code>$class</code>
       <code>$collectionToDelete</code>
       <code>$collectionToUpdate</code>
       <code>$commitOrder[$i]</code>
-      <code>$this-&gt;em</code>
     </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="4">
       <code>! is_object($object)</code>

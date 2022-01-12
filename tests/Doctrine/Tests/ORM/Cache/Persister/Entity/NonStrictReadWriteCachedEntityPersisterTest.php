@@ -9,7 +9,7 @@ use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\Persister\Entity\AbstractEntityPersister;
 use Doctrine\ORM\Cache\Persister\Entity\NonStrictReadWriteCachedEntityPersister;
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\Tests\Models\Cache\Country;
@@ -20,7 +20,7 @@ use ReflectionProperty;
  */
 class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
 {
-    protected function createPersister(EntityManager $em, EntityPersister $persister, Region $region, ClassMetadata $metadata): AbstractEntityPersister
+    protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata): AbstractEntityPersister
     {
         return new NonStrictReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
     }

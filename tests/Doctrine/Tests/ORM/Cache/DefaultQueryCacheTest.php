@@ -13,7 +13,6 @@ use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Cache\QueryCache;
 use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\Cache\QueryCacheKey;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\Mocks\CacheEntryMock;
@@ -38,7 +37,7 @@ class DefaultQueryCacheTest extends OrmTestCase
     /** @var DefaultQueryCache */
     private $queryCache;
 
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     private $em;
 
     /** @var CacheRegionMock */

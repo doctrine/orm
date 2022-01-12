@@ -7,7 +7,7 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Cache;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\Parameter;
@@ -29,7 +29,7 @@ use function get_class;
  */
 class QueryBuilderTest extends OrmTestCase
 {
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     private $entityManager;
 
     protected function setUp(): void
