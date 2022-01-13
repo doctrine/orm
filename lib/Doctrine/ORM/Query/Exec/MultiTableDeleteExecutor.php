@@ -90,9 +90,9 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         }
 
         // 4. Store DDL for temporary identifier table.
-        $schemaOptions = $schemaConfig->getDefaultTableOptions();
-        $columnsCharset = $schemaOptions['charset'] ?? null;
-        $columnsCollation = $schemaOptions['collate'] ?? null;
+        $schemaOptions     = $schemaConfig->getDefaultTableOptions();
+        $columnsCharset    = $schemaOptions['charset'] ?? null;
+        $columnsCollation  = $schemaOptions['collate'] ?? null;
         $columnDefinitions = [];
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = [
