@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -22,10 +23,10 @@ class EnumTest extends OrmFunctionalTestCase
 {
     public function setUp(): void
     {
+        parent::setUp();
+
         $this->_em         = $this->getEntityManager(null, new AttributeDriver([dirname(__DIR__, 2) . '/Models/Enums']));
         $this->_schemaTool = new SchemaTool($this->_em);
-
-        parent::setUp();
 
         if ($this->isSecondLevelCacheEnabled) {
             $this->markTestSkipped();
@@ -100,5 +101,16 @@ EXCEPTION
             Card::class => [Card::class],
             TypedCard::class => [TypedCard::class],
         ];
+    }
+
+    public function testGetAttributesDelegate()
+    {
+        $metadata = $this->_em->getClassMetadata(Card::class);
+        $property = $metadata->getReflectionProperty('suit');
+
+        $attributes = $property->getAttributes();
+
+        $this->assertCount(1, $attributes);
+        $this->assertEquals(Column::class, $attributes[0]->getName());
     }
 }
