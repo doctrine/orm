@@ -29,6 +29,11 @@ class ReflectionEnumProperty extends ReflectionProperty
     {
         $this->originalReflectionProperty = $originalReflectionProperty;
         $this->enumType                   = $enumType;
+
+        parent::__construct(
+            $originalReflectionProperty->getDeclaringClass()->getName(),
+            $originalReflectionProperty->getName()
+        );
     }
 
     /**
@@ -78,13 +83,5 @@ class ReflectionEnumProperty extends ReflectionProperty
         }
 
         $this->originalReflectionProperty->setValue($object, $value);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getAttributes(?string $name = null, int $flags = 0): array
-    {
-        return $this->originalReflectionProperty->getAttributes($name, $flags);
     }
 }
