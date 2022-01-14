@@ -79,4 +79,12 @@ class ReflectionEnumProperty extends ReflectionProperty
 
         $this->originalReflectionProperty->setValue($object, $value);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAttributes(?string $name = null, int $flags = 0): array
+    {
+        return $this->originalReflectionProperty->getAttributes($name, $flags);
+    }
 }
