@@ -1185,29 +1185,41 @@ will return the rows iterating the different top-level entities.
 Hydration Modes
 ~~~~~~~~~~~~~~~
 
-Each of the Hydration Modes makes assumptions about how the result
-is returned to user land. You should know about all the details to
-make best use of the different result formats:
+The process of transforming a query result set (i.e. rows and columns) into PHP "variables" (e.g. objects, arrays)
+is called "hydration". Doctrine features the following hydration modes:
 
-The constants for the different hydration modes are:
+- :ref:`Object Hydration <object-hydration>`
+- :ref:`Array Hydration <array-hydration>`
+- :ref:`Scalar Hydration <scalar-hydration>`
+- :ref:`Single Scalar Hydration <single-scalar-hydration>`
+- :ref:`Scalar Column Hydration <scalar-column-hydration>`
 
+Besides, you can create your own :ref:`custom hydration mode <custom-hydration>`
 
--  ``Query::HYDRATE_OBJECT``
--  ``Query::HYDRATE_ARRAY``
--  ``Query::HYDRATE_SCALAR``
--  ``Query::HYDRATE_SINGLE_SCALAR``
--  ``Query::HYDRATE_SCALAR_COLUMN``
+.. _object-hydration:
 
 Object Hydration
 ^^^^^^^^^^^^^^^^
 
-Object hydration hydrates the result set into the object graph:
+This is the default hydration mode. The result is transformed into an **array of objects** (=entities).
 
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT u FROM CmsUser u');
-    $users = $query->getResult(Query::HYDRATE_OBJECT);
+    use Doctrine\ORM\AbstractQuery;
+
+    $query = $entityManager->createQuery('SELECT u FROM User u');
+    /** var array<int, User> $users */
+    $users = $query->getResult(AbstractQuery::HYDRATE_OBJECT);
+    // same as:
+    $users = $query->getResult();
+
+Result:
+
+.. code-block:: php
+
+    [0] => User
+    [1] => User
 
 Sometimes the behavior in the object hydrator can be confusing, which is
 why we are listing as many of the assumptions here for reference:
@@ -1225,24 +1237,43 @@ why we are listing as many of the assumptions here for reference:
 
 This list might be incomplete.
 
+.. _array-hydration:
+
 Array Hydration
 ^^^^^^^^^^^^^^^
 
-You can run the same query with array hydration and the result set
-is hydrated into an array that represents the object graph:
+This is similar to object hydration (see above), but the individual entities
+are represented as associative *arrays* (instead of objects), so what you're getting is
+an **array of arrays**.
+
+* Advantage: It is *much* faster than object hydration.
+* Disadvantage: If you make changes to the entity, you can not persist it back to the database.
 
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT u FROM CmsUser u');
-    $users = $query->getResult(Query::HYDRATE_ARRAY);
-
-You can use the ``getArrayResult()`` shortcut as well:
-
-.. code-block:: php
-
-    <?php
+    use Doctrine\ORM\AbstractQuery;
+    
+    $query = $entityManager->createQuery('SELECT u FROM User u');
+    /** @var array<int, array> $users */
     $users = $query->getArrayResult();
+    // same as:
+    $users = $query->getResult(AbstractQuery::HYDRATE_ARRAY);
+
+Result:
+
+.. code-block:: php
+
+    [0] => [
+        'firstName' => 'John',
+        'lastName' => 'Dough'
+    ],
+    [1] => [
+        'firstName' => 'Jane',
+        'lastName' => 'Doe'
+    ]
+
+.. _scalar-hydration:
 
 Scalar Hydration
 ^^^^^^^^^^^^^^^^
@@ -1253,8 +1284,10 @@ object graph you can use scalar hydration:
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT u FROM CmsUser u');
-    $users = $query->getResult(Query::HYDRATE_SCALAR);
+    use Doctrine\ORM\AbstractQuery;
+
+    $query = $entityManager->createQuery('SELECT u FROM User u');
+    $users = $query->getResult(AbstractQuery::HYDRATE_SCALAR);
     echo $users[0]['u_id'];
 
 The following assumptions are made about selected fields using
@@ -1265,44 +1298,64 @@ Scalar Hydration:
    A query of the kind 'SELECT u.name ..' returns a key 'u_name' in
    the result rows.
 
+.. _single-scalar-hydration:
+
 Single Scalar Hydration
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-If you have a query which returns just a single scalar value you can use
-single scalar hydration:
+If your query returns just a **single scalar value**, this is the best hydration mode:
 
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT COUNT(a.id) FROM CmsUser u LEFT JOIN u.articles a WHERE u.username = ?1 GROUP BY u.id');
-    $query->setParameter(1, 'jwage');
-    $numArticles = $query->getResult(Query::HYDRATE_SINGLE_SCALAR);
+    use Doctrine\ORM\AbstractQuery;
+    
+    $query = $entityManager->createQuery('SELECT COUNT(a.id) FROM User u');
+    /** @var int $countUsers */
+    $countUsers = $query->getSingleScalarResult();;
+    // same as:
+    $countUsers = $query->getResult(AbstractQuery::HYDRATE_SINGLE_SCALAR);
 
-You can use the ``getSingleScalarResult()`` shortcut as well:
+Result:
 
 .. code-block:: php
 
-    <?php
-    $numArticles = $query->getSingleScalarResult();
+    2
+
+.. _scalar-column-hydration:
 
 Scalar Column Hydration
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-If you have a query which returns a one-dimensional array of scalar values
-you can use scalar column hydration:
+If your query returns **one column**, the result may look like this:
+
+.. code-block:: php
+
+    [
+        [0] => ['id' => 5],
+        [1] => ['id' => 12],
+        [2] => ['id' => 23],
+    ]
+
+In this case, you can use the scalar column hydration to reduce the result into a
+one-dimensional array like this:
+
+.. code-block:: php
+
+    [5, 12, 23]
 
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT a.id FROM CmsUser u');
-    $ids = $query->getResult(Query::HYDRATE_SCALAR_COLUMN);
+    use Doctrine\ORM\AbstractQuery;
 
-You can use the ``getSingleColumnResult()`` shortcut as well:
-
-.. code-block:: php
-
-    <?php
+    $query = $entityManager->createQuery('SELECT u.id FROM User u');
+    /** @var array<int> $ids */
     $ids = $query->getSingleColumnResult();
+    // same as:
+    $ids = $query->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
+
+.. _custom-hydration:
 
 Custom Hydration Modes
 ^^^^^^^^^^^^^^^^^^^^^^
