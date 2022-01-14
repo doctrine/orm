@@ -103,7 +103,7 @@ EXCEPTION
         ];
     }
 
-    public function testGetAttributesDelegate()
+    public function testGetAttributesDelegate(): void
     {
         $metadata = $this->_em->getClassMetadata(Card::class);
         $property = $metadata->getReflectionProperty('suit');
