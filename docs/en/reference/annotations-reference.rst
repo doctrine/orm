@@ -1287,10 +1287,15 @@ Example:
 .. code-block:: php
 
     <?php
+
+    namespace App\Entity;
+
+    use Doctrine\ORM\Mapping as ORM;
+
     /**
      * @Entity
-     * @Table(name="user",
-     *      uniqueConstraints={@UniqueConstraint(name="user_unique",columns={"username"})},
+     * @ORM\Table(name="user",
+     *      uniqueConstraints={@ORM\UniqueConstraint(name="user_unique",columns={"username"})},
      *      indexes={@Index(name="user_idx", columns={"email"})}
      *      schema="schema_name"
      * )
@@ -1327,9 +1332,14 @@ Basic example:
 .. code-block:: php
 
     <?php
+
+    namespace App\Entity;
+
+    use Doctrine\ORM\Mapping as ORM;
+
     /**
      * @Entity
-     * @Table(name="ecommerce_products",uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "email"})})
+     * @ORM\Table(name="ecommerce_products",uniqueConstraints={@ORM\UniqueConstraint(name="search_idx", columns={"name", "email"})})
      */
     class ECommerceProduct
     {
@@ -1340,9 +1350,14 @@ Basic example using fields:
 .. code-block:: php
 
     <?php
+
+    namespace App\Entity;
+
+    use Doctrine\ORM\Mapping as ORM;
+
     /**
      * @Entity
-     * @Table(name="ecommerce_products",uniqueConstraints={@UniqueConstraint(name="search_idx", fields={"name", "email"})})
+     * @ORM\Table(name="ecommerce_products",uniqueConstraints={@ORM\UniqueConstraint(name="search_idx", fields={"name", "email"})})
      */
     class ECommerceProduct
     {
@@ -1353,9 +1368,14 @@ Example with partial indexes:
 .. code-block:: php
 
     <?php
+
+    namespace App\Entity;
+
+    use Doctrine\ORM\Mapping as ORM;
+
     /**
      * @Entity
-     * @Table(name="ecommerce_products",uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "email"}, options={"where": "(((id IS NOT NULL) AND (name IS NULL)) AND (email IS NULL))"})})
+     * @ORM\Table(name="ecommerce_products",uniqueConstraints={@ORM\UniqueConstraint(name="search_idx", columns={"name", "email"}, options={"where": "(((id IS NOT NULL) AND (name IS NULL)) AND (email IS NULL))"})})
      */
     class ECommerceProduct
     {
