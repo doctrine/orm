@@ -1517,7 +1517,7 @@ class ClassMetadataInfo implements ClassMetadata
                 ! isset($mapping['type'])
                 && ($type instanceof ReflectionNamedType)
             ) {
-                if (PHP_VERSION_ID >= 80100 && ! $type->isBuiltin() && enum_exists($type->getName(), false)) {
+                if (PHP_VERSION_ID >= 80100 && ! $type->isBuiltin() && enum_exists($type->getName())) {
                     $mapping['enumType'] = $type->getName();
 
                     $reflection = new ReflectionEnum($type->getName());
