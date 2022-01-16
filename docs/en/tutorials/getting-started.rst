@@ -82,10 +82,10 @@ that directory with the following contents:
     {
         "require": {
             "doctrine/orm": "^2.11.0",
-            "doctrine/dbal": "^3.1.1",
+            "doctrine/dbal": "^3.2",
             "doctrine/annotations": "1.13.2",
-            "symfony/yaml": "2.*",
-            "symfony/cache": "^5.3"
+            "symfony/yaml": "^5.4",
+            "symfony/cache": "^5.4"
         },
         "autoload": {
             "psr-0": {"": "src/"}
