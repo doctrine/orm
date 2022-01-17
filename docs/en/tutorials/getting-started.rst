@@ -81,9 +81,10 @@ that directory with the following contents:
 
     {
         "require": {
-            "doctrine/orm": "^2.10.2",
-            "doctrine/dbal": "^3.1.1",
-            "symfony/cache": "^5.3"
+            "doctrine/orm": "^2.11.0",
+            "doctrine/dbal": "^3.2",
+            "doctrine/annotations": "1.13.2",
+            "symfony/cache": "^5.4"
         },
         "autoload": {
             "psr-0": {"": "src/"}

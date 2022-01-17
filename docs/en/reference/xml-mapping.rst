@@ -694,6 +694,7 @@ specified by their respective tags:
 -  ``<cascade-merge />``
 -  ``<cascade-remove />``
 -  ``<cascade-refresh />``
+-  ``<cascade-detach />``
 
 Join Column Element
 ~~~~~~~~~~~~~~~~~~~

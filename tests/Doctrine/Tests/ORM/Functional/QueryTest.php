@@ -16,6 +16,8 @@ use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\Enums\AccessLevel;
+use Doctrine\Tests\Models\Enums\UserStatus;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -163,6 +165,66 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->createQuery('SELECT u FROM ' . CmsUser::class . ' u WHERE u.name = ?')
                   ->setParameter(1, 'jwage')
                   ->getSingleResult();
+    }
+
+    /**
+     * @requires PHP 8.1
+     */
+    public function testUseStringEnumCaseAsParameter(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'John';
+        $user->username = 'john';
+        $user->status   = 'inactive';
+        $this->_em->persist($user);
+
+        $user           = new CmsUser();
+        $user->name     = 'Jane';
+        $user->username = 'jane';
+        $user->status   = 'active';
+        $this->_em->persist($user);
+
+        unset($user);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQuery('SELECT u FROM ' . CmsUser::class . ' u WHERE u.status = :status')
+            ->setParameter('status', UserStatus::Active)
+            ->getResult();
+
+        self::assertCount(1, $result);
+        self::assertSame('jane', $result[0]->username);
+    }
+
+    /**
+     * @requires PHP 8.1
+     */
+    public function testUseIntegerEnumCaseAsParameter(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'John';
+        $user->username = 'john';
+        $user->status   = '1';
+        $this->_em->persist($user);
+
+        $user           = new CmsUser();
+        $user->name     = 'Jane';
+        $user->username = 'jane';
+        $user->status   = '2';
+        $this->_em->persist($user);
+
+        unset($user);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQuery('SELECT u FROM ' . CmsUser::class . ' u WHERE u.status = :status')
+            ->setParameter('status', AccessLevel::User)
+            ->getResult();
+
+        self::assertCount(1, $result);
+        self::assertSame('jane', $result[0]->username);
     }
 
     public function testSetParameters(): void

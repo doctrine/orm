@@ -256,11 +256,6 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
 
 		-
-			message: "#^Array \\(array\\<class\\-string, object\\>\\) does not accept key string\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/DefaultEntityListenerResolver.php
-
-		-
 			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:mapEmbedded\\(\\)\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
@@ -551,11 +546,6 @@ parameters:
 			path: lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php
 
 		-
-			message: "#^Array \\(array\\<class\\-string, string\\>\\) does not accept key string\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: "#^Parameter \\#3 \\$hints of method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\AbstractHydrator\\:\\:hydrateAll\\(\\) expects array\\<string, string\\>, array\\<string, Doctrine\\\\ORM\\\\PersistentCollection\\|true\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
@@ -824,11 +814,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$class of static method Doctrine\\\\ORM\\\\Utility\\\\PersisterHelper\\:\\:getTypeOfColumn\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php
-
-		-
-			message: "#^Array \\(array\\<string, array\\<int, string\\>\\|string\\>\\) does not accept key int\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-
 			message: "#^Call to function is_string\\(\\) with Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node will always evaluate to false\\.$#"

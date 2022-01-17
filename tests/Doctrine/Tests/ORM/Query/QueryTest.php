@@ -23,14 +23,20 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\Enums\AccessLevel;
+use Doctrine\Tests\Models\Enums\City;
+use Doctrine\Tests\Models\Enums\UserStatus;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
+use function array_map;
 use function assert;
 use function method_exists;
+
+use const PHP_VERSION_ID;
 
 class QueryTest extends OrmTestCase
 {
@@ -219,6 +225,9 @@ class QueryTest extends OrmTestCase
         self::assertEquals($cities, $parameter->getValue());
     }
 
+    /**
+     * @psalm-return Generator<string, array{iterable}>
+     */
     public function provideProcessParameterValueIterable(): Generator
     {
         $baseArray = [
@@ -234,6 +243,10 @@ class QueryTest extends OrmTestCase
         yield 'simple_array' => [$baseArray];
         yield 'doctrine_collection' => [new ArrayCollection($baseArray)];
         yield 'generator' => [$gen()];
+
+        if (PHP_VERSION_ID >= 80100) {
+            yield 'array_of_enum' => [array_map([City::class, 'from'], $baseArray)];
+        }
     }
 
     /**
@@ -303,6 +316,28 @@ class QueryTest extends OrmTestCase
         $query = $this->entityManager->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.user = :user');
 
         self::assertNull($query->processParameterValue(null));
+    }
+
+    /**
+     * @requires PHP 8.1
+     */
+    public function testProcessParameterValueBackedEnum(): void
+    {
+        $query = $this->entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status = :status');
+
+        self::assertSame(['active'], $query->processParameterValue([UserStatus::Active]));
+        self::assertSame([2], $query->processParameterValue([AccessLevel::User]));
+    }
+
+    /**
+     * @requires PHP 8.1
+     */
+    public function testProcessParameterValueBackedEnumArray(): void
+    {
+        $query = $this->entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status IN (:status)');
+
+        self::assertSame(['active'], $query->processParameterValue([UserStatus::Active]));
+        self::assertSame([2], $query->processParameterValue([AccessLevel::User]));
     }
 
     public function testDefaultQueryHints(): void

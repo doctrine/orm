@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use BackedEnum;
 use Countable;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -418,6 +419,10 @@ abstract class AbstractQuery
 
         if ($value instanceof Mapping\ClassMetadata) {
             return $value->name;
+        }
+
+        if ($value instanceof BackedEnum) {
+            return $value->value;
         }
 
         if (! is_object($value)) {
