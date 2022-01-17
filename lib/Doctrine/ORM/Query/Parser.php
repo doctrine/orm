@@ -338,7 +338,7 @@ class Parser
      */
     public function match($token)
     {
-        $lookaheadType = $this->lexer->lookahead['type'] ?? null;
+        $lookaheadType = $this->getLookaheadType();
 
         // Short-circuit on first condition, usually types match
         if ($lookaheadType === $token) {
@@ -588,7 +588,7 @@ class Parser
      */
     private function isFunction(): bool
     {
-        $lookaheadType = $this->lexer->lookahead['type'];
+        $lookaheadType = $this->getLookaheadType();
         $peek          = $this->lexer->peek();
 
         $this->lexer->resetPeek();
@@ -618,7 +618,7 @@ class Parser
     private function isNextAllAnySome(): bool
     {
         return in_array(
-            $this->lexer->lookahead['type'],
+            $this->getLookaheadType(),
             [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME],
             true
         );
@@ -882,7 +882,7 @@ class Parser
 
         $this->lexer->moveNext();
 
-        switch ($this->lexer->lookahead['type'] ?? null) {
+        switch ($this->getLookaheadType()) {
             case Lexer::T_SELECT:
                 $statement = $this->SelectStatement();
                 break;
@@ -1516,7 +1516,7 @@ class Parser
         }
 
         // Still need to decide between IdentificationVariable or ResultVariable
-        $lookaheadValue = $this->lexer->lookahead['value'];
+        $lookaheadValue = $this->getLookaheadValue();
 
         if (! isset($this->queryComponents[$lookaheadValue])) {
             $this->semanticalError('Cannot group by undefined identification or result variable.');
@@ -1559,7 +1559,7 @@ class Parser
                 $expr = $this->ScalarExpression();
                 break;
 
-            case $this->lexer->lookahead['type'] === Lexer::T_CASE:
+            case $this->getLookaheadType() === Lexer::T_CASE:
                 $expr = $this->CaseExpression();
                 break;
 
@@ -1956,7 +1956,7 @@ class Parser
         $token = $this->lexer->lookahead;
         $peek  = $this->lexer->glimpse();
 
-        if ($token['type'] === Lexer::T_OPEN_PARENTHESIS && $peek['type'] === Lexer::T_SELECT) {
+        if ($token && $token['type'] === Lexer::T_OPEN_PARENTHESIS && $peek['type'] === Lexer::T_SELECT) {
             $this->match(Lexer::T_OPEN_PARENTHESIS);
             $expression = $this->Subselect();
             $this->match(Lexer::T_CLOSE_PARENTHESIS);
@@ -1993,7 +1993,7 @@ class Parser
      */
     public function ScalarExpression()
     {
-        $lookahead = $this->lexer->lookahead['type'];
+        $lookahead = $this->getLookaheadType();
         $peek      = $this->lexer->glimpse();
 
         switch (true) {
@@ -2079,7 +2079,7 @@ class Parser
      */
     public function CaseExpression()
     {
-        $lookahead = $this->lexer->lookahead['type'];
+        $lookahead = $this->getLookaheadType();
 
         switch ($lookahead) {
             case Lexer::T_NULLIF:
@@ -2239,7 +2239,7 @@ class Parser
         $expression    = null;
         $identVariable = null;
         $peek          = $this->lexer->glimpse();
-        $lookaheadType = $this->lexer->lookahead['type'];
+        $lookaheadType = $this->getLookaheadType();
 
         switch (true) {
             // ScalarExpression (u.name)
@@ -2367,7 +2367,7 @@ class Parser
     {
         $peek = $this->lexer->glimpse();
 
-        switch ($this->lexer->lookahead['type']) {
+        switch ($this->getLookaheadType()) {
             case Lexer::T_IDENTIFIER:
                 switch (true) {
                     case $peek['type'] === Lexer::T_DOT:
@@ -2387,7 +2387,7 @@ class Parser
                         }
 
                         // COUNT(u.id)
-                        if ($this->isAggregateFunction($this->lexer->lookahead['type'])) {
+                        if ($this->isAggregateFunction($this->getLookaheadType())) {
                             return new AST\SimpleSelectExpression($this->AggregateExpression());
                         }
 
@@ -2583,7 +2583,7 @@ class Parser
             return $this->ExistsExpression();
         }
 
-        $token     = $this->lexer->lookahead;
+        $token     = $this->lexer->lookahead ?? ['type' => -1, 'value' => ''];
         $peek      = $this->lexer->glimpse();
         $lookahead = $token;
 
@@ -2731,7 +2731,7 @@ class Parser
      */
     public function Literal()
     {
-        switch ($this->lexer->lookahead['type']) {
+        switch ($this->getLookaheadType()) {
             case Lexer::T_STRING:
                 $this->match(Lexer::T_STRING);
 
@@ -2765,7 +2765,7 @@ class Parser
      */
     public function InParameter()
     {
-        if ($this->lexer->lookahead['type'] === Lexer::T_INPUT_PARAMETER) {
+        if ($this->getLookaheadType() === Lexer::T_INPUT_PARAMETER) {
             return $this->InputParameter();
         }
 
@@ -2908,7 +2908,7 @@ class Parser
             return new AST\ParenthesisExpression($expr);
         }
 
-        switch ($this->lexer->lookahead['type']) {
+        switch ($this->getLookaheadType()) {
             case Lexer::T_COALESCE:
             case Lexer::T_NULLIF:
             case Lexer::T_CASE:
@@ -2925,7 +2925,7 @@ class Parser
                     return $this->SingleValuedPathExpression();
                 }
 
-                if (isset($this->queryComponents[$this->lexer->lookahead['value']]['resultVariable'])) {
+                if (isset($this->queryComponents[$this->getLookaheadValue()]['resultVariable'])) {
                     return $this->ResultVariable();
                 }
 
@@ -2966,7 +2966,7 @@ class Parser
         // ResultVariable (string)
         if (
             $this->lexer->isNextToken(Lexer::T_IDENTIFIER) &&
-            isset($this->queryComponents[$this->lexer->lookahead['value']]['resultVariable'])
+            isset($this->queryComponents[$this->getLookaheadValue()]['resultVariable'])
         ) {
             return $this->ResultVariable();
         }
@@ -2981,7 +2981,7 @@ class Parser
      */
     public function StringPrimary()
     {
-        $lookaheadType = $this->lexer->lookahead['type'];
+        $lookaheadType = $this->getLookaheadType();
 
         switch ($lookaheadType) {
             case Lexer::T_IDENTIFIER:
@@ -3061,7 +3061,7 @@ class Parser
      */
     public function AggregateExpression()
     {
-        $lookaheadType = $this->lexer->lookahead['type'];
+        $lookaheadType = $this->getLookaheadType();
         $isDistinct    = false;
 
         if (! in_array($lookaheadType, [Lexer::T_COUNT, Lexer::T_AVG, Lexer::T_MAX, Lexer::T_MIN, Lexer::T_SUM], true)) {
@@ -3091,8 +3091,8 @@ class Parser
      */
     public function QuantifiedExpression()
     {
-        $lookaheadType = $this->lexer->lookahead['type'];
-        $value         = $this->lexer->lookahead['value'];
+        $lookaheadType = $this->getLookaheadType();
+        $value         = $this->getLookaheadValue();
 
         if (! in_array($lookaheadType, [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME], true)) {
             $this->syntaxError('ALL, ANY or SOME');
@@ -3279,7 +3279,7 @@ class Parser
 
         $escapeChar = null;
 
-        if ($this->lexer->lookahead !== null && $this->lexer->lookahead['type'] === Lexer::T_ESCAPE) {
+        if ($this->getLookaheadType() === Lexer::T_ESCAPE) {
             $this->match(Lexer::T_ESCAPE);
             $this->match(Lexer::T_STRING);
 
@@ -3329,7 +3329,7 @@ class Parser
                     break;
                 }
 
-                $lookaheadValue = $this->lexer->lookahead['value'];
+                $lookaheadValue = $this->getLookaheadValue();
 
                 // Validate existing component
                 if (! isset($this->queryComponents[$lookaheadValue])) {
@@ -3398,7 +3398,7 @@ class Parser
      */
     public function ComparisonOperator()
     {
-        switch ($this->lexer->lookahead['value']) {
+        switch ($this->getLookaheadValue()) {
             case '=':
                 $this->match(Lexer::T_EQUALS);
 
@@ -3448,7 +3448,7 @@ class Parser
     public function FunctionDeclaration()
     {
         $token    = $this->lexer->lookahead;
-        $funcName = strtolower($token['value']);
+        $funcName = strtolower($token['value'] ?? '');
 
         $customFunctionDeclaration = $this->CustomFunctionDeclaration();
 
@@ -3476,8 +3476,7 @@ class Parser
      */
     private function CustomFunctionDeclaration(): ?FunctionNode
     {
-        $token    = $this->lexer->lookahead;
-        $funcName = strtolower($token['value']);
+        $funcName = strtolower($this->getLookaheadValue());
 
         // Check for custom functions afterwards
         $config = $this->em->getConfiguration();
@@ -3513,7 +3512,7 @@ class Parser
      */
     public function FunctionsReturningNumerics()
     {
-        $funcNameLower = strtolower($this->lexer->lookahead['value']);
+        $funcNameLower = strtolower($this->getLookaheadValue());
         $funcClass     = self::$numericFunctions[$funcNameLower];
 
         $function = new $funcClass($funcNameLower);
@@ -3528,7 +3527,7 @@ class Parser
     public function CustomFunctionsReturningNumerics()
     {
         // getCustomNumericFunction is case-insensitive
-        $functionName  = strtolower($this->lexer->lookahead['value']);
+        $functionName  = strtolower($this->getLookaheadValue());
         $functionClass = $this->em->getConfiguration()->getCustomNumericFunction($functionName);
 
         assert($functionClass !== null);
@@ -3554,7 +3553,7 @@ class Parser
      */
     public function FunctionsReturningDatetime()
     {
-        $funcNameLower = strtolower($this->lexer->lookahead['value']);
+        $funcNameLower = strtolower($this->getLookaheadValue());
         $funcClass     = self::$datetimeFunctions[$funcNameLower];
 
         $function = new $funcClass($funcNameLower);
@@ -3569,7 +3568,7 @@ class Parser
     public function CustomFunctionsReturningDatetime()
     {
         // getCustomDatetimeFunction is case-insensitive
-        $functionName  = $this->lexer->lookahead['value'];
+        $functionName  = $this->getLookaheadValue();
         $functionClass = $this->em->getConfiguration()->getCustomDatetimeFunction($functionName);
 
         assert($functionClass !== null);
@@ -3596,7 +3595,7 @@ class Parser
      */
     public function FunctionsReturningStrings()
     {
-        $funcNameLower = strtolower($this->lexer->lookahead['value']);
+        $funcNameLower = strtolower($this->getLookaheadValue());
         $funcClass     = self::$stringFunctions[$funcNameLower];
 
         $function = new $funcClass($funcNameLower);
@@ -3611,7 +3610,7 @@ class Parser
     public function CustomFunctionsReturningStrings()
     {
         // getCustomStringFunction is case-insensitive
-        $functionName  = $this->lexer->lookahead['value'];
+        $functionName  = $this->getLookaheadValue();
         $functionClass = $this->em->getConfiguration()->getCustomStringFunction($functionName);
 
         assert($functionClass !== null);
@@ -3623,5 +3622,25 @@ class Parser
         $function->parse($this);
 
         return $function;
+    }
+
+    /**
+     * Gets the lookahead type used by the parser.
+     *
+     * @return int
+     */
+    protected function getLookaheadType()
+    {
+        return $this->lexer->lookahead['type'] ?? -1;
+    }
+
+    /**
+     * Gets the lookahead value used by the parser.
+     *
+     * @return string
+     */
+    protected function getLookaheadValue()
+    {
+        return $this->lexer->lookahead['value'] ?? '';
     }
 }
