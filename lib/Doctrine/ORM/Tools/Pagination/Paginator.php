@@ -44,10 +44,18 @@ class Paginator implements Countable, IteratorAggregate
     private $count;
 
     /**
+     * @var bool
+     */
+    private $fullyLoadChildCollection;
+
+    /**
+     * Constructor.
+     *
      * @param Query|QueryBuilder $query               A Doctrine ORM query or query builder.
      * @param bool               $fetchJoinCollection Whether the query joins a collection (true by default).
+     * @param boolean            $fullyLoadChildCollection Whether the query fully load a child collection.
      */
-    public function __construct($query, $fetchJoinCollection = true)
+    public function __construct($query, $fetchJoinCollection = true, $fullyLoadChildCollection = false)
     {
         if ($query instanceof QueryBuilder) {
             $query = $query->getQuery();
@@ -55,6 +63,7 @@ class Paginator implements Countable, IteratorAggregate
 
         $this->query               = $query;
         $this->fetchJoinCollection = (bool) $fetchJoinCollection;
+        $this->fullyLoadChildCollection = (bool) $fullyLoadChildCollection;
     }
 
     /**
@@ -156,6 +165,13 @@ class Paginator implements Countable, IteratorAggregate
             $ids          = array_map('current', $foundIdRows);
 
             $this->appendTreeWalker($whereInQuery, WhereInWalker::class);
+
+            if ($this->fullyLoadChildCollection) {
+                $whereInQuery->setHint(WhereInWalker::HINT_FULLY_LOAD_CHILD_COLLECTION, true);
+                // Unbind unused parameters since where clause was replaced with IN condition
+                $this->unbindUnusedQueryParams($whereInQuery);
+            }
+
             $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids));
             $whereInQuery->setFirstResult(null)->setMaxResults(null);
             $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $ids);
