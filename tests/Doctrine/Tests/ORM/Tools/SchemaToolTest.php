@@ -35,6 +35,8 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedChildClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedIdentityClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedRootClass;
+use Doctrine\Tests\Models\Enums\Card;
+use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
@@ -187,6 +189,23 @@ class SchemaToolTest extends OrmTestCase
             ->getCustomSchemaOptions();
 
         self::assertSame([], $customSchemaOptions);
+    }
+
+    /**
+     * @requires PHP 8.1
+     */
+    public function testEnumTypeAddedToCustomSchemaOptions(): void
+    {
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $customSchemaOptions = $schemaTool->getSchemaFromMetadata([$em->getClassMetadata(Card::class)])
+            ->getTable('Card')
+            ->getColumn('suit')
+            ->getCustomSchemaOptions();
+
+        self::assertArrayHasKey('enumType', $customSchemaOptions);
+        self::assertSame(Suit::class, $customSchemaOptions['enumType']);
     }
 
     /**
