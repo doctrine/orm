@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Proxy\Proxy;
@@ -771,6 +772,66 @@ class QueryTest extends OrmFunctionalTestCase
 
         self::assertCount(3, $users);
         self::assertInstanceOf(CmsUser::class, $users[0]);
+    }
+
+    public function testQueryWithHiddenEntityAndScalarColumnHydrator(): void
+    {
+        $userA           = new CmsUser();
+        $userA->name     = 'Benjamin';
+        $userA->username = 'beberlei';
+        $userA->status   = 'developer';
+        $this->_em->persist($userA);
+
+        $userB           = new CmsUser();
+        $userB->name     = 'Roman';
+        $userB->username = 'romanb';
+        $userB->status   = 'developer';
+        $this->_em->persist($userB);
+
+        $userC           = new CmsUser();
+        $userC->name     = 'Jonathan';
+        $userC->username = 'jwage';
+        $userC->status   = 'developer';
+        $this->_em->persist($userC);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery('SELECT u.id, u AS HIDDEN _u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.name');
+        $userIds = $query->execute(null,AbstractQuery::HYDRATE_SCALAR_COLUMN);
+
+        self::assertCount(3, $userIds);
+        self::assertEquals($userIds[0], $userA->getId());
+    }
+
+    public function testQueryWithHiddenColumnAndScalarColumnHydrator(): void
+    {
+        $userA           = new CmsUser();
+        $userA->name     = 'Benjamin';
+        $userA->username = 'beberlei';
+        $userA->status   = 'developer';
+        $this->_em->persist($userA);
+
+        $userB           = new CmsUser();
+        $userB->name     = 'Roman';
+        $userB->username = 'romanb';
+        $userB->status   = 'developer';
+        $this->_em->persist($userB);
+
+        $userC           = new CmsUser();
+        $userC->name     = 'Jonathan';
+        $userC->username = 'jwage';
+        $userC->status   = 'developer';
+        $this->_em->persist($userC);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery('SELECT u.id, u.name AS HIDDEN u__name FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.name');
+        $userIds = $query->execute(null,AbstractQuery::HYDRATE_SCALAR_COLUMN);
+
+        self::assertCount(3, $userIds);
+        self::assertEquals($userIds[0], $userA->getId());
     }
 
     /**
