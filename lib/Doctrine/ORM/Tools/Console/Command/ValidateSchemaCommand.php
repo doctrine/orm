@@ -29,6 +29,7 @@ class ValidateSchemaCommand extends AbstractEntityManagerCommand
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('skip-mapping', null, InputOption::VALUE_NONE, 'Skip the mapping validation check')
              ->addOption('skip-sync', null, InputOption::VALUE_NONE, 'Skip checking if the mapping is in sync with the database')
+             ->addOption('strict-sync', null, InputOption::VALUE_NONE, 'Check that all tables in a database have a mapping files')
              ->setHelp('Validate that the mapping files are correct and in sync with the database.');
     }
 
@@ -74,7 +75,7 @@ class ValidateSchemaCommand extends AbstractEntityManagerCommand
 
         if ($input->getOption('skip-sync')) {
             $ui->text('<comment>[SKIPPED] The database was not checked for synchronicity.</comment>');
-        } elseif (! $validator->schemaInSyncWithMetadata()) {
+        } elseif (! $validator->schemaInSyncWithMetadata($input->getOption('strict-sync'))) {
             $ui->error('The database schema is not in sync with the current mapping file.');
             $exit += 2;
         } else {

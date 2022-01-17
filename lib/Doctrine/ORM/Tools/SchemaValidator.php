@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 use function array_diff;
+use function array_filter;
 use function array_key_exists;
 use function array_search;
 use function array_values;
@@ -258,14 +259,21 @@ class SchemaValidator
     /**
      * Checks if the Database Schema is in sync with the current metadata state.
      *
+     * @param bool $strictSync If TRUE, check that all tables in a database have a mapping files
+     *
      * @return bool
      */
-    public function schemaInSyncWithMetadata()
+    public function schemaInSyncWithMetadata($strictSync = false)
     {
         $schemaTool = new SchemaTool($this->em);
 
         $allMetadata = $this->em->getMetadataFactory()->getAllMetadata();
 
-        return count($schemaTool->getUpdateSchemaSql($allMetadata, true)) === 0;
+        return count(array_filter(
+                $schemaTool->getUpdateSchemaSql($allMetadata, $strictSync === false),
+                function ($value) {
+                    return $value != 'DROP TABLE migration_versions';
+                }
+            )) == 0;
     }
 }
