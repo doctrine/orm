@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="4.18.1@dda05fa913f4dc6eb3386f2f7ce5a45d37a71bcb">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
-    <DeprecatedMethod occurrences="3">
-      <code>getResultCacheDriver</code>
-      <code>getResultCacheDriver</code>
-      <code>getResultCacheImpl</code>
-    </DeprecatedMethod>
     <FalsableReturnStatement occurrences="1">
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
     </FalsableReturnStatement>
     <InvalidFalsableReturnType occurrences="1">
       <code>Parameter|null</code>
     </InvalidFalsableReturnType>
-    <InvalidNullableReturnType occurrences="1">
-      <code>\Doctrine\Common\Cache\Cache</code>
-    </InvalidNullableReturnType>
     <InvalidScalarArgument occurrences="1">
       <code>$key</code>
     </InvalidScalarArgument>
@@ -23,10 +15,6 @@
       <code>$data</code>
       <code>$data</code>
     </MissingClosureParamType>
-    <NullableReturnStatement occurrences="2">
-      <code>$this-&gt;_em-&gt;getConfiguration()-&gt;getResultCacheImpl()</code>
-      <code>$this-&gt;_queryCacheProfile-&gt;getResultCacheDriver()</code>
-    </NullableReturnStatement>
     <PossiblyInvalidArgument occurrences="1">
       <code>$stmt</code>
     </PossiblyInvalidArgument>
@@ -1398,9 +1386,6 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Query.php">
-    <DeprecatedMethod occurrences="1">
-      <code>getResultCacheDriver</code>
-    </DeprecatedMethod>
     <InvalidScalarArgument occurrences="1">
       <code>$sqlParams</code>
     </InvalidScalarArgument>

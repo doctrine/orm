@@ -1,5 +1,20 @@
 # Upgrade to 3.0
 
+## BC BREAK: Remove old cache accessors and mutators from query classes
+
+The following methods have been removed from `AbstractQuery`:
+
+* `setResultCacheDriver()`
+* `getResultCacheDriver()`
+* `useResultCache()`
+* `getResultCacheLifetime()`
+* `getResultCacheId()`
+
+The following methods have been removed from `Query`:
+
+* `setQueryCacheDriver()`
+* `getQueryCacheDriver()`
+
 ## BC BREAK: Remove `Doctrine\ORM\Cache\MultiGetRegion`
 
 The interface has been merged into `Doctrine\ORM\Cache\Region`.

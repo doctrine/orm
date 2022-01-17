@@ -19,7 +19,6 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use function assert;
 use function count;
 use function iterator_to_array;
-use function method_exists;
 use function sprintf;
 
 class ResultCacheTest extends OrmFunctionalTestCase
@@ -85,36 +84,6 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertCacheHasItem('testing_result_cache_id', $cache);
     }
 
-    public function testUseResultCacheTrue(): void
-    {
-        $cache = new ArrayAdapter();
-        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
-
-        $query->useResultCache(true);
-        $this->setResultCache($query, $cache);
-        $query->setResultCacheId('testing_result_cache_id');
-        $query->getResult();
-
-        self::assertCacheHasItem('testing_result_cache_id', $cache);
-
-        $this->resetCache();
-    }
-
-    public function testUseResultCacheFalse(): void
-    {
-        $cache = new ArrayAdapter();
-        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
-
-        $this->setResultCache($query, $cache);
-        $query->setResultCacheId('testing_result_cache_id');
-        $query->useResultCache(false);
-        $query->getResult();
-
-        self::assertFalse($cache->hasItem('testing_result_cache_id'));
-
-        $this->resetCache();
-    }
-
     /**
      * @group DDC-1026
      */
@@ -125,7 +94,6 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query    = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux WHERE ux.id = ?1');
 
         $this->setResultCache($query, $cache);
-        $query->useResultCache(true);
 
         // these queries should result in cache miss:
         $query->setParameter(1, 1);
@@ -390,15 +358,10 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
     private function setResultCache(AbstractQuery $query, CacheItemPoolInterface $cache): void
     {
-        $profile = new QueryCacheProfile();
-
-        if (method_exists($profile, 'setResultCache')) {
-            $profile = $profile->setResultCache($cache);
-        } else {
-            $profile = $profile->setResultCacheDriver(DoctrineProvider::wrap($cache));
-        }
-
-        $query->setResultCacheProfile($profile);
+        $query->setResultCacheProfile(
+            (new QueryCacheProfile())
+                ->setResultCache($cache)
+        );
     }
 
     private static function assertCacheHasItem(string $key, CacheItemPoolInterface $cache): void

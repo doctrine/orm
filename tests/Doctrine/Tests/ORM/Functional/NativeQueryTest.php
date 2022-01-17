@@ -216,7 +216,6 @@ class NativeQueryTest extends OrmFunctionalTestCase
           ->setHint('foo', 'bar')
           ->setParameter(1, 'foo')
           ->setParameters($parameters)
-          ->setResultCacheDriver(null)
           ->setResultCacheLifetime(3500);
 
         self::assertSame($q, $q2);
