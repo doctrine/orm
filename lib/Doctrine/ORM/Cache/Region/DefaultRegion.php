@@ -37,26 +37,17 @@ class DefaultRegion implements Region
         $this->lifetime      = $lifetime;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function contains(CacheKey $key)
+    public function contains(CacheKey $key): bool
     {
         return $this->cacheItemPool->hasItem($this->getCacheEntryKey($key));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function get(CacheKey $key)
+    public function get(CacheKey $key): ?CacheEntry
     {
         $item  = $this->cacheItemPool->getItem($this->getCacheEntryKey($key));
         $entry = $item->isHit() ? $item->get() : null;
@@ -71,7 +62,7 @@ class DefaultRegion implements Region
     /**
      * {@inheritdoc}
      */
-    public function getMultiple(CollectionCacheEntry $collection)
+    public function getMultiple(CollectionCacheEntry $collection): ?array
     {
         $keys = array_map(
             Closure::fromCallable([$this, 'getCacheEntryKey']),
@@ -100,12 +91,7 @@ class DefaultRegion implements Region
         return $result;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return bool
-     */
-    public function put(CacheKey $key, CacheEntry $entry, ?Lock $lock = null)
+    public function put(CacheKey $key, CacheEntry $entry, ?Lock $lock = null): bool
     {
         $item = $this->cacheItemPool
             ->getItem($this->getCacheEntryKey($key))
@@ -118,22 +104,12 @@ class DefaultRegion implements Region
         return $this->cacheItemPool->save($item);
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return bool
-     */
-    public function evict(CacheKey $key)
+    public function evict(CacheKey $key): bool
     {
         return $this->cacheItemPool->deleteItem($this->getCacheEntryKey($key));
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return bool
-     */
-    public function evictAll()
+    public function evictAll(): bool
     {
         return $this->cacheItemPool->clear(self::REGION_PREFIX . $this->name);
     }

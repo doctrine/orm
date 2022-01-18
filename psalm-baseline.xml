@@ -275,11 +275,6 @@
       <code>lock</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/Region/UpdateTimestampCache.php">
-    <MissingReturnType occurrences="1">
-      <code>update</code>
-    </MissingReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/RegionsConfiguration.php">
     <RedundantCastGivenDocblockType occurrences="6">
       <code>(int) $defaultLifetime</code>
@@ -304,11 +299,6 @@
     <NoInterfaceProperties occurrences="1">
       <code>$timestamp-&gt;time</code>
     </NoInterfaceProperties>
-  </file>
-  <file src="lib/Doctrine/ORM/Cache/TimestampRegion.php">
-    <MissingReturnType occurrences="1">
-      <code>update</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Configuration.php">
     <ArgumentTypeCoercion occurrences="2">
