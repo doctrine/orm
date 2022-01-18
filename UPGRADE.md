@@ -1,3 +1,9 @@
+# Upgrade to 2.12
+
+## Deprecate `Doctrine\ORM\Cache\MultiGetRegion`
+
+The interface will be merged with `Doctrine\ORM\Cache\Region` in 3.0.
+
 # Upgrade to 2.11
 
 ## Rename `AbstractIdGenerator::generate()` to `generateId()`

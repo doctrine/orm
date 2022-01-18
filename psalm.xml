@@ -34,6 +34,11 @@
                 <referencedClass name="Doctrine\Persistence\Mapping\Driver\AnnotationDriver"/>
             </errorLevel>
         </DeprecatedClass>
+        <DeprecatedInterface>
+            <errorLevel type="suppress">
+                <referencedClass name="Doctrine\ORM\Cache\MultiGetRegion"/>
+            </errorLevel>
+        </DeprecatedInterface>
         <DeprecatedMethod>
             <errorLevel type="suppress">
                 <!-- We're calling the deprecated method for BC here. -->
