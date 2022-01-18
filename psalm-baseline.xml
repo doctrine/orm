@@ -703,8 +703,9 @@
     <DeprecatedConstant occurrences="1">
       <code>self::GENERATOR_TYPE_UUID</code>
     </DeprecatedConstant>
-    <DeprecatedMethod occurrences="1">
+    <DeprecatedMethod occurrences="2">
       <code>canEmulateSchemas</code>
+      <code>canRequireSQLConversion</code>
     </DeprecatedMethod>
     <DeprecatedProperty occurrences="4">
       <code>$this-&gt;columnNames</code>
