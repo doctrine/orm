@@ -8,6 +8,8 @@ namespace Doctrine\ORM\Cache;
  * Defines a region that supports multi-get reading.
  *
  * With one method call we can get multiple items.
+ *
+ * @deprecated Implement {@see Region} instead.
  */
 interface MultiGetRegion
 {
