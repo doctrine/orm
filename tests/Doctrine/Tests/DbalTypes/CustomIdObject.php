@@ -6,12 +6,11 @@ namespace Doctrine\Tests\DbalTypes;
 
 class CustomIdObject
 {
-    /** @var string */
-    public $id;
+    public string $id;
 
     public function __construct(string $id)
     {
-        $this->id = (string) $id;
+        $this->id = $id;
     }
 
     public function __toString(): string

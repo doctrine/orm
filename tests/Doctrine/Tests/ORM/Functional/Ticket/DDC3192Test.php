@@ -146,15 +146,15 @@ class DDC3192CurrencyCode extends Type
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getSmallIntTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getSmallIntTypeDeclarationSQL($column);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): int
     {
         return self::$map[$value];
     }
@@ -162,15 +162,12 @@ class DDC3192CurrencyCode extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): mixed
     {
         return array_search((int) $value, self::$map, true);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return 'ddc3192_currency_code';
     }

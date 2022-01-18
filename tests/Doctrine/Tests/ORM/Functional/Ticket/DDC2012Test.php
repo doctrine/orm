@@ -129,15 +129,15 @@ class DDC2012TsVectorType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getVarcharTypeDeclarationSQL($column);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         if (is_array($value)) {
             $value = implode(' ', $value);
@@ -153,8 +153,10 @@ class DDC2012TsVectorType extends Type
 
     /**
      * {@inheritdoc}
+     *
+     * @return list<string>
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): array
     {
         self::$calls[__FUNCTION__][] = [
             'value'     => $value,
@@ -167,7 +169,7 @@ class DDC2012TsVectorType extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform)
+    public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform): string
     {
         self::$calls[__FUNCTION__][] = [
             'sqlExpr'   => $sqlExpr,
@@ -188,10 +190,7 @@ class DDC2012TsVectorType extends Type
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::MYTYPE;
     }

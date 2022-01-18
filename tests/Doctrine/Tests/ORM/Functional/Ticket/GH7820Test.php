@@ -173,7 +173,7 @@ final class GH7820LineTextType extends StringType
     /**
      * {@inheritDoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): mixed
     {
         $text = parent::convertToPHPValue($value, $platform);
 
@@ -187,7 +187,7 @@ final class GH7820LineTextType extends StringType
     /**
      * {@inheritDoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         if (! $value instanceof GH7820LineText) {
             return parent::convertToDatabaseValue($value, $platform);

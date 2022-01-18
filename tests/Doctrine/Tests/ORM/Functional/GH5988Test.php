@@ -60,7 +60,7 @@ class GH5988CustomIdObjectHashType extends DBALType
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
         return $value->id . '_test';
     }
@@ -68,7 +68,7 @@ class GH5988CustomIdObjectHashType extends DBALType
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): CustomIdObject
     {
         return new CustomIdObject(str_replace('_test', '', $value));
     }
@@ -76,15 +76,12 @@ class GH5988CustomIdObjectHashType extends DBALType
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getVarcharTypeDeclarationSQL($column);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::class;
     }

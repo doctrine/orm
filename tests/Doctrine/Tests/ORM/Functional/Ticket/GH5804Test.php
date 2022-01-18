@@ -61,10 +61,7 @@ final class GH5804Type extends Type
 {
     public const NAME = 'GH5804Type';
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::NAME;
     }
@@ -72,15 +69,15 @@ final class GH5804Type extends Type
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getVarcharTypeDeclarationSQL($column);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if (empty($value)) {
             return null;

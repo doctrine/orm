@@ -155,7 +155,7 @@ class DDC2984UserIdCustomDbalType extends StringType
     /**
      * {@inheritDoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?DDC2984DomainUserId
     {
         return ! empty($value)
             ? new DDC2984DomainUserId($value)
@@ -165,7 +165,7 @@ class DDC2984UserIdCustomDbalType extends StringType
     /**
      * {@inheritDoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         if (empty($value)) {
             return null;

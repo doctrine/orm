@@ -85,7 +85,7 @@ class GH6141PeopleType extends StringType
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
         if (! $value instanceof GH6141People) {
             $value = GH6141People::get($value);
@@ -97,15 +97,12 @@ class GH6141PeopleType extends StringType
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): GH6141People
     {
         return GH6141People::get($value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::NAME;
     }
