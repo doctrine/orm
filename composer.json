@@ -41,7 +41,7 @@
         "doctrine/annotations": "^1.13",
         "doctrine/coding-standard": "^9.0",
         "phpbench/phpbench": "^1.0",
-        "phpstan/phpstan": "1.4.0",
+        "phpstan/phpstan": "1.4.1",
         "phpunit/phpunit": "^9.5",
         "squizlabs/php_codesniffer": "3.6.2",
         "symfony/cache": "^4.4 || ^5.4 || ^6.0",

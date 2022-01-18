@@ -93,6 +93,7 @@ be any regular PHP class observing the following restrictions:
 -  An entity cannot make use of func_get_args() to implement variable parameters.
    Generated proxies do not support this for performance reasons and your code might
    actually fail to work when violating this restriction.
+-  Entity cannot access private/protected properties/methods of another entity of the same class or :doc:`do so safely <../cookbook/accessing-private-properties-of-the-same-class-from-different-instance>`.
 
 Entities support inheritance, polymorphic associations, and
 polymorphic queries. Both abstract and concrete classes can be
