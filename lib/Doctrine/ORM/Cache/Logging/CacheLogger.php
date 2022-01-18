@@ -15,73 +15,46 @@ interface CacheLogger
 {
     /**
      * Log an entity put into second level cache.
-     *
-     * @param string         $regionName The name of the cache region.
-     * @param EntityCacheKey $key        The cache key of the entity.
      */
-    public function entityCachePut($regionName, EntityCacheKey $key);
+    public function entityCachePut(string $regionName, EntityCacheKey $key): void;
 
     /**
      * Log an entity get from second level cache resulted in a hit.
-     *
-     * @param string         $regionName The name of the cache region.
-     * @param EntityCacheKey $key        The cache key of the entity.
      */
-    public function entityCacheHit($regionName, EntityCacheKey $key);
+    public function entityCacheHit(string $regionName, EntityCacheKey $key): void;
 
     /**
      * Log an entity get from second level cache resulted in a miss.
-     *
-     * @param string         $regionName The name of the cache region.
-     * @param EntityCacheKey $key        The cache key of the entity.
      */
-    public function entityCacheMiss($regionName, EntityCacheKey $key);
+    public function entityCacheMiss(string $regionName, EntityCacheKey $key): void;
 
     /**
      * Log an entity put into second level cache.
-     *
-     * @param string             $regionName The name of the cache region.
-     * @param CollectionCacheKey $key        The cache key of the collection.
      */
-    public function collectionCachePut($regionName, CollectionCacheKey $key);
+    public function collectionCachePut(string $regionName, CollectionCacheKey $key): void;
 
     /**
      * Log an entity get from second level cache resulted in a hit.
-     *
-     * @param string             $regionName The name of the cache region.
-     * @param CollectionCacheKey $key        The cache key of the collection.
      */
-    public function collectionCacheHit($regionName, CollectionCacheKey $key);
+    public function collectionCacheHit(string $regionName, CollectionCacheKey $key): void;
 
     /**
      * Log an entity get from second level cache resulted in a miss.
-     *
-     * @param string             $regionName The name of the cache region.
-     * @param CollectionCacheKey $key        The cache key of the collection.
      */
-    public function collectionCacheMiss($regionName, CollectionCacheKey $key);
+    public function collectionCacheMiss(string $regionName, CollectionCacheKey $key): void;
 
     /**
      * Log a query put into the query cache.
-     *
-     * @param string        $regionName The name of the cache region.
-     * @param QueryCacheKey $key        The cache key of the query.
      */
-    public function queryCachePut($regionName, QueryCacheKey $key);
+    public function queryCachePut(string $regionName, QueryCacheKey $key): void;
 
     /**
      * Log a query get from the query cache resulted in a hit.
-     *
-     * @param string        $regionName The name of the cache region.
-     * @param QueryCacheKey $key        The cache key of the query.
      */
-    public function queryCacheHit($regionName, QueryCacheKey $key);
+    public function queryCacheHit(string $regionName, QueryCacheKey $key): void;
 
     /**
      * Log a query get from the query cache resulted in a miss.
-     *
-     * @param string        $regionName The name of the cache region.
-     * @param QueryCacheKey $key        The cache key of the query.
      */
-    public function queryCacheMiss($regionName, QueryCacheKey $key);
+    public function queryCacheMiss(string $regionName, QueryCacheKey $key): void;
 }

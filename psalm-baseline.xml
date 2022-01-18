@@ -125,45 +125,6 @@
       <code>$value-&gt;class</code>
     </ArgumentTypeCoercion>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/Logging/CacheLogger.php">
-    <MissingReturnType occurrences="9">
-      <code>collectionCacheHit</code>
-      <code>collectionCacheMiss</code>
-      <code>collectionCachePut</code>
-      <code>entityCacheHit</code>
-      <code>entityCacheMiss</code>
-      <code>entityCachePut</code>
-      <code>queryCacheHit</code>
-      <code>queryCacheMiss</code>
-      <code>queryCachePut</code>
-    </MissingReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Cache/Logging/CacheLoggerChain.php">
-    <MissingReturnType occurrences="9">
-      <code>collectionCacheHit</code>
-      <code>collectionCacheMiss</code>
-      <code>collectionCachePut</code>
-      <code>entityCacheHit</code>
-      <code>entityCacheMiss</code>
-      <code>entityCachePut</code>
-      <code>queryCacheHit</code>
-      <code>queryCacheMiss</code>
-      <code>queryCachePut</code>
-    </MissingReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Cache/Logging/StatisticsCacheLogger.php">
-    <MissingReturnType occurrences="9">
-      <code>collectionCacheHit</code>
-      <code>collectionCacheMiss</code>
-      <code>collectionCachePut</code>
-      <code>entityCacheHit</code>
-      <code>entityCacheMiss</code>
-      <code>entityCachePut</code>
-      <code>queryCacheHit</code>
-      <code>queryCacheMiss</code>
-      <code>queryCachePut</code>
-    </MissingReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/Persister/CachedPersister.php">
     <MissingReturnType occurrences="2">
       <code>afterTransactionComplete</code>
