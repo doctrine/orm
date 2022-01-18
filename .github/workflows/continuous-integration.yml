@@ -25,7 +25,7 @@ jobs:
           - "default"
         include:
           - php-version: "8.1"
-            dbal-version: "3.2@dev"
+            dbal-version: "3.4@dev"
 
     steps:
       - name: "Checkout"
