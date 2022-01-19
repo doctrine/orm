@@ -1,5 +1,9 @@
 # Upgrade to 3.0
 
+## BC BREAK: Remove `Doctrine\ORM\Cache\MultiGetRegion`
+
+The interface has been merged into `Doctrine\ORM\Cache\Region`.
+
 ## BC BREAK: Rename `AbstractIdGenerator::generate()` to `generateId()`
 
 * Implementations of `AbstractIdGenerator` have to implement the method
