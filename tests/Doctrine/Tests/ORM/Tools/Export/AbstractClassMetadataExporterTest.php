@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools\Export;
 
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
@@ -19,8 +21,6 @@ use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\Driver\PHPDriver;
-use Doctrine\Tests\Mocks\ConnectionMock;
-use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\OrmTestCase;
 use Symfony\Component\Yaml\Parser;
@@ -52,15 +52,21 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 
     protected function createEntityManager($metadataDriver): EntityManagerMock
     {
-        $driverMock = new DriverMock();
-        $config     = new Configuration();
+        $platform = $this->createMock(AbstractPlatform::class);
+        $platform->method('supportsIdentityColumns')
+            ->willReturn(true);
+
+        $connection = $this->createMock(Connection::class);
+        $connection->method('getDatabasePlatform')
+            ->willReturn($platform);
+
+        $config = new Configuration();
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $eventManager = new EventManager();
-        $conn         = new ConnectionMock([], $driverMock, $config, $eventManager);
         $config->setMetadataDriverImpl($metadataDriver);
 
-        return EntityManagerMock::create($conn, $config, $eventManager);
+        return EntityManagerMock::create($connection, $config, $eventManager);
     }
 
     protected function createMetadataDriver(string $type, string $path): MappingDriver
