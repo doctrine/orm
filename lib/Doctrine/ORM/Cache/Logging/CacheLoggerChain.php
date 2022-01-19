@@ -10,7 +10,7 @@ use Doctrine\ORM\Cache\QueryCacheKey;
 
 class CacheLoggerChain implements CacheLogger
 {
-    /** @var array<CacheLogger> */
+    /** @var array<string, CacheLogger> */
     private $loggers = [];
 
     /**
@@ -34,7 +34,7 @@ class CacheLoggerChain implements CacheLogger
     }
 
     /**
-     * @return array<CacheLogger>
+     * @return array<string, CacheLogger>
      */
     public function getLoggers()
     {
