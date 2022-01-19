@@ -21,36 +21,20 @@ use function reset;
  */
 class DefaultEntityHydrator implements EntityHydrator
 {
-    /** @var EntityManagerInterface */
-    private $em;
-
-    /** @var UnitOfWork */
-    private $uow;
-
-    /**
-     * The IdentifierFlattener used for manipulating identifiers
-     *
-     * @var IdentifierFlattener
-     */
-    private $identifierFlattener;
+    private UnitOfWork $uow;
+    private IdentifierFlattener $identifierFlattener;
 
     /** @var array<string,mixed> */
-    private static $hints = [Query::HINT_CACHE_ENABLED => true];
+    private static array $hints = [Query::HINT_CACHE_ENABLED => true];
 
-    /**
-     * @param EntityManagerInterface $em The entity manager.
-     */
-    public function __construct(EntityManagerInterface $em)
-    {
-        $this->em                  = $em;
+    public function __construct(
+        private EntityManagerInterface $em
+    ) {
         $this->uow                 = $em->getUnitOfWork();
         $this->identifierFlattener = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, $entity)
+    public function buildCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, object $entity): EntityCacheEntry
     {
         $data = $this->uow->getOriginalEntityData($entity);
         $data = array_merge($data, $metadata->getIdentifierValues($entity)); // why update has no identifier values ?
@@ -139,10 +123,7 @@ class DefaultEntityHydrator implements EntityHydrator
         return new EntityCacheEntry($metadata->name, $data);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function loadCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, EntityCacheEntry $entry, $entity = null)
+    public function loadCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, EntityCacheEntry $entry, ?object $entity = null): ?object
     {
         $data  = $entry->data;
         $hints = self::$hints;
