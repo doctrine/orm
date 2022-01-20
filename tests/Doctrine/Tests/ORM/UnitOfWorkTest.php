@@ -7,6 +7,9 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Events;
@@ -25,7 +28,6 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Tests\Mocks\ConnectionMock;
-use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
@@ -43,6 +45,7 @@ use function assert;
 use function count;
 use function gc_collect_cycles;
 use function get_class;
+use function method_exists;
 use function random_int;
 use function uniqid;
 
@@ -80,9 +83,40 @@ class UnitOfWorkTest extends OrmTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_connectionMock = new ConnectionMock([], new DriverMock());
+
+        $platform = $this->createMock(AbstractPlatform::class);
+        $platform->method('supportsIdentityColumns')
+            ->willReturn(true);
+
+        if (method_exists($platform, 'getSQLResultCasing')) {
+            $platform->method('getSQLResultCasing')
+                ->willReturnCallback(static function (string $column): string {
+                    return $column;
+                });
+        }
+
+        $driverStatement = $this->createMock(Driver\Statement::class);
+
+        if (method_exists($driverStatement, 'rowCount')) {
+            $driverStatement->method('rowCount')
+                ->willReturn(0);
+        }
+
+        $driverConnection = $this->createMock(Driver\Connection::class);
+        $driverConnection->method('prepare')
+            ->willReturn($driverStatement);
+
+        $driver = $this->createMock(Driver::class);
+        $driver->method('getDatabasePlatform')
+            ->willReturn($platform);
+        $driver->method('connect')
+            ->willReturn($driverConnection);
+
+        $connection = new Connection([], $driver);
+
+        $this->_connectionMock = $connection;
         $this->eventManager    = $this->getMockBuilder(EventManager::class)->getMock();
-        $this->_emMock         = EntityManagerMock::create($this->_connectionMock, null, $this->eventManager);
+        $this->_emMock         = EntityManagerMock::create($connection, null, $this->eventManager);
         // SUT
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
@@ -802,9 +836,13 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testCommitThrowOptimisticLockExceptionWhenConnectionCommitReturnFalse(): void
     {
+        $driver = $this->createMock(Driver::class);
+        $driver->method('connect')
+            ->willReturn($this->createMock(Driver\Connection::class));
+
         // Set another connection mock that fail on commit
         $this->_connectionMock = $this->getMockBuilder(ConnectionMock::class)
-            ->setConstructorArgs([[], new DriverMock()])
+            ->setConstructorArgs([[], $driver])
             ->setMethods(['commit'])
             ->getMock();
         $this->_emMock         = EntityManagerMock::create($this->_connectionMock, null, $this->eventManager);

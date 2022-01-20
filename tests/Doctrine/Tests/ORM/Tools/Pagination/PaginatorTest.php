@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Mocks\ConnectionMock;
-use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -27,7 +27,7 @@ class PaginatorTest extends OrmTestCase
     protected function setUp(): void
     {
         $this->connection = $this->getMockBuilder(ConnectionMock::class)
-            ->setConstructorArgs([[], new DriverMock()])
+            ->setConstructorArgs([[], $this->createMock(Driver::class)])
             ->setMethods(['executeQuery'])
             ->getMock();
 

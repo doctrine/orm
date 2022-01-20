@@ -13,12 +13,6 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  */
 class DatabasePlatformMock extends AbstractPlatform
 {
-    /** @var bool */
-    private $supportsIdentityColumns = true;
-
-    /** @var bool */
-    private $supportsSequences = false;
-
     public function prefersIdentityColumns(): bool
     {
         throw new BadMethodCallException('Call to deprecated method.');
@@ -26,12 +20,12 @@ class DatabasePlatformMock extends AbstractPlatform
 
     public function supportsIdentityColumns(): bool
     {
-        return $this->supportsIdentityColumns;
+        return true;
     }
 
     public function supportsSequences(): bool
     {
-        return $this->supportsSequences;
+        return false;
     }
 
     /**
@@ -92,16 +86,6 @@ class DatabasePlatformMock extends AbstractPlatform
     }
 
     /* MOCK API */
-
-    public function setSupportsIdentityColumns(bool $bool): void
-    {
-        $this->supportsIdentityColumns = $bool;
-    }
-
-    public function setSupportsSequences(bool $bool): void
-    {
-        $this->supportsSequences = $bool;
-    }
 
     public function getName(): string
     {
