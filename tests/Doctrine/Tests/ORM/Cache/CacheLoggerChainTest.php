@@ -18,11 +18,10 @@ use PHPUnit\Framework\MockObject\MockObject;
  */
 class CacheLoggerChainTest extends DoctrineTestCase
 {
-    /** @var CacheLoggerChain */
-    private $logger;
+    private CacheLoggerChain $logger;
 
     /** @var CacheLogger&MockObject */
-    private $mock;
+    private CacheLogger $mock;
 
     protected function setUp(): void
     {
