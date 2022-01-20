@@ -235,12 +235,19 @@ use function sprintf;
             $return = call_user_func($func, $this);
 
             $this->flush();
+        } catch (Throwable $e) {
+            $this->close();
+            $this->conn->rollBack();
+
+            throw $e;
+        }
+
+        try {
             $this->conn->commit();
 
             return $return ?: true;
         } catch (Throwable $e) {
             $this->close();
-            $this->conn->rollBack();
 
             throw $e;
         }
