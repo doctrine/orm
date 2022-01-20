@@ -19,7 +19,6 @@ use stdClass;
 
 use function array_keys;
 use function assert;
-use function method_exists;
 
 /**
  * Tests the lazy-loading capabilities of the PersistentCollection and the initialization of collections.
@@ -39,11 +38,6 @@ class PersistentCollectionTest extends OrmTestCase
         $platform = $this->createMock(AbstractPlatform::class);
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
-
-        if (method_exists($platform, 'getSQLResultCasing')) {
-            $platform->method('getSQLResultCasing')
-                ->willReturnArgument(0);
-        }
 
         $connection = $this->createMock(Connection::class);
         $connection->method('getDatabasePlatform')

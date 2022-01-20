@@ -88,13 +88,6 @@ class UnitOfWorkTest extends OrmTestCase
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 
-        if (method_exists($platform, 'getSQLResultCasing')) {
-            $platform->method('getSQLResultCasing')
-                ->willReturnCallback(static function (string $column): string {
-                    return $column;
-                });
-        }
-
         $driverStatement = $this->createMock(Driver\Statement::class);
 
         if (method_exists($driverStatement, 'rowCount')) {
