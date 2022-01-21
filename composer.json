@@ -24,6 +24,7 @@
         "composer-runtime-api": "^2",
         "ext-ctype": "*",
         "ext-pdo": "*",
+        "doctrine/annotations": "^1.13",
         "doctrine/cache": "^1.12.1 || ^2.1.1",
         "doctrine/collections": "^1.5",
         "doctrine/common": "^3.0.3",
@@ -40,7 +41,6 @@
         "symfony/polyfill-php80": "^1.15"
     },
     "require-dev": {
-        "doctrine/annotations": "^1.13",
         "doctrine/coding-standard": "^9.0",
         "phpbench/phpbench": "^0.16.10 || ^1.0",
         "phpstan/phpstan": "1.4.1",
@@ -49,9 +49,6 @@
         "symfony/cache": "^4.4 || ^5.4 || ^6.0",
         "symfony/yaml": "^3.4 || ^4.0 || ^5.0 || ^6.0",
         "vimeo/psalm": "4.18.1"
-    },
-    "conflict": {
-        "doctrine/annotations": "<1.13 || >= 2.0"
     },
     "suggest": {
         "symfony/cache": "Provides cache support for Setup Tool with doctrine/cache 2.0",
