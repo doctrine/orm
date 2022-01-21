@@ -1707,7 +1707,7 @@ class BasicEntityPersister implements EntityPersister
                 }
 
                 $joinTableName = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
-                $joinColumns   = $assoc['isOwningSide']
+                $joinColumns   = $association['isOwningSide']
                     ? $association['joinTable']['joinColumns']
                     : $association['joinTable']['inverseJoinColumns'];
 
