@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
@@ -23,9 +22,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2346Test extends OrmFunctionalTestCase
 {
-    /** @var DebugStack */
-    protected $logger;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -37,8 +33,6 @@ class DDC2346Test extends OrmFunctionalTestCase
                 $this->_em->getClassMetadata(DDC2346Baz::class),
             ]
         );
-
-        $this->logger = new DebugStack();
     }
 
     /**
@@ -66,12 +60,12 @@ class DDC2346Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->_em->getConnection()->getConfiguration()->setSQLLogger($this->logger);
+        $this->getQueryLog()->reset()->enable();
 
         $fetchedBazs = $this->_em->getRepository(DDC2346Baz::class)->findAll();
 
         self::assertCount(2, $fetchedBazs);
-        self::assertCount(2, $this->logger->queries, 'The total number of executed queries is 2, and not n+1');
+        self::assertSame(2, $this->getCurrentQueryCount(), 'The total number of executed queries is 2, and not n+1');
     }
 }
 

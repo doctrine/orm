@@ -149,8 +149,6 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         //$this->assertEquals(2, $product->getFeatures()->count());
         //$this->assertTrue($product->getFeatures()->contains($features[0]));
         //$this->assertTrue($product->getFeatures()->contains($features[1]));
-
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(null);
     }
 
     public function testJoinFromOwningSide(): void

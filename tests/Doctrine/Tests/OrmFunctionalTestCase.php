@@ -6,7 +6,6 @@ namespace Doctrine\Tests;
 
 use Doctrine\Common\Cache\Cache;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
@@ -24,6 +23,7 @@ use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Tests\DbalExtensions\QueryLog;
 use Doctrine\Tests\DbalTypes\Rot13Type;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
 use Exception;
@@ -35,8 +35,10 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Throwable;
 
 use function array_map;
+use function array_pop;
 use function array_reverse;
 use function array_slice;
+use function assert;
 use function count;
 use function explode;
 use function get_debug_type;
@@ -74,7 +76,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * Shared connection when a TestCase is run alone (outside of its functional suite).
      *
-     * @var Connection|null
+     * @var DbalExtensions\Connection|null
      */
     protected static $sharedConn;
 
@@ -83,9 +85,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
     /** @var SchemaTool */
     protected $_schemaTool;
-
-    /** @var DebugStack */
-    protected $_sqlLoggerStack;
 
     /**
      * The names of the model sets used in this testcase.
@@ -374,8 +373,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         $platform = $conn->getDatabasePlatform();
 
-        if ($this->_sqlLoggerStack instanceof DebugStack) {
-            $this->_sqlLoggerStack->enabled = false;
+        if ($this->isQueryLogAvailable()) {
+            $this->disableQueryLog();
         }
 
         if (isset($this->_usedModelSets['cms'])) {
@@ -714,7 +713,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $this->_schemaTool->createSchema($classes);
         }
 
-        $this->_sqlLoggerStack->enabled = true;
+        $this->enableQueryLog();
     }
 
     /**
@@ -723,7 +722,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      * @throws ORMException
      */
     protected function getEntityManager(
-        ?Connection $connection = null,
+        ?DbalExtensions\Connection $connection = null,
         ?MappingDriver $mappingDriver = null
     ): EntityManagerInterface {
         // NOTE: Functional tests use their own shared metadata cache, because
@@ -740,9 +739,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         if (self::$queryCache === null) {
             self::$queryCache = new ArrayAdapter();
         }
-
-        $this->_sqlLoggerStack          = new DebugStack();
-        $this->_sqlLoggerStack->enabled = false;
 
         //FIXME: two different configs! $conn and the created entity manager have
         // different configs.
@@ -795,7 +791,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         );
 
         $conn = $connection ?: static::$sharedConn;
-        $conn->getConfiguration()->setSQLLogger($this->_sqlLoggerStack);
+        assert($conn !== null);
+        $conn->queryLog->reset();
 
         // get rid of more global state
         $evm = $conn->getEventManager();
@@ -839,9 +836,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             throw $e;
         }
 
-        if (isset($this->_sqlLoggerStack->queries) && count($this->_sqlLoggerStack->queries)) {
+        if ($this->isQueryLogAvailable() && $this->getCurrentQueryCount() > 0) {
             $queries       = '';
-            $last25queries = array_slice(array_reverse($this->_sqlLoggerStack->queries, true), 0, 25, true);
+            $last25queries = array_slice(array_reverse($this->getQueryLog()->queries, true), 0, 25, true);
             foreach ($last25queries as $i => $query) {
                 $params   = array_map(static function ($p) {
                     return is_object($p) ? get_debug_type($p) : var_export($p, true);
@@ -880,14 +877,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     }
 
     /**
-     * Using the SQL Logger Stack this method retrieves the current query count executed in this test.
-     */
-    protected function getCurrentQueryCount(): int
-    {
-        return count($this->_sqlLoggerStack->queries);
-    }
-
-    /**
      * Configures DBAL types required in tests
      */
     protected function setUpDBALTypes(): void
@@ -897,5 +886,60 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         } else {
             Type::addType('rot13', Rot13Type::class);
         }
+    }
+
+    final protected function isQueryLogAvailable(): bool
+    {
+        return $this->_em->getConnection() instanceof DbalExtensions\Connection;
+    }
+
+    final protected function enableQueryLog(): void
+    {
+        $this->getQueryLog()->enabled = true;
+    }
+
+    final protected function disableQueryLog(): void
+    {
+        $this->getQueryLog()->enabled = false;
+    }
+
+    final protected function getQueryLog(): QueryLog
+    {
+        $connection = $this->_em->getConnection();
+        if (! $connection instanceof DbalExtensions\Connection) {
+            throw new RuntimeException(sprintf(
+                'The query log is only available if %s is used as wrapper class. Got %s.',
+                DbalExtensions\Connection::class,
+                get_debug_type($connection)
+            ));
+        }
+
+        return $connection->queryLog;
+    }
+
+    /**
+     * Using the SQL Logger Stack this method retrieves the current query count executed in this test.
+     */
+    final protected function getCurrentQueryCount(): int
+    {
+        return count($this->getQueryLog()->queries);
+    }
+
+    /**
+     * @psalm-return array{sql: string, params: array|null, types: array|null}
+     */
+    final protected function getLastLoggedQuery(int $index = 0): array
+    {
+        $queries   = $this->getQueryLog()->queries;
+        $lastQuery = null;
+        for ($i = $index; $i >= 0; $i--) {
+            $lastQuery = array_pop($queries);
+        }
+
+        if ($lastQuery === null) {
+            throw new RuntimeException('The query log was empty.');
+        }
+
+        return $lastQuery;
     }
 }
