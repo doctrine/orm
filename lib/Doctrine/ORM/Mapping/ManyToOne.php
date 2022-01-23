@@ -15,7 +15,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class ManyToOne implements Annotation
 {
-    /** @var string|null */
+    /** @var class-string|null */
     public $targetEntity;
 
     /** @var string[]|null */
@@ -33,7 +33,8 @@ final class ManyToOne implements Annotation
     public $inversedBy;
 
     /**
-     * @param string[]|null $cascade
+     * @param class-string|null $targetEntity
+     * @param string[]|null     $cascade
      */
     public function __construct(
         ?string $targetEntity = null,
