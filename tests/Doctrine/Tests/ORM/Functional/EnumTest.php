@@ -9,8 +9,11 @@ use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\Enums\Card;
+use Doctrine\Tests\Models\Enums\Product;
+use Doctrine\Tests\Models\Enums\Quantity;
 use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Enums\TypedCard;
+use Doctrine\Tests\Models\Enums\Unit;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function dirname;
@@ -112,5 +115,24 @@ EXCEPTION
 
         $this->assertCount(1, $attributes);
         $this->assertEquals(Column::class, $attributes[0]->getName());
+    }
+
+    public function testEnumMappingWithEmbeddable(): void
+    {
+        $this->setUpEntitySchema([Product::class]);
+
+        $product                  = new Product();
+        $product->quantity        = new Quantity();
+        $product->quantity->value = 10;
+        $product->quantity->unit  = Unit::Gram;
+
+        $this->_em->persist($product);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $fetchedProduct = $this->_em->find(Product::class, $product->id);
+
+        $this->assertInstanceOf(Unit::class, $fetchedProduct->quantity->unit);
+        $this->assertEquals(Unit::Gram, $fetchedProduct->quantity->unit);
     }
 }
