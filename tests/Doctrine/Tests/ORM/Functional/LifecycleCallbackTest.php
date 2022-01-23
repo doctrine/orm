@@ -171,8 +171,6 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
      */
     public function testCascadedEntitiesCallsPrePersist(): void
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-
         $e1 = new LifecycleCallbackTestEntity();
         $e2 = new LifecycleCallbackTestEntity();
 

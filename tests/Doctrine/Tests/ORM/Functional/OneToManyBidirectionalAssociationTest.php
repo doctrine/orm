@@ -133,7 +133,6 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testLazyLoadsObjectsOnTheInverseSide2(): void
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->createFixture();
 
         $query    = $this->_em->createQuery('select f,p from Doctrine\Tests\Models\ECommerce\ECommerceFeature f join f.product p');
@@ -150,8 +149,6 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         //$this->assertEquals(2, $product->getFeatures()->count());
         //$this->assertTrue($product->getFeatures()->contains($features[0]));
         //$this->assertTrue($product->getFeatures()->contains($features[1]));
-
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(null);
     }
 
     public function testJoinFromOwningSide(): void

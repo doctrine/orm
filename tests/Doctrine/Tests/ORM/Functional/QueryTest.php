@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Proxy\Proxy;
@@ -22,6 +23,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
 use function array_values;
+use function class_exists;
 use function count;
 use function iterator_to_array;
 
@@ -237,14 +239,18 @@ class QueryTest extends OrmFunctionalTestCase
                   ->setParameters($parameters)
                   ->getResult();
 
-        $extractValue = static function (Parameter $parameter) {
-            return $parameter->getValue();
-        };
-
-        self::assertSame(
-            $parameters->map($extractValue)->toArray(),
-            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['params']
-        );
+        if (! class_exists(LoggingMiddleware::class)) {
+            // DBAL 2 logs queries before resolving parameter positions
+            self::assertSame(
+                ['jwage', 'active'],
+                $this->getLastLoggedQuery()['params']
+            );
+        } else {
+            self::assertSame(
+                [1 => 'jwage', 2 => 'active'],
+                $this->getLastLoggedQuery()['params']
+            );
+        }
     }
 
     public function testSetParametersBackwardsCompatible(): void
@@ -256,8 +262,8 @@ class QueryTest extends OrmFunctionalTestCase
                   ->getResult();
 
         self::assertSame(
-            array_values($parameters),
-            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['params']
+            class_exists(LoggingMiddleware::class) ? $parameters : array_values($parameters),
+            $this->getLastLoggedQuery()['params']
         );
     }
 
@@ -584,7 +590,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->flush();
         $this->_em->clear();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+
         $q = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a where a.topic = :topic and a.user = :user')
                 ->setParameter('user', $this->_em->getReference(CmsUser::class, $author->id))
                 ->setParameter('topic', 'dr. dolittle');
