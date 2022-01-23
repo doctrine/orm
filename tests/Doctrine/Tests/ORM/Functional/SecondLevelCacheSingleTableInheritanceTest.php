@@ -99,12 +99,12 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
 
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $entity3 = $this->_em->find(Attraction::class, $entityId1);
         $entity4 = $this->_em->find(Attraction::class, $entityId2);
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
 
         self::assertInstanceOf(Attraction::class, $entity3);
         self::assertInstanceOf(Attraction::class, $entity4);
@@ -129,14 +129,14 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
 
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT a FROM Doctrine\Tests\Models\Cache\Attraction a';
-        $result1    = $this->_em->createQuery($dql)
+        $this->getQueryLog()->reset()->enable();
+        $dql     = 'SELECT a FROM Doctrine\Tests\Models\Cache\Attraction a';
+        $result1 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
         self::assertCount(count($this->attractions), $result1);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         $this->_em->clear();
 
@@ -145,7 +145,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
             ->getResult();
 
         self::assertCount(count($this->attractions), $result2);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         foreach ($result2 as $entity) {
             self::assertInstanceOf(Attraction::class, $entity);
@@ -190,8 +190,8 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         self::assertInstanceOf(PersistentCollection::class, $entity->getAttractions());
         self::assertCount(2, $entity->getAttractions());
 
-        $ownerId    = $this->cities[0]->getId();
-        $queryCount = $this->getCurrentQueryCount();
+        $ownerId = $this->cities[0]->getId();
+        $this->getQueryLog()->reset()->enable();
 
         self::assertTrue($this->cache->containsEntity(City::class, $ownerId));
         self::assertTrue($this->cache->containsCollection(City::class, 'attractions', $ownerId));
@@ -209,7 +209,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         self::assertInstanceOf(PersistentCollection::class, $entity->getAttractions());
         self::assertCount(2, $entity->getAttractions());
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
 
         self::assertInstanceOf(Bar::class, $entity->getAttractions()->get(0));
         self::assertInstanceOf(Bar::class, $entity->getAttractions()->get(1));
@@ -225,15 +225,15 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->loadFixturesAttractions();
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT attraction FROM Doctrine\Tests\Models\Cache\Attraction attraction';
+        $this->getQueryLog()->reset()->enable();
+        $dql = 'SELECT attraction FROM Doctrine\Tests\Models\Cache\Attraction attraction';
 
         $result1 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
         self::assertCount(count($this->attractions), $result1);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         $contact = new Beach(
             'Botafogo',
@@ -244,14 +244,14 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->_em->flush();
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $result2 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
         self::assertCount(count($this->attractions) + 1, $result2);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         foreach ($result2 as $entity) {
             self::assertInstanceOf(Attraction::class, $entity);

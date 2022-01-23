@@ -52,23 +52,23 @@ class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctio
     {
         $admin1Repo = $this->_em->getRepository(Admin1::class);
 
-        $queries = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $admin1Rome = $admin1Repo->findOneBy(['country' => 'IT', 'id' => 1]);
 
         self::assertEquals('Italy', $admin1Rome->country->name);
         self::assertCount(2, $admin1Rome->names);
-        self::assertEquals($queries + 3, $this->getCurrentQueryCount());
+        $this->assertQueryCount(3);
 
         $this->_em->clear();
 
-        $queries = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $admin1Rome = $admin1Repo->findOneBy(['country' => 'IT', 'id' => 1]);
 
         self::assertEquals('Italy', $admin1Rome->country->name);
         self::assertCount(2, $admin1Rome->names);
-        self::assertEquals($queries, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
     }
 
     private function evictRegions(): void

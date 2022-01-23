@@ -71,11 +71,11 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
 
         self::assertFalse($this->cache->containsEntity(Country::class, $countryId));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $country    = $this->_em->find(Country::class, $countryId);
+        $this->getQueryLog()->reset()->enable();
+        $country = $this->_em->find(Country::class, $countryId);
 
         self::assertInstanceOf(Country::class, $country);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertFalse($this->cache->containsEntity(Country::class, $countryId));
     }
 
@@ -110,8 +110,8 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
 
         self::assertFalse($this->cache->containsCollection(State::class, 'cities', $stateId));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $state      = $this->_em->find(State::class, $stateId);
+        $this->getQueryLog()->reset()->enable();
+        $state = $this->_em->find(State::class, $stateId);
 
         self::assertEquals(0, $this->secondLevelCacheLogger->getMissCount());
         self::assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
@@ -126,7 +126,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         self::assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
         self::assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getCollectionRegion(State::class, 'cities')));
 
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertFalse($this->cache->containsCollection(State::class, 'cities', $stateId));
     }
 }

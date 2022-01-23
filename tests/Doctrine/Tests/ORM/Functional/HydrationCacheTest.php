@@ -44,24 +44,24 @@ class HydrationCacheTest extends OrmFunctionalTestCase
                   ->setHydrationCacheProfile(new QueryCacheProfile(0, null, $cache))
                   ->getResult();
 
-        $c = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
         $this->_em->createQuery($dql)
                   ->setHydrationCacheProfile(new QueryCacheProfile(0, null, $cache))
                   ->getResult();
 
-        self::assertEquals($c, $this->getCurrentQueryCount(), 'Should not execute query. Its cached!');
+        $this->assertQueryCount(0, 'Should not execute query. Its cached!');
 
         $this->_em->createQuery($dql)
                   ->setHydrationCacheProfile(new QueryCacheProfile(0, null, $cache))
                   ->getArrayResult();
 
-        self::assertEquals($c + 1, $this->getCurrentQueryCount(), 'Hydration is part of cache key.');
+        $this->assertQueryCount(1, 'Hydration is part of cache key.');
 
         $this->_em->createQuery($dql)
                   ->setHydrationCacheProfile(new QueryCacheProfile(0, null, $cache))
                   ->getArrayResult();
 
-        self::assertEquals($c + 1, $this->getCurrentQueryCount(), 'Hydration now cached');
+        $this->assertQueryCount(1, 'Hydration now cached');
 
         $this->_em->createQuery($dql)
                   ->setHydrationCacheProfile(new QueryCacheProfile(0, 'cachekey', $cache))
@@ -72,7 +72,7 @@ class HydrationCacheTest extends OrmFunctionalTestCase
         $this->_em->createQuery($dql)
                       ->setHydrationCacheProfile(new QueryCacheProfile(0, 'cachekey', $cache))
                       ->getArrayResult();
-        self::assertEquals($c + 2, $this->getCurrentQueryCount(), 'Hydration now cached');
+        $this->assertQueryCount(2, 'Hydration now cached');
     }
 
     public function testHydrationParametersSerialization(): void
@@ -89,10 +89,10 @@ class HydrationCacheTest extends OrmFunctionalTestCase
 
         $query->getResult();
 
-        $c = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $query->getResult();
 
-        self::assertEquals($c, $this->getCurrentQueryCount(), 'Should not execute query. Its cached!');
+        $this->assertQueryCount(0, 'Should not execute query. Its cached!');
     }
 }
