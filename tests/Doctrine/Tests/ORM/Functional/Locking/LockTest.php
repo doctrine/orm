@@ -14,8 +14,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 use InvalidArgumentException;
 
-use function array_pop;
-
 /**
  * @group locking
  */
@@ -175,13 +173,15 @@ class LockTest extends OrmFunctionalTestCase
             $this->_em->commit();
         } catch (Exception $e) {
             $this->_em->rollback();
-
-            throw $e;
         }
 
-        $query = array_pop($this->_sqlLoggerStack->queries);
-        $query = array_pop($this->_sqlLoggerStack->queries);
-        self::assertStringContainsString($writeLockSql, $query['sql']);
+        $lastLoggedQuery = $this->getLastLoggedQuery()['sql'];
+        // DBAL 2 logs a commit as last query.
+        if ($lastLoggedQuery === '"COMMIT"') {
+            $lastLoggedQuery = $this->getLastLoggedQuery(1)['sql'];
+        }
+
+        self::assertStringContainsString($writeLockSql, $lastLoggedQuery);
     }
 
     /**
@@ -209,14 +209,15 @@ class LockTest extends OrmFunctionalTestCase
             $this->_em->commit();
         } catch (Exception $e) {
             $this->_em->rollback();
-
-            throw $e;
         }
 
-        array_pop($this->_sqlLoggerStack->queries);
-        $query = array_pop($this->_sqlLoggerStack->queries);
+        $lastLoggedQuery = $this->getLastLoggedQuery()['sql'];
+        // DBAL 2 logs a commit as last query.
+        if ($lastLoggedQuery === '"COMMIT"') {
+            $lastLoggedQuery = $this->getLastLoggedQuery(1)['sql'];
+        }
 
-        self::assertStringContainsString($readLockSql, $query['sql']);
+        self::assertStringContainsString($readLockSql, $lastLoggedQuery);
     }
 
     /**

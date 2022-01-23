@@ -1039,9 +1039,19 @@ class ClassMetadataInfo implements ClassMetadata
 
         foreach ($this->fieldMappings as $field => $mapping) {
             if (isset($mapping['declaredField']) && isset($parentReflFields[$mapping['declaredField']])) {
+                $childProperty = $this->getAccessibleProperty($reflService, $mapping['originalClass'], $mapping['originalField']);
+                assert($childProperty !== null);
+
+                if (isset($mapping['enumType'])) {
+                    $childProperty = new ReflectionEnumProperty(
+                        $childProperty,
+                        $mapping['enumType']
+                    );
+                }
+
                 $this->reflFields[$field] = new ReflectionEmbeddedProperty(
                     $parentReflFields[$mapping['declaredField']],
-                    $this->getAccessibleProperty($reflService, $mapping['originalClass'], $mapping['originalField']),
+                    $childProperty,
                     $mapping['originalClass']
                 );
                 continue;

@@ -637,7 +637,7 @@
       <code>$fieldName</code>
       <code>$fieldName</code>
     </ParamNameMismatch>
-    <PossiblyNullArgument occurrences="9">
+    <PossiblyNullArgument occurrences="8">
       <code>$class</code>
       <code>$className</code>
       <code>$entityResult['entityClass']</code>
@@ -646,7 +646,6 @@
       <code>$parentReflFields[$embeddedClass['declaredField']]</code>
       <code>$parentReflFields[$mapping['declaredField']]</code>
       <code>$queryMapping['resultClass']</code>
-      <code>$this-&gt;getAccessibleProperty($reflService, $mapping['originalClass'], $mapping['originalField'])</code>
     </PossiblyNullArgument>
     <PossiblyNullPropertyFetch occurrences="2">
       <code>$embeddable-&gt;reflClass-&gt;name</code>
@@ -732,11 +731,8 @@
     </MissingClosureParamType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DiscriminatorColumn.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="4">
+    <PossiblyNullPropertyAssignmentValue occurrences="1">
       <code>$columnDefinition</code>
-      <code>$length</code>
-      <code>$name</code>
-      <code>$type</code>
     </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php">
@@ -1015,11 +1011,10 @@
     </MissingConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/OneToMany.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="4">
+    <PossiblyNullPropertyAssignmentValue occurrences="3">
       <code>$cascade</code>
       <code>$indexBy</code>
       <code>$mappedBy</code>
-      <code>$targetEntity</code>
     </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ReflectionEmbeddedProperty.php">

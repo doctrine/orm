@@ -519,7 +519,6 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
     public function testToOneFilter(): void
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->loadFixtureData();
 
         $query = $this->_em->createQuery('select ux, ua from Doctrine\Tests\Models\CMS\CmsUser ux JOIN ux.address ua');

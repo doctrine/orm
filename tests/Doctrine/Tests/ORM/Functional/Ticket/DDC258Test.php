@@ -34,8 +34,6 @@ class DDC258Test extends OrmFunctionalTestCase
      */
     public function testIssue(): void
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-
         $c1              = new DDC258Class1();
         $c1->title       = 'Foo';
         $c1->description = 'Foo';
