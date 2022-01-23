@@ -271,6 +271,7 @@
         <exclude-pattern>tests/Doctrine/Tests/Models/Enums/AccessLevel.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/Models/Enums/City.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/Models/Enums/Suit.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/Models/Enums/Unit.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/Models/Enums/UserStatus.php</exclude-pattern>
     </rule>
     <rule ref="Generic.WhiteSpace.ScopeIndent.IncorrectExact">
@@ -278,6 +279,7 @@
         <exclude-pattern>tests/Doctrine/Tests/Models/Enums/AccessLevel.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/Models/Enums/City.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/Models/Enums/Suit.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/Models/Enums/Unit.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/Models/Enums/UserStatus.php</exclude-pattern>
     </rule>
 </ruleset>

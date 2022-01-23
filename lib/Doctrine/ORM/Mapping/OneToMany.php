@@ -18,7 +18,7 @@ final class OneToMany implements Annotation
     /** @var string */
     public $mappedBy;
 
-    /** @var string */
+    /** @var class-string|null */
     public $targetEntity;
 
     /** @var array<string> */
@@ -39,7 +39,8 @@ final class OneToMany implements Annotation
     public $indexBy;
 
     /**
-     * @param string[]|null $cascade
+     * @param class-string|null $targetEntity
+     * @param string[]|null     $cascade
      */
     public function __construct(
         ?string $mappedBy = null,
