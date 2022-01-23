@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Entity;
@@ -33,6 +34,7 @@ use Doctrine\Tests\Models\DDC1872\DDC1872ExampleEntityWithOverride;
 use Doctrine\Tests\Models\DirectoryTree\Directory;
 use Doctrine\Tests\Models\DirectoryTree\File;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
+use Generator;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
@@ -274,6 +276,30 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         self::assertArrayHasKey('example_trait_bar_id', $metadataWithoutOverride->associationMappings['bar']['joinColumnFieldNames']);
         self::assertArrayHasKey('example_entity_overridden_bar_id', $metadataWithOverride->associationMappings['bar']['joinColumnFieldNames']);
     }
+
+    /**
+     * @psalm-param class-string $class
+     *
+     * @dataProvider provideDiscriminatorColumnTestcases
+     */
+    public function testLengthForDiscriminatorColumn(string $class, int $expectedLength): void
+    {
+        $factory = $this->createClassMetadataFactory();
+
+        $metadata = $factory->getMetadataFor($class);
+
+        self::assertNotNull($metadata->discriminatorColumn);
+        self::assertArrayHasKey('length', $metadata->discriminatorColumn);
+        self::assertSame($expectedLength, $metadata->discriminatorColumn['length']);
+    }
+
+    public function provideDiscriminatorColumnTestcases(): Generator
+    {
+        yield [DiscriminatorColumnWithNullLength::class, 255];
+        yield [DiscriminatorColumnWithNoLength::class, 255];
+        yield [DiscriminatorColumnWithZeroLength::class, 0];
+        yield [DiscriminatorColumnWithNonZeroLength::class, 60];
+    }
 }
 
 /**
@@ -435,6 +461,86 @@ class AnnotationSLCFoo
     /**
      * @var string
      * @Column(type="string")
+     */
+    public $id;
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorColumn(
+ *     name="type",
+ *     type="string",
+ *     length=0,
+ *     columnDefinition="enum('region','airport','station','poi') NOT NULL",
+ * ),
+ * @DiscriminatorMap({"s"="SuperEntity", "c"="ChildEntity"})
+ */
+class DiscriminatorColumnWithZeroLength
+{
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
+    public $id;
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorColumn(
+ *     name="type",
+ *     type="string",
+ * ),
+ * @DiscriminatorMap({"s"="SuperEntity", "c"="ChildEntity"})
+ */
+class DiscriminatorColumnWithNoLength
+{
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
+    public $id;
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorColumn(
+ *     name="type",
+ *     type="string",
+ *     length=60,
+ * ),
+ * @DiscriminatorMap({"s"="SuperEntity", "c"="ChildEntity"})
+ */
+class DiscriminatorColumnWithNonZeroLength
+{
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
+    public $id;
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorColumn(
+ *     name="type",
+ *     type="string",
+ *     length=null,
+ * ),
+ * @DiscriminatorMap({"s"="SuperEntity", "c"="ChildEntity"})
+ */
+class DiscriminatorColumnWithNullLength
+{
+    /**
+     * @var int
+     * @Id
+     * @Column
      */
     public $id;
 }
