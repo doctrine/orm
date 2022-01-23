@@ -9,6 +9,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
@@ -32,7 +34,9 @@ use Doctrine\Tests\Models\DDC753\DDC753EntityWithDefaultCustomRepository;
 use Doctrine\Tests\Models\DDC753\DDC753InvalidRepository;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function array_pop;
+use function array_fill;
+use function array_values;
+use function class_exists;
 use function reset;
 
 class EntityRepositoryTest extends OrmFunctionalTestCase
@@ -523,9 +527,9 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $repos = $this->_em->getRepository(CmsUser::class);
         $users = $repos->findBy(['status' => null, 'username' => 'romanb']);
 
-        $params = $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['params'];
+        $params = $this->getLastLoggedQuery()['params'];
         self::assertCount(1, $params, 'Should only execute with one parameter.');
-        self::assertEquals(['romanb'], $params);
+        self::assertEquals(['romanb'], array_values($params));
     }
 
     public function testIsNullCriteria(): void
@@ -718,11 +722,28 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     public function testFindByAssociationArray(): void
     {
         $repo = $this->_em->getRepository(CmsAddress::class);
-        $data = $repo->findBy(['user' => [1, 2, 3]]);
+        $repo->findBy(['user' => [1, 2, 3]]);
 
-        $query = array_pop($this->_sqlLoggerStack->queries);
-        self::assertEquals([1, 2, 3], $query['params'][0]);
-        self::assertEquals(Connection::PARAM_INT_ARRAY, $query['types'][0]);
+        if (! class_exists(LoggingMiddleware::class)) {
+            // DBAL 2 logs queries before resolving parameter positions
+            self::assertSame(
+                [
+                    'sql' => 'SELECT t0.id AS id_1, t0.country AS country_2, t0.zip AS zip_3, t0.city AS city_4, t0.user_id AS user_id_5 FROM cms_addresses t0 WHERE t0.user_id IN (?)',
+                    'params' => [[1, 2, 3]],
+                    'types' => [Connection::PARAM_INT_ARRAY],
+                ],
+                $this->getLastLoggedQuery()
+            );
+        } else {
+            self::assertSame(
+                [
+                    'sql' => 'SELECT t0.id AS id_1, t0.country AS country_2, t0.zip AS zip_3, t0.city AS city_4, t0.user_id AS user_id_5 FROM cms_addresses t0 WHERE t0.user_id IN (?, ?, ?)',
+                    'params' => [1 => 1, 2 => 2, 3 => 3],
+                    'types' => array_fill(1, 3, ParameterType::INTEGER),
+                ],
+                $this->getLastLoggedQuery()
+            );
+        }
     }
 
     /**

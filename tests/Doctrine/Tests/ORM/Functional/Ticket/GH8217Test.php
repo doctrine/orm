@@ -15,8 +15,6 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 final class GH8217Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -41,10 +39,9 @@ final class GH8217Test extends OrmFunctionalTestCase
         $this->_em->persist($collection);
         $this->_em->flush();
 
-        $logger                         = $this->_sqlLoggerStack;
-        $queriesNumberBeforeSecondFlush = count($logger->queries);
+        $queriesNumberBeforeSecondFlush = $this->getCurrentQueryCount();
         $this->_em->flush();
-        $queriesNumberAfterSecondFlush = count($logger->queries);
+        $queriesNumberAfterSecondFlush = $this->getCurrentQueryCount();
         self::assertEquals($queriesNumberBeforeSecondFlush, $queriesNumberAfterSecondFlush);
     }
 }
