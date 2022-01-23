@@ -4,13 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\Psr6\CacheAdapter;
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
-use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\AST\DeleteStatement;
 use Doctrine\ORM\Query\AST\SelectStatement;
@@ -33,7 +28,6 @@ use function get_debug_type;
 use function in_array;
 use function ksort;
 use function md5;
-use function method_exists;
 use function reset;
 use function serialize;
 use function sha1;
@@ -338,9 +332,7 @@ final class Query extends AbstractQuery
             return;
         }
 
-        $cache = method_exists(QueryCacheProfile::class, 'getResultCache')
-            ? $this->_queryCacheProfile->getResultCache()
-            : $this->_queryCacheProfile->getResultCacheDriver();
+        $cache = $this->_queryCacheProfile->getResultCache();
 
         assert($cache !== null);
 
@@ -348,10 +340,7 @@ final class Query extends AbstractQuery
 
         foreach ($statements as $statement) {
             $cacheKeys = $this->_queryCacheProfile->generateCacheKeys($statement, $sqlParams, $types, $connectionParams);
-
-            $cache instanceof CacheItemPoolInterface
-                ? $cache->deleteItem(reset($cacheKeys))
-                : $cache->delete(reset($cacheKeys));
+            $cache->deleteItem(reset($cacheKeys));
         }
     }
 
@@ -464,29 +453,6 @@ final class Query extends AbstractQuery
     /**
      * Defines a cache driver to be used for caching queries.
      *
-     * @deprecated Call {@see setQueryCache()} instead.
-     *
-     * @param Cache|null $queryCache Cache driver.
-     *
-     * @return $this
-     */
-    public function setQueryCacheDriver($queryCache): self
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/9004',
-            '%s is deprecated and will be removed in Doctrine 3.0. Use setQueryCache() instead.',
-            __METHOD__
-        );
-
-        $this->queryCache = $queryCache ? CacheAdapter::wrap($queryCache) : null;
-
-        return $this;
-    }
-
-    /**
-     * Defines a cache driver to be used for caching queries.
-     *
      * @return $this
      */
     public function setQueryCache(?CacheItemPoolInterface $queryCache): self
@@ -508,28 +474,6 @@ final class Query extends AbstractQuery
         $this->useQueryCache = $bool;
 
         return $this;
-    }
-
-    /**
-     * Returns the cache driver used for query caching.
-     *
-     * @deprecated
-     *
-     * @return Cache|null The cache driver used for query caching or NULL, if
-     * this Query does not use query caching.
-     */
-    public function getQueryCacheDriver(): ?Cache
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/9004',
-            '%s is deprecated and will be removed in Doctrine 3.0 without replacement.',
-            __METHOD__
-        );
-
-        $queryCache = $this->queryCache ?? $this->_em->getConfiguration()->getQueryCache();
-
-        return $queryCache ? DoctrineProvider::wrap($queryCache) : null;
     }
 
     /**

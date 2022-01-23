@@ -6,11 +6,9 @@ namespace Doctrine\Tests\ORM\Query;
 
 use DateTime;
 use DateTimeImmutable;
-use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query\Parameter;
@@ -29,12 +27,12 @@ use Doctrine\Tests\Models\Enums\UserStatus;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
+use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function array_map;
 use function assert;
-use function method_exists;
 
 use const PHP_VERSION_ID;
 
@@ -111,14 +109,12 @@ class QueryTest extends OrmTestCase
         $q  = $this->entityManager->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
         $q2 = $q->expireQueryCache(true)
           ->setQueryCacheLifetime(3600)
-          ->setQueryCacheDriver(null)
           ->setQueryCache(null)
           ->expireResultCache(true)
           ->setHint('foo', 'bar')
           ->setHint('bar', 'baz')
           ->setParameter(1, 'bar')
           ->setParameters(new ArrayCollection([new Parameter(2, 'baz')]))
-          ->setResultCacheDriver(null)
           ->setResultCache(null)
           ->setResultCacheId('foo')
           ->setDQL('foo')
@@ -141,21 +137,6 @@ class QueryTest extends OrmTestCase
         self::assertEquals(['foo' => 'bar', 'bar' => 'baz'], $q->getHints());
         self::assertTrue($q->hasHint('foo'));
         self::assertFalse($q->hasHint('barFooBaz'));
-    }
-
-    /**
-     * @group DDC-1588
-     */
-    public function testQueryDefaultResultCache(): void
-    {
-        if (! method_exists(QueryCacheProfile::class, 'getResultCache')) {
-            self::markTestSkipped('This test requires DBAL 3.2 or newer.');
-        }
-
-        $this->entityManager->getConfiguration()->setResultCache(new ArrayAdapter());
-        $q = $this->entityManager->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
-        $q->enableResultCache();
-        self::assertSame($this->entityManager->getConfiguration()->getResultCache(), $q->getQueryCacheProfile()->getResultCache());
     }
 
     /**
@@ -576,32 +557,28 @@ class QueryTest extends OrmTestCase
     public function testGetQueryCacheDriverWithDefaults(): void
     {
         $cache = $this->createMock(CacheItemPoolInterface::class);
+        $cache
+            ->expects(self::atLeastOnce())
+            ->method('getItem')
+            ->willReturn($this->createMock(CacheItemInterface::class));
 
         $this->entityManager->getConfiguration()->setQueryCache($cache);
-        $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u');
-
-        self::assertSame($cache, CacheAdapter::wrap($query->getQueryCacheDriver()));
-    }
-
-    public function testGetQueryCacheDriverWithCacheExplicitlySetLegacy(): void
-    {
-        $cache = $this->createMock(Cache::class);
-
-        $query = $this->entityManager
+        $this->entityManager
             ->createQuery('select u from ' . CmsUser::class . ' u')
-            ->setQueryCacheDriver($cache);
-
-        self::assertSame($cache, $query->getQueryCacheDriver());
+            ->getSQL();
     }
 
     public function testGetQueryCacheDriverWithCacheExplicitlySet(): void
     {
         $cache = $this->createMock(CacheItemPoolInterface::class);
+        $cache
+            ->expects(self::atLeastOnce())
+            ->method('getItem')
+            ->willReturn($this->createMock(CacheItemInterface::class));
 
-        $query = $this->entityManager
+        $this->entityManager
             ->createQuery('select u from ' . CmsUser::class . ' u')
-            ->setQueryCache($cache);
-
-        self::assertSame($cache, CacheAdapter::wrap($query->getQueryCacheDriver()));
+            ->setQueryCache($cache)
+            ->getSQL();
     }
 }

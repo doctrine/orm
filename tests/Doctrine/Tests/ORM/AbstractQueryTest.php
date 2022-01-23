@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
-use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
+use Doctrine\DBAL\Result;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,29 +14,6 @@ use Psr\Cache\CacheItemPoolInterface;
 
 final class AbstractQueryTest extends TestCase
 {
-    use VerifyDeprecations;
-
-    /**
-     * @requires function Doctrine\DBAL\Cache\QueryCacheProfile::getResultCacheDriver
-     */
-    public function testItMakesHydrationCacheProfilesAwareOfTheResultCacheDriver(): void
-    {
-        $cache = $this->createMock(CacheItemPoolInterface::class);
-
-        $configuration = new Configuration();
-        $configuration->setHydrationCache($cache);
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->method('getConfiguration')->willReturn($configuration);
-        $query        = $this->getMockForAbstractClass(AbstractQuery::class, [$entityManager]);
-        $cacheProfile = new QueryCacheProfile();
-
-        $query->setHydrationCacheProfile($cacheProfile);
-        self::assertSame($cache, CacheAdapter::wrap($query->getHydrationCacheProfile()->getResultCacheDriver()));
-    }
-
-    /**
-     * @requires function Doctrine\DBAL\Cache\QueryCacheProfile::getResultCache
-     */
     public function testItMakesHydrationCacheProfilesAwareOfTheResultCache(): void
     {
         $cache = $this->createMock(CacheItemPoolInterface::class);
@@ -46,12 +22,11 @@ final class AbstractQueryTest extends TestCase
         $configuration->setHydrationCache($cache);
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->method('getConfiguration')->willReturn($configuration);
-        $query        = $this->getMockForAbstractClass(AbstractQuery::class, [$entityManager]);
+        $query        = new TestQuery($entityManager);
         $cacheProfile = new QueryCacheProfile();
 
         $query->setHydrationCacheProfile($cacheProfile);
         self::assertSame($cache, $query->getHydrationCacheProfile()->getResultCache());
-        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/dbal/pull/4620');
     }
 
     public function testItMakesResultCacheProfilesAwareOfTheResultCache(): void
@@ -62,12 +37,10 @@ final class AbstractQueryTest extends TestCase
         $configuration->setResultCache($cache);
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->method('getConfiguration')->willReturn($configuration);
-        $query        = $this->getMockForAbstractClass(AbstractQuery::class, [$entityManager]);
-        $cacheProfile = new QueryCacheProfile();
+        $query = new TestQuery($entityManager);
+        $query->setResultCacheProfile(new QueryCacheProfile());
 
-        $query->setResultCacheProfile($cacheProfile);
-        self::assertSame($cache, CacheAdapter::wrap($query->getResultCacheDriver()));
-        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/dbal/pull/4620');
+        self::assertSame($cache, $query->getResultCache());
     }
 
     public function testSettingTheResultCacheIsPossibleWithoutCallingDeprecatedMethods(): void
@@ -76,10 +49,27 @@ final class AbstractQueryTest extends TestCase
 
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->method('getConfiguration')->willReturn(new Configuration());
-        $query = $this->getMockForAbstractClass(AbstractQuery::class, [$entityManager]);
-
+        $query = new TestQuery($entityManager);
         $query->setResultCache($cache);
-        self::assertSame($cache, CacheAdapter::wrap($query->getResultCacheDriver()));
-        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/dbal/pull/4620');
+
+        self::assertSame($cache, $query->getResultCache());
+    }
+}
+
+class TestQuery extends AbstractQuery
+{
+    public function getSQL(): string
+    {
+        return '';
+    }
+
+    protected function _doExecute(): Result|int
+    {
+        return 0;
+    }
+
+    public function getResultCache(): ?CacheItemPoolInterface
+    {
+        return $this->_queryCacheProfile->getResultCache();
     }
 }

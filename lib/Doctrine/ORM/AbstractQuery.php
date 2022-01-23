@@ -6,12 +6,10 @@ namespace Doctrine\ORM;
 
 use BackedEnum;
 use Countable;
-use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Result;
-use Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
@@ -597,27 +595,6 @@ abstract class AbstractQuery
     /**
      * Defines a cache driver to be used for caching result sets and implicitly enables caching.
      *
-     * @deprecated Use {@see setResultCache()} instead.
-     *
-     * @param \Doctrine\Common\Cache\Cache|null $resultCacheDriver Cache driver
-     *
-     * @return $this
-     *
-     * @throws InvalidResultCacheDriver
-     */
-    public function setResultCacheDriver($resultCacheDriver = null)
-    {
-        /** @phpstan-ignore-next-line */
-        if ($resultCacheDriver !== null && ! ($resultCacheDriver instanceof \Doctrine\Common\Cache\Cache)) {
-            throw InvalidResultCacheDriver::create();
-        }
-
-        return $this->setResultCache($resultCacheDriver ? CacheAdapter::wrap($resultCacheDriver) : null);
-    }
-
-    /**
-     * Defines a cache driver to be used for caching result sets and implicitly enables caching.
-     *
      * @return $this
      */
     public function setResultCache(?CacheItemPoolInterface $resultCache = null)
@@ -635,41 +612,6 @@ abstract class AbstractQuery
             : new QueryCacheProfile(0, null, $resultCache);
 
         return $this;
-    }
-
-    /**
-     * Returns the cache driver used for caching result sets.
-     *
-     * @deprecated
-     *
-     * @return \Doctrine\Common\Cache\Cache Cache driver
-     */
-    public function getResultCacheDriver()
-    {
-        if ($this->_queryCacheProfile && $this->_queryCacheProfile->getResultCacheDriver()) {
-            return $this->_queryCacheProfile->getResultCacheDriver();
-        }
-
-        return $this->_em->getConfiguration()->getResultCacheImpl();
-    }
-
-    /**
-     * Set whether or not to cache the results of this query and if so, for
-     * how long and which ID to use for the cache entry.
-     *
-     * @deprecated 2.7 Use {@see enableResultCache} and {@see disableResultCache} instead.
-     *
-     * @param bool   $useCache      Whether or not to cache the results of this query.
-     * @param int    $lifetime      How long the cache entry is valid, in seconds.
-     * @param string $resultCacheId ID to use for the cache entry.
-     *
-     * @return $this
-     */
-    public function useResultCache($useCache, $lifetime = null, $resultCacheId = null)
-    {
-        return $useCache
-            ? $this->enableResultCache($lifetime, $resultCacheId)
-            : $this->disableResultCache();
     }
 
     /**
@@ -728,18 +670,6 @@ abstract class AbstractQuery
         $this->_queryCacheProfile = $this->_queryCacheProfile->setResultCache($cache);
 
         return $this;
-    }
-
-    /**
-     * Retrieves the lifetime of resultset cache.
-     *
-     * @deprecated
-     *
-     * @return int
-     */
-    public function getResultCacheLifetime()
-    {
-        return $this->_queryCacheProfile ? $this->_queryCacheProfile->getLifetime() : 0;
     }
 
     /**
@@ -1244,18 +1174,6 @@ abstract class AbstractQuery
         $this->_queryCacheProfile = $this->_queryCacheProfile->setCacheKey($id);
 
         return $this;
-    }
-
-    /**
-     * Get the result cache id to use to store the result set cache entry if set.
-     *
-     * @deprecated
-     *
-     * @return string|null
-     */
-    public function getResultCacheId()
-    {
-        return $this->_queryCacheProfile ? $this->_queryCacheProfile->getCacheKey() : null;
     }
 
     /**

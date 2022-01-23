@@ -215,6 +215,7 @@
         <!-- extending a class from another package -->
         <exclude-pattern>tests/Doctrine/Tests/Mocks/DatabasePlatformMock.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/Mocks/SchemaManagerMock.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/AbstractQueryTest.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3634Test.php</exclude-pattern>
     </rule>
 
