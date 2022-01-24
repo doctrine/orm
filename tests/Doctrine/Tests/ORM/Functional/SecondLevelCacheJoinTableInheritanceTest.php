@@ -80,12 +80,12 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         self::assertFalse($this->cache->containsEntity(AttractionContactInfo::class, $entityId1));
         self::assertFalse($this->cache->containsEntity(AttractionContactInfo::class, $entityId2));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $entity1    = $this->_em->find(AttractionInfo::class, $entityId1);
-        $entity2    = $this->_em->find(AttractionInfo::class, $entityId2);
+        $this->getQueryLog()->reset()->enable();
+        $entity1 = $this->_em->find(AttractionInfo::class, $entityId1);
+        $entity2 = $this->_em->find(AttractionInfo::class, $entityId2);
 
         //load entity and relation whit sub classes
-        self::assertEquals($queryCount + 4, $this->getCurrentQueryCount());
+        $this->assertQueryCount(4);
 
         self::assertTrue($this->cache->containsEntity(AttractionInfo::class, $entityId1));
         self::assertTrue($this->cache->containsEntity(AttractionInfo::class, $entityId2));
@@ -105,11 +105,11 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
 
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $entity3    = $this->_em->find(AttractionInfo::class, $entityId1);
-        $entity4    = $this->_em->find(AttractionInfo::class, $entityId2);
+        $this->getQueryLog()->reset()->enable();
+        $entity3 = $this->_em->find(AttractionInfo::class, $entityId1);
+        $entity4 = $this->_em->find(AttractionInfo::class, $entityId2);
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
 
         self::assertInstanceOf(AttractionInfo::class, $entity3);
         self::assertInstanceOf(AttractionInfo::class, $entity4);
@@ -135,14 +135,14 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         $this->evictRegions();
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT i, a FROM Doctrine\Tests\Models\Cache\AttractionInfo i JOIN i.attraction a';
-        $result1    = $this->_em->createQuery($dql)
+        $this->getQueryLog()->reset()->enable();
+        $dql     = 'SELECT i, a FROM Doctrine\Tests\Models\Cache\AttractionInfo i JOIN i.attraction a';
+        $result1 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
         self::assertCount(count($this->attractionsInfo), $result1);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         $this->_em->clear();
 
@@ -151,7 +151,7 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
             ->getResult();
 
         self::assertCount(count($this->attractionsInfo), $result2);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         foreach ($result2 as $entity) {
             self::assertInstanceOf(AttractionInfo::class, $entity);
@@ -174,8 +174,7 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         self::assertInstanceOf(PersistentCollection::class, $entity->getInfos());
         self::assertCount(1, $entity->getInfos());
 
-        $ownerId    = $this->attractions[0]->getId();
-        $queryCount = $this->getCurrentQueryCount();
+        $ownerId = $this->attractions[0]->getId();
 
         self::assertTrue($this->cache->containsEntity(Attraction::class, $ownerId));
         self::assertTrue($this->cache->containsCollection(Attraction::class, 'infos', $ownerId));
@@ -205,15 +204,15 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         $this->evictRegions();
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT attractionInfo FROM Doctrine\Tests\Models\Cache\AttractionInfo attractionInfo';
+        $this->getQueryLog()->reset()->enable();
+        $dql = 'SELECT attractionInfo FROM Doctrine\Tests\Models\Cache\AttractionInfo attractionInfo';
 
         $result1 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
         self::assertCount(count($this->attractionsInfo), $result1);
-        self::assertEquals($queryCount + 5, $this->getCurrentQueryCount());
+        $this->assertQueryCount(5);
 
         $contact = new AttractionContactInfo(
             '1234-1234',
@@ -224,14 +223,14 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         $this->_em->flush();
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $result2 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
         self::assertCount(count($this->attractionsInfo) + 1, $result2);
-        self::assertEquals($queryCount + 6, $this->getCurrentQueryCount());
+        $this->assertQueryCount(6);
 
         foreach ($result2 as $entity) {
             self::assertInstanceOf(AttractionInfo::class, $entity);

@@ -62,12 +62,12 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $c3 = $this->_em->find(Country::class, $this->countries[0]->getId());
         $c4 = $this->_em->find(Country::class, $this->countries[1]->getId());
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
         self::assertEquals(2, $this->secondLevelCacheLogger->getHitCount());
         self::assertEquals(2, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(Country::class)));
 
@@ -177,7 +177,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         self::assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(Country::class)));
         self::assertEquals(4, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(State::class)));
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $c3 = $this->_em->find(State::class, $this->states[0]->getId());
         $c4 = $this->_em->find(State::class, $this->states[1]->getId());
@@ -185,7 +185,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         self::assertEquals(2, $this->secondLevelCacheLogger->getHitCount());
         self::assertEquals(2, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(State::class)));
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
 
         self::assertTrue($this->cache->containsEntity(State::class, $this->states[0]->getId()));
         self::assertTrue($this->cache->containsEntity(State::class, $this->states[1]->getId()));
@@ -326,12 +326,12 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
     {
         $this->loadFixturesCountries();
 
-        $persister  = $this->_em->getUnitOfWork()->getEntityPersister(Country::class);
-        $queryCount = $this->getCurrentQueryCount();
+        $persister = $this->_em->getUnitOfWork()->getEntityPersister(Country::class);
+        $this->getQueryLog()->reset()->enable();
 
         self::assertTrue($persister->exists($this->countries[0]));
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
 
         self::assertFalse($persister->exists(new Country('Foo')));
     }

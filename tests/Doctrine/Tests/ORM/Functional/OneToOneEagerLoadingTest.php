@@ -60,13 +60,13 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $sqlCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $train = $this->_em->find(get_class($train), $train->id);
         self::assertNotInstanceOf(Proxy::class, $train->driver);
         self::assertEquals('Benjamin', $train->driver->name);
 
-        self::assertSame($sqlCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
     }
 
     /**
@@ -80,13 +80,13 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $sqlCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $train = $this->_em->find(get_class($train), $train->id);
         self::assertNotInstanceOf(Proxy::class, $train->driver);
         self::assertNull($train->driver);
 
-        self::assertSame($sqlCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
     }
 
     /**
@@ -101,13 +101,13 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $sqlCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $driver = $this->_em->find(get_class($owner), $owner->id);
         self::assertNotInstanceOf(Proxy::class, $owner->train);
         self::assertNotNull($owner->train);
 
-        self::assertSame($sqlCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
     }
 
     /**
@@ -123,13 +123,13 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 
         self::assertNull($driver->train);
 
-        $sqlCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $driver = $this->_em->find(get_class($driver), $driver->id);
         self::assertNotInstanceOf(Proxy::class, $driver->train);
         self::assertNull($driver->train);
 
-        self::assertSame($sqlCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
     }
 
     public function testEagerLoadManyToOne(): void

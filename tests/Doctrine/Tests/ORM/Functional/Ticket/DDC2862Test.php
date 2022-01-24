@@ -49,10 +49,10 @@ class DDC2862Test extends OrmFunctionalTestCase
         self::assertTrue($this->_em->getCache()->containsEntity(DDC2862User::class, ['id' => $user1->getId()]));
         self::assertTrue($this->_em->getCache()->containsEntity(DDC2862Driver::class, ['id' => $driver1->getId()]));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $driver2    = $this->_em->find(DDC2862Driver::class, $driver1->getId());
+        $this->getQueryLog()->reset()->enable();
+        $driver2 = $this->_em->find(DDC2862Driver::class, $driver1->getId());
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
         self::assertInstanceOf(DDC2862Driver::class, $driver2);
         self::assertInstanceOf(DDC2862User::class, $driver2->getUserProfile());
 
@@ -64,10 +64,10 @@ class DDC2862Test extends OrmFunctionalTestCase
         self::assertTrue($this->_em->getCache()->containsEntity(DDC2862User::class, ['id' => $user1->getId()]));
         self::assertTrue($this->_em->getCache()->containsEntity(DDC2862Driver::class, ['id' => $driver1->getId()]));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $driver3    = $this->_em->find(DDC2862Driver::class, $driver1->getId());
+        $this->getQueryLog()->reset()->enable();
+        $driver3 = $this->_em->find(DDC2862Driver::class, $driver1->getId());
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
         self::assertInstanceOf(DDC2862Driver::class, $driver3);
         self::assertInstanceOf(DDC2862User::class, $driver3->getUserProfile());
         self::assertEquals('Franta', $driver3->getName());
@@ -90,35 +90,35 @@ class DDC2862Test extends OrmFunctionalTestCase
         self::assertFalse($this->_em->getCache()->containsEntity(DDC2862User::class, ['id' => $user1->getId()]));
         self::assertFalse($this->_em->getCache()->containsEntity(DDC2862Driver::class, ['id' => $driver1->getId()]));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $driver2    = $this->_em->find(DDC2862Driver::class, $driver1->getId());
+        $this->getQueryLog()->reset()->enable();
+        $driver2 = $this->_em->find(DDC2862Driver::class, $driver1->getId());
 
         self::assertInstanceOf(DDC2862Driver::class, $driver2);
         self::assertInstanceOf(DDC2862User::class, $driver2->getUserProfile());
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         $this->_em->clear();
 
         self::assertFalse($this->_em->getCache()->containsEntity(DDC2862User::class, ['id' => $user1->getId()]));
         self::assertTrue($this->_em->getCache()->containsEntity(DDC2862Driver::class, ['id' => $driver1->getId()]));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $driver3    = $this->_em->find(DDC2862Driver::class, $driver1->getId());
+        $this->getQueryLog()->reset()->enable();
+        $driver3 = $this->_em->find(DDC2862Driver::class, $driver1->getId());
 
         self::assertInstanceOf(DDC2862Driver::class, $driver3);
         self::assertInstanceOf(DDC2862User::class, $driver3->getUserProfile());
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
         self::assertEquals('Foo', $driver3->getUserProfile()->getName());
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
-        $queryCount = $this->getCurrentQueryCount();
-        $driver4    = $this->_em->find(DDC2862Driver::class, $driver1->getId());
+        $this->getQueryLog()->reset()->enable();
+        $driver4 = $this->_em->find(DDC2862Driver::class, $driver1->getId());
 
         self::assertInstanceOf(DDC2862Driver::class, $driver4);
         self::assertInstanceOf(DDC2862User::class, $driver4->getUserProfile());
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
         self::assertEquals('Foo', $driver4->getUserProfile()->getName());
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
     }
 }
 

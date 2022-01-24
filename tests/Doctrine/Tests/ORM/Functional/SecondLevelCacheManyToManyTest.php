@@ -104,7 +104,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->_em->clear();
         $this->secondLevelCacheLogger->clearStats();
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $t3 = $this->_em->find(Travel::class, $this->travels[0]->getId());
         $t4 = $this->_em->find(Travel::class, $this->travels[1]->getId());
@@ -145,7 +145,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         self::assertEquals($t2->getVisitedCities()->get(1)->getName(), $t4->getVisitedCities()->get(1)->getName());
 
         self::assertEquals(4, $this->secondLevelCacheLogger->getHitCount());
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
     }
 
     public function testStoreManyToManyAssociationWhitCascade(): void
@@ -181,12 +181,12 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[3]->getId()));
         self::assertTrue($this->cache->containsCollection(Travel::class, 'visitedCities', $travel->getId()));
 
-        $queryCount1 = $this->getCurrentQueryCount();
-        $t1          = $this->_em->find(Travel::class, $travel->getId());
+        $this->getQueryLog()->reset()->enable();
+        $t1 = $this->_em->find(Travel::class, $travel->getId());
 
         self::assertInstanceOf(Travel::class, $t1);
         self::assertCount(3, $t1->getVisitedCities());
-        self::assertEquals($queryCount1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
     }
 
     public function testReadOnlyCollection(): void
@@ -228,20 +228,20 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
 
         $this->evictRegions();
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $entitiId = $this->travels[2]->getId(); //empty travel
         $entity   = $this->_em->find(Travel::class, $entitiId);
 
         self::assertEquals(0, $entity->getVisitedCities()->count());
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
 
         $this->_em->clear();
 
         $entity = $this->_em->find(Travel::class, $entitiId);
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
         self::assertEquals(0, $entity->getVisitedCities()->count());
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
     }
 }
