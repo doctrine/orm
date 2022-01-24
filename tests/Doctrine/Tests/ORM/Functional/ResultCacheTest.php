@@ -120,9 +120,9 @@ class ResultCacheTest extends OrmFunctionalTestCase
      */
     public function testUseResultCacheParams(): void
     {
-        $cache    = new ArrayAdapter();
-        $sqlCount = $this->getCurrentQueryCount();
-        $query    = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux WHERE ux.id = ?1');
+        $cache = new ArrayAdapter();
+        $this->getQueryLog()->reset()->enable();
+        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux WHERE ux.id = ?1');
 
         $this->setResultCache($query, $cache);
         $query->enableResultCache();
@@ -133,11 +133,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setParameter(1, 2);
         $query->getResult();
 
-        self::assertSame(
-            $sqlCount + 2,
-            $this->getCurrentQueryCount(),
-            'Two non-cached queries.'
-        );
+        $this->assertQueryCount(2, 'Two non-cached queries.');
 
         // these two queries should actually be cached, as they repeat previous ones:
         $query->setParameter(1, 1);
@@ -145,11 +141,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setParameter(1, 2);
         $query->getResult();
 
-        self::assertSame(
-            $sqlCount + 2,
-            $this->getCurrentQueryCount(),
-            'The next two sql queries should have been cached, but were not.'
-        );
+        $this->assertQueryCount(2, 'The next two sql queries should have been cached, but were not.');
     }
 
     public function testEnableResultCache(): void
@@ -169,8 +161,8 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
     public function testEnableResultCacheWithIterable(): void
     {
-        $cache            = new ArrayAdapter();
-        $expectedSQLCount = $this->getCurrentQueryCount() + 1;
+        $cache = new ArrayAdapter();
+        $this->getQueryLog()->reset()->enable();
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         $query->enableResultCache();
@@ -180,10 +172,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        self::assertSame(
-            $expectedSQLCount,
-            $this->getCurrentQueryCount()
-        );
+        $this->assertQueryCount(1);
         self::assertCacheHasItem('testing_iterable_result_cache_id', $cache);
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
@@ -192,11 +181,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setResultCacheId('testing_iterable_result_cache_id');
         iterator_to_array($query->toIterable());
 
-        self::assertSame(
-            $expectedSQLCount,
-            $this->getCurrentQueryCount(),
-            'Expected query to be cached'
-        );
+        $this->assertQueryCount(1, 'Expected query to be cached');
 
         $this->resetCache();
     }
@@ -206,9 +191,9 @@ class ResultCacheTest extends OrmFunctionalTestCase
      */
     public function testEnableResultCacheParams(): void
     {
-        $cache    = new ArrayAdapter();
-        $sqlCount = $this->getCurrentQueryCount();
-        $query    = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux WHERE ux.id = ?1');
+        $cache = new ArrayAdapter();
+        $this->getQueryLog()->reset()->enable();
+        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux WHERE ux.id = ?1');
 
         $this->setResultCache($query, $cache);
         $query->enableResultCache();
@@ -219,11 +204,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setParameter(1, 2);
         $query->getResult();
 
-        self::assertSame(
-            $sqlCount + 2,
-            $this->getCurrentQueryCount(),
-            'Two non-cached queries.'
-        );
+        $this->assertQueryCount(2, 'Two non-cached queries.');
 
         // these two queries should actually be cached, as they repeat previous ones:
         $query->setParameter(1, 1);
@@ -231,11 +212,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setParameter(1, 2);
         $query->getResult();
 
-        self::assertSame(
-            $sqlCount + 2,
-            $this->getCurrentQueryCount(),
-            'The next two sql queries should have been cached, but were not.'
-        );
+        $this->assertQueryCount(2, 'The next two sql queries should have been cached, but were not.');
     }
 
     public function testDisableResultCache(): void

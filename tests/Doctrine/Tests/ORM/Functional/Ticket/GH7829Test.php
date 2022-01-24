@@ -41,7 +41,7 @@ final class GH7829Test extends OrmFunctionalTestCase
         $paginator->count();
         $paginator->getIterator();
 
-        self::assertSame(3, $this->getCurrentQueryCount());
+        $this->assertQueryCount(3);
     }
 
     public function testPaginatorWithLimitSubquerySkipped(): void
@@ -56,6 +56,6 @@ final class GH7829Test extends OrmFunctionalTestCase
         $paginator->count();
         $paginator->getIterator();
 
-        self::assertSame(2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
     }
 }
