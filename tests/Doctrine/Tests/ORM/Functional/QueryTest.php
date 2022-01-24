@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Proxy\Proxy;
@@ -22,8 +21,6 @@ use Doctrine\Tests\Models\Enums\UserStatus;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-use function array_values;
-use function class_exists;
 use function count;
 use function iterator_to_array;
 
@@ -239,18 +236,10 @@ class QueryTest extends OrmFunctionalTestCase
                   ->setParameters($parameters)
                   ->getResult();
 
-        if (! class_exists(LoggingMiddleware::class)) {
-            // DBAL 2 logs queries before resolving parameter positions
-            self::assertSame(
-                ['jwage', 'active'],
-                $this->getLastLoggedQuery()['params']
-            );
-        } else {
-            self::assertSame(
-                [1 => 'jwage', 2 => 'active'],
-                $this->getLastLoggedQuery()['params']
-            );
-        }
+        self::assertSame(
+            [1 => 'jwage', 2 => 'active'],
+            $this->getLastLoggedQuery()['params']
+        );
     }
 
     public function testSetParametersBackwardsCompatible(): void
@@ -261,10 +250,7 @@ class QueryTest extends OrmFunctionalTestCase
                   ->setParameters($parameters)
                   ->getResult();
 
-        self::assertSame(
-            class_exists(LoggingMiddleware::class) ? $parameters : array_values($parameters),
-            $this->getLastLoggedQuery()['params']
-        );
+        self::assertSame($parameters, $this->getLastLoggedQuery()['params']);
     }
 
     /**
