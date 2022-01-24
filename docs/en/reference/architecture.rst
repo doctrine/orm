@@ -85,8 +85,9 @@ be any regular PHP class observing the following restrictions:
    You can also consider implementing
    `Serializable <https://php.net/manual/en/class.serializable.php>`_,
    but be aware that it is deprecated since PHP 8.1. We do not recommend its usage.
--  PHP 7.4 introduces the new magic method ``__unserialize``, which changes the execution
-   priority between ``__wakeup`` and itself when used. This can cause unexpected behaviour in
+-  PHP 7.4 introduces :doc:`the new magic method <https://php.net/manual/en/language.oop5.magic.php#object.unserialize>`
+   ``__unserialize``, which changes the execution priority between
+   ``__wakeup`` and itself when used. This can cause unexpected behaviour in
    an Entity.
 -  Any two entity classes in a class hierarchy that inherit
    directly or indirectly from one another must not have a mapped
