@@ -45,7 +45,7 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[0]->getId()));
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[1]->getId()));
 
-        $queryCount  = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
         $flight      = $this->_em->find(Flight::class, $id);
         $leavingFrom = $flight->getLeavingFrom();
         $goingTo     = $flight->getGoingTo();
@@ -56,7 +56,7 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
 
         self::assertEquals($goingTo->getId(), $goingToId);
         self::assertEquals($leavingFrom->getId(), $leavingFromId);
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
     }
 
     public function testRemoveCompositPrimaryKeyEntities(): void
@@ -135,7 +135,7 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[0]->getId()));
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[1]->getId()));
 
-        $queryCount  = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
         $flight      = $this->_em->find(Flight::class, $id);
         $leavingFrom = $flight->getLeavingFrom();
         $goingTo     = $flight->getGoingTo();
@@ -148,7 +148,7 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
         self::assertEquals($flight->getDeparture(), $now);
         self::assertEquals($leavingFrom->getId(), $leavingFromId);
         self::assertEquals($leavingFrom->getId(), $leavingFromId);
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
 
         $flight->setDeparture($tomorrow);
 
@@ -160,7 +160,7 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[0]->getId()));
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[1]->getId()));
 
-        $queryCount  = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
         $flight      = $this->_em->find(Flight::class, $id);
         $leavingFrom = $flight->getLeavingFrom();
         $goingTo     = $flight->getGoingTo();
@@ -173,6 +173,6 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
         self::assertEquals($flight->getDeparture(), $tomorrow);
         self::assertEquals($leavingFrom->getId(), $leavingFromId);
         self::assertEquals($leavingFrom->getId(), $leavingFromId);
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
     }
 }

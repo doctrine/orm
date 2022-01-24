@@ -665,11 +665,10 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertCount(1, $user2->articles);
         self::assertInstanceOf(CmsAddress::class, $user2->address);
 
-        $countBeforeFlush = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
         $this->_em->flush();
-        $countAfterFlush = $this->getCurrentQueryCount();
 
-        self::assertSame($countBeforeFlush, $countAfterFlush);
+        $this->assertQueryCount(0);
     }
 
     public function testRemoveEntityByReference(): void
@@ -1012,7 +1011,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $qc      = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
         $dql     = 'SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.id = ?1';
         $article = $this->_em->createQuery($dql)
                              ->setParameter(1, $article->id)
@@ -1020,7 +1019,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
                              ->getSingleResult();
         self::assertInstanceOf(Proxy::class, $article->user, 'It IS a proxy, ...');
         self::assertTrue($article->user->__isInitialized__, '...but its initialized!');
-        self::assertEquals($qc + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
     }
 
     /**

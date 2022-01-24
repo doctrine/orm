@@ -30,23 +30,23 @@ class GH2947Test extends OrmFunctionalTestCase
     public function testIssue(): void
     {
         $this->createData();
-        $initialQueryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $query = $this->createQuery();
         self::assertEquals('BMW', (string) $query->getSingleResult());
-        self::assertEquals($initialQueryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         $this->updateData();
         self::assertEquals('BMW', (string) $query->getSingleResult());
-        self::assertEquals($initialQueryCount + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
 
         $query->expireResultCache(true);
         self::assertEquals('Dacia', (string) $query->getSingleResult());
-        self::assertEquals($initialQueryCount + 3, $this->getCurrentQueryCount());
+        $this->assertQueryCount(3);
 
         $query->expireResultCache(false);
         self::assertEquals('Dacia', (string) $query->getSingleResult());
-        self::assertEquals($initialQueryCount + 3, $this->getCurrentQueryCount());
+        $this->assertQueryCount(3);
     }
 
     private function createQuery(): Query

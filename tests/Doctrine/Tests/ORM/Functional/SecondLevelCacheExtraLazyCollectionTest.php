@@ -59,12 +59,12 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
         $this->_em->persist($newItem);
         $this->_em->persist($owner);
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         self::assertFalse($owner->getVisitedCities()->isInitialized());
         self::assertEquals(4, $owner->getVisitedCities()->count());
         self::assertFalse($owner->getVisitedCities()->isInitialized());
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
 
         $this->_em->flush();
 
@@ -73,11 +73,11 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
 
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $owner      = $this->_em->find(Travel::class, $ownerId);
+        $this->getQueryLog()->reset()->enable();
+        $owner = $this->_em->find(Travel::class, $ownerId);
 
         self::assertEquals(4, $owner->getVisitedCities()->count());
         self::assertFalse($owner->getVisitedCities()->isInitialized());
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
     }
 }

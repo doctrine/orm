@@ -39,10 +39,9 @@ final class GH8217Test extends OrmFunctionalTestCase
         $this->_em->persist($collection);
         $this->_em->flush();
 
-        $queriesNumberBeforeSecondFlush = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
         $this->_em->flush();
-        $queriesNumberAfterSecondFlush = $this->getCurrentQueryCount();
-        self::assertEquals($queriesNumberBeforeSecondFlush, $queriesNumberAfterSecondFlush);
+        $this->assertQueryCount(0);
     }
 }
 

@@ -60,7 +60,7 @@ class DDC2494Test extends OrmFunctionalTestCase
         self::assertInstanceOf(DDC2494Campaign::class, $item);
         self::assertInstanceOf(DDC2494Currency::class, $item->getCurrency());
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         self::assertInstanceOf('\Doctrine\Common\Proxy\Proxy', $item->getCurrency());
         self::assertFalse($item->getCurrency()->__isInitialized());
@@ -72,13 +72,13 @@ class DDC2494Test extends OrmFunctionalTestCase
         self::assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
         self::assertFalse($item->getCurrency()->__isInitialized());
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
 
         self::assertIsInt($item->getCurrency()->getTemp());
         self::assertCount(3, DDC2494TinyIntType::$calls['convertToPHPValue']);
         self::assertTrue($item->getCurrency()->__isInitialized());
 
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
     }
 }
 

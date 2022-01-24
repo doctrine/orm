@@ -65,7 +65,7 @@ class DDC2346Test extends OrmFunctionalTestCase
         $fetchedBazs = $this->_em->getRepository(DDC2346Baz::class)->findAll();
 
         self::assertCount(2, $fetchedBazs);
-        self::assertSame(2, $this->getCurrentQueryCount(), 'The total number of executed queries is 2, and not n+1');
+        $this->assertQueryCount(2, 'The total number of executed queries is 2, and not n+1');
     }
 }
 

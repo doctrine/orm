@@ -24,12 +24,12 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
         $repository = $this->_em->getRepository(Country::class);
         $country1   = $repository->find($this->countries[0]->getId());
         $country2   = $repository->find($this->countries[1]->getId());
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
 
         self::assertInstanceOf(Country::class, $country1);
         self::assertInstanceOf(Country::class, $country2);
@@ -50,15 +50,15 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         $repository = $this->_em->getRepository(Country::class);
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         self::assertCount(2, $repository->findAll());
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
-        $queryCount = $this->getCurrentQueryCount();
-        $countries  = $repository->findAll();
+        $this->getQueryLog()->reset()->enable();
+        $countries = $repository->findAll();
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
 
         self::assertInstanceOf(Country::class, $countries[0]);
         self::assertInstanceOf(Country::class, $countries[1]);
@@ -81,15 +81,15 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         $repository = $this->_em->getRepository(Country::class);
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         self::assertCount(2, $repository->findAll());
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
-        $queryCount = $this->getCurrentQueryCount();
-        $countries  = $repository->findAll();
+        $this->getQueryLog()->reset()->enable();
+        $countries = $repository->findAll();
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
 
         self::assertCount(2, $countries);
         self::assertInstanceOf(Country::class, $countries[0]);
@@ -101,10 +101,10 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->_em->flush();
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         self::assertCount(3, $repository->findAll());
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         $country = $repository->find($country->getId());
 
@@ -112,10 +112,10 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->_em->flush();
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         self::assertCount(2, $repository->findAll());
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
     }
 
     public function testRepositoryCacheFindBy(): void
@@ -129,15 +129,15 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
 
         $criteria   = ['name' => $this->countries[0]->getName()];
         $repository = $this->_em->getRepository(Country::class);
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         self::assertCount(1, $repository->findBy($criteria));
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
-        $queryCount = $this->getCurrentQueryCount();
-        $countries  = $repository->findBy($criteria);
+        $this->getQueryLog()->reset()->enable();
+        $countries = $repository->findBy($criteria);
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
 
         self::assertCount(1, $countries);
         self::assertInstanceOf(Country::class, $countries[0]);
@@ -159,15 +159,15 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
 
         $criteria   = ['name' => $this->countries[0]->getName()];
         $repository = $this->_em->getRepository(Country::class);
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         self::assertNotNull($repository->findOneBy($criteria));
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
-        $queryCount = $this->getCurrentQueryCount();
-        $country    = $repository->findOneBy($criteria);
+        $this->getQueryLog()->reset()->enable();
+        $country = $repository->findOneBy($criteria);
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
 
         self::assertInstanceOf(Country::class, $country);
 
@@ -189,11 +189,11 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
 
         // load from database
         $repository = $this->_em->getRepository(State::class);
-        $queryCount = $this->getCurrentQueryCount();
-        $entities   = $repository->findAll();
+        $this->getQueryLog()->reset()->enable();
+        $entities = $repository->findAll();
 
         self::assertCount(4, $entities);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         self::assertInstanceOf(State::class, $entities[0]);
         self::assertInstanceOf(State::class, $entities[1]);
@@ -203,11 +203,11 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         self::assertInstanceOf(Proxy::class, $entities[1]->getCountry());
 
         // load from cache
-        $queryCount = $this->getCurrentQueryCount();
-        $entities   = $repository->findAll();
+        $this->getQueryLog()->reset()->enable();
+        $entities = $repository->findAll();
 
         self::assertCount(4, $entities);
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
 
         self::assertInstanceOf(State::class, $entities[0]);
         self::assertInstanceOf(State::class, $entities[1]);
@@ -222,11 +222,11 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->_em->clear();
 
         // load from database
-        $queryCount = $this->getCurrentQueryCount();
-        $entities   = $repository->findAll();
+        $this->getQueryLog()->reset()->enable();
+        $entities = $repository->findAll();
 
         self::assertCount(5, $entities);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         self::assertInstanceOf(State::class, $entities[0]);
         self::assertInstanceOf(State::class, $entities[1]);
@@ -236,11 +236,11 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         self::assertInstanceOf(Proxy::class, $entities[1]->getCountry());
 
         // load from cache
-        $queryCount = $this->getCurrentQueryCount();
-        $entities   = $repository->findAll();
+        $this->getQueryLog()->reset()->enable();
+        $entities = $repository->findAll();
 
         self::assertCount(5, $entities);
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
 
         self::assertInstanceOf(State::class, $entities[0]);
         self::assertInstanceOf(State::class, $entities[1]);

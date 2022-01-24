@@ -28,6 +28,7 @@ use Doctrine\Tests\DbalTypes\Rot13Type;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
 use Exception;
 use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit\Framework\Constraint\Count;
 use PHPUnit\Framework\Warning;
 use Psr\Cache\CacheItemPoolInterface;
 use RuntimeException;
@@ -39,7 +40,6 @@ use function array_pop;
 use function array_reverse;
 use function array_slice;
 use function assert;
-use function count;
 use function explode;
 use function get_debug_type;
 use function getenv;
@@ -374,7 +374,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $platform = $conn->getDatabasePlatform();
 
         if ($this->isQueryLogAvailable()) {
-            $this->disableQueryLog();
+            $this->getQueryLog()->reset();
         }
 
         if (isset($this->_usedModelSets['cms'])) {
@@ -713,7 +713,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $this->_schemaTool->createSchema($classes);
         }
 
-        $this->enableQueryLog();
+        $this->getQueryLog()->enable();
     }
 
     /**
@@ -836,7 +836,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             throw $e;
         }
 
-        if ($this->isQueryLogAvailable() && $this->getCurrentQueryCount() > 0) {
+        if ($this->isQueryLogAvailable() && $this->getQueryLog()->queries !== []) {
             $queries       = '';
             $last25queries = array_slice(array_reverse($this->getQueryLog()->queries, true), 0, 25, true);
             foreach ($last25queries as $i => $query) {
@@ -893,16 +893,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         return $this->_em->getConnection() instanceof DbalExtensions\Connection;
     }
 
-    final protected function enableQueryLog(): void
-    {
-        $this->getQueryLog()->enabled = true;
-    }
-
-    final protected function disableQueryLog(): void
-    {
-        $this->getQueryLog()->enabled = false;
-    }
-
     final protected function getQueryLog(): QueryLog
     {
         $connection = $this->_em->getConnection();
@@ -917,12 +907,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         return $connection->queryLog;
     }
 
-    /**
-     * Using the SQL Logger Stack this method retrieves the current query count executed in this test.
-     */
-    final protected function getCurrentQueryCount(): int
+    final protected function assertQueryCount(int $expectedCount, string $message = ''): void
     {
-        return count($this->getQueryLog()->queries);
+        self::assertThat($this->getQueryLog()->queries, new Count($expectedCount), $message);
     }
 
     /**
