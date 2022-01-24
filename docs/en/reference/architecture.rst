@@ -82,9 +82,9 @@ be any regular PHP class observing the following restrictions:
    :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
 -  An entity class must not implement ``__wakeup`` or
    :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
-   Also consider implementing
-   `Serializable <https://php.net/manual/en/class.serializable.php>`_
-   instead.
+   You can also consider implementing
+   `Serializable <https://php.net/manual/en/class.serializable.php>`_,
+   but be aware that it is deprecated since PHP 8.1. We do not recommend its usage.
 -  PHP 7.4 introduces the new magic method ``__unserialize``, which changes the execution
    priority between ``__wakeup`` and itself when used. This can cause unexpected behaviour in
    an Entity.
@@ -164,7 +164,8 @@ possible for ``__sleep`` to return names of private properties in
 parent classes. On the other hand it is not a solution for proxy
 objects to implement ``Serializable`` because Serializable does not
 work well with any potential cyclic object references (at least we
-did not find a way yet, if you did, please contact us).
+did not find a way yet, if you did, please contact us). The
+``Serializable`` interface is also deprecated beginning with PHP 8.1.
 
 The EntityManager
 ~~~~~~~~~~~~~~~~~
