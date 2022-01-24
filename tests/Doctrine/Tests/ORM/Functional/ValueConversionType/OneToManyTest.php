@@ -124,4 +124,21 @@ class OneToManyTest extends OrmFunctionalTestCase
 
         self::assertCount(1, $inversed->associatedEntities);
     }
+
+    /**
+     * @depends testThatEntitiesAreFetchedFromTheDatabase
+     */
+    public function testThatEntitiesAreFetchedByDQLWithEntityAsParameter(): void
+    {
+        $inversed = $this->_em->find(
+            Models\ValueConversionType\InversedOneToManyEntity::class,
+            'abc'
+        );
+
+        $owningArray = $this->_em->createQuery(
+            'SELECT e FROM Doctrine\Tests\Models\ValueConversionType\OwningManyToOneEntity e WHERE e.associatedEntity = :associatedEntity'
+        )->setParameter('associatedEntity', $inversed)->execute();
+
+        self::assertCount(1, $owningArray);
+    }
 }
