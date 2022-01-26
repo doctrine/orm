@@ -445,4 +445,13 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         
         $this->assertEquals(0, $andExpr->count());
     }
+
+    public function testComparisonBooleans()
+    {
+        $comparison = new Expr\Comparison('foo',Expr\Comparison::EQ, true);
+        $this->assertSame('foo = 1', (string)$comparison);
+
+        $comparison = new Expr\Comparison('foo',Expr\Comparison::EQ, false);
+        $this->assertSame('foo = 0', (string)$comparison);
+    }
 }
