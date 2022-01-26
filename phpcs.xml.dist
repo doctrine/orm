@@ -101,10 +101,6 @@
         <exclude-pattern>lib/Doctrine/ORM/Mapping/ManyToMany.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/ManyToOne.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/MappedSuperclass.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/NamedNativeQueries.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/NamedNativeQuery.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/NamedQueries.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/NamedQuery.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/OneToMany.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/OneToOne.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/OrderBy.php</exclude-pattern>

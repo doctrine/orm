@@ -346,30 +346,6 @@ class ClassMetadataInfo implements ClassMetadata
     public $embeddedClasses = [];
 
     /**
-     * READ-ONLY: The named queries allowed to be called directly from Repository.
-     *
-     * @psalm-var array<string, array<string, mixed>>
-     */
-    public $namedQueries = [];
-
-    /**
-     * READ-ONLY: The named native queries allowed to be called directly from Repository.
-     *
-     * A native SQL named query definition has the following structure:
-     * <pre>
-     * array(
-     *     'name'               => <query name>,
-     *     'query'              => <sql query>,
-     *     'resultClass'        => <class of the result>,
-     *     'resultSetMapping'   => <name of a SqlResultSetMapping>
-     * )
-     * </pre>
-     *
-     * @psalm-var array<string, array<string, mixed>>
-     */
-    public $namedNativeQueries = [];
-
-    /**
      * READ-ONLY: The mappings of the results of native SQL queries.
      *
      * A native result mapping definition has the following structure:
@@ -954,14 +930,6 @@ class ClassMetadataInfo implements ClassMetadata
             $serialized[] = 'entityListeners';
         }
 
-        if ($this->namedQueries) {
-            $serialized[] = 'namedQueries';
-        }
-
-        if ($this->namedNativeQueries) {
-            $serialized[] = 'namedNativeQueries';
-        }
-
         if ($this->sqlResultSetMappings) {
             $serialized[] = 'sqlResultSetMappings';
         }
@@ -1385,68 +1353,6 @@ class ClassMetadataInfo implements ClassMetadata
     public function getFieldName($columnName)
     {
         return $this->fieldNames[$columnName] ?? $columnName;
-    }
-
-    /**
-     * Gets the named query.
-     *
-     * @see ClassMetadataInfo::$namedQueries
-     *
-     * @param string $queryName The query name.
-     *
-     * @return string
-     *
-     * @throws MappingException
-     */
-    public function getNamedQuery($queryName)
-    {
-        if (! isset($this->namedQueries[$queryName])) {
-            throw MappingException::queryNotFound($this->name, $queryName);
-        }
-
-        return $this->namedQueries[$queryName]['dql'];
-    }
-
-    /**
-     * Gets all named queries of the class.
-     *
-     * @return mixed[][]
-     * @psalm-return array<string, array<string, mixed>>
-     */
-    public function getNamedQueries()
-    {
-        return $this->namedQueries;
-    }
-
-    /**
-     * Gets the named native query.
-     *
-     * @see ClassMetadataInfo::$namedNativeQueries
-     *
-     * @param string $queryName The query name.
-     *
-     * @return mixed[]
-     * @psalm-return array<string, mixed>
-     *
-     * @throws MappingException
-     */
-    public function getNamedNativeQuery($queryName)
-    {
-        if (! isset($this->namedNativeQueries[$queryName])) {
-            throw MappingException::queryNotFound($this->name, $queryName);
-        }
-
-        return $this->namedNativeQueries[$queryName];
-    }
-
-    /**
-     * Gets all named native queries of the class.
-     *
-     * @psalm-return array<string, array<string, mixed>>
-     */
-    public function getNamedNativeQueries()
-    {
-        return $this->namedNativeQueries;
     }
 
     /**
@@ -2720,104 +2626,6 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * INTERNAL:
-     * Adds a named query to this class.
-     *
-     * @deprecated
-     *
-     * @psalm-param array<string, mixed> $queryMapping
-     *
-     * @return void
-     *
-     * @throws MappingException
-     */
-    public function addNamedQuery(array $queryMapping)
-    {
-        if (! isset($queryMapping['name'])) {
-            throw MappingException::nameIsMandatoryForQueryMapping($this->name);
-        }
-
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/8592',
-            'Named Queries are deprecated, here "%s" on entity %s. Move the query logic into EntityRepository',
-            $queryMapping['name'],
-            $this->name
-        );
-
-        if (isset($this->namedQueries[$queryMapping['name']])) {
-            throw MappingException::duplicateQueryMapping($this->name, $queryMapping['name']);
-        }
-
-        if (! isset($queryMapping['query'])) {
-            throw MappingException::emptyQueryMapping($this->name, $queryMapping['name']);
-        }
-
-        $name  = $queryMapping['name'];
-        $query = $queryMapping['query'];
-        $dql   = str_replace('__CLASS__', $this->name, $query);
-
-        $this->namedQueries[$name] = [
-            'name'  => $name,
-            'query' => $query,
-            'dql'   => $dql,
-        ];
-    }
-
-    /**
-     * INTERNAL:
-     * Adds a named native query to this class.
-     *
-     * @deprecated
-     *
-     * @psalm-param array<string, mixed> $queryMapping
-     *
-     * @return void
-     *
-     * @throws MappingException
-     */
-    public function addNamedNativeQuery(array $queryMapping)
-    {
-        if (! isset($queryMapping['name'])) {
-            throw MappingException::nameIsMandatoryForQueryMapping($this->name);
-        }
-
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/8592',
-            'Named Native Queries are deprecated, here "%s" on entity %s. Move the query logic into EntityRepository',
-            $queryMapping['name'],
-            $this->name
-        );
-
-        if (isset($this->namedNativeQueries[$queryMapping['name']])) {
-            throw MappingException::duplicateQueryMapping($this->name, $queryMapping['name']);
-        }
-
-        if (! isset($queryMapping['query'])) {
-            throw MappingException::emptyQueryMapping($this->name, $queryMapping['name']);
-        }
-
-        if (! isset($queryMapping['resultClass']) && ! isset($queryMapping['resultSetMapping'])) {
-            throw MappingException::missingQueryMapping($this->name, $queryMapping['name']);
-        }
-
-        $queryMapping['isSelfClass'] = false;
-
-        if (isset($queryMapping['resultClass'])) {
-            if ($queryMapping['resultClass'] === '__CLASS__') {
-                $queryMapping['isSelfClass'] = true;
-                $queryMapping['resultClass'] = $this->name;
-            }
-
-            $queryMapping['resultClass'] = $this->fullyQualifiedClassName($queryMapping['resultClass']);
-            $queryMapping['resultClass'] = ltrim($queryMapping['resultClass'], '\\');
-        }
-
-        $this->namedNativeQueries[$queryMapping['name']] = $queryMapping;
-    }
-
-    /**
-     * INTERNAL:
      * Adds a sql result set mapping to this class.
      *
      * @psalm-param array<string, mixed> $resultMapping
@@ -3186,42 +2994,6 @@ class ClassMetadataInfo implements ClassMetadata
         if (is_subclass_of($className, $this->name) && ! in_array($className, $this->subClasses, true)) {
             $this->subClasses[] = $className;
         }
-    }
-
-    /**
-     * Checks whether the class has a named query with the given query name.
-     *
-     * @param string $queryName
-     *
-     * @return bool
-     */
-    public function hasNamedQuery($queryName)
-    {
-        return isset($this->namedQueries[$queryName]);
-    }
-
-    /**
-     * Checks whether the class has a named native query with the given query name.
-     *
-     * @param string $queryName
-     *
-     * @return bool
-     */
-    public function hasNamedNativeQuery($queryName)
-    {
-        return isset($this->namedNativeQueries[$queryName]);
-    }
-
-    /**
-     * Checks whether the class has a named native query with the given query name.
-     *
-     * @param string $name
-     *
-     * @return bool
-     */
-    public function hasSqlResultSetMapping($name)
-    {
-        return isset($this->sqlResultSetMappings[$name]);
     }
 
     /**

@@ -24,8 +24,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\ORM\Mapping\NamedNativeQueries;
-use Doctrine\ORM\Mapping\NamedNativeQuery;
 use Doctrine\ORM\Mapping\SqlResultSetMapping;
 use Doctrine\ORM\Mapping\SqlResultSetMappings;
 use Doctrine\ORM\Mapping\Table;
@@ -40,18 +38,6 @@ use Doctrine\ORM\Mapping\Table;
  *     "fix"       = "CompanyFixContract",
  *     "flexible"  = "CompanyFlexContract",
  *     "flexultra" = "CompanyFlexUltraContract"
- * })
- * @NamedNativeQueries({
- *      @NamedNativeQuery(
- *          name           = "all-contracts",
- *          resultClass    = "__CLASS__",
- *          query          = "SELECT id, completed, discr FROM company_contracts"
- *      ),
- *      @NamedNativeQuery(
- *          name           = "all",
- *          resultClass    = "__CLASS__",
- *          query          = "SELECT id, completed, discr FROM company_contracts"
- *      ),
  * })
  * @SqlResultSetMappings({
  *      @SqlResultSetMapping(

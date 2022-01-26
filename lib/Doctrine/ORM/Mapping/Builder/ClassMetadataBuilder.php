@@ -157,26 +157,6 @@ class ClassMetadataBuilder
     }
 
     /**
-     * Adds named query.
-     *
-     * @param string $name
-     * @param string $dqlQuery
-     *
-     * @return $this
-     */
-    public function addNamedQuery($name, $dqlQuery)
-    {
-        $this->cm->addNamedQuery(
-            [
-                'name' => $name,
-                'query' => $dqlQuery,
-            ]
-        );
-
-        return $this;
-    }
-
-    /**
      * Sets class as root of a joined table inheritance hierarchy.
      *
      * @return $this

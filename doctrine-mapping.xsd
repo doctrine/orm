@@ -82,36 +82,6 @@
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
 
-  <xs:complexType name="named-query">
-    <xs:attribute name="name" type="xs:string" use="required" />
-    <xs:attribute name="query" type="xs:string" use="required" />
-    <xs:anyAttribute namespace="##other"/>
-  </xs:complexType>
-
-  <xs:complexType name="named-queries">
-    <xs:sequence>
-      <xs:element name="named-query" type="orm:named-query" minOccurs="1" maxOccurs="unbounded" />
-      <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="named-native-query">
-    <xs:choice minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="query" type="xs:string" minOccurs="1" maxOccurs="1"/>
-      <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
-    </xs:choice>
-    <xs:attribute name="name" type="xs:string" use="required" />
-    <xs:attribute name="result-class" type="orm:fqcn" />
-    <xs:attribute name="result-set-mapping" type="xs:string" />
-  </xs:complexType>
-
-  <xs:complexType name="named-native-queries">
-    <xs:choice minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="named-native-query" type="orm:named-native-query" minOccurs="1" maxOccurs="unbounded" />
-      <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
-    </xs:choice>
-  </xs:complexType>
-
   <xs:complexType name="entity-listener">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element name="lifecycle-callback" type="orm:lifecycle-callback" minOccurs="0" maxOccurs="unbounded"/>
@@ -176,8 +146,6 @@
       <xs:element name="discriminator-map" type="orm:discriminator-map" minOccurs="0"/>
       <xs:element name="lifecycle-callbacks" type="orm:lifecycle-callbacks" minOccurs="0" maxOccurs="1" />
       <xs:element name="entity-listeners" type="orm:entity-listeners" minOccurs="0" maxOccurs="1" />
-      <xs:element name="named-queries" type="orm:named-queries" minOccurs="0" maxOccurs="1" />
-      <xs:element name="named-native-queries" type="orm:named-native-queries" minOccurs="0" maxOccurs="1" />
       <xs:element name="sql-result-set-mappings" type="orm:sql-result-set-mappings" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="id" type="orm:id" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="field" type="orm:field" minOccurs="0" maxOccurs="unbounded"/>

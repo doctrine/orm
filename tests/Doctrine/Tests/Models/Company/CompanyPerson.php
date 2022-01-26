@@ -19,8 +19,6 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
-use Doctrine\ORM\Mapping\NamedNativeQueries;
-use Doctrine\ORM\Mapping\NamedNativeQuery;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\SqlResultSetMapping;
 use Doctrine\ORM\Mapping\SqlResultSetMappings;
@@ -37,18 +35,6 @@ use Doctrine\ORM\Mapping\Table;
  *      "person"    = "CompanyPerson",
  *      "manager"   = "CompanyManager",
  *      "employee"  = "CompanyEmployee"
- * })
- * @NamedNativeQueries({
- *      @NamedNativeQuery(
- *          name           = "fetchAllWithResultClass",
- *          resultClass    = "__CLASS__",
- *          query          = "SELECT id, name, discr FROM company_persons ORDER BY name"
- *      ),
- *      @NamedNativeQuery(
- *          name            = "fetchAllWithSqlResultSetMapping",
- *          resultSetMapping= "mappingFetchAll",
- *          query           = "SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name"
- *      )
  * })
  * @SqlResultSetMappings({
  *      @SqlResultSetMapping(
@@ -157,22 +143,6 @@ class CompanyPerson
     {
         $metadata->setPrimaryTable(
             ['name' => 'company_person']
-        );
-
-        $metadata->addNamedNativeQuery(
-            [
-                'name'              => 'fetchAllWithResultClass',
-                'query'             => 'SELECT id, name, discr FROM company_persons ORDER BY name',
-                'resultClass'       => self::class,
-            ]
-        );
-
-        $metadata->addNamedNativeQuery(
-            [
-                'name'              => 'fetchAllWithSqlResultSetMapping',
-                'query'             => 'SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name',
-                'resultSetMapping'  => 'mappingFetchAll',
-            ]
         );
 
         $metadata->addSqlResultSetMapping(

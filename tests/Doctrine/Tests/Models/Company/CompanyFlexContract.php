@@ -14,25 +14,11 @@ use Doctrine\ORM\Mapping\FieldResult;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
-use Doctrine\ORM\Mapping\NamedNativeQueries;
-use Doctrine\ORM\Mapping\NamedNativeQuery;
 use Doctrine\ORM\Mapping\SqlResultSetMapping;
 use Doctrine\ORM\Mapping\SqlResultSetMappings;
 
 /**
  * @Entity
- * @NamedNativeQueries({
- *      @NamedNativeQuery(
- *          name           = "all",
- *          resultClass    = "__CLASS__",
- *          query          = "SELECT id, hoursWorked, discr FROM company_contracts"
- *      ),
- *      @NamedNativeQuery(
- *          name           = "all-flex",
- *          resultClass    = "CompanyFlexContract",
- *          query          = "SELECT id, hoursWorked, discr FROM company_contracts"
- *      ),
- * })
  * @SqlResultSetMappings({
  *      @SqlResultSetMapping(
  *          name    = "mapping-all-flex",

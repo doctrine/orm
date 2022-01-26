@@ -9,20 +9,6 @@
             <entity-listener class="CmsAddressListener"/>
         </entity-listeners>
 
-        <named-native-queries>
-            <named-native-query name="find-all" result-set-mapping="mapping-find-all">
-                <query>SELECT id, country, city FROM cms_addresses</query>
-            </named-native-query>
-
-            <named-native-query name="find-by-id" result-class="CmsAddress">
-                <query>SELECT * FROM cms_addresses WHERE id = ?</query>
-            </named-native-query>
-
-            <named-native-query name="count" result-set-mapping="mapping-count">
-                <query>SELECT COUNT(*) AS count FROM cms_addresses</query>
-            </named-native-query>
-        </named-native-queries>
-
         <sql-result-set-mappings>
             <sql-result-set-mapping name="mapping-find-all">
                 <entity-result entity-class="CmsAddress">

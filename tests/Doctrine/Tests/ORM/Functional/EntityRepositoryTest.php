@@ -14,7 +14,6 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
-use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Persisters\Exception\InvalidOrientation;
 use Doctrine\ORM\Persisters\Exception\UnrecognizedField;
@@ -493,27 +492,6 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
         self::assertInstanceOf(CmsAddress::class, $address);
         self::assertEquals($addressId, $address->id);
-    }
-
-    public function testValidNamedQueryRetrieval(): void
-    {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8592');
-
-        $repos = $this->_em->getRepository(CmsUser::class);
-
-        $query = $repos->createNamedQuery('all');
-
-        self::assertInstanceOf(Query::class, $query);
-        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $query->getDQL());
-    }
-
-    public function testInvalidNamedQueryRetrieval(): void
-    {
-        $repos = $this->_em->getRepository(CmsUser::class);
-
-        $this->expectException(MappingException::class);
-
-        $repos->createNamedQuery('invalidNamedQuery');
     }
 
     /**

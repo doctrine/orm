@@ -16,8 +16,6 @@ use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
-use Doctrine\ORM\Exception\NamedNativeQueryNotFound;
-use Doctrine\ORM\Exception\NamedQueryNotFound;
 use Doctrine\ORM\Exception\UnknownEntityNamespace;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -28,7 +26,6 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
-use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -403,71 +400,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $this->_attributes['metadataCache']     = $cache;
         $this->_attributes['metadataCacheImpl'] = DoctrineProvider::wrap($cache);
-    }
-
-    /**
-     * Adds a named DQL query to the configuration.
-     *
-     * @param string $name The name of the query.
-     * @param string $dql  The DQL query string.
-     *
-     * @return void
-     */
-    public function addNamedQuery($name, $dql)
-    {
-        $this->_attributes['namedQueries'][$name] = $dql;
-    }
-
-    /**
-     * Gets a previously registered named DQL query.
-     *
-     * @param string $name The name of the query.
-     *
-     * @return string The DQL query.
-     *
-     * @throws NamedQueryNotFound
-     */
-    public function getNamedQuery($name)
-    {
-        if (! isset($this->_attributes['namedQueries'][$name])) {
-            throw NamedQueryNotFound::fromName($name);
-        }
-
-        return $this->_attributes['namedQueries'][$name];
-    }
-
-    /**
-     * Adds a named native query to the configuration.
-     *
-     * @param string                 $name The name of the query.
-     * @param string                 $sql  The native SQL query string.
-     * @param Query\ResultSetMapping $rsm  The ResultSetMapping used for the results of the SQL query.
-     *
-     * @return void
-     */
-    public function addNamedNativeQuery($name, $sql, Query\ResultSetMapping $rsm)
-    {
-        $this->_attributes['namedNativeQueries'][$name] = [$sql, $rsm];
-    }
-
-    /**
-     * Gets the components of a previously registered named native query.
-     *
-     * @param string $name The name of the query.
-     *
-     * @return mixed[]
-     * @psalm-return array{string, ResultSetMapping} A tuple with the first element being the SQL string and the second
-     *                                               element being the ResultSetMapping.
-     *
-     * @throws NamedNativeQueryNotFound
-     */
-    public function getNamedNativeQuery($name)
-    {
-        if (! isset($this->_attributes['namedNativeQueries'][$name])) {
-            throw NamedNativeQueryNotFound::fromName($name);
-        }
-
-        return $this->_attributes['namedNativeQueries'][$name];
     }
 
     /**

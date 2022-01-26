@@ -17,10 +17,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
-use Doctrine\ORM\Mapping\NamedNativeQueries;
-use Doctrine\ORM\Mapping\NamedNativeQuery;
-use Doctrine\ORM\Mapping\NamedQueries;
-use Doctrine\ORM\Mapping\NamedQuery;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\SqlResultSetMapping;
@@ -30,41 +26,6 @@ use Doctrine\ORM\Mapping\Table;
 /**
  * @Entity
  * @Table(name="cms_users")
- * @NamedQueries({
- *     @NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")
- * })
- * @NamedNativeQueries({
- *      @NamedNativeQuery(
- *          name           = "fetchIdAndUsernameWithResultClass",
- *          resultClass    = "CmsUser",
- *          query          = "SELECT id, username FROM cms_users WHERE username = ?"
- *      ),
- *      @NamedNativeQuery(
- *          name           = "fetchAllColumns",
- *          resultClass    = "CmsUser",
- *          query          = "SELECT * FROM cms_users WHERE username = ?"
- *      ),
- *      @NamedNativeQuery(
- *          name            = "fetchJoinedAddress",
- *          resultSetMapping= "mappingJoinedAddress",
- *          query           = "SELECT u.id, u.name, u.status, a.id AS a_id, a.country, a.zip, a.city FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?"
- *      ),
- *      @NamedNativeQuery(
- *          name            = "fetchJoinedPhonenumber",
- *          resultSetMapping= "mappingJoinedPhonenumber",
- *          query           = "SELECT id, name, status, phonenumber AS number FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?"
- *      ),
- *      @NamedNativeQuery(
- *          name            = "fetchUserPhonenumberCount",
- *          resultSetMapping= "mappingUserPhonenumberCount",
- *          query           = "SELECT id, name, status, COUNT(phonenumber) AS numphones FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username IN (?) GROUP BY id, name, status, username ORDER BY username"
- *      ),
- *      @NamedNativeQuery(
- *          name            = "fetchMultipleJoinsEntityResults",
- *          resultSetMapping= "mappingMultipleJoinsEntityResults",
- *          query           = "SELECT u.id AS u_id, u.name AS u_name, u.status AS u_status, a.id AS a_id, a.zip AS a_zip, a.country AS a_country, COUNT(p.phonenumber) AS numphones FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id INNER JOIN cms_phonenumbers p ON u.id = p.user_id GROUP BY u.id, u.name, u.status, u.username, a.id, a.zip, a.country ORDER BY u.username"
- *      ),
- * })
  * @SqlResultSetMappings({
  *      @SqlResultSetMapping(
  *          name    = "mappingJoinedAddress",
@@ -340,54 +301,6 @@ class CmsUser
     {
         $metadata->setPrimaryTable(
             ['name' => 'cms_users']
-        );
-
-        $metadata->addNamedNativeQuery(
-            [
-                'name'              => 'fetchIdAndUsernameWithResultClass',
-                'query'             => 'SELECT id, username FROM cms_users WHERE username = ?',
-                'resultClass'       => self::class,
-            ]
-        );
-
-        $metadata->addNamedNativeQuery(
-            [
-                'name'              => 'fetchAllColumns',
-                'query'             => 'SELECT * FROM cms_users WHERE username = ?',
-                'resultClass'       => self::class,
-            ]
-        );
-
-        $metadata->addNamedNativeQuery(
-            [
-                'name'              => 'fetchJoinedAddress',
-                'query'             => 'SELECT u.id, u.name, u.status, a.id AS a_id, a.country, a.zip, a.city FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?',
-                'resultSetMapping'  => 'mappingJoinedAddress',
-            ]
-        );
-
-        $metadata->addNamedNativeQuery(
-            [
-                'name'              => 'fetchJoinedPhonenumber',
-                'query'             => 'SELECT id, name, status, phonenumber AS number FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?',
-                'resultSetMapping'  => 'mappingJoinedPhonenumber',
-            ]
-        );
-
-        $metadata->addNamedNativeQuery(
-            [
-                'name'              => 'fetchUserPhonenumberCount',
-                'query'             => 'SELECT id, name, status, COUNT(phonenumber) AS numphones FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username IN (?) GROUP BY id, name, status, username ORDER BY username',
-                'resultSetMapping'  => 'mappingUserPhonenumberCount',
-            ]
-        );
-
-        $metadata->addNamedNativeQuery(
-            [
-                'name'              => 'fetchMultipleJoinsEntityResults',
-                'resultSetMapping'  => 'mappingMultipleJoinsEntityResults',
-                'query'             => 'SELECT u.id AS u_id, u.name AS u_name, u.status AS u_status, a.id AS a_id, a.zip AS a_zip, a.country AS a_country, COUNT(p.phonenumber) AS numphones FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id INNER JOIN cms_phonenumbers p ON u.id = p.user_id GROUP BY u.id, u.name, u.status, u.username, a.id, a.zip, a.country ORDER BY u.username',
-            ]
         );
 
         $metadata->addSqlResultSetMapping(

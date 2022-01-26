@@ -192,14 +192,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $class->containsForeignIdentifier = true;
             }
 
-            if (! empty($parent->namedQueries)) {
-                $this->addInheritedNamedQueries($class, $parent);
-            }
-
-            if (! empty($parent->namedNativeQueries)) {
-                $this->addInheritedNamedNativeQueries($class, $parent);
-            }
-
             if (! empty($parent->sqlResultSetMappings)) {
                 $this->addInheritedSqlResultSetMappings($class, $parent);
             }
@@ -463,43 +455,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                     $subClass->table[$indexType][$indexName] = $index;
                 }
-            }
-        }
-    }
-
-    /**
-     * Adds inherited named queries to the subclass mapping.
-     */
-    private function addInheritedNamedQueries(ClassMetadata $subClass, ClassMetadata $parentClass): void
-    {
-        foreach ($parentClass->namedQueries as $name => $query) {
-            if (! isset($subClass->namedQueries[$name])) {
-                $subClass->addNamedQuery(
-                    [
-                        'name'  => $query['name'],
-                        'query' => $query['query'],
-                    ]
-                );
-            }
-        }
-    }
-
-    /**
-     * Adds inherited named native queries to the subclass mapping.
-     */
-    private function addInheritedNamedNativeQueries(ClassMetadata $subClass, ClassMetadata $parentClass): void
-    {
-        foreach ($parentClass->namedNativeQueries as $name => $query) {
-            if (! isset($subClass->namedNativeQueries[$name])) {
-                $subClass->addNamedNativeQuery(
-                    [
-                        'name'              => $query['name'],
-                        'query'             => $query['query'],
-                        'isSelfClass'       => $query['isSelfClass'],
-                        'resultSetMapping'  => $query['resultSetMapping'],
-                        'resultClass'       => $query['isSelfClass'] ? $subClass->name : $query['resultClass'],
-                    ]
-                );
             }
         }
     }
