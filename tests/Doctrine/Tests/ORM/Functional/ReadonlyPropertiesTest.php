@@ -108,4 +108,22 @@ class ReadonlyPropertiesTest extends OrmFunctionalTestCase
         self::assertEquals($bookId, $book->getId());
         self::assertSame('Jane Austen', $book->getAuthors()[0]->getName());
     }
+
+    public function testEntityProxy(): void
+    {
+        $connection = $this->_em->getConnection();
+
+        $connection->insert('author', ['name' => 'Jane Austen']);
+        $authorId = $connection->lastInsertId();
+
+        $connection->insert('simple_book', ['title' => 'Pride and Prejudice', 'author_id' => $authorId]);
+        $bookId = $connection->lastInsertId();
+
+        $proxyBook = $this->_em->getReference(SimpleBook::class, $bookId);
+
+        self::assertSame('Pride and Prejudice', $proxyBook->title);
+        self::assertEquals($bookId, $proxyBook->getId());
+        self::assertSame('Jane Austen', $proxyBook->getAuthor()->getName());
+    }
+
 }
