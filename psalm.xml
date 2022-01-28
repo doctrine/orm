@@ -90,18 +90,6 @@
                 <file name="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php"/>
             </errorLevel>
         </MissingDependency>
-        <ParadoxicalCondition>
-            <errorLevel type="suppress">
-                <!-- See https://github.com/vimeo/psalm/issues/3381 -->
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php"/>
-            </errorLevel>
-        </ParadoxicalCondition>
-        <NullArgument>
-            <errorLevel type="suppress">
-                <!-- See https://github.com/vimeo/psalm/issues/5920 -->
-                <file name="lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php"/>
-            </errorLevel>
-        </NullArgument>
         <RedundantCastGivenDocblockType>
             <errorLevel type="suppress">
                 <!-- Can be removed once the "getMaxResults" methods of those classes have native parameter types -->
