@@ -481,6 +481,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * {@inheritdoc}
      */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->get($offset);
