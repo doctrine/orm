@@ -20,6 +20,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function debug_backtrace;
+use function sprintf;
 
 use const PHP_INT_MAX;
 
@@ -347,7 +348,10 @@ class DDC3634LastInsertIdMockingConnection extends Connection
     /** {@inheritDoc} */
     public function executeUpdate($query, array $params = [], array $types = []): int
     {
-        throw new BadMethodCallException('Call to deprecated method.');
+        throw new BadMethodCallException(sprintf(
+            'Call to deprecated method %s().',
+            __METHOD__
+        ));
     }
 
     /** {@inheritDoc} */

@@ -12,6 +12,8 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Exception;
 
+use function sprintf;
+
 /**
  * Mock class for Driver.
  */
@@ -70,7 +72,10 @@ class DriverMock implements Driver
      */
     public function getName()
     {
-        throw new BadMethodCallException('Call to deprecated method.');
+        throw new BadMethodCallException(sprintf(
+            'Call to deprecated method %s().',
+            __METHOD__
+        ));
     }
 
     /**
