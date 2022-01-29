@@ -8,6 +8,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Tools\DoctrineSetup;
 use Doctrine\ORM\UnitOfWork;
 
 /**
@@ -60,7 +61,7 @@ class EntityManagerMock extends EntityManager
             $config = new Configuration();
             $config->setProxyDir(__DIR__ . '/../Proxies');
             $config->setProxyNamespace('Doctrine\Tests\Proxies');
-            $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], false));
+            $config->setMetadataDriverImpl(DoctrineSetup::createDefaultAnnotationDriver());
         }
 
         if ($eventManager === null) {

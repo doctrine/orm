@@ -992,10 +992,6 @@
     </MissingParamType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/SimplifiedYamlDriver.php">
-    <DeprecatedClass occurrences="2">
-      <code>YamlDriver</code>
-      <code>parent::__construct($locator, $fileExtension)</code>
-    </DeprecatedClass>
     <MissingParamType occurrences="2">
       <code>$fileExtension</code>
       <code>$prefixes</code>
@@ -3437,10 +3433,9 @@
     </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Setup.php">
-    <DeprecatedClass occurrences="3">
+    <DeprecatedClass occurrences="2">
       <code>new ClassLoader('Doctrine', $directory)</code>
       <code>new ClassLoader('Symfony\Component', $directory . '/Doctrine')</code>
-      <code>new YamlDriver($paths)</code>
     </DeprecatedClass>
     <UnresolvableInclude occurrences="1">
       <code>require_once $directory . '/Doctrine/Common/ClassLoader.php'</code>
