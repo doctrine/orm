@@ -42,7 +42,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
-          extensions: "pdo, pdo_sqlite"
+          extensions: "apcu, pdo, pdo_sqlite"
           coverage: "pcov"
           ini-values: "zend.assertions=1"
 
