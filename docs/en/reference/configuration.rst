@@ -58,11 +58,6 @@ access point to ORM functionality provided by Doctrine.
     $config = DoctrineSetup::createAnnotationMetadataConfiguration($paths, $isDevMode);
     $entityManager = EntityManager::create($dbParams, $config);
 
-.. note::
-
-    The ``DoctrineSetup`` class has been introduced with ORM 2.12. It's predecessor ``Setup`` is deprecated and will
-    be removed in version 3.0.
-
 Or if you prefer XML:
 
 .. code-block:: php

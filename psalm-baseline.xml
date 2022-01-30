@@ -254,13 +254,6 @@
       <code>$className</code>
       <code>$className</code>
     </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="2">
-      <code>new CachedReader($reader, new ArrayCache())</code>
-      <code>new SimpleAnnotationReader()</code>
-    </DeprecatedClass>
-    <DeprecatedMethod occurrences="1">
-      <code>AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php')</code>
-    </DeprecatedMethod>
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(bool) $flag</code>
     </RedundantCastGivenDocblockType>

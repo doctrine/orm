@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Annotations\CachedReader;
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache as CacheDriver;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
@@ -22,19 +17,16 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
-use Doctrine\ORM\Tools\DoctrineSetup;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectRepository;
 use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
 
-use function class_exists;
 use function strtolower;
 use function trim;
 
@@ -139,48 +131,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setMetadataDriverImpl(MappingDriver $driverImpl)
     {
         $this->_attributes['metadataDriverImpl'] = $driverImpl;
-    }
-
-    /**
-     * Adds a new default annotation driver with a correctly configured annotation reader. If $useSimpleAnnotationReader
-     * is true, the notation `@Entity` will work, otherwise, the notation `@ORM\Entity` will be supported.
-     *
-     * @deprecated Use {@see DoctrineSetup::createDefaultAnnotationDriver()} instead.
-     *
-     * @param string|string[] $paths
-     * @param bool            $useSimpleAnnotationReader
-     * @psalm-param string|list<string> $paths
-     *
-     * @return AnnotationDriver
-     */
-    public function newDefaultAnnotationDriver($paths = [], $useSimpleAnnotationReader = true)
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/9443',
-            '%s is deprecated, call %s::createDefaultAnnotationDriver() instead.',
-            __METHOD__,
-            DoctrineSetup::class
-        );
-
-        AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
-
-        if ($useSimpleAnnotationReader) {
-            // Register the ORM Annotations in the AnnotationRegistry
-            $reader = new SimpleAnnotationReader();
-            $reader->addNamespace('Doctrine\ORM\Mapping');
-        } else {
-            $reader = new AnnotationReader();
-        }
-
-        if (class_exists(ArrayCache::class)) {
-            $reader = new CachedReader($reader, new ArrayCache());
-        }
-
-        return new AnnotationDriver(
-            $reader,
-            (array) $paths
-        );
     }
 
     /**
