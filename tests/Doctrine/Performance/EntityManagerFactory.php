@@ -13,6 +13,7 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Tools\DoctrineSetup;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Mocks\DriverResultMock;
 
@@ -28,10 +29,10 @@ final class EntityManagerFactory
         $config->setProxyDir(__DIR__ . '/../Tests/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([
+        $config->setMetadataDriverImpl(DoctrineSetup::createDefaultAnnotationDriver([
             realpath(__DIR__ . '/Models/Cache'),
             realpath(__DIR__ . '/Models/GeoNames'),
-        ], true));
+        ]));
 
         $entityManager = EntityManager::create(
             [
@@ -54,11 +55,11 @@ final class EntityManagerFactory
         $config->setProxyDir(__DIR__ . '/../Tests/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([
+        $config->setMetadataDriverImpl(DoctrineSetup::createDefaultAnnotationDriver([
             realpath(__DIR__ . '/Models/Cache'),
             realpath(__DIR__ . '/Models/Generic'),
             realpath(__DIR__ . '/Models/GeoNames'),
-        ], true));
+        ]));
 
         // A connection that doesn't really do anything
         $connection = new class ([], new Driver(), null, new EventManager()) extends Connection
