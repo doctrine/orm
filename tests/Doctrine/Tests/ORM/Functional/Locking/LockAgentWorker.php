@@ -9,6 +9,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\DoctrineSetup;
 use GearmanWorker;
 use InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -118,7 +119,7 @@ class LockAgentWorker
         $config->setProxyNamespace('MyProject\Proxies');
         $config->setAutoGenerateProxyClasses(true);
 
-        $annotDriver = $config->newDefaultAnnotationDriver([__DIR__ . '/../../../Models/'], false);
+        $annotDriver = DoctrineSetup::createDefaultAnnotationDriver([__DIR__ . '/../../../Models/']);
         $config->setMetadataDriverImpl($annotDriver);
         $config->setMetadataCache(new ArrayAdapter());
 

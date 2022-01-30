@@ -14,6 +14,7 @@ use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Tools\DoctrineSetup;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -84,16 +85,12 @@ abstract class OrmTestCase extends DoctrineTestCase
         $config = new Configuration();
 
         $config->setMetadataCache($metadataCache);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], false));
         $config->setQueryCache(self::getSharedQueryCache());
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
-            [
-                realpath(__DIR__ . '/Models/Cache'),
-            ],
-            false
-        ));
+        $config->setMetadataDriverImpl(DoctrineSetup::createDefaultAnnotationDriver([
+            realpath(__DIR__ . '/Models/Cache'),
+        ]));
 
         if ($this->isSecondLevelCacheEnabled) {
             $cacheConfig = new CacheConfiguration();

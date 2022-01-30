@@ -28,6 +28,7 @@ use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
+use Doctrine\ORM\Tools\DoctrineSetup;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectRepository;
 use Psr\Cache\CacheItemPoolInterface;
@@ -144,6 +145,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Adds a new default annotation driver with a correctly configured annotation reader. If $useSimpleAnnotationReader
      * is true, the notation `@Entity` will work, otherwise, the notation `@ORM\Entity` will be supported.
      *
+     * @deprecated Use {@see DoctrineSetup::createDefaultAnnotationDriver()} instead.
+     *
      * @param string|string[] $paths
      * @param bool            $useSimpleAnnotationReader
      * @psalm-param string|list<string> $paths
@@ -152,6 +155,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function newDefaultAnnotationDriver($paths = [], $useSimpleAnnotationReader = true)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9443',
+            '%s is deprecated, call %s::createDefaultAnnotationDriver() instead.',
+            __METHOD__,
+            DoctrineSetup::class
+        );
+
         AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
 
         if ($useSimpleAnnotationReader) {

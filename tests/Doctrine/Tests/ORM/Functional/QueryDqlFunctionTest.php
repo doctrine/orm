@@ -312,8 +312,18 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertArrayHasKey('now', $result);
         self::assertArrayHasKey('add', $result);
 
+        $now       = new DateTimeImmutable($result['now']);
+        $inOneUnit = $now->modify(sprintf('+%d %s', $amount, $unit));
+        if (
+            $unit === 'month'
+            && $inOneUnit->format('m') === $now->modify('+2 month')->format('m')
+            && ! $this->_em->getConnection()->getDatabasePlatform() instanceof SqlitePlatform
+        ) {
+            $inOneUnit = new DateTimeImmutable('last day of next month');
+        }
+
         self::assertEqualsWithDelta(
-            (new DateTimeImmutable($result['now']))->modify(sprintf('+%d %s', $amount, $unit)),
+            $inOneUnit,
             new DateTimeImmutable($result['add']),
             $delta
         );

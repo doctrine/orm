@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.18.1@dda05fa913f4dc6eb3386f2f7ce5a45d37a71bcb">
+<files psalm-version="4.19.0@a2ad69ae4f5ab1f7d225a8dc4e2ec2d9415ed599">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <FalsableReturnStatement occurrences="1">
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
@@ -604,6 +604,9 @@
       <code>$className</code>
       <code>$this-&gt;namespace . '\\' . $className</code>
     </LessSpecificReturnStatement>
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
     <MissingClosureParamType occurrences="2">
       <code>$joinColumn</code>
       <code>$joinColumn</code>
@@ -630,7 +633,7 @@
       <code>$fieldName</code>
       <code>$fieldName</code>
     </ParamNameMismatch>
-    <PossiblyNullArgument occurrences="8">
+    <PossiblyNullArgument occurrences="7">
       <code>$class</code>
       <code>$className</code>
       <code>$entityResult['entityClass']</code>
@@ -638,7 +641,6 @@
       <code>$mapping['targetEntity']</code>
       <code>$parentReflFields[$embeddedClass['declaredField']]</code>
       <code>$parentReflFields[$mapping['declaredField']]</code>
-      <code>$queryMapping['resultClass']</code>
     </PossiblyNullArgument>
     <PossiblyNullPropertyFetch occurrences="2">
       <code>$embeddable-&gt;reflClass-&gt;name</code>
@@ -871,7 +873,7 @@
       <code>$indexXml-&gt;options</code>
       <code>$uniqueXml-&gt;options</code>
     </PossiblyInvalidPropertyFetch>
-    <RedundantCondition occurrences="19">
+    <RedundantCondition occurrences="17">
       <code>isset($xmlRoot-&gt;cache)</code>
       <code>isset($xmlRoot-&gt;embedded)</code>
       <code>isset($xmlRoot-&gt;field)</code>
@@ -890,7 +892,7 @@
       <code>isset($xmlRoot-&gt;{'sql-result-set-mappings'})</code>
       <code>isset($xmlRoot-&gt;{'unique-constraints'})</code>
     </RedundantCondition>
-    <UndefinedInterfaceMethod occurrences="34">
+    <UndefinedInterfaceMethod occurrences="32">
       <code>addEntityListener</code>
       <code>addLifecycleCallback</code>
       <code>addSqlResultSetMapping</code>
@@ -1765,6 +1767,9 @@
     <DocblockTypeContradiction occurrences="1">
       <code>is_array($obj)</code>
     </DocblockTypeContradiction>
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>is_object($obj)</code>
     </RedundantConditionGivenDocblockType>
@@ -1958,15 +1963,36 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$this-&gt;parts</code>
     </ArgumentTypeCoercion>
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
     <PossiblyInvalidCast occurrences="1">
       <code>$this-&gt;parts[0]</code>
     </PossiblyInvalidCast>
   </file>
+  <file src="lib/Doctrine/ORM/Query/Expr/Comparison.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
+  </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Composite.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
     <PossiblyInvalidCast occurrences="2">
       <code>$part</code>
       <code>$this-&gt;parts[0]</code>
     </PossiblyInvalidCast>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/Expr/From.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/Expr/Func.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/GroupBy.php">
     <NonInvariantDocblockPropertyType occurrences="1">
@@ -1974,6 +2000,9 @@
     </NonInvariantDocblockPropertyType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Join.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
     <PossiblyNullArgument occurrences="1">
       <code>$this-&gt;conditionType</code>
     </PossiblyNullArgument>
@@ -1982,6 +2011,16 @@
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$parts</code>
     </NonInvariantDocblockPropertyType>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/Expr/Math.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/Expr/OrderBy.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Orx.php">
     <NonInvariantDocblockPropertyType occurrences="2">
@@ -1996,6 +2035,9 @@
     </NonInvariantDocblockPropertyType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Filter/SQLFilter.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
     <MissingClosureParamType occurrences="1">
       <code>$value</code>
     </MissingClosureParamType>
@@ -2230,9 +2272,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/QueryExpressionVisitor.php">
-    <RedundantCondition occurrences="1">
+    <RedundantConditionGivenDocblockType occurrences="1">
       <code>Comparison::EQ</code>
-    </RedundantCondition>
+    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/ResultSetMapping.php">
     <PropertyTypeCoercion occurrences="3">
@@ -2242,21 +2284,15 @@
     </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php">
-    <ArgumentTypeCoercion occurrences="5">
-      <code>$class</code>
+    <ArgumentTypeCoercion occurrences="4">
       <code>$class</code>
       <code>$class</code>
       <code>$renameMode</code>
       <code>$renameMode</code>
     </ArgumentTypeCoercion>
-    <PossiblyNullPropertyFetch occurrences="1">
-      <code>$classMetadata-&gt;reflClass-&gt;name</code>
-    </PossiblyNullPropertyFetch>
-    <PossiblyNullReference occurrences="3">
-      <code>getShortName</code>
-      <code>getShortName</code>
-      <code>getShortName</code>
-    </PossiblyNullReference>
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
     <DocblockTypeContradiction occurrences="6">
@@ -2626,6 +2662,9 @@
     <InvalidScalarArgument occurrences="1">
       <code>$key</code>
     </InvalidScalarArgument>
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
     <PossiblyFalseArgument occurrences="2">
       <code>$spacePos</code>
       <code>$spacePos</code>

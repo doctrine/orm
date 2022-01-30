@@ -37,7 +37,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
-          extensions: "pdo, pdo_sqlite"
+          extensions: "apcu, pdo, pdo_sqlite"
           coverage: "pcov"
           ini-values: "zend.assertions=1"
 
@@ -73,7 +73,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.0"
+          - "8.1"
         dbal-version:
           - "default"
         postgres-version:
@@ -130,7 +130,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.0"
+          - "8.1"
         dbal-version:
           - "default"
         mariadb-version:
@@ -191,7 +191,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.0"
+          - "8.1"
         dbal-version:
           - "default"
         mysql-version:

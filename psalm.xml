@@ -21,6 +21,8 @@
             <errorLevel type="suppress">
                 <!-- We're calling the deprecated method for BC here. -->
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
+                <!-- Remove on 3.0.x -->
+                <referencedMethod name="Doctrine\ORM\Configuration::newDefaultAnnotationDriver"/>
             </errorLevel>
         </DeprecatedMethod>
         <DocblockTypeContradiction>
@@ -59,24 +61,6 @@
                 <file name="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php"/>
             </errorLevel>
         </MissingDependency>
-        <NoInterfaceProperties>
-            <errorLevel type="suppress">
-                <!-- see https://github.com/vimeo/psalm/issues/7364 -->
-                <referencedClass name="BackedEnum"/>
-            </errorLevel>
-        </NoInterfaceProperties>
-        <ParadoxicalCondition>
-            <errorLevel type="suppress">
-                <!-- See https://github.com/vimeo/psalm/issues/3381 -->
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php"/>
-            </errorLevel>
-        </ParadoxicalCondition>
-        <NullArgument>
-            <errorLevel type="suppress">
-                <!-- See https://github.com/vimeo/psalm/issues/5920 -->
-                <file name="lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php"/>
-            </errorLevel>
-        </NullArgument>
         <RedundantCastGivenDocblockType>
             <errorLevel type="suppress">
                 <!-- Can be removed once the "getMaxResults" methods of those classes have native parameter types -->

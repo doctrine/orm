@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Tools\Setup;
-use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function count;
@@ -20,7 +20,7 @@ use function spl_autoload_functions;
 use function spl_autoload_unregister;
 use function sys_get_temp_dir;
 
-class SetupTest extends OrmTestCase
+class SetupTest extends TestCase
 {
     /** @var int */
     private $originalAutoloaderCount;
