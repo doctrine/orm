@@ -91,19 +91,9 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         return $this->wrapped->createQuery($dql);
     }
 
-    public function createNamedQuery(string $name): Query
-    {
-        return $this->wrapped->createNamedQuery($name);
-    }
-
     public function createNativeQuery(string $sql, ResultSetMapping $rsm): NativeQuery
     {
         return $this->wrapped->createNativeQuery($sql, $rsm);
-    }
-
-    public function createNamedNativeQuery(string $name): NativeQuery
-    {
-        return $this->wrapped->createNamedNativeQuery($name);
     }
 
     public function createQueryBuilder(): QueryBuilder

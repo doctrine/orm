@@ -16,8 +16,6 @@ use Doctrine\ORM\Mapping\FieldResult;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\NamedNativeQueries;
-use Doctrine\ORM\Mapping\NamedNativeQuery;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\SqlResultSetMapping;
 use Doctrine\ORM\Mapping\SqlResultSetMappings;
@@ -28,23 +26,6 @@ use Doctrine\ORM\Mapping\Table;
  *
  * @Entity
  * @Table(name="cms_addresses")
- * @NamedNativeQueries({
- *      @NamedNativeQuery(
- *          name                = "find-all",
- *          resultSetMapping    = "mapping-find-all",
- *          query               = "SELECT id, country, city FROM cms_addresses"
- *      ),
- *      @NamedNativeQuery(
- *          name           = "find-by-id",
- *          resultClass    = "CmsAddress",
- *          query          = "SELECT * FROM cms_addresses WHERE id = ?"
- *      ),
- *      @NamedNativeQuery(
- *          name            = "count",
- *          resultSetMapping= "mapping-count",
- *          query           = "SELECT COUNT(*) AS count FROM cms_addresses"
- *      )
- * })
  * @SqlResultSetMappings({
  *      @SqlResultSetMapping(
  *          name    = "mapping-find-all",
@@ -190,30 +171,6 @@ class CmsAddress
                 'fieldName'     => 'user',
                 'targetEntity'  => 'CmsUser',
                 'joinColumns'   => [['referencedColumnName' => 'id']],
-            ]
-        );
-
-        $metadata->addNamedNativeQuery(
-            [
-                'name'              => 'find-all',
-                'query'             => 'SELECT id, country, city FROM cms_addresses',
-                'resultSetMapping'  => 'mapping-find-all',
-            ]
-        );
-
-        $metadata->addNamedNativeQuery(
-            [
-                'name'              => 'find-by-id',
-                'query'             => 'SELECT * FROM cms_addresses WHERE id = ?',
-                'resultClass'       => self::class,
-            ]
-        );
-
-        $metadata->addNamedNativeQuery(
-            [
-                'name'              => 'count',
-                'query'             => 'SELECT COUNT(*) AS count FROM cms_addresses',
-                'resultSetMapping'  => 'mapping-count',
             ]
         );
 

@@ -30,16 +30,6 @@ class AttributeDriverTest extends AbstractMappingDriverTest
         return new AttributeDriver($paths);
     }
 
-    public function testNamedQuery(): void
-    {
-        self::markTestSkipped('AttributeDriver does not support named queries.');
-    }
-
-    public function testNamedNativeQuery(): void
-    {
-        self::markTestSkipped('AttributeDriver does not support named native queries.');
-    }
-
     public function testSqlResultSetMapping(): void
     {
         self::markTestSkipped('AttributeDriver does not support named sql resultset mapping.');

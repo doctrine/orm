@@ -13,16 +13,6 @@
             <discriminator-mapping value="employee" class="CompanyEmployee" />
         </discriminator-map>
 
-        <named-native-queries>
-            <named-native-query name="fetchAllWithResultClass" result-class="__CLASS__">
-                <query>SELECT id, name, discr FROM company_persons ORDER BY name</query>
-            </named-native-query>
-            
-            <named-native-query name="fetchAllWithSqlResultSetMapping" result-set-mapping="mappingFetchAll">
-                <query>SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name</query>
-            </named-native-query>
-        </named-native-queries>
-
         <sql-result-set-mappings>
             <sql-result-set-mapping name="mappingFetchAll">
                 <entity-result entity-class="__CLASS__" discriminator-column="discriminator">

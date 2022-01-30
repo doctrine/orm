@@ -85,7 +85,6 @@ The API of the ClassMetadataBuilder has the following methods with a fluent inte
 -   ``setTable($name)``
 -   ``addIndex(array $columns, $indexName)``
 -   ``addUniqueConstraint(array $columns, $constraintName)``
--   ``addNamedQuery($name, $dqlQuery)``
 -   ``setJoinedTableInheritance()``
 -   ``setSingleTableInheritance()``
 -   ``setDiscriminatorColumn($name, $type = 'string', $length = 255)``

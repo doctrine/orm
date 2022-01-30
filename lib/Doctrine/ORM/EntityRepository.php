@@ -91,54 +91,6 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * Creates a new Query instance based on a predefined metadata named query.
-     *
-     * @deprecated
-     *
-     * @param string $queryName
-     *
-     * @return Query
-     */
-    public function createNamedQuery($queryName)
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/8592',
-            'Named Queries are deprecated, here "%s" on entity %s. Move the query logic into EntityRepository',
-            $queryName,
-            $this->_class->name
-        );
-
-        return $this->_em->createQuery($this->_class->getNamedQuery($queryName));
-    }
-
-    /**
-     * Creates a native SQL query.
-     *
-     * @deprecated
-     *
-     * @param string $queryName
-     *
-     * @return NativeQuery
-     */
-    public function createNativeNamedQuery($queryName)
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/8592',
-            'Named Native Queries are deprecated, here "%s" on entity %s. Move the query logic into EntityRepository',
-            $queryName,
-            $this->_class->name
-        );
-
-        $queryMapping = $this->_class->getNamedNativeQuery($queryName);
-        $rsm          = new Query\ResultSetMappingBuilder($this->_em);
-        $rsm->addNamedNativeQueryMapping($this->_class, $queryMapping);
-
-        return $this->_em->createNativeQuery($queryMapping['query'], $rsm);
-    }
-
-    /**
      * Clears the repository, causing all managed entities to become detached.
      *
      * @deprecated 2.8 This method is being removed from the ORM and won't have any replacement

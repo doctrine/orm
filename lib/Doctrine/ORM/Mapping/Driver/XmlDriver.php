@@ -87,32 +87,6 @@ class XmlDriver extends FileDriver
             $metadata->enableCache($this->cacheToArray($xmlRoot->cache));
         }
 
-        // Evaluate named queries
-        if (isset($xmlRoot->{'named-queries'})) {
-            foreach ($xmlRoot->{'named-queries'}->{'named-query'} as $namedQueryElement) {
-                $metadata->addNamedQuery(
-                    [
-                        'name'  => (string) $namedQueryElement['name'],
-                        'query' => (string) $namedQueryElement['query'],
-                    ]
-                );
-            }
-        }
-
-        // Evaluate native named queries
-        if (isset($xmlRoot->{'named-native-queries'})) {
-            foreach ($xmlRoot->{'named-native-queries'}->{'named-native-query'} as $nativeQueryElement) {
-                $metadata->addNamedNativeQuery(
-                    [
-                        'name'              => isset($nativeQueryElement['name']) ? (string) $nativeQueryElement['name'] : null,
-                        'query'             => isset($nativeQueryElement->query) ? (string) $nativeQueryElement->query : null,
-                        'resultClass'       => isset($nativeQueryElement['result-class']) ? (string) $nativeQueryElement['result-class'] : null,
-                        'resultSetMapping'  => isset($nativeQueryElement['result-set-mapping']) ? (string) $nativeQueryElement['result-set-mapping'] : null,
-                    ]
-                );
-            }
-        }
-
         // Evaluate sql result set mapping
         if (isset($xmlRoot->{'sql-result-set-mappings'})) {
             foreach ($xmlRoot->{'sql-result-set-mappings'}->{'sql-result-set-mapping'} as $rsmElement) {

@@ -6,37 +6,6 @@
                           https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
     <entity name="Doctrine\Tests\Models\CMS\CmsUser" table="cms_users">
-
-        <named-queries>
-            <named-query name="all" query="SELECT u FROM __CLASS__ u"/>
-        </named-queries>
-
-        <named-native-queries>
-            <named-native-query name="fetchIdAndUsernameWithResultClass" result-class="CmsUser">
-                <query>SELECT id, username FROM cms_users WHERE username = ?</query>
-            </named-native-query>
-
-            <named-native-query name="fetchAllColumns" result-class="CmsUser">
-                <query>SELECT * FROM cms_users WHERE username = ?</query>
-            </named-native-query>
-
-            <named-native-query name="fetchJoinedAddress" result-set-mapping="mappingJoinedAddress">
-                <query>SELECT u.id, u.name, u.status, a.id AS a_id, a.country, a.zip, a.city FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?</query>
-            </named-native-query>
-
-            <named-native-query name="fetchJoinedPhonenumber" result-set-mapping="mappingJoinedPhonenumber">
-                <query>SELECT id, name, status, phonenumber AS number FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?</query>
-            </named-native-query>
-
-            <named-native-query name="fetchUserPhonenumberCount" result-set-mapping="mappingUserPhonenumberCount">
-                <query>SELECT id, name, status, COUNT(phonenumber) AS numphones FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username IN (?) GROUP BY id, name, status, username ORDER BY username</query>
-            </named-native-query>
-
-            <named-native-query name="fetchMultipleJoinsEntityResults" result-set-mapping="mappingMultipleJoinsEntityResults">
-                <query>SELECT u.id AS u_id, u.name AS u_name, u.status AS u_status, a.id AS a_id, a.zip AS a_zip, a.country AS a_country, COUNT(p.phonenumber) AS numphones FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id INNER JOIN cms_phonenumbers p ON u.id = p.user_id GROUP BY u.id, u.name, u.status, u.username, a.id, a.zip, a.country ORDER BY u.username</query>
-            </named-native-query>
-        </named-native-queries>
-
         <sql-result-set-mappings>
             <sql-result-set-mapping name="mappingJoinedAddress">
                 <entity-result entity-class="__CLASS__">

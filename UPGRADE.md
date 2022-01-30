@@ -1,5 +1,9 @@
 # Upgrade to 3.0
 
+## BC BREAK: Removed named queries
+
+All APIs related to named queries have been removed.
+
 ## BC BREAK: Remove old cache accessors and mutators from query classes
 
 The following methods have been removed from `AbstractQuery`:

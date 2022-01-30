@@ -26,8 +26,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Mapping\NamedQueries;
-use Doctrine\ORM\Mapping\NamedQuery;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\OrderBy;
@@ -74,8 +72,6 @@ use Doctrine\Tests\OrmTestCase;
 
 use function assert;
 use function count;
-use function get_debug_type;
-use function sprintf;
 use function strpos;
 use function strtolower;
 
@@ -630,64 +626,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $factory->getMetadataFor(DDC889Entity::class);
     }
 
-    public function testNamedQuery(): void
-    {
-        $driver = $this->loadDriver();
-        $class  = $this->createClassMetadata(User::class);
-
-        self::assertCount(1, $class->getNamedQueries(), sprintf('Named queries not processed correctly by driver %s', get_debug_type($driver)));
-    }
-
-    /**
-     * @group DDC-1663
-     */
-    public function testNamedNativeQuery(): void
-    {
-        $class = $this->createClassMetadata(CmsAddress::class);
-
-        //named native query
-        self::assertCount(3, $class->namedNativeQueries);
-        self::assertArrayHasKey('find-all', $class->namedNativeQueries);
-        self::assertArrayHasKey('find-by-id', $class->namedNativeQueries);
-
-        $findAllQuery = $class->getNamedNativeQuery('find-all');
-        self::assertEquals('find-all', $findAllQuery['name']);
-        self::assertEquals('mapping-find-all', $findAllQuery['resultSetMapping']);
-        self::assertEquals('SELECT id, country, city FROM cms_addresses', $findAllQuery['query']);
-
-        $findByIdQuery = $class->getNamedNativeQuery('find-by-id');
-        self::assertEquals('find-by-id', $findByIdQuery['name']);
-        self::assertEquals(CmsAddress::class, $findByIdQuery['resultClass']);
-        self::assertEquals('SELECT * FROM cms_addresses WHERE id = ?', $findByIdQuery['query']);
-
-        $countQuery = $class->getNamedNativeQuery('count');
-        self::assertEquals('count', $countQuery['name']);
-        self::assertEquals('mapping-count', $countQuery['resultSetMapping']);
-        self::assertEquals('SELECT COUNT(*) AS count FROM cms_addresses', $countQuery['query']);
-
-        // result set mapping
-        self::assertCount(3, $class->sqlResultSetMappings);
-        self::assertArrayHasKey('mapping-count', $class->sqlResultSetMappings);
-        self::assertArrayHasKey('mapping-find-all', $class->sqlResultSetMappings);
-        self::assertArrayHasKey('mapping-without-fields', $class->sqlResultSetMappings);
-
-        $findAllMapping = $class->getSqlResultSetMapping('mapping-find-all');
-        self::assertEquals('mapping-find-all', $findAllMapping['name']);
-        self::assertEquals(CmsAddress::class, $findAllMapping['entities'][0]['entityClass']);
-        self::assertEquals(['name' => 'id', 'column' => 'id'], $findAllMapping['entities'][0]['fields'][0]);
-        self::assertEquals(['name' => 'city', 'column' => 'city'], $findAllMapping['entities'][0]['fields'][1]);
-        self::assertEquals(['name' => 'country', 'column' => 'country'], $findAllMapping['entities'][0]['fields'][2]);
-
-        $withoutFieldsMapping = $class->getSqlResultSetMapping('mapping-without-fields');
-        self::assertEquals('mapping-without-fields', $withoutFieldsMapping['name']);
-        self::assertEquals(CmsAddress::class, $withoutFieldsMapping['entities'][0]['entityClass']);
-        self::assertEquals([], $withoutFieldsMapping['entities'][0]['fields']);
-
-        $countMapping = $class->getSqlResultSetMapping('mapping-count');
-        self::assertEquals('mapping-count', $countMapping['name']);
-        self::assertEquals(['name' => 'count'], $countMapping['columns'][0]);
-    }
-
     /**
      * @group DDC-1663
      */
@@ -1187,7 +1125,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
  *  indexes={@Index(name="name_idx", columns={"name"}), @Index(name="0", columns={"user_email"}), @index(name="fields", fields={"name", "email"})},
  *  options={"foo": "bar", "baz": {"key": "val"}}
  * )
- * @NamedQueries({@NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")})
  */
 #[ORM\Entity(), ORM\HasLifecycleCallbacks()]
 #[ORM\Table(name: 'cms_users', options: ['foo' => 'bar', 'baz' => ['key' => 'val']])]
@@ -1415,12 +1352,6 @@ class User
                 'sequenceName' => 'tablename_seq',
                 'allocationSize' => 100,
                 'initialValue' => 1,
-            ]
-        );
-        $metadata->addNamedQuery(
-            [
-                'name' => 'all',
-                'query' => 'SELECT u FROM __CLASS__ u',
             ]
         );
     }

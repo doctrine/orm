@@ -492,9 +492,6 @@
       <code>$class</code>
       <code>$repositoryClassName</code>
     </ArgumentTypeCoercion>
-    <DeprecatedMethod occurrences="1">
-      <code>addNamedQuery</code>
-    </DeprecatedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Builder/EntityListenerBuilder.php">
     <PossiblyNullArgument occurrences="1">
@@ -529,10 +526,6 @@
       <code>$nonSuperclassParents</code>
       <code>new $definition['class']()</code>
     </ArgumentTypeCoercion>
-    <DeprecatedMethod occurrences="2">
-      <code>addNamedNativeQuery</code>
-      <code>addNamedQuery</code>
-    </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="2">
       <code>! $definition</code>
       <code>$definition</code>
@@ -736,10 +729,6 @@
     </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php">
-    <DeprecatedMethod occurrences="2">
-      <code>addNamedNativeQuery</code>
-      <code>addNamedQuery</code>
-    </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="1">
       <code>new ReflectionClass($metadata-&gt;name)</code>
     </DocblockTypeContradiction>
@@ -896,8 +885,6 @@
       <code>isset($xmlRoot-&gt;{'lifecycle-callbacks'})</code>
       <code>isset($xmlRoot-&gt;{'many-to-many'})</code>
       <code>isset($xmlRoot-&gt;{'many-to-one'})</code>
-      <code>isset($xmlRoot-&gt;{'named-native-queries'})</code>
-      <code>isset($xmlRoot-&gt;{'named-queries'})</code>
       <code>isset($xmlRoot-&gt;{'one-to-many'})</code>
       <code>isset($xmlRoot-&gt;{'one-to-one'})</code>
       <code>isset($xmlRoot-&gt;{'sql-result-set-mappings'})</code>
@@ -906,8 +893,6 @@
     <UndefinedInterfaceMethod occurrences="34">
       <code>addEntityListener</code>
       <code>addLifecycleCallback</code>
-      <code>addNamedNativeQuery</code>
-      <code>addNamedQuery</code>
       <code>addSqlResultSetMapping</code>
       <code>enableCache</code>
       <code>getAssociationCacheDefaults</code>
@@ -990,25 +975,6 @@
       <code>$indexName</code>
       <code>$indexName</code>
     </MissingParamType>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/NamedNativeQuery.php">
-    <MissingConstructor occurrences="4">
-      <code>$name</code>
-      <code>$query</code>
-      <code>$resultClass</code>
-      <code>$resultSetMapping</code>
-    </MissingConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/NamedQueries.php">
-    <MissingConstructor occurrences="1">
-      <code>$value</code>
-    </MissingConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/NamedQuery.php">
-    <MissingConstructor occurrences="2">
-      <code>$name</code>
-      <code>$query</code>
-    </MissingConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/OneToMany.php">
     <PossiblyNullPropertyAssignmentValue occurrences="3">

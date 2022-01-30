@@ -241,11 +241,6 @@ use function sprintf;
         return $query;
     }
 
-    public function createNamedQuery(string $name): Query
-    {
-        return $this->createQuery($this->config->getNamedQuery($name));
-    }
-
     public function createNativeQuery(string $sql, ResultSetMapping $rsm): NativeQuery
     {
         $query = new NativeQuery($this);
@@ -254,13 +249,6 @@ use function sprintf;
         $query->setResultSetMapping($rsm);
 
         return $query;
-    }
-
-    public function createNamedNativeQuery(string $name): NativeQuery
-    {
-        [$sql, $rsm] = $this->config->getNamedNativeQuery($name);
-
-        return $this->createNativeQuery($sql, $rsm);
     }
 
     public function createQueryBuilder(): QueryBuilder

@@ -371,16 +371,6 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
 
 		-
-			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<T of object\\>\\:\\:addNamedNativeQuery\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
-
-		-
-			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<T of object\\>\\:\\:addNamedQuery\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
-
-		-
 			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<T of object\\>\\:\\:addSqlResultSetMapping\\(\\)\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
@@ -799,21 +789,6 @@ parameters:
 			message: "#^Unreachable statement \\- code above always terminates\\.$#"
 			count: 3
 			path: lib/Doctrine/ORM/Query/Parser.php
-
-		-
-			message: "#^Offset 'columns' on array\\{name\\: string, entities\\: array, columns\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php
-
-		-
-			message: "#^Offset 'entities' on array\\{name\\: string, entities\\: array, columns\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php
-
-		-
-			message: "#^Parameter \\#2 \\$class of static method Doctrine\\\\ORM\\\\Utility\\\\PersisterHelper\\:\\:getTypeOfColumn\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php
 
 		-
 			message: "#^Call to function is_string\\(\\) with Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node will always evaluate to false\\.$#"

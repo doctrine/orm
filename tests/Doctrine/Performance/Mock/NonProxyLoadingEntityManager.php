@@ -107,19 +107,9 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
         return $this->realEntityManager->createQuery($dql);
     }
 
-    public function createNamedQuery(string $name): Query
-    {
-        return $this->realEntityManager->createNamedQuery($name);
-    }
-
     public function createNativeQuery(string $sql, ResultSetMapping $rsm): NativeQuery
     {
         return $this->realEntityManager->createNativeQuery($sql, $rsm);
-    }
-
-    public function createNamedNativeQuery(string $name): NativeQuery
-    {
-        return $this->realEntityManager->createNamedNativeQuery($name);
     }
 
     public function createQueryBuilder(): QueryBuilder

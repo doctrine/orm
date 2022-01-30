@@ -64,7 +64,6 @@ Index
 -  :ref:`@ManyToOne <annref_manytoone>`
 -  :ref:`@ManyToMany <annref_manytomany>`
 -  :ref:`@MappedSuperclass <annref_mappedsuperclass>`
--  :ref:`@NamedNativeQuery <annref_named_native_query>`
 -  :ref:`@OneToOne <annref_onetoone>`
 -  :ref:`@OneToMany <annref_onetomany>`
 -  :ref:`@OrderBy <annref_orderby>`
@@ -879,82 +878,6 @@ Example:
         // ... fields and methods
     }
 
-.. _annref_named_native_query:
-
-@NamedNativeQuery
-~~~~~~~~~~~~~~~~~
-
-.. note::
-
-    Named Native Queries are deprecated as of version 2.9 and will be removed in ORM 3.0
-
-Is used to specify a native SQL named query.
-The NamedNativeQuery annotation can be applied to an entity or mapped superclass.
-
-Required attributes:
-
--  **name**: The name used to refer to the query with the EntityManager methods that create query objects.
--  **query**: The SQL query string.
-
-
-Optional attributes:
-
--  **resultClass**: The class of the result.
--  **resultSetMapping**: The name of a SqlResultSetMapping, as defined in metadata.
-
-
-Example:
-
-.. code-block:: php
-
-    <?php
-    /**
-     * @NamedNativeQueries({
-     *      @NamedNativeQuery(
-     *          name            = "fetchJoinedAddress",
-     *          resultSetMapping= "mappingJoinedAddress",
-     *          query           = "SELECT u.id, u.name, u.status, a.id AS a_id, a.country, a.zip, a.city FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?"
-     *      ),
-     * })
-     * @SqlResultSetMappings({
-     *      @SqlResultSetMapping(
-     *          name    = "mappingJoinedAddress",
-     *          entities= {
-     *              @EntityResult(
-     *                  entityClass = "__CLASS__",
-     *                  fields      = {
-     *                      @FieldResult(name = "id"),
-     *                      @FieldResult(name = "name"),
-     *                      @FieldResult(name = "status"),
-     *                      @FieldResult(name = "address.zip"),
-     *                      @FieldResult(name = "address.city"),
-     *                      @FieldResult(name = "address.country"),
-     *                      @FieldResult(name = "address.id", column = "a_id"),
-     *                  }
-     *              )
-     *          }
-     *      )
-     * })
-     */
-    class User
-    {
-        /** @Id @Column(type="integer") @GeneratedValue */
-        public $id;
-
-        /** @Column(type="string", length=50, nullable=true) */
-        public $status;
-
-        /** @Column(type="string", length=255, unique=true) */
-        public $username;
-
-        /** @Column(type="string", length=255) */
-        public $name;
-
-        /** @OneToOne(targetEntity="Address") */
-        public $address;
-
-        // ....
-    }
 .. _annref_onetoone:
 
 @OneToOne
@@ -1183,18 +1106,6 @@ Example:
 
     <?php
     /**
-     * @NamedNativeQueries({
-     *      @NamedNativeQuery(
-     *          name            = "fetchUserPhonenumberCount",
-     *          resultSetMapping= "mappingUserPhonenumberCount",
-     *          query           = "SELECT id, name, status, COUNT(phonenumber) AS numphones FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username IN (?) GROUP BY id, name, status, username ORDER BY username"
-     *      ),
-     *      @NamedNativeQuery(
-     *          name            = "fetchMultipleJoinsEntityResults",
-     *          resultSetMapping= "mappingMultipleJoinsEntityResults",
-     *          query           = "SELECT u.id AS u_id, u.name AS u_name, u.status AS u_status, a.id AS a_id, a.zip AS a_zip, a.country AS a_country, COUNT(p.phonenumber) AS numphones FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id INNER JOIN cms_phonenumbers p ON u.id = p.user_id GROUP BY u.id, u.name, u.status, u.username, a.id, a.zip, a.country ORDER BY u.username"
-     *      ),
-     * })
      * @SqlResultSetMappings({
      *      @SqlResultSetMapping(
      *          name    = "mappingUserPhonenumberCount",

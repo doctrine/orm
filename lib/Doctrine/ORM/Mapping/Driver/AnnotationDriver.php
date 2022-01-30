@@ -15,7 +15,6 @@ use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDr
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
-use UnexpectedValueException;
 
 use function assert;
 use function class_exists;
@@ -23,7 +22,6 @@ use function constant;
 use function count;
 use function defined;
 use function get_class;
-use function is_array;
 use function is_numeric;
 
 /**
@@ -184,22 +182,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $metadata->enableCache($cacheMap);
         }
 
-        // Evaluate NamedNativeQueries annotation
-        if (isset($classAnnotations[Mapping\NamedNativeQueries::class])) {
-            $namedNativeQueriesAnnot = $classAnnotations[Mapping\NamedNativeQueries::class];
-
-            foreach ($namedNativeQueriesAnnot->value as $namedNativeQuery) {
-                $metadata->addNamedNativeQuery(
-                    [
-                        'name'              => $namedNativeQuery->name,
-                        'query'             => $namedNativeQuery->query,
-                        'resultClass'       => $namedNativeQuery->resultClass,
-                        'resultSetMapping'  => $namedNativeQuery->resultSetMapping,
-                    ]
-                );
-            }
-        }
-
         // Evaluate SqlResultSetMappings annotation
         if (isset($classAnnotations[Mapping\SqlResultSetMappings::class])) {
             $sqlResultSetMappingsAnnot = $classAnnotations[Mapping\SqlResultSetMappings::class];
@@ -235,28 +217,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                         'name'          => $resultSetMapping->name,
                         'entities'      => $entities,
                         'columns'       => $columns,
-                    ]
-                );
-            }
-        }
-
-        // Evaluate NamedQueries annotation
-        if (isset($classAnnotations[Mapping\NamedQueries::class])) {
-            $namedQueriesAnnot = $classAnnotations[Mapping\NamedQueries::class];
-
-            if (! is_array($namedQueriesAnnot->value)) {
-                throw new UnexpectedValueException('@NamedQueries should contain an array of @NamedQuery annotations.');
-            }
-
-            foreach ($namedQueriesAnnot->value as $namedQuery) {
-                if (! ($namedQuery instanceof Mapping\NamedQuery)) {
-                    throw new UnexpectedValueException('@NamedQueries should contain an array of @NamedQuery annotations.');
-                }
-
-                $metadata->addNamedQuery(
-                    [
-                        'name'  => $namedQuery->name,
-                        'query' => $namedQuery->query,
                     ]
                 );
             }

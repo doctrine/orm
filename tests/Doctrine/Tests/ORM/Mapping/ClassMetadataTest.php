@@ -68,7 +68,6 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapOneToOne(['fieldName' => 'phonenumbers', 'targetEntity' => 'CmsAddress', 'mappedBy' => 'foo']);
         $cm->markReadOnly();
         $cm->mapField(['fieldName' => 'status', 'notInsertable' => true, 'generated' => ClassMetadata::GENERATED_ALWAYS]);
-        $cm->addNamedQuery(['name' => 'dql', 'query' => 'foo']);
 
         self::assertTrue($cm->requiresFetchAfterChange);
         self::assertEquals(1, count($cm->associationMappings));
@@ -94,7 +93,6 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals('phonenumbers', $oneOneMapping['fieldName']);
         self::assertEquals(CMS\CmsAddress::class, $oneOneMapping['targetEntity']);
         self::assertTrue($cm->isReadOnly);
-        self::assertEquals(['dql' => ['name' => 'dql', 'query' => 'foo', 'dql' => 'foo']], $cm->namedQueries);
         self::assertTrue($cm->requiresFetchAfterChange);
     }
 
@@ -630,23 +628,6 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapField(['fieldName' => '']);
     }
 
-    public function testRetrievalOfNamedQueries(): void
-    {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        self::assertCount(0, $cm->getNamedQueries());
-
-        $cm->addNamedQuery(
-            [
-                'name'  => 'userById',
-                'query' => 'SELECT u FROM __CLASS__ u WHERE u.id = ?1',
-            ]
-        );
-
-        self::assertCount(1, $cm->getNamedQueries());
-    }
-
     /**
      * @group DDC-1663
      */
@@ -669,59 +650,6 @@ class ClassMetadataTest extends OrmTestCase
         );
 
         self::assertCount(1, $cm->getSqlResultSetMappings());
-    }
-
-    public function testExistanceOfNamedQuery(): void
-    {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        $cm->addNamedQuery(
-            [
-                'name'  => 'all',
-                'query' => 'SELECT u FROM __CLASS__ u',
-            ]
-        );
-
-        self::assertTrue($cm->hasNamedQuery('all'));
-        self::assertFalse($cm->hasNamedQuery('userById'));
-    }
-
-    /**
-     * @group DDC-1663
-     */
-    public function testRetrieveOfNamedNativeQuery(): void
-    {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        $cm->addNamedNativeQuery(
-            [
-                'name'              => 'find-all',
-                'query'             => 'SELECT * FROM cms_users',
-                'resultSetMapping'  => 'result-mapping-name',
-                'resultClass'       => CMS\CmsUser::class,
-            ]
-        );
-
-        $cm->addNamedNativeQuery(
-            [
-                'name'              => 'find-by-id',
-                'query'             => 'SELECT * FROM cms_users WHERE id = ?',
-                'resultClass'       => '__CLASS__',
-                'resultSetMapping'  => 'result-mapping-name',
-            ]
-        );
-
-        $mapping = $cm->getNamedNativeQuery('find-all');
-        self::assertEquals('SELECT * FROM cms_users', $mapping['query']);
-        self::assertEquals('result-mapping-name', $mapping['resultSetMapping']);
-        self::assertEquals(CMS\CmsUser::class, $mapping['resultClass']);
-
-        $mapping = $cm->getNamedNativeQuery('find-by-id');
-        self::assertEquals('SELECT * FROM cms_users WHERE id = ?', $mapping['query']);
-        self::assertEquals('result-mapping-name', $mapping['resultSetMapping']);
-        self::assertEquals(CMS\CmsUser::class, $mapping['resultClass']);
     }
 
     /**
@@ -783,87 +711,6 @@ class ClassMetadataTest extends OrmTestCase
     }
 
     /**
-     * @group DDC-1663
-     */
-    public function testExistanceOfSqlResultSetMapping(): void
-    {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        $cm->addSqlResultSetMapping(
-            [
-                'name'      => 'find-all',
-                'entities'  => [
-                    [
-                        'entityClass'   => CMS\CmsUser::class,
-                    ],
-                ],
-            ]
-        );
-
-        self::assertTrue($cm->hasSqlResultSetMapping('find-all'));
-        self::assertFalse($cm->hasSqlResultSetMapping('find-by-id'));
-    }
-
-    /**
-     * @group DDC-1663
-     */
-    public function testExistanceOfNamedNativeQuery(): void
-    {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        $cm->addNamedNativeQuery(
-            [
-                'name'              => 'find-all',
-                'query'             => 'SELECT * FROM cms_users',
-                'resultClass'       => CMS\CmsUser::class,
-                'resultSetMapping'  => 'result-mapping-name',
-            ]
-        );
-
-        self::assertTrue($cm->hasNamedNativeQuery('find-all'));
-        self::assertFalse($cm->hasNamedNativeQuery('find-by-id'));
-    }
-
-    public function testRetrieveOfNamedQuery(): void
-    {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        $cm->addNamedQuery(
-            [
-                'name'  => 'userById',
-                'query' => 'SELECT u FROM __CLASS__ u WHERE u.id = ?1',
-            ]
-        );
-
-        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1', $cm->getNamedQuery('userById'));
-    }
-
-    /**
-     * @group DDC-1663
-     */
-    public function testRetrievalOfNamedNativeQueries(): void
-    {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        self::assertCount(0, $cm->getNamedNativeQueries());
-
-        $cm->addNamedNativeQuery(
-            [
-                'name'              => 'find-all',
-                'query'             => 'SELECT * FROM cms_users',
-                'resultClass'       => CMS\CmsUser::class,
-                'resultSetMapping'  => 'result-mapping-name',
-            ]
-        );
-
-        self::assertCount(1, $cm->getNamedNativeQueries());
-    }
-
-    /**
      * @group DDC-2451
      */
     public function testSerializeEntityListeners(): void
@@ -878,57 +725,6 @@ class ClassMetadataTest extends OrmTestCase
         $unserialize = unserialize($serialize);
 
         self::assertEquals($metadata->entityListeners, $unserialize->entityListeners);
-    }
-
-    public function testNamingCollisionNamedQueryShouldThrowException(): void
-    {
-        $this->expectException('Doctrine\ORM\Mapping\MappingException');
-        $this->expectExceptionMessage('Query named "userById" in "Doctrine\Tests\Models\CMS\CmsUser" was already declared, but it must be declared only once');
-        $cm = new ClassMetadata(CMS\CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        $cm->addNamedQuery(
-            [
-                'name'  => 'userById',
-                'query' => 'SELECT u FROM __CLASS__ u WHERE u.id = ?1',
-            ]
-        );
-
-        $cm->addNamedQuery(
-            [
-                'name'  => 'userById',
-                'query' => 'SELECT u FROM __CLASS__ u WHERE u.id = ?1',
-            ]
-        );
-    }
-
-    /**
-     * @group DDC-1663
-     */
-    public function testNamingCollisionNamedNativeQueryShouldThrowException(): void
-    {
-        $this->expectException('Doctrine\ORM\Mapping\MappingException');
-        $this->expectExceptionMessage('Query named "find-all" in "Doctrine\Tests\Models\CMS\CmsUser" was already declared, but it must be declared only once');
-        $cm = new ClassMetadata(CMS\CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        $cm->addNamedNativeQuery(
-            [
-                'name'              => 'find-all',
-                'query'             => 'SELECT * FROM cms_users',
-                'resultClass'       => CMS\CmsUser::class,
-                'resultSetMapping'  => 'result-mapping-name',
-            ]
-        );
-
-        $cm->addNamedNativeQuery(
-            [
-                'name'              => 'find-all',
-                'query'             => 'SELECT * FROM cms_users',
-                'resultClass'       => CMS\CmsUser::class,
-                'resultSetMapping'  => 'result-mapping-name',
-            ]
-        );
     }
 
     /**
@@ -1004,38 +800,6 @@ class ClassMetadataTest extends OrmTestCase
         $this->expectExceptionMessage("The target-entity Doctrine\\Tests\\Models\\CMS\\UnknownClass cannot be found in '" . CMS\CmsUser::class . "#address'.");
 
         $cm->validateAssociations();
-    }
-
-    /**
-     * @group DDC-1663
-     */
-    public function testNameIsMandatoryForNamedQueryMappingException(): void
-    {
-        $this->expectException('Doctrine\ORM\Mapping\MappingException');
-        $this->expectExceptionMessage('Query name on entity class \'Doctrine\Tests\Models\CMS\CmsUser\' is not defined.');
-        $cm = new ClassMetadata(CMS\CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->addNamedQuery(
-            ['query' => 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u']
-        );
-    }
-
-    /**
-     * @group DDC-1663
-     */
-    public function testNameIsMandatoryForNameNativeQueryMappingException(): void
-    {
-        $this->expectException('Doctrine\ORM\Mapping\MappingException');
-        $this->expectExceptionMessage('Query name on entity class \'Doctrine\Tests\Models\CMS\CmsUser\' is not defined.');
-        $cm = new ClassMetadata(CMS\CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->addNamedQuery(
-            [
-                'query'             => 'SELECT * FROM cms_users',
-                'resultClass'       => CMS\CmsUser::class,
-                'resultSetMapping'  => 'result-mapping-name',
-            ]
-        );
     }
 
     /**

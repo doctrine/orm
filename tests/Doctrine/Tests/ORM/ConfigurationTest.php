@@ -17,7 +17,6 @@ use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\PrePersist;
 use Doctrine\ORM\Mapping\QuoteStrategy;
-use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
@@ -166,29 +165,6 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->setMetadataCache($cache);
         self::assertSame($cache, $this->configuration->getMetadataCache());
         self::assertSame($cache, CacheAdapter::wrap($this->configuration->getMetadataCacheImpl()));
-    }
-
-    public function testAddGetNamedQuery(): void
-    {
-        $dql = 'SELECT u FROM User u';
-        $this->configuration->addNamedQuery('QueryName', $dql);
-        self::assertSame($dql, $this->configuration->getNamedQuery('QueryName'));
-        $this->expectException(ORMException::class);
-        $this->expectExceptionMessage('a named query');
-        $this->configuration->getNamedQuery('NonExistingQuery');
-    }
-
-    public function testAddGetNamedNativeQuery(): void
-    {
-        $sql = 'SELECT * FROM user';
-        $rsm = $this->createMock(ResultSetMapping::class);
-        $this->configuration->addNamedNativeQuery('QueryName', $sql, $rsm);
-        $fetched = $this->configuration->getNamedNativeQuery('QueryName');
-        self::assertSame($sql, $fetched[0]);
-        self::assertSame($rsm, $fetched[1]);
-        $this->expectException(ORMException::class);
-        $this->expectExceptionMessage('a named native query');
-        $this->configuration->getNamedNativeQuery('NonExistingQuery');
     }
 
     public function testAddGetCustomStringFunction(): void

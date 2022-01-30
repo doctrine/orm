@@ -12,7 +12,6 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query;
@@ -94,19 +93,6 @@ class EntityManagerTest extends OrmTestCase
         self::assertSame('SELECT foo', $query->getSql());
     }
 
-    /**
-     * @covers \Doctrine\ORM\EntityManager::createNamedNativeQuery
-     */
-    public function testCreateNamedNativeQuery(): void
-    {
-        $rsm = new ResultSetMapping();
-        $this->entityManager->getConfiguration()->addNamedNativeQuery('foo', 'SELECT foo', $rsm);
-
-        $query = $this->entityManager->createNamedNativeQuery('foo');
-
-        self::assertInstanceOf(NativeQuery::class, $query);
-    }
-
     public function testCreateQueryBuilder(): void
     {
         self::assertInstanceOf(QueryBuilder::class, $this->entityManager->createQueryBuilder());
@@ -144,18 +130,6 @@ class EntityManagerTest extends OrmTestCase
         $q = $this->entityManager->createQuery('SELECT 1');
         self::assertInstanceOf(Query::class, $q);
         self::assertEquals('SELECT 1', $q->getDql());
-    }
-
-    /**
-     * @covers Doctrine\ORM\EntityManager::createNamedQuery
-     */
-    public function testCreateNamedQuery(): void
-    {
-        $this->entityManager->getConfiguration()->addNamedQuery('foo', 'SELECT 1');
-
-        $query = $this->entityManager->createNamedQuery('foo');
-        self::assertInstanceOf(Query::class, $query);
-        self::assertEquals('SELECT 1', $query->getDql());
     }
 
     /**
