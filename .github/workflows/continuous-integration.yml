@@ -78,7 +78,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.4"
+          - "8.1"
         dbal-version:
           - "default"
         postgres-version:
@@ -139,7 +139,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.4"
+          - "8.1"
         dbal-version:
           - "default"
         mariadb-version:
@@ -205,7 +205,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.4"
+          - "8.1"
         dbal-version:
           - "default"
         mysql-version:
