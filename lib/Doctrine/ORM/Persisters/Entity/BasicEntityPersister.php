@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Persisters\Entity;
 
+use BackedEnum;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Util\ClassUtils;
@@ -1976,13 +1977,16 @@ class BasicEntityPersister implements EntityPersister
      *
      * @param mixed $value
      *
-     * @return       array<mixed>
      * @psalm-return list<mixed>
      */
-    private function getIndividualValue($value)
+    private function getIndividualValue($value): array
     {
         if (! is_object($value)) {
             return [$value];
+        }
+
+        if ($value instanceof BackedEnum) {
+            return [$value->value];
         }
 
         $valueClass = ClassUtils::getClass($value);
