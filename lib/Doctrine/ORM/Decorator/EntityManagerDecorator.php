@@ -68,10 +68,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         $this->wrapped->beginTransaction();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function wrapInTransaction(callable $func)
+    public function wrapInTransaction(callable $func): mixed
     {
         return $this->wrapped->wrapInTransaction($func);
     }
