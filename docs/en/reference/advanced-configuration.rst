@@ -12,6 +12,7 @@ steps of configuration.
 
     use Doctrine\ORM\Configuration;
     use Doctrine\ORM\EntityManager;
+    use Doctrine\ORM\Tools\DoctrineSetup;
     use Symfony\Component\Cache\Adapter\ArrayAdapter;
     use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 
@@ -27,7 +28,7 @@ steps of configuration.
 
     $config = new Configuration;
     $config->setMetadataCache($metadataCache);
-    $driverImpl = $config->newDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
+    $driverImpl = DoctrineSetup::createDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
     $config->setMetadataDriverImpl($driverImpl);
     $config->setQueryCache($queryCache);
     $config->setProxyDir('/path/to/myproject/lib/MyProject/Proxies');
@@ -129,7 +130,9 @@ the ``Doctrine\ORM\Configuration``:
 .. code-block:: php
 
     <?php
-    $driverImpl = $config->newDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
+    use Doctrine\ORM\Tools\DoctrineSetup;
+
+    $driverImpl = DoctrineSetup::createDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
     $config->setMetadataDriverImpl($driverImpl);
 
 The path information to the entities is required for the annotation
@@ -468,4 +471,3 @@ In general the required code looks like this:
     $cli->setHelperSet($helperSet);
     Doctrine\ORM\Tools\Console\ConsoleRunner::addCommands($cli);
     $cli->run();
-

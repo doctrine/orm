@@ -137,7 +137,7 @@ step:
 
     <?php
     // bootstrap.php
-    use Doctrine\ORM\Tools\Setup;
+    use Doctrine\ORM\Tools\DoctrineSetup;
     use Doctrine\ORM\EntityManager;
 
     require_once "vendor/autoload.php";
@@ -147,10 +147,10 @@ step:
     $proxyDir = null;
     $cache = null;
     $useSimpleAnnotationReader = false;
-    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
-    // or if you prefer yaml or XML
-    // $config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
-    // $config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
+    $config = DoctrineSetup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
+    // or if you prefer YAML or XML
+    // $config = DoctrineSetup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
+    // $config = DoctrineSetup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
 
     // database configuration parameters
     $conn = array(
@@ -173,7 +173,7 @@ The ``require_once`` statement sets up the class autoloading for Doctrine and
 its dependencies using Composer's autoloader.
 
 The second block consists of the instantiation of the ORM
-``Configuration`` object using the Setup helper. It assumes a bunch
+``Configuration`` object using the ``DoctrineSetup`` helper. It assumes a bunch
 of defaults that you don't have to bother about for now. You can
 read up on the configuration details in the
 :doc:`reference chapter on configuration <../reference/configuration>`.

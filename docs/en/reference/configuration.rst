@@ -41,7 +41,7 @@ access point to ORM functionality provided by Doctrine.
     // bootstrap.php
     require_once "vendor/autoload.php";
 
-    use Doctrine\ORM\Tools\Setup;
+    use Doctrine\ORM\Tools\DoctrineSetup;
     use Doctrine\ORM\EntityManager;
 
     $paths = array("/path/to/entity-files");
@@ -55,8 +55,13 @@ access point to ORM functionality provided by Doctrine.
         'dbname'   => 'foo',
     );
 
-    $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
+    $config = DoctrineSetup::createAnnotationMetadataConfiguration($paths, $isDevMode);
     $entityManager = EntityManager::create($dbParams, $config);
+
+.. note::
+
+    The ``DoctrineSetup`` class has been introduced with ORM 2.12. It's predecessor ``Setup`` is deprecated and will
+    be removed in version 3.0.
 
 Or if you prefer XML:
 
@@ -64,7 +69,7 @@ Or if you prefer XML:
 
     <?php
     $paths = array("/path/to/xml-mappings");
-    $config = Setup::createXMLMetadataConfiguration($paths, $isDevMode);
+    $config = DoctrineSetup::createXMLMetadataConfiguration($paths, $isDevMode);
     $entityManager = EntityManager::create($dbParams, $config);
 
 Or if you prefer YAML:
@@ -73,7 +78,7 @@ Or if you prefer YAML:
 
     <?php
     $paths = array("/path/to/yml-mappings");
-    $config = Setup::createYAMLMetadataConfiguration($paths, $isDevMode);
+    $config = DoctrineSetup::createYAMLMetadataConfiguration($paths, $isDevMode);
     $entityManager = EntityManager::create($dbParams, $config);
 
 .. note::
@@ -83,12 +88,17 @@ Or if you prefer YAML:
     
         "symfony/yaml": "*"
 
-Inside the ``Setup`` methods several assumptions are made:
+Inside the ``DoctrineSetup`` methods several assumptions are made:
 
--  If ``$isDevMode`` is true caching is done in memory with the ``ArrayCache``. Proxy objects are recreated on every request.
--  If ``$isDevMode`` is false, check for Caches in the order APC, Xcache, Memcache (127.0.0.1:11211), Redis (127.0.0.1:6379) unless `$cache` is passed as fourth argument.
+-  If ``$isDevMode`` is true caching is done in memory with the ``ArrayAdapter``. Proxy objects are recreated on every request.
+-  If ``$isDevMode`` is false, check for Caches in the order APCu, Redis (127.0.0.1:6379), Memcache (127.0.0.1:11211) unless `$cache` is passed as fourth argument.
 -  If ``$isDevMode`` is false, set then proxy classes have to be explicitly created through the command line.
 -  If third argument `$proxyDir` is not set, use the systems temporary directory.
+
+.. note::
+
+    In order to have ``DoctrineSetup`` configure the cache automatically, the library ``symfony/cache``
+    has to be installed as a dependency.
 
 If you want to configure Doctrine in more detail, take a look at the :doc:`Advanced Configuration <reference/advanced-configuration>` section.
 
