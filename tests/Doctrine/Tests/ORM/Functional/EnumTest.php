@@ -58,6 +58,30 @@ class EnumTest extends OrmFunctionalTestCase
         $this->assertEquals(Suit::Clubs, $fetchedCard->suit);
     }
 
+    public function testFindByEnum(): void
+    {
+        $this->setUpEntitySchema([Card::class]);
+
+        $card1       = new Card();
+        $card1->suit = Suit::Clubs;
+        $card2       = new Card();
+        $card2->suit = Suit::Hearts;
+
+        $this->_em->persist($card1);
+        $this->_em->persist($card2);
+        $this->_em->flush();
+
+        unset($card1, $card2);
+        $this->_em->clear();
+
+        /** @var list<Card> $foundCards */
+        $foundCards = $this->_em->getRepository(Card::class)->findBy(['suit' => Suit::Clubs]);
+        $this->assertNotEmpty($foundCards);
+        foreach ($foundCards as $card) {
+            $this->assertSame(Suit::Clubs, $card->suit);
+        }
+    }
+
     /**
      * @param class-string $cardClass
      *
