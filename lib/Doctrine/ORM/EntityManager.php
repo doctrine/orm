@@ -9,10 +9,12 @@ use Doctrine\Common\EventManager;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Exception\InvalidHydrationMode;
+use Doctrine\ORM\Exception\ManagerException;
 use Doctrine\ORM\Exception\MismatchedEventManager;
 use Doctrine\ORM\Exception\MissingIdentifierField;
 use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
@@ -28,16 +30,13 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Persistence\ObjectRepository;
-use InvalidArgumentException;
 use Throwable;
 
 use function array_keys;
-use function get_debug_type;
 use function is_array;
 use function is_object;
 use function is_string;
 use function ltrim;
-use function sprintf;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -179,10 +178,7 @@ use function sprintf;
         return $this->cache;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function wrapInTransaction(callable $func)
+    public function wrapInTransaction(callable $func): mixed
     {
         $this->conn->beginTransaction();
 
@@ -728,17 +724,13 @@ use function sprintf;
     /**
      * Factory method to create EntityManager instances.
      *
-     * @param mixed[]|Connection $connection   An array with the connection parameters or an existing Connection instance.
-     * @param Configuration      $config       The Configuration instance to use.
-     * @param EventManager|null  $eventManager The EventManager instance to use.
+     * @param mixed[]|Connection $connection An array with the connection parameters or an existing Connection instance.
      * @psalm-param array<string, mixed>|Connection $connection
      *
-     * @return EntityManager The created EntityManager.
-     *
-     * @throws InvalidArgumentException
-     * @throws ORMException
+     * @throws DBALException
+     * @throws ManagerException
      */
-    public static function create($connection, Configuration $config, ?EventManager $eventManager = null): EntityManager
+    public static function create(array|Connection $connection, Configuration $config, ?EventManager $eventManager = null): EntityManager
     {
         if (! $config->getMetadataDriverImpl()) {
             throw MissingMappingDriverImplementation::create();
@@ -752,28 +744,16 @@ use function sprintf;
     /**
      * Factory method to create Connection instances.
      *
-     * @param mixed[]|Connection $connection   An array with the connection parameters or an existing Connection instance.
-     * @param Configuration      $config       The Configuration instance to use.
-     * @param EventManager|null  $eventManager The EventManager instance to use.
+     * @param mixed[]|Connection $connection An array with the connection parameters or an existing Connection instance.
      * @psalm-param array<string, mixed>|Connection $connection
      *
-     * @throws InvalidArgumentException
-     * @throws ORMException
+     * @throws DBALException
+     * @throws ManagerException
      */
-    protected static function createConnection($connection, Configuration $config, ?EventManager $eventManager = null): Connection
+    protected static function createConnection(array|Connection $connection, Configuration $config, ?EventManager $eventManager = null): Connection
     {
         if (is_array($connection)) {
-            return DriverManager::getConnection($connection, $config, $eventManager ?: new EventManager());
-        }
-
-        if (! $connection instanceof Connection) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'Invalid $connection argument of type %s given%s.',
-                    get_debug_type($connection),
-                    is_object($connection) ? '' : ': "' . $connection . '"'
-                )
-            );
+            return DriverManager::getConnection($connection, $config, $eventManager ?? new EventManager());
         }
 
         if ($eventManager !== null && $connection->getEventManager() !== $eventManager) {

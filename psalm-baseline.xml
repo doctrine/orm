@@ -341,12 +341,6 @@
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(string) $hydrationMode</code>
     </RedundantCastGivenDocblockType>
-    <RedundantCondition occurrences="1">
-      <code>is_object($connection)</code>
-    </RedundantCondition>
-    <TypeDoesNotContainType occurrences="1">
-      <code>': "' . $connection . '"'</code>
-    </TypeDoesNotContainType>
     <UnsafeInstantiation occurrences="1">
       <code>new $class($this)</code>
     </UnsafeInstantiation>

@@ -18,13 +18,11 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
-use InvalidArgumentException;
 use stdClass;
 use TypeError;
 
@@ -210,16 +208,6 @@ class EntityManagerTest extends OrmTestCase
         );
 
         $this->assertSame($expectedValue, $return);
-    }
-
-    public function testCreateInvalidConnection(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid $connection argument of type int given: "1".');
-
-        $config = new Configuration();
-        $config->setMetadataDriverImpl($this->createMock(MappingDriver::class));
-        EntityManager::create(1, $config);
     }
 
     /**
