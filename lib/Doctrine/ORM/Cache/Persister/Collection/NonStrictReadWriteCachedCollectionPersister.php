@@ -11,10 +11,7 @@ use function spl_object_id;
 
 class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function afterTransactionComplete()
+    public function afterTransactionComplete(): void
     {
         if (isset($this->queuedCache['update'])) {
             foreach ($this->queuedCache['update'] as $item) {
@@ -31,18 +28,12 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
         $this->queuedCache = [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function afterTransactionRolledBack()
+    public function afterTransactionRolledBack(): void
     {
         $this->queuedCache = [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function delete(PersistentCollection $collection)
+    public function delete(PersistentCollection $collection): void
     {
         $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
         $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
@@ -52,10 +43,7 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
         $this->queuedCache['delete'][spl_object_id($collection)] = $key;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function update(PersistentCollection $collection)
+    public function update(PersistentCollection $collection): void
     {
         $isInitialized = $collection->isInitialized();
         $isDirty       = $collection->isDirty();

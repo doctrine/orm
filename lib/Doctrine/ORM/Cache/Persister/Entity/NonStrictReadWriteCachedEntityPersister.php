@@ -13,10 +13,7 @@ use function get_class;
  */
 class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function afterTransactionComplete()
+    public function afterTransactionComplete(): void
     {
         $isChanged = false;
 
@@ -47,18 +44,12 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
         $this->queuedCache = [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function afterTransactionRolledBack()
+    public function afterTransactionRolledBack(): void
     {
         $this->queuedCache = [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function delete($entity)
+    public function delete(object $entity): bool
     {
         $key     = new EntityCacheKey($this->class->rootEntityName, $this->uow->getEntityIdentifier($entity));
         $deleted = $this->persister->delete($entity);
@@ -72,20 +63,14 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
         return $deleted;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function update($entity)
+    public function update(object $entity): void
     {
         $this->persister->update($entity);
 
         $this->queuedCache['update'][] = $entity;
     }
 
-    /**
-     * @param object $entity
-     */
-    private function updateCache($entity, bool $isChanged): bool
+    private function updateCache(object $entity, bool $isChanged): bool
     {
         $class     = $this->metadataFactory->getMetadataFor(get_class($entity));
         $key       = new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($entity));
@@ -93,8 +78,8 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
         $cached    = $this->region->put($key, $entry);
         $isChanged = $isChanged || $cached;
 
-        if ($this->cacheLogger && $cached) {
-            $this->cacheLogger->entityCachePut($this->regionName, $key);
+        if ($cached) {
+            $this->cacheLogger?->entityCachePut($this->regionName, $key);
         }
 
         return $isChanged;

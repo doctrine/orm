@@ -16,11 +16,8 @@ use Doctrine\Tests\OrmTestCase;
  */
 class JoinedSubclassPersisterTest extends OrmTestCase
 {
-    /** @var JoinedSubclassPersister */
-    protected $persister;
-
-    /** @var EntityManagerMock */
-    protected $em;
+    protected JoinedSubclassPersister $persister;
+    protected EntityManagerMock $em;
 
     protected function setUp(): void
     {

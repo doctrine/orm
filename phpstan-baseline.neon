@@ -46,11 +46,6 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
 
 		-
-			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
-
-		-
 			message: "#^Parameter \\#2 \\$key of method Doctrine\\\\ORM\\\\Cache\\\\EntityHydrator\\:\\:buildCacheEntry\\(\\) expects Doctrine\\\\ORM\\\\Cache\\\\EntityCacheKey, Doctrine\\\\ORM\\\\Cache\\\\CacheKey given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
@@ -519,11 +514,6 @@ parameters:
 			message: "#^The @implements tag of class Doctrine\\\\ORM\\\\PersistentCollection describes Doctrine\\\\Common\\\\Collections\\\\Collection but the class implements\\: Doctrine\\\\Common\\\\Collections\\\\Selectable$#"
 			count: 1
 			path: lib/Doctrine/ORM/PersistentCollection.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Persisters\\\\Collection\\\\OneToManyPersister\\:\\:delete\\(\\) should return int\\|null but empty return statement found\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php
 
 		-
 			message: "#^Parameter \\#3 \\$hints of method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\AbstractHydrator\\:\\:hydrateAll\\(\\) expects array\\<string, string\\>, array\\<string, Doctrine\\\\ORM\\\\PersistentCollection\\|true\\> given\\.$#"

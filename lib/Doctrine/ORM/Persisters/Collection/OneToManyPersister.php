@@ -21,12 +21,7 @@ use function implode;
  */
 class OneToManyPersister extends AbstractCollectionPersister
 {
-    /**
-     * {@inheritdoc}
-     *
-     * @return int|null
-     */
-    public function delete(PersistentCollection $collection)
+    public function delete(PersistentCollection $collection): void
     {
         // The only valid case here is when you have weak entities. In this
         // scenario, you have @OneToMany with orphanRemoval=true, and replacing
@@ -42,15 +37,12 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
 
-        return $targetClass->isInheritanceTypeJoined()
+        $targetClass->isInheritanceTypeJoined()
             ? $this->deleteJoinedEntityCollection($collection)
             : $this->deleteEntityCollection($collection);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function update(PersistentCollection $collection)
+    public function update(PersistentCollection $collection): void
     {
         // This can never happen. One to many can only be inverse side.
         // For owning side one to many, it is required to have a join table,
@@ -58,10 +50,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         return;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function get(PersistentCollection $collection, $index)
+    public function get(PersistentCollection $collection, mixed $index): mixed
     {
         $mapping = $collection->getMapping();
 
@@ -84,10 +73,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function count(PersistentCollection $collection)
+    public function count(PersistentCollection $collection): int
     {
         $mapping   = $collection->getMapping();
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
@@ -103,7 +89,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function slice(PersistentCollection $collection, $offset, $length = null)
+    public function slice(PersistentCollection $collection, int $offset, ?int $length = null): array
     {
         $mapping   = $collection->getMapping();
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
@@ -111,10 +97,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         return $persister->getOneToManyCollection($mapping, $collection->getOwner(), $offset, $length);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function containsKey(PersistentCollection $collection, $key)
+    public function containsKey(PersistentCollection $collection, mixed $key): bool
     {
         $mapping = $collection->getMapping();
 
@@ -135,10 +118,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         return (bool) $persister->count($criteria);
     }
 
-     /**
-      * {@inheritdoc}
-      */
-    public function contains(PersistentCollection $collection, $element)
+    public function contains(PersistentCollection $collection, object $element): bool
     {
         if (! $this->isValidEntityState($element)) {
             return false;
@@ -158,7 +138,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
+    public function loadCriteria(PersistentCollection $collection, Criteria $criteria): array
     {
         throw new BadMethodCallException('Filtering a collection by Criteria is not supported by this CollectionPersister.');
     }

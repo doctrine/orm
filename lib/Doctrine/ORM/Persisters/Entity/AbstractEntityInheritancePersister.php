@@ -19,7 +19,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     /**
      * {@inheritdoc}
      */
-    protected function prepareInsertData($entity)
+    protected function prepareInsertData(object $entity): array
     {
         $data = parent::prepareInsertData($entity);
 
@@ -33,15 +33,10 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
 
     /**
      * Gets the name of the table that contains the discriminator column.
-     *
-     * @return string The table name.
      */
-    abstract protected function getDiscriminatorColumnTableName();
+    abstract protected function getDiscriminatorColumnTableName(): string;
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
+    protected function getSelectColumnSQL(string $field, ClassMetadata $class, string $alias = 'r'): string
     {
         $tableAlias   = $alias === 'r' ? '' : $alias;
         $fieldMapping = $class->fieldMappings[$field];
@@ -62,15 +57,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
         return $sql . ' AS ' . $columnAlias;
     }
 
-    /**
-     * @param string $tableAlias
-     * @param string $joinColumnName
-     * @param string $quotedColumnName
-     * @param string $type
-     *
-     * @return string
-     */
-    protected function getSelectJoinColumnSQL($tableAlias, $joinColumnName, $quotedColumnName, $type)
+    protected function getSelectJoinColumnSQL(string $tableAlias, string $joinColumnName, string $quotedColumnName, string $type): string
     {
         $columnAlias = $this->getSQLColumnAlias($joinColumnName);
 

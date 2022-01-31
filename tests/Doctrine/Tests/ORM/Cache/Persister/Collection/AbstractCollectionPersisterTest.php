@@ -23,13 +23,12 @@ use PHPUnit\Framework\MockObject\MockObject;
 abstract class AbstractCollectionPersisterTest extends OrmTestCase
 {
     /** @var Region&MockObject */
-    protected $region;
+    protected Region $region;
 
     /** @var CollectionPersister&MockObject */
-    protected $collectionPersister;
+    protected CollectionPersister $collectionPersister;
 
-    /** @var EntityManagerMock */
-    protected $em;
+    protected EntityManagerMock $em;
 
     abstract protected function createPersister(EntityManagerInterface $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister;
 

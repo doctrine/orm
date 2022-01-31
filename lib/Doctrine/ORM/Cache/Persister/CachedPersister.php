@@ -13,22 +13,13 @@ interface CachedPersister
 {
     /**
      * Perform whatever processing is encapsulated here after completion of the transaction.
-     *
-     * @return void
      */
-    public function afterTransactionComplete();
+    public function afterTransactionComplete(): void;
 
     /**
      * Perform whatever processing is encapsulated here after completion of the rolled-back.
-     *
-     * @return void
      */
-    public function afterTransactionRolledBack();
+    public function afterTransactionRolledBack(): void;
 
-    /**
-     * Gets the The region access.
-     *
-     * @return Region
-     */
-    public function getCacheRegion();
+    public function getCacheRegion(): Region;
 }

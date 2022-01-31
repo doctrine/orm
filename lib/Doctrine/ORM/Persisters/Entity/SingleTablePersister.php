@@ -22,18 +22,12 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 {
     use SQLResultCasing;
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getDiscriminatorColumnTableName()
+    protected function getDiscriminatorColumnTableName(): string
     {
         return $this->class->getTableName();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getSelectColumnsSQL()
+    protected function getSelectColumnsSQL(): string
     {
         if ($this->currentPersisterContext->selectColumnListSql !== null) {
             return $this->currentPersisterContext->selectColumnListSql;
@@ -96,7 +90,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function getInsertColumnList()
+    protected function getInsertColumnList(): array
     {
         $columns = parent::getInsertColumnList();
 
@@ -106,10 +100,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         return $columns;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getSQLTableAlias($className, $assocName = '')
+    protected function getSQLTableAlias(string $className, string $assocName = ''): string
     {
         return parent::getSQLTableAlias($this->class->rootEntityName, $assocName);
     }
@@ -117,7 +108,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function getSelectConditionSQL(array $criteria, $assoc = null)
+    protected function getSelectConditionSQL(array $criteria, ?array $assoc = null): string
     {
         $conditionSql = parent::getSelectConditionSQL($criteria, $assoc);
 
@@ -128,10 +119,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         return $conditionSql . $this->getSelectConditionDiscriminatorValueSQL();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getSelectConditionCriteriaSQL(Criteria $criteria)
+    protected function getSelectConditionCriteriaSQL(Criteria $criteria): string
     {
         $conditionSql = parent::getSelectConditionCriteriaSQL($criteria);
 
@@ -142,10 +130,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         return $conditionSql . $this->getSelectConditionDiscriminatorValueSQL();
     }
 
-    /**
-     * @return string
-     */
-    protected function getSelectConditionDiscriminatorValueSQL()
+    protected function getSelectConditionDiscriminatorValueSQL(): string
     {
         $values = [];
 
@@ -167,10 +152,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         return $tableAlias . '.' . $discColumnName . ' IN (' . $values . ')';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         // Ensure that the filters are applied to the root entity of the inheritance tree
         $targetEntity = $this->em->getClassMetadata($targetEntity->rootEntityName);

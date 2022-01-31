@@ -156,9 +156,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$cacheEntry</code>
     </ArgumentTypeCoercion>
-    <MissingReturnType occurrences="1">
-      <code>loadAll</code>
-    </MissingReturnType>
     <NoInterfaceProperties occurrences="1">
       <code>$cacheEntry-&gt;class</code>
     </NoInterfaceProperties>
@@ -1151,9 +1148,6 @@
     </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php">
-    <ImplementedReturnTypeMismatch occurrences="1">
-      <code>int|null</code>
-    </ImplementedReturnTypeMismatch>
     <PossiblyNullArgument occurrences="14">
       <code>$collection-&gt;getOwner()</code>
       <code>$collection-&gt;getOwner()</code>
@@ -1197,9 +1191,6 @@
       <code>$em-&gt;getMetadataFactory()</code>
       <code>$hints</code>
     </InvalidArgument>
-    <InvalidNullableReturnType occurrences="1">
-      <code>loadOneToOneEntity</code>
-    </InvalidNullableReturnType>
     <InvalidScalarArgument occurrences="4">
       <code>$hints</code>
       <code>[Query::HINT_REFRESH =&gt; true]</code>
@@ -1211,18 +1202,11 @@
       <code>[$params, $types]</code>
       <code>[$sqlParams, $sqlTypes]</code>
     </LessSpecificReturnStatement>
-    <MissingReturnType occurrences="1">
-      <code>loadAll</code>
-    </MissingReturnType>
     <MoreSpecificReturnType occurrences="3">
-      <code>executeInserts</code>
-      <code>expandCriteriaParameters</code>
-      <code>expandParameters</code>
+      <code>array</code>
+      <code>array</code>
+      <code>array</code>
     </MoreSpecificReturnType>
-    <NullableReturnStatement occurrences="2">
-      <code>$targetEntity</code>
-      <code>$targetEntity</code>
-    </NullableReturnStatement>
     <PossiblyNullArgument occurrences="2">
       <code>$association</code>
       <code>$type</code>
@@ -1254,17 +1238,12 @@
       <code>(bool) $handlesLimits</code>
     </RedundantCastGivenDocblockType>
   </file>
-  <file src="lib/Doctrine/ORM/Persisters/Entity/EntityPersister.php">
-    <MissingReturnType occurrences="1">
-      <code>loadAll</code>
-    </MissingReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php">
     <LessSpecificReturnStatement occurrences="1">
       <code>$postInsertIds</code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType occurrences="1">
-      <code>executeInserts</code>
+      <code>array</code>
     </MoreSpecificReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/SingleTablePersister.php">
