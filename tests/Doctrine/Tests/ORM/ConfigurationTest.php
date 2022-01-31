@@ -21,7 +21,6 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
 use Psr\Cache\CacheItemPoolInterface;
-use ReflectionClass;
 
 /**
  * Tests for the Configuration object
@@ -75,28 +74,6 @@ class ConfigurationTest extends DoctrineTestCase
         $metadataDriver = $this->createMock(MappingDriver::class);
         $this->configuration->setMetadataDriverImpl($metadataDriver);
         self::assertSame($metadataDriver, $this->configuration->getMetadataDriverImpl());
-    }
-
-    public function testNewDefaultAnnotationDriver(): void
-    {
-        $paths           = [__DIR__];
-        $reflectionClass = new ReflectionClass(ConfigurationTestAnnotationReaderChecker::class);
-
-        $annotationDriver = $this->configuration->newDefaultAnnotationDriver($paths, false);
-        $reader           = $annotationDriver->getReader();
-        $annotation       = $reader->getMethodAnnotation(
-            $reflectionClass->getMethod('namespacedAnnotationMethod'),
-            AnnotationNamespace\PrePersist::class
-        );
-        self::assertInstanceOf(AnnotationNamespace\PrePersist::class, $annotation);
-
-        $annotationDriver = $this->configuration->newDefaultAnnotationDriver($paths);
-        $reader           = $annotationDriver->getReader();
-        $annotation       = $reader->getMethodAnnotation(
-            $reflectionClass->getMethod('simpleAnnotationMethod'),
-            AnnotationNamespace\PrePersist::class
-        );
-        self::assertInstanceOf(AnnotationNamespace\PrePersist::class, $annotation);
     }
 
     public function testSetGetEntityNamespace(): void
