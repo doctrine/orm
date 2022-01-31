@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests;
 
-use Doctrine\Common\Cache\Cache;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
@@ -59,9 +58,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * The metadata cache shared between all functional tests.
      *
-     * @var Cache|CacheItemPoolInterface|null
+     * @var CacheItemPoolInterface|null
      */
-    private static $_metadataCache = null;
+    private static $metadataCache = null;
 
     /**
      * The query cache shared between all functional tests.
@@ -709,12 +708,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         // NOTE: Functional tests use their own shared metadata cache, because
         // the actual database platform used during execution has effect on some
         // metadata mapping behaviors (like the choice of the ID generation).
-        if (self::$_metadataCache === null) {
-            if (isset($GLOBALS['DOCTRINE_CACHE_IMPL'])) {
-                self::$_metadataCache = new $GLOBALS['DOCTRINE_CACHE_IMPL']();
-            } else {
-                self::$_metadataCache = new ArrayAdapter();
-            }
+        if (self::$metadataCache === null) {
+            self::$metadataCache = new ArrayAdapter();
         }
 
         if (self::$queryCache === null) {
@@ -724,12 +719,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         //FIXME: two different configs! $conn and the created entity manager have
         // different configs.
         $config = new Configuration();
-        if (self::$_metadataCache instanceof CacheItemPoolInterface) {
-            $config->setMetadataCache(self::$_metadataCache);
-        } else {
-            $config->setMetadataCacheImpl(self::$_metadataCache);
-        }
-
+        $config->setMetadataCache(self::$metadataCache);
         $config->setQueryCache(self::$queryCache);
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
