@@ -8,10 +8,6 @@ parameters:
         -
             message: '/^Variable \$offset in isset\(\) always exists and is not nullable\.$/'
             path: lib/Doctrine/ORM/PersistentCollection.php
-        -
-            message: '/^Call to an undefined method Doctrine\\Common\\Cache\\Cache::deleteAll\(\)\.$/'
-            count: 1
-            path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php
 
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'

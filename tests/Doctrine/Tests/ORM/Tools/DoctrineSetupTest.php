@@ -99,11 +99,8 @@ class DoctrineSetupTest extends TestCase
         $config = DoctrineSetup::createAnnotationMetadataConfiguration([], true, null, $cache);
 
         self::assertSame($cache, $config->getResultCache());
-        self::assertSame($cache, $config->getResultCacheImpl()->getPool());
         self::assertSame($cache, $config->getQueryCache());
-        self::assertSame($cache, $config->getQueryCacheImpl()->getPool());
         self::assertSame($cache, $config->getMetadataCache());
-        self::assertSame($cache, $config->getMetadataCacheImpl()->getPool());
     }
 
     /**
@@ -115,11 +112,8 @@ class DoctrineSetupTest extends TestCase
         $config = DoctrineSetup::createConfiguration(true, null, $cache);
 
         self::assertSame($cache, $config->getResultCache());
-        self::assertSame($cache, $config->getResultCacheImpl()->getPool());
         self::assertSame($cache, $config->getQueryCache());
-        self::assertSame($cache, $config->getQueryCacheImpl()->getPool());
         self::assertSame($cache, $config->getMetadataCache());
-        self::assertSame($cache, $config->getMetadataCacheImpl()->getPool());
     }
 }
 

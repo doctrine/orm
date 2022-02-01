@@ -1331,26 +1331,6 @@ parameters:
 			path: lib/Doctrine/ORM/QueryBuilder.php
 
 		-
-			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\ApcCache not found\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryCommand.php
-
-		-
-			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\XcacheCache not found\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryCommand.php
-
-		-
-			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\ApcCache not found\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php
-
-		-
-			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\XcacheCache not found\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$name\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Console/Command/GenerateProxiesCommand.php

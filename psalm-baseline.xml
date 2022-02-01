@@ -277,9 +277,8 @@
       <code>ProxyFactory</code>
       <code>ProxyFactory</code>
     </DeprecatedClass>
-    <DeprecatedMethod occurrences="5">
+    <DeprecatedMethod occurrences="4">
       <code>getAutoGenerateProxyClasses</code>
-      <code>getMetadataCacheImpl</code>
       <code>getProxyDir</code>
       <code>getProxyNamespace</code>
       <code>merge</code>
@@ -2688,16 +2687,6 @@
     <PossiblyNullReference occurrences="1">
       <code>evictAll</code>
     </PossiblyNullReference>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryCommand.php">
-    <DeprecatedMethod occurrences="1">
-      <code>getQueryCacheImpl</code>
-    </DeprecatedMethod>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php">
-    <DeprecatedMethod occurrences="1">
-      <code>getResultCacheImpl</code>
-    </DeprecatedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/GenerateProxiesCommand.php">
     <DeprecatedMethod occurrences="2">
