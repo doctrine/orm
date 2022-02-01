@@ -39,11 +39,13 @@ use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectRepository;
+use LogicException;
 use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
 
 use function class_exists;
 use function method_exists;
+use function sprintf;
 use function strtolower;
 use function trim;
 
@@ -162,6 +164,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function newDefaultAnnotationDriver($paths = [], $useSimpleAnnotationReader = true)
     {
+        if (! class_exists(AnnotationReader::class)) {
+            throw new LogicException(sprintf(
+                'The annotation metadata driver cannot be enabled because the "doctrine/annotations" library'
+                . ' is not installed. Please run "composer require doctrine/annotations" or choose a different'
+                . ' metadata driver.'
+            ));
+        }
+
         AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
 
         if ($useSimpleAnnotationReader) {
