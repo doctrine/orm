@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\AnnotationDriver;
-use LogicException;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -21,9 +20,6 @@ use function class_exists;
 use function constant;
 use function defined;
 use function get_class;
-use function sprintf;
-
-use const PHP_VERSION_ID;
 
 class AttributeDriver extends AnnotationDriver
 {
@@ -39,13 +35,6 @@ class AttributeDriver extends AnnotationDriver
      */
     public function __construct(array $paths)
     {
-        if (PHP_VERSION_ID < 80000) {
-            throw new LogicException(sprintf(
-                'The attribute metadata driver cannot be enabled on PHP 7. Please upgrade to PHP 8 or choose a different'
-                . ' metadata driver.'
-            ));
-        }
-
         parent::__construct(new AttributeReader(), $paths);
     }
 
