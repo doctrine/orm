@@ -11,9 +11,11 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use InvalidArgumentException;
+use LogicException;
 use Symfony\Component\Yaml\Yaml;
 
 use function array_map;
+use function class_exists;
 use function constant;
 use function defined;
 use function explode;
@@ -44,6 +46,14 @@ class YamlDriver extends FileDriver
             'https://github.com/doctrine/orm/issues/8465',
             'YAML mapping driver is deprecated and will be removed in Doctrine ORM 3.0, please migrate to attribute or XML driver.'
         );
+
+        if (! class_exists(Yaml::class)) {
+            throw new LogicException(sprintf(
+                'The YAML metadata driver cannot be enabled because the "symfony/yaml" library'
+                . ' is not installed. Please run "composer require symfony/yaml" or choose a different'
+                . ' metadata driver.'
+            ));
+        }
 
         parent::__construct($locator, $fileExtension);
     }

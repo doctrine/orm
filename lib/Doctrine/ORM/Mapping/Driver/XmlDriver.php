@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use InvalidArgumentException;
+use LogicException;
 use SimpleXMLElement;
 
 use function assert;
@@ -18,6 +19,7 @@ use function constant;
 use function count;
 use function defined;
 use function explode;
+use function extension_loaded;
 use function file_get_contents;
 use function in_array;
 use function simplexml_load_string;
@@ -39,6 +41,13 @@ class XmlDriver extends FileDriver
      */
     public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
+        if (! extension_loaded('simplexml')) {
+            throw new LogicException(sprintf(
+                'The XML metadata driver cannot be enabled because the SimpleXML PHP extension is missing.'
+                . ' Please configure PHP with SimpleXML or choose a different metadata driver.'
+            ));
+        }
+
         parent::__construct($locator, $fileExtension);
     }
 

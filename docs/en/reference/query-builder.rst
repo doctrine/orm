@@ -13,7 +13,7 @@ as you want, or just pick a preferred one.
 
     The ``QueryBuilder`` is not an abstraction of DQL, but merely a tool to dynamically build it.
     You should still use plain DQL when you can, as it is simpler and more readable.
-    More about this in the :doc:`FAQ <faq>`_.
+    More about this in the :doc:`FAQ <faq>`.
 
 Constructing a new QueryBuilder object
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
