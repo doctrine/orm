@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Tools\DoctrineSetup;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionProperty;
@@ -56,6 +57,19 @@ class DoctrineSetupTest extends TestCase
         self::assertEquals(sys_get_temp_dir(), $config->getProxyDir());
         self::assertEquals('DoctrineProxies', $config->getProxyNamespace());
         self::assertInstanceOf(AttributeDriver::class, $config->getMetadataDriverImpl());
+    }
+
+    /**
+     * @requires PHP < 8
+     */
+    public function testAttributeConfigurationFailsOnPHP7(): void
+    {
+        self::expectException(LogicException::class);
+        self::expectExceptionMessage(
+            'The attribute metadata driver cannot be enabled on PHP 7. Please upgrade to PHP 8 or choose a different metadata driver.'
+        );
+
+        DoctrineSetup::createAttributeMetadataConfiguration([], true);
     }
 
     public function testXMLConfiguration(): void

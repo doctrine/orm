@@ -10,6 +10,7 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
+use LogicException;
 use Memcached;
 use Psr\Cache\CacheItemPoolInterface;
 use Redis;
@@ -22,6 +23,7 @@ use Symfony\Component\Cache\Adapter\RedisAdapter;
 use function class_exists;
 use function extension_loaded;
 use function md5;
+use function sprintf;
 use function sys_get_temp_dir;
 
 final class DoctrineSetup
@@ -52,6 +54,14 @@ final class DoctrineSetup
         array $paths = [],
         ?CacheItemPoolInterface $cache = null
     ): AnnotationDriver {
+        if (! class_exists(AnnotationReader::class)) {
+            throw new LogicException(sprintf(
+                'The annotation metadata driver cannot be enabled because the "doctrine/annotations" library'
+                . ' is not installed. Please run "composer require doctrine/annotations" or choose a different'
+                . ' metadata driver.'
+            ));
+        }
+
         $reader = new AnnotationReader();
 
         if ($cache === null && class_exists(ArrayAdapter::class)) {
