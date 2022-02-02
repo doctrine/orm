@@ -429,7 +429,7 @@ abstract class AbstractQuery
         }
 
         try {
-            $value = $this->_em->getUnitOfWork()->getSingleIdentifierValue($value);
+            $value = $this->_em->getUnitOfWork()->getSingleIdentifierDbValue($value);
 
             if ($value === null) {
                 throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
