@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Proxy;
 
+use Closure;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Common\Proxy\Proxy;
 use Doctrine\DBAL\Connection;
@@ -30,9 +31,6 @@ use function sys_get_temp_dir;
  */
 class ProxyFactoryTest extends OrmTestCase
 {
-    /** @var Connection */
-    private $connection;
-
     /** @var UnitOfWorkMock */
     private $uowMock;
 
@@ -52,9 +50,8 @@ class ProxyFactoryTest extends OrmTestCase
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);
 
-        $this->connection = $connection;
-        $this->emMock     = EntityManagerMock::create($this->connection);
-        $this->uowMock    = new UnitOfWorkMock($this->emMock);
+        $this->emMock  = EntityManagerMock::create($connection);
+        $this->uowMock = new UnitOfWorkMock($this->emMock);
         $this->emMock->setUnitOfWork($this->uowMock);
         $this->proxyFactory = new ProxyFactory($this->emMock, sys_get_temp_dir(), 'Proxies', AbstractProxyFactory::AUTOGENERATE_ALWAYS);
     }
@@ -124,7 +121,11 @@ class ProxyFactoryTest extends OrmTestCase
      */
     public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized(): void
     {
-        $persister = $this->getMockBuilder(BasicEntityPersister::class)->setMethods(['load'])->disableOriginalConstructor()->getMock();
+        $persister = $this
+            ->getMockBuilder(BasicEntityPersister::class)
+            ->setMethods(['load', 'getClassMetadata'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
         $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, ['id' => 42]);
@@ -142,8 +143,8 @@ class ProxyFactoryTest extends OrmTestCase
         }
 
         self::assertFalse($proxy->__isInitialized());
-        self::assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
-        self::assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
+        self::assertInstanceOf(Closure::class, $proxy->__getInitializer(), 'The initializer wasn\'t removed');
+        self::assertInstanceOf(Closure::class, $proxy->__getCloner(), 'The cloner wasn\'t removed');
     }
 
     /**
@@ -151,7 +152,11 @@ class ProxyFactoryTest extends OrmTestCase
      */
     public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized(): void
     {
-        $persister = $this->getMockBuilder(BasicEntityPersister::class)->setMethods(['load'])->disableOriginalConstructor()->getMock();
+        $persister = $this
+            ->getMockBuilder(BasicEntityPersister::class)
+            ->setMethods(['load', 'getClassMetadata'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
         $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, ['id' => 42]);
@@ -169,8 +174,8 @@ class ProxyFactoryTest extends OrmTestCase
         }
 
         self::assertFalse($proxy->__isInitialized());
-        self::assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
-        self::assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
+        self::assertInstanceOf(Closure::class, $proxy->__getInitializer(), 'The initializer wasn\'t removed');
+        self::assertInstanceOf(Closure::class, $proxy->__getCloner(), 'The cloner wasn\'t removed');
     }
 
     public function testProxyClonesParentFields(): void

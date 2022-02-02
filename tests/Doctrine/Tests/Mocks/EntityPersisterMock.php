@@ -34,26 +34,18 @@ class EntityPersisterMock extends BasicEntityPersister
     /** @var bool */
     private $existsCalled = false;
 
-    /**
-     * @return mixed
-     */
-    public function addInsert($entity)
+    public function addInsert($entity): void
     {
         $this->inserts[] = $entity;
-        if (
-            $this->mockIdGeneratorType !== null && $this->mockIdGeneratorType === ClassMetadata::GENERATOR_TYPE_IDENTITY
-                || $this->class->isIdGeneratorIdentity()
-        ) {
-            $id                    = $this->identityColumnValueCounter++;
-            $this->postInsertIds[] = [
-                'generatedId' => $id,
-                'entity' => $entity,
-            ];
-
-            return $id;
+        if ($this->mockIdGeneratorType !== ClassMetadata::GENERATOR_TYPE_IDENTITY && ! $this->class->isIdGeneratorIdentity()) {
+            return;
         }
 
-        return null;
+        $id                    = $this->identityColumnValueCounter++;
+        $this->postInsertIds[] = [
+            'generatedId' => $id,
+            'entity' => $entity,
+        ];
     }
 
     /**
@@ -72,7 +64,7 @@ class EntityPersisterMock extends BasicEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function update($entity)
+    public function update($entity): void
     {
         $this->updates[] = $entity;
     }
@@ -80,38 +72,33 @@ class EntityPersisterMock extends BasicEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function exists($entity, ?Criteria $extraConditions = null)
+    public function exists($entity, ?Criteria $extraConditions = null): bool
     {
         $this->existsCalled = true;
+
+        return false;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete($entity)
+    public function delete($entity): bool
     {
         $this->deletes[] = $entity;
+
+        return true;
     }
 
-    /**
-     * @return array
-     */
     public function getInserts(): array
     {
         return $this->inserts;
     }
 
-    /**
-     * @return array
-     */
     public function getUpdates(): array
     {
         return $this->updates;
     }
 
-    /**
-     * @return array
-     */
     public function getDeletes(): array
     {
         return $this->deletes;
