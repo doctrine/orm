@@ -3131,11 +3131,9 @@ class UnitOfWork implements PropertyChangedListener
             : $class->getIdentifierValues($entity);
 
         $value = $values[$class->identifier[0]] ?? null;
+        $type  = $class->getTypeOfField($class->identifier[0]);
 
-        return $this->em->getConnection()->convertToDatabaseValue(
-            $value,
-            $class->getTypeOfField($class->identifier[0])
-        );
+        return $type ? $this->em->getConnection()->convertToDatabaseValue($value, $type) : $value;
     }
 
     /**
