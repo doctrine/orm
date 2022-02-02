@@ -15,14 +15,6 @@ use const PHP_VERSION_ID;
 
 class AttributeDriverTest extends AbstractMappingDriverTest
 {
-    /** @before */
-    public function requiresPhp8Assertion(): void
-    {
-        if (PHP_VERSION_ID < 80000) {
-            self::markTestSkipped('requires PHP 8.0');
-        }
-    }
-
     protected function loadDriver(): MappingDriver
     {
         $paths = [];
