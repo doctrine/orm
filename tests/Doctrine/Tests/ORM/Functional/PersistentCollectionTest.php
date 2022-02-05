@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\PersistentObject;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\GeneratedValue;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\Tests\Models\PersistentObject\PersistentCollectionContent;
+use Doctrine\Tests\Models\PersistentObject\PersistentCollectionHolder;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
+
+use function class_exists;
 
 class PersistentCollectionTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
+        if (! class_exists(PersistentObject::class)) {
+            self::markTestSkipped('This test requires doctrine/persistence 2');
+        }
+
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(
@@ -104,64 +105,4 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         self::assertEmpty($criteria->getMaxResults());
         self::assertEmpty($criteria->getOrderings());
     }
-}
-
-/**
- * @Entity
- */
-class PersistentCollectionHolder extends PersistentObject
-{
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     * @var int
-     */
-    protected $id;
-
-    /**
-     * @var Collection
-     * @ManyToMany(targetEntity="PersistentCollectionContent", cascade={"all"}, fetch="EXTRA_LAZY")
-     */
-    protected $collection;
-
-    public function __construct()
-    {
-        $this->collection = new ArrayCollection();
-    }
-
-    public function addElement(PersistentCollectionContent $element): void
-    {
-        $this->collection->add($element);
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getCollection(): Collection
-    {
-        return clone $this->collection;
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getRawCollection(): Collection
-    {
-        return $this->collection;
-    }
-}
-
-/**
- * @Entity
- */
-class PersistentCollectionContent extends PersistentObject
-{
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     * @var int
-     */
-    protected $id;
 }
