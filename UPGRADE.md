@@ -1,5 +1,10 @@
 # Upgrade to 2.12
 
+## Deprecate `OnClearEventArgs::getEntityClass()` and `OnClearEventArgs::clearsAllEntities()`
+
+These methods will be removed in 3.0 along with the ability to partially clear
+the entity manager.
+
 ## Deprecate `Doctrine\ORM\Configuration::newDefaultAnnotationDriver`
 
 This functionality has been moved to the new `DoctrineSetup` class. Call
