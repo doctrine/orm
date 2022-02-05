@@ -8,7 +8,6 @@ use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
 use Doctrine\Tests\OrmTestCase;
-use Exception;
 
 /**
  * Test case for testing the saving and referencing of query identifiers.
@@ -37,13 +36,9 @@ class UpdateSqlGenerationTest extends OrmTestCase
 
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed): void
     {
-        try {
-            $query = $this->entityManager->createQuery($dqlToBeTested);
-            parent::assertEquals($sqlToBeConfirmed, $query->getSql());
-            $query->free();
-        } catch (Exception $e) {
-            self::fail($e->getMessage());
-        }
+        $query = $this->entityManager->createQuery($dqlToBeTested);
+        parent::assertEquals($sqlToBeConfirmed, $query->getSql());
+        $query->free();
     }
 
     public function testSupportsQueriesWithoutWhere(): void

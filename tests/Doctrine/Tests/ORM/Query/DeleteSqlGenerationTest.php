@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\OrmTestCase;
-use Exception;
 
 /**
  * Test case for testing the saving and referencing of query identifiers.
@@ -29,13 +28,9 @@ class DeleteSqlGenerationTest extends OrmTestCase
 
     public function assertSqlGeneration(string $dqlToBeTested, string $sqlToBeConfirmed): void
     {
-        try {
-            $query = $this->entityManager->createQuery($dqlToBeTested);
-            parent::assertEquals($sqlToBeConfirmed, $query->getSql());
-            $query->free();
-        } catch (Exception $e) {
-            self::fail($e->getMessage());
-        }
+        $query = $this->entityManager->createQuery($dqlToBeTested);
+        parent::assertEquals($sqlToBeConfirmed, $query->getSql());
+        $query->free();
     }
 
     /**

@@ -20,7 +20,6 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Enums\AccessLevel;
 use Doctrine\Tests\Models\Enums\UserStatus;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function array_values;
 use function class_exists;
@@ -566,11 +565,9 @@ class QueryTest extends OrmFunctionalTestCase
             $query = $this->_em->createQuery('UPDATE CMS:CmsUser u SET u.name = ?1');
             self::assertEquals('UPDATE cms_users SET name = ?', $query->getSQL());
             $query->free();
-        } catch (Exception $e) {
-            self::fail($e->getMessage());
+        } finally {
+            $this->_em->getConfiguration()->setEntityNamespaces([]);
         }
-
-        $this->_em->getConfiguration()->setEntityNamespaces([]);
     }
 
     /**

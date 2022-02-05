@@ -9,7 +9,6 @@ use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
-use Exception;
 
 /**
  * Test case for custom AST walking and adding new joins.
@@ -28,16 +27,12 @@ class CustomTreeWalkersJoinTest extends OrmTestCase
 
     public function assertSqlGeneration(string $dqlToBeTested, string $sqlToBeConfirmed): void
     {
-        try {
-            $query = $this->em->createQuery($dqlToBeTested);
-            $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CustomTreeWalkerJoin::class])
-                  ->useQueryCache(false);
+        $query = $this->em->createQuery($dqlToBeTested);
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CustomTreeWalkerJoin::class])
+              ->useQueryCache(false);
 
-            self::assertEquals($sqlToBeConfirmed, $query->getSql());
-            $query->free();
-        } catch (Exception $e) {
-            self::fail($e->getMessage() . ' at "' . $e->getFile() . '" on line ' . $e->getLine());
-        }
+        self::assertEquals($sqlToBeConfirmed, $query->getSql());
+        $query->free();
     }
 
     public function testAddsJoin(): void
