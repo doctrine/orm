@@ -83,11 +83,11 @@ jobs:
           - "default"
         postgres-version:
           - "9.6"
-          - "13"
+          - "14"
         include:
           - php-version: "8.0"
             dbal-version: "2.13"
-            postgres-version: "13"
+            postgres-version: "14"
 
     services:
       postgres:
@@ -143,14 +143,14 @@ jobs:
         dbal-version:
           - "default"
         mariadb-version:
-          - "10.5"
+          - "10.6"
         extension:
           - "mysqli"
           - "pdo_mysql"
         include:
           - php-version: "8.0"
             dbal-version: "2.13"
-            mariadb-version: "10.5"
+            mariadb-version: "10.6"
             extension: "pdo_mysql"
 
     services:
