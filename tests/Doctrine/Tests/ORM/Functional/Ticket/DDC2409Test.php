@@ -56,8 +56,7 @@ class DDC2409Test extends OrmFunctionalTestCase
         self::assertEquals(UnitOfWork::STATE_MANAGED, $uow->getEntityState($article));
         self::assertEquals(UnitOfWork::STATE_NEW, $uow->getEntityState($user));
 
-        $em->clear(CmsUser::class);
-        $em->clear(CmsArticle::class);
+        $em->clear();
 
         $userMerged    = $em->merge($user);
         $articleMerged = $em->merge($article);

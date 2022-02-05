@@ -449,7 +449,7 @@ class DDC117Test extends OrmFunctionalTestCase
 
         $refRep = $this->_em->find(DDC117Reference::class, $idCriteria);
 
-        $this->_em->clear(DDC117Reference::class);
+        $this->_em->clear();
         $refRep = $this->_em->merge($refRep);
 
         self::assertEquals($this->article1->id(), $refRep->source()->id());

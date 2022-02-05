@@ -12,8 +12,6 @@ use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-use function get_class;
-
 /**
  * Functional Query tests.
  *
@@ -77,7 +75,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->getUnitOfWork()->markReadOnly($readOnly);
 
-        $this->_em->clear(get_class($readOnly));
+        $this->_em->clear();
 
         self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
     }

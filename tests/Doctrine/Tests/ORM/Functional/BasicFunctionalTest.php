@@ -538,10 +538,9 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->persist($address);
 
         $this->_em->flush();
-        $this->_em->clear(CmsAddress::class);
-
-        self::assertFalse($this->_em->contains($address));
-        self::assertTrue($this->_em->contains($user));
+        $userId = $user->getId();
+        $this->_em->clear();
+        $user = $this->_em->find(CmsUser::class, $userId);
 
         // Assume we only got the identifier of the address and now want to attach
         // that address to the user without actually loading it, using getReference().
@@ -1021,55 +1020,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertInstanceOf(Proxy::class, $article->user, 'It IS a proxy, ...');
         self::assertTrue($article->user->__isInitialized__, '...but its initialized!');
         $this->assertQueryCount(2);
-    }
-
-    /**
-     * @group DDC-1278
-     */
-    public function testClearWithEntityName(): void
-    {
-        $user           = new CmsUser();
-        $user->name     = 'Dominik';
-        $user->username = 'domnikl';
-        $user->status   = 'developer';
-
-        $address          = new CmsAddress();
-        $address->city    = 'Springfield';
-        $address->zip     = '12354';
-        $address->country = 'Germany';
-        $address->street  = 'Foo Street';
-        $address->user    = $user;
-        $user->address    = $address;
-
-        $article1        = new CmsArticle();
-        $article1->topic = 'Foo';
-        $article1->text  = 'Foo Text';
-
-        $article2        = new CmsArticle();
-        $article2->topic = 'Bar';
-        $article2->text  = 'Bar Text';
-
-        $user->addArticle($article1);
-        $user->addArticle($article2);
-
-        $this->_em->persist($article1);
-        $this->_em->persist($article2);
-        $this->_em->persist($address);
-        $this->_em->persist($user);
-        $this->_em->flush();
-
-        $unitOfWork = $this->_em->getUnitOfWork();
-
-        $this->_em->clear(CmsUser::class);
-
-        self::assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($user));
-        self::assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($article1));
-        self::assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($article2));
-        self::assertEquals(UnitOfWork::STATE_MANAGED, $unitOfWork->getEntityState($address));
-
-        $this->_em->clear();
-
-        self::assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($address));
     }
 
     public function testFlushManyExplicitEntities(): void

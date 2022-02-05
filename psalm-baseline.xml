@@ -283,8 +283,7 @@
       <code>getProxyNamespace</code>
       <code>merge</code>
     </DeprecatedMethod>
-    <DocblockTypeContradiction occurrences="6">
-      <code>$entityName !== null &amp;&amp; ! is_string($entityName)</code>
+    <DocblockTypeContradiction occurrences="5">
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
@@ -316,14 +315,13 @@
     <MoreSpecificReturnType occurrences="1">
       <code>EntityRepository&lt;T&gt;</code>
     </MoreSpecificReturnType>
-    <ParamNameMismatch occurrences="8">
+    <ParamNameMismatch occurrences="7">
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity</code>
-      <code>$entityName</code>
       <code>$entityName</code>
     </ParamNameMismatch>
     <PossiblyNullArgument occurrences="2">
@@ -2871,7 +2869,7 @@
     <PossiblyInvalidArrayOffset occurrences="1">
       <code>$this-&gt;identityMap[$rootClassName]</code>
     </PossiblyInvalidArrayOffset>
-    <PossiblyNullArgument occurrences="10">
+    <PossiblyNullArgument occurrences="9">
       <code>$assoc</code>
       <code>$assoc</code>
       <code>$assoc['targetEntity']</code>
@@ -2879,7 +2877,6 @@
       <code>$collection-&gt;getOwner()</code>
       <code>$collection-&gt;getOwner()</code>
       <code>$collectionToDelete-&gt;getMapping()</code>
-      <code>$entity</code>
       <code>$entity</code>
       <code>$owner</code>
     </PossiblyNullArgument>

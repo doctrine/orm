@@ -35,8 +35,6 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
-use Doctrine\Tests\Models\GeoNames\City;
-use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
@@ -405,30 +403,6 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->_unitOfWork->persist($entity);
         self::assertTrue($this->_unitOfWork->isInIdentityMap($entity));
-    }
-
-    /**
-     * @group 5849
-     * @group 5850
-     */
-    public function testPersistedEntityAndClearManager(): void
-    {
-        $entity1 = new City(123, 'London');
-        $entity2 = new Country(456, 'United Kingdom');
-
-        $this->_unitOfWork->persist($entity1);
-        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
-
-        $this->_unitOfWork->persist($entity2);
-        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity2));
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8460');
-
-        $this->_unitOfWork->clear(Country::class);
-        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
-        self::assertFalse($this->_unitOfWork->isInIdentityMap($entity2));
-        self::assertTrue($this->_unitOfWork->isScheduledForInsert($entity1));
-        self::assertFalse($this->_unitOfWork->isScheduledForInsert($entity2));
     }
 
     /**

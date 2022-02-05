@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\DBAL\LockMode;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -88,25 +87,6 @@ class EntityRepository implements ObjectRepository, Selectable
         $rsm->addRootEntityFromClassMetadata($this->_entityName, $alias);
 
         return $rsm;
-    }
-
-    /**
-     * Clears the repository, causing all managed entities to become detached.
-     *
-     * @deprecated 2.8 This method is being removed from the ORM and won't have any replacement
-     *
-     * @return void
-     */
-    public function clear()
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/8460',
-            'Calling %s() is deprecated and will not be supported in Doctrine ORM 3.0.',
-            __METHOD__
-        );
-
-        $this->_em->clear($this->_class->rootEntityName);
     }
 
     /**

@@ -27,14 +27,12 @@ use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\RepositoryFactory;
-use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Persistence\ObjectRepository;
 use Throwable;
 
 use function array_keys;
 use function is_array;
 use function is_object;
-use function is_string;
 use function ltrim;
 
 /**
@@ -448,32 +446,17 @@ use function ltrim;
      * Clears the EntityManager. All entities that are currently managed
      * by this EntityManager become detached.
      *
-     * @param string|null $entityName if given, only entities of this type will get detached
+     * @param string|null $objectName The object name (not supported).
      *
-     * @throws ORMInvalidArgumentException If a non-null non-string value is given.
-     * @throws MappingException            If a $entityName is given, but that entity is not
-     *                                     found in the mappings.
+     * @throws ORMInvalidArgumentException If the caller attempted to clear the EM partially by passing an object name.
      */
-    public function clear($entityName = null): void
+    public function clear($objectName = null): void
     {
-        if ($entityName !== null && ! is_string($entityName)) {
-            throw ORMInvalidArgumentException::invalidEntityName($entityName);
+        if ($objectName !== null) {
+            throw new ORMInvalidArgumentException('Clearing the entity manager partially if not supported.');
         }
 
-        if ($entityName !== null) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/issues/8460',
-                'Calling %s() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
-                __METHOD__
-            );
-        }
-
-        $this->unitOfWork->clear(
-            $entityName === null
-                ? null
-                : $this->metadataFactory->getMetadataFor($entityName)->getName()
-        );
+        $this->unitOfWork->clear();
     }
 
     public function close(): void
