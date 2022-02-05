@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use InvalidArgumentException;
 
@@ -224,12 +225,21 @@ class ORMInvalidArgumentException extends InvalidArgumentException
     /**
      * Used when a given entityName hasn't the good type
      *
+     * @deprecated This method will be removed in 3.0.
+     *
      * @param mixed $entityName The given entity (which shouldn't be a string)
      *
      * @return self
      */
     public static function invalidEntityName($entityName)
     {
+        Deprecation::triggerIfCalledFromOutside(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9471',
+            '%s() is deprecated',
+            __METHOD__
+        );
+
         return new self(sprintf('Entity name must be a string, %s given', get_debug_type($entityName)));
     }
 
