@@ -78,14 +78,8 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->_em->persist($routeA);
         $this->_em->persist($routeB);
 
-        $exceptionThrown = false;
-        try {
-            // exception depending on the underlying Database Driver
-            $this->_em->flush();
-        } catch (Exception $e) {
-            $exceptionThrown = true;
-        }
-
-        self::assertTrue($exceptionThrown, 'The underlying database driver throws an exception.');
+        // exception depending on the underlying Database Driver
+        $this->expectException(Exception::class);
+        $this->_em->flush();
     }
 }
