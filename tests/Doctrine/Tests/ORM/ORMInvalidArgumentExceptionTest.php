@@ -17,17 +17,6 @@ use function uniqid;
 class ORMInvalidArgumentExceptionTest extends TestCase
 {
     /**
-     * @dataProvider invalidEntityNames
-     */
-    public function testInvalidEntityName(mixed $value, string $expectedMessage): void
-    {
-        $exception = ORMInvalidArgumentException::invalidEntityName($value);
-
-        self::assertInstanceOf(ORMInvalidArgumentException::class, $exception);
-        self::assertSame($expectedMessage, $exception->getMessage());
-    }
-
-    /**
      * @psalm-return list<array{mixed, string}>
      */
     public function invalidEntityNames(): array

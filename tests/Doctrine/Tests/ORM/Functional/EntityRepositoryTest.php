@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\ParameterType;
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Exception\ORMException;
@@ -37,8 +36,6 @@ use function reset;
 
 class EntityRepositoryTest extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     protected function setUp(): void
     {
         $this->useModelSet('cms');
@@ -1112,14 +1109,5 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         foreach ($users as $user) {
             self::assertContains($user, [$user1, $user2]);
         }
-    }
-
-    public function testDeprecatedClear(): void
-    {
-        $repository = $this->_em->getRepository(CmsAddress::class);
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8460');
-
-        $repository->clear();
     }
 }

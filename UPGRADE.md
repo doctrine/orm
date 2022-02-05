@@ -1,5 +1,16 @@
 # Upgrade to 3.0
 
+## BC BREAK: Removed ability to partially clear entity manager and unit of work
+
+* Passing an argument other than `null` to `EntityManager::clear()` will raise
+  an exception.
+* The unit of work cannot be cleared partially anymore. Passing an argument to
+  `UnitOfWork::clear()` does not have any effect anymore; the unit of work is
+  cleared completely.
+* The method `EntityRepository::clear()` has been removed.
+* The methods `getEntityClass()` and `clearsAllEntities()` have been removed
+  from `OnClearEventArgs`.
+
 ## BC BREAK: Remove support for Doctrine Cache
 
 The Doctrine Cache library is not supported anymore. The following methods

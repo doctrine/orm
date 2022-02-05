@@ -18,17 +18,12 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
 use stdClass;
 use TypeError;
-
-use function get_class;
-use function random_int;
-use function uniqid;
 
 class EntityManagerTest extends OrmTestCase
 {
@@ -226,72 +221,6 @@ class EntityManagerTest extends OrmTestCase
         } catch (TypeError $ignored) {
             self::assertFalse($this->entityManager->isOpen());
         }
-    }
-
-    /**
-     * @group 6017
-     */
-    public function testClearManagerWithObject(): void
-    {
-        $entity = new Country(456, 'United Kingdom');
-
-        $this->expectException(ORMInvalidArgumentException::class);
-
-        $this->entityManager->clear($entity);
-    }
-
-    /**
-     * @group 6017
-     */
-    public function testClearManagerWithUnknownEntityName(): void
-    {
-        $this->expectException(MappingException::class);
-
-        $this->entityManager->clear(uniqid('nonExisting', true));
-    }
-
-    /**
-     * @group 6017
-     */
-    public function testClearManagerWithProxyClassName(): void
-    {
-        $proxy = $this->entityManager->getReference(Country::class, ['id' => random_int(457, 100000)]);
-
-        $entity = new Country(456, 'United Kingdom');
-
-        $this->entityManager->persist($entity);
-
-        self::assertTrue($this->entityManager->contains($entity));
-
-        $this->entityManager->clear(get_class($proxy));
-
-        self::assertFalse($this->entityManager->contains($entity));
-    }
-
-    /**
-     * @group 6017
-     */
-    public function testClearManagerWithNullValue(): void
-    {
-        $entity = new Country(456, 'United Kingdom');
-
-        $this->entityManager->persist($entity);
-
-        self::assertTrue($this->entityManager->contains($entity));
-
-        $this->entityManager->clear(null);
-
-        self::assertFalse($this->entityManager->contains($entity));
-    }
-
-    public function testDeprecatedClearWithArguments(): void
-    {
-        $entity = new Country(456, 'United Kingdom');
-        $this->entityManager->persist($entity);
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8460');
-
-        $this->entityManager->clear(Country::class);
     }
 
     public function testDeprecatedFlushWithArguments(): void

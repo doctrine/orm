@@ -146,11 +146,6 @@ parameters:
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
-			message: "#^Result of && is always false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
 			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ORM\\\\EntityManager\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
