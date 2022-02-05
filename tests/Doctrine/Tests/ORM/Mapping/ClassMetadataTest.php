@@ -32,8 +32,8 @@ use ReflectionClass;
 use function assert;
 use function count;
 use function serialize;
+use function str_contains;
 use function str_replace;
-use function strpos;
 use function strtolower;
 use function strtoupper;
 use function unserialize;
@@ -1387,7 +1387,7 @@ class MyNamespacedNamingStrategy extends DefaultNamingStrategy
      */
     public function classToTableName($className)
     {
-        if (strpos($className, '\\') !== false) {
+        if (str_contains($className, '\\')) {
             $className = str_replace('\\', '_', str_replace('Doctrine\Tests\Models\\', '', $className));
         }
 

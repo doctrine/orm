@@ -49,8 +49,8 @@ use function is_subclass_of;
 use function ltrim;
 use function method_exists;
 use function spl_object_id;
+use function str_contains;
 use function str_replace;
-use function strpos;
 use function strtolower;
 use function trait_exists;
 use function trim;
@@ -2671,7 +2671,7 @@ class ClassMetadataInfo implements ClassMetadata
     {
         if (isset($table['name'])) {
             // Split schema and table name from a table name like "myschema.mytable"
-            if (strpos($table['name'], '.') !== false) {
+            if (str_contains($table['name'], '.')) {
                 [$this->table['schema'], $table['name']] = explode('.', $table['name'], 2);
             }
 
@@ -2917,7 +2917,7 @@ class ClassMetadataInfo implements ClassMetadata
 
                         if (! isset($field['column'])) {
                             $fieldName = $field['name'];
-                            if (strpos($fieldName, '.')) {
+                            if (str_contains($fieldName, '.')) {
                                 [, $fieldName] = explode('.', $fieldName);
                             }
 
@@ -3701,7 +3701,7 @@ class ClassMetadataInfo implements ClassMetadata
             return $className;
         }
 
-        if (strpos($className, '\\') === false && $this->namespace) {
+        if (! str_contains($className, '\\') && $this->namespace) {
             return $this->namespace . '\\' . $className;
         }
 
