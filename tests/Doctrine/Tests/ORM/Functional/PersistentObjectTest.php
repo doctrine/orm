@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Persistence\PersistentObject;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\GeneratedValue;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\Tests\Models\PersistentObject\PersistentEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
+
+use function class_exists;
 
 /**
  * Test that Doctrine ORM correctly works with the ObjectManagerAware and PersistentObject
@@ -23,6 +21,10 @@ class PersistentObjectTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
+        if (! class_exists(PersistentObject::class)) {
+            self::markTestSkipped('This test requires doctrine/persistence 2');
+        }
+
         parent::setUp();
 
         try {
@@ -92,30 +94,4 @@ class PersistentObjectTest extends OrmFunctionalTestCase
         $entity = $this->_em->getReference(PersistentEntity::class, $entity->getId());
         self::assertSame($entity, $entity->getParent());
     }
-}
-
-/**
- * @Entity
- */
-class PersistentEntity extends PersistentObject
-{
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     * @var int
-     */
-    protected $id;
-
-    /**
-     * @Column(type="string")
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @ManyToOne(targetEntity="PersistentEntity")
-     * @var PersistentEntity
-     */
-    protected $parent;
 }

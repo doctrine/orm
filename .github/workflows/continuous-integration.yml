@@ -78,7 +78,7 @@ jobs:
           - "default"
         postgres-version:
           - "9.6"
-          - "13"
+          - "14"
 
     services:
       postgres:
@@ -134,7 +134,7 @@ jobs:
         dbal-version:
           - "default"
         mariadb-version:
-          - "10.5"
+          - "10.6"
         extension:
           - "mysqli"
           - "pdo_mysql"
