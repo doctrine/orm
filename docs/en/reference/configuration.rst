@@ -41,8 +41,8 @@ access point to ORM functionality provided by Doctrine.
     // bootstrap.php
     require_once "vendor/autoload.php";
 
-    use Doctrine\ORM\Tools\DoctrineSetup;
     use Doctrine\ORM\EntityManager;
+    use Doctrine\ORM\ORMSetup;
 
     $paths = array("/path/to/entity-files");
     $isDevMode = false;
@@ -55,12 +55,12 @@ access point to ORM functionality provided by Doctrine.
         'dbname'   => 'foo',
     );
 
-    $config = DoctrineSetup::createAnnotationMetadataConfiguration($paths, $isDevMode);
+    $config = ORMSetup::createAnnotationMetadataConfiguration($paths, $isDevMode);
     $entityManager = EntityManager::create($dbParams, $config);
 
 .. note::
 
-    The ``DoctrineSetup`` class has been introduced with ORM 2.12. It's predecessor ``Setup`` is deprecated and will
+    The ``ORMSetup`` class has been introduced with ORM 2.12. It's predecessor ``Setup`` is deprecated and will
     be removed in version 3.0.
 
 Or if you prefer XML:
@@ -69,7 +69,7 @@ Or if you prefer XML:
 
     <?php
     $paths = array("/path/to/xml-mappings");
-    $config = DoctrineSetup::createXMLMetadataConfiguration($paths, $isDevMode);
+    $config = ORMSetup::createXMLMetadataConfiguration($paths, $isDevMode);
     $entityManager = EntityManager::create($dbParams, $config);
 
 Or if you prefer YAML:
@@ -78,7 +78,7 @@ Or if you prefer YAML:
 
     <?php
     $paths = array("/path/to/yml-mappings");
-    $config = DoctrineSetup::createYAMLMetadataConfiguration($paths, $isDevMode);
+    $config = ORMSetup::createYAMLMetadataConfiguration($paths, $isDevMode);
     $entityManager = EntityManager::create($dbParams, $config);
 
 .. note::
@@ -88,7 +88,7 @@ Or if you prefer YAML:
     
         "symfony/yaml": "*"
 
-Inside the ``DoctrineSetup`` methods several assumptions are made:
+Inside the ``ORMSetup`` methods several assumptions are made:
 
 -  If ``$isDevMode`` is true caching is done in memory with the ``ArrayAdapter``. Proxy objects are recreated on every request.
 -  If ``$isDevMode`` is false, check for Caches in the order APCu, Redis (127.0.0.1:6379), Memcache (127.0.0.1:11211) unless `$cache` is passed as fourth argument.
@@ -97,7 +97,7 @@ Inside the ``DoctrineSetup`` methods several assumptions are made:
 
 .. note::
 
-    In order to have ``DoctrineSetup`` configure the cache automatically, the library ``symfony/cache``
+    In order to have ``ORMSetup`` configure the cache automatically, the library ``symfony/cache``
     has to be installed as a dependency.
 
 If you want to configure Doctrine in more detail, take a look at the :doc:`Advanced Configuration <reference/advanced-configuration>` section.

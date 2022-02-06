@@ -18,6 +18,7 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
+use Doctrine\ORM\ORMSetup;
 use Memcached;
 use Redis;
 use RuntimeException;
@@ -34,7 +35,7 @@ use function sys_get_temp_dir;
 /**
  * Convenience class for setting up Doctrine from different installations and configurations.
  *
- * @deprecated Use {@see DoctrineSetup} instead.
+ * @deprecated Use {@see ORMSetup} instead.
  */
 class Setup
 {
@@ -78,7 +79,7 @@ class Setup
             'https://github.com/doctrine/orm/pull/9443',
             '%s is deprecated and will be removed in Doctrine 3.0, please use %s instead.',
             self::class,
-            DoctrineSetup::class
+            ORMSetup::class
         );
 
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
@@ -105,7 +106,7 @@ class Setup
             'https://github.com/doctrine/orm/pull/9443',
             '%s is deprecated and will be removed in Doctrine 3.0, please use %s instead.',
             self::class,
-            DoctrineSetup::class
+            ORMSetup::class
         );
 
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
@@ -130,7 +131,7 @@ class Setup
             'https://github.com/doctrine/orm/pull/9443',
             '%s is deprecated and will be removed in Doctrine 3.0, please use %s instead.',
             self::class,
-            DoctrineSetup::class
+            ORMSetup::class
         );
 
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
@@ -179,7 +180,7 @@ class Setup
             'https://github.com/doctrine/orm/pull/9443',
             '%s is deprecated and will be removed in Doctrine 3.0, please use %s instead.',
             self::class,
-            DoctrineSetup::class
+            ORMSetup::class
         );
 
         $proxyDir = $proxyDir ?: sys_get_temp_dir();
