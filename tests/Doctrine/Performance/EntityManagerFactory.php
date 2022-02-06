@@ -12,8 +12,8 @@ use Doctrine\DBAL\Result;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Proxy\ProxyFactory;
-use Doctrine\ORM\Tools\DoctrineSetup;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Mocks\DriverResultMock;
 
@@ -29,7 +29,7 @@ final class EntityManagerFactory
         $config->setProxyDir(__DIR__ . '/../Tests/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
-        $config->setMetadataDriverImpl(DoctrineSetup::createDefaultAnnotationDriver([
+        $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver([
             realpath(__DIR__ . '/Models/Cache'),
             realpath(__DIR__ . '/Models/GeoNames'),
         ]));
@@ -55,7 +55,7 @@ final class EntityManagerFactory
         $config->setProxyDir(__DIR__ . '/../Tests/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
-        $config->setMetadataDriverImpl(DoctrineSetup::createDefaultAnnotationDriver([
+        $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver([
             realpath(__DIR__ . '/Models/Cache'),
             realpath(__DIR__ . '/Models/Generic'),
             realpath(__DIR__ . '/Models/GeoNames'),

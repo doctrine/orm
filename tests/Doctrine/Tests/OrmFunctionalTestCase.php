@@ -17,8 +17,8 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
-use Doctrine\ORM\Tools\DoctrineSetup;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\DbalExtensions\QueryLog;
@@ -754,7 +754,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         $config->setMetadataDriverImpl(
-            $mappingDriver ?? DoctrineSetup::createDefaultAnnotationDriver([
+            $mappingDriver ?? ORMSetup::createDefaultAnnotationDriver([
                 realpath(__DIR__ . '/Models/Cache'),
                 realpath(__DIR__ . '/Models/GeoNames'),
             ])

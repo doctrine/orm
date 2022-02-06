@@ -37,7 +37,6 @@ use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
-use Doctrine\ORM\Tools\DoctrineSetup;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectRepository;
 use LogicException;
@@ -157,7 +156,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Adds a new default annotation driver with a correctly configured annotation reader. If $useSimpleAnnotationReader
      * is true, the notation `@Entity` will work, otherwise, the notation `@ORM\Entity` will be supported.
      *
-     * @deprecated Use {@see DoctrineSetup::createDefaultAnnotationDriver()} instead.
+     * @deprecated Use {@see ORMSetup::createDefaultAnnotationDriver()} instead.
      *
      * @param string|string[] $paths
      * @param bool            $useSimpleAnnotationReader
@@ -172,7 +171,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'https://github.com/doctrine/orm/pull/9443',
             '%s is deprecated, call %s::createDefaultAnnotationDriver() instead.',
             __METHOD__,
-            DoctrineSetup::class
+            ORMSetup::class
         );
 
         if (! class_exists(AnnotationReader::class)) {

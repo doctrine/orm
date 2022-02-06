@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\ORM\Tools;
+namespace Doctrine\Tests\ORM;
 
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Configuration;
@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
-use Doctrine\ORM\Tools\DoctrineSetup;
+use Doctrine\ORM\ORMSetup;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -22,13 +22,13 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function sys_get_temp_dir;
 
-class DoctrineSetupTest extends TestCase
+class ORMSetupTest extends TestCase
 {
     use VerifyDeprecations;
 
     public function testAnnotationConfiguration(): void
     {
-        $config = DoctrineSetup::createAnnotationMetadataConfiguration([], true);
+        $config = ORMSetup::createAnnotationMetadataConfiguration([], true);
 
         self::assertInstanceOf(Configuration::class, $config);
         self::assertEquals(sys_get_temp_dir(), $config->getProxyDir());
@@ -41,7 +41,7 @@ class DoctrineSetupTest extends TestCase
         $paths           = [__DIR__];
         $reflectionClass = new ReflectionClass(AnnotatedDummy::class);
 
-        $annotationDriver = DoctrineSetup::createDefaultAnnotationDriver($paths);
+        $annotationDriver = ORMSetup::createDefaultAnnotationDriver($paths);
         $reader           = $annotationDriver->getReader();
         $annotation       = $reader->getMethodAnnotation(
             $reflectionClass->getMethod('namespacedAnnotationMethod'),
@@ -55,7 +55,7 @@ class DoctrineSetupTest extends TestCase
      */
     public function testAttributeConfiguration(): void
     {
-        $config = DoctrineSetup::createAttributeMetadataConfiguration([], true);
+        $config = ORMSetup::createAttributeMetadataConfiguration([], true);
 
         self::assertInstanceOf(Configuration::class, $config);
         self::assertEquals(sys_get_temp_dir(), $config->getProxyDir());
@@ -73,12 +73,12 @@ class DoctrineSetupTest extends TestCase
             'The attribute metadata driver cannot be enabled on PHP 7. Please upgrade to PHP 8 or choose a different metadata driver.'
         );
 
-        DoctrineSetup::createAttributeMetadataConfiguration([], true);
+        ORMSetup::createAttributeMetadataConfiguration([], true);
     }
 
     public function testXMLConfiguration(): void
     {
-        $config = DoctrineSetup::createXMLMetadataConfiguration([], true);
+        $config = ORMSetup::createXMLMetadataConfiguration([], true);
 
         self::assertInstanceOf(Configuration::class, $config);
         self::assertInstanceOf(XmlDriver::class, $config->getMetadataDriverImpl());
@@ -87,7 +87,7 @@ class DoctrineSetupTest extends TestCase
     public function testYAMLConfiguration(): void
     {
         $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8465');
-        $config = DoctrineSetup::createYAMLMetadataConfiguration([], true);
+        $config = ORMSetup::createYAMLMetadataConfiguration([], true);
 
         self::assertInstanceOf(Configuration::class, $config);
         self::assertInstanceOf(YamlDriver::class, $config->getMetadataDriverImpl());
@@ -98,7 +98,7 @@ class DoctrineSetupTest extends TestCase
      */
     public function testCacheNamespaceShouldBeGeneratedForApcu(): void
     {
-        $config = DoctrineSetup::createConfiguration(false, '/foo');
+        $config = ORMSetup::createConfiguration(false, '/foo');
         $cache  = $config->getMetadataCache();
 
         $namespaceProperty = new ReflectionProperty(AbstractAdapter::class, 'namespace');
@@ -113,7 +113,7 @@ class DoctrineSetupTest extends TestCase
      */
     public function testConfigureProxyDir(): void
     {
-        $config = DoctrineSetup::createAnnotationMetadataConfiguration([], true, '/foo');
+        $config = ORMSetup::createAnnotationMetadataConfiguration([], true, '/foo');
         self::assertEquals('/foo', $config->getProxyDir());
     }
 
@@ -123,7 +123,7 @@ class DoctrineSetupTest extends TestCase
     public function testConfigureCache(): void
     {
         $cache  = new ArrayAdapter();
-        $config = DoctrineSetup::createAnnotationMetadataConfiguration([], true, null, $cache);
+        $config = ORMSetup::createAnnotationMetadataConfiguration([], true, null, $cache);
 
         self::assertSame($cache, $config->getResultCache());
         self::assertSame($cache, $config->getResultCacheImpl()->getPool());
@@ -139,7 +139,7 @@ class DoctrineSetupTest extends TestCase
     public function testConfigureCacheCustomInstance(): void
     {
         $cache  = new ArrayAdapter();
-        $config = DoctrineSetup::createConfiguration(true, null, $cache);
+        $config = ORMSetup::createConfiguration(true, null, $cache);
 
         self::assertSame($cache, $config->getResultCache());
         self::assertSame($cache, $config->getResultCacheImpl()->getPool());

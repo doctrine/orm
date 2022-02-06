@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Tools;
+namespace Doctrine\ORM;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\PsrCachedReader;
 use Doctrine\Deprecations\Deprecation;
-use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
@@ -28,7 +27,7 @@ use function md5;
 use function sprintf;
 use function sys_get_temp_dir;
 
-final class DoctrineSetup
+final class ORMSetup
 {
     /**
      * Creates a configuration with an annotation metadata driver.
