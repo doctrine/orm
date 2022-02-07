@@ -135,14 +135,6 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         return $this->wrapped->find($className, $id, $lockMode, $lockVersion);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function flush($entity = null): void
-    {
-        $this->wrapped->flush($entity);
-    }
-
     public function getEventManager(): EventManager
     {
         return $this->wrapped->getEventManager();

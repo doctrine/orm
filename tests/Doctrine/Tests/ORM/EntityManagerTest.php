@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,7 +18,6 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
 use stdClass;
@@ -27,8 +25,6 @@ use TypeError;
 
 class EntityManagerTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     /** @var EntityManager */
     private $entityManager;
 
@@ -221,15 +217,5 @@ class EntityManagerTest extends OrmTestCase
         } catch (TypeError $ignored) {
             self::assertFalse($this->entityManager->isOpen());
         }
-    }
-
-    public function testDeprecatedFlushWithArguments(): void
-    {
-        $entity = new Country(456, 'United Kingdom');
-        $this->entityManager->persist($entity);
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8459');
-
-        $this->entityManager->flush($entity);
     }
 }

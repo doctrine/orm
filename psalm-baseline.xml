@@ -235,12 +235,6 @@
     <DeprecatedClass occurrences="1">
       <code>ProxyFactory</code>
     </DeprecatedClass>
-    <MissingParamType occurrences="1">
-      <code>$entity</code>
-    </MissingParamType>
-    <TooManyArguments occurrences="1">
-      <code>flush</code>
-    </TooManyArguments>
   </file>
   <file src="lib/Doctrine/ORM/EntityManager.php">
     <ArgumentTypeCoercion occurrences="1">

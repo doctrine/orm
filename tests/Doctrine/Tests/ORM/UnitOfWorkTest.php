@@ -10,7 +10,6 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -40,7 +39,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
 use function assert;
-use function count;
 use function gc_collect_cycles;
 use function get_class;
 use function method_exists;
@@ -52,8 +50,6 @@ use function uniqid;
  */
 class UnitOfWorkTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     /**
      * SUT
      *
@@ -239,44 +235,6 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertSame($updates[0], $item);
     }
 
-    public function testChangeTrackingNotifyIndividualCommit(): void
-    {
-        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\ORM\NotifyChangedEntity'));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedEntity', $persister);
-        $itemPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\ORM\NotifyChangedRelatedItem'));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedRelatedItem', $itemPersister);
-
-        $entity = new NotifyChangedEntity();
-        $entity->setData('thedata');
-
-        $entity2 = new NotifyChangedEntity();
-        $entity2->setData('thedata');
-
-        $this->_unitOfWork->persist($entity);
-        $this->_unitOfWork->persist($entity2);
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8459');
-
-        $this->_unitOfWork->commit($entity);
-        $this->_unitOfWork->commit();
-
-        self::assertEquals(2, count($persister->getInserts()));
-
-        $persister->reset();
-
-        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity2));
-
-        $entity->setData('newdata');
-        $entity2->setData('newdata');
-
-        $this->_unitOfWork->commit($entity);
-
-        self::assertTrue($this->_unitOfWork->isScheduledForDirtyCheck($entity2));
-        self::assertEquals(['data' => ['thedata', 'newdata']], $this->_unitOfWork->getEntityChangeSet($entity2));
-        self::assertFalse($this->_unitOfWork->isScheduledForDirtyCheck($entity));
-        self::assertEquals([], $this->_unitOfWork->getEntityChangeSet($entity));
-    }
-
     public function testGetEntityStateOnVersionedEntityWithAssignedIdentifier(): void
     {
         $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(VersionedAssignedIdentifierEntity::class));
@@ -403,53 +361,6 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->_unitOfWork->persist($entity);
         self::assertTrue($this->_unitOfWork->isInIdentityMap($entity));
-    }
-
-    /**
-     * @group #5579
-     */
-    public function testEntityChangeSetIsNotClearedAfterFlushOnSingleEntity(): void
-    {
-        $entity1 = new NotifyChangedEntity();
-        $entity2 = new NotifyChangedEntity();
-
-        $entity1->setData('thedata');
-        $entity2->setData('thedata');
-
-        $this->_unitOfWork->persist($entity1);
-        $this->_unitOfWork->persist($entity2);
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8459');
-
-        $this->_unitOfWork->commit($entity1);
-        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity1));
-        self::assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
-    }
-
-    /**
-     * @group #5579
-     */
-    public function testEntityChangeSetIsNotClearedAfterFlushOnArrayOfEntities(): void
-    {
-        $entity1 = new NotifyChangedEntity();
-        $entity2 = new NotifyChangedEntity();
-        $entity3 = new NotifyChangedEntity();
-
-        $entity1->setData('thedata');
-        $entity2->setData('thedata');
-        $entity3->setData('thedata');
-
-        $this->_unitOfWork->persist($entity1);
-        $this->_unitOfWork->persist($entity2);
-        $this->_unitOfWork->persist($entity3);
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8459');
-
-        $this->_unitOfWork->commit([$entity1, $entity3]);
-
-        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity1));
-        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity3));
-        self::assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
     }
 
     /**

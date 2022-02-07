@@ -257,26 +257,14 @@ use function ltrim;
      * If an entity is explicitly passed to this method only this entity and
      * the cascade-persist semantics + scheduled inserts/removals are synchronized.
      *
-     * @param object|mixed[]|null $entity
-     *
      * @throws OptimisticLockException If a version check on an entity that
      * makes use of optimistic locking fails.
      * @throws ORMException
      */
-    public function flush($entity = null): void
+    public function flush(): void
     {
-        if ($entity !== null) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/issues/8459',
-                'Calling %s() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
-                __METHOD__
-            );
-        }
-
         $this->errorIfClosed();
-
-        $this->unitOfWork->commit($entity);
+        $this->unitOfWork->commit();
     }
 
     /**
