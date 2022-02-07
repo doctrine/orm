@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="../../vendor/phpunit/phpunit/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="../../../vendor/phpunit/phpunit/phpunit.xsd"
          colors="true"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTodoAnnotatedTests="true"
          failOnRisky="true"
+         convertDeprecationsToExceptions="true"
 >
     <php>
+        <ini name="error_reporting" value="-1" />
         <var name="db_driver" value="pdo_pgsql"/>
         <var name="db_host" value="localhost" />
         <var name="db_user" value="postgres" />
