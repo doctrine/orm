@@ -15,8 +15,8 @@ use function explode;
 use function fwrite;
 use function get_debug_type;
 use function sprintf;
+use function str_starts_with;
 use function strlen;
-use function strpos;
 use function substr;
 
 use const STDERR;
@@ -182,7 +182,7 @@ class TestUtil
         }
 
         foreach ($configuration as $param => $value) {
-            if (strpos($param, $prefix . 'driver_option_') !== 0) {
+            if (! str_starts_with($param, $prefix . 'driver_option_')) {
                 continue;
             }
 

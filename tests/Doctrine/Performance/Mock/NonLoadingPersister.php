@@ -23,7 +23,7 @@ class NonLoadingPersister extends BasicEntityPersister
         $entity = null,
         $assoc = null,
         array $hints = [],
-        $lockMode = 0,
+        $lockMode = null,
         $limit = null,
         ?array $orderBy = null
     ) {

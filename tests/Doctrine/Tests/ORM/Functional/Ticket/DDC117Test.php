@@ -237,15 +237,9 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->article1->addTranslation('en', 'Bar');
         $this->article1->addTranslation('en', 'Baz');
 
-        $exceptionThrown = false;
-        try {
-            // exception depending on the underlying Database Driver
-            $this->_em->flush();
-        } catch (Exception $e) {
-            $exceptionThrown = true;
-        }
-
-        self::assertTrue($exceptionThrown, 'The underlying database driver throws an exception.');
+        // exception depending on the underlying Database Driver
+        $this->expectException(Exception::class);
+        $this->_em->flush();
     }
 
     /**

@@ -9,8 +9,8 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Proxy\Proxy;
-use Doctrine\ORM\Tools\DoctrineSetup;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\DbalExtensions\Connection;
 use Doctrine\Tests\DbalExtensions\QueryLog;
@@ -241,7 +241,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
 
         $config->setProxyDir(realpath(__DIR__ . '/../../Proxies'));
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $config->setMetadataDriverImpl(DoctrineSetup::createDefaultAnnotationDriver(
+        $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver(
             [realpath(__DIR__ . '/../../Models/Cache')]
         ));
 

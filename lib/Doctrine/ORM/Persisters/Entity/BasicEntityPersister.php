@@ -14,6 +14,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -48,7 +49,7 @@ use function is_object;
 use function reset;
 use function spl_object_id;
 use function sprintf;
-use function strpos;
+use function str_contains;
 use function strtoupper;
 use function trim;
 
@@ -164,7 +165,7 @@ class BasicEntityPersister implements EntityPersister
      * The INSERT SQL statement used for entities handled by this persister.
      * This SQL is only generated once per request, if at all.
      *
-     * @var string
+     * @var string|null
      */
     private $insertSql;
 
@@ -1580,11 +1581,22 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getLockTablesSql($lockMode)
     {
+        if ($lockMode === null) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/9466',
+                'Passing null as argument to %s is deprecated, pass LockMode::NONE instead.',
+                __METHOD__
+            );
+
+            $lockMode = LockMode::NONE;
+        }
+
         return $this->platform->appendLockHint(
             'FROM '
             . $this->quoteStrategy->getTableName($this->class, $this->platform) . ' '
             . $this->getSQLTableAlias($this->class->name),
-            $lockMode ?? LockMode::NONE
+            $lockMode
         );
     }
 
@@ -1733,7 +1745,7 @@ class BasicEntityPersister implements EntityPersister
             return $columns;
         }
 
-        if ($assoc !== null && strpos($field, ' ') === false && strpos($field, '(') === false) {
+        if ($assoc !== null && ! str_contains($field, ' ') && ! str_contains($field, '(')) {
             // very careless developers could potentially open up this normally hidden api for userland attacks,
             // therefore checking for spaces and function calls which are not allowed.
 
@@ -2024,7 +2036,7 @@ class BasicEntityPersister implements EntityPersister
         $alias = $this->getSQLTableAlias($this->class->name);
 
         $sql = 'SELECT 1 '
-             . $this->getLockTablesSql(null)
+             . $this->getLockTablesSql(LockMode::NONE)
              . ' WHERE ' . $this->getSelectConditionSQL($criteria);
 
         [$params, $types] = $this->expandParameters($criteria);

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Persisters;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
+use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\GeoNames\Admin1;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
 use Doctrine\Tests\Models\GeoNames\Country;
@@ -17,7 +17,7 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
     /** @var BasicEntityPersister */
     protected $persister;
 
-    /** @var EntityManagerInterface */
+    /** @var EntityManagerMock */
     protected $entityManager;
 
     protected function setUp(): void

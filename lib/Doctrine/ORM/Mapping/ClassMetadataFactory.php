@@ -34,8 +34,8 @@ use function end;
 use function explode;
 use function in_array;
 use function is_subclass_of;
+use function str_contains;
 use function strlen;
-use function strpos;
 use function strtolower;
 use function substr;
 
@@ -329,7 +329,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     private function getShortName(string $className): string
     {
-        if (strpos($className, '\\') === false) {
+        if (! str_contains($className, '\\')) {
             return strtolower($className);
         }
 

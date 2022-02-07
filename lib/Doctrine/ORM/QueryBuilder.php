@@ -26,6 +26,7 @@ use function is_string;
 use function key;
 use function reset;
 use function sprintf;
+use function str_starts_with;
 use function strpos;
 use function strrpos;
 use function substr;
@@ -1325,7 +1326,7 @@ class QueryBuilder
             foreach ($criteria->getOrderings() as $sort => $order) {
                 $hasValidAlias = false;
                 foreach ($allAliases as $alias) {
-                    if (strpos($sort . '.', $alias . '.') === 0) {
+                    if (str_starts_with($sort . '.', $alias . '.')) {
                         $hasValidAlias = true;
                         break;
                     }

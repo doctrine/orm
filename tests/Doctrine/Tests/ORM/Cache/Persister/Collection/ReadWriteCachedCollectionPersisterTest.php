@@ -20,19 +20,6 @@ use ReflectionProperty;
  */
 class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersisterTest
 {
-    /** @psalm-var list<string> */
-    protected $regionMockMethods = [
-        'getName',
-        'contains',
-        'get',
-        'getMultiple',
-        'put',
-        'evict',
-        'evictAll',
-        'lock',
-        'unlock',
-    ];
-
     protected function createPersister(EntityManagerInterface $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister
     {
         return new ReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
@@ -40,9 +27,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
     protected function createRegion(): Region
     {
-        return $this->getMockBuilder(ConcurrentRegion::class)
-                    ->setMethods($this->regionMockMethods)
-                    ->getMock();
+        return $this->createMock(ConcurrentRegion::class);
     }
 
     public function testDeleteShouldLockItem(): void
@@ -120,7 +105,8 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
         $this->region->expects(self::once())
             ->method('evict')
-            ->with(self::equalTo($key));
+            ->with(self::equalTo($key))
+            ->willReturn(true);
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -146,7 +132,8 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
         $this->region->expects(self::once())
             ->method('evict')
-            ->with(self::equalTo($key));
+            ->with(self::equalTo($key))
+            ->willReturn(true);
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -177,7 +164,8 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
         $this->region->expects(self::once())
             ->method('evict')
-            ->with(self::equalTo($key));
+            ->with(self::equalTo($key))
+            ->willReturn(true);
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -208,7 +196,8 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
         $this->region->expects(self::once())
             ->method('evict')
-            ->with(self::equalTo($key));
+            ->with(self::equalTo($key))
+            ->willReturn(true);
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -239,7 +228,8 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
         $this->region->expects(self::once())
             ->method('evict')
-            ->with(self::equalTo($key));
+            ->with(self::equalTo($key))
+            ->willReturn(true);
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -269,7 +259,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
         $this->collectionPersister->expects(self::once())
             ->method('delete')
-            ->with(self::equalTo($collection));
+            ->with(self::identicalTo($collection));
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -294,7 +284,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
         $this->collectionPersister->expects(self::once())
             ->method('update')
-            ->with(self::equalTo($collection));
+            ->with(self::identicalTo($collection));
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 

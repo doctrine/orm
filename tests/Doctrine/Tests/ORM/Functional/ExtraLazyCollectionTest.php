@@ -203,7 +203,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $user = $this->_em->find(CmsUser::class, $this->userId);
         self::assertFalse($user->groups->isInitialized(), 'Pre-Condition: Collection is not initialized.');
 
-        $someGroups = $user->groups->slice(null);
+        $someGroups = $user->groups->slice(0);
         self::assertCount(3, $someGroups);
     }
 

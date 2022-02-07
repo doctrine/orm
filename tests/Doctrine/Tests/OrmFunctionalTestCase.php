@@ -16,8 +16,8 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
-use Doctrine\ORM\Tools\DoctrineSetup;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\DbalExtensions\QueryLog;
@@ -44,7 +44,7 @@ use function implode;
 use function is_object;
 use function realpath;
 use function sprintf;
-use function strpos;
+use function str_contains;
 use function strtolower;
 use function var_export;
 
@@ -752,7 +752,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         $config->setMetadataDriverImpl(
-            $mappingDriver ?? DoctrineSetup::createDefaultAnnotationDriver([
+            $mappingDriver ?? ORMSetup::createDefaultAnnotationDriver([
                 realpath(__DIR__ . '/Models/Cache'),
                 realpath(__DIR__ . '/Models/GeoNames'),
             ])
@@ -816,7 +816,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $traceMsg = '';
             foreach ($trace as $part) {
                 if (isset($part['file'])) {
-                    if (strpos($part['file'], 'PHPUnit/') !== false) {
+                    if (str_contains($part['file'], 'PHPUnit/')) {
                         // Beginning with PHPUnit files we don't print the trace anymore.
                         break;
                     }

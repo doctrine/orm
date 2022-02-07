@@ -41,8 +41,8 @@ access point to ORM functionality provided by Doctrine.
     // bootstrap.php
     require_once "vendor/autoload.php";
 
-    use Doctrine\ORM\Tools\DoctrineSetup;
     use Doctrine\ORM\EntityManager;
+    use Doctrine\ORM\ORMSetup;
 
     $paths = array("/path/to/entity-files");
     $isDevMode = false;
@@ -55,7 +55,7 @@ access point to ORM functionality provided by Doctrine.
         'dbname'   => 'foo',
     );
 
-    $config = DoctrineSetup::createAnnotationMetadataConfiguration($paths, $isDevMode);
+    $config = ORMSetup::createAnnotationMetadataConfiguration($paths, $isDevMode);
     $entityManager = EntityManager::create($dbParams, $config);
 
 Or if you prefer XML:
@@ -64,7 +64,7 @@ Or if you prefer XML:
 
     <?php
     $paths = array("/path/to/xml-mappings");
-    $config = DoctrineSetup::createXMLMetadataConfiguration($paths, $isDevMode);
+    $config = ORMSetup::createXMLMetadataConfiguration($paths, $isDevMode);
     $entityManager = EntityManager::create($dbParams, $config);
 
 Inside the ``DoctrineSetup`` methods several assumptions are made:
@@ -76,7 +76,7 @@ Inside the ``DoctrineSetup`` methods several assumptions are made:
 
 .. note::
 
-    In order to have ``DoctrineSetup`` configure the cache automatically, the library ``symfony/cache``
+    In order to have ``ORMSetup`` configure the cache automatically, the library ``symfony/cache``
     has to be installed as a dependency.
 
 If you want to configure Doctrine in more detail, take a look at the :doc:`Advanced Configuration <reference/advanced-configuration>` section.
