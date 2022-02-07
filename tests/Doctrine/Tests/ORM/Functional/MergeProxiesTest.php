@@ -103,7 +103,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         $date = new DateTimeModel();
 
         $this->_em->persist($date);
-        $this->_em->flush($date);
+        $this->_em->flush();
         $this->_em->clear();
 
         $managed = $this->_em->getReference(DateTimeModel::class, $date->id);

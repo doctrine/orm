@@ -1022,37 +1022,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->assertQueryCount(2);
     }
 
-    public function testFlushManyExplicitEntities(): void
-    {
-        $userA           = new CmsUser();
-        $userA->username = 'UserA';
-        $userA->name     = 'UserA';
-
-        $userB           = new CmsUser();
-        $userB->username = 'UserB';
-        $userB->name     = 'UserB';
-
-        $userC           = new CmsUser();
-        $userC->username = 'UserC';
-        $userC->name     = 'UserC';
-
-        $this->_em->persist($userA);
-        $this->_em->persist($userB);
-        $this->_em->persist($userC);
-
-        $this->_em->flush([$userA, $userB, $userB]);
-
-        $userC->name = 'changed name';
-
-        $this->_em->flush([$userA, $userB]);
-        $this->_em->refresh($userC);
-
-        self::assertTrue($userA->id > 0, 'user a has an id');
-        self::assertTrue($userB->id > 0, 'user b has an id');
-        self::assertTrue($userC->id > 0, 'user c has an id');
-        self::assertEquals('UserC', $userC->name, 'name has not changed because we did not flush it');
-    }
-
     /**
      * @group DDC-720
      */
@@ -1067,54 +1036,11 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $user->status = 'administrator';
-        $this->_em->flush($user);
+        $this->_em->flush();
         $this->_em->clear();
 
         $user = $this->_em->find(get_class($user), $user->id);
         self::assertEquals('administrator', $user->status);
-    }
-
-    /**
-     * @group DDC-720
-     */
-    public function testFlushSingleUnmanagedEntity(): void
-    {
-        $user           = new CmsUser();
-        $user->name     = 'Dominik';
-        $user->username = 'domnikl';
-        $user->status   = 'developer';
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Entity has to be managed or scheduled for removal for single computation');
-
-        $this->_em->flush($user);
-    }
-
-    /**
-     * @group DDC-720
-     */
-    public function testFlushSingleAndNewEntity(): void
-    {
-        $user           = new CmsUser();
-        $user->name     = 'Dominik';
-        $user->username = 'domnikl';
-        $user->status   = 'developer';
-
-        $this->_em->persist($user);
-        $this->_em->flush();
-
-        $otherUser           = new CmsUser();
-        $otherUser->name     = 'Dominik2';
-        $otherUser->username = 'domnikl2';
-        $otherUser->status   = 'developer';
-
-        $user->status = 'administrator';
-
-        $this->_em->persist($otherUser);
-        $this->_em->flush($user);
-
-        self::assertTrue($this->_em->contains($otherUser), 'Other user is contained in EntityManager');
-        self::assertTrue($otherUser->id > 0, 'other user has an id');
     }
 
     /**
@@ -1138,7 +1064,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $address->user    = $user;
         $user->address    = $address;
 
-        $this->_em->flush($user);
+        $this->_em->flush();
 
         self::assertTrue($this->_em->contains($address), 'Other user is contained in EntityManager');
         self::assertTrue($address->id > 0, 'other user has an id');
@@ -1166,7 +1092,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("A new entity was found through the relationship 'Doctrine\Tests\Models\CMS\CmsUser#articles'");
 
-        $this->_em->flush($user);
+        $this->_em->flush();
     }
 
     /**
@@ -1182,72 +1108,15 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $user->status   = 'developer';
 
         $this->_em->persist($user);
-        $this->_em->flush($user);
+        $this->_em->flush();
 
         $userId = $user->id;
 
         $this->_em->remove($user);
-        $this->_em->flush($user);
+        $this->_em->flush();
         $this->_em->clear();
 
         self::assertNull($this->_em->find(get_class($user), $userId));
-    }
-
-    /**
-     * @group DDC-720
-     */
-    public function testProxyIsIgnored(): void
-    {
-        $user           = new CmsUser();
-        $user->name     = 'Dominik';
-        $user->username = 'domnikl';
-        $user->status   = 'developer';
-
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
-
-        $user = $this->_em->getReference(get_class($user), $user->id);
-
-        $otherUser           = new CmsUser();
-        $otherUser->name     = 'Dominik2';
-        $otherUser->username = 'domnikl2';
-        $otherUser->status   = 'developer';
-
-        $this->_em->persist($otherUser);
-        $this->_em->flush($user);
-
-        self::assertTrue($this->_em->contains($otherUser), 'Other user is contained in EntityManager');
-        self::assertTrue($otherUser->id > 0, 'other user has an id');
-    }
-
-    /**
-     * @group DDC-720
-     */
-    public function testFlushSingleSaveOnlySingle(): void
-    {
-        $user           = new CmsUser();
-        $user->name     = 'Dominik';
-        $user->username = 'domnikl';
-        $user->status   = 'developer';
-        $this->_em->persist($user);
-
-        $user2           = new CmsUser();
-        $user2->name     = 'Dominik';
-        $user2->username = 'domnikl2';
-        $user2->status   = 'developer';
-        $this->_em->persist($user2);
-
-        $this->_em->flush();
-
-        $user->status  = 'admin';
-        $user2->status = 'admin';
-
-        $this->_em->flush($user);
-        $this->_em->clear();
-
-        $user2 = $this->_em->find(get_class($user2), $user2->id);
-        self::assertEquals('developer', $user2->status);
     }
 
     /**

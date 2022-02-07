@@ -1,5 +1,17 @@
 # Upgrade to 3.0
 
+## BC BREAK: Removed ability to partially flush/commit entity manager and unit of work
+
+The following methods don't accept a single entity or an array of entities anymore:
+
+* `Doctrine\ORM\EntityManager::flush()`
+* `Doctrine\ORM\Decorator\EntityManagerDecorator::flush()`
+* `Doctrine\ORM\UnitOfWork::commit()`
+
+The semantics of `flush()` and `commit()` will remain the same, but the change
+tracking will be performed on all entities managed by the unit of work, and not
+just on the provided entities, as the parameter is now completely ignored.
+
 ## BC BREAK: Removed ability to partially clear entity manager and unit of work
 
 * Passing an argument other than `null` to `EntityManager::clear()` will raise
