@@ -20,7 +20,7 @@ use Doctrine\Persistence\ObjectRepository;
 use function array_slice;
 use function lcfirst;
 use function sprintf;
-use function strpos;
+use function str_starts_with;
 use function substr;
 
 /**
@@ -246,15 +246,15 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function __call($method, $arguments)
     {
-        if (strpos($method, 'findBy') === 0) {
+        if (str_starts_with($method, 'findBy')) {
             return $this->resolveMagicCall('findBy', substr($method, 6), $arguments);
         }
 
-        if (strpos($method, 'findOneBy') === 0) {
+        if (str_starts_with($method, 'findOneBy')) {
             return $this->resolveMagicCall('findOneBy', substr($method, 9), $arguments);
         }
 
-        if (strpos($method, 'countBy') === 0) {
+        if (str_starts_with($method, 'countBy')) {
             return $this->resolveMagicCall('count', substr($method, 7), $arguments);
         }
 

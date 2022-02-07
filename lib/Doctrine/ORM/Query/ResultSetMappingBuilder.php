@@ -15,7 +15,7 @@ use InvalidArgumentException;
 use function explode;
 use function in_array;
 use function sprintf;
-use function strpos;
+use function str_contains;
 use function strtolower;
 
 /**
@@ -381,7 +381,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 $fieldName = $field['name'];
                 $relation  = null;
 
-                if (strpos($fieldName, '.') !== false) {
+                if (str_contains($fieldName, '.')) {
                     [$relation, $fieldName] = explode('.', $fieldName);
                 }
 

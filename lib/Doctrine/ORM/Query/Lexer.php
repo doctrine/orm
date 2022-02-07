@@ -10,10 +10,10 @@ use function constant;
 use function ctype_alpha;
 use function defined;
 use function is_numeric;
+use function str_contains;
 use function str_replace;
 use function stripos;
 use function strlen;
-use function strpos;
 use function strtoupper;
 use function substr;
 
@@ -149,7 +149,7 @@ class Lexer extends AbstractLexer
         switch (true) {
             // Recognize numeric values
             case is_numeric($value):
-                if (strpos($value, '.') !== false || stripos($value, 'e') !== false) {
+                if (str_contains($value, '.') || stripos($value, 'e') !== false) {
                     return self::T_FLOAT;
                 }
 
@@ -173,11 +173,11 @@ class Lexer extends AbstractLexer
                     }
                 }
 
-                if (strpos($value, ':') !== false) {
+                if (str_contains($value, ':')) {
                     return self::T_ALIASED_NAME;
                 }
 
-                if (strpos($value, '\\') !== false) {
+                if (str_contains($value, '\\')) {
                     return self::T_FULLY_QUALIFIED_NAME;
                 }
 

@@ -74,6 +74,7 @@ use function in_array;
 use function interface_exists;
 use function is_string;
 use function sprintf;
+use function str_contains;
 use function strlen;
 use function strpos;
 use function strrpos;
@@ -670,7 +671,7 @@ class Parser
             $fromClassName = $AST->fromClause->identificationVariableDeclarations[0]->rangeVariableDeclaration->abstractSchemaName ?? null;
 
             // If the namespace is not given then assumes the first FROM entity namespace
-            if (strpos($className, '\\') === false && ! class_exists($className) && strpos($fromClassName, '\\') !== false) {
+            if (! str_contains($className, '\\') && ! class_exists($className) && str_contains($fromClassName, '\\')) {
                 $namespace = substr($fromClassName, 0, strrpos($fromClassName, '\\'));
                 $fqcn      = $namespace . '\\' . $className;
 

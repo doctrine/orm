@@ -76,7 +76,7 @@ use function assert;
 use function count;
 use function get_debug_type;
 use function sprintf;
-use function strpos;
+use function str_contains;
 use function strtolower;
 
 use const CASE_UPPER;
@@ -488,7 +488,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testDiscriminatorColumnDefaults(): void
     {
-        if (strpos(static::class, 'PHPMappingDriver') !== false) {
+        if (str_contains(static::class, 'PHPMappingDriver')) {
             self::markTestSkipped('PHP Mapping Drivers have no defaults.');
         }
 
@@ -1098,7 +1098,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testDiscriminatorColumnDefaultLength(): void
     {
-        if (strpos(static::class, 'PHPMappingDriver') !== false) {
+        if (str_contains(static::class, 'PHPMappingDriver')) {
             self::markTestSkipped('PHP Mapping Drivers have no defaults.');
         }
 
@@ -1114,7 +1114,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testDiscriminatorColumnDefaultType(): void
     {
-        if (strpos(static::class, 'PHPMappingDriver') !== false) {
+        if (str_contains(static::class, 'PHPMappingDriver')) {
             self::markTestSkipped('PHP Mapping Drivers have no defaults.');
         }
 
@@ -1130,7 +1130,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testDiscriminatorColumnDefaultName(): void
     {
-        if (strpos(static::class, 'PHPMappingDriver') !== false) {
+        if (str_contains(static::class, 'PHPMappingDriver')) {
             self::markTestSkipped('PHP Mapping Drivers have no defaults.');
         }
 

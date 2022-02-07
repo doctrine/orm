@@ -49,7 +49,7 @@ use function is_object;
 use function reset;
 use function spl_object_id;
 use function sprintf;
-use function strpos;
+use function str_contains;
 use function strtoupper;
 use function trim;
 
@@ -1745,7 +1745,7 @@ class BasicEntityPersister implements EntityPersister
             return $columns;
         }
 
-        if ($assoc !== null && strpos($field, ' ') === false && strpos($field, '(') === false) {
+        if ($assoc !== null && ! str_contains($field, ' ') && ! str_contains($field, '(')) {
             // very careless developers could potentially open up this normally hidden api for userland attacks,
             // therefore checking for spaces and function calls which are not allowed.
 

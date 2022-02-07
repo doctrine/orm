@@ -42,10 +42,10 @@ use function ltrim;
 use function max;
 use function mkdir;
 use function sprintf;
+use function str_contains;
 use function str_repeat;
 use function str_replace;
 use function strlen;
-use function strpos;
 use function strrpos;
 use function strtolower;
 use function substr;
@@ -960,7 +960,7 @@ public function __construct(<params>)
      */
     protected function hasNamespace(ClassMetadataInfo $metadata)
     {
-        return (bool) strpos($metadata->name, '\\');
+        return str_contains($metadata->name, '\\');
     }
 
     /**

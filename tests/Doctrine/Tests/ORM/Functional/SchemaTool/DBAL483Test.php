@@ -12,7 +12,7 @@ use Doctrine\ORM\Tools;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_filter;
-use function strpos;
+use function str_contains;
 
 class DBAL483Test extends OrmFunctionalTestCase
 {
@@ -37,7 +37,7 @@ class DBAL483Test extends OrmFunctionalTestCase
         $updateSql = $this->schemaTool->getUpdateSchemaSql([$class]);
 
         $updateSql = array_filter($updateSql, static function ($sql) {
-            return strpos($sql, 'DBAL483') !== false;
+            return str_contains($sql, 'DBAL483');
         });
 
         self::assertCount(0, $updateSql);

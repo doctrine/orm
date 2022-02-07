@@ -14,7 +14,7 @@ use Exception;
 use function array_filter;
 use function implode;
 use function method_exists;
-use function strpos;
+use function str_contains;
 
 use const PHP_EOL;
 
@@ -106,7 +106,7 @@ class DDC214Test extends OrmFunctionalTestCase
 
         $sql = $schemaDiff->toSql($this->_em->getConnection()->getDatabasePlatform());
         $sql = array_filter($sql, static function ($sql) {
-            return strpos($sql, 'DROP') === false;
+            return ! str_contains($sql, 'DROP');
         });
 
         self::assertCount(0, $sql, 'SQL: ' . implode(PHP_EOL, $sql));
