@@ -166,21 +166,12 @@
       <code>queryCachePut</code>
     </MissingReturnType>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/Persister/CachedPersister.php">
-    <MissingReturnType occurrences="2">
-      <code>afterTransactionComplete</code>
-      <code>afterTransactionRolledBack</code>
-    </MissingReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php">
     <ArgumentTypeCoercion occurrences="3">
       <code>$cache</code>
       <code>$entityKey</code>
       <code>$targetEntity</code>
     </ArgumentTypeCoercion>
-    <ImplementedReturnTypeMismatch occurrences="1">
-      <code>object[]|null</code>
-    </ImplementedReturnTypeMismatch>
     <NoInterfaceProperties occurrences="1">
       <code>$entry-&gt;identifiers</code>
     </NoInterfaceProperties>
@@ -194,10 +185,6 @@
     </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Cache/Persister/Collection/NonStrictReadWriteCachedCollectionPersister.php">
-    <MissingReturnType occurrences="2">
-      <code>afterTransactionComplete</code>
-      <code>afterTransactionRolledBack</code>
-    </MissingReturnType>
     <PossiblyNullArgument occurrences="2">
       <code>$collection-&gt;getOwner()</code>
       <code>$collection-&gt;getOwner()</code>
@@ -209,10 +196,6 @@
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Cache/Persister/Collection/ReadWriteCachedCollectionPersister.php">
-    <MissingReturnType occurrences="2">
-      <code>afterTransactionComplete</code>
-      <code>afterTransactionRolledBack</code>
-    </MissingReturnType>
     <PossiblyNullArgument occurrences="2">
       <code>$collection-&gt;getOwner()</code>
       <code>$collection-&gt;getOwner()</code>
@@ -258,17 +241,7 @@
       <code>storeEntityCache</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/Persister/Entity/NonStrictReadWriteCachedEntityPersister.php">
-    <MissingReturnType occurrences="2">
-      <code>afterTransactionComplete</code>
-      <code>afterTransactionRolledBack</code>
-    </MissingReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/Persister/Entity/ReadWriteCachedEntityPersister.php">
-    <MissingReturnType occurrences="2">
-      <code>afterTransactionComplete</code>
-      <code>afterTransactionRolledBack</code>
-    </MissingReturnType>
     <RedundantCondition occurrences="1">
       <code>$isChanged</code>
     </RedundantCondition>
@@ -1548,15 +1521,9 @@
       <code>getValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$insertSql</code>
-    </PropertyNotSetInConstructor>
     <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;currentPersisterContext-&gt;sqlTableAliases</code>
     </PropertyTypeCoercion>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>$this-&gt;insertSql !== null</code>
-    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/CachedPersisterContext.php">
     <PropertyNotSetInConstructor occurrences="1">

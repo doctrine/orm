@@ -32,17 +32,17 @@ interface EntityPersister
     /**
      * Get all queued inserts.
      *
-     * @psalm-return array<string|int, object>
+     * @return object[]
      */
     public function getInserts();
 
      /**
+      * Gets the INSERT SQL used by the persister to persist a new entity.
+      *
       * @return string
       *
-      * @TODO - It should not be here.
-      * But its necessary since JoinedSubclassPersister#executeInserts invoke the root persister.
-      *
-      * Gets the INSERT SQL used by the persister to persist a new entity.
+      * @TODO It should not be here.
+      *       But its necessary since JoinedSubclassPersister#executeInserts invoke the root persister.
       */
     public function getInsertSQL();
 
