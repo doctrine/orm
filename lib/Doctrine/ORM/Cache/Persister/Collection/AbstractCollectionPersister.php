@@ -108,7 +108,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
-     * @return object[]|null
+     * {@inheritdoc}
      */
     public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key)
     {
