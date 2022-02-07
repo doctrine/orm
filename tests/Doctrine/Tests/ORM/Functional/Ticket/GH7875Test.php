@@ -18,7 +18,8 @@ use function array_filter;
 use function current;
 use function method_exists;
 use function sprintf;
-use function strpos;
+use function str_contains;
+use function str_starts_with;
 
 /** @group GH7875 */
 final class GH7875Test extends OrmFunctionalTestCase
@@ -46,7 +47,7 @@ final class GH7875Test extends OrmFunctionalTestCase
     private function filterCreateTable(array $sqls, string $tableName): array
     {
         return array_filter($sqls, static function (string $sql) use ($tableName): bool {
-            return strpos($sql, sprintf('CREATE TABLE %s (', $tableName)) === 0;
+            return str_starts_with($sql, sprintf('CREATE TABLE %s (', $tableName));
         });
     }
 
@@ -62,7 +63,7 @@ final class GH7875Test extends OrmFunctionalTestCase
         $this->_em->getConnection()->executeStatement(current($sqls));
 
         $sqls = array_filter($tool->getUpdateSchemaSql($classes), static function (string $sql): bool {
-            return strpos($sql, ' gh7875_my_entity ') !== false;
+            return str_contains($sql, ' gh7875_my_entity ');
         });
 
         self::assertSame([], $sqls);
@@ -114,7 +115,7 @@ final class GH7875Test extends OrmFunctionalTestCase
 
         $sqls = $tool->getUpdateSchemaSql($classes);
         $sqls = array_filter($sqls, static function (string $sql): bool {
-            return strpos($sql, ' gh7875_my_entity ') !== false;
+            return str_contains($sql, ' gh7875_my_entity ');
         });
 
         self::assertCount(0, $sqls);

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Tests\DbalExtensions\Connection;
 use Doctrine\Tests\Models\OrnementalOrphanRemoval\Person;
 use Doctrine\Tests\Models\OrnementalOrphanRemoval\PhoneNumber;
 use Doctrine\Tests\OrmFunctionalTestCase;

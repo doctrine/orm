@@ -19,7 +19,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use function array_filter;
 use function array_shift;
 use function implode;
-use function strpos;
+use function str_starts_with;
 
 class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
 {
@@ -120,7 +120,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         $dropSequenceSQLs = 0;
 
         foreach ($sql as $stmt) {
-            if (strpos($stmt, 'DROP SEQUENCE') === 0) {
+            if (str_starts_with($stmt, 'DROP SEQUENCE')) {
                 $dropSequenceSQLs++;
             }
         }
@@ -143,7 +143,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
 
         $sql = $tool->getUpdateSchemaSql($classes);
         $sql = array_filter($sql, static function ($sql) {
-            return strpos($sql, 'DROP SEQUENCE stonewood.') === 0;
+            return str_starts_with($sql, 'DROP SEQUENCE stonewood.');
         });
 
         self::assertCount(0, $sql, implode("\n", $sql));
