@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.19.0@a2ad69ae4f5ab1f7d225a8dc4e2ec2d9415ed599">
+<files psalm-version="4.20.0@f82a70e7edfc6cf2705e9374c8a0b6a974a779ed">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass occurrences="1">
       <code>IterableResult</code>
@@ -475,12 +475,6 @@
       <code>$entity</code>
     </PossiblyNullArgument>
   </file>
-  <file src="lib/Doctrine/ORM/Id/SequenceGenerator.php">
-    <MethodSignatureMustProvideReturnType occurrences="2">
-      <code>serialize</code>
-      <code>unserialize</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Id/TableGenerator.php">
     <PossiblyFalseOperand occurrences="3">
       <code>$currentLevel</code>
@@ -704,9 +698,6 @@
       <code>$className</code>
       <code>$this-&gt;namespace . '\\' . $className</code>
     </LessSpecificReturnStatement>
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <MissingClosureParamType occurrences="2">
       <code>$joinColumn</code>
       <code>$joinColumn</code>
@@ -1998,9 +1989,6 @@
     <DocblockTypeContradiction occurrences="1">
       <code>is_array($obj)</code>
     </DocblockTypeContradiction>
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>is_object($obj)</code>
     </RedundantConditionGivenDocblockType>
@@ -2194,36 +2182,15 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$this-&gt;parts</code>
     </ArgumentTypeCoercion>
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <PossiblyInvalidCast occurrences="1">
       <code>$this-&gt;parts[0]</code>
     </PossiblyInvalidCast>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Comparison.php">
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Composite.php">
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <PossiblyInvalidCast occurrences="2">
       <code>$part</code>
       <code>$this-&gt;parts[0]</code>
     </PossiblyInvalidCast>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/From.php">
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Func.php">
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/GroupBy.php">
     <NonInvariantDocblockPropertyType occurrences="1">
@@ -2231,9 +2198,6 @@
     </NonInvariantDocblockPropertyType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Join.php">
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <PossiblyNullArgument occurrences="1">
       <code>$this-&gt;conditionType</code>
     </PossiblyNullArgument>
@@ -2242,16 +2206,6 @@
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$parts</code>
     </NonInvariantDocblockPropertyType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Math.php">
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/OrderBy.php">
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Orx.php">
     <NonInvariantDocblockPropertyType occurrences="2">
@@ -2266,9 +2220,6 @@
     </NonInvariantDocblockPropertyType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Filter/SQLFilter.php">
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <MissingClosureParamType occurrences="1">
       <code>$value</code>
     </MissingClosureParamType>
@@ -2522,9 +2473,6 @@
       <code>$renameMode</code>
       <code>$renameMode</code>
     </ArgumentTypeCoercion>
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <PossiblyNullPropertyFetch occurrences="1">
       <code>$classMetadata-&gt;reflClass-&gt;name</code>
     </PossiblyNullPropertyFetch>
@@ -2899,9 +2847,6 @@
     <InvalidFalsableReturnType occurrences="1">
       <code>Parameter|null</code>
     </InvalidFalsableReturnType>
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <PossiblyFalseArgument occurrences="2">
       <code>$spacePos</code>
       <code>$spacePos</code>

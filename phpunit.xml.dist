@@ -16,6 +16,7 @@
          colors="true"
          verbose="false"
          failOnRisky="true"
+         convertDeprecationsToExceptions="true"
          bootstrap="./tests/Doctrine/Tests/TestInit.php"
 >
     <testsuites>
@@ -32,6 +33,7 @@
     </groups>
 
   <php>
+    <ini name="error_reporting" value="-1" />
     <!-- "Real" test database -->
     <var name="db_driver" value="pdo_sqlite"/>
     <var name="db_memory" value="true"/>
