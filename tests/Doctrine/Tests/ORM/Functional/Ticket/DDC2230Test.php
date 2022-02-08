@@ -38,29 +38,6 @@ class DDC2230Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testNotifyTrackingNotCalledOnUninitializedProxies(): void
-    {
-        $insertedUser          = new DDC2230User();
-        $insertedUser->address = new DDC2230Address();
-
-        $this->_em->persist($insertedUser);
-        $this->_em->persist($insertedUser->address);
-        $this->_em->flush();
-        $this->_em->clear();
-
-        $user = $this->_em->find(DDC2230User::class, $insertedUser->id);
-
-        $this->_em->clear();
-
-        $mergedUser = $this->_em->merge($user);
-
-        $address = $mergedUser->address;
-        assert($address instanceof Proxy);
-
-        self::assertInstanceOf(Proxy::class, $address);
-        self::assertFalse($address->__isInitialized());
-    }
-
     public function testNotifyTrackingCalledOnProxyInitialization(): void
     {
         $insertedAddress = new DDC2230Address();

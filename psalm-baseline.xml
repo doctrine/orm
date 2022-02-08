@@ -244,14 +244,12 @@
       <code>ProxyFactory</code>
       <code>ProxyFactory</code>
     </DeprecatedClass>
-    <DeprecatedMethod occurrences="4">
+    <DeprecatedMethod occurrences="3">
       <code>getAutoGenerateProxyClasses</code>
       <code>getProxyDir</code>
       <code>getProxyNamespace</code>
-      <code>merge</code>
     </DeprecatedMethod>
-    <DocblockTypeContradiction occurrences="5">
-      <code>is_object($entity)</code>
+    <DocblockTypeContradiction occurrences="4">
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
@@ -282,8 +280,7 @@
     <MoreSpecificReturnType occurrences="1">
       <code>EntityRepository&lt;T&gt;</code>
     </MoreSpecificReturnType>
-    <ParamNameMismatch occurrences="7">
-      <code>$entity</code>
+    <ParamNameMismatch occurrences="6">
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity</code>
@@ -2800,25 +2797,17 @@
       <code>$collectionToUpdate</code>
       <code>$commitOrder[$i]</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="2">
-      <code>$association['type'] === ClassMetadata::ONE_TO_MANY</code>
-      <code>$association['type'] === ClassMetadata::ONE_TO_MANY</code>
-    </DocblockTypeContradiction>
     <InvalidArgument occurrences="1">
       <code>$em-&gt;getMetadataFactory()</code>
     </InvalidArgument>
     <InvalidNullableReturnType occurrences="1">
       <code>object</code>
     </InvalidNullableReturnType>
-    <InvalidOperand occurrences="1">
-      <code>$association['type']</code>
-    </InvalidOperand>
     <InvalidPropertyAssignmentValue occurrences="2">
       <code>$this-&gt;entityChangeSets</code>
       <code>$this-&gt;entityChangeSets</code>
     </InvalidPropertyAssignmentValue>
-    <MissingClosureReturnType occurrences="5">
-      <code>static function (array $assoc) {</code>
+    <MissingClosureReturnType occurrences="4">
       <code>static function (array $assoc) {</code>
       <code>static function (array $assoc) {</code>
       <code>static function (array $assoc) {</code>
@@ -2845,7 +2834,7 @@
       <code>$assoc['targetEntity']</code>
       <code>$assoc['type']</code>
     </PossiblyNullArrayAccess>
-    <PossiblyNullReference occurrences="33">
+    <PossiblyNullReference occurrences="27">
       <code>buildCachedCollectionPersister</code>
       <code>buildCachedEntityPersister</code>
       <code>getCacheFactory</code>
@@ -2858,12 +2847,6 @@
       <code>getValue</code>
       <code>getValue</code>
       <code>getValue</code>
-      <code>getValue</code>
-      <code>getValue</code>
-      <code>getValue</code>
-      <code>getValue</code>
-      <code>setValue</code>
-      <code>setValue</code>
       <code>setValue</code>
       <code>setValue</code>
       <code>setValue</code>

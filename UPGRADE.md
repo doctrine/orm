@@ -1,5 +1,15 @@
 # Upgrade to 3.0
 
+## BC BREAK: Remove ability to merge detached entities
+
+Merge semantics was a poor fit for the PHP "share-nothing" architecture.
+In addition to that, merging caused multiple issues with data integrity
+in the managed entity graph, which was constantly spawning more edge-case
+bugs/scenarios.
+
+The method `UnitOfWork::merge()` has been removed. The method
+`EntityManager::merge()` will throw an exception on each call.
+
 ## BC BREAK: Removed ability to partially flush/commit entity manager and unit of work
 
 The following methods don't accept a single entity or an array of entities anymore:
