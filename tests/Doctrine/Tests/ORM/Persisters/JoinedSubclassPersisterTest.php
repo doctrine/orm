@@ -6,13 +6,14 @@ namespace Doctrine\Tests\ORM\Persisters;
 
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\Tests\Mocks\ConnectionMock;
-use Doctrine\Tests\Models\JoinedInheritanceType\AnotherChildClass;
 use Doctrine\Tests\Models\JoinedInheritanceType\ChildClassWithNonWritableFields;
 use Doctrine\Tests\Models\JoinedInheritanceType\RootClass;
 use Doctrine\Tests\OrmTestCase;
+
+use function assert;
+use function count;
 
 /**
  * Tests for {@see \Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister}
@@ -55,7 +56,7 @@ class JoinedSubclassPersisterTest extends OrmTestCase
         $em->persist($entity);
         $em->flush();
 
-        $subClassInsertQuery = $logger->queries[\count($logger->queries) - 1];
+        $subClassInsertQuery = $logger->queries[count($logger->queries) - 1];
         self::assertSame($subClassInsertQuery['sql'], 'INSERT INTO ChildClassWithNonWritableFields (id, nonUpdatableContent, writableContent) VALUES (?, ?, ?)', 'Non-insertable fields must be absent from query.');
         self::assertCount(3, $subClassInsertQuery['params'], 'Non-insertable fields must be absent from params.');
     }
