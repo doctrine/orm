@@ -16,9 +16,6 @@
     <InvalidNullableReturnType occurrences="1">
       <code>\Doctrine\Common\Cache\Cache</code>
     </InvalidNullableReturnType>
-    <InvalidScalarArgument occurrences="1">
-      <code>$key</code>
-    </InvalidScalarArgument>
     <MissingClosureParamType occurrences="3">
       <code>$alias</code>
       <code>$data</code>
@@ -2911,9 +2908,6 @@
     <InvalidFalsableReturnType occurrences="1">
       <code>Parameter|null</code>
     </InvalidFalsableReturnType>
-    <InvalidScalarArgument occurrences="1">
-      <code>$key</code>
-    </InvalidScalarArgument>
     <MethodSignatureMustProvideReturnType occurrences="1">
       <code>__toString</code>
     </MethodSignatureMustProvideReturnType>
