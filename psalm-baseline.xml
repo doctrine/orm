@@ -2541,7 +2541,7 @@
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
     </FalsableReturnStatement>
     <InvalidFalsableReturnType occurrences="1">
-      <code>Parameter|null</code>
+      <code>?Parameter</code>
     </InvalidFalsableReturnType>
     <PossiblyFalseArgument occurrences="2">
       <code>$spacePos</code>
@@ -2558,9 +2558,6 @@
       <code>$alias</code>
       <code>$alias</code>
     </PossiblyNullArgument>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>self::SELECT</code>
-    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Repository/DefaultRepositoryFactory.php">
     <LessSpecificReturnStatement occurrences="1">
