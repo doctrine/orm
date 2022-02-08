@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use BadMethodCallException;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\LockMode;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Exception\InvalidHydrationMode;
 use Doctrine\ORM\Exception\ManagerException;
@@ -542,35 +542,15 @@ use function ltrim;
     }
 
     /**
-     * Merges the state of a detached entity into the persistence context
-     * of this EntityManager and returns the managed copy of the entity.
-     * The entity passed to merge will not become associated/managed with this EntityManager.
+     * Not supported.
      *
-     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
+     * @param object $object
      *
-     * @param object $entity The detached entity to merge into the persistence context.
-     *
-     * @return object The managed copy of the entity.
-     *
-     * @throws ORMInvalidArgumentException
-     * @throws ORMException
+     * @psalm-return never
      */
-    public function merge($entity): object
+    public function merge($object): object
     {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/8461',
-            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0.',
-            __METHOD__
-        );
-
-        if (! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#merge()', $entity);
-        }
-
-        $this->errorIfClosed();
-
-        return $this->unitOfWork->merge($entity);
+        throw new BadMethodCallException('The merge operation is not supported.');
     }
 
     /**

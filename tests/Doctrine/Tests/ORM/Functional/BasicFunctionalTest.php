@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\PersistentCollection;
@@ -898,97 +897,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         self::assertEquals('Benjamin E.', $this->_em->find(get_class($user), $userId)->name);
-    }
-
-    public function testMergePersistsNewEntities(): void
-    {
-        $user           = new CmsUser();
-        $user->username = 'beberlei';
-        $user->name     = 'Benjamin E.';
-        $user->status   = 'active';
-
-        $managedUser = $this->_em->merge($user);
-        self::assertEquals('beberlei', $managedUser->username);
-        self::assertEquals('Benjamin E.', $managedUser->name);
-        self::assertEquals('active', $managedUser->status);
-
-        self::assertTrue($user !== $managedUser);
-        self::assertTrue($this->_em->contains($managedUser));
-
-        $this->_em->flush();
-        $userId = $managedUser->id;
-        $this->_em->clear();
-
-        $user2 = $this->_em->find(get_class($managedUser), $userId);
-        self::assertInstanceOf(CmsUser::class, $user2);
-    }
-
-    public function testMergeNonPersistedProperties(): void
-    {
-        $user                             = new CmsUser();
-        $user->username                   = 'beberlei';
-        $user->name                       = 'Benjamin E.';
-        $user->status                     = 'active';
-        $user->nonPersistedProperty       = 'test';
-        $user->nonPersistedPropertyObject = new CmsPhonenumber();
-
-        $managedUser = $this->_em->merge($user);
-        self::assertEquals('test', $managedUser->nonPersistedProperty);
-        self::assertSame($user->nonPersistedProperty, $managedUser->nonPersistedProperty);
-        self::assertSame($user->nonPersistedPropertyObject, $managedUser->nonPersistedPropertyObject);
-
-        self::assertTrue($user !== $managedUser);
-        self::assertTrue($this->_em->contains($managedUser));
-
-        $this->_em->flush();
-        $userId = $managedUser->id;
-        $this->_em->clear();
-
-        $user2 = $this->_em->find(get_class($managedUser), $userId);
-        self::assertNull($user2->nonPersistedProperty);
-        self::assertNull($user2->nonPersistedPropertyObject);
-        self::assertEquals('active', $user2->status);
-    }
-
-    public function testMergeThrowsExceptionIfEntityWithGeneratedIdentifierDoesNotExist(): void
-    {
-        $user           = new CmsUser();
-        $user->username = 'beberlei';
-        $user->name     = 'Benjamin E.';
-        $user->status   = 'active';
-        $user->id       = 42;
-
-        $this->expectException(EntityNotFoundException::class);
-        $this->_em->merge($user);
-    }
-
-    /**
-     * @group DDC-634
-     */
-    public function testOneToOneMergeSetNull(): void
-    {
-        $user           = new CmsUser();
-        $user->username = 'beberlei';
-        $user->name     = 'Benjamin E.';
-        $user->status   = 'active';
-
-        $ph              = new CmsPhonenumber();
-        $ph->phonenumber = '12345';
-        $user->addPhonenumber($ph);
-
-        $this->_em->persist($user);
-        $this->_em->persist($ph);
-        $this->_em->flush();
-
-        $this->_em->clear();
-
-        $ph->user  = null;
-        $managedPh = $this->_em->merge($ph);
-
-        $this->_em->flush();
-        $this->_em->clear();
-
-        self::assertNull($this->_em->find(get_class($ph), $ph->phonenumber)->getUser());
     }
 
     /**

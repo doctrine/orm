@@ -11,7 +11,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityNotFoundException;
-use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -23,7 +22,6 @@ use Doctrine\ORM\Mapping\Version;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Tests\Mocks\ConnectionMock;
@@ -31,15 +29,12 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
-use function assert;
-use function gc_collect_cycles;
 use function get_class;
 use function method_exists;
 use function random_int;
@@ -470,115 +465,6 @@ class UnitOfWorkTest extends OrmTestCase
             'first null string, two fields'  => [$firstNullString, ['id1' => null, 'id2' => $firstNullString->id2]],
             'second null string, two fields' => [$secondNullString, ['id1' => $secondNullString->id1, 'id2' => null]],
         ];
-    }
-
-    /**
-     * @group 5689
-     * @group 1465
-     */
-    public function testObjectHashesOfMergedEntitiesAreNotUsedInOriginalEntityDataMap(): void
-    {
-        $user       = new CmsUser();
-        $user->name = 'ocramius';
-        $mergedUser = $this->_unitOfWork->merge($user);
-
-        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($user), 'No original data was stored');
-        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($mergedUser), 'No original data was stored');
-
-        $user       = null;
-        $mergedUser = null;
-
-        // force garbage collection of $user (frees the used object hashes, which may be recycled)
-        gc_collect_cycles();
-
-        $newUser       = new CmsUser();
-        $newUser->name = 'ocramius';
-
-        $this->_unitOfWork->persist($newUser);
-
-        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($newUser), 'No original data was stored');
-    }
-
-    /**
-     * @group DDC-1955
-     * @group 5570
-     * @group 6174
-     */
-    public function testMergeWithNewEntityWillPersistItAndTriggerPrePersistListenersWithMergedEntityData(): void
-    {
-        $entity = new EntityWithRandomlyGeneratedField();
-
-        $generatedFieldValue = $entity->generatedField;
-
-        $this
-            ->eventManager
-            ->expects(self::any())
-            ->method('hasListeners')
-            ->willReturnCallback(static function ($eventName) {
-                return $eventName === Events::prePersist;
-            });
-        $this
-            ->eventManager
-            ->expects(self::once())
-            ->method('dispatchEvent')
-            ->with(
-                self::anything(),
-                self::callback(static function (LifecycleEventArgs $args) use ($entity, $generatedFieldValue) {
-                    $object = $args->getObject();
-                    assert($object instanceof EntityWithRandomlyGeneratedField);
-
-                    self::assertInstanceOf(EntityWithRandomlyGeneratedField::class, $object);
-                    self::assertNotSame($entity, $object);
-                    self::assertSame($generatedFieldValue, $object->generatedField);
-
-                    return true;
-                })
-            );
-
-        $object = $this->_unitOfWork->merge($entity);
-        assert($object instanceof EntityWithRandomlyGeneratedField);
-
-        self::assertNotSame($object, $entity);
-        self::assertInstanceOf(EntityWithRandomlyGeneratedField::class, $object);
-        self::assertSame($object->generatedField, $entity->generatedField);
-    }
-
-    /**
-     * @group DDC-1955
-     * @group 5570
-     * @group 6174
-     */
-    public function testMergeWithExistingEntityWillNotPersistItNorTriggerPrePersistListeners(): void
-    {
-        $persistedEntity = new EntityWithRandomlyGeneratedField();
-        $mergedEntity    = new EntityWithRandomlyGeneratedField();
-
-        $mergedEntity->id             = $persistedEntity->id;
-        $mergedEntity->generatedField = random_int(
-            $persistedEntity->generatedField + 1,
-            $persistedEntity->generatedField + 1000
-        );
-
-        $this
-            ->eventManager
-            ->expects(self::any())
-            ->method('hasListeners')
-            ->willReturnCallback(static function ($eventName) {
-                return $eventName === Events::prePersist;
-            });
-        $this->eventManager->expects(self::never())->method('dispatchEvent');
-
-        $this->_unitOfWork->registerManaged(
-            $persistedEntity,
-            ['id' => $persistedEntity->id],
-            ['generatedField' => $persistedEntity->generatedField]
-        );
-
-        $merged = $this->_unitOfWork->merge($mergedEntity);
-        assert($merged instanceof EntityWithRandomlyGeneratedField);
-
-        self::assertSame($merged, $persistedEntity);
-        self::assertSame($persistedEntity->generatedField, $mergedEntity->generatedField);
     }
 
     /**
