@@ -979,7 +979,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     public function testMatchingCriteriaNullAssocComparison(): void
     {
         $fixtures       = $this->loadFixtureUserEmail();
-        $user           = $this->_em->merge($fixtures[0]);
+        $user           = $this->_em->find(CmsUser::class, $fixtures[0]->id);
         $repository     = $this->_em->getRepository(CmsUser::class);
         $criteriaIsNull = Criteria::create()->where(Criteria::expr()->isNull('email'));
         $criteriaEqNull = Criteria::create()->where(Criteria::expr()->eq('email', null));
