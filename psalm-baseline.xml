@@ -430,9 +430,6 @@
       <code>$this-&gt;_entityName</code>
       <code>$this-&gt;_entityName</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="1">
-      <code>self::$inflector === null</code>
-    </DocblockTypeContradiction>
     <InvalidReturnStatement occurrences="3">
       <code>$persister-&gt;load($criteria, null, null, [], null, 1, $orderBy)</code>
       <code>$this-&gt;_em-&gt;find($this-&gt;_entityName, $id, $lockMode, $lockVersion)</code>
@@ -441,7 +438,7 @@
     <InvalidReturnType occurrences="3">
       <code>?T</code>
       <code>?T</code>
-      <code>Collection&lt;int, T&gt;</code>
+      <code>AbstractLazyCollection&lt;int, T&gt;&amp;Selectable&lt;int, T&gt;</code>
     </InvalidReturnType>
     <LessSpecificImplementedReturnType occurrences="1">
       <code>string</code>
@@ -574,15 +571,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/LazyCriteriaCollection.php">
-    <MoreSpecificImplementedParamType occurrences="1">
-      <code>$element</code>
-    </MoreSpecificImplementedParamType>
     <PropertyNotSetInConstructor occurrences="1">
       <code>LazyCriteriaCollection</code>
     </PropertyNotSetInConstructor>
-    <UndefinedInterfaceMethod occurrences="1">
-      <code>matching</code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php">
     <ArgumentTypeCoercion occurrences="2">

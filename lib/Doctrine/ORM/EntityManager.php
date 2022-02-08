@@ -778,7 +778,7 @@ use function sprintf;
      * @return ObjectRepository|EntityRepository The repository class.
      * @psalm-return EntityRepository<T>
      *
-     * @template T
+     * @template T of object
      */
     public function getRepository($entityName)
     {
