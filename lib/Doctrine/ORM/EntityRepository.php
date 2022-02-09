@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use BadMethodCallException;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\AbstractLazyCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\DBAL\LockMode;
@@ -29,28 +29,37 @@ use function substr;
  * This class is designed for inheritance and users can subclass this class to
  * write their own repositories with business-specific methods to locate entities.
  *
- * @template T
+ * @template T of object
  * @template-implements Selectable<int,T>
  * @template-implements ObjectRepository<T>
  */
 class EntityRepository implements ObjectRepository, Selectable
 {
-    /** @var string */
+    /**
+     * @internal This property will be private in 3.0, call {@see getEntityName()} instead.
+     *
+     * @var string
+     */
     protected $_entityName;
 
-    /** @var EntityManagerInterface */
+    /**
+     * @internal This property will be private in 3.0, call {@see getEntityManager()} instead.
+     *
+     * @var EntityManagerInterface
+     */
     protected $_em;
 
-    /** @var ClassMetadata */
+    /**
+     * @internal This property will be private in 3.0, call {@see getClassMetadata()} instead.
+     *
+     * @var ClassMetadata
+     */
     protected $_class;
 
-    /** @var Inflector */
+    /** @var Inflector|null */
     private static $inflector;
 
-    /**
-     * Initializes a new <tt>EntityRepository</tt>.
-     */
-    public function __construct(EntityManagerInterface $em, Mapping\ClassMetadata $class)
+    public function __construct(EntityManagerInterface $em, ClassMetadata $class)
     {
         $this->_entityName = $class->name;
         $this->_em         = $em;
@@ -60,8 +69,8 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Creates a new QueryBuilder instance that is prepopulated for this entity name.
      *
-     * @param string $alias
-     * @param string $indexBy The index for the from.
+     * @param string      $alias
+     * @param string|null $indexBy The index for the from.
      *
      * @return QueryBuilder
      */
@@ -222,7 +231,7 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * @return Mapping\ClassMetadata
+     * @return ClassMetadata
      */
     protected function getClassMetadata()
     {
@@ -233,8 +242,8 @@ class EntityRepository implements ObjectRepository, Selectable
      * Select all elements from a selectable that match the expression and
      * return a new collection containing these elements.
      *
-     * @return LazyCriteriaCollection
-     * @psalm-return Collection<int, T>
+     * @return AbstractLazyCollection
+     * @psalm-return AbstractLazyCollection<int, T>&Selectable<int, T>
      */
     public function matching(Criteria $criteria)
     {

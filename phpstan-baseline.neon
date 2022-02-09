@@ -116,36 +116,6 @@ parameters:
 			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:find\\(\\) should return T of object\\|null but returns object\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:find\\(\\) should return T of object\\|null but returns object\\|null\\.$#"
-			count: 3
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getPartialReference\\(\\) should return T of object\\|null but returns object\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getPartialReference\\(\\) should return T of object\\|null but returns object\\|null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getReference\\(\\) should return T of object\\|null but returns Doctrine\\\\Common\\\\Proxy\\\\Proxy\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getReference\\(\\) should return T of object\\|null but returns object\\|null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
 			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ORM\\\\EntityManager\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
@@ -161,12 +131,7 @@ parameters:
 			path: lib/Doctrine/ORM/EntityManagerInterface.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityRepository\\:\\:find\\(\\) should return T\\|null but returns object\\|null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityRepository.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityRepository\\:\\:findOneBy\\(\\) should return T\\|null but returns object\\|null\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\EntityRepository\\:\\:matching\\(\\) should return Doctrine\\\\Common\\\\Collections\\\\AbstractLazyCollection\\<int, T of object\\>&Doctrine\\\\Common\\\\Collections\\\\Selectable\\<int, T of object\\> but returns Doctrine\\\\ORM\\\\LazyCriteriaCollection\\<\\(int\\|string\\), object\\>\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityRepository.php
 
@@ -189,11 +154,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$discrMap of static method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\HydrationException\\:\\:invalidDiscriminatorValue\\(\\) expects array\\<string, string\\>, array\\<int, int\\|string\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Internal/Hydration/SimpleObjectHydrator.php
-
-		-
-			message: "#^Call to an undefined method Doctrine\\\\Common\\\\Collections\\\\Collection\\<\\(int\\|string\\), mixed\\>\\:\\:matching\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/LazyCriteriaCollection.php
 
 		-
 			message: "#^Offset 'indexes' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
@@ -498,11 +458,6 @@ parameters:
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\PersistentCollection\\:\\:remove\\(\\) should return object but returns array\\|float\\|int\\|string\\|false\\|null\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/PersistentCollection.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\PersistentCollection\\:\\:slice\\(\\) should return array\\<TKey of \\(int\\|string\\), T\\> but returns array\\.$#"
-			count: 2
 			path: lib/Doctrine/ORM/PersistentCollection.php
 
 		-

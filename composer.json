@@ -39,12 +39,12 @@
         "doctrine/annotations": "^1.13",
         "doctrine/coding-standard": "^9.0",
         "phpbench/phpbench": "^1.0",
-        "phpstan/phpstan": "1.4.3",
+        "phpstan/phpstan": "1.4.6",
         "phpunit/phpunit": "^9.5",
         "psr/log": "^1 || ^2 || ^3",
         "squizlabs/php_codesniffer": "3.6.2",
         "symfony/cache": "^4.4 || ^5.4 || ^6.0",
-        "vimeo/psalm": "4.19.0"
+        "vimeo/psalm": "4.20.0"
     },
     "conflict": {
         "doctrine/annotations": "<1.13 || >= 2.0"

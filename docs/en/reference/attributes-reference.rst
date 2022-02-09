@@ -628,7 +628,7 @@ Examples:
     #[Entity]
     #[InheritanceType("SINGLE_TABLE")]
     #[DiscriminatorColumn(name: "discr", type: "string")]
-    #[DiscriminatorMap({"person" = "Person", "employee" = "Employee"})]
+    #[DiscriminatorMap(["person" => "Person", "employee" => "Employee"])]
     class Person
     {
         // ...
@@ -637,7 +637,7 @@ Examples:
     #[Entity]
     #[InheritanceType("JOINED")]
     #[DiscriminatorColumn(name: "discr", type: "string")]
-    #[DiscriminatorMap({"person" = "Person", "employee" = "Employee"})]
+    #[DiscriminatorMap(["person" => "Person", "employee" => "Employee"])]
     class Person
     {
         // ...

@@ -26,7 +26,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @psalm-return EntityRepository<T>
      *
-     * @template T
+     * @template T of object
      */
     public function getRepository($className): EntityRepository;
 
