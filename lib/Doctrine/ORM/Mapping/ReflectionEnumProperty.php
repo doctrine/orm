@@ -58,6 +58,12 @@ class ReflectionEnumProperty extends ReflectionProperty
             return null;
         }
 
+        if (is_array($enum)) {
+            return array_map(function ($item) {
+                return $item->value;
+            }, $enum);
+        }
+
         return $enum->value;
     }
 
