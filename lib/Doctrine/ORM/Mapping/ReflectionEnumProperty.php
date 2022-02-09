@@ -67,18 +67,37 @@ class ReflectionEnumProperty extends ReflectionProperty
     {
         if ($value !== null) {
             $enumType = $this->enumType;
-            try {
-                $value = $enumType::from($value);
-            } catch (ValueError $e) {
-                assert(is_string($value) || is_int($value));
 
-                throw MappingException::invalidEnumValue(
-                    get_class($object),
-                    $this->originalReflectionProperty->getName(),
-                    (string) $value,
-                    $enumType,
-                    $e
-                );
+            if (is_array($value)) {
+                $value = array_map(function ($item) use ($enumType, $object) {
+                    try {
+                        return $enumType::from($item);
+                    } catch (ValueError $e) {
+                        assert(is_string($item) || is_int($item));
+
+                        throw MappingException::invalidEnumValue(
+                            get_class($object),
+                            $this->originalReflectionProperty->getName(),
+                            (string) $item,
+                            $enumType,
+                            $e
+                        );
+                    }
+                }, $value);
+            } else {
+                try {
+                    $value = $enumType::from($value);
+                } catch (ValueError $e) {
+                    assert(is_string($value) || is_int($value));
+
+                    throw MappingException::invalidEnumValue(
+                        get_class($object),
+                        $this->originalReflectionProperty->getName(),
+                        (string) $value,
+                        $enumType,
+                        $e
+                    );
+                }
             }
         }
 
