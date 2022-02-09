@@ -141,7 +141,7 @@ EXCEPTION
     {
         $this->setUpEntitySchema([Scale::class]);
 
-        $scale       = new Scale();
+        $scale                 = new Scale();
         $scale->supportedUnits = [Unit::Gram, Unit::Meter];
 
         $this->_em->persist($scale);

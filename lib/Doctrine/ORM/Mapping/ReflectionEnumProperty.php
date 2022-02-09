@@ -77,7 +77,7 @@ class ReflectionEnumProperty extends ReflectionProperty
             $enumType = $this->enumType;
 
             if (is_array($value)) {
-                $value = array_map(function ($item) use ($enumType, $object) {
+                $value = array_map(static function ($item) use ($enumType, $object) {
                     try {
                         return $enumType::from($item);
                     } catch (ValueError $e) {
