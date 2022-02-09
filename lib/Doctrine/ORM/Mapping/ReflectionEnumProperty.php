@@ -59,7 +59,7 @@ class ReflectionEnumProperty extends ReflectionProperty
         }
 
         if (is_array($enum)) {
-            return array_map(static function ($item) {
+            return array_map(static function ($item): mixed {
                 return $item->value;
             }, $enum);
         }
