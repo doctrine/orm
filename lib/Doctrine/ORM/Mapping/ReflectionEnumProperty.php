@@ -13,6 +13,8 @@ use function assert;
 use function get_class;
 use function is_int;
 use function is_string;
+use function is_array;
+use function array_map;
 
 class ReflectionEnumProperty extends ReflectionProperty
 {
