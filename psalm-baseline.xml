@@ -447,8 +447,7 @@
     </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadata.php">
-    <PropertyNotSetInConstructor occurrences="5">
-      <code>ClassMetadata</code>
+    <PropertyNotSetInConstructor occurrences="4">
       <code>ClassMetadata</code>
       <code>ClassMetadata</code>
       <code>ClassMetadata</code>
@@ -595,12 +594,11 @@
       <code>$mapping['originalField']</code>
       <code>$mapping['targetEntity']</code>
     </PossiblyUndefinedArrayOffset>
-    <PropertyNotSetInConstructor occurrences="5">
+    <PropertyNotSetInConstructor occurrences="4">
       <code>$idGenerator</code>
       <code>$namespace</code>
       <code>$sequenceGeneratorDefinition</code>
       <code>$table</code>
-      <code>$tableGeneratorDefinition</code>
     </PropertyNotSetInConstructor>
     <PropertyTypeCoercion occurrences="10">
       <code>$this-&gt;entityListeners</code>
@@ -1626,9 +1624,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/IndexBy.php">
-    <DeprecatedProperty occurrences="1">
-      <code>$this-&gt;simpleStateFieldPathExpression</code>
-    </DeprecatedProperty>
     <InvalidNullableReturnType occurrences="1">
       <code>dispatch</code>
     </InvalidNullableReturnType>
@@ -1638,8 +1633,7 @@
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-    <PossiblyNullPropertyAssignmentValue occurrences="2">
-      <code>null</code>
+    <PossiblyNullPropertyAssignmentValue occurrences="1">
       <code>null</code>
     </PossiblyNullPropertyAssignmentValue>
   </file>
