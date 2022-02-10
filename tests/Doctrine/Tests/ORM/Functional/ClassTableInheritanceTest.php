@@ -6,8 +6,8 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use DateTime;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\Company\CompanyEmployee;

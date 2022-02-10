@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Proxy;
 
 use Closure;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
-use Doctrine\Common\Proxy\Proxy as BaseProxy;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\Common\Proxy\ProxyDefinition;
 use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\Common\Util\ClassUtils;
@@ -93,7 +93,7 @@ class ProxyFactory extends AbstractProxyFactory
     /**
      * Creates a closure capable of initializing a proxy
      *
-     * @psalm-return Closure(BaseProxy):void
+     * @psalm-return Closure(Proxy):void
      *
      * @throws EntityNotFoundException
      */
@@ -101,7 +101,7 @@ class ProxyFactory extends AbstractProxyFactory
     {
         $wakeupProxy = $classMetadata->getReflectionClass()->hasMethod('__wakeup');
 
-        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata, $wakeupProxy): void {
+        return function (Proxy $proxy) use ($entityPersister, $classMetadata, $wakeupProxy): void {
             $initializer = $proxy->__getInitializer();
             $cloner      = $proxy->__getCloner();
 
@@ -144,13 +144,13 @@ class ProxyFactory extends AbstractProxyFactory
     /**
      * Creates a closure capable of finalizing state a cloned proxy
      *
-     * @psalm-return Closure(BaseProxy):void
+     * @psalm-return Closure(Proxy):void
      *
      * @throws EntityNotFoundException
      */
     private function createCloner(ClassMetadata $classMetadata, EntityPersister $entityPersister): Closure
     {
-        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata): void {
+        return function (Proxy $proxy) use ($entityPersister, $classMetadata): void {
             if ($proxy->__isInitialized()) {
                 return;
             }

@@ -1,5 +1,10 @@
 # Upgrade to 3.0
 
+## BC BREAK: Remove `Proxy` marker interface
+
+The `Doctrine\ORM\Proxy\Proxy` marker interface has been removed. Generated
+proxies implement `Doctrine\Common\Proxy\Proxy` instead.
+
 ## BC BREAK: Remove quoting methods from `ClassMetadata`
 
 The following methods have been removed from the class metadata because
