@@ -626,16 +626,6 @@ class ClassMetadataInfo implements ClassMetadata
     public $sequenceGeneratorDefinition;
 
     /**
-     * READ-ONLY: The definition of the table generator of this class. Only used for the
-     * TABLE generation strategy.
-     *
-     * @deprecated
-     *
-     * @var array<string, mixed>
-     */
-    public $tableGeneratorDefinition;
-
-    /**
      * READ-ONLY: The policy used for change-tracking on entities of this class.
      *
      * @var int
@@ -2233,21 +2223,6 @@ class ClassMetadataInfo implements ClassMetadata
         return isset($this->fieldMappings[$fieldName])
             ? $this->fieldMappings[$fieldName]['type']
             : null;
-    }
-
-    /**
-     * Gets the type of a column.
-     *
-     * @deprecated 3.0 remove this. this method is bogus and unreliable, since it cannot resolve the type of a column
-     *             that is derived by a referenced field on a different entity.
-     *
-     * @param string $columnName
-     *
-     * @return string|null
-     */
-    public function getTypeOfColumn($columnName)
-    {
-        return $this->getTypeOfField($this->getFieldName($columnName));
     }
 
     /**

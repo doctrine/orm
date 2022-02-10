@@ -370,23 +370,6 @@ class MappingException extends Exception implements ORMException
     }
 
     /**
-     * @deprecated 2.9 no longer in use
-     *
-     * @param string $className
-     * @param string $propertyName
-     *
-     * @return MappingException
-     */
-    public static function propertyTypeIsRequired($className, $propertyName)
-    {
-        return new self(sprintf(
-            "The attribute 'type' is required for the column description of property %s::\$%s.",
-            $className,
-            $propertyName
-        ));
-    }
-
-    /**
      * @param string $entity    The entity's name.
      * @param string $fieldName The name of the field that was already declared.
      *
