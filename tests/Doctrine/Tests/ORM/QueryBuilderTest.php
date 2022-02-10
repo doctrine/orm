@@ -29,8 +29,7 @@ use function get_class;
  */
 class QueryBuilderTest extends OrmTestCase
 {
-    /** @var EntityManagerMock */
-    private $entityManager;
+    private EntityManagerMock $entityManager;
 
     protected function setUp(): void
     {
