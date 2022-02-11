@@ -1,5 +1,15 @@
 # Upgrade to 3.0
 
+## BC BREAK: Remove quoting methods from `ClassMetadata`
+
+The following methods have been removed from the class metadata because
+quoting is handled by implementations of `Doctrine\ORM\Mapping\QuoteStrategy`:
+
+* `getQuotedIdentifierColumnNames()`
+* `getQuotedColumnName()`
+* `getQuotedTableName()`
+* `getQuotedJoinTableName()`
+
 ## BC BREAK: Remove ability to merge detached entities
 
 Merge semantics was a poor fit for the PHP "share-nothing" architecture.

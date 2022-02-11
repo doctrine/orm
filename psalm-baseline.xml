@@ -536,8 +536,7 @@
       <code>$className</code>
       <code>$this-&gt;namespace . '\\' . $className</code>
     </LessSpecificReturnStatement>
-    <MissingClosureParamType occurrences="2">
-      <code>$joinColumn</code>
+    <MissingClosureParamType occurrences="1">
       <code>$joinColumn</code>
     </MissingClosureParamType>
     <MissingClosureReturnType occurrences="1">
