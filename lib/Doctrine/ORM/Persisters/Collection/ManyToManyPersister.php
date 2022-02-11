@@ -27,10 +27,7 @@ use function sprintf;
  */
 class ManyToManyPersister extends AbstractCollectionPersister
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function delete(PersistentCollection $collection)
+    public function delete(PersistentCollection $collection): void
     {
         $mapping = $collection->getMapping();
 
@@ -48,10 +45,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $this->conn->executeStatement($this->getDeleteSQL($collection), $this->getDeleteSQLParameters($collection), $types);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function update(PersistentCollection $collection)
+    public function update(PersistentCollection $collection): void
     {
         $mapping = $collection->getMapping();
 
@@ -79,10 +73,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function get(PersistentCollection $collection, $index)
+    public function get(PersistentCollection $collection, mixed $index): mixed
     {
         $mapping = $collection->getMapping();
 
@@ -98,10 +89,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         return $persister->load([$mappedKey => $collection->getOwner(), $mapping['indexBy'] => $index], null, $mapping, [], 0, 1);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function count(PersistentCollection $collection)
+    public function count(PersistentCollection $collection): int
     {
         $conditions  = [];
         $params      = [];
@@ -160,7 +148,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritDoc}
      */
-    public function slice(PersistentCollection $collection, $offset, $length = null)
+    public function slice(PersistentCollection $collection, int $offset, ?int $length = null): array
     {
         $mapping   = $collection->getMapping();
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
@@ -168,10 +156,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         return $persister->getManyToManyCollection($mapping, $collection->getOwner(), $offset, $length);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function containsKey(PersistentCollection $collection, $key)
+    public function containsKey(PersistentCollection $collection, mixed $key): bool
     {
         $mapping = $collection->getMapping();
 
@@ -190,10 +175,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         return (bool) $this->conn->fetchOne($sql, $params, $types);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function contains(PersistentCollection $collection, $element)
+    public function contains(PersistentCollection $collection, object $element): bool
     {
         if (! $this->isValidEntityState($element)) {
             return false;
@@ -213,7 +195,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritDoc}
      */
-    public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
+    public function loadCriteria(PersistentCollection $collection, Criteria $criteria): array
     {
         $mapping       = $collection->getMapping();
         $owner         = $collection->getOwner();
@@ -293,7 +275,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *                   - WHERE condition to add to the SQL
      * @psalm-return array{0: string, 1: string}
      */
-    public function getFilterSql($mapping)
+    public function getFilterSql(array $mapping): array
     {
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
         $rootClass   = $this->em->getClassMetadata($targetClass->rootEntityName);
@@ -319,7 +301,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @return string The SQL query part to add to a query.
      */
-    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         $filterClauses = [];
 
@@ -344,7 +326,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * @return string[]
      * @psalm-return list<string>
      */
-    protected function getOnConditionSQL($mapping)
+    protected function getOnConditionSQL(array $mapping): array
     {
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
         $association = ! $mapping['isOwningSide']
@@ -367,10 +349,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         return $conditions;
     }
 
-    /**
-     * @return string
-     */
-    protected function getDeleteSQL(PersistentCollection $collection)
+    protected function getDeleteSQL(PersistentCollection $collection): string
     {
         $columns   = [];
         $mapping   = $collection->getMapping();
@@ -390,7 +369,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @return list<mixed>
      */
-    protected function getDeleteSQLParameters(PersistentCollection $collection)
+    protected function getDeleteSQLParameters(PersistentCollection $collection): array
     {
         $mapping    = $collection->getMapping();
         $identifier = $this->uow->getEntityIdentifier($collection->getOwner());
@@ -420,7 +399,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *                             of types for bound parameters
      * @psalm-return array{0: string, 1: list<string>}
      */
-    protected function getDeleteRowSQL(PersistentCollection $collection)
+    protected function getDeleteRowSQL(PersistentCollection $collection): array
     {
         $mapping     = $collection->getMapping();
         $class       = $this->em->getClassMetadata($mapping['sourceEntity']);
@@ -451,12 +430,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * Internal note: Order of the parameters must be the same as the order of the columns in getDeleteRowSql.
      *
-     * @param mixed $element
-     *
      * @return mixed[]
      * @psalm-return list<mixed>
      */
-    protected function getDeleteRowSQLParameters(PersistentCollection $collection, $element)
+    protected function getDeleteRowSQLParameters(PersistentCollection $collection, object $element)
     {
         return $this->collectJoinTableColumnParameters($collection, $element);
     }
@@ -468,7 +445,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *                             of types for bound parameters
      * @psalm-return array{0: string, 1: list<string>}
      */
-    protected function getInsertRowSQL(PersistentCollection $collection)
+    protected function getInsertRowSQL(PersistentCollection $collection): array
     {
         $columns     = [];
         $types       = [];
@@ -501,12 +478,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * Internal note: Order of the parameters must be the same as the order of the columns in getInsertRowSql.
      *
-     * @param object $element
-     *
      * @return mixed[]
      * @psalm-return list<mixed>
      */
-    protected function getInsertRowSQLParameters(PersistentCollection $collection, $element)
+    protected function getInsertRowSQLParameters(PersistentCollection $collection, object $element): array
     {
         return $this->collectJoinTableColumnParameters($collection, $element);
     }
@@ -515,14 +490,12 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * Collects the parameters for inserting/deleting on the join table in the order
      * of the join table columns as specified in ManyToManyMapping#joinTableColumns.
      *
-     * @param object $element
-     *
      * @return mixed[]
      * @psalm-return list<mixed>
      */
     private function collectJoinTableColumnParameters(
         PersistentCollection $collection,
-        $element
+        object $element
     ): array {
         $params      = [];
         $mapping     = $collection->getMapping();
@@ -646,8 +619,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * @param bool   $addFilters Whether the filter SQL should be included or not.
-     * @param object $element
+     * @param bool $addFilters Whether the filter SQL should be included or not.
      *
      * @return mixed[] ordered vector:
      *                - quoted join table name
@@ -658,7 +630,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     private function getJoinTableRestrictions(
         PersistentCollection $collection,
-        $element,
+        object $element,
         bool $addFilters
     ): array {
         $filterMapping = $collection->getMapping();

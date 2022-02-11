@@ -15,9 +15,6 @@ use Doctrine\ORM\Persisters\Collection\CollectionPersister;
  */
 class NonStrictReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersisterTest
 {
-    /**
-     * {@inheritdoc}
-     */
     protected function createPersister(EntityManagerInterface $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister
     {
         return new NonStrictReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);

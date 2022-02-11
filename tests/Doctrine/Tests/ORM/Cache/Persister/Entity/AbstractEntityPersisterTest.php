@@ -26,13 +26,12 @@ use PHPUnit\Framework\MockObject\MockObject;
 abstract class AbstractEntityPersisterTest extends OrmTestCase
 {
     /** @var Region&MockObject */
-    protected $region;
+    protected Region $region;
 
     /** @var EntityPersister&MockObject */
-    protected $entityPersister;
+    protected EntityPersister $entityPersister;
 
-    /** @var EntityManagerMock */
-    protected $em;
+    protected EntityManagerMock $em;
 
     abstract protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata): AbstractEntityPersister;
 

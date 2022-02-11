@@ -31,19 +31,16 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      *
      * @psalm-var array<string, string>
      */
-    private $owningTableMap = [];
+    private array $owningTableMap = [];
 
     /**
      * Map of table to quoted table names.
      *
      * @psalm-var array<string, string>
      */
-    private $quotedTableMap = [];
+    private array $quotedTableMap = [];
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getDiscriminatorColumnTableName()
+    protected function getDiscriminatorColumnTableName(): string
     {
         $class = $this->class->name !== $this->class->rootEntityName
             ? $this->em->getClassMetadata($this->class->rootEntityName)
@@ -70,31 +67,21 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * Gets the name of the table that owns the column the given field is mapped to.
      *
-     * @param string $fieldName
-     *
-     * @return string
-     *
      * @override
      */
-    public function getOwningTable($fieldName)
+    public function getOwningTable(string $fieldName): string
     {
         if (isset($this->owningTableMap[$fieldName])) {
             return $this->owningTableMap[$fieldName];
         }
 
-        switch (true) {
-            case isset($this->class->associationMappings[$fieldName]['inherited']):
-                $cm = $this->em->getClassMetadata($this->class->associationMappings[$fieldName]['inherited']);
-                break;
-
-            case isset($this->class->fieldMappings[$fieldName]['inherited']):
-                $cm = $this->em->getClassMetadata($this->class->fieldMappings[$fieldName]['inherited']);
-                break;
-
-            default:
-                $cm = $this->class;
-                break;
-        }
+        $cm = match (true) {
+            isset($this->class->associationMappings[$fieldName]['inherited'])
+                => $this->em->getClassMetadata($this->class->associationMappings[$fieldName]['inherited']),
+            isset($this->class->fieldMappings[$fieldName]['inherited'])
+                => $this->em->getClassMetadata($this->class->fieldMappings[$fieldName]['inherited']),
+            default => $this->class,
+        };
 
         $tableName       = $cm->getTableName();
         $quotedTableName = $this->quoteStrategy->getTableName($cm, $this->platform);
@@ -108,7 +95,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    public function executeInserts()
+    public function executeInserts(): array
     {
         if (! $this->queuedInserts) {
             return [];
@@ -200,10 +187,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         return $postInsertIds;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function update($entity)
+    public function update(object $entity): void
     {
         $updateData = $this->prepareUpdateData($entity);
 
@@ -238,10 +222,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function delete($entity)
+    public function delete(object $entity): bool
     {
         $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
         $id         = array_combine($this->class->getIdentifierColumnNames(), $identifier);
@@ -276,10 +257,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         return (bool) $affectedRows;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getSelectSQL($criteria, $assoc = null, $lockMode = null, $limit = null, $offset = null, ?array $orderBy = null)
+    public function getSelectSQL(array|Criteria $criteria, ?array $assoc = null, ?int $lockMode = null, ?int $limit = null, ?int $offset = null, ?array $orderBy = null): string
     {
         $this->switchPersisterContext($offset, $limit);
 
@@ -343,10 +321,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         return $this->platform->modifyLimitQuery($query, $limit, $offset ?? 0) . $lockSql;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getCountSQL($criteria = [])
+    public function getCountSQL(array|Criteria $criteria = []): string
     {
         $tableName      = $this->quoteStrategy->getTableName($this->class, $this->platform);
         $baseTableAlias = $this->getSQLTableAlias($this->class->name);
@@ -370,10 +345,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             . (empty($conditionSql) ? '' : ' WHERE ' . $conditionSql);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getLockTablesSql($lockMode)
+    protected function getLockTablesSql(int $lockMode): string
     {
         $joinSql           = '';
         $identifierColumns = $this->class->getIdentifierColumnNames();
@@ -398,10 +370,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
     /**
      * Ensure this method is never called. This persister overrides getSelectEntitiesSQL directly.
-     *
-     * @return string
      */
-    protected function getSelectColumnsSQL()
+    protected function getSelectColumnsSQL(): string
     {
         // Create the column list fragment only once
         if ($this->currentPersisterContext->selectColumnListSql !== null) {
@@ -502,7 +472,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function getInsertColumnList()
+    protected function getInsertColumnList(): array
     {
         // Identifier columns must always come first in the column list of subclasses.
         $columns = $this->class->parentClasses
@@ -547,7 +517,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function assignDefaultVersionAndUpsertableValues($entity, array $id)
+    protected function assignDefaultVersionAndUpsertableValues(object $entity, array $id): void
     {
         $values = $this->fetchVersionAndNotUpsertableValues($this->getVersionedClassMetadata(), $id);
 

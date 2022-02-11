@@ -20,13 +20,13 @@ class NonLoadingPersister extends BasicEntityPersister
      */
     public function load(
         array $criteria,
-        $entity = null,
-        $assoc = null,
+        ?object $entity = null,
+        ?array $assoc = null,
         array $hints = [],
-        $lockMode = null,
-        $limit = null,
+        ?int $lockMode = null,
+        ?int $limit = null,
         ?array $orderBy = null
-    ) {
+    ): ?object {
         return $entity;
     }
 }
