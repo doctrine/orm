@@ -19,14 +19,9 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
  */
 abstract class AbstractRegionTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var Region
-     * @psalm-var TRegion
-     */
-    protected $region;
-
-    /** @var CacheItemPoolInterface */
-    protected $cacheItemPool;
+    /** @psalm-var TRegion */
+    protected Region $region;
+    protected CacheItemPoolInterface $cacheItemPool;
 
     protected function setUp(): void
     {

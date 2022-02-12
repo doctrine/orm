@@ -7,10 +7,8 @@ namespace Doctrine\ORM\Cache\Persister\Collection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\CollectionHydrator;
-use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\Cache\Region;
@@ -171,52 +169,5 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria): array
     {
         return $this->persister->loadCriteria($collection, $criteria);
-    }
-
-    /**
-     * Clears cache entries related to the current collection
-     *
-     * @deprecated This method is not used anymore.
-     */
-    protected function evictCollectionCache(PersistentCollection $collection): void
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/9512',
-            'The method %s() is deprecated and will be removed without replacement.'
-        );
-
-        $key = new CollectionCacheKey(
-            $this->sourceEntity->rootEntityName,
-            $this->association['fieldName'],
-            $this->uow->getEntityIdentifier($collection->getOwner())
-        );
-
-        $this->region->evict($key);
-
-        $this->cacheLogger?->collectionCachePut($this->regionName, $key);
-    }
-
-    /**
-     * @deprecated This method is not used anymore.
-     *
-     * @psalm-param class-string $targetEntity
-     */
-    protected function evictElementCache(string $targetEntity, object $element): void
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/9512',
-            'The method %s() is deprecated and will be removed without replacement.'
-        );
-
-        $targetPersister = $this->uow->getEntityPersister($targetEntity);
-        assert($targetPersister instanceof CachedEntityPersister);
-        $targetRegion = $targetPersister->getCacheRegion();
-        $key          = new EntityCacheKey($targetEntity, $this->uow->getEntityIdentifier($element));
-
-        $targetRegion->evict($key);
-
-        $this->cacheLogger?->entityCachePut($targetRegion->getName(), $key);
     }
 }

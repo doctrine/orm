@@ -15,24 +15,19 @@ class QueryCacheKey extends CacheKey
      * Cache key lifetime
      *
      * @readonly Public only for performance reasons, it should be considered immutable.
-     * @var int
      */
-    public $lifetime;
+    public int $lifetime;
 
     /**
      * Cache mode
      *
      * @readonly Public only for performance reasons, it should be considered immutable.
-     * @var int
      * @psalm-var Cache::MODE_*
      */
-    public $cacheMode;
+    public int $cacheMode;
 
-    /**
-     * @readonly Public only for performance reasons, it should be considered immutable.
-     * @var TimestampCacheKey|null
-     */
-    public $timestampKey;
+    /** @readonly Public only for performance reasons, it should be considered immutable. */
+    public ?TimestampCacheKey $timestampKey = null;
 
     /**
      * @psalm-param Cache::MODE_* $cacheMode

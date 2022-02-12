@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\ORM\Cache\Lock;
-use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\Region\FileLockRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
@@ -31,11 +30,11 @@ use const E_WARNING;
 /**
  * @extends AbstractRegionTest<FileLockRegion>
  * @group DDC-2183
+ * @extends AbstractRegionTest<FileLockRegion>
  */
 class FileLockRegionTest extends AbstractRegionTest
 {
-    /** @var string */
-    protected $directory;
+    protected string $directory;
 
     public function tearDown(): void
     {
@@ -51,7 +50,7 @@ class FileLockRegionTest extends AbstractRegionTest
         return $reflection->invoke($region, $key);
     }
 
-    protected function createRegion(): Region
+    protected function createRegion(): FileLockRegion
     {
         $this->directory = sys_get_temp_dir() . '/doctrine_lock_' . uniqid();
 

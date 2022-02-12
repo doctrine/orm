@@ -1,5 +1,14 @@
 # Upgrade to 3.0
 
+## BC BREAK: Remove helper methods from `AbstractCollectionPersister`
+
+The following protected methods of
+`Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister`
+have been removed.
+
+* `evictCollectionCache()`
+* `evictElementCache()`
+
 ## BC BREAK: `Doctrine\ORM\Query\TreeWalkerChainIterator`
 
 This class has been removed without replacement.

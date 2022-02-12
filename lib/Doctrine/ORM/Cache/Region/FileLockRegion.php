@@ -92,18 +92,12 @@ class FileLockRegion implements ConcurrentRegion
         return $this->directory . DIRECTORY_SEPARATOR . $key->hash . '.' . self::LOCK_EXTENSION;
     }
 
-    /**
-     * @return string|false
-     */
-    private function getLockContent(string $filename)
+    private function getLockContent(string $filename): string|false
     {
         return @file_get_contents($filename);
     }
 
-    /**
-     * @return int|false
-     */
-    private function getLockTime(string $filename)
+    private function getLockTime(string $filename): int|false
     {
         return @fileatime($filename);
     }
