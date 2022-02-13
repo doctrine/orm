@@ -16,11 +16,11 @@ use Doctrine\ORM\Cache\Persister\Entity\ReadOnlyCachedEntityPersister;
 use Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\RegionsConfiguration;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Tests\Mocks\ConcurrentRegionMock;
+use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\Cache\AttractionContactInfo;
 use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
 use Doctrine\Tests\Models\Cache\City;
@@ -39,7 +39,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
     /** @var CacheFactory&MockObject */
     private $factory;
 
-    /** @var EntityManagerInterface */
+    /** @var EntityManagerMock */
     private $em;
 
     /** @var RegionsConfiguration */

@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Cache;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\ORM\Cache\CollectionHydrator;
 use Doctrine\ORM\Cache\DefaultCollectionHydrator;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
@@ -22,7 +21,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
 {
-    /** @var CollectionHydrator */
+    /** @var DefaultCollectionHydrator */
     private $structure;
 
     protected function setUp(): void
@@ -30,8 +29,7 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
         $this->enableSecondLevelCache();
         parent::setUp();
 
-        $targetPersister = $this->_em->getUnitOfWork()->getEntityPersister(City::class);
-        $this->structure = new DefaultCollectionHydrator($this->_em, $targetPersister);
+        $this->structure = new DefaultCollectionHydrator($this->_em);
     }
 
     public function testImplementsCollectionEntryStructure(): void
