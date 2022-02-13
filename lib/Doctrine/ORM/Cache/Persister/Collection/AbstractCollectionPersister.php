@@ -224,6 +224,8 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     /**
      * Clears cache entries related to the current collection
      *
+     * @deprecated This method is not used anymore.
+     *
      * @return void
      */
     protected function evictCollectionCache(PersistentCollection $collection)
@@ -242,8 +244,11 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
+     * @deprecated This method is not used anymore.
+     *
      * @param string $targetEntity
      * @param object $element
+     * @psalm-param class-string $targetEntity
      *
      * @return void
      */
