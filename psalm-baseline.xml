@@ -40,11 +40,6 @@
       <code>(string) $cacheRegion</code>
     </RedundantCastGivenDocblockType>
   </file>
-  <file src="lib/Doctrine/ORM/Cache.php">
-    <MissingReturnType occurrences="1">
-      <code>evictQueryRegion</code>
-    </MissingReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/CacheConfiguration.php">
     <PossiblyNullReference occurrences="1">
       <code>getTimestampRegion</code>
@@ -60,9 +55,6 @@
     <InvalidOperand occurrences="1">
       <code>! $association['type']</code>
     </InvalidOperand>
-    <MissingReturnType occurrences="1">
-      <code>evictQueryRegion</code>
-    </MissingReturnType>
     <PossiblyNullPropertyAssignmentValue occurrences="1"/>
     <PossiblyNullReference occurrences="1">
       <code>getCacheFactory</code>
@@ -88,16 +80,12 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultQueryCache.php">
-    <ArgumentTypeCoercion occurrences="5">
+    <ArgumentTypeCoercion occurrences="4">
       <code>$assocKeys-&gt;identifiers[$assocIndex]</code>
       <code>$assocKeys-&gt;identifiers[$assocIndex]</code>
       <code>$cacheKeys-&gt;identifiers[$index]</code>
       <code>$cacheKeys-&gt;identifiers[$index]</code>
-      <code>$unCachedAssociationData-&gt;class</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="1">
-      <code>$assocValue === null</code>
-    </DocblockTypeContradiction>
     <MissingClosureParamType occurrences="1">
       <code>$id</code>
     </MissingClosureParamType>
@@ -119,55 +107,10 @@
       <code>storeEntityCache</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/EntityCacheEntry.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$value-&gt;class</code>
-    </ArgumentTypeCoercion>
-  </file>
-  <file src="lib/Doctrine/ORM/Cache/Logging/CacheLogger.php">
-    <MissingReturnType occurrences="9">
-      <code>collectionCacheHit</code>
-      <code>collectionCacheMiss</code>
-      <code>collectionCachePut</code>
-      <code>entityCacheHit</code>
-      <code>entityCacheMiss</code>
-      <code>entityCachePut</code>
-      <code>queryCacheHit</code>
-      <code>queryCacheMiss</code>
-      <code>queryCachePut</code>
-    </MissingReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Cache/Logging/CacheLoggerChain.php">
-    <MissingReturnType occurrences="9">
-      <code>collectionCacheHit</code>
-      <code>collectionCacheMiss</code>
-      <code>collectionCachePut</code>
-      <code>entityCacheHit</code>
-      <code>entityCacheMiss</code>
-      <code>entityCachePut</code>
-      <code>queryCacheHit</code>
-      <code>queryCacheMiss</code>
-      <code>queryCachePut</code>
-    </MissingReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Cache/Logging/StatisticsCacheLogger.php">
-    <MissingReturnType occurrences="9">
-      <code>collectionCacheHit</code>
-      <code>collectionCacheMiss</code>
-      <code>collectionCachePut</code>
-      <code>entityCacheHit</code>
-      <code>entityCacheMiss</code>
-      <code>entityCachePut</code>
-      <code>queryCacheHit</code>
-      <code>queryCacheMiss</code>
-      <code>queryCachePut</code>
-    </MissingReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php">
-    <ArgumentTypeCoercion occurrences="3">
+    <ArgumentTypeCoercion occurrences="2">
       <code>$cache</code>
       <code>$entityKey</code>
-      <code>$targetEntity</code>
     </ArgumentTypeCoercion>
     <NoInterfaceProperties occurrences="1">
       <code>$entry-&gt;identifiers</code>
@@ -255,11 +198,6 @@
       <code>CacheProvider</code>
     </MoreSpecificReturnType>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/Region/UpdateTimestampCache.php">
-    <MissingReturnType occurrences="1">
-      <code>update</code>
-    </MissingReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/RegionsConfiguration.php">
     <RedundantCastGivenDocblockType occurrences="6">
       <code>(int) $defaultLifetime</code>
@@ -284,11 +222,6 @@
     <NoInterfaceProperties occurrences="1">
       <code>$timestamp-&gt;time</code>
     </NoInterfaceProperties>
-  </file>
-  <file src="lib/Doctrine/ORM/Cache/TimestampRegion.php">
-    <MissingReturnType occurrences="1">
-      <code>update</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Configuration.php">
     <ArgumentTypeCoercion occurrences="2">

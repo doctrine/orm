@@ -14,11 +14,15 @@ use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
+ * @template TRegion of Region
  * @group DDC-2183
  */
 abstract class AbstractRegionTest extends OrmFunctionalTestCase
 {
-    /** @var Region */
+    /**
+     * @var Region
+     * @psalm-var TRegion
+     */
     protected $region;
 
     /** @var CacheItemPoolInterface */
@@ -32,6 +36,7 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
         $this->region        = $this->createRegion();
     }
 
+    /** @psalm-return TRegion */
     abstract protected function createRegion(): Region;
 
     /** @psalm-return list<array{CacheKeyMock, CacheEntryMock}> */

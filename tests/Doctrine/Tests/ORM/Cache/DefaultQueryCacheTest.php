@@ -17,6 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheRegionMock;
+use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\TimestampRegionMock;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Country;
@@ -37,14 +38,11 @@ class DefaultQueryCacheTest extends OrmTestCase
     /** @var DefaultQueryCache */
     private $queryCache;
 
-    /** @var EntityManagerInterface */
+    /** @var EntityManagerMock */
     private $em;
 
     /** @var CacheRegionMock */
     private $region;
-
-    /** @var CacheFactoryDefaultQueryCacheTest */
-    private $cacheFactory;
 
     protected function setUp(): void
     {
@@ -52,14 +50,14 @@ class DefaultQueryCacheTest extends OrmTestCase
 
         $this->enableSecondLevelCache();
 
-        $this->em           = $this->getTestEntityManager();
-        $this->region       = new CacheRegionMock();
-        $this->queryCache   = new DefaultQueryCache($this->em, $this->region);
-        $this->cacheFactory = new CacheFactoryDefaultQueryCacheTest($this->queryCache, $this->region);
+        $this->em         = $this->getTestEntityManager();
+        $this->region     = new CacheRegionMock();
+        $this->queryCache = new DefaultQueryCache($this->em, $this->region);
+        $cacheFactory     = new CacheFactoryDefaultQueryCacheTest($this->queryCache, $this->region);
 
         $this->em->getConfiguration()
             ->getSecondLevelCacheConfiguration()
-            ->setCacheFactory($this->cacheFactory);
+            ->setCacheFactory($cacheFactory);
     }
 
     public function testImplementQueryCache(): void

@@ -29,7 +29,10 @@ class DefaultCache implements Cache
      /** @var CacheFactory */
     private $cacheFactory;
 
-    /** @var QueryCache[] */
+    /**
+     * @var QueryCache[]
+     * @psalm-var array<string, QueryCache>
+     */
     private $queryCaches = [];
 
     /** @var QueryCache|null */
@@ -260,8 +263,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * @param ClassMetadata $metadata   The entity metadata.
-     * @param mixed         $identifier The entity identifier.
+     * @param mixed $identifier The entity identifier.
      */
     private function buildEntityCacheKey(ClassMetadata $metadata, $identifier): EntityCacheKey
     {
@@ -273,9 +275,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * @param ClassMetadata $metadata        The entity metadata.
-     * @param string        $association     The field name that represents the association.
-     * @param mixed         $ownerIdentifier The identifier of the owning entity.
+     * @param mixed $ownerIdentifier The identifier of the owning entity.
      */
     private function buildCollectionCacheKey(
         ClassMetadata $metadata,
@@ -290,8 +290,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * @param ClassMetadata $metadata   The entity metadata.
-     * @param mixed         $identifier The entity identifier.
+     * @param mixed $identifier The entity identifier.
      *
      * @return array<string, mixed>
      */
