@@ -26,11 +26,6 @@
       <code>(string) $cacheRegion</code>
     </RedundantCastGivenDocblockType>
   </file>
-  <file src="lib/Doctrine/ORM/Cache.php">
-    <MissingReturnType occurrences="1">
-      <code>evictQueryRegion</code>
-    </MissingReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/CacheConfiguration.php">
     <PossiblyNullReference occurrences="1">
       <code>getTimestampRegion</code>
@@ -46,9 +41,6 @@
     <InvalidOperand occurrences="1">
       <code>! $association['type']</code>
     </InvalidOperand>
-    <MissingReturnType occurrences="1">
-      <code>evictQueryRegion</code>
-    </MissingReturnType>
     <PossiblyNullPropertyAssignmentValue occurrences="1"/>
     <PossiblyNullReference occurrences="1">
       <code>getCacheFactory</code>
@@ -74,16 +66,12 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultQueryCache.php">
-    <ArgumentTypeCoercion occurrences="5">
+    <ArgumentTypeCoercion occurrences="4">
       <code>$assocKeys-&gt;identifiers[$assocIndex]</code>
       <code>$assocKeys-&gt;identifiers[$assocIndex]</code>
       <code>$cacheKeys-&gt;identifiers[$index]</code>
       <code>$cacheKeys-&gt;identifiers[$index]</code>
-      <code>$unCachedAssociationData-&gt;class</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="1">
-      <code>$assocValue === null</code>
-    </DocblockTypeContradiction>
     <MissingClosureParamType occurrences="1">
       <code>$id</code>
     </MissingClosureParamType>
@@ -105,16 +93,10 @@
       <code>storeEntityCache</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/EntityCacheEntry.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$value-&gt;class</code>
-    </ArgumentTypeCoercion>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php">
-    <ArgumentTypeCoercion occurrences="3">
+    <ArgumentTypeCoercion occurrences="2">
       <code>$cache</code>
       <code>$entityKey</code>
-      <code>$targetEntity</code>
     </ArgumentTypeCoercion>
     <NoInterfaceProperties occurrences="1">
       <code>$entry-&gt;identifiers</code>

@@ -15,20 +15,27 @@ use function strtolower;
 class CollectionCacheKey extends CacheKey
 {
     /**
+     * The owner entity identifier
+     *
      * @readonly Public only for performance reasons, it should be considered immutable.
-     * @var array<string, mixed> The owner entity identifier
+     * @var array<string, mixed>
      */
     public $ownerIdentifier;
 
     /**
+     * The owner entity class
+     *
      * @readonly Public only for performance reasons, it should be considered immutable.
-     * @var string The owner entity class
+     * @var string
+     * @psalm-var class-string
      */
     public $entityClass;
 
     /**
+     * The association name
+     *
      * @readonly Public only for performance reasons, it should be considered immutable.
-     * @var string The association name
+     * @var string
      */
     public $association;
 
@@ -36,6 +43,7 @@ class CollectionCacheKey extends CacheKey
      * @param string               $entityClass     The entity class.
      * @param string               $association     The field name that represents the association.
      * @param array<string, mixed> $ownerIdentifier The identifier of the owning entity.
+     * @psalm-param class-string $entityClass
      */
     public function __construct($entityClass, $association, array $ownerIdentifier)
     {

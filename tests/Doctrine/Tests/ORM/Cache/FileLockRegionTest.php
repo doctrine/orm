@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\ORM\Cache\CacheKey;
-use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
@@ -30,13 +29,11 @@ use function unlink;
 use const E_WARNING;
 
 /**
+ * @extends AbstractRegionTest<FileLockRegion>
  * @group DDC-2183
  */
 class FileLockRegionTest extends AbstractRegionTest
 {
-    /** @var ConcurrentRegion */
-    protected $region;
-
     /** @var string */
     protected $directory;
 
@@ -45,7 +42,7 @@ class FileLockRegionTest extends AbstractRegionTest
         $this->cleanTestDirectory($this->directory);
     }
 
-    private function getFileName(ConcurrentRegion $region, CacheKey $key): string
+    private function getFileName(FileLockRegion $region, CacheKey $key): string
     {
         $reflection = new ReflectionMethod($region, 'getLockFileName');
 
@@ -259,15 +256,16 @@ class FileLockRegionTest extends AbstractRegionTest
         $reflectionDirectory->setAccessible(true);
         $reflectionDirectory->setValue($region, str_repeat('a', 10000));
 
-        set_error_handler(static function (): void {
+        set_error_handler(static function (): bool {
+            return true;
         }, E_WARNING);
-        self::assertTrue($region->evictAll());
-        restore_error_handler();
+        try {
+            self::assertTrue($region->evictAll());
+        } finally {
+            restore_error_handler();
+        }
     }
 
-    /**
-     * @param string|null $path directory to clean
-     */
     private function cleanTestDirectory(?string $path): void
     {
         $path = $path ?: $this->directory;

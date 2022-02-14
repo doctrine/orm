@@ -10,7 +10,7 @@ use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\DefaultCache;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -25,10 +25,10 @@ use function array_merge;
  */
 class DefaultCacheTest extends OrmTestCase
 {
-    /** @var Cache */
+    /** @var DefaultCache */
     private $cache;
 
-    /** @var EntityManagerInterface */
+    /** @var EntityManagerMock */
     private $em;
 
     protected function setUp(): void

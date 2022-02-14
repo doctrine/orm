@@ -18,7 +18,7 @@ class TimestampCacheEntry implements CacheEntry
     public $time;
 
     /**
-     * @param float $time
+     * @param float|null $time
      */
     public function __construct($time = null)
     {

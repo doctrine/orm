@@ -13,6 +13,7 @@ use Doctrine\Tests\Mocks\CacheKeyMock;
 use function array_map;
 
 /**
+ * @extends AbstractRegionTest<DefaultRegion>
  * @group DDC-2183
  */
 class DefaultRegionTest extends AbstractRegionTest

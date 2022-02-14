@@ -174,6 +174,8 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
 
     /**
      * Clears cache entries related to the current collection
+     *
+     * @deprecated This method is not used anymore.
      */
     protected function evictCollectionCache(PersistentCollection $collection): void
     {
@@ -188,6 +190,11 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         $this->cacheLogger?->collectionCachePut($this->regionName, $key);
     }
 
+    /**
+     * @deprecated This method is not used anymore.
+     *
+     * @psalm-param class-string $targetEntity
+     */
     protected function evictElementCache(string $targetEntity, object $element): void
     {
         $targetPersister = $this->uow->getEntityPersister($targetEntity);

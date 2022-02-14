@@ -59,9 +59,9 @@ class ClassMetadataBuilder
     /**
      * Adds and embedded class
      *
-     * @param string      $fieldName
-     * @param string      $class
-     * @param string|null $columnPrefix
+     * @param string            $fieldName
+     * @param string            $class
+     * @param string|false|null $columnPrefix
      *
      * @return $this
      */

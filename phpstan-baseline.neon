@@ -36,11 +36,6 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/DefaultQueryCache.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between array\\<object\\>\\|object and null will always evaluate to false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Cache/DefaultQueryCache.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Cache\\\\CacheEntry\\:\\:\\$identifiers\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
