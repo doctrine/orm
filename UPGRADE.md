@@ -1,5 +1,9 @@
 # Upgrade to 3.0
 
+## BC BREAK: `Doctrine\ORM\Query\TreeWalkerChainIterator`
+
+This class has been removed without replacement.
+
 ## BC BREAK: Remove quoting methods from `ClassMetadata`
 
 The following methods have been removed from the class metadata because
