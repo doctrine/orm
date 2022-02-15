@@ -9,14 +9,12 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\MappedSuperclass;
-use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToMany;
-use Doctrine\ORM\Tools\SchemaValidator;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class GH9516Test extends OrmFunctionalTestCase
 {
-    public function testEntityCanHaveInverseOneToManyAssociationWithChildMappedSuperclass()
+    public function testEntityCanHaveInverseOneToManyAssociationWithChildMappedSuperclass(): void
     {
         $sportsCarMetadata = $this->_em->getClassMetadata(GH9516SportsCar::class);
         $this->assertTrue($sportsCarMetadata->hasAssociation('passengers'));
@@ -29,12 +27,14 @@ class GH9516Test extends OrmFunctionalTestCase
 class GH9516Passenger
 {
     /**
+     * @var int $id
      * @Id
      * @Column(type="integer")
      */
     private $id;
 
     /**
+     * @var GH9516Vehicle $vehicle
      * @ManyToOne(targetEntity="GH9516Vehicle", inversedBy="passengers")
      */
     private $vehicle;
@@ -46,12 +46,14 @@ class GH9516Passenger
 abstract class GH9516Vehicle
 {
     /**
+     * @var int $id
      * @Id
      * @Column(type="integer")
      */
     private $id;
 
     /**
+     * @var GH9516Passenger[] $passengers
      * @OneToMany(targetEntity="GH9516Passenger", mappedBy="vehicle")
      */
     private $passengers;
