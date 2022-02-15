@@ -2759,54 +2759,6 @@
     <ParamNameMismatch occurrences="1">
       <code>$condPrimary</code>
     </ParamNameMismatch>
-    <PossiblyNullReference occurrences="46">
-      <code>walkAggregateExpression</code>
-      <code>walkArithmeticExpression</code>
-      <code>walkArithmeticFactor</code>
-      <code>walkArithmeticTerm</code>
-      <code>walkBetweenExpression</code>
-      <code>walkCollectionMemberExpression</code>
-      <code>walkComparisonExpression</code>
-      <code>walkConditionalExpression</code>
-      <code>walkConditionalFactor</code>
-      <code>walkConditionalPrimary</code>
-      <code>walkConditionalTerm</code>
-      <code>walkDeleteClause</code>
-      <code>walkDeleteStatement</code>
-      <code>walkEmptyCollectionComparisonExpression</code>
-      <code>walkExistsExpression</code>
-      <code>walkFromClause</code>
-      <code>walkFunction</code>
-      <code>walkGroupByClause</code>
-      <code>walkGroupByItem</code>
-      <code>walkHavingClause</code>
-      <code>walkInExpression</code>
-      <code>walkInputParameter</code>
-      <code>walkInstanceOfExpression</code>
-      <code>walkJoin</code>
-      <code>walkLikeExpression</code>
-      <code>walkLiteral</code>
-      <code>walkNullComparisonExpression</code>
-      <code>walkOrderByClause</code>
-      <code>walkOrderByItem</code>
-      <code>walkPathExpression</code>
-      <code>walkQuantifiedExpression</code>
-      <code>walkResultVariable</code>
-      <code>walkSelectClause</code>
-      <code>walkSelectExpression</code>
-      <code>walkSelectStatement</code>
-      <code>walkSimpleArithmeticExpression</code>
-      <code>walkSimpleSelectClause</code>
-      <code>walkSimpleSelectExpression</code>
-      <code>walkStateFieldPathExpression</code>
-      <code>walkStringPrimary</code>
-      <code>walkSubselect</code>
-      <code>walkSubselectFromClause</code>
-      <code>walkUpdateClause</code>
-      <code>walkUpdateItem</code>
-      <code>walkUpdateStatement</code>
-      <code>walkWhereClause</code>
-    </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Query/TreeWalkerChainIterator.php">
     <ImplementedParamTypeMismatch occurrences="1">
