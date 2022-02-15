@@ -1,5 +1,14 @@
 # Upgrade to 2.12
 
+## Deprecate helper methods from `AbstractCollectionPersister`
+
+The following protected methods of
+`Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister`
+are not in use anymore and will be removed.
+
+* `evictCollectionCache()`
+* `evictElementCache()`
+
 ## Deprecate `Doctrine\ORM\Query\TreeWalkerChainIterator`
 
 This class won't have a replacement.
