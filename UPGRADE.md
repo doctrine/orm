@@ -1,5 +1,9 @@
 # Upgrade to 2.12
 
+## Deprecate `Doctrine\ORM\Query\TreeWalkerChainIterator`
+
+This class won't have a replacement.
+
 ## Deprecate `OnClearEventArgs::getEntityClass()` and `OnClearEventArgs::clearsAllEntities()`
 
 These methods will be removed in 3.0 along with the ability to partially clear
