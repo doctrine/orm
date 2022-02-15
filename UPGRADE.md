@@ -230,6 +230,19 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.12
 
+## Deprecate helper methods from `AbstractCollectionPersister`
+
+The following protected methods of
+`Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister`
+are not in use anymore and will be removed.
+
+* `evictCollectionCache()`
+* `evictElementCache()`
+
+## Deprecate `Doctrine\ORM\Query\TreeWalkerChainIterator`
+
+This class won't have a replacement.
+
 ## Deprecate `OnClearEventArgs::getEntityClass()` and `OnClearEventArgs::clearsAllEntities()`
 
 These methods will be removed in 3.0 along with the ability to partially clear
