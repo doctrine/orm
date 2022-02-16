@@ -1256,11 +1256,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/TreeWalkerChain.php
 
 		-
-			message: "#^Parameter \\#2 \\$value \\(string\\) of method Doctrine\\\\ORM\\\\Query\\\\TreeWalkerChainIterator\\:\\:offsetSet\\(\\) should be compatible with parameter \\$value \\(Doctrine\\\\ORM\\\\Query\\\\TreeWalker\\) of method ArrayAccess\\<int,Doctrine\\\\ORM\\\\Query\\\\TreeWalker\\>\\:\\:offsetSet\\(\\)$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/TreeWalkerChainIterator.php
-
-		-
 			message: "#^Parameter \\#2 \\$dqlPart of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:add\\(\\) expects array\\<'join'\\|int, array\\<int\\|string, object\\>\\|string\\>\\|object\\|string, non\\-empty\\-array\\<string, Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Join\\> given\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/QueryBuilder.php
