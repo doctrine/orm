@@ -120,11 +120,13 @@ class CustomTreeWalkersTest extends OrmTestCase
 
 class AddUnknownQueryComponentWalker extends SqlWalker
 {
-    public function walkSelectStatement(SelectStatement $selectStatement): void
+    public function walkSelectStatement(SelectStatement $selectStatement): string
     {
-        parent::walkSelectStatement($selectStatement);
+        $sql = parent::walkSelectStatement($selectStatement);
 
         $this->setQueryComponent('x', []);
+
+        return $sql;
     }
 }
 

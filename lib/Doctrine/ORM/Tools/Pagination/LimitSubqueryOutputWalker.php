@@ -18,6 +18,7 @@ use Doctrine\ORM\Query\AST\PartialObjectExpression;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\AST\Subselect;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
@@ -54,54 +55,39 @@ class LimitSubqueryOutputWalker extends SqlWalker
 {
     private const ORDER_BY_PATH_EXPRESSION = '/(?<![a-z0-9_])%s\.%s(?![a-z0-9_])/i';
 
-    /** @var AbstractPlatform */
-    private $platform;
-
-    /** @var ResultSetMapping */
-    private $rsm;
-
-    /** @var int */
-    private $firstResult;
-
-    /** @var int */
-    private $maxResults;
-
-    /** @var EntityManagerInterface */
-    private $em;
-
-    /**
-     * The quote strategy.
-     *
-     * @var QuoteStrategy
-     */
-    private $quoteStrategy;
+    private AbstractPlatform $platform;
+    private ResultSetMapping $rsm;
+    private int $firstResult;
+    private ?int $maxResults;
+    private EntityManagerInterface $em;
+    private QuoteStrategy $quoteStrategy;
 
     /** @var list<PathExpression> */
-    private $orderByPathExpressions = [];
+    private array $orderByPathExpressions = [];
 
     /**
-     * @var bool We don't want to add path expressions from sub-selects into the select clause of the containing query.
-     *           This state flag simply keeps track on whether we are walking on a subquery or not
+     * We don't want to add path expressions from sub-selects into the select clause of the containing query.
+     * This state flag simply keeps track on whether we are walking on a subquery or not
      */
-    private $inSubSelect = false;
+    private bool $inSubSelect = false;
 
     /**
      * Stores various parameters that are otherwise unavailable
      * because Doctrine\ORM\Query\SqlWalker keeps everything private without
      * accessors.
      *
-     * @param Query        $query
-     * @param ParserResult $parserResult
-     * @param mixed[]      $queryComponents
-     * @psalm-param array<string, QueryComponent> $queryComponents
+     * {@inheritdoc}
      */
-    public function __construct($query, $parserResult, array $queryComponents)
-    {
+    public function __construct(
+        Query $query,
+        ParserResult $parserResult,
+        array $queryComponents
+    ) {
         $this->platform = $query->getEntityManager()->getConnection()->getDatabasePlatform();
         $this->rsm      = $parserResult->getResultSetMapping();
 
         // Reset limit and offset
-        $this->firstResult = $query->getFirstResult();
+        $this->firstResult = $query->getFirstResult() ?? 0;
         $this->maxResults  = $query->getMaxResults();
         $query->setFirstResult(0)->setMaxResults(null);
 
@@ -152,27 +138,22 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $AST->orderByClause = null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function walkSelectStatement(SelectStatement $AST)
+    public function walkSelectStatement(SelectStatement $selectStatement): string
     {
         if ($this->platformSupportsRowNumber()) {
-            return $this->walkSelectStatementWithRowNumber($AST);
+            return $this->walkSelectStatementWithRowNumber($selectStatement);
         }
 
-        return $this->walkSelectStatementWithoutRowNumber($AST);
+        return $this->walkSelectStatementWithoutRowNumber($selectStatement);
     }
 
     /**
      * Walks down a SelectStatement AST node, wrapping it in a SELECT DISTINCT.
      * This method is for use with platforms which support ROW_NUMBER.
      *
-     * @return string
-     *
      * @throws RuntimeException
      */
-    public function walkSelectStatementWithRowNumber(SelectStatement $AST)
+    public function walkSelectStatementWithRowNumber(SelectStatement $AST): string
     {
         $hasOrderBy   = false;
         $outerOrderBy = ' ORDER BY dctrn_minrownum ASC';
@@ -224,13 +205,9 @@ class LimitSubqueryOutputWalker extends SqlWalker
      * Walks down a SelectStatement AST node, wrapping it in a SELECT DISTINCT.
      * This method is for platforms which DO NOT support ROW_NUMBER.
      *
-     * @param bool $addMissingItemsFromOrderByToSelect
-     *
-     * @return string
-     *
      * @throws RuntimeException
      */
-    public function walkSelectStatementWithoutRowNumber(SelectStatement $AST, $addMissingItemsFromOrderByToSelect = true)
+    public function walkSelectStatementWithoutRowNumber(SelectStatement $AST, bool $addMissingItemsFromOrderByToSelect = true): string
     {
         // We don't want to call this recursively!
         if ($AST->orderByClause instanceof OrderByClause && $addMissingItemsFromOrderByToSelect) {
@@ -459,7 +436,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      *
      * @return list<PathExpression>
      */
-    public function getOrderByPathExpressions()
+    public function getOrderByPathExpressions(): array
     {
         return $this->orderByPathExpressions;
     }
@@ -547,10 +524,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         return $sqlIdentifier;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function walkPathExpression($pathExpr)
+    public function walkPathExpression(PathExpression $pathExpr): string
     {
         if (! $this->inSubSelect && ! $this->platformSupportsRowNumber() && ! in_array($pathExpr, $this->orderByPathExpressions, true)) {
             $this->orderByPathExpressions[] = $pathExpr;
@@ -559,10 +533,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         return parent::walkPathExpression($pathExpr);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function walkSubSelect($subselect)
+    public function walkSubSelect(Subselect $subselect): string
     {
         $this->inSubSelect = true;
 
