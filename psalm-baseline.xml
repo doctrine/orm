@@ -1837,12 +1837,6 @@
     </NonInvariantDocblockPropertyType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Filter/SQLFilter.php">
-    <MissingClosureParamType occurrences="1">
-      <code>$value</code>
-    </MissingClosureParamType>
-    <MissingClosureReturnType occurrences="1">
-      <code>static function ($value) use ($connection, $param) {</code>
-    </MissingClosureReturnType>
     <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;parameters</code>
     </PropertyTypeCoercion>
