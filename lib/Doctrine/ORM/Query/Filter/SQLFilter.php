@@ -175,7 +175,7 @@ abstract class SQLFilter
      *
      * @return string String representation of the SQLFilter.
      */
-    final public function __toString()
+    public function __toString()
     {
         return serialize($this->parameters);
     }
