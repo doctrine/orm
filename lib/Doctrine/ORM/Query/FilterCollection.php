@@ -192,7 +192,7 @@ class FilterCollection
             $filterHash .= $name . $filter;
         }
 
-        $this->filterHash = md5($filterHash);
+        $this->filterHash   = $filterHash;
         $this->filtersState = self::FILTERS_STATE_CLEAN;
 
         return $filterHash;
