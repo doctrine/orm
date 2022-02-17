@@ -50,9 +50,6 @@ class FilterCollection
      */
     private $enabledFilters = [];
 
-    /** @var string The filter hash from the last time the query was parsed. */
-    private $filterHash;
-
     /** @var int The current state of this filter. */
     private $filtersState = self::FILTERS_STATE_CLEAN;
 
@@ -183,11 +180,6 @@ class FilterCollection
      */
     public function getHash()
     {
-        // If there are only clean filters, the previous hash can be returned
-        if ($this->filtersState === self::FILTERS_STATE_CLEAN) {
-            return $this->filterHash;
-        }
-
         $filterHash = '';
 
         foreach ($this->enabledFilters as $name => $filter) {
