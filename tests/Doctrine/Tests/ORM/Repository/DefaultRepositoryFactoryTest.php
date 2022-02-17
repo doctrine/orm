@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\Tests\Models\DDC753\DDC753DefaultRepository;
+use Doctrine\Tests\Models\DDC753\DDC753EntityWithDefaultCustomRepository;
 use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -22,13 +23,12 @@ use PHPUnit\Framework\TestCase;
 class DefaultRepositoryFactoryTest extends TestCase
 {
     /** @var EntityManagerInterface&MockObject */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     /** @var Configuration&MockObject */
-    private $configuration;
+    private Configuration $configuration;
 
-    /** @var DefaultRepositoryFactory */
-    private $repositoryFactory;
+    private DefaultRepositoryFactory $repositoryFactory;
 
     protected function setUp(): void
     {
@@ -70,7 +70,7 @@ class DefaultRepositoryFactoryTest extends TestCase
 
     public function testCreatesRepositoryFromCustomClassMetadata(): void
     {
-        $customMetadata                            = $this->buildClassMetadata(__DIR__);
+        $customMetadata                            = $this->buildClassMetadata(DDC753EntityWithDefaultCustomRepository::class);
         $customMetadata->customRepositoryClassName = DDC753DefaultRepository::class;
 
         $this->entityManager
@@ -107,12 +107,18 @@ class DefaultRepositoryFactoryTest extends TestCase
     }
 
     /**
+     * @psalm-param class-string<TEntity> $className
+     *
      * @return ClassMetadata&MockObject
+     * @psalm-return ClassMetadata<TEntity>&MockObject
+     *
+     * @template TEntity of object
      */
     private function buildClassMetadata(string $className): ClassMetadata
     {
         $metadata = $this->createMock(ClassMetadata::class);
         $metadata->expects(self::any())->method('getName')->will(self::returnValue($className));
+        $metadata->name = $className;
 
         $metadata->customRepositoryClassName = null;
 
