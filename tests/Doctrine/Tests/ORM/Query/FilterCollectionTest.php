@@ -85,6 +85,12 @@ class FilterCollectionTest extends OrmTestCase
         self::assertTrue($filterCollection->isClean());
 
         $oldHash = $filterCollection->getHash();
+        $filterCollection->setFiltersStateDirty();
+
+        self::assertFalse($filterCollection->isClean());
+        self::assertSame($oldHash, $filterCollection->getHash());
+        self::assertTrue($filterCollection->isClean());
+
         $filterCollection->enable('testFilter');
 
         self::assertFalse($filterCollection->isClean());
@@ -94,6 +100,12 @@ class FilterCollectionTest extends OrmTestCase
         self::assertNotSame($oldHash, $hash);
         self::assertTrue($filterCollection->isClean());
         self::assertSame($hash, $filterCollection->getHash());
+
+        $filterCollection->disable('testFilter');
+
+        self::assertFalse($filterCollection->isClean());
+        self::assertSame($oldHash, $filterCollection->getHash());
+        self::assertTrue($filterCollection->isClean());
     }
 }
 

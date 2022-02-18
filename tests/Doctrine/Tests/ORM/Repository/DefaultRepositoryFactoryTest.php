@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\Tests\Models\DDC753\DDC753DefaultRepository;
+use Doctrine\Tests\Models\DDC753\DDC753EntityWithDefaultCustomRepository;
 use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -70,7 +71,7 @@ class DefaultRepositoryFactoryTest extends TestCase
 
     public function testCreatesRepositoryFromCustomClassMetadata(): void
     {
-        $customMetadata                            = $this->buildClassMetadata(__DIR__);
+        $customMetadata                            = $this->buildClassMetadata(DDC753EntityWithDefaultCustomRepository::class);
         $customMetadata->customRepositoryClassName = DDC753DefaultRepository::class;
 
         $this->entityManager
@@ -107,12 +108,18 @@ class DefaultRepositoryFactoryTest extends TestCase
     }
 
     /**
+     * @psalm-param class-string<TEntity> $className
+     *
      * @return ClassMetadata&MockObject
+     * @psalm-return ClassMetadata<TEntity>&MockObject
+     *
+     * @template TEntity of object
      */
     private function buildClassMetadata(string $className): ClassMetadata
     {
         $metadata = $this->createMock(ClassMetadata::class);
-        $metadata->expects(self::any())->method('getName')->will(self::returnValue($className));
+        $metadata->method('getName')->willReturn($className);
+        $metadata->name = $className;
 
         $metadata->customRepositoryClassName = null;
 
@@ -125,10 +132,7 @@ class DefaultRepositoryFactoryTest extends TestCase
     private function createEntityManager(): EntityManagerInterface
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-
-        $entityManager->expects(self::any())
-            ->method('getConfiguration')
-            ->will(self::returnValue($this->configuration));
+        $entityManager->method('getConfiguration')->willReturn($this->configuration);
 
         return $entityManager;
     }

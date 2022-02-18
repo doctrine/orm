@@ -34,6 +34,7 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
+use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
@@ -804,6 +805,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name      The name of the filter.
      * @param string $className The class name of the filter.
+     * @psalm-param class-string<SQLFilter> $className
      *
      * @return void
      */
@@ -819,7 +821,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return string|null The class name of the filter, or null if it is not
      *  defined.
-     * @psalm-return ?class-string
+     * @psalm-return class-string<SQLFilter>|null
      */
     public function getFilterClassName($name)
     {
