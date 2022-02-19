@@ -18,7 +18,6 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function get_class;
 
@@ -30,16 +29,11 @@ class DDC992Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC992Role::class),
-                    $this->_em->getClassMetadata(DDC992Parent::class),
-                    $this->_em->getClassMetadata(DDC992Child::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(
+            DDC992Role::class,
+            DDC992Parent::class,
+            DDC992Child::class
+        );
     }
 
     public function testIssue(): void

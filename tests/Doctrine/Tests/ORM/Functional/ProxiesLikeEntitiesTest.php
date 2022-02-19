@@ -13,7 +13,6 @@ use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser as CmsUserProxy;
-use Exception;
 
 use function assert;
 
@@ -34,20 +33,15 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(CmsUser::class),
-                    $this->_em->getClassMetadata(CmsTag::class),
-                    $this->_em->getClassMetadata(CmsPhonenumber::class),
-                    $this->_em->getClassMetadata(CmsArticle::class),
-                    $this->_em->getClassMetadata(CmsAddress::class),
-                    $this->_em->getClassMetadata(CmsEmail::class),
-                    $this->_em->getClassMetadata(CmsGroup::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(
+            CmsUser::class,
+            CmsTag::class,
+            CmsPhonenumber::class,
+            CmsArticle::class,
+            CmsAddress::class,
+            CmsEmail::class,
+            CmsGroup::class
+        );
 
         $this->user           = new CmsUser();
         $this->user->username = 'ocramius';

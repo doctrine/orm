@@ -12,22 +12,13 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 class DDC960Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC960Root::class),
-                    $this->_em->getClassMetadata(DDC960Child::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(DDC960Root::class, DDC960Child::class);
     }
 
     /**

@@ -15,9 +15,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Proxy\Proxy;
-use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function count;
 use function get_class;
@@ -30,19 +28,13 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $schemaTool = new SchemaTool($this->_em);
-        try {
-            $schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(Train::class),
-                    $this->_em->getClassMetadata(TrainDriver::class),
-                    $this->_em->getClassMetadata(TrainOwner::class),
-                    $this->_em->getClassMetadata(Waggon::class),
-                    $this->_em->getClassMetadata(TrainOrder::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(
+            Train::class,
+            TrainDriver::class,
+            TrainOwner::class,
+            Waggon::class,
+            TrainOrder::class
+        );
     }
 
     /**

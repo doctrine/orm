@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 /**
  * Test that Doctrine ORM correctly works with the ObjectManagerAware and PersistentObject
@@ -25,14 +24,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(PersistentEntity::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(PersistentEntity::class);
 
         PersistentObject::setObjectManager($this->_em);
     }

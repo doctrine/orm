@@ -29,30 +29,14 @@ class DDC2602Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC2602User::class),
-                $this->_em->getClassMetadata(DDC2602Biography::class),
-                $this->_em->getClassMetadata(DDC2602BiographyField::class),
-                $this->_em->getClassMetadata(DDC2602BiographyFieldChoice::class),
-            ]
+        $this->createSchemaForModels(
+            DDC2602User::class,
+            DDC2602Biography::class,
+            DDC2602BiographyField::class,
+            DDC2602BiographyFieldChoice::class
         );
 
         $this->loadFixture();
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
-        $this->_schemaTool->dropSchema(
-            [
-                $this->_em->getClassMetadata(DDC2602User::class),
-                $this->_em->getClassMetadata(DDC2602Biography::class),
-                $this->_em->getClassMetadata(DDC2602BiographyField::class),
-                $this->_em->getClassMetadata(DDC2602BiographyFieldChoice::class),
-            ]
-        );
     }
 
     public function testPostLoadListenerShouldBeAbleToRunQueries(): void

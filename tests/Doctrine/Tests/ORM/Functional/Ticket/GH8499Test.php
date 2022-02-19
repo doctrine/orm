@@ -33,16 +33,7 @@ class GH8499Test extends OrmFunctionalTestCase
 
     protected function createSchema(): void
     {
-        $this->_schemaTool->createSchema(
-            [$this->_em->getClassMetadata(GH8499VersionableEntity::class)]
-        );
-    }
-
-    protected function dropSchema(): void
-    {
-        $this->_schemaTool->dropSchema(
-            [$this->_em->getClassMetadata(GH8499VersionableEntity::class)]
-        );
+        $this->createSchemaForModels(GH8499VersionableEntity::class);
     }
 
     /**
@@ -102,7 +93,6 @@ class GH8499Test extends OrmFunctionalTestCase
             $test->getRevision()->getTimestamp(),
             'Current version timestamp is not greater than previous one.'
         );
-        $this->dropSchema();
     }
 
     /**
@@ -119,7 +109,6 @@ class GH8499Test extends OrmFunctionalTestCase
 
         $this->expectException(OptimisticLockException::class);
         $this->_em->lock($entity, LockMode::OPTIMISTIC, new DateTime('2020-07-15 18:04:00'));
-        $this->dropSchema();
     }
 }
 

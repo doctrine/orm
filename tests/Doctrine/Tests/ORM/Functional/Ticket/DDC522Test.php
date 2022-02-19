@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function get_class;
 
@@ -26,16 +25,11 @@ class DDC522Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC522Customer::class),
-                    $this->_em->getClassMetadata(DDC522Cart::class),
-                    $this->_em->getClassMetadata(DDC522ForeignKeyTest::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(
+            DDC522Customer::class,
+            DDC522Cart::class,
+            DDC522ForeignKeyTest::class
+        );
     }
 
     /**

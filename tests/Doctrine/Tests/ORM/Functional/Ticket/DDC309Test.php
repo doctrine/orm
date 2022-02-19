@@ -17,24 +17,7 @@ class DDC309Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC309Country::class),
-                $this->_em->getClassMetadata(DDC309User::class),
-            ]
-        );
-    }
-
-    protected function tearDown(): void
-    {
-        $this->_schemaTool->dropSchema(
-            [
-                $this->_em->getClassMetadata(DDC309Country::class),
-                $this->_em->getClassMetadata(DDC309User::class),
-            ]
-        );
-
-        parent::tearDown();
+        $this->createSchemaForModels(DDC309Country::class, DDC309User::class);
     }
 
     public function testTwoIterateHydrations(): void

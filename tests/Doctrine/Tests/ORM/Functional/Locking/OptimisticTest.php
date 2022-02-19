@@ -35,22 +35,12 @@ class OptimisticTest extends OrmFunctionalTestCase
 
     private function createSchema(): void
     {
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(OptimisticJoinedParent::class),
-            $this->_em->getClassMetadata(OptimisticJoinedChild::class),
-            $this->_em->getClassMetadata(OptimisticStandard::class),
-            $this->_em->getClassMetadata(OptimisticTimestamp::class),
-        ]);
-    }
-
-    private function dropSchema(): void
-    {
-        $this->_schemaTool->dropSchema([
-            $this->_em->getClassMetadata(OptimisticJoinedParent::class),
-            $this->_em->getClassMetadata(OptimisticJoinedChild::class),
-            $this->_em->getClassMetadata(OptimisticStandard::class),
-            $this->_em->getClassMetadata(OptimisticTimestamp::class),
-        ]);
+        $this->createSchemaForModels(
+            OptimisticJoinedParent::class,
+            OptimisticJoinedChild::class,
+            OptimisticStandard::class,
+            OptimisticTimestamp::class
+        );
     }
 
     public function testJoinedChildInsertSetsInitialVersionValue(): OptimisticJoinedChild
@@ -93,8 +83,6 @@ class OptimisticTest extends OrmFunctionalTestCase
         } catch (OptimisticLockException $e) {
             self::assertSame($test, $e->getEntity());
         }
-
-        $this->dropSchema();
     }
 
     public function testJoinedParentInsertSetsInitialVersionValue(): OptimisticJoinedParent
@@ -136,8 +124,6 @@ class OptimisticTest extends OrmFunctionalTestCase
         } catch (OptimisticLockException $e) {
             self::assertSame($test, $e->getEntity());
         }
-
-        $this->dropSchema();
     }
 
     public function testMultipleFlushesDoIncrementalUpdates(): void
@@ -155,8 +141,6 @@ class OptimisticTest extends OrmFunctionalTestCase
             self::assertIsInt($test->getVersion());
             self::assertEquals($i + 1, $test->getVersion());
         }
-
-        $this->dropSchema();
     }
 
     public function testStandardInsertSetsInitialVersionValue(): OptimisticStandard
@@ -200,8 +184,6 @@ class OptimisticTest extends OrmFunctionalTestCase
         } catch (OptimisticLockException $e) {
             self::assertSame($test, $e->getEntity());
         }
-
-        $this->dropSchema();
     }
 
     public function testLockWorksWithProxy(): void
@@ -219,7 +201,6 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->_em->lock($proxy, LockMode::OPTIMISTIC, 1);
 
         $this->addToAssertionCount(1);
-        $this->dropSchema();
     }
 
     public function testOptimisticTimestampSetsDefaultValue(): OptimisticTimestamp
@@ -300,8 +281,6 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         self::assertNotNull($caughtException, 'No OptimisticLockingException was thrown');
         self::assertSame($test, $caughtException->getEntity());
-
-        $this->dropSchema();
     }
 }
 
