@@ -20,20 +20,7 @@ class GH9027Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(GH9027Cart::class),
-            $this->_em->getClassMetadata(GH9027Customer::class),
-        ]);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->_schemaTool->dropSchema([
-            $this->_em->getClassMetadata(GH9027Cart::class),
-            $this->_em->getClassMetadata(GH9027Customer::class),
-        ]);
-
-        parent::tearDown();
+        $this->createSchemaForModels(GH9027Cart::class, GH9027Customer::class);
     }
 
     /**

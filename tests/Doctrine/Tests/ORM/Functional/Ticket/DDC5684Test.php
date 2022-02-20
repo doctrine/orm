@@ -32,14 +32,7 @@ class DDC5684Test extends OrmFunctionalTestCase
             DBALTypes\Type::addType(DDC5684ObjectIdType::class, DDC5684ObjectIdType::class);
         }
 
-        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC5684Object::class)]);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->_schemaTool->dropSchema([$this->_em->getClassMetadata(DDC5684Object::class)]);
-
-        parent::tearDown();
+        $this->createSchemaForModels(DDC5684Object::class);
     }
 
     public function testAutoIncrementIdWithCustomType(): void

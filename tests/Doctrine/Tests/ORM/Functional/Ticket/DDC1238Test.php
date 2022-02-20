@@ -9,7 +9,6 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 /**
  * @group DDC-1238
@@ -19,14 +18,7 @@ class DDC1238Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1238User::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(DDC1238User::class);
     }
 
     public function testIssue(): void

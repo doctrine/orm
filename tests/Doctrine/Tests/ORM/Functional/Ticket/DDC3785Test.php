@@ -18,7 +18,6 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 class DDC3785Test extends OrmFunctionalTestCase
 {
@@ -28,16 +27,11 @@ class DDC3785Test extends OrmFunctionalTestCase
 
         Type::addType('ddc3785_asset_id', DDC3785AssetIdType::class);
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC3785Asset::class),
-                    $this->_em->getClassMetadata(DDC3785AssetId::class),
-                    $this->_em->getClassMetadata(DDC3785Attribute::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(
+            DDC3785Asset::class,
+            DDC3785AssetId::class,
+            DDC3785Attribute::class
+        );
     }
 
     /**

@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 class DDC832Test extends OrmFunctionalTestCase
 {
@@ -27,16 +26,11 @@ class DDC832Test extends OrmFunctionalTestCase
             self::markTestSkipped('Doesnt run on Oracle.');
         }
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC832JoinedIndex::class),
-                    $this->_em->getClassMetadata(DDC832JoinedTreeIndex::class),
-                    $this->_em->getClassMetadata(DDC832Like::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(
+            DDC832JoinedIndex::class,
+            DDC832JoinedTreeIndex::class,
+            DDC832Like::class
+        );
     }
 
     public function tearDown(): void

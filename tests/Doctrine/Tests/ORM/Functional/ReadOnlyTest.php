@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 /**
  * Functional Query tests.
@@ -23,14 +22,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(ReadOnlyEntity::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(ReadOnlyEntity::class);
     }
 
     public function testReadOnlyEntityNeverChangeTracked(): void

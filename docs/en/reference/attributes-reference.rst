@@ -570,7 +570,7 @@ Example with partial indexes:
     <?php
     use Doctrine\ORM\Mapping\Index;
 
-    #[Index(name: "search_idx", columns: {"category"},
+    #[Index(name: "search_idx", columns: ["category"],
         options: [
             "where": "((category IS NOT NULL))"
         ]
