@@ -1696,19 +1696,9 @@
     <PossiblyNullArrayAccess occurrences="1">
       <code>$parser-&gt;getLexer()-&gt;token['value']</code>
     </PossiblyNullArrayAccess>
-    <PossiblyNullArrayOffset occurrences="1">
-      <code>$class-&gt;associationMappings</code>
-    </PossiblyNullArrayOffset>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$parser-&gt;getLexer()-&gt;token['value']</code>
-    </PossiblyNullPropertyAssignmentValue>
-    <PropertyNotSetInConstructor occurrences="2">
-      <code>$fieldMapping</code>
+    <PropertyNotSetInConstructor occurrences="1">
       <code>$pathExpression</code>
     </PropertyNotSetInConstructor>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>$this-&gt;fieldMapping !== null</code>
-    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/LengthFunction.php">
     <ArgumentTypeCoercion occurrences="1">
@@ -1752,9 +1742,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/SizeFunction.php">
-    <PossiblyNullArrayOffset occurrences="1">
-      <code>$class-&gt;associationMappings</code>
-    </PossiblyNullArrayOffset>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$collectionPathExpression</code>
     </PropertyNotSetInConstructor>
@@ -2214,10 +2201,9 @@
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PossiblyNullArgument occurrences="22">
+    <PossiblyNullArgument occurrences="21">
       <code>$aliasIdentVariable</code>
       <code>$dql</code>
-      <code>$field</code>
       <code>$fromClassName</code>
       <code>$functionName</code>
       <code>$functionName</code>
@@ -2238,7 +2224,7 @@
       <code>$token['value']</code>
       <code>$token['value']</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess occurrences="74">
+    <PossiblyNullArrayAccess occurrences="73">
       <code>$glimpse['type']</code>
       <code>$glimpse['value']</code>
       <code>$lookahead['type']</code>
@@ -2280,7 +2266,6 @@
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
@@ -2378,10 +2363,9 @@
     </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
-    <DocblockTypeContradiction occurrences="6">
+    <DocblockTypeContradiction occurrences="5">
       <code>$likeExpr-&gt;stringPattern instanceof AST\Functions\FunctionNode</code>
       <code>$likeExpr-&gt;stringPattern instanceof AST\PathExpression</code>
-      <code>$this-&gt;queryComponents[$dqlAlias]['relation'] === null</code>
       <code>''</code>
       <code>is_string($expression)</code>
       <code>is_string($stringExpr)</code>
@@ -2395,9 +2379,6 @@
       <code>$factor</code>
       <code>$selectedClass['class']-&gt;name</code>
     </InvalidArgument>
-    <InvalidArrayOffset occurrences="1">
-      <code>$this-&gt;selectedClasses[$joinedDqlAlias]</code>
-    </InvalidArrayOffset>
     <InvalidNullableReturnType occurrences="1">
       <code>walkConditionalPrimary</code>
     </InvalidNullableReturnType>
@@ -2450,10 +2431,8 @@
     <PossiblyNullReference occurrences="1">
       <code>dispatch</code>
     </PossiblyNullReference>
-    <PropertyTypeCoercion occurrences="3">
+    <PropertyTypeCoercion occurrences="1">
       <code>$query</code>
-      <code>$this-&gt;queryComponents</code>
-      <code>$this-&gt;selectedClasses</code>
     </PropertyTypeCoercion>
     <RedundantConditionGivenDocblockType occurrences="3">
       <code>$likeExpr-&gt;stringPattern instanceof AST\InputParameter</code>
@@ -2559,9 +2538,6 @@
     <MissingReturnType occurrences="1">
       <code>_getQueryComponents</code>
     </MissingReturnType>
-    <PropertyTypeCoercion occurrences="1">
-      <code>$this-&gt;_queryComponents</code>
-    </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/TreeWalkerChain.php">
     <ImplementedReturnTypeMismatch occurrences="47">

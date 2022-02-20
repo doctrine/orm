@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\AbstractQuery;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Generator;
 
 use function array_diff;
@@ -15,6 +14,8 @@ use function array_keys;
  * Represents a chain of tree walkers that modify an AST and finally emit output.
  * Only the last walker in the chain can emit output. Any previous walkers can modify
  * the AST to influence the final output produced by the last walker.
+ *
+ * @psalm-import-type QueryComponent from Parser
  */
 class TreeWalkerChain implements TreeWalker
 {
@@ -36,14 +37,7 @@ class TreeWalkerChain implements TreeWalker
      * The query components of the original query (the "symbol table") that was produced by the Parser.
      *
      * @var array<string, array<string, mixed>>
-     * @psalm-var array<string, array{
-     *                metadata: ClassMetadata,
-     *                parent: string,
-     *                relation: mixed[],
-     *                map: mixed,
-     *                nestingLevel: int,
-     *                token: array
-     *            }>
+     * @psalm-var array<string, QueryComponent>
      */
     private $queryComponents;
 
