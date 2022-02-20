@@ -356,26 +356,14 @@
     </DeprecatedClass>
   </file>
   <file src="lib/Doctrine/ORM/EntityRepository.php">
-    <ArgumentTypeCoercion occurrences="5">
-      <code>$this-&gt;_entityName</code>
-      <code>$this-&gt;_entityName</code>
-      <code>$this-&gt;_entityName</code>
-      <code>$this-&gt;_entityName</code>
-      <code>$this-&gt;_entityName</code>
-    </ArgumentTypeCoercion>
-    <InvalidReturnStatement occurrences="3">
+    <InvalidReturnStatement occurrences="2">
       <code>$persister-&gt;load($criteria, null, null, [], null, 1, $orderBy)</code>
-      <code>$this-&gt;_em-&gt;find($this-&gt;_entityName, $id, $lockMode, $lockVersion)</code>
       <code>new LazyCriteriaCollection($persister, $criteria)</code>
     </InvalidReturnStatement>
-    <InvalidReturnType occurrences="3">
-      <code>?T</code>
+    <InvalidReturnType occurrences="2">
       <code>?T</code>
       <code>AbstractLazyCollection&lt;int, T&gt;&amp;Selectable&lt;int, T&gt;</code>
     </InvalidReturnType>
-    <LessSpecificImplementedReturnType occurrences="1">
-      <code>string</code>
-    </LessSpecificImplementedReturnType>
     <TooManyArguments occurrences="1">
       <code>find</code>
     </TooManyArguments>
@@ -2209,20 +2197,6 @@
     </MissingClosureReturnType>
     <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;parameters</code>
-    </PropertyTypeCoercion>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/FilterCollection.php">
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$this-&gt;enabledFilters[$name]</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
-      <code>SQLFilter</code>
-    </MoreSpecificReturnType>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$filterHash</code>
-    </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="1">
-      <code>$this-&gt;enabledFilters</code>
     </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/Parser.php">
