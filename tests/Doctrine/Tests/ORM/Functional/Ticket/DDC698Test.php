@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function strtolower;
 
@@ -23,15 +22,7 @@ class DDC698Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC698Role::class),
-                    $this->_em->getClassMetadata(DDC698Privilege::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(DDC698Role::class, DDC698Privilege::class);
     }
 
     public function testTicket(): void

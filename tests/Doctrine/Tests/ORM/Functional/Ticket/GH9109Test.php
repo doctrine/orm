@@ -23,24 +23,7 @@ class GH9109Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(GH9109User::class),
-                $this->_em->getClassMetadata(GH9109Product::class),
-            ]
-        );
-    }
-
-    protected function tearDown(): void
-    {
-        $this->_schemaTool->dropSchema(
-            [
-                $this->_em->getClassMetadata(GH9109User::class),
-                $this->_em->getClassMetadata(GH9109Product::class),
-            ]
-        );
-
-        parent::tearDown();
+        $this->createSchemaForModels(GH9109User::class, GH9109Product::class);
     }
 
     public function testIssue(): void

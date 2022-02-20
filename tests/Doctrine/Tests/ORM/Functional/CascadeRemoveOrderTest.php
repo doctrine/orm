@@ -24,23 +24,9 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(CascadeRemoveOrderEntityO::class),
-                $this->_em->getClassMetadata(CascadeRemoveOrderEntityG::class),
-            ]
-        );
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
-        $this->_schemaTool->dropSchema(
-            [
-                $this->_em->getClassMetadata(CascadeRemoveOrderEntityO::class),
-                $this->_em->getClassMetadata(CascadeRemoveOrderEntityG::class),
-            ]
+        $this->createSchemaForModels(
+            CascadeRemoveOrderEntityO::class,
+            CascadeRemoveOrderEntityG::class
         );
     }
 

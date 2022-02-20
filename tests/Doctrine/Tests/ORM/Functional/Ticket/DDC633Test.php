@@ -11,22 +11,16 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 class DDC633Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC633Patient::class),
-                    $this->_em->getClassMetadata(DDC633Appointment::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(
+            DDC633Patient::class,
+            DDC633Appointment::class
+        );
     }
 
     /**
