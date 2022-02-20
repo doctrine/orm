@@ -9,7 +9,6 @@ use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\Tests\Models\PersistentObject\PersistentCollectionContent;
 use Doctrine\Tests\Models\PersistentObject\PersistentCollectionHolder;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function class_exists;
 
@@ -22,15 +21,10 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         }
 
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(PersistentCollectionHolder::class),
-                    $this->_em->getClassMetadata(PersistentCollectionContent::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(
+            PersistentCollectionHolder::class,
+            PersistentCollectionContent::class
+        );
 
         PersistentObject::setObjectManager($this->_em);
     }

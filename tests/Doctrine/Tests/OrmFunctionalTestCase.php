@@ -17,9 +17,11 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\DbalExtensions\QueryLog;
 use Doctrine\Tests\DbalTypes\Rot13Type;
@@ -335,6 +337,22 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Issue5989\Issue5989Manager::class,
         ],
     ];
+
+    /**
+     * @param class-string ...$models
+     */
+    final protected function createSchemaForModels(string ...$models): void
+    {
+        try {
+            $this->_schemaTool->createSchema(array_map(
+                function (string $className): ClassMetadata {
+                    return $this->_em->getClassMetadata($className);
+                },
+                $models
+            ));
+        } catch (ToolsException $e) {
+        }
+    }
 
     protected function useModelSet(string $setName): void
     {

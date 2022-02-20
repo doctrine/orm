@@ -41,23 +41,12 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(LifecycleCallbackEventArgEntity::class),
-            $this->_em->getClassMetadata(LifecycleCallbackTestEntity::class),
-            $this->_em->getClassMetadata(LifecycleCallbackTestUser::class),
-            $this->_em->getClassMetadata(LifecycleCallbackCascader::class),
-        ]);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->_schemaTool->dropSchema([
-            $this->_em->getClassMetadata(LifecycleCallbackEventArgEntity::class),
-            $this->_em->getClassMetadata(LifecycleCallbackTestEntity::class),
-            $this->_em->getClassMetadata(LifecycleCallbackTestUser::class),
-            $this->_em->getClassMetadata(LifecycleCallbackCascader::class),
-        ]);
-        parent::tearDown();
+        $this->createSchemaForModels(
+            LifecycleCallbackEventArgEntity::class,
+            LifecycleCallbackTestEntity::class,
+            LifecycleCallbackTestUser::class,
+            LifecycleCallbackCascader::class
+        );
     }
 
     public function testPreSavePostSaveCallbacksAreInvoked(): void

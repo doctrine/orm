@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\Tests\Models\PersistentObject\PersistentEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function class_exists;
 
@@ -27,14 +26,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(PersistentEntity::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(PersistentEntity::class);
 
         PersistentObject::setObjectManager($this->_em);
     }

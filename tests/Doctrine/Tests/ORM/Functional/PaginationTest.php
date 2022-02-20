@@ -670,6 +670,7 @@ class PaginationTest extends OrmFunctionalTestCase
 
         $dql   = 'SELECT p FROM Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent p';
         $query = $this->_em->createQuery($dql);
+        $query->setMaxResults(1);
 
         $paginator = new Paginator($query, true);
         $paginator->setUseOutputWalkers(false);

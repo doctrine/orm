@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -14,7 +15,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 /**
  * @group DDC-1335
@@ -24,15 +24,10 @@ class DDC1335Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->createSchemaForModels(DDC1335User::class, DDC1335Phone::class);
         try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1335User::class),
-                    $this->_em->getClassMetadata(DDC1335Phone::class),
-                ]
-            );
             $this->loadFixture();
-        } catch (Exception $e) {
+        } catch (UniqueConstraintViolationException $e) {
         }
     }
 

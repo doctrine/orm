@@ -21,7 +21,6 @@ use Doctrine\ORM\Mapping\ReflectionEmbeddedProperty;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Persistence\Reflection\RuntimePublicReflectionProperty;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function class_exists;
 use function sprintf;
@@ -35,19 +34,14 @@ class ValueObjectsTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC93Person::class),
-                    $this->_em->getClassMetadata(DDC93Address::class),
-                    $this->_em->getClassMetadata(DDC93Vehicle::class),
-                    $this->_em->getClassMetadata(DDC93Car::class),
-                    $this->_em->getClassMetadata(DDC3027Animal::class),
-                    $this->_em->getClassMetadata(DDC3027Dog::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(
+            DDC93Person::class,
+            DDC93Address::class,
+            DDC93Vehicle::class,
+            DDC93Car::class,
+            DDC3027Animal::class,
+            DDC3027Dog::class
+        );
     }
 
     public function testMetadataHasReflectionEmbeddablesAccessible(): void

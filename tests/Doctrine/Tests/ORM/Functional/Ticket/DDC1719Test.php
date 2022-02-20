@@ -20,22 +20,7 @@ class DDC1719Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC1719SimpleEntity::class),
-            ]
-        );
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
-        $this->_schemaTool->dropSchema(
-            [
-                $this->_em->getClassMetadata(DDC1719SimpleEntity::class),
-            ]
-        );
+        $this->createSchemaForModels(DDC1719SimpleEntity::class);
     }
 
     public function testCreateRetrieveUpdateDelete(): void

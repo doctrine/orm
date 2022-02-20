@@ -17,7 +17,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 class DDC881Test extends OrmFunctionalTestCase
 {
@@ -25,16 +24,11 @@ class DDC881Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC881User::class),
-                    $this->_em->getClassMetadata(DDC881Phonenumber::class),
-                    $this->_em->getClassMetadata(DDC881Phonecall::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(
+            DDC881User::class,
+            DDC881PhoneNumber::class,
+            DDC881PhoneCall::class
+        );
     }
 
     /**

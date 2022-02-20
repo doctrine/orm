@@ -9,7 +9,6 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function array_keys;
 use function get_class;
@@ -19,14 +18,7 @@ class DDC656Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC656Entity::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(DDC656Entity::class);
     }
 
     public function testRecomputeSingleEntityChangeSetPreservesFieldOrder(): void
