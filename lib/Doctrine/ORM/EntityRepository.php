@@ -40,6 +40,7 @@ class EntityRepository implements ObjectRepository, Selectable
      * @internal This property will be private in 3.0, call {@see getEntityName()} instead.
      *
      * @var string
+     * @psalm-var class-string<T>
      */
     protected $_entityName;
 
@@ -54,12 +55,16 @@ class EntityRepository implements ObjectRepository, Selectable
      * @internal This property will be private in 3.0, call {@see getClassMetadata()} instead.
      *
      * @var ClassMetadata
+     * @psalm-var ClassMetadata<T>
      */
     protected $_class;
 
     /** @var Inflector|null */
     private static $inflector;
 
+    /**
+     * @psalm-param ClassMetadata<T> $class
+     */
     public function __construct(EntityManagerInterface $em, ClassMetadata $class)
     {
         $this->_entityName = $class->name;
@@ -276,6 +281,7 @@ class EntityRepository implements ObjectRepository, Selectable
 
     /**
      * @return string
+     * @psalm-return class-string<T>
      */
     protected function getEntityName()
     {
@@ -283,7 +289,7 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getClassName()
     {
@@ -300,6 +306,7 @@ class EntityRepository implements ObjectRepository, Selectable
 
     /**
      * @return ClassMetadata
+     * @psalm-return ClassMetadata<T>
      */
     protected function getClassMetadata()
     {
