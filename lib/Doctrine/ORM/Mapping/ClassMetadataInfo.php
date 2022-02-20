@@ -16,10 +16,10 @@ use Doctrine\Deprecations\Deprecation;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
+use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
@@ -323,7 +323,7 @@ class ClassMetadataInfo implements ClassMetadata
      * (Optional).
      *
      * @var string|null
-     * @psalm-var ?class-string<EntityRepository>
+     * @psalm-var ?class-string<ObjectRepository>
      */
     public $customRepositoryClassName;
 
@@ -3018,7 +3018,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Registers a custom repository class for the entity class.
      *
      * @param string|null $repositoryClassName The class name of the custom mapper.
-     * @psalm-param class-string<EntityRepository>|null $repositoryClassName
+     * @psalm-param class-string<ObjectRepository>|null $repositoryClassName
      *
      * @return void
      */

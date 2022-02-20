@@ -25,17 +25,6 @@ use Doctrine\Persistence\ObjectManager;
 interface EntityManagerInterface extends ObjectManager
 {
     /**
-     * {@inheritdoc}
-     *
-     * @psalm-param class-string<T> $className
-     *
-     * @psalm-return EntityRepository<T>
-     *
-     * @template T of object
-     */
-    public function getRepository($className);
-
-    /**
      * Returns the cache API for managing the second level cache regions or NULL if the cache is not enabled.
      *
      * @return Cache|null

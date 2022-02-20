@@ -824,6 +824,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Sets default repository class.
      *
      * @param string $className
+     * @psalm-param class-string<ObjectRepository> $className
      *
      * @return void
      *
@@ -844,7 +845,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Get default repository class.
      *
      * @return string
-     * @psalm-return class-string
+     * @psalm-return class-string<ObjectRepository>
      */
     public function getDefaultRepositoryClassName()
     {

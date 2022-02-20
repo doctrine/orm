@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Mapping;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Persistence\ObjectRepository;
 
 /**
  * @Annotation
@@ -18,7 +18,7 @@ final class Entity implements Annotation
 {
     /**
      * @var string|null
-     * @psalm-var class-string<EntityRepository>|null
+     * @psalm-var class-string<ObjectRepository>|null
      */
     public $repositoryClass;
 
@@ -26,7 +26,7 @@ final class Entity implements Annotation
     public $readOnly = false;
 
     /**
-     * @psalm-param class-string<EntityRepository>|null $repositoryClass
+     * @psalm-param class-string<ObjectRepository>|null $repositoryClass
      */
     public function __construct(?string $repositoryClass = null, bool $readOnly = false)
     {

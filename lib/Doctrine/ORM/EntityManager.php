@@ -26,7 +26,6 @@ use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\MappingException;
-use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
 use Throwable;
 
@@ -770,15 +769,7 @@ use function sprintf;
     }
 
     /**
-     * Gets the repository for an entity class.
-     *
-     * @param string $entityName The name of the entity.
-     * @psalm-param class-string<T> $entityName
-     *
-     * @return ObjectRepository|EntityRepository The repository class.
-     * @psalm-return EntityRepository<T>
-     *
-     * @template T of object
+     * {@inheritdoc}
      */
     public function getRepository($entityName)
     {
