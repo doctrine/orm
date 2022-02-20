@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\Filter\SQLFilter;
+use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\OrmTestCase;
+use InvalidArgumentException;
 
 /**
  * Test case for FilterCollection
  */
 class FilterCollectionTest extends OrmTestCase
 {
-    /** @var EntityManagerInterface */
+    /** @var EntityManagerMock */
     private $em;
 
     protected function setUp(): void
@@ -64,7 +65,7 @@ class FilterCollectionTest extends OrmTestCase
 
     public function testGetFilterInvalidArgument(): void
     {
-        $this->expectException('InvalidArgumentException');
+        $this->expectException(InvalidArgumentException::class);
         $filterCollection = $this->em->getFilters();
         $filterCollection->getFilter('testFilter');
     }
@@ -75,6 +76,24 @@ class FilterCollectionTest extends OrmTestCase
         $filterCollection->enable('testFilter');
 
         self::assertInstanceOf(MyFilter::class, $filterCollection->getFilter('testFilter'));
+    }
+
+    public function testHashing(): void
+    {
+        $filterCollection = $this->em->getFilters();
+
+        self::assertTrue($filterCollection->isClean());
+
+        $oldHash = $filterCollection->getHash();
+        $filterCollection->enable('testFilter');
+
+        self::assertFalse($filterCollection->isClean());
+
+        $hash = $filterCollection->getHash();
+
+        self::assertNotSame($oldHash, $hash);
+        self::assertTrue($filterCollection->isClean());
+        self::assertSame($hash, $filterCollection->getHash());
     }
 }
 
