@@ -35,9 +35,9 @@ class GH7512Test extends OrmFunctionalTestCase
 
     public function testFindEntityByAssociationPropertyJoinedChildWithClearMetadata(): void
     {
-        // unset metadata for entity B as though it hasn't been touched yet in application lifecycle.
-        $this->_em->getMetadataFactory()->setMetadataFor(GH7512EntityB::class, null);
-        $result = $this->_em->getRepository(GH7512EntityC::class)->findBy([
+        // pretend we are starting afresh
+        $this->_em = $this->getEntityManager();
+        $result    = $this->_em->getRepository(GH7512EntityC::class)->findBy([
             'entityA' => new GH7512EntityB(),
         ]);
         $this->assertEmpty($result);
