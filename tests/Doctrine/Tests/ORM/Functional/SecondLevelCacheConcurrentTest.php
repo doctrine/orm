@@ -23,11 +23,8 @@ use function assert;
  */
 class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
 {
-    /** @var CacheFactorySecondLevelCacheConcurrentTest */
-    private $cacheFactory;
-
-    /** @var ClassMetadata */
-    private $countryMetadata;
+    private CacheFactorySecondLevelCacheConcurrentTest $cacheFactory;
+    private ClassMetadata $countryMetadata;
 
     protected function setUp(): void
     {

@@ -37,13 +37,10 @@ use Psr\Cache\CacheItemPoolInterface;
 class DefaultCacheFactoryTest extends OrmTestCase
 {
     /** @var CacheFactory&MockObject */
-    private $factory;
+    private CacheFactory $factory;
 
-    /** @var EntityManagerMock */
-    private $em;
-
-    /** @var RegionsConfiguration */
-    private $regionsConfig;
+    private EntityManagerMock $em;
+    private RegionsConfiguration $regionsConfig;
 
     protected function setUp(): void
     {
@@ -54,7 +51,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->regionsConfig = new RegionsConfiguration();
         $arguments           = [$this->regionsConfig, $this->getSharedSecondLevelCache()];
         $this->factory       = $this->getMockBuilder(DefaultCacheFactory::class)
-                                    ->setMethods(['getRegion'])
+                                    ->onlyMethods(['getRegion'])
                                     ->setConstructorArgs($arguments)
                                     ->getMock();
     }

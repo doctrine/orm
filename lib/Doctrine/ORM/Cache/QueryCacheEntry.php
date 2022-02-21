@@ -17,21 +17,19 @@ class QueryCacheEntry implements CacheEntry
      * @readonly Public only for performance reasons, it should be considered immutable.
      * @var array<string, mixed>
      */
-    public $result;
+    public array $result;
 
     /**
      * Time creation of this cache entry
      *
      * @readonly Public only for performance reasons, it should be considered immutable.
-     * @var float
      */
-    public $time;
+    public float $time;
 
     /**
      * @param array<string, mixed> $result
-     * @param float|null           $time
      */
-    public function __construct($result, $time = null)
+    public function __construct(array $result, ?float $time = null)
     {
         $this->result = $result;
         $this->time   = $time ?: microtime(true);
@@ -39,10 +37,8 @@ class QueryCacheEntry implements CacheEntry
 
     /**
      * @param array<string, mixed> $values
-     *
-     * @return QueryCacheEntry
      */
-    public static function __set_state(array $values)
+    public static function __set_state(array $values): self
     {
         return new self($values['result'], $values['time']);
     }

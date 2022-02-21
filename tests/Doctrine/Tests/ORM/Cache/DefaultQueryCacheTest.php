@@ -35,14 +35,9 @@ use function sprintf;
  */
 class DefaultQueryCacheTest extends OrmTestCase
 {
-    /** @var DefaultQueryCache */
-    private $queryCache;
-
-    /** @var EntityManagerMock */
-    private $em;
-
-    /** @var CacheRegionMock */
-    private $region;
+    private DefaultQueryCache $queryCache;
+    private EntityManagerMock $em;
+    private CacheRegionMock $region;
 
     protected function setUp(): void
     {
@@ -678,19 +673,13 @@ class DefaultQueryCacheTest extends OrmTestCase
 
 class CacheFactoryDefaultQueryCacheTest extends Cache\DefaultCacheFactory
 {
-    /** @var DefaultQueryCache */
-    private $queryCache;
-
-    /** @var CacheRegionMock */
-    private $region;
-
-    public function __construct(DefaultQueryCache $queryCache, CacheRegionMock $region)
-    {
-        $this->queryCache = $queryCache;
-        $this->region     = $region;
+    public function __construct(
+        private DefaultQueryCache $queryCache,
+        private CacheRegionMock $region
+    ) {
     }
 
-    public function buildQueryCache(EntityManagerInterface $em, $regionName = null): DefaultQueryCache
+    public function buildQueryCache(EntityManagerInterface $em, ?string $regionName = null): DefaultQueryCache
     {
         return $this->queryCache;
     }

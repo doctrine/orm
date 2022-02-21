@@ -29,37 +29,36 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 {
     /** @psalm-var list<Person> */
-    protected $people = [];
+    protected array $people = [];
 
     /** @psalm-var list<Address> */
-    protected $addresses = [];
+    protected array $addresses = [];
 
     /** @psalm-var list<Country> */
-    protected $countries = [];
+    protected array $countries = [];
 
     /** @psalm-var list<State> */
-    protected $states = [];
+    protected array $states = [];
 
     /** @psalm-var list<City> */
-    protected $cities = [];
+    protected array $cities = [];
 
     /** @psalm-var list<Travel> */
-    protected $travels = [];
+    protected array $travels = [];
 
     /** @psalm-var list<Traveler> */
-    protected $travelers = [];
+    protected array $travelers = [];
 
     /** @psalm-var list<Attraction> */
-    protected $attractions = [];
+    protected array $attractions = [];
 
     /** @psalm-var list<AttractionInfo> */
-    protected $attractionsInfo = [];
+    protected array $attractionsInfo = [];
 
     /** @psalm-var list<TravelerProfile> */
-    protected $travelersWithProfile = [];
+    protected array $travelersWithProfile = [];
 
-    /** @var Cache */
-    protected $cache;
+    protected Cache $cache;
 
     protected function setUp(): void
     {

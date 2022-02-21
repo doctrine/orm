@@ -18,8 +18,7 @@ use Doctrine\Tests\DoctrineTestCase;
  */
 class CacheConfigTest extends DoctrineTestCase
 {
-    /** @var CacheConfiguration */
-    private $config;
+    private CacheConfiguration $config;
 
     protected function setUp(): void
     {

@@ -25,11 +25,8 @@ use function array_merge;
  */
 class DefaultCacheTest extends OrmTestCase
 {
-    /** @var DefaultCache */
-    private $cache;
-
-    /** @var EntityManagerMock */
-    private $em;
+    private DefaultCache $cache;
+    private EntityManagerMock $em;
 
     protected function setUp(): void
     {

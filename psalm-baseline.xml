@@ -31,12 +31,6 @@
       <code>getTimestampRegion</code>
     </PossiblyNullReference>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/CollectionCacheKey.php">
-    <RedundantCastGivenDocblockType occurrences="2">
-      <code>(string) $association</code>
-      <code>(string) $entityClass</code>
-    </RedundantCastGivenDocblockType>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultCache.php">
     <InvalidOperand occurrences="1">
       <code>! $association['type']</code>
@@ -53,9 +47,6 @@
     <NullableReturnStatement occurrences="1">
       <code>$this-&gt;fileLockRegionDirectory</code>
     </NullableReturnStatement>
-    <RedundantCastGivenDocblockType occurrences="1">
-      <code>(string) $fileLockRegionDirectory</code>
-    </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultEntityHydrator.php">
     <InvalidArgument occurrences="1">
@@ -101,8 +92,7 @@
     <NoInterfaceProperties occurrences="1">
       <code>$entry-&gt;identifiers</code>
     </NoInterfaceProperties>
-    <PossiblyNullArgument occurrences="2">
-      <code>$collection-&gt;getOwner()</code>
+    <PossiblyNullArgument occurrences="1">
       <code>$collection-&gt;getOwner()</code>
     </PossiblyNullArgument>
     <PossiblyNullReference occurrences="2">
@@ -172,26 +162,6 @@
       <code>lock</code>
       <code>lock</code>
     </UndefinedInterfaceMethod>
-  </file>
-  <file src="lib/Doctrine/ORM/Cache/RegionsConfiguration.php">
-    <RedundantCastGivenDocblockType occurrences="6">
-      <code>(int) $defaultLifetime</code>
-      <code>(int) $defaultLifetime</code>
-      <code>(int) $defaultLockLifetime</code>
-      <code>(int) $defaultLockLifetime</code>
-      <code>(int) $lifetime</code>
-      <code>(int) $lifetime</code>
-    </RedundantCastGivenDocblockType>
-  </file>
-  <file src="lib/Doctrine/ORM/Cache/TimestampCacheEntry.php">
-    <RedundantCastGivenDocblockType occurrences="1">
-      <code>(float) $time</code>
-    </RedundantCastGivenDocblockType>
-  </file>
-  <file src="lib/Doctrine/ORM/Cache/TimestampCacheKey.php">
-    <RedundantCastGivenDocblockType occurrences="1">
-      <code>(string) $space</code>
-    </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Cache/TimestampQueryCacheValidator.php">
     <NoInterfaceProperties occurrences="1">

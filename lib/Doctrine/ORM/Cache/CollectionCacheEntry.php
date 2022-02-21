@@ -15,7 +15,7 @@ class CollectionCacheEntry implements CacheEntry
      * @readonly Public only for performance reasons, it should be considered immutable.
      * @var CacheKey[]
      */
-    public $identifiers;
+    public array $identifiers;
 
     /**
      * @param CacheKey[] $identifiers List of entity identifiers hold by the collection
@@ -31,10 +31,8 @@ class CollectionCacheEntry implements CacheEntry
      * This method allows for Doctrine\Common\Cache\PhpFileCache compatibility
      *
      * @param array<string, mixed> $values array containing property values
-     *
-     * @return CollectionCacheEntry
      */
-    public static function __set_state(array $values)
+    public static function __set_state(array $values): CollectionCacheEntry
     {
         return new self($values['identifiers']);
     }

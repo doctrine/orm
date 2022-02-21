@@ -26,15 +26,11 @@ class DefaultRegion implements Region
     private const REGION_KEY_SEPARATOR = '_';
     private const REGION_PREFIX        = 'DC2_REGION_';
 
-    private string $name;
-    private int $lifetime = 0;
-    private CacheItemPoolInterface $cacheItemPool;
-
-    public function __construct(string $name, CacheItemPoolInterface $cacheItemPool, int $lifetime = 0)
-    {
-        $this->cacheItemPool = $cacheItemPool;
-        $this->name          = $name;
-        $this->lifetime      = $lifetime;
+    public function __construct(
+        private string $name,
+        private CacheItemPoolInterface $cacheItemPool,
+        private int $lifetime = 0
+    ) {
     }
 
     public function getName(): string

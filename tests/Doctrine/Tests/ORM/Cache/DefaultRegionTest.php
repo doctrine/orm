@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\ORM\Cache\CollectionCacheEntry;
-use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
@@ -18,7 +17,7 @@ use function array_map;
  */
 class DefaultRegionTest extends AbstractRegionTest
 {
-    protected function createRegion(): Region
+    protected function createRegion(): DefaultRegion
     {
         return new DefaultRegion('default.region.test', $this->cacheItemPool);
     }
