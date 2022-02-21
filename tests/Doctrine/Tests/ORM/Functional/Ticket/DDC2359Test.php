@@ -61,6 +61,8 @@ class DDC2359Test extends TestCase
 
         $metadataFactory->setEntityManager($entityManager);
 
+        $mockMetadata->method('getName')->willReturn(DDC2359Foo::class);
+
         self::assertSame($mockMetadata, $metadataFactory->getMetadataFor(DDC2359Foo::class));
     }
 }
