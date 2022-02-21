@@ -784,9 +784,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$metadata</code>
     </ArgumentTypeCoercion>
-    <InvalidArgument occurrences="1">
-      <code>new AttributeReader()</code>
-    </InvalidArgument>
     <InvalidArrayAccess occurrences="4">
       <code>$value[0]</code>
       <code>$value[0]</code>
@@ -797,17 +794,13 @@
       <code>$mapping</code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType occurrences="1"/>
-    <NonInvariantDocblockPropertyType occurrences="1">
+    <NonInvariantDocblockPropertyType occurrences="2">
       <code>$entityAnnotationClasses</code>
+      <code>$reader</code>
     </NonInvariantDocblockPropertyType>
     <PossiblyNullArgument occurrences="1">
       <code>$listenerClassName</code>
     </PossiblyNullArgument>
-    <PossiblyNullIterator occurrences="3">
-      <code>$joinColumnAttributes</code>
-      <code>$this-&gt;reader-&gt;getPropertyAnnotation($property, Mapping\InverseJoinColumn::class)</code>
-      <code>$this-&gt;reader-&gt;getPropertyAnnotation($property, Mapping\JoinColumn::class)</code>
-    </PossiblyNullIterator>
     <RedundantCondition occurrences="3">
       <code>assert($method instanceof ReflectionMethod)</code>
       <code>assert($method instanceof ReflectionMethod)</code>
