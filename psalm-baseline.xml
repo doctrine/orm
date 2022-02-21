@@ -224,8 +224,7 @@
     </NoInterfaceProperties>
   </file>
   <file src="lib/Doctrine/ORM/Configuration.php">
-    <ArgumentTypeCoercion occurrences="2">
-      <code>$className</code>
+    <ArgumentTypeCoercion occurrences="1">
       <code>$className</code>
     </ArgumentTypeCoercion>
     <DeprecatedClass occurrences="2">
@@ -297,15 +296,9 @@
       <code>getPartialReference</code>
       <code>getReference</code>
     </InvalidReturnType>
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$this-&gt;repositoryFactory-&gt;getRepository($this, $entityName)</code>
-    </LessSpecificReturnStatement>
     <MissingReturnType occurrences="1">
       <code>wrapInTransaction</code>
     </MissingReturnType>
-    <MoreSpecificReturnType occurrences="1">
-      <code>EntityRepository&lt;T&gt;</code>
-    </MoreSpecificReturnType>
     <ParamNameMismatch occurrences="8">
       <code>$entity</code>
       <code>$entity</code>
@@ -2677,12 +2670,12 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Repository/DefaultRepositoryFactory.php">
-    <LessSpecificReturnStatement occurrences="1">
+    <TypeDoesNotContainType occurrences="1">
+      <code>$repository instanceof EntityRepository</code>
+    </TypeDoesNotContainType>
+    <UnsafeInstantiation occurrences="1">
       <code>new $repositoryClassName($entityManager, $metadata)</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
-      <code>ObjectRepository</code>
-    </MoreSpecificReturnType>
+    </UnsafeInstantiation>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/CollectionRegionCommand.php">
     <MissingReturnType occurrences="1">

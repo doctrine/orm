@@ -803,7 +803,18 @@ use function strpos;
             }
         }
 
-        return $this->repositoryFactory->getRepository($this, $entityName);
+        $repository = $this->repositoryFactory->getRepository($this, $entityName);
+        if (! $repository instanceof EntityRepository) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/9533',
+                'Not returning an instance of %s from %s::getRepository() is deprecated and will cause a TypeError on 3.0.',
+                EntityRepository::class,
+                get_debug_type($this->repositoryFactory)
+            );
+        }
+
+        return $repository;
     }
 
     /**

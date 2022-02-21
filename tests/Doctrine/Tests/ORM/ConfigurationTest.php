@@ -16,6 +16,7 @@ use Doctrine\ORM\Cache\Exception\QueryCacheNotConfigured;
 use Doctrine\ORM\Cache\Exception\QueryCacheUsesNonPersistentCache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Mapping as AnnotationNamespace;
@@ -25,10 +26,12 @@ use Doctrine\ORM\Mapping\PrePersist;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\ObjectRepository;
 use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
 use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
+use stdClass;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function class_exists;
@@ -388,8 +391,17 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame(EntityRepository::class, $this->configuration->getDefaultRepositoryClassName());
         $this->configuration->setDefaultRepositoryClassName(DDC753CustomRepository::class);
         self::assertSame(DDC753CustomRepository::class, $this->configuration->getDefaultRepositoryClassName());
-        $this->expectException(ORMException::class);
+        $this->expectException(InvalidEntityRepository::class);
+        $this->expectExceptionMessage('Invalid repository class \'Doctrine\Tests\ORM\ConfigurationTest\'. It must be a Doctrine\ORM\EntityRepository.');
         $this->configuration->setDefaultRepositoryClassName(self::class);
+    }
+
+    public function testSetDeprecatedDefaultRepositoryClassName(): void
+    {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9533');
+
+        $this->configuration->setDefaultRepositoryClassName(DeprecatedRepository::class);
+        self::assertSame(DeprecatedRepository::class, $this->configuration->getDefaultRepositoryClassName());
     }
 
     public function testSetGetNamingStrategy(): void
@@ -443,5 +455,39 @@ class ConfigurationTestAnnotationReaderChecker
     /** @AnnotationNamespace\PrePersist */
     public function namespacedAnnotationMethod(): void
     {
+    }
+}
+
+class DeprecatedRepository implements ObjectRepository
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function find($id)
+    {
+        return null;
+    }
+
+    public function findAll(): array
+    {
+        return [];
+    }
+
+    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
+    {
+        return [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findOneBy(array $criteria)
+    {
+        return null;
+    }
+
+    public function getClassName(): string
+    {
+        return stdClass::class;
     }
 }

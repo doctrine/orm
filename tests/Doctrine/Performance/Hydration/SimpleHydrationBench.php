@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Performance\Hydration;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\Performance\EntityManagerFactory;
-use Doctrine\Persistence\ObjectRepository;
 use Doctrine\Tests\Models\CMS;
 
 /**
@@ -17,7 +17,7 @@ final class SimpleHydrationBench
     /** @var EntityManagerInterface */
     private $entityManager;
 
-    /** @var ObjectRepository */
+    /** @var EntityRepository */
     private $repository;
 
     public function init(): void

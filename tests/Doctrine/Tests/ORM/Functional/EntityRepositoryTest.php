@@ -14,7 +14,6 @@ use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
@@ -33,7 +32,6 @@ use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
 use Doctrine\Tests\Models\DDC753\DDC753DefaultRepository;
 use Doctrine\Tests\Models\DDC753\DDC753EntityWithCustomRepository;
 use Doctrine\Tests\Models\DDC753\DDC753EntityWithDefaultCustomRepository;
-use Doctrine\Tests\Models\DDC753\DDC753InvalidRepository;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_fill;
@@ -661,17 +659,6 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         self::assertEquals($this->_em->getConfiguration()->getDefaultRepositoryClassName(), DDC753DefaultRepository::class);
         $this->_em->getConfiguration()->setDefaultRepositoryClassName(EntityRepository::class);
         self::assertEquals($this->_em->getConfiguration()->getDefaultRepositoryClassName(), EntityRepository::class);
-    }
-
-    /**
-     * @group DDC-753
-     */
-    public function testSetDefaultRepositoryInvalidClassError(): void
-    {
-        $this->expectException(InvalidEntityRepository::class);
-        $this->expectExceptionMessage('Invalid repository class \'Doctrine\Tests\Models\DDC753\DDC753InvalidRepository\'. It must be a Doctrine\Persistence\ObjectRepository.');
-        self::assertEquals($this->_em->getConfiguration()->getDefaultRepositoryClassName(), EntityRepository::class);
-        $this->_em->getConfiguration()->setDefaultRepositoryClassName(DDC753InvalidRepository::class);
     }
 
     /**
