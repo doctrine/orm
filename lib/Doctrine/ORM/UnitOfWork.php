@@ -40,6 +40,7 @@ use Doctrine\Persistence\PropertyChangedListener;
 use Exception;
 use InvalidArgumentException;
 use RuntimeException;
+use Stringable;
 use Throwable;
 use UnexpectedValueException;
 
@@ -60,7 +61,6 @@ use function implode;
 use function in_array;
 use function is_array;
 use function is_object;
-use function method_exists;
 use function reset;
 use function spl_object_id;
 use function sprintf;
@@ -2836,7 +2836,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private static function objToStr(object $obj): string
     {
-        return method_exists($obj, '__toString') ? (string) $obj : get_debug_type($obj) . '@' . spl_object_id($obj);
+        return $obj instanceof Stringable ? (string) $obj : get_debug_type($obj) . '@' . spl_object_id($obj);
     }
 
     /**

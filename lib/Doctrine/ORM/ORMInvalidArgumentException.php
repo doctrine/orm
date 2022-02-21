@@ -6,13 +6,13 @@ namespace Doctrine\ORM;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use InvalidArgumentException;
+use Stringable;
 
 use function array_map;
 use function count;
 use function get_debug_type;
 use function gettype;
 use function implode;
-use function method_exists;
 use function reset;
 use function spl_object_id;
 use function sprintf;
@@ -223,19 +223,16 @@ class ORMInvalidArgumentException extends InvalidArgumentException
 
     /**
      * Helper method to show an object as string.
-     *
-     * @param object $obj
      */
-    private static function objToStr($obj): string
+    private static function objToStr(object $obj): string
     {
-        return method_exists($obj, '__toString') ? (string) $obj : get_debug_type($obj) . '@' . spl_object_id($obj);
+        return $obj instanceof Stringable ? (string) $obj : get_debug_type($obj) . '@' . spl_object_id($obj);
     }
 
     /**
-     * @param object $entity
      * @psalm-param array<string,string> $associationMapping
      */
-    private static function newEntityFoundThroughRelationshipMessage(array $associationMapping, $entity): string
+    private static function newEntityFoundThroughRelationshipMessage(array $associationMapping, object $entity): string
     {
         return 'A new entity was found through the relationship \''
             . $associationMapping['sourceEntity'] . '#' . $associationMapping['fieldName'] . '\' that was not'
@@ -243,7 +240,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
             . ' To solve this issue: Either explicitly call EntityManager#persist()'
             . ' on this unknown entity or configure cascade persist'
             . ' this association in the mapping for example @ManyToOne(..,cascade={"persist"}).'
-            . (method_exists($entity, '__toString')
+            . ($entity instanceof Stringable
                 ? ''
                 : ' If you cannot find out which entity causes the problem implement \''
                 . $associationMapping['targetEntity'] . '#__toString()\' to get a clue.'

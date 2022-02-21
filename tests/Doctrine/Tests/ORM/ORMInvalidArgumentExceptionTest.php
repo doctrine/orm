@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use stdClass;
+use Stringable;
 
 use function spl_object_id;
 use function uniqid;
@@ -46,7 +47,7 @@ class ORMInvalidArgumentExceptionTest extends TestCase
         $stringEntity3 = uniqid('entity3', true);
         $entity1       = new stdClass();
         $entity2       = new stdClass();
-        $entity3       = $this->getMockBuilder(stdClass::class)->setMethods(['__toString'])->getMock();
+        $entity3       = $this->createMock(Stringable::class);
         $association1  = [
             'sourceEntity' => 'foo1',
             'fieldName'    => 'bar1',
@@ -63,7 +64,7 @@ class ORMInvalidArgumentExceptionTest extends TestCase
             'targetEntity' => 'baz3',
         ];
 
-        $entity3->expects(self::any())->method('__toString')->willReturn($stringEntity3);
+        $entity3->method('__toString')->willReturn($stringEntity3);
 
         return [
             'one entity found' => [
