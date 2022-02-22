@@ -152,6 +152,25 @@ class SchemaValidatorTest extends OrmTestCase
     }
 
     /**
+     * @group 9536
+     */
+    public function testInvalidBiDirectionalRelationMappingMissingMappedByAttribute(): void
+    {
+        $class = $this->em->getClassMetadata(Issue9536Owner::class);
+        $ce    = $this->validator->validateClass($class);
+
+        self::assertEquals(
+            [
+                'The field Doctrine\Tests\ORM\Tools\Issue9536Owner#one is on the owning side of a bi-directional ' .
+                'relationship, but the specified inversedBy association on the target-entity ' .
+                "Doctrine\Tests\ORM\Tools\Issue9536Target#two does not contain the required 'mappedBy=\"one\"' " .
+                'attribute.',
+            ],
+            $ce
+        );
+    }
+
+    /**
      * @group DDC-3322
      */
     public function testInvalidOrderByInvalidField(): void
@@ -431,6 +450,46 @@ class DDC3274Two
      * @var DDC3274One
      * @Id
      * @ManyToOne(targetEntity="DDC3274One")
+     */
+    private $one;
+}
+
+/**
+ * @Entity
+ */
+class Issue9536Target
+{
+    /**
+     * @var mixed
+     * @Id
+     * @Column
+     * @GeneratedValue
+     */
+    private $id;
+
+    /**
+     * @var Issue9536Owner
+     * @OneToOne(targetEntity="Issue9536Owner")
+     */
+    private $two;
+}
+
+/**
+ * @Entity
+ */
+class Issue9536Owner
+{
+    /**
+     * @var mixed
+     * @Id
+     * @Column
+     * @GeneratedValue
+     */
+    private $id;
+
+    /**
+     * @var Issue9536Target
+     * @OneToOne(targetEntity="Issue9536Target", inversedBy="two")
      */
     private $one;
 }
