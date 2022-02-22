@@ -30,7 +30,7 @@ jobs:
           - php-version: "8.0"
             dbal-version: "2.13"
           - php-version: "8.1"
-            dbal-version: "3.2@dev"
+            dbal-version: "3@dev"
 
     steps:
       - name: "Checkout"
