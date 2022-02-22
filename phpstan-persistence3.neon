@@ -1,0 +1,8 @@
+includes:
+    - phpstan.neon
+
+parameters:
+    ignoreErrors:
+        -
+            message: '/clear.*invoked with 1 parameter/'
+            path: lib/Doctrine/ORM/EntityRepository.php
