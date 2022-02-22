@@ -661,11 +661,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Expr/Select.php
 
 		-
-			message: "#^Property Doctrine\\\\ORM\\\\Query\\\\FilterCollection\\:\\:\\$filterHash is never written, only read\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/FilterCollection.php
-
-		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 3
 			path: lib/Doctrine/ORM/Query/Parser.php

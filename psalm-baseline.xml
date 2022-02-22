@@ -1847,20 +1847,6 @@
       <code>$this-&gt;parameters</code>
     </PropertyTypeCoercion>
   </file>
-  <file src="lib/Doctrine/ORM/Query/FilterCollection.php">
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$this-&gt;enabledFilters[$name]</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
-      <code>SQLFilter</code>
-    </MoreSpecificReturnType>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$filterHash</code>
-    </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="1">
-      <code>$this-&gt;enabledFilters</code>
-    </PropertyTypeCoercion>
-  </file>
   <file src="lib/Doctrine/ORM/Query/Parser.php">
     <ArgumentTypeCoercion occurrences="1">
       <code>$stringPattern</code>

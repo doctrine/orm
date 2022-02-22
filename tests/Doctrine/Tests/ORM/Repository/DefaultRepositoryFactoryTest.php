@@ -117,7 +117,7 @@ class DefaultRepositoryFactoryTest extends TestCase
     private function buildClassMetadata(string $className): ClassMetadata
     {
         $metadata = $this->createMock(ClassMetadata::class);
-        $metadata->expects(self::any())->method('getName')->will(self::returnValue($className));
+        $metadata->method('getName')->will(self::returnValue($className));
         $metadata->name = $className;
 
         $metadata->customRepositoryClassName = null;
@@ -131,10 +131,7 @@ class DefaultRepositoryFactoryTest extends TestCase
     private function createEntityManager(): EntityManagerInterface
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-
-        $entityManager->expects(self::any())
-            ->method('getConfiguration')
-            ->will(self::returnValue($this->configuration));
+        $entityManager->method('getConfiguration')->willReturn($this->configuration);
 
         return $entityManager;
     }

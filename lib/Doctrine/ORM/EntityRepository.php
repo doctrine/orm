@@ -193,6 +193,9 @@ class EntityRepository implements ObjectRepository, Selectable
         return $this->em;
     }
 
+    /**
+     * @psalm-return ClassMetadata<T>
+     */
     protected function getClassMetadata(): ClassMetadata
     {
         return $this->class;
