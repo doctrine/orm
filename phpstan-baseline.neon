@@ -261,13 +261,8 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
 
 		-
-			message: "#^Argument of an invalid type Doctrine\\\\ORM\\\\Mapping\\\\InverseJoinColumn supplied for foreach, only iterables are supported\\.$#"
+			message: "#^PHPDoc type Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\AttributeReader of property Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\AttributeDriver\\:\\:\\$reader is not covariant with PHPDoc type Doctrine\\\\Common\\\\Annotations\\\\Reader of overridden property Doctrine\\\\Persistence\\\\Mapping\\\\Driver\\\\AnnotationDriver\\:\\:\\$reader\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
-
-		-
-			message: "#^Argument of an invalid type Doctrine\\\\ORM\\\\Mapping\\\\JoinColumn supplied for foreach, only iterables are supported\\.$#"
-			count: 2
 			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
 
 		-
@@ -277,11 +272,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$metadata of static method Doctrine\\\\ORM\\\\Mapping\\\\Builder\\\\EntityListenerBuilder\\:\\:bindEntityListener\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo&Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<T of object\\> given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
-
-		-
-			message: "#^Parameter \\#1 \\$reader of method Doctrine\\\\Persistence\\\\Mapping\\\\Driver\\\\AnnotationDriver\\:\\:__construct\\(\\) expects Doctrine\\\\Common\\\\Annotations\\\\Reader, Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\AttributeReader given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
 

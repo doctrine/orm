@@ -35,6 +35,13 @@ class AttributeDriver extends AnnotationDriver
     ];
 
     /**
+     * The annotation reader.
+     *
+     * @var AttributeReader
+     */
+    protected $reader;
+
+    /**
      * @param array<string> $paths
      */
     public function __construct(array $paths)
@@ -46,7 +53,8 @@ class AttributeDriver extends AnnotationDriver
             ));
         }
 
-        parent::__construct(new AttributeReader(), $paths);
+        $this->reader = new AttributeReader();
+        $this->addPaths($paths);
     }
 
     /**
@@ -271,7 +279,7 @@ class AttributeDriver extends AnnotationDriver
             // Check for JoinColumn/JoinColumns annotations
             $joinColumns = [];
 
-            $joinColumnAttributes = $this->reader->getPropertyAnnotation($property, Mapping\JoinColumn::class);
+            $joinColumnAttributes = $this->reader->getPropertyAnnotationCollection($property, Mapping\JoinColumn::class);
 
             foreach ($joinColumnAttributes as $joinColumnAttribute) {
                 $joinColumns[] = $this->joinColumnToArray($joinColumnAttribute);
@@ -376,11 +384,11 @@ class AttributeDriver extends AnnotationDriver
                     ];
                 }
 
-                foreach ($this->reader->getPropertyAnnotation($property, Mapping\JoinColumn::class) as $joinColumn) {
+                foreach ($this->reader->getPropertyAnnotationCollection($property, Mapping\JoinColumn::class) as $joinColumn) {
                     $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
                 }
 
-                foreach ($this->reader->getPropertyAnnotation($property, Mapping\InverseJoinColumn::class) as $joinColumn) {
+                foreach ($this->reader->getPropertyAnnotationCollection($property, Mapping\InverseJoinColumn::class) as $joinColumn) {
                     $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumn);
                 }
 
