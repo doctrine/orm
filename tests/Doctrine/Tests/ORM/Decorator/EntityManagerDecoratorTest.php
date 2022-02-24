@@ -7,13 +7,18 @@ namespace Doctrine\Tests\ORM\Decorator;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Generator;
+use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionNamedType;
+use stdClass;
 
-use function array_fill;
+use function assert;
 use function in_array;
+use function sprintf;
 
 class EntityManagerDecoratorTest extends TestCase
 {
@@ -40,21 +45,18 @@ class EntityManagerDecoratorTest extends TestCase
         $this->wrapped = $this->createMock(EntityManagerInterface::class);
     }
 
-    /** @psalm-return array<string, mixed[]> */
-    public function getMethodParameters(): array
+    /** @psalm-return Generator<string, mixed[]> */
+    public function getMethodParameters(): Generator
     {
-        $class   = new ReflectionClass(EntityManagerInterface::class);
-        $methods = [];
+        $class = new ReflectionClass(EntityManagerInterface::class);
 
         foreach ($class->getMethods() as $method) {
             if ($method->isConstructor() || $method->isStatic() || ! $method->isPublic()) {
                 continue;
             }
 
-            $methods[$method->getName()] = $this->getParameters($method);
+            yield $method->getName() => $this->getParameters($method);
         }
-
-        return $methods;
     }
 
     /**
@@ -77,19 +79,34 @@ class EntityManagerDecoratorTest extends TestCase
             ];
         }
 
-        if ($method->getNumberOfRequiredParameters() === 0) {
-            return [$method->getName(), []];
+        $parameters = [];
+
+        foreach ($method->getParameters() as $parameter) {
+            if ($parameter->getType() === null) {
+                $parameters[] = 'mixed';
+                continue;
+            }
+
+            $type = $parameter->getType();
+            assert($type instanceof ReflectionNamedType);
+            switch ($type->getName()) {
+                case 'string':
+                    $parameters[] = 'parameter';
+                    break;
+
+                case 'object':
+                    $parameters[] = new stdClass();
+                    break;
+
+                default:
+                    throw new LogicException(sprintf(
+                        'Type %s is not handled yet',
+                        (string) $parameter->getType()
+                    ));
+            }
         }
 
-        if ($method->getNumberOfRequiredParameters() > 0) {
-            return [$method->getName(), array_fill(0, $method->getNumberOfRequiredParameters(), 'req') ?: []];
-        }
-
-        if ($method->getNumberOfParameters() !== $method->getNumberOfRequiredParameters()) {
-            return [$method->getName(), array_fill(0, $method->getNumberOfParameters(), 'all') ?: []];
-        }
-
-        return [];
+        return [$method->getName(), $parameters];
     }
 
     /**

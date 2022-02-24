@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Decorator;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ObjectManagerDecorator;
 
@@ -41,6 +42,28 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     public function getExpressionBuilder()
     {
         return $this->wrapped->getExpressionBuilder();
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @psalm-param class-string<T> $className
+     *
+     * @psalm-return EntityRepository<T>
+     *
+     * @template T of object
+     */
+    public function getRepository($className)
+    {
+        return $this->wrapped->getRepository($className);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassMetadata($className)
+    {
+        return $this->wrapped->getClassMetadata($className);
     }
 
     /**
