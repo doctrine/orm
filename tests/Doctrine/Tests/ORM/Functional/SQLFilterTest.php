@@ -42,44 +42,19 @@ use function serialize;
  */
 class SQLFilterTest extends OrmFunctionalTestCase
 {
-    /** @var int */
-    private $userId;
-
-    /** @var int */
-    private $userId2;
-
-    /** @var int */
-    private $articleId;
-
-    /** @var int */
-    private $articleId2;
-
-    /** @var int */
-    private $groupId;
-
-    /** @var int */
-    private $groupId2;
-
-    /** @var int */
-    private $managerId;
-
-    /** @var int */
-    private $managerId2;
-
-    /** @var int */
-    private $contractId1;
-
-    /** @var int */
-    private $contractId2;
-
-    /** @var int */
-    private $organizationId;
-
-    /** @var int */
-    private $eventId1;
-
-    /** @var int */
-    private $eventId2;
+    private int $userId;
+    private int $userId2;
+    private int $articleId;
+    private int $articleId2;
+    private int $groupId;
+    private int $groupId2;
+    private int $managerId;
+    private int $managerId2;
+    private int $contractId1;
+    private int $contractId2;
+    private int $organizationId;
+    private int $eventId1;
+    private int $eventId2;
 
     protected function setUp(): void
     {
@@ -1185,8 +1160,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
 class MySoftDeleteFilter extends SQLFilter
 {
-    /** {@inheritDoc} */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if ($targetEntity->name !== 'MyEntity\SoftDeleteNewsItem') {
             return '';
@@ -1198,8 +1172,7 @@ class MySoftDeleteFilter extends SQLFilter
 
 class MyLocaleFilter extends SQLFilter
 {
-    /** {@inheritDoc} */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if (! in_array('LocaleAware', $targetEntity->reflClass->getInterfaceNames(), true)) {
             return '';
@@ -1211,8 +1184,7 @@ class MyLocaleFilter extends SQLFilter
 
 class CMSCountryFilter extends SQLFilter
 {
-    /** {@inheritDoc} */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if ($targetEntity->name !== CmsAddress::class) {
             return '';
@@ -1224,8 +1196,7 @@ class CMSCountryFilter extends SQLFilter
 
 class CMSGroupPrefixFilter extends SQLFilter
 {
-    /** {@inheritDoc} */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if ($targetEntity->name !== CmsGroup::class) {
             return '';
@@ -1237,8 +1208,7 @@ class CMSGroupPrefixFilter extends SQLFilter
 
 class CMSArticleTopicFilter extends SQLFilter
 {
-    /** {@inheritDoc} */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if ($targetEntity->name !== CmsArticle::class) {
             return '';
@@ -1250,8 +1220,7 @@ class CMSArticleTopicFilter extends SQLFilter
 
 class CompanyPersonNameFilter extends SQLFilter
 {
-    /** {@inheritDoc} */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if ($targetEntity->name !== CompanyPerson::class) {
             return '';
@@ -1263,8 +1232,7 @@ class CompanyPersonNameFilter extends SQLFilter
 
 class CompletedContractFilter extends SQLFilter
 {
-    /** {@inheritDoc} */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if ($targetEntity->name !== CompanyContract::class) {
             return '';
@@ -1276,8 +1244,7 @@ class CompletedContractFilter extends SQLFilter
 
 class CompanyEventFilter extends SQLFilter
 {
-    /** {@inheritDoc} */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if ($targetEntity->name !== CompanyEvent::class) {
             return '';
