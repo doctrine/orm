@@ -235,9 +235,8 @@
       <code>new CachedReader($reader, new ArrayCache())</code>
       <code>new SimpleAnnotationReader()</code>
     </DeprecatedClass>
-    <DeprecatedMethod occurrences="4">
+    <DeprecatedMethod occurrences="3">
       <code>AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php')</code>
-      <code>getAutoGenerateProxyClasses</code>
       <code>getMetadataCacheImpl</code>
       <code>getQueryCacheImpl</code>
     </DeprecatedMethod>
@@ -269,14 +268,8 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$connection</code>
     </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="2">
-      <code>ProxyFactory</code>
-    </DeprecatedClass>
-    <DeprecatedMethod occurrences="5">
-      <code>getAutoGenerateProxyClasses</code>
+    <DeprecatedMethod occurrences="2">
       <code>getMetadataCacheImpl</code>
-      <code>getProxyDir</code>
-      <code>getProxyNamespace</code>
       <code>merge</code>
     </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="6">
@@ -349,11 +342,6 @@
     <UnsafeInstantiation occurrences="1">
       <code>new $class($this)</code>
     </UnsafeInstantiation>
-  </file>
-  <file src="lib/Doctrine/ORM/EntityManagerInterface.php">
-    <DeprecatedClass occurrences="1">
-      <code>ProxyFactory</code>
-    </DeprecatedClass>
   </file>
   <file src="lib/Doctrine/ORM/EntityRepository.php">
     <InvalidReturnStatement occurrences="2">
@@ -2890,10 +2878,6 @@
     </NoInterfaceProperties>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/GenerateProxiesCommand.php">
-    <DeprecatedMethod occurrences="2">
-      <code>getProxyDir</code>
-      <code>getProxyDir</code>
-    </DeprecatedMethod>
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>

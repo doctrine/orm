@@ -34,6 +34,7 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
+use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
@@ -55,6 +56,8 @@ use function trim;
  * It combines all configuration options from DBAL & ORM.
  *
  * Internal note: When adding a new configuration option just write a getter/setter pair.
+ *
+ * @psalm-import-type AutogenerateMode from ProxyFactory
  */
 class Configuration extends \Doctrine\DBAL\Configuration
 {
@@ -76,10 +79,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the directory where Doctrine generates any necessary proxy class files.
      *
-     * @deprecated 2.7 We're switch to `ocramius/proxy-manager` and this method isn't applicable any longer
-     *
-     * @see https://github.com/Ocramius/ProxyManager
-     *
      * @return string|null
      */
     public function getProxyDir()
@@ -90,11 +89,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the strategy for automatically generating proxy classes.
      *
-     * @deprecated 2.7 We're switch to `ocramius/proxy-manager` and this method isn't applicable any longer
-     *
-     * @see https://github.com/Ocramius/ProxyManager
-     *
      * @return int Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     * @psalm-return AutogenerateMode
      */
     public function getAutoGenerateProxyClasses()
     {
@@ -116,10 +112,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /**
      * Gets the namespace where proxy classes reside.
-     *
-     * @deprecated 2.7 We're switch to `ocramius/proxy-manager` and this method isn't applicable any longer
-     *
-     * @see https://github.com/Ocramius/ProxyManager
      *
      * @return string|null
      */
@@ -549,7 +541,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
             throw QueryCacheUsesNonPersistentCache::fromDriver($queryCacheImpl);
         }
 
-        if ($this->getAutoGenerateProxyClasses()) {
+        if ($this->getAutoGenerateProxyClasses() !== AbstractProxyFactory::AUTOGENERATE_NEVER) {
             throw ProxyClassesAlwaysRegenerating::create();
         }
 
