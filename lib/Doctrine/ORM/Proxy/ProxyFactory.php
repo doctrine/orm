@@ -20,7 +20,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
 /**
  * This factory is used to create proxy objects for entities at runtime.
  *
- * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
+ * @psalm-type AutogenerateMode = AbstractProxyFactory::AUTOGENERATE_NEVER|AbstractProxyFactory::AUTOGENERATE_ALWAYS|AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS|AbstractProxyFactory::AUTOGENERATE_EVAL|AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS_OR_CHANGED
  */
 class ProxyFactory extends AbstractProxyFactory
 {
@@ -48,7 +48,8 @@ class ProxyFactory extends AbstractProxyFactory
      * @param string                 $proxyDir     The directory to use for the proxy classes. It must exist.
      * @param string                 $proxyNs      The namespace to use for the proxy classes.
      * @param bool|int               $autoGenerate The strategy for automatically generating proxy classes. Possible
-     *               values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     *                                             values are constants of {@see AbstractProxyFactory}.
+     * @psalm-param bool|AutogenerateMode $autoGenerate
      */
     public function __construct(EntityManagerInterface $em, $proxyDir, $proxyNs, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
     {

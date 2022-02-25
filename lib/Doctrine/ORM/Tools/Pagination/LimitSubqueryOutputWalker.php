@@ -17,6 +17,7 @@ use Doctrine\ORM\Query\AST\OrderByClause;
 use Doctrine\ORM\Query\AST\PartialObjectExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -44,6 +45,8 @@ use function substr;
  *
  * Works with composite keys but cannot deal with queries that have multiple
  * root entities (e.g. `SELECT f, b from Foo, Bar`)
+ *
+ * @psalm-import-type QueryComponent from Parser
  */
 class LimitSubqueryOutputWalker extends SqlWalker
 {
@@ -54,9 +57,6 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
     /** @var ResultSetMapping */
     private $rsm;
-
-    /** @var mixed[] */
-    private $queryComponents;
 
     /** @var int */
     private $firstResult;
@@ -91,12 +91,12 @@ class LimitSubqueryOutputWalker extends SqlWalker
      * @param Query        $query
      * @param ParserResult $parserResult
      * @param mixed[]      $queryComponents
+     * @psalm-param array<string, QueryComponent> $queryComponents
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
-        $this->platform        = $query->getEntityManager()->getConnection()->getDatabasePlatform();
-        $this->rsm             = $parserResult->getResultSetMapping();
-        $this->queryComponents = $queryComponents;
+        $this->platform = $query->getEntityManager()->getConnection()->getDatabasePlatform();
+        $this->rsm      = $parserResult->getResultSetMapping();
 
         // Reset limit and offset
         $this->firstResult = $query->getFirstResult();
@@ -411,7 +411,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
         // Generate DQL alias -> SQL table alias mapping
         foreach (array_keys($this->rsm->aliasMap) as $dqlAlias) {
-            $metadataList[$dqlAlias] = $class = $this->queryComponents[$dqlAlias]['metadata'];
+            $metadataList[$dqlAlias] = $class = $this->getMetadataForDqlAlias($dqlAlias);
             $aliasMap[$dqlAlias]     = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
         }
 
@@ -509,7 +509,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
         $fromRoot       = reset($from);
         $rootAlias      = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
-        $rootClass      = $this->queryComponents[$rootAlias]['metadata'];
+        $rootClass      = $this->getMetadataForDqlAlias($rootAlias);
         $rootIdentifier = $rootClass->identifier;
 
         // For every identifier, find out the SQL alias by combing through the ResultSetMapping

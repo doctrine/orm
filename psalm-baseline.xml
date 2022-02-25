@@ -177,24 +177,10 @@
       <code>(bool) $flag</code>
     </RedundantCastGivenDocblockType>
   </file>
-  <file src="lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php">
-    <DeprecatedClass occurrences="1">
-      <code>ProxyFactory</code>
-    </DeprecatedClass>
-  </file>
   <file src="lib/Doctrine/ORM/EntityManager.php">
     <ArgumentTypeCoercion occurrences="1">
       <code>$connection</code>
     </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="3">
-      <code>ProxyFactory</code>
-      <code>ProxyFactory</code>
-    </DeprecatedClass>
-    <DeprecatedMethod occurrences="3">
-      <code>getAutoGenerateProxyClasses</code>
-      <code>getProxyDir</code>
-      <code>getProxyNamespace</code>
-    </DeprecatedMethod>
     <DocblockTypeContradiction occurrences="4">
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
@@ -251,11 +237,6 @@
     <UnsafeInstantiation occurrences="1">
       <code>new $class($this)</code>
     </UnsafeInstantiation>
-  </file>
-  <file src="lib/Doctrine/ORM/EntityManagerInterface.php">
-    <DeprecatedClass occurrences="1">
-      <code>ProxyFactory</code>
-    </DeprecatedClass>
   </file>
   <file src="lib/Doctrine/ORM/EntityRepository.php">
     <InvalidReturnStatement occurrences="2">
@@ -630,9 +611,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$metadata</code>
     </ArgumentTypeCoercion>
-    <InvalidArgument occurrences="1">
-      <code>new AttributeReader()</code>
-    </InvalidArgument>
     <InvalidArrayAccess occurrences="4">
       <code>$value[0]</code>
       <code>$value[0]</code>
@@ -643,17 +621,13 @@
       <code>$mapping</code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType occurrences="1"/>
-    <NonInvariantDocblockPropertyType occurrences="1">
+    <NonInvariantDocblockPropertyType occurrences="2">
       <code>$entityAnnotationClasses</code>
+      <code>$reader</code>
     </NonInvariantDocblockPropertyType>
     <PossiblyNullArgument occurrences="1">
       <code>$listenerClassName</code>
     </PossiblyNullArgument>
-    <PossiblyNullIterator occurrences="3">
-      <code>$joinColumnAttributes</code>
-      <code>$this-&gt;reader-&gt;getPropertyAnnotation($property, Mapping\InverseJoinColumn::class)</code>
-      <code>$this-&gt;reader-&gt;getPropertyAnnotation($property, Mapping\JoinColumn::class)</code>
-    </PossiblyNullIterator>
     <RedundantCondition occurrences="3">
       <code>assert($method instanceof ReflectionMethod)</code>
       <code>assert($method instanceof ReflectionMethod)</code>
@@ -1408,19 +1382,9 @@
     <PossiblyNullArrayAccess occurrences="1">
       <code>$parser-&gt;getLexer()-&gt;token['value']</code>
     </PossiblyNullArrayAccess>
-    <PossiblyNullArrayOffset occurrences="1">
-      <code>$class-&gt;associationMappings</code>
-    </PossiblyNullArrayOffset>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$parser-&gt;getLexer()-&gt;token['value']</code>
-    </PossiblyNullPropertyAssignmentValue>
-    <PropertyNotSetInConstructor occurrences="2">
-      <code>$fieldMapping</code>
+    <PropertyNotSetInConstructor occurrences="1">
       <code>$pathExpression</code>
     </PropertyNotSetInConstructor>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>$this-&gt;fieldMapping !== null</code>
-    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/LengthFunction.php">
     <ArgumentTypeCoercion occurrences="1">
@@ -1464,9 +1428,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/SizeFunction.php">
-    <PossiblyNullArrayOffset occurrences="1">
-      <code>$class-&gt;associationMappings</code>
-    </PossiblyNullArrayOffset>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$collectionPathExpression</code>
     </PropertyNotSetInConstructor>
@@ -1916,10 +1877,9 @@
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PossiblyNullArgument occurrences="22">
+    <PossiblyNullArgument occurrences="21">
       <code>$aliasIdentVariable</code>
       <code>$dql</code>
-      <code>$field</code>
       <code>$fromClassName</code>
       <code>$functionName</code>
       <code>$functionName</code>
@@ -1940,7 +1900,7 @@
       <code>$token['value']</code>
       <code>$token['value']</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess occurrences="74">
+    <PossiblyNullArrayAccess occurrences="73">
       <code>$glimpse['type']</code>
       <code>$glimpse['value']</code>
       <code>$lookahead['type']</code>
@@ -1982,7 +1942,6 @@
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
@@ -2071,10 +2030,9 @@
     </ArgumentTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
-    <DocblockTypeContradiction occurrences="6">
+    <DocblockTypeContradiction occurrences="5">
       <code>$likeExpr-&gt;stringPattern instanceof AST\Functions\FunctionNode</code>
       <code>$likeExpr-&gt;stringPattern instanceof AST\PathExpression</code>
-      <code>$this-&gt;queryComponents[$dqlAlias]['relation'] === null</code>
       <code>''</code>
       <code>is_string($expression)</code>
       <code>is_string($stringExpr)</code>
@@ -2088,9 +2046,6 @@
       <code>$factor</code>
       <code>$selectedClass['class']-&gt;name</code>
     </InvalidArgument>
-    <InvalidArrayOffset occurrences="1">
-      <code>$this-&gt;selectedClasses[$joinedDqlAlias]</code>
-    </InvalidArrayOffset>
     <InvalidNullableReturnType occurrences="1">
       <code>walkConditionalPrimary</code>
     </InvalidNullableReturnType>
@@ -2143,10 +2098,8 @@
     <PossiblyNullReference occurrences="1">
       <code>dispatch</code>
     </PossiblyNullReference>
-    <PropertyTypeCoercion occurrences="3">
+    <PropertyTypeCoercion occurrences="1">
       <code>$query</code>
-      <code>$this-&gt;queryComponents</code>
-      <code>$this-&gt;selectedClasses</code>
     </PropertyTypeCoercion>
     <RedundantConditionGivenDocblockType occurrences="3">
       <code>$likeExpr-&gt;stringPattern instanceof AST\InputParameter</code>
@@ -2252,9 +2205,6 @@
     <MissingReturnType occurrences="1">
       <code>_getQueryComponents</code>
     </MissingReturnType>
-    <PropertyTypeCoercion occurrences="1">
-      <code>$this-&gt;_queryComponents</code>
-    </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/TreeWalkerChain.php">
     <ImplementedReturnTypeMismatch occurrences="47">
@@ -2406,10 +2356,6 @@
     </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/GenerateProxiesCommand.php">
-    <DeprecatedMethod occurrences="2">
-      <code>getProxyDir</code>
-      <code>getProxyDir</code>
-    </DeprecatedMethod>
     <NoInterfaceProperties occurrences="1">
       <code>$metadata-&gt;name</code>
     </NoInterfaceProperties>
