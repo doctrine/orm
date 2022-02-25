@@ -9,6 +9,8 @@ use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use Doctrine\ORM\Internal\Hydration\DefaultHydratorFactory;
+use Doctrine\ORM\Internal\Hydration\HydratorFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
@@ -46,6 +48,16 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /** @phpstan-var array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> */
     private $identityGenerationPreferences = [];
+
+    public function setHydratorFactory(HydratorFactory $factory): void
+    {
+        $this->attributes['hydratorFactory'] = $factory;
+    }
+
+    public function getHydratorFactory(): HydratorFactory
+    {
+        return $this->attributes['hydratorFactory'] ?? new DefaultHydratorFactory();
+    }
 
     /** @phpstan-param array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> $value */
     public function setIdentityGenerationPreferences(array $value): void
