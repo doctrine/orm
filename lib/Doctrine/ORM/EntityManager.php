@@ -13,11 +13,11 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Exception\EntityManagerClosed;
-use Doctrine\ORM\Exception\InvalidHydrationMode;
 use Doctrine\ORM\Exception\MismatchedEventManager;
 use Doctrine\ORM\Exception\MissingIdentifierField;
 use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
 use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
+use Doctrine\ORM\Internal\Hydration\HydratorFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\ProxyFactory;
@@ -146,6 +146,13 @@ use function sprintf;
     private $cache;
 
     /**
+     * The hydrator factory to use.
+     *
+     * @var HydratorFactory
+     */
+    private $hydratorFactory;
+
+    /**
      * Creates a new EntityManager that operates on the given database connection
      * and uses the given Configuration and EventManager implementations.
      */
@@ -162,6 +169,7 @@ use function sprintf;
 
         $this->configureMetadataCache();
 
+        $this->hydratorFactory   = $config->getHydratorFactory();
         $this->repositoryFactory = $config->getRepositoryFactory();
         $this->unitOfWork        = new UnitOfWork($this);
         $this->proxyFactory      = new ProxyFactory(
@@ -856,34 +864,7 @@ use function sprintf;
      */
     public function newHydrator($hydrationMode)
     {
-        switch ($hydrationMode) {
-            case Query::HYDRATE_OBJECT:
-                return new Internal\Hydration\ObjectHydrator($this);
-
-            case Query::HYDRATE_ARRAY:
-                return new Internal\Hydration\ArrayHydrator($this);
-
-            case Query::HYDRATE_SCALAR:
-                return new Internal\Hydration\ScalarHydrator($this);
-
-            case Query::HYDRATE_SINGLE_SCALAR:
-                return new Internal\Hydration\SingleScalarHydrator($this);
-
-            case Query::HYDRATE_SIMPLEOBJECT:
-                return new Internal\Hydration\SimpleObjectHydrator($this);
-
-            case Query::HYDRATE_SCALAR_COLUMN:
-                return new Internal\Hydration\ScalarColumnHydrator($this);
-
-            default:
-                $class = $this->config->getCustomHydrationMode($hydrationMode);
-
-                if ($class !== null) {
-                    return new $class($this);
-                }
-        }
-
-        throw InvalidHydrationMode::fromMode((string) $hydrationMode);
+        return $this->hydratorFactory->create($this, $this->config, $hydrationMode);
     }
 
     /**

@@ -327,18 +327,20 @@
     <PropertyTypeCoercion occurrences="1">
       <code>new $metadataFactoryClassName()</code>
     </PropertyTypeCoercion>
-    <RedundantCastGivenDocblockType occurrences="1">
-      <code>(string) $hydrationMode</code>
-    </RedundantCastGivenDocblockType>
     <RedundantCondition occurrences="1">
       <code>is_object($connection)</code>
     </RedundantCondition>
     <TypeDoesNotContainType occurrences="1">
       <code>': "' . $connection . '"'</code>
     </TypeDoesNotContainType>
+  </file>
+  <file src="lib/Doctrine/ORM/Internal/Hydration/DefaultHydratorFactory.php">
     <UnsafeInstantiation occurrences="1">
-      <code>new $class($this)</code>
+      <code>new $class($em)</code>
     </UnsafeInstantiation>
+    <RedundantCastGivenDocblockType occurrences="1">
+      <code>(string) $hydrationMode</code>
+    </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/EntityRepository.php">
     <InvalidReturnStatement occurrences="2">
