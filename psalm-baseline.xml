@@ -181,8 +181,10 @@
     <PropertyTypeCoercion>
       <code><![CDATA[new $metadataFactoryClassName()]]></code>
     </PropertyTypeCoercion>
-    <RedundantCastGivenDocblockType>
-      <code><![CDATA[(string) $hydrationMode]]></code>
+  </file>
+  <file src="src/Internal/Hydration/DefaultHydratorFactory.php">
+    <RedundantCastGivenDocblockType occurrences="1">
+      <code>(string) $hydrationMode</code>
     </RedundantCastGivenDocblockType>
   </file>
   <file src="src/EntityRepository.php">
