@@ -2402,11 +2402,14 @@
       <code>$this-&gt;scalarResultAliasMap</code>
       <code>$this-&gt;scalarResultAliasMap</code>
     </InvalidPropertyAssignmentValue>
-    <InvalidScalarArgument occurrences="4">
+    <InvalidScalarArgument occurrences="7">
       <code>$resultAlias</code>
       <code>$resultAlias</code>
       <code>$resultAlias</code>
       <code>$resultAlias</code>
+      <code>$this-&gt;queryComponents[$expr]['token']['value']</code>
+      <code>$this-&gt;queryComponents[$factor]['token']['value']</code>
+      <code>$this-&gt;queryComponents[$term]['token']['value']</code>
     </InvalidScalarArgument>
     <PossiblyInvalidArgument occurrences="2">
       <code>$aggExpression-&gt;pathExpression</code>
