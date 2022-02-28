@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.20.0@f82a70e7edfc6cf2705e9374c8a0b6a974a779ed">
+<files psalm-version="4.22.0@fc2c6ab4d5fa5d644d8617089f012f3bb84b8703">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass occurrences="1">
       <code>IterableResult</code>
@@ -1686,6 +1686,9 @@
     </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/IdentityFunction.php">
+    <PossiblyInvalidPropertyAssignmentValue occurrences="1">
+      <code>$parser-&gt;getLexer()-&gt;token['value']</code>
+    </PossiblyInvalidPropertyAssignmentValue>
     <PossiblyNullArrayAccess occurrences="1">
       <code>$parser-&gt;getLexer()-&gt;token['value']</code>
     </PossiblyNullArrayAccess>
@@ -1756,16 +1759,18 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/TrimFunction.php">
-    <PossiblyNullArgument occurrences="1">
+    <PossiblyInvalidArgument occurrences="3">
       <code>$value</code>
-    </PossiblyNullArgument>
+      <code>$value</code>
+      <code>$value</code>
+    </PossiblyInvalidArgument>
+    <PossiblyInvalidPropertyAssignmentValue occurrences="1">
+      <code>$lexer-&gt;token['value']</code>
+    </PossiblyInvalidPropertyAssignmentValue>
     <PossiblyNullArrayAccess occurrences="2">
       <code>$lexer-&gt;lookahead['value']</code>
       <code>$lexer-&gt;token['value']</code>
     </PossiblyNullArrayAccess>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$lexer-&gt;token['value']</code>
-    </PossiblyNullPropertyAssignmentValue>
     <PropertyNotSetInConstructor occurrences="4">
       <code>$both</code>
       <code>$leading</code>
@@ -2131,17 +2136,16 @@
     <InvalidArgument occurrences="1">
       <code>$lookaheadType</code>
     </InvalidArgument>
-    <InvalidNullableReturnType occurrences="6">
+    <InvalidNullableReturnType occurrences="1">
       <code>SelectStatement|UpdateStatement|DeleteStatement</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
     </InvalidNullableReturnType>
-    <InvalidReturnStatement occurrences="11">
+    <InvalidReturnStatement occurrences="17">
+      <code>$aliasIdentVariable</code>
       <code>$factors[0]</code>
+      <code>$identVariable</code>
       <code>$primary</code>
+      <code>$resultVariable</code>
+      <code>$resultVariable</code>
       <code>$terms[0]</code>
       <code>$this-&gt;CollectionMemberExpression()</code>
       <code>$this-&gt;ComparisonExpression()</code>
@@ -2151,23 +2155,45 @@
       <code>$this-&gt;InstanceOfExpression()</code>
       <code>$this-&gt;LikeExpression()</code>
       <code>$this-&gt;NullComparisonExpression()</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
     </InvalidReturnStatement>
-    <InvalidReturnType occurrences="4">
+    <InvalidReturnType occurrences="9">
       <code>AST\BetweenExpression|</code>
       <code>ArithmeticFactor</code>
       <code>ArithmeticTerm</code>
       <code>SimpleArithmeticExpression</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
     </InvalidReturnType>
-    <InvalidScalarArgument occurrences="3">
+    <InvalidScalarArgument occurrences="14">
+      <code>$field</code>
+      <code>$field</code>
+      <code>$field</code>
+      <code>$functionName</code>
+      <code>$functionName</code>
+      <code>$functionName</code>
       <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
       <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
       <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
     </InvalidScalarArgument>
-    <LessSpecificReturnStatement occurrences="3">
+    <LessSpecificReturnStatement occurrences="4">
       <code>$function</code>
       <code>$function</code>
       <code>$function</code>
+      <code>$token</code>
     </LessSpecificReturnStatement>
+    <MoreSpecificReturnType occurrences="1">
+      <code>array{value: string, type: int|null|string, position: int}|null</code>
+    </MoreSpecificReturnType>
     <NullableReturnStatement occurrences="9">
       <code>$aliasIdentVariable</code>
       <code>$factors[0]</code>
@@ -2182,39 +2208,32 @@
     <PossiblyFalseArgument occurrences="1">
       <code>strrpos($fromClassName, '\\')</code>
     </PossiblyFalseArgument>
-    <PossiblyInvalidArgument occurrences="6">
+    <PossiblyInvalidArgument occurrences="13">
       <code>$AST</code>
       <code>$conditionalExpression</code>
       <code>$expr</code>
       <code>$stringExpr</code>
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>
+      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
+      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
+      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
+      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$token['value']</code>
+      <code>$token['value']</code>
     </PossiblyInvalidArgument>
-    <PossiblyInvalidPropertyAssignmentValue occurrences="2">
+    <PossiblyInvalidPropertyAssignmentValue occurrences="3">
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>
+      <code>$value</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PossiblyNullArgument occurrences="21">
+    <PossiblyNullArgument occurrences="6">
       <code>$aliasIdentVariable</code>
       <code>$dql</code>
       <code>$fromClassName</code>
-      <code>$functionName</code>
-      <code>$functionName</code>
-      <code>$functionName</code>
       <code>$resultVariable</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;query-&gt;getDQL()</code>
-      <code>$token['value']</code>
-      <code>$token['value']</code>
       <code>$token['value']</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess occurrences="73">
@@ -2292,9 +2311,6 @@
       <code>$token['value']</code>
       <code>$token['value']</code>
     </PossiblyNullArrayAccess>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$value</code>
-    </PossiblyNullPropertyAssignmentValue>
     <PossiblyNullReference occurrences="1">
       <code>getNumberOfRequiredParameters</code>
     </PossiblyNullReference>
