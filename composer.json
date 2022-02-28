@@ -47,7 +47,7 @@
         "squizlabs/php_codesniffer": "3.6.2",
         "symfony/cache": "^4.4 || ^5.4 || ^6.0",
         "symfony/yaml": "^3.4 || ^4.0 || ^5.0 || ^6.0",
-        "vimeo/psalm": "4.20.0"
+        "vimeo/psalm": "4.22.0"
     },
     "conflict": {
         "doctrine/annotations": "<1.13 || >= 2.0"
