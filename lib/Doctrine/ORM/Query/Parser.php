@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\Common\Lexer\AbstractLexer;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -86,6 +87,7 @@ use function substr;
  * An LL(*) recursive-descent parser for the context-free grammar of the Doctrine Query Language.
  * Parses a DQL query, reports any errors in it, and generates an AST.
  *
+ * @psalm-import-type Token from AbstractLexer
  * @psalm-type QueryComponent = array{
  *                 metadata?: ClassMetadata<object>,
  *                 parent?: string|null,
@@ -93,7 +95,7 @@ use function substr;
  *                 map?: string|null,
  *                 resultVariable?: AST\Node|string,
  *                 nestingLevel: int,
- *                 token: array
+ *                 token: Token,
  *             }
  */
 class Parser
@@ -151,19 +153,19 @@ class Parser
      * and still need to be validated.
      */
 
-    /** @psalm-var list<array{token: mixed, expression: mixed, nestingLevel: int}> */
+    /** @psalm-var list<array{token: Token|null, expression: mixed, nestingLevel: int}> */
     private $deferredIdentificationVariables = [];
 
-    /** @psalm-var list<array{token: mixed, expression: AST\PartialObjectExpression, nestingLevel: int}> */
+    /** @psalm-var list<array{token: Token|null, expression: AST\PartialObjectExpression, nestingLevel: int}> */
     private $deferredPartialObjectExpressions = [];
 
-    /** @psalm-var list<array{token: mixed, expression: AST\PathExpression, nestingLevel: int}> */
+    /** @psalm-var list<array{token: Token|null, expression: AST\PathExpression, nestingLevel: int}> */
     private $deferredPathExpressions = [];
 
-    /** @psalm-var list<array{token: mixed, expression: mixed, nestingLevel: int}> */
+    /** @psalm-var list<array{token: Token|null, expression: mixed, nestingLevel: int}> */
     private $deferredResultVariables = [];
 
-    /** @psalm-var list<array{token: mixed, expression: AST\NewObjectExpression, nestingLevel: int}> */
+    /** @psalm-var list<array{token: Token|null, expression: AST\NewObjectExpression, nestingLevel: int}> */
     private $deferredNewObjectExpressions = [];
 
     /**
@@ -484,7 +486,7 @@ class Parser
      *
      * @param string       $expected Expected string.
      * @param mixed[]|null $token    Got token.
-     * @psalm-param array<string, mixed>|null $token
+     * @psalm-param Token|null $token
      *
      * @return void
      * @psalm-return no-return
@@ -511,7 +513,7 @@ class Parser
      *
      * @param string       $message Optional message.
      * @param mixed[]|null $token   Optional token.
-     * @psalm-param array<string, mixed>|null $token
+     * @psalm-param Token|null $token
      *
      * @return void
      * @psalm-return no-return
@@ -583,7 +585,7 @@ class Parser
     /**
      * Checks if the given token indicates a mathematical operator.
      *
-     * @psalm-param array<string, mixed>|null $token
+     * @psalm-param Token|null $token
      */
     private function isMathOperator(?array $token): bool
     {
