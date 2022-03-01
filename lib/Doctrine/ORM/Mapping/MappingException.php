@@ -991,7 +991,7 @@ class MappingException extends ORMException
             <<<'EXCEPTION'
 Context: Trying to hydrate enum property "%s::$%s"
 Problem: Case "%s" is not listed in enum "%s"
-Solution: Either add the case to the enum type or migrate the database column to use another case of the enum
+Solution: Either add the case to the enum or migrate the database column to use another case of the enum
 EXCEPTION
             ,
             $className,
