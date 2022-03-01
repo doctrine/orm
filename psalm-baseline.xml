@@ -2317,24 +2317,16 @@
     <PossiblyUndefinedVariable occurrences="1">
       <code>$args</code>
     </PossiblyUndefinedVariable>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$customOutputWalker</code>
-    </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="2">
-      <code>$className</code>
-      <code>$this-&gt;customTreeWalkers</code>
-    </PropertyTypeCoercion>
     <RedundantConditionGivenDocblockType occurrences="4">
       <code>$AST instanceof AST\SelectStatement</code>
       <code>is_string($functionClass)</code>
       <code>is_string($functionClass)</code>
       <code>is_string($functionClass)</code>
     </RedundantConditionGivenDocblockType>
-    <UnsafeInstantiation occurrences="4">
+    <UnsafeInstantiation occurrences="3">
       <code>new $funcClass($funcNameLower)</code>
       <code>new $funcClass($funcNameLower)</code>
       <code>new $funcClass($funcNameLower)</code>
-      <code>new $outputWalkerClass($this-&gt;query, $this-&gt;parserResult, $this-&gt;queryComponents)</code>
     </UnsafeInstantiation>
   </file>
   <file src="lib/Doctrine/ORM/Query/ParserResult.php">
@@ -2411,6 +2403,9 @@
       <code>$this-&gt;queryComponents[$factor]['token']['value']</code>
       <code>$this-&gt;queryComponents[$term]['token']['value']</code>
     </InvalidScalarArgument>
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$query</code>
+    </MoreSpecificImplementedParamType>
     <PossiblyInvalidArgument occurrences="2">
       <code>$aggExpression-&gt;pathExpression</code>
       <code>$whereClause-&gt;conditionalExpression</code>
@@ -2443,9 +2438,6 @@
     <PossiblyNullReference occurrences="1">
       <code>dispatch</code>
     </PossiblyNullReference>
-    <PropertyTypeCoercion occurrences="1">
-      <code>$query</code>
-    </PropertyTypeCoercion>
     <RedundantConditionGivenDocblockType occurrences="3">
       <code>$likeExpr-&gt;stringPattern instanceof AST\InputParameter</code>
       <code>$whereClause !== null</code>
