@@ -958,6 +958,7 @@ class SqlWalker implements TreeWalker
      * @param AST\JoinAssociationDeclaration $joinAssociationDeclaration
      * @param int                            $joinType
      * @param AST\ConditionalExpression      $condExpr
+     * @psalm-param AST\Join::JOIN_TYPE_* $joinType
      *
      * @return string
      *
