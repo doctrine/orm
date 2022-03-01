@@ -44,6 +44,7 @@ use function trim;
  * the corresponding SQL.
  *
  * @psalm-import-type QueryComponent from Parser
+ * @psalm-consistent-constructor
  */
 class SqlWalker implements TreeWalker
 {
@@ -172,7 +173,9 @@ class SqlWalker implements TreeWalker
     private $quoteStrategy;
 
     /**
-     * {@inheritDoc}
+     * @param Query        $query        The parsed Query.
+     * @param ParserResult $parserResult The result of the parsing process.
+     * @psalm-param array<string, QueryComponent> $queryComponents The query components (symbol table).
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
