@@ -48,7 +48,7 @@ mapping metadata:
 -  :doc:`Docblock Annotations <annotations-reference>`
 -  :doc:`XML <xml-mapping>`
 -  :doc:`PHP code <php-mapping>`
--  :doc:`YAML <yaml-mapping>` (deprecated and will be removed in version 3.0.)
+-  :doc:`YAML <yaml-mapping>` (deprecated and will be removed in ``doctrine/orm`` 3.0.)
 
 This manual will usually show mapping metadata via docblock annotations, though
 many examples also show the equivalent configuration in YAML and XML.
@@ -233,7 +233,7 @@ Here is a complete list of ``Column``s attributes (all optional):
 - ``nullable`` (default: ``false``): Whether the database column is nullable.
 - ``insertable`` (default: ``true``): Whether the database column should be inserted.
 - ``updatable`` (default: ``true``): Whether the database column should be updated.
-- ``enumType`` (requires PHP 8.1 and ORM 2.11): The PHP enum class name to convert the database value into.
+- ``enumType`` (requires PHP 8.1 and ``doctrine/orm`` 2.11): The PHP enum class name to convert the database value into.
 - ``precision`` (default: 0): The precision for a decimal (exact numeric) column
   (applies only for decimal column),
   which is the maximum number of digits that are stored for the values.
