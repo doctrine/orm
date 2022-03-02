@@ -1740,6 +1740,9 @@
     </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/AbsFunction.php">
+    <PossiblyInvalidPropertyAssignmentValue occurrences="1">
+      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+    </PossiblyInvalidPropertyAssignmentValue>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$simpleArithmeticExpression</code>
     </PropertyNotSetInConstructor>
@@ -1862,6 +1865,9 @@
     <PossiblyInvalidArgument occurrences="1">
       <code>$this-&gt;simpleArithmeticExpression</code>
     </PossiblyInvalidArgument>
+    <PossiblyInvalidPropertyAssignmentValue occurrences="1">
+      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+    </PossiblyInvalidPropertyAssignmentValue>
     <PropertyNotSetInConstructor occurrences="2">
       <code>$firstStringPrimary</code>
       <code>$secondStringPrimary</code>
@@ -1886,6 +1892,10 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/ModFunction.php">
+    <PossiblyInvalidPropertyAssignmentValue occurrences="2">
+      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+    </PossiblyInvalidPropertyAssignmentValue>
     <PropertyNotSetInConstructor occurrences="2">
       <code>$firstSimpleArithmeticExpression</code>
       <code>$secondSimpleArithmeticExpression</code>
@@ -1900,11 +1910,18 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/SqrtFunction.php">
+    <PossiblyInvalidPropertyAssignmentValue occurrences="1">
+      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+    </PossiblyInvalidPropertyAssignmentValue>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$simpleArithmeticExpression</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/SubstringFunction.php">
+    <PossiblyInvalidPropertyAssignmentValue occurrences="2">
+      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+    </PossiblyInvalidPropertyAssignmentValue>
     <PropertyNotSetInConstructor occurrences="2">
       <code>$firstSimpleArithmeticExpression</code>
       <code>$stringPrimary</code>
@@ -2333,7 +2350,7 @@
       <code>AST\BetweenExpression|</code>
       <code>ArithmeticFactor</code>
       <code>ArithmeticTerm</code>
-      <code>SimpleArithmeticExpression</code>
+      <code>SimpleArithmeticExpression|ArithmeticTerm</code>
       <code>string</code>
       <code>string</code>
       <code>string</code>
@@ -2378,10 +2395,11 @@
     <PossiblyFalseArgument occurrences="1">
       <code>strrpos($fromClassName, '\\')</code>
     </PossiblyFalseArgument>
-    <PossiblyInvalidArgument occurrences="13">
+    <PossiblyInvalidArgument occurrences="14">
       <code>$AST</code>
       <code>$conditionalExpression</code>
       <code>$expr</code>
+      <code>$pathExp</code>
       <code>$stringExpr</code>
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>
@@ -2393,9 +2411,10 @@
       <code>$token['value']</code>
       <code>$token['value']</code>
     </PossiblyInvalidArgument>
-    <PossiblyInvalidPropertyAssignmentValue occurrences="3">
+    <PossiblyInvalidPropertyAssignmentValue occurrences="4">
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>
+      <code>$this-&gt;SimpleArithmeticExpression()</code>
       <code>$value</code>
     </PossiblyInvalidPropertyAssignmentValue>
     <PossiblyNullArgument occurrences="6">
