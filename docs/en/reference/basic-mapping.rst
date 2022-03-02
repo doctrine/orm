@@ -111,6 +111,7 @@ You can change this by configuring information about the table:
 
         <?php
         use Doctrine\ORM\Mapping\Entity;
+        use Doctrine\ORM\Mapping\Table;
 
         #[Entity]
         #[Table(name: 'message')]
@@ -163,7 +164,7 @@ default.
     .. code-block:: attribute
 
         <?php
-        use Doctrine\ORM\Mapping;
+        use Doctrine\ORM\Mapping\Column;
         use Doctrine\DBAL\Types\Types;
 
         #[Entity]
@@ -180,7 +181,7 @@ default.
     .. code-block:: annotation
 
         <?php
-        use Doctrine\ORM\Mapping;
+        use Doctrine\ORM\Mapping\Column;
 
         /** @Entity */
         class Message
