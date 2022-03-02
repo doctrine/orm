@@ -68,6 +68,8 @@ Marking our ``Message`` class as an entity for Doctrine is straightforward:
     .. code-block:: attribute
 
         <?php
+        use Doctrine\ORM\Mapping;
+
         #[Entity]
         class Message
         {
@@ -77,6 +79,8 @@ Marking our ``Message`` class as an entity for Doctrine is straightforward:
     .. code-block:: annotation
 
         <?php
+        use Doctrine\ORM\Mapping;
+
         /** @Entity */
         class Message
         {
@@ -103,7 +107,19 @@ You can change this by configuring information about the table:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        use Doctrine\ORM\Mapping;
+
+        #[Entity]
+        #[Table(name: 'message')]
+        class Message
+        {
+            // ...
+        }
+
+    .. code-block:: annotation
 
         <?php
         /**
@@ -135,19 +151,37 @@ Now the class ``Message`` will be saved and fetched from the table ``message``.
 Property Mapping
 ----------------
 
-The next step after marking a PHP class as an entity is mapping its properties
-to columns in a table.
+The next step is mapping its properties to columns in the table.
 
-To configure a property use the ``@Column`` docblock annotation. The ``type``
+To configure a property use the ``Column`` docblock annotation. The ``type``
 attribute specifies the :ref:`Doctrine Mapping Type <reference-mapping-types>`
 to use for the field. If the type is not specified, ``string`` is used as the
 default.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
+        use Doctrine\ORM\Mapping;
+        use Doctrine\DBAL\Types\Types;
+
+        #[Entity]
+        class Message
+        {
+            #[Column(type: Types::INTEGER)]
+            private $id;
+            #[Column(length: 140)]
+            private $text;
+            #[Column(name: 'posted_at', type: Types::DATETIME)]
+            private $postedAt;
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        use Doctrine\ORM\Mapping;
+
         /** @Entity */
         class Message
         {
