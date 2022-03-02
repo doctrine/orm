@@ -217,42 +217,34 @@ default.
               column: posted_at
 
 When we don't explicitly specify a column name via the ``name`` option, Doctrine
-assumes the field name is also the column name. This means that:
+assumes the field name is also the column name. So in this example:
 
 * the ``id`` property will map to the column ``id`` using the type ``integer``;
 * the ``text`` property will map to the column ``text`` with the default mapping type ``string``;
 * the ``postedAt`` property will map to the ``posted_at`` column with the ``datetime`` type.
 
-The Column annotation has some more attributes. Here is a complete
-list:
+Here is a complete list of ``Column``s attributes (all optional):
 
-- ``type``: (optional, defaults to 'string') The mapping type to
-  use for the column.
-- ``name``: (optional, defaults to field name) The name of the
-  column in the database.
-- ``length``: (optional, default 255) The length of the column in
-  the database. (Applies only if a string-valued column is used).
-- ``unique``: (optional, default FALSE) Whether the column is a
-  unique key.
-- ``nullable``: (optional, default FALSE) Whether the database
-  column is nullable.
-- ``insertable``: (optional, default TRUE) Whether the database
-  column should be inserted.
-- ``updatable``: (optional, default TRUE) Whether the database
-  column should be updated.
-- ``enumType``: (optional, requires PHP 8.1 and ORM 2.11) The PHP enum type
-  name to convert the database value into.
-- ``precision``: (optional, default 0) The precision for a decimal
-  (exact numeric) column (applies only for decimal column),
+- ``type`` (default: 'string'): The mapping type to use for the column.
+- ``name`` (default: name of property): The name of the column in the database.
+- ``length`` (default: 255): The length of the column in the database.
+  Applies only if a string-valued column is used.
+- ``unique`` (default: ``false``): Whether the column is a unique key.
+- ``nullable`` (default: ``false``): Whether the database column is nullable.
+- ``insertable`` (default: ``true``): Whether the database column should be inserted.
+- ``updatable`` (default: ``true``): Whether the database column should be updated.
+- ``enumType`` (requires PHP 8.1 and ORM 2.11): The PHP enum class name to convert the database value into.
+- ``precision`` (default: 0): The precision for a decimal (exact numeric) column
+  (applies only for decimal column),
   which is the maximum number of digits that are stored for the values.
-- ``scale``: (optional, default 0) The scale for a decimal (exact
+- ``scale`` (default: 0): The scale for a decimal (exact
   numeric) column (applies only for decimal column), which represents
   the number of digits to the right of the decimal point and must
-  not be greater than *precision*.
-- ``columnDefinition``: (optional) Allows to define a custom
+  not be greater than ``precision``.
+- ``columnDefinition``: Allows to define a custom
   DDL snippet that is used to create the column. Warning: This normally
-  confuses the SchemaTool to always detect the column as changed.
-- ``options``: (optional) Key-value pairs of options that get passed
+  confuses the :ref:`SchemaTool <tools.rst>` to always detect the column as changed.
+- ``options``: Key-value pairs of options that get passed
   to the underlying database platform when generating DDL statements.
 
 .. _reference-php-mapping-types:
