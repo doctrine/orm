@@ -823,9 +823,6 @@
       <code>joinColumnName</code>
       <code>joinColumnName</code>
     </TooManyArguments>
-    <UndefinedMethod occurrences="1">
-      <code>isReadOnly</code>
-    </UndefinedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ColumnResult.php">
     <MissingConstructor occurrences="1">
@@ -1262,11 +1259,6 @@
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(string) $embeddedClass</code>
     </RedundantCastGivenDocblockType>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/ReflectionReadonlyProperty.php">
-    <UndefinedMethod occurrences="1">
-      <code>isReadOnly</code>
-    </UndefinedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/SequenceGenerator.php">
     <PossiblyNullPropertyAssignmentValue occurrences="1">
