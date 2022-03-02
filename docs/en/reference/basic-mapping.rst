@@ -110,7 +110,7 @@ You can change this by configuring information about the table:
     .. code-block:: attribute
 
         <?php
-        use Doctrine\ORM\Mapping;
+        use Doctrine\ORM\Mapping\Entity;
 
         #[Entity]
         #[Table(name: 'message')]
