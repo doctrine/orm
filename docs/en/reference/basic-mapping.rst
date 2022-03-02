@@ -68,7 +68,7 @@ Marking our ``Message`` class as an entity for Doctrine is straightforward:
     .. code-block:: attribute
 
         <?php
-        /** #[Entity] */
+        #[Entity]
         class Message
         {
             // ...
