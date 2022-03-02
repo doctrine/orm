@@ -252,21 +252,30 @@ Here is a complete list of ``Column``s attributes (all optional):
 PHP Types Mapping
 _________________
 
-Since version 2.9 Doctrine can determine usable defaults from property types
-on entity classes. When property type is nullable this has no effect on
-``nullable`` Column attribute at the moment for backwards compatibility
-reasons.
+Since ``doctrine/orm`` 2.9 the column types can be inferred automatically from PHP's property types.
+However, when the property type is nullable this has no effect on the ``nullable`` Column attribute.
 
-Additionally, Doctrine will map PHP types to ``type`` attribute as follows:
+These are the "automatic" mapping rules:
 
-- ``DateInterval``: ``dateinterval``
-- ``DateTime``: ``datetime``
-- ``DateTimeImmutable``: ``datetime_immutable``
-- ``array``: ``json``
-- ``bool``: ``boolean``
-- ``float``: ``float``
-- ``int``: ``integer``
-- ``string`` or any other type: ``string``
++-----------------------+-------------------------------+
+| PHP property type     | Doctrine column type          |
++=======================+===============================+
+| ``DateInterval``      | ``Types::DATEINTERVAL``       |
++-----------------------+-------------------------------+
+| ``DateTime``          | ``Types::DATETIME_MUTABLE``   |
++-----------------------+-------------------------------+
+| ``DateTimeImmutable`` | ``Types::DATETIME_IMMUTABLE`` |
++-----------------------+-------------------------------+
+| ``array``             | ``Types::JSON``               |
++-----------------------+-------------------------------+
+| ``bool``              | ``Types::BOOLEAN``            |
++-----------------------+-------------------------------+
+| ``float``             | ``Types::FLOAT``              |
++-----------------------+-------------------------------+
+| ``int``               | ``Types::INTEGER``            |
++-----------------------+-------------------------------+
+| Any other type        | ``Types::STRING``             |
++-----------------------+-------------------------------+
 
 As of version 2.11 Doctrine can also automatically map typed properties using a
 PHP 8.1 enum to set the right ``type`` and ``enumType``.
