@@ -2333,7 +2333,6 @@
       <code>AST\BetweenExpression|</code>
       <code>ArithmeticFactor</code>
       <code>ArithmeticTerm</code>
-      <code>SimpleArithmeticExpression</code>
       <code>string</code>
       <code>string</code>
       <code>string</code>
