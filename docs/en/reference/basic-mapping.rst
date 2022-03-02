@@ -14,17 +14,11 @@ After working through this guide you should know:
 Mapping of associations will be covered in the next chapter on
 :doc:`Association Mapping <association-mapping>`.
 
-Guide Assumptions
------------------
-
-You should have already :doc:`installed and configure <configuration>`
-Doctrine.
-
 Creating Classes for the Database
 ---------------------------------
 
 Every PHP object that you want to save in the database using Doctrine
-is called an "Entity". The term "Entity" describes objects
+is called an *Entity*. The term "Entity" describes objects
 that have an identity over many independent requests. This identity is
 usually achieved by assigning a unique identifier to an entity.
 In this tutorial the following ``Message`` PHP class will serve as the
@@ -50,11 +44,11 @@ that describes your entity.
 Doctrine provides several different ways to specify object-relational
 mapping metadata:
 
--  :doc:`Docblock Annotations <annotations-reference>`
 -  :doc:`Attributes <attributes-reference>`
+-  :doc:`Docblock Annotations <annotations-reference>`
 -  :doc:`XML <xml-mapping>`
--  :doc:`YAML <yaml-mapping>`
 -  :doc:`PHP code <php-mapping>`
+-  :doc:`YAML <yaml-mapping>` (deprecated and will be removed in version 3.0.)
 
 This manual will usually show mapping metadata via docblock annotations, though
 many examples also show the equivalent configuration in YAML and XML.
@@ -62,8 +56,8 @@ many examples also show the equivalent configuration in YAML and XML.
 .. note::
 
     All metadata drivers perform equally. Once the metadata of a class has been
-    read from the source (annotations, xml or yaml) it is stored in an instance
-    of the ``Doctrine\ORM\Mapping\ClassMetadata`` class and these instances are
+    read from the source (attributes, annotations, XML, etc.) it is stored in an instance
+    of the ``Doctrine\ORM\Mapping\ClassMetadata`` class which are
     stored in the metadata cache.  If you're not using a metadata cache (not
     recommended!) then the XML driver is the fastest.
 
@@ -71,7 +65,16 @@ Marking our ``Message`` class as an entity for Doctrine is straightforward:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        /** #[Entity] */
+        class Message
+        {
+            // ...
+        }
+
+    .. code-block:: annotation
 
         <?php
         /** @Entity */
