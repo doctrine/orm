@@ -65,7 +65,6 @@ class ClassTableInheritanceSecondTest extends OrmFunctionalTestCase
 
     public function testManyToManyToCTIHierarchy(): void
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
         $mmrel = new CTIRelated2();
         $child = new CTIChild();
         $child->setData('child');

@@ -29,8 +29,6 @@ class DDC425Test extends OrmFunctionalTestCase
      */
     public function testIssue(): void
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-
         $num = $this->_em->createQuery('DELETE ' . __NAMESPACE__ . '\DDC425Entity e WHERE e.someDatetimeField > ?1')
                 ->setParameter(1, new DateTime(), Types::DATETIME_MUTABLE)
                 ->getResult();

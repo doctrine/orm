@@ -195,10 +195,7 @@ SQL Logger (***Optional***)
 
 Gets or sets the logger to use for logging all SQL statements
 executed by Doctrine. The logger class must implement the
-``Doctrine\DBAL\Logging\SQLLogger`` interface. A simple default
-implementation that logs to the standard output using ``echo`` and
-``var_dump`` can be found at
-``Doctrine\DBAL\Logging\EchoSQLLogger``.
+deprecated ``Doctrine\DBAL\Logging\SQLLogger`` interface.
 
 Auto-generating Proxy Classes (***OPTIONAL***)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

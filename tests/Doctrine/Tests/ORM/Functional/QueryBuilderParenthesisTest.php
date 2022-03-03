@@ -15,7 +15,6 @@ class QueryBuilderParenthesisTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->createSchemaForModels(QueryBuilderParenthesisEntity::class);
     }
 

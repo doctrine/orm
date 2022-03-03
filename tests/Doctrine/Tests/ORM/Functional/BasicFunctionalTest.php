@@ -113,7 +113,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     public function testBasicOneToOne(): void
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user           = new CmsUser();
         $user->name     = 'Roman';
         $user->username = 'romanb';
@@ -658,8 +657,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->persist($user);
 
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-
         $this->_em->flush();
         $this->_em->clear();
 
@@ -685,8 +682,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $user->name     = 'Guilherme';
         $user->username = 'gblanco';
         $user->status   = 'developer';
-
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
         $this->_em->persist($user);
         $this->_em->flush();
@@ -720,8 +715,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
             $em->persist($user);
         });
         $this->_em->clear();
-
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
         $userRef  = $this->_em->getReference(CmsUser::class, $user->getId());
         $address2 = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsAddress a where a.user = :user')

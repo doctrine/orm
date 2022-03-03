@@ -38,8 +38,6 @@ class DDC168Test extends OrmFunctionalTestCase
      */
     public function testJoinedSubclassPersisterRequiresSpecificOrderOfMetadataReflFieldsArray(): void
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-
         $spouse = new CompanyEmployee();
         $spouse->setName('Blub');
         $spouse->setDepartment('Accounting');

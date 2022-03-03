@@ -522,7 +522,6 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->flush();
         $this->_em->clear();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $q = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a where a.topic = :topic and a.user = :user')
                 ->setParameter('user', $this->_em->getReference(CmsUser::class, $author->id))
                 ->setParameter('topic', 'dr. dolittle');
