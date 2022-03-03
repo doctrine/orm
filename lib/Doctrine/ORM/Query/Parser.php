@@ -220,7 +220,7 @@ class Parser
     /**
      * The custom last tree walker, if any, that is responsible for producing the output.
      *
-     * @var class-string<TreeWalker>
+     * @var class-string<SqlWalker>|null
      */
     private $customOutputWalker;
 
@@ -245,6 +245,7 @@ class Parser
      * This tree walker will be run last over the AST, after any other walkers.
      *
      * @param string $className
+     * @psalm-param class-string<SqlWalker> $className
      *
      * @return void
      */
@@ -257,7 +258,7 @@ class Parser
      * Adds a custom tree walker for modifying the AST.
      *
      * @param string $className
-     * @psalm-param class-string $className
+     * @psalm-param class-string<TreeWalker> $className
      *
      * @return void
      */
@@ -2832,7 +2833,7 @@ class Parser
     /**
      * SimpleArithmeticExpression ::= ArithmeticTerm {("+" | "-") ArithmeticTerm}*
      *
-     * @return SimpleArithmeticExpression
+     * @return SimpleArithmeticExpression|ArithmeticTerm
      */
     public function SimpleArithmeticExpression()
     {

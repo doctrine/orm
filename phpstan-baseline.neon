@@ -666,11 +666,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:SimpleArithmeticExpression\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm\\|int\\|string\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/Parser.php
-
-		-
 			message: """
 				#^PHPDoc tag @return has invalid value \\(AST\\\\BetweenExpression\\|
 				        AST\\\\CollectionMemberExpression\\|
@@ -742,11 +737,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#2 \\$alias of method Doctrine\\\\ORM\\\\Query\\\\ResultSetMapping\\:\\:addScalarResult\\(\\) expects string, int given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
-
-		-
-			message: "#^Property Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:\\$query \\(Doctrine\\\\ORM\\\\Query\\) does not accept Doctrine\\\\ORM\\\\AbstractQuery\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
