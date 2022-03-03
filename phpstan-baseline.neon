@@ -881,11 +881,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:SimpleArithmeticExpression\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm\\|int\\|string\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/Parser.php
-
-		-
 			message: """
 				#^PHPDoc tag @return has invalid value \\(AST\\\\BetweenExpression\\|
 				        AST\\\\CollectionMemberExpression\\|
