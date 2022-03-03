@@ -31,8 +31,6 @@ class DDC211Test extends OrmFunctionalTestCase
 
     public function testIssue(): void
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-
         $user = new DDC211User();
         $user->setName('John Doe');
 
