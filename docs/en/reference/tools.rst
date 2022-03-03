@@ -393,6 +393,11 @@ You can either use the Doctrine Command Line Tool:
 
     doctrine orm:validate-schema
 
+If the validation fails, you can change the verbosity level to
+check the detected errors:
+
+    doctrine orm:validate-schema -v
+
 Or you can trigger the validation manually:
 
 .. code-block:: php

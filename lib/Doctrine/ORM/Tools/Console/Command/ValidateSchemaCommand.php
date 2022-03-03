@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use function count;
 use function sprintf;
 
 /**
@@ -76,6 +77,13 @@ class ValidateSchemaCommand extends AbstractEntityManagerCommand
             $ui->text('<comment>[SKIPPED] The database was not checked for synchronicity.</comment>');
         } elseif (! $validator->schemaInSyncWithMetadata()) {
             $ui->error('The database schema is not in sync with the current mapping file.');
+
+            if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
+                $sqls = $validator->getUpdateSchemaList();
+                $ui->comment(sprintf('<info>%d</info> schema diff(s) detected:', count($sqls)));
+                $ui->listing($sqls);
+            }
+
             $exit += 2;
         } else {
             $ui->success('The database schema is in sync with the mapping files.');
