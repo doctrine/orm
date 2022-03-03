@@ -256,7 +256,9 @@ Here is a complete list of ``Column``s attributes (all optional):
 PHP Types Mapping
 _________________
 
-Since ``doctrine/orm`` 2.9 the column types can be inferred automatically from PHP's property types.
+.. versionadded:: 2.9
+
+The column types can be inferred automatically from PHP's property types.
 However, when the property type is nullable this has no effect on the ``nullable`` Column attribute.
 
 These are the "automatic" mapping rules:
