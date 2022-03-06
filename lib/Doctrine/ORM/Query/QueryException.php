@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Query;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Exception;
+use Stringable;
 
 /**
  * Description of QueryException.
@@ -139,7 +140,7 @@ class QueryException extends ORMException
     }
 
     /**
-     * @param string $literal
+     * @param string|Stringable $literal
      *
      * @return QueryException
      */
