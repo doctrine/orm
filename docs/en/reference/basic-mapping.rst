@@ -184,6 +184,7 @@ default.
     .. code-block:: annotation
 
         <?php
+        use Doctrine\ORM\Mapping\Entity;
         use Doctrine\ORM\Mapping\Column;
 
         /** @Entity */
