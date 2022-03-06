@@ -1868,11 +1868,6 @@
       <code>$sqlWalker</code>
     </ParamNameMismatch>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/JoinAssociationPathExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/JoinClassPathExpression.php">
     <UndefinedMethod occurrences="1">
       <code>walkJoinPathExpression</code>
@@ -1926,11 +1921,6 @@
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$type</code>
-    </PropertyNotSetInConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/PathExpression.php">
     <PropertyNotSetInConstructor occurrences="1">
       <code>$type</code>
     </PropertyNotSetInConstructor>
@@ -2402,9 +2392,7 @@
     <InvalidNullableReturnType occurrences="1">
       <code>walkConditionalPrimary</code>
     </InvalidNullableReturnType>
-    <InvalidPropertyAssignmentValue occurrences="9">
-      <code>$this-&gt;scalarFields</code>
-      <code>$this-&gt;scalarResultAliasMap</code>
+    <InvalidPropertyAssignmentValue occurrences="7">
       <code>$this-&gt;scalarResultAliasMap</code>
       <code>$this-&gt;scalarResultAliasMap</code>
       <code>$this-&gt;scalarResultAliasMap</code>
@@ -2429,28 +2417,17 @@
       <code>$aggExpression-&gt;pathExpression</code>
       <code>$whereClause-&gt;conditionalExpression</code>
     </PossiblyInvalidArgument>
-    <PossiblyNullArgument occurrences="12">
+    <PossiblyNullArgument occurrences="8">
       <code>$AST-&gt;whereClause</code>
       <code>$AST-&gt;whereClause</code>
       <code>$AST-&gt;whereClause</code>
       <code>$arithmeticExpr-&gt;simpleArithmeticExpression</code>
       <code>$arithmeticExpr-&gt;subselect</code>
       <code>$condExpr</code>
-      <code>$field</code>
-      <code>$fieldName</code>
-      <code>$fieldName</code>
       <code>$identificationVariableDecl-&gt;rangeVariableDeclaration</code>
-      <code>$resultAlias</code>
       <code>$subselect-&gt;whereClause</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayOffset occurrences="9">
-      <code>$class-&gt;associationMappings</code>
-      <code>$class-&gt;associationMappings</code>
-      <code>$class-&gt;fieldMappings</code>
-      <code>$class-&gt;fieldMappings</code>
-      <code>$class-&gt;fieldMappings</code>
-      <code>$this-&gt;scalarFields[$dqlAlias]</code>
-      <code>$this-&gt;scalarResultAliasMap</code>
+    <PossiblyNullArrayOffset occurrences="2">
       <code>$this-&gt;scalarResultAliasMap</code>
       <code>$this-&gt;scalarResultAliasMap</code>
     </PossiblyNullArrayOffset>

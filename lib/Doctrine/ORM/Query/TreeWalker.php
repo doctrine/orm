@@ -434,7 +434,7 @@ interface TreeWalker
     /**
      * Walks down a PathExpression AST node, thereby generating the appropriate SQL.
      *
-     * @param mixed $pathExpr
+     * @param AST\PathExpression $pathExpr
      *
      * @return string The SQL.
      */
