@@ -106,7 +106,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @template T
      */
-    // public function wrapInTransaction(callable $func);
+    public function wrapInTransaction(callable $func);
 
     /**
      * Commits a transaction on the underlying database connection.
