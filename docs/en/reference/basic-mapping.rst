@@ -248,7 +248,7 @@ Here is a complete list of ``Column``s attributes (all optional):
   not be greater than ``precision``.
 - ``columnDefinition``: Allows to define a custom
   DDL snippet that is used to create the column. Warning: This normally
-  confuses the :ref:`SchemaTool <tools.rst>` to always detect the column as changed.
+  confuses the :doc:`SchemaTool <tools>` to always detect the column as changed.
 - ``options``: Key-value pairs of options that get passed
   to the underlying database platform when generating DDL statements.
 
