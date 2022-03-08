@@ -48,10 +48,7 @@ mapping metadata:
 -  :doc:`Docblock Annotations <annotations-reference>`
 -  :doc:`XML <xml-mapping>`
 -  :doc:`PHP code <php-mapping>`
--  :doc:`YAML <yaml-mapping>` (deprecated and will be removed in ``doctrine/orm`` 3.0.)
-
-This manual will usually show mapping metadata via docblock annotations, though
-many examples also show the equivalent configuration in YAML and XML.
+-  :doc:`YAML <yaml-mapping>` (deprecated and will be removed in ``doctrine/orm`` 3.0)
 
 .. note::
 
@@ -252,6 +249,84 @@ Here is a complete list of ``Column``s attributes (all optional):
 - ``options``: Key-value pairs of options that get passed
   to the underlying database platform when generating DDL statements.
 
+.. _reference-mapping-types:
+
+Doctrine Mapping Types
+----------------------
+
+A Doctrine type defines the conversion between PHP and SQL types,
+independent from the database vendor you are using.
+All Mapping Types that ship with Doctrine are fully portable
+between the supported database systems.
+The ``type`` option used in the ``@Column`` accepts any of the existing
+Doctrine types or even :doc:`your own custom mapping types
+<../cookbook/custom-mapping-types>`.
+
+Here is a full list of the built-in mapping types:
+
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| Doctrine type    | ``Doctrine\DBAL\Types`` constant | SQL                      | PHP type               | Notes                                       |
++==================+==================================+==========================+========================+=============================================+
+| ``string``       | ``Types::STRING``                | VARCHAR                  | string                 |                                             |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``integer``      | ``Types::INTEGER``               | INT                      | int                    |                                             |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``smallint``     | ``Types::SMALLINT``              | SMALLINT                 | int                    |                                             |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``bigint``       | ``Types::BIGINT``                | BIGINT                   | string                 |                                             |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``boolean``      | ``Types::BOOLEAN``               | BOOLEAN / TINYINT        | bool                   |                                             |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``decimal``      | ``Types::DECIMAL``               | DECIMAL                  | string                 |                                             |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``date``         | ``Types::DATE_MUTABLE``          | DATETIME                 | DateTime               |                                             |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``time``         | ``Types::TIME_MUTABLE``          | TIME                     | DateTime               |                                             |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``datetime``     | ``Types::DATETIME_MUTABLE``      | DATETIME / TIMESTAMP     | DateTime               |                                             |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``datetimetz``   | ``Types::DATETIMETZ_MUTABLE``    | DATETIME / TIMESTAMP     | DateTime with timezone |                                             |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``text``         | ``Types::TEXT``                  | CLOB                     | string                 |                                             |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``object``       | ``Types::OBJECT``                | CLOB                     | object                 | Uses ``serialize()`` and ``unserialize()``  |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``array``        | ``Types::ARRAY``                 | CLOB                     | array                  | Uses ``serialize()`` and ``unserialize()``  |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``simple_array`` | ``Types::SIMPLE_ARRAY``          | CLOB                     | array                  | Uses ``implode()`` and ``explode()`` with   |
+|                  |                                  |                          |                        | ``,`` as delimiter. Only use this if your   |
+|                  |                                  |                          |                        | values cannot contain a ",".                |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``json``         | ``Types::JSON``                  | CLOB                     | array                  | Uses `json_encode()`` and ``json_decode()`` |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``float``        | ``Types::FLOAT``                 | Float (Double Precision) | double                 | Works only with locales that use ``.`` as   |
+|                  |                                  |                          |                        | decimal separator.                          |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``guid``         | ``Types::GUID``                  | GUID / UUID              | string                 | Defaults to varchar but uses a specific     |
+|                  |                                  |                          |                        | type if the database supports it.           |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+
+| ``blob``         | ``Types::BLOB``                  | BLOB                     | resource stream        |                                             |
++------------------+----------------------------------+--------------------------+------------------------+---------------------------------------------+  
+
+.. note::
+
+    DateTime and Object types are compared by reference, not by value. Doctrine
+    updates this values if the reference changes and therefore behaves as if
+    these objects are immutable value objects.
+
+.. warning::
+
+    All Date types assume that you are exclusively using the default timezone
+    set by `date_default_timezone_set() <https://php.net/manual/en/function.date-default-timezone-set.php>`_
+    or by the php.ini configuration ``date.timezone``. Working with
+    different timezones will cause troubles and unexpected behavior.
+
+    If you need specific timezone handling you have to handle this
+    in your domain, converting all the values back and forth from UTC.
+    There is also a :doc:`cookbook entry <../cookbook/working-with-datetime>`
+    on working with datetimes that gives hints for implementing
+    multi timezone applications.
+
 .. _reference-php-mapping-types:
 
 PHP Types Mapping
@@ -284,77 +359,8 @@ These are the "automatic" mapping rules:
 | Any other type        | ``Types::STRING``             |
 +-----------------------+-------------------------------+
 
-As of version 2.11 Doctrine can also automatically map typed properties using a
-PHP 8.1 enum to set the right ``type`` and ``enumType``.
-
-.. _reference-mapping-types:
-
-Doctrine Mapping Types
-----------------------
-
-The ``type`` option used in the ``@Column`` accepts any of the existing
-Doctrine types or even your own custom types. A Doctrine type defines
-the conversion between PHP and SQL types, independent from the database vendor
-you are using. All Mapping Types that ship with Doctrine are fully portable
-between the supported database systems.
-
-As an example, the Doctrine Mapping Type ``string`` defines the
-mapping from a PHP string to a SQL VARCHAR (or VARCHAR2 etc.
-depending on the RDBMS brand). Here is a quick overview of the
-built-in mapping types:
-
--  ``string``: Type that maps a SQL VARCHAR to a PHP string.
--  ``integer``: Type that maps a SQL INT to a PHP integer.
--  ``smallint``: Type that maps a database SMALLINT to a PHP
-   integer.
--  ``bigint``: Type that maps a database BIGINT to a PHP string.
--  ``boolean``: Type that maps a SQL boolean or equivalent (TINYINT) to a PHP boolean.
--  ``decimal``: Type that maps a SQL DECIMAL to a PHP string.
--  ``date``: Type that maps a SQL DATETIME to a PHP DateTime
-   object.
--  ``time``: Type that maps a SQL TIME to a PHP DateTime object.
--  ``datetime``: Type that maps a SQL DATETIME/TIMESTAMP to a PHP
-   DateTime object.
--  ``datetimetz``: Type that maps a SQL DATETIME/TIMESTAMP to a PHP
-   DateTime object with timezone.
--  ``text``: Type that maps a SQL CLOB to a PHP string.
--  ``object``: Type that maps a SQL CLOB to a PHP object using
-   ``serialize()`` and ``unserialize()``
--  ``array``: Type that maps a SQL CLOB to a PHP array using
-   ``serialize()`` and ``unserialize()``
--  ``simple_array``: Type that maps a SQL CLOB to a PHP array using
-   ``implode()`` and ``explode()``, with a comma as delimiter. *IMPORTANT*
-   Only use this type if you are sure that your values cannot contain a ",".
--  ``json_array``: Type that maps a SQL CLOB to a PHP array using
-   ``json_encode()`` and ``json_decode()``
--  ``float``: Type that maps a SQL Float (Double Precision) to a
-   PHP double. *IMPORTANT*: Works only with locale settings that use
-   decimal points as separator.
--  ``guid``: Type that maps a database GUID/UUID to a PHP string. Defaults to
-   varchar but uses a specific type if the platform supports it.
--  ``blob``: Type that maps a SQL BLOB to a PHP resource stream
-
-A cookbook article shows how to define :doc:`your own custom mapping types
-<../cookbook/custom-mapping-types>`.
-
-.. note::
-
-    DateTime and Object types are compared by reference, not by value. Doctrine
-    updates this values if the reference changes and therefore behaves as if
-    these objects are immutable value objects.
-
-.. warning::
-
-    All Date types assume that you are exclusively using the default timezone
-    set by `date_default_timezone_set() <https://php.net/manual/en/function.date-default-timezone-set.php>`_
-    or by the php.ini configuration ``date.timezone``. Working with
-    different timezones will cause troubles and unexpected behavior.
-
-    If you need specific timezone handling you have to handle this
-    in your domain, converting all the values back and forth from UTC.
-    There is also a :doc:`cookbook entry <../cookbook/working-with-datetime>`
-    on working with datetimes that gives hints for implementing
-    multi timezone applications.
+Since ``doctrine/orm`` 2.11, properties typed as PHP 8.1 enum will be mapped
+automatically to the right ``type`` and ``enumType``.
 
 Identifiers / Primary Keys
 --------------------------
