@@ -197,7 +197,7 @@ class Setup
             $cache = class_exists(ArrayCache::class) ? new ArrayCache() : new ArrayAdapter();
         } elseif (extension_loaded('apcu')) {
             $cache = class_exists(ApcuCache::class) ? new ApcuCache() : new ApcuAdapter();
-        } elseif (extension_loaded('memcached')) {
+        } elseif (extension_loaded('memcached') && (class_exists(MemcachedCache::class) || MemcachedAdapter::isSupported())) {
             $memcached = new Memcached();
             $memcached->addServer('127.0.0.1', 11211);
 
