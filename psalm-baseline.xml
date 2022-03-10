@@ -1035,6 +1035,14 @@
     </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php">
+    <InvalidReturnStatement occurrences="2">
+      <code>$numDeleted</code>
+      <code>$this-&gt;conn-&gt;executeStatement($statement, $parameters)</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="2">
+      <code>int</code>
+      <code>int</code>
+    </InvalidReturnType>
     <PossiblyNullArgument occurrences="14">
       <code>$collection-&gt;getOwner()</code>
       <code>$collection-&gt;getOwner()</code>
@@ -1731,6 +1739,12 @@
     </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableDeleteExecutor.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>$numDeleted</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>int</code>
+    </InvalidReturnType>
     <PossiblyInvalidIterator occurrences="1">
       <code>$this-&gt;_sqlStatements</code>
     </PossiblyInvalidIterator>
@@ -1743,6 +1757,12 @@
     </UninitializedProperty>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableUpdateExecutor.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>$numUpdated</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>int</code>
+    </InvalidReturnType>
     <PossiblyInvalidIterator occurrences="1">
       <code>$this-&gt;_sqlStatements</code>
     </PossiblyInvalidIterator>
@@ -1759,6 +1779,12 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/SingleTableDeleteUpdateExecutor.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>$conn-&gt;executeStatement($this-&gt;_sqlStatements, $params, $types)</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>int</code>
+    </InvalidReturnType>
     <PossiblyInvalidArgument occurrences="1">
       <code>$this-&gt;_sqlStatements</code>
     </PossiblyInvalidArgument>
