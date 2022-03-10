@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use LogicException;
-use Memcached;
 use Psr\Cache\CacheItemPoolInterface;
 use Redis;
 use RuntimeException;
@@ -185,11 +184,8 @@ final class ORMSetup
             return new ApcuAdapter($namespace);
         }
 
-        if (extension_loaded('memcached')) {
-            $memcached = new Memcached();
-            $memcached->addServer('127.0.0.1', 11211);
-
-            return new MemcachedAdapter($memcached, $namespace);
+        if (MemcachedAdapter::isSupported()) {
+            return new MemcachedAdapter(MemcachedAdapter::createConnection('memcached://127.0.0.1'), $namespace);
         }
 
         if (extension_loaded('redis')) {
