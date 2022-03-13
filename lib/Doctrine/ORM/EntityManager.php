@@ -59,7 +59,7 @@ use function sprintf;
  *     $entityManager = EntityManager::create($dbParams, $config);
  *
  * For more information see
- * {@link http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/configuration.html}
+ * {@link http://docs.doctrine-project.org/projects/doctrine-orm/en/stable/reference/configuration.html}
  *
  * You should never attempt to inherit from the EntityManager: Inheritance
  * is not a valid extension point for the EntityManager. Instead you
