@@ -95,7 +95,7 @@ If you want to configure Doctrine in more detail, take a look at the :doc:`Advan
 .. note::
 
     You can learn more about the database connection configuration in the
-    `Doctrine DBAL connection configuration reference <https://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html>`_.
+    `Doctrine DBAL connection configuration reference <https://docs.doctrine-project.org/projects/doctrine-dbal/en/stable/reference/configuration.html>`_.
 
 Setting up the Commandline Tool
 -------------------------------

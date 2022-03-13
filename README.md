@@ -13,7 +13,7 @@ without requiring unnecessary code duplication.
 ## More resources:
 
 * [Website](http://www.doctrine-project.org)
-* [Documentation](https://www.doctrine-project.org/projects/doctrine-orm/en/latest/index.html)
+* [Documentation](https://www.doctrine-project.org/projects/doctrine-orm/en/stable/index.html)
 
 
   [3.0 image]: https://github.com/doctrine/orm/actions/workflows/continuous-integration.yml/badge.svg?branch=3.0.x
