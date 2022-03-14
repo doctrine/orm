@@ -261,16 +261,6 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
 
 		-
-			message: "#^PHPDoc type Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\AttributeReader of property Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\AttributeDriver\\:\\:\\$reader is not covariant with PHPDoc type Doctrine\\\\Common\\\\Annotations\\\\Reader of overridden property Doctrine\\\\Persistence\\\\Mapping\\\\Driver\\\\AnnotationDriver\\:\\:\\$reader\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
-
-		-
-			message: "#^PHPDoc type array\\<string, int\\> of property Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\AttributeDriver\\:\\:\\$entityAnnotationClasses is not covariant with PHPDoc type array\\<class\\-string, bool\\|int\\> of overridden property Doctrine\\\\Persistence\\\\Mapping\\\\Driver\\\\AnnotationDriver\\:\\:\\$entityAnnotationClasses\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
-
-		-
 			message: "#^Parameter \\#1 \\$metadata of static method Doctrine\\\\ORM\\\\Mapping\\\\Builder\\\\EntityListenerBuilder\\:\\:bindEntityListener\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo&Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<T of object\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
