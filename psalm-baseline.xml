@@ -750,9 +750,6 @@
       <code>$mapping</code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType occurrences="1"/>
-    <NonInvariantDocblockPropertyType occurrences="1">
-      <code>$entityAnnotationClasses</code>
-    </NonInvariantDocblockPropertyType>
     <PossiblyNullArgument occurrences="1">
       <code>$listenerClassName</code>
     </PossiblyNullArgument>
@@ -785,10 +782,6 @@
       <code>$mapping</code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType occurrences="1"/>
-    <NonInvariantDocblockPropertyType occurrences="2">
-      <code>$entityAnnotationClasses</code>
-      <code>$reader</code>
-    </NonInvariantDocblockPropertyType>
     <PossiblyNullArgument occurrences="1">
       <code>$listenerClassName</code>
     </PossiblyNullArgument>
