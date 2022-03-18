@@ -8,16 +8,19 @@ use BadMethodCallException;
 use Doctrine\Common\Collections\AbstractLazyCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
+use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
+use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall;
 use Doctrine\Persistence\ObjectRepository;
 
 use function array_slice;
+use function class_exists;
 use function lcfirst;
 use function sprintf;
 use function str_starts_with;
@@ -167,6 +170,13 @@ class EntityRepository implements ObjectRepository, Selectable
             'Calling %s() is deprecated and will not be supported in Doctrine ORM 3.0.',
             __METHOD__
         );
+
+        if (! class_exists(PersistentObject::class)) {
+            throw NotSupported::createForPersistence3(sprintf(
+                'Partial clearing of entities for class %s',
+                $this->_class->rootEntityName
+            ));
+        }
 
         $this->_em->clear($this->_class->rootEntityName);
     }
