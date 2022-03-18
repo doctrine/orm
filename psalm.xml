@@ -30,6 +30,8 @@
                 <referencedClass name="Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\Command\GenerateEntitiesCommand"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand"/>
+                <!-- Remove on 2.12.x -->
+                <referencedClass name="Doctrine\Persistence\Mapping\Driver\AnnotationDriver"/>
             </errorLevel>
         </DeprecatedClass>
         <DeprecatedMethod>
