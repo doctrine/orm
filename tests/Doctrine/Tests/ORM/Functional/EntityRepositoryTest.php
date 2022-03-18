@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use BadMethodCallException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
@@ -14,6 +15,7 @@ use Doctrine\DBAL\ParameterType;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
+use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\Mapping\MappingException;
@@ -1155,7 +1157,12 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     {
         $repository = $this->_em->getRepository(CmsAddress::class);
 
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8460');
+        if (class_exists(PersistentObject::class)) {
+            $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8460');
+        } else {
+            $this->expectException(NotSupported::class);
+            $this->expectExceptionMessage(CmsAddress::class);
+        }
 
         $repository->clear();
     }
