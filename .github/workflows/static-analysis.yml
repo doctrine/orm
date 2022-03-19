@@ -21,6 +21,12 @@ jobs:
           - "8.1"
         dbal-version:
           - "default"
+        persistence-version:
+          - "default"
+        include:
+          - php-version: "8.1"
+            dbal-version: "default"
+            persistence-version: "'3.0.x-dev as 2.4.0'"
 
     steps:
       - name: "Checkout code"
@@ -36,6 +42,10 @@ jobs:
         run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
         if: "${{ matrix.dbal-version != 'default' }}"
 
+      - name: "Require specific persistence version"
+        run: "composer require doctrine/persistence ${{ matrix.persistence-version }} --no-update"
+        if: "${{ matrix.persistence-version != 'default' }}"
+
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
         with:
@@ -43,7 +53,6 @@ jobs:
 
       - name: "Run a static analysis with phpstan/phpstan"
         run: "vendor/bin/phpstan analyse"
-        if: "${{ matrix.dbal-version == 'default' }}"
 
   static-analysis-psalm:
     name: "Static Analysis with Psalm"

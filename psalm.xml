@@ -17,6 +17,11 @@
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
+        <DeprecatedClass>
+            <errorLevel type="suppress">
+                <referencedClass name="Doctrine\Common\Persistence\PersistentObject"/>
+            </errorLevel>
+        </DeprecatedClass>
         <DeprecatedMethod>
             <errorLevel type="suppress">
                 <!-- We're calling the deprecated method for BC here. -->

@@ -243,6 +243,16 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.12
 
+## BC Break: `AttributeDriver` and `AnnotationDriver` no longer extends parent class from `doctrine/persistence`
+
+Both these classes used to extend an abstract `AnnotationDriver` class defined
+in `doctrine/persistence`, and no longer do.
+
+## Deprecate `AttributeDriver::getReader()` and `AnnotationDriver::getReader()`
+
+That method was inherited from the abstract `AnnotationDriver` class of
+`doctrine/persistence`, and does not seem to serve any purpose.
+
 ## Un-deprecate `Doctrine\ORM\Proxy\Proxy`
 
 Because no forward-compatible new proxy solution had been implemented yet, the
