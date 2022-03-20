@@ -6,6 +6,9 @@ namespace Doctrine\ORM\Exception;
 
 use function sprintf;
 
+/**
+ * @deprecated No replacement planned.
+ */
 final class UnknownEntityNamespace extends ORMException implements ConfigurationException
 {
     public static function fromNamespaceAlias(string $entityNamespaceAlias): self
