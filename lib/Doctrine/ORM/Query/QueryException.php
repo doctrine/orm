@@ -127,7 +127,7 @@ class QueryException extends ORMException
     }
 
     /**
-     * @param object $pathExpr
+     * @param PathExpression $pathExpr
      *
      * @return QueryException
      */
