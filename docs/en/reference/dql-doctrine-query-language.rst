@@ -1592,8 +1592,8 @@ Identifiers
     /* Alias Identification declaration (the "u" of "FROM User u") */
     AliasIdentificationVariable :: = identifier
 
-    /* identifier that must be a class name (the "User" of "FROM User u"), possibly as a fully qualified class name or namespace-aliased */
-    AbstractSchemaName ::= fully_qualified_name | aliased_name | identifier
+    /* identifier that must be a class name (the "User" of "FROM User u"), possibly as a fully qualified class name */
+    AbstractSchemaName ::= fully_qualified_name | identifier
 
     /* Alias ResultVariable declaration (the "total" of "COUNT(*) AS total") */
     AliasResultVariable = identifier

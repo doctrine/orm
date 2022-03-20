@@ -238,8 +238,6 @@ class LexerTest extends OrmTestCase
             [Lexer::T_IDENTIFIER, '_some_identifier'], // starts with underscore
             [Lexer::T_IDENTIFIER, 'comma'], // name of a token class with value < 100 (whitebox test)
             [Lexer::T_FULLY_QUALIFIED_NAME, 'Some\Class'], // DQL class reference
-            [Lexer::T_ALIASED_NAME, 'Some:Name'],
-            [Lexer::T_ALIASED_NAME, 'Some:Subclassed\Name'],
         ];
     }
 }

@@ -1,5 +1,13 @@
 # Upgrade to 3.0
 
+## Removed: support for entity namespace alias
+
+- `EntityManager::getRepository()` no longer accepts the entity namespace alias
+  notation.
+- `Configuration::addEntityNamespace()` and
+  `Configuration::getEntityNamespace()` have been removed.
+
+
 ## BC BREAK: Remove helper methods from `AbstractCollectionPersister`
 
 The following protected methods of

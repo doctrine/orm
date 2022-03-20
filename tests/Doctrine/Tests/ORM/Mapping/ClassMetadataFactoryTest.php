@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -47,7 +46,6 @@ use stdClass;
 
 use function array_search;
 use function assert;
-use function class_exists;
 use function count;
 use function sprintf;
 
@@ -194,39 +192,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         self::assertTrue($em->getMetadataFactory()->isTransient(CmsUser::class));
         self::assertFalse($em->getMetadataFactory()->isTransient(CmsArticle::class));
-    }
-
-    /**
-     * @group DDC-1512
-     */
-    public function testIsTransientEntityNamespace(): void
-    {
-        if (! class_exists(PersistentObject::class)) {
-            $this->markTestSkipped('This test requires doctrine/persistence 2');
-        }
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8818');
-
-        $cmf    = new ClassMetadataFactory();
-        $driver = $this->createMock(MappingDriver::class);
-        $driver->expects(self::exactly(2))
-            ->method('isTransient')
-            ->withConsecutive(
-                [CmsUser::class],
-                [CmsArticle::class]
-            )
-            ->willReturnMap(
-                [
-                    [CmsUser::class, true],
-                    [CmsArticle::class, false],
-                ]
-            );
-
-        $em = $this->createEntityManager($driver);
-        $em->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
-
-        self::assertTrue($em->getMetadataFactory()->isTransient('CMS:CmsUser'));
-        self::assertFalse($em->getMetadataFactory()->isTransient('CMS:CmsArticle'));
     }
 
     public function testAddDefaultDiscriminatorMap(): void

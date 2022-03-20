@@ -48,32 +48,6 @@ class ParserTest extends OrmTestCase
     }
 
     /**
-     * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
-     * @group DDC-3715
-     */
-    public function testAbstractSchemaNameSupportsNamespaceAlias(): void
-    {
-        $parser = $this->createParser('CMS:CmsUser');
-
-        $parser->getEntityManager()->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
-
-        self::assertEquals(CmsUser::class, $parser->AbstractSchemaName());
-    }
-
-    /**
-     * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
-     * @group DDC-3715
-     */
-    public function testAbstractSchemaNameSupportsNamespaceAliasWithRelativeClassname(): void
-    {
-        $parser = $this->createParser('Model:CMS\CmsUser');
-
-        $parser->getEntityManager()->getConfiguration()->addEntityNamespace('Model', 'Doctrine\Tests\Models');
-
-        self::assertEquals(CmsUser::class, $parser->AbstractSchemaName());
-    }
-
-    /**
      * @dataProvider validMatches
      * @covers Doctrine\ORM\Query\Parser::match
      * @group DDC-3701
@@ -134,7 +108,6 @@ class ParserTest extends OrmTestCase
             // The following are qualified or aliased names and must not be accepted where only an Identifier is expected
             [Lexer::T_IDENTIFIER, '\\Some\\Class'],
             [Lexer::T_IDENTIFIER, 'Some\\Class'],
-            [Lexer::T_IDENTIFIER, 'Some:Name'],
         ];
     }
 

@@ -32,7 +32,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_fill;
 use function array_values;
-use function class_exists;
 use function reset;
 
 class EntityRepositoryTest extends OrmFunctionalTestCase
@@ -272,25 +271,6 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     {
         $user1Id = $this->loadFixture();
         $repos   = $this->_em->getRepository(CmsUser::class);
-
-        $users = $repos->findAll();
-        self::assertCount(4, $users);
-    }
-
-    public function testFindByAlias(): void
-    {
-        if (! class_exists(PersistentObject::class)) {
-            $this->markTestSkipped('This test requires doctrine/persistence 2');
-        }
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8818');
-
-        $user1Id = $this->loadFixture();
-        $repos   = $this->_em->getRepository(CmsUser::class);
-
-        $this->_em->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
-
-        $repos = $this->_em->getRepository('CMS:CmsUser');
 
         $users = $repos->findAll();
         self::assertCount(4, $users);
@@ -643,27 +623,6 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $this->expectExceptionMessage('Invalid repository class \'Doctrine\Tests\Models\DDC753\DDC753InvalidRepository\'. It must be a Doctrine\Persistence\ObjectRepository.');
         self::assertEquals($this->_em->getConfiguration()->getDefaultRepositoryClassName(), EntityRepository::class);
         $this->_em->getConfiguration()->setDefaultRepositoryClassName(DDC753InvalidRepository::class);
-    }
-
-    /**
-     * @group DDC-3257
-     */
-    public function testSingleRepositoryInstanceForDifferentEntityAliases(): void
-    {
-        if (! class_exists(PersistentObject::class)) {
-            $this->markTestSkipped('This test requires doctrine/persistence 2');
-        }
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8818');
-        $config = $this->_em->getConfiguration();
-
-        $config->addEntityNamespace('Aliased', 'Doctrine\Tests\Models\CMS');
-        $config->addEntityNamespace('AliasedAgain', 'Doctrine\Tests\Models\CMS');
-
-        $repository = $this->_em->getRepository(CmsUser::class);
-
-        self::assertSame($repository, $this->_em->getRepository('Aliased:CmsUser'));
-        self::assertSame($repository, $this->_em->getRepository('AliasedAgain:CmsUser'));
     }
 
     /**

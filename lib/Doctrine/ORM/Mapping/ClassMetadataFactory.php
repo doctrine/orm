@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use BadMethodCallException;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Platforms;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -666,8 +667,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function getFqcnFromAlias($namespaceAlias, $simpleClassName)
     {
-        /** @psalm-var class-string */
-        return $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
+        throw new BadMethodCallException(__METHOD__ . ' is no longer supported by ' . self::class);
     }
 
     /**

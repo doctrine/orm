@@ -74,19 +74,6 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame($metadataDriver, $this->configuration->getMetadataDriverImpl());
     }
 
-    public function testSetGetEntityNamespace(): void
-    {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8818');
-
-        $this->configuration->addEntityNamespace('TestNamespace', __NAMESPACE__);
-        self::assertSame(__NAMESPACE__, $this->configuration->getEntityNamespace('TestNamespace'));
-        $namespaces = ['OtherNamespace' => __NAMESPACE__];
-        $this->configuration->setEntityNamespaces($namespaces);
-        self::assertSame($namespaces, $this->configuration->getEntityNamespaces());
-        $this->expectException(ORMException::class);
-        $this->configuration->getEntityNamespace('NonExistingNamespace');
-    }
-
     public function testSetGetQueryCache(): void
     {
         self::assertNull($this->configuration->getQueryCache()); // defaults

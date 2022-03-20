@@ -496,19 +496,6 @@ class QueryTest extends OrmFunctionalTestCase
                   ->getScalarResult();
     }
 
-    public function testSupportsQueriesWithEntityNamespaces(): void
-    {
-        $this->_em->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
-
-        try {
-            $query = $this->_em->createQuery('UPDATE CMS:CmsUser u SET u.name = ?1');
-            self::assertEquals('UPDATE cms_users SET name = ?', $query->getSQL());
-            $query->free();
-        } finally {
-            $this->_em->getConfiguration()->setEntityNamespaces([]);
-        }
-    }
-
     /**
      * @group DDC-604
      */
