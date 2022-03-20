@@ -142,33 +142,33 @@ Events Overview
 | Event                                                           | Dispatched by         | Lifecycle | Passed                              |
 |                                                                 |                       | Callback  | Argument                            |
 +=================================================================+=======================+===========+=====================================+
-| :ref:`preRemove<reference-events-pre-remove>`                   | ``$em->remove()``     | Yes       | `_LifecycleEventArgs`_              |
+| :ref:`preRemove<reference-events-pre-remove>`                   | ``$em->remove()``     | Yes       | `LifecycleEventArgs`_               |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`postRemove<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       | `_LifecycleEventArgs`_              |
+| :ref:`postRemove<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       | `LifecycleEventArgs`_               |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`prePersist<reference-events-pre-persist>`                 | ``$em->persist()``    | Yes       | `_LifecycleEventArgs`_              |
+| :ref:`prePersist<reference-events-pre-persist>`                 | ``$em->persist()``    | Yes       | `LifecycleEventArgs`_               |
 |                                                                 | on *initial* persist  |           |                                     |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`postPersist<reference-events-post-update-remove-persist>` | ``$em->flush()``      | Yes       | `_LifecycleEventArgs`_              |
+| :ref:`postPersist<reference-events-post-update-remove-persist>` | ``$em->flush()``      | Yes       | `LifecycleEventArgs`_               |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`preUpdate<reference-events-pre-update>`                   | ``$em->flush()``      | Yes       | `_PreUpdateEventArgs`_              |
+| :ref:`preUpdate<reference-events-pre-update>`                   | ``$em->flush()``      | Yes       | `PreUpdateEventArgs`_               |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`postUpdate<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       | `_LifecycleEventArgs`_              |
+| :ref:`postUpdate<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       | `LifecycleEventArgs`_               |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`postLoad<reference-events-post-load>`                     | Loading from database | Yes       | `_LifecycleEventArgs`_              |
+| :ref:`postLoad<reference-events-post-load>`                     | Loading from database | Yes       | `LifecycleEventArgs`_               |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`loadClassMetadata<reference-events-load-class-metadata>`  | Loading of mapping    | No        | `_LoadClassMetadataEventArgs`       |
+| :ref:`loadClassMetadata<reference-events-load-class-metadata>`  | Loading of mapping    | No        | `LoadClassMetadataEventArgs`_       |
 |                                                                 | metadata              |           |                                     |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| ``onClassMetadataNotFound``                                     | ``MappingException``  | No        | `_OnClassMetadataNotFoundEventArgs` |
+| ``onClassMetadataNotFound``                                     | ``MappingException``  | No        | `OnClassMetadataNotFoundEventArgs`_ |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`preFlush<reference-events-pre-flush>`                     | ``$em->flush()``      | Yes       | `_PreFlushEventArgs`_               |
+| :ref:`preFlush<reference-events-pre-flush>`                     | ``$em->flush()``      | Yes       | `PreFlushEventArgs`_                |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`onFlush<reference-events-on-flush>`                       | ``$em->flush()``      | No        | `_OnFlushEventArgs`                 |
+| :ref:`onFlush<reference-events-on-flush>`                       | ``$em->flush()``      | No        | `OnFlushEventArgs`_                 |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`postFlush<reference-events-post-flush>`                   | ``$em->flush()``      | No        | `_PostFlushEventArgs`               |
+| :ref:`postFlush<reference-events-post-flush>`                   | ``$em->flush()``      | No        | `PostFlushEventArgs`_               |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`onClear<reference-events-on-clear>`                       | ``$em->clear()``      | No        | `_OnClearEventArgs`                 |
+| :ref:`onClear<reference-events-on-clear>`                       | ``$em->clear()``      | No        | `OnClearEventArgs`_                 |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
 
 Naming convention
