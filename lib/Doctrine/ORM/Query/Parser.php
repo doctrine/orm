@@ -1027,6 +1027,13 @@ class Parser
 
         $this->match(Lexer::T_ALIASED_NAME);
 
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8818',
+            'Short namespace aliases such as "%s" are deprecated and will be removed in Doctrine ORM 3.0.',
+            $this->lexer->token['value']
+        );
+
         [$namespaceAlias, $simpleClassName] = explode(':', $this->lexer->token['value']);
 
         return $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
