@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
@@ -45,11 +47,14 @@ use stdClass;
 
 use function array_search;
 use function assert;
+use function class_exists;
 use function count;
 use function sprintf;
 
 class ClassMetadataFactoryTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     public function testGetMetadataForSingleClass(): void
     {
         $platform = $this->createMock(AbstractPlatform::class);
@@ -196,6 +201,12 @@ class ClassMetadataFactoryTest extends OrmTestCase
      */
     public function testIsTransientEntityNamespace(): void
     {
+        if (! class_exists(PersistentObject::class)) {
+            $this->markTestSkipped('This test requires doctrine/persistence 2');
+        }
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8818');
+
         $cmf    = new ClassMetadataFactory();
         $driver = $this->createMock(MappingDriver::class);
         $driver->expects(self::exactly(2))
