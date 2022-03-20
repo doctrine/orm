@@ -16,6 +16,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\OrderByClause;
 use Doctrine\ORM\Query\AST\PartialObjectExpression;
+use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\Parser;
@@ -27,6 +28,7 @@ use RuntimeException;
 
 use function array_diff;
 use function array_keys;
+use function assert;
 use function count;
 use function implode;
 use function in_array;
@@ -75,7 +77,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     private $quoteStrategy;
 
-    /** @var mixed[] */
+    /** @var list<PathExpression> */
     private $orderByPathExpressions = [];
 
     /**
@@ -306,6 +308,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         // Get a map of referenced identifiers to field names.
         $selects = [];
         foreach ($orderByPathExpressions as $pathExpression) {
+            assert($pathExpression->field !== null);
             $idVar = $pathExpression->identificationVariable;
             $field = $pathExpression->field;
             if (! isset($selects[$idVar])) {
@@ -460,7 +463,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * getter for $orderByPathExpressions
      *
-     * @return mixed[]
+     * @return list<PathExpression>
      */
     public function getOrderByPathExpressions()
     {
