@@ -655,6 +655,7 @@ class SqlWalker implements TreeWalker
     public function walkPathExpression($pathExpr)
     {
         $sql = '';
+        assert($pathExpr->field !== null);
 
         switch ($pathExpr->type) {
             case AST\PathExpression::TYPE_STATE_FIELD:
@@ -869,6 +870,7 @@ class SqlWalker implements TreeWalker
     {
         $pathExpression = $indexBy->singleValuedPathExpression;
         $alias          = $pathExpression->identificationVariable;
+        assert($pathExpression->field !== null);
 
         switch ($pathExpression->type) {
             case AST\PathExpression::TYPE_STATE_FIELD:
@@ -1328,6 +1330,7 @@ class SqlWalker implements TreeWalker
                     throw QueryException::invalidPathExpression($expr);
                 }
 
+                assert($expr->field !== null);
                 $fieldName = $expr->field;
                 $dqlAlias  = $expr->identificationVariable;
                 $class     = $this->getMetadataForDqlAlias($dqlAlias);
@@ -1595,11 +1598,12 @@ class SqlWalker implements TreeWalker
                     break;
 
                 case $e instanceof AST\PathExpression:
+                    assert($e->field !== null);
                     $dqlAlias     = $e->identificationVariable;
                     $class        = $this->getMetadataForDqlAlias($dqlAlias);
-                    $fieldType    = $class->fieldMappings[$e->field]['type'];
                     $fieldName    = $e->field;
                     $fieldMapping = $class->fieldMappings[$fieldName];
+                    $fieldType    = $fieldMapping['type'];
                     $col          = trim($e->dispatch($this));
 
                     if (isset($fieldMapping['requireSQLConversion'])) {
@@ -1941,6 +1945,7 @@ class SqlWalker implements TreeWalker
 
         $entityExpr   = $collMemberExpr->entityExpression;
         $collPathExpr = $collMemberExpr->collectionValuedPathExpression;
+        assert($collPathExpr->field !== null);
 
         $fieldName = $collPathExpr->field;
         $dqlAlias  = $collPathExpr->identificationVariable;

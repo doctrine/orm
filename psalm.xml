@@ -20,8 +20,16 @@
         <DeprecatedClass>
             <errorLevel type="suppress">
                 <referencedClass name="Doctrine\Common\Persistence\PersistentObject"/>
+                <referencedClass name="Doctrine\ORM\Exception\UnknownEntityNamespace"/>
             </errorLevel>
         </DeprecatedClass>
+        <DeprecatedConstant>
+            <errorLevel type="suppress">
+                <file name="lib/Doctrine/ORM/Configuration.php"/>
+                <file name="lib/Doctrine/ORM/Query/Lexer.php"/>
+                <file name="lib/Doctrine/ORM/Query/Parser.php"/>
+            </errorLevel>
+        </DeprecatedConstant>
         <DeprecatedMethod>
             <errorLevel type="suppress">
                 <!-- We're calling the deprecated method for BC here. -->

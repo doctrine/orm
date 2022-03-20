@@ -8,6 +8,9 @@ use LogicException;
 
 use function sprintf;
 
+/**
+ * @deprecated No replacement planned.
+ */
 final class UnknownEntityNamespace extends LogicException implements ConfigurationException
 {
     public static function fromNamespaceAlias(string $entityNamespaceAlias): self
