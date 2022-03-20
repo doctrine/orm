@@ -243,6 +243,18 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.12
 
+## Deprecated more APIs related to entity namespace aliases
+
+```diff
+-$config = $entityManager->getConfiguration();
+-$config->addEntityNamespace('CMS', 'My\App\Cms');
++use My\App\Cms\CmsUser;
+
+-$entityManager->getRepository('CMS:CmsUser');
++$entityManager->getRepository(CmsUser::class);
+```
+
+
 ## BC Break: `AttributeDriver` and `AnnotationDriver` no longer extends parent class from `doctrine/persistence`
 
 Both these classes used to extend an abstract `AnnotationDriver` class defined

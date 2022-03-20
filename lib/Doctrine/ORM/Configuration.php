@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
+use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\Exception\UnknownEntityNamespace;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -26,6 +28,8 @@ use Doctrine\Persistence\ObjectRepository;
 use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
 
+use function class_exists;
+use function sprintf;
 use function strtolower;
 use function trim;
 
@@ -124,6 +128,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
+     * @deprecated No replacement planned.
+     *
      * Adds a namespace under a certain alias.
      *
      * @param string $alias
@@ -133,6 +139,21 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function addEntityNamespace($alias, $namespace)
     {
+        if (class_exists(PersistentObject::class)) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8818',
+                'Short namespace aliases such as "%s" are deprecated and will be removed in Doctrine ORM 3.0.',
+                $alias
+            );
+        } else {
+            NotSupported::createForPersistence3(sprintf(
+                'Using short namespace alias "%s" by calling %s',
+                $alias,
+                __METHOD__
+            ));
+        }
+
         $this->_attributes['entityNamespaces'][$alias] = $namespace;
     }
 
