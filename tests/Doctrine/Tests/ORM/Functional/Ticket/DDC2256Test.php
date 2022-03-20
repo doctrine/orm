@@ -6,6 +6,8 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Persistence\PersistentObject;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -18,11 +20,15 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function class_exists;
+
 /**
  * @group DDC-2256
  */
 class DDC2256Test extends OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -37,6 +43,11 @@ class DDC2256Test extends OrmFunctionalTestCase
 
     public function testIssue(): void
     {
+        if (! class_exists(PersistentObject::class)) {
+            $this->markTestSkipped('This test requires doctrine/persistence 2');
+        }
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8818');
         $config = $this->_em->getConfiguration();
         $config->addEntityNamespace('MyNamespace', __NAMESPACE__);
 

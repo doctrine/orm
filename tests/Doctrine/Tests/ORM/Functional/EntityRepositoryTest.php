@@ -287,6 +287,12 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
     public function testFindByAlias(): void
     {
+        if (! class_exists(PersistentObject::class)) {
+            $this->markTestSkipped('This test requires doctrine/persistence 2');
+        }
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8818');
+
         $user1Id = $this->loadFixture();
         $repos   = $this->_em->getRepository(CmsUser::class);
 
@@ -673,6 +679,11 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testSingleRepositoryInstanceForDifferentEntityAliases(): void
     {
+        if (! class_exists(PersistentObject::class)) {
+            $this->markTestSkipped('This test requires doctrine/persistence 2');
+        }
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8818');
         $config = $this->_em->getConfiguration();
 
         $config->addEntityNamespace('Aliased', 'Doctrine\Tests\Models\CMS');
