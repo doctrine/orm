@@ -6,20 +6,17 @@ namespace Doctrine\ORM;
 
 use BadMethodCallException;
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\LockMode;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Exception\InvalidHydrationMode;
 use Doctrine\ORM\Exception\ManagerException;
 use Doctrine\ORM\Exception\MismatchedEventManager;
 use Doctrine\ORM\Exception\MissingIdentifierField;
 use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
-use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -34,12 +31,9 @@ use Doctrine\Persistence\ObjectRepository;
 use Throwable;
 
 use function array_keys;
-use function class_exists;
 use function is_array;
 use function is_object;
 use function ltrim;
-use function sprintf;
-use function strpos;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -580,23 +574,6 @@ use function strpos;
      */
     public function getRepository($entityName): EntityRepository
     {
-        if (strpos($entityName, ':') !== false) {
-            if (class_exists(PersistentObject::class)) {
-                Deprecation::trigger(
-                    'doctrine/orm',
-                    'https://github.com/doctrine/orm/issues/8818',
-                    'Short namespace aliases such as "%s" are deprecated and will be removed in Doctrine ORM 3.0.',
-                    $entityName
-                );
-            } else {
-                NotSupported::createForPersistence3(sprintf(
-                    'Using short namespace alias "%s" when calling %s',
-                    $entityName,
-                    __METHOD__
-                ));
-            }
-        }
-
         return $this->repositoryFactory->getRepository($this, $entityName);
     }
 

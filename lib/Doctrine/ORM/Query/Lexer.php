@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\Common\Lexer\AbstractLexer;
-use Doctrine\Deprecations\Deprecation;
 
 use function constant;
 use function ctype_alpha;
@@ -45,8 +44,6 @@ class Lexer extends AbstractLexer
     public const T_CLOSE_CURLY_BRACE = 19;
 
     // All tokens that are identifiers or keywords that could be considered as identifiers should be >= 100
-    /** @deprecated No Replacement planned. */
-    public const T_ALIASED_NAME         = 100;
     public const T_FULLY_QUALIFIED_NAME = 101;
     public const T_IDENTIFIER           = 102;
 
@@ -173,17 +170,6 @@ class Lexer extends AbstractLexer
                     if ($type > 100) {
                         return $type;
                     }
-                }
-
-                if (str_contains($value, ':')) {
-                    Deprecation::trigger(
-                        'doctrine/orm',
-                        'https://github.com/doctrine/orm/issues/8818',
-                        'Short namespace aliases such as "%s" are deprecated and will be removed in Doctrine ORM 3.0.',
-                        $value
-                    );
-
-                    return self::T_ALIASED_NAME;
                 }
 
                 if (str_contains($value, '\\')) {
