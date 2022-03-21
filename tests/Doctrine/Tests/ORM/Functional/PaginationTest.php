@@ -731,6 +731,14 @@ class PaginationTest extends OrmFunctionalTestCase
         $getCountQuery->setAccessible(true);
 
         self::assertCount(2, $paginator);
+
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
+
+        $paginator = new Paginator($query);
+
+        // if select part of query is replaced with count(...) paginator should remove
+        // parameters from query object not used in new query.
+        self::assertCount(2, $paginator);
     }
 
     /**
