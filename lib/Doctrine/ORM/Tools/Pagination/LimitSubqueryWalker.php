@@ -74,17 +74,15 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
         $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
 
-        $selectClauses = clone $AST->selectClause;
+        $selectClauses                        = clone $AST->selectClause;
         $AST->selectClause->selectExpressions = [new SelectExpression($pathExpression, '_dctrn_id')];
         $AST->selectClause->isDistinct        = true;
 
         if ($AST->groupByClause && $selectClauses->selectExpressions !== []) {
-            foreach ($AST->groupByClause as $clause) {
-                foreach ($clause as $key) {
-                    foreach ($selectClauses->selectExpressions as $expression) {
-                        if ($key === $expression->fieldIdentificationVariable && !empty($queryComponents[$key]['resultVariable'])) {
-                            $AST->selectClause->selectExpressions[] = $expression;
-                        }
+            foreach ($AST->groupByClause->groupByItems as $key) {
+                foreach ($selectClauses->selectExpressions as $expression) {
+                    if ($key === $expression->fieldIdentificationVariable && ! empty($queryComponents[$key]['resultVariable'])) {
+                        $AST->selectClause->selectExpressions[] = $expression;
                     }
                 }
             }
