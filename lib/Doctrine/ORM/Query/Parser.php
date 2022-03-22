@@ -1137,6 +1137,7 @@ class Parser
      * PathExpression ::= IdentificationVariable {"." identifier}*
      *
      * @param int $expectedTypes
+     * @psalm-param int-mask-of<PathExpression::TYPE_*> $expectedTypes
      *
      * @return PathExpression
      */
