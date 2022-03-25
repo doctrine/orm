@@ -1326,7 +1326,7 @@ class QueryBuilder
             throw new Query\QueryException('No aliases are set before invoking addCriteria().');
         }
 
-        $visitor = new QueryExpressionVisitor($this->getAllAliases());
+        $visitor = new QueryExpressionVisitor($this->getAllAliases(), $this->getParameters()->toArray());
 
         $whereExpression = $criteria->getWhereExpression();
         if ($whereExpression) {
