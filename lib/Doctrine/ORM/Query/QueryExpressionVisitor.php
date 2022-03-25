@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\Value;
 use RuntimeException;
 
+use function array_merge;
 use function count;
 use function str_replace;
 use function str_starts_with;
@@ -37,11 +38,18 @@ class QueryExpressionVisitor extends ExpressionVisitor
     /** @var list<mixed> */
     private $parameters = [];
 
-    /** @param mixed[] $queryAliases */
-    public function __construct($queryAliases)
+    /** @var list<mixed> */
+    private array $existingParameters;
+
+    /**
+     * @param mixed[] $queryAliases
+     * @param mixed[] $existingParameters
+     */
+    public function __construct($queryAliases, array $existingParameters = [])
     {
-        $this->queryAliases = $queryAliases;
-        $this->expr         = new Expr();
+        $this->queryAliases       = $queryAliases;
+        $this->expr               = new Expr();
+        $this->existingParameters = $existingParameters;
     }
 
     /**
@@ -120,9 +128,11 @@ class QueryExpressionVisitor extends ExpressionVisitor
 
         $parameterName = str_replace('.', '_', $comparison->getField());
 
-        foreach ($this->parameters as $parameter) {
+        $parameters = array_merge($this->parameters, $this->existingParameters);
+
+        foreach ($parameters as $parameter) {
             if ($parameter->getName() === $parameterName) {
-                $parameterName .= '_' . count($this->parameters);
+                $parameterName .= '_' . count($parameters);
                 break;
             }
         }
