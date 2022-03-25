@@ -318,13 +318,8 @@ class ArrayHydrator extends AbstractHydrator
             $dqlAliasesByLevel[$level][] = $dqlAlias;
         }
 
-        $dqlAliasesOrderedByLevel = [];
-        for ($level = 0; isset($dqlAliasesByLevel[$level]); $level++) {
-            foreach ($dqlAliasesByLevel[$level] as $dqlAliases2) {
-                $dqlAliasesOrderedByLevel[] = $dqlAliases2;
-            }
-        }
-
-        return $dqlAliasesOrderedByLevel;
+        ksort($dqlAliasesByLevel,  SORT_NUMERIC);
+        
+        return array_merge(...array_values($dqlAliasesByLevel));
     }
 }
