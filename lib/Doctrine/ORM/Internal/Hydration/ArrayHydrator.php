@@ -74,6 +74,18 @@ class ArrayHydrator extends AbstractHydrator
         $nonemptyComponents = [];
         $rowData            = $this->gatherRowData($row, $id, $nonemptyComponents);
 
+        // 1.1) Sort $rowData['data'] by level obtained from ResultSetMapping::$parentAliasMap
+        // It is necessary otherwise $this->_resultPointers can contain incorrect data (from previous row).
+        $dqlAliases = array_keys($rowData['data']);
+
+        $orderedDqlAliases = $this->getDqlAliasesOrderedByLevel($dqlAliases, $this->resultSetMapping()->parentAliasMap);
+
+        $rowDataData = $rowData['data'];
+        $rowData['data'] = [];
+        foreach ($orderedDqlAliases as $dqlAlias) {
+            $rowData['data'][$dqlAlias] = $rowDataData[$dqlAlias];
+        }
+
         // 2) Now hydrate the data found in the current row.
         foreach ($rowData['data'] as $dqlAlias => $data) {
             $index = false;
@@ -276,5 +288,43 @@ class ArrayHydrator extends AbstractHydrator
 
         end($coll);
         $this->_resultPointers[$dqlAlias] =& $coll[key($coll)];
+    }
+
+    /**
+     * @param int|string $dqlAlias
+     * @param array<string, string> $parentAliasMap
+     * @return int
+     */
+    private function getDqlAliasLevel($dqlAlias, array $parentAliasMap): int
+    {
+        if (!isset($parentAliasMap[$dqlAlias])) {
+            return 0;
+        }
+
+        return $this->getDqlAliasLevel($parentAliasMap[$dqlAlias], $parentAliasMap) + 1;
+    }
+
+    /**
+     * @param string[] $dqlAliases
+     * @param array<string, string> $parentAliasMap
+     * @return string[]
+     */
+    private function getDqlAliasesOrderedByLevel(array $dqlAliases, array $parentAliasMap): array
+    {
+        $dqlAliasesByLevel = [];
+
+        foreach ($dqlAliases as $dqlAlias) {
+            $level = $this->getDqlAliasLevel($dqlAlias, $parentAliasMap);
+            $dqlAliasesByLevel[$level][] = $dqlAlias;
+        }
+
+        $dqlAliasesOrderedByLevel = [];
+        for ($level = 0; isset($dqlAliasesByLevel[$level]); $level++) {
+            foreach ($dqlAliasesByLevel[$level] as $dqlAliases2) {
+                $dqlAliasesOrderedByLevel[] = $dqlAliases2;
+            }
+        }
+
+        return $dqlAliasesOrderedByLevel;
     }
 }
