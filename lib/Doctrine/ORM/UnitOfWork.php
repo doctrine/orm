@@ -35,7 +35,6 @@ use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\NotifyPropertyChanged;
-use Doctrine\Persistence\ObjectManagerAware;
 use Doctrine\Persistence\PropertyChangedListener;
 use Exception;
 use InvalidArgumentException;
@@ -2150,17 +2149,6 @@ class UnitOfWork implements PropertyChangedListener
         return isset($this->collectionDeletions[spl_object_id($coll)]);
     }
 
-    private function newInstance(ClassMetadata $class): object
-    {
-        $entity = $class->newInstance();
-
-        if ($entity instanceof ObjectManagerAware) {
-            $entity->injectObjectManager($this->em, $class);
-        }
-
-        return $entity;
-    }
-
     /**
      * INTERNAL:
      * Creates an entity. Used for reconstitution of persistent entities.
@@ -2225,14 +2213,9 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            // inject ObjectManager upon refresh.
-            if ($entity instanceof ObjectManagerAware) {
-                $entity->injectObjectManager($this->em, $class);
-            }
-
             $this->originalEntityData[$oid] = $data;
         } else {
-            $entity = $this->newInstance($class);
+            $entity = $class->newInstance();
             $oid    = spl_object_id($entity);
 
             $this->entityIdentifiers[$oid]  = $id;
