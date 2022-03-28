@@ -7,16 +7,15 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
@@ -25,8 +24,7 @@ use TypeError;
 
 class EntityManagerTest extends OrmTestCase
 {
-    /** @var EntityManager */
-    private $entityManager;
+    private EntityManagerMock $entityManager;
 
     protected function setUp(): void
     {
@@ -124,30 +122,6 @@ class EntityManagerTest extends OrmTestCase
     /**
      * @psalm-return list<array{string}>
      */
-    public static function dataMethodsAffectedByNoObjectArguments(): array
-    {
-        return [
-            ['persist'],
-            ['remove'],
-            ['refresh'],
-            ['detach'],
-        ];
-    }
-
-    /**
-     * @dataProvider dataMethodsAffectedByNoObjectArguments
-     */
-    public function testThrowsExceptionOnNonObjectValues($methodName): void
-    {
-        $this->expectException(ORMInvalidArgumentException::class);
-        $this->expectExceptionMessage('EntityManager#' . $methodName . '() expects parameter 1 to be an entity object, NULL given.');
-
-        $this->entityManager->$methodName(null);
-    }
-
-    /**
-     * @psalm-return list<array{string}>
-     */
     public static function dataAffectedByErrorIfClosedException(): array
     {
         return [
@@ -190,10 +164,7 @@ class EntityManagerTest extends OrmTestCase
     public function testWrapInTransactionAcceptsReturn(mixed $expectedValue): void
     {
         $return = $this->entityManager->wrapInTransaction(
-            /** @return mixed */
-            static function (EntityManagerInterface $em) use ($expectedValue) {
-                return $expectedValue;
-            }
+            static fn (EntityManagerInterface $em): mixed => $expectedValue
         );
 
         $this->assertSame($expectedValue, $return);
@@ -212,7 +183,7 @@ class EntityManagerTest extends OrmTestCase
             });
 
             self::fail('TypeError expected to be thrown');
-        } catch (TypeError $ignored) {
+        } catch (TypeError) {
             self::assertFalse($this->entityManager->isOpen());
         }
     }

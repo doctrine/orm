@@ -23,10 +23,6 @@ jobs:
           - "default"
         persistence-version:
           - "default"
-        include:
-          - php-version: "8.1"
-            dbal-version: "default"
-            persistence-version: "2.5"
 
     steps:
       - name: "Checkout code"

@@ -28,7 +28,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @template T of object
      */
-    public function getRepository($className): EntityRepository;
+    public function getRepository(string $className): EntityRepository;
 
     /**
      * Returns the cache API for managing the second level cache regions or NULL if the cache is not enabled.
@@ -130,7 +130,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @template T of object
      */
-    public function find($className, mixed $id, ?int $lockMode = null, ?int $lockVersion = null): ?object;
+    public function find(string $className, mixed $id, ?int $lockMode = null, ?int $lockVersion = null): ?object;
 
     /**
      * Gets a reference to the entity identified by the given type and identifier
@@ -214,12 +214,11 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Create a new instance for the given hydration mode.
      *
-     * @param string|int $hydrationMode
      * @psalm-param string|AbstractQuery::HYDRATE_* $hydrationMode
      *
      * @throws ORMException
      */
-    public function newHydrator($hydrationMode): AbstractHydrator;
+    public function newHydrator(string|int $hydrationMode): AbstractHydrator;
 
     /**
      * Gets the proxy factory used by the EntityManager to create entity proxies.
@@ -250,5 +249,5 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @psalm-template T of object
      */
-    public function getClassMetadata($className): Mapping\ClassMetadata;
+    public function getClassMetadata(string $className): Mapping\ClassMetadata;
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use BackedEnum;
-use BadMethodCallException;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
@@ -219,7 +218,7 @@ use function ltrim;
      *
      * {@inheritDoc}
      */
-    public function getClassMetadata($className): Mapping\ClassMetadata
+    public function getClassMetadata(string $className): Mapping\ClassMetadata
     {
         return $this->metadataFactory->getMetadataFor($className);
     }
@@ -442,17 +441,9 @@ use function ltrim;
     /**
      * Clears the EntityManager. All entities that are currently managed
      * by this EntityManager become detached.
-     *
-     * @param string|null $objectName The object name (not supported).
-     *
-     * @throws ORMInvalidArgumentException If the caller attempted to clear the EM partially by passing an object name.
      */
-    public function clear($objectName = null): void
+    public function clear(): void
     {
-        if ($objectName !== null) {
-            throw new ORMInvalidArgumentException('Clearing the entity manager partially if not supported.');
-        }
-
         $this->unitOfWork->clear();
     }
 
@@ -472,20 +463,14 @@ use function ltrim;
      * NOTE: The persist operation always considers entities that are not yet known to
      * this EntityManager as NEW. Do not pass detached entities to the persist operation.
      *
-     * @param object $entity The instance to make managed and persistent.
-     *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    public function persist($entity): void
+    public function persist(object $object): void
     {
-        if (! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#persist()', $entity);
-        }
-
         $this->errorIfClosed();
 
-        $this->unitOfWork->persist($entity);
+        $this->unitOfWork->persist($object);
     }
 
     /**
@@ -494,40 +479,28 @@ use function ltrim;
      * A removed entity will be removed from the database at or before transaction commit
      * or as a result of the flush operation.
      *
-     * @param object $entity The entity instance to remove.
-     *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    public function remove($entity): void
+    public function remove(object $object): void
     {
-        if (! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#remove()', $entity);
-        }
-
         $this->errorIfClosed();
 
-        $this->unitOfWork->remove($entity);
+        $this->unitOfWork->remove($object);
     }
 
     /**
      * Refreshes the persistent state of an entity from the database,
      * overriding any local changes that have not yet been persisted.
      *
-     * @param object $entity The entity to refresh.
-     *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    public function refresh($entity): void
+    public function refresh(object $object): void
     {
-        if (! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#refresh()', $entity);
-        }
-
         $this->errorIfClosed();
 
-        $this->unitOfWork->refresh($entity);
+        $this->unitOfWork->refresh($object);
     }
 
     /**
@@ -537,29 +510,11 @@ use function ltrim;
      * Entities which previously referenced the detached entity will continue to
      * reference it.
      *
-     * @param object $entity The entity to detach.
-     *
      * @throws ORMInvalidArgumentException
      */
-    public function detach($entity): void
+    public function detach(object $object): void
     {
-        if (! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()', $entity);
-        }
-
-        $this->unitOfWork->detach($entity);
-    }
-
-    /**
-     * Not supported.
-     *
-     * @param object $object
-     *
-     * @psalm-return never
-     */
-    public function merge($object): object
-    {
-        throw new BadMethodCallException('The merge operation is not supported.');
+        $this->unitOfWork->detach($object);
     }
 
     /**
@@ -573,31 +528,28 @@ use function ltrim;
     /**
      * Gets the repository for an entity class.
      *
-     * @param string $entityName The name of the entity.
-     * @psalm-param class-string<T> $entityName
+     * @psalm-param class-string<T> $className
      *
      * @return ObjectRepository|EntityRepository The repository class.
      * @psalm-return EntityRepository<T>
      *
      * @template T of object
      */
-    public function getRepository($entityName): EntityRepository
+    public function getRepository(string $className): EntityRepository
     {
-        return $this->repositoryFactory->getRepository($this, $entityName);
+        return $this->repositoryFactory->getRepository($this, $className);
     }
 
     /**
      * Determines whether an entity instance is managed in this EntityManager.
      *
-     * @param object $entity
-     *
      * @return bool TRUE if this EntityManager currently manages the given entity, FALSE otherwise.
      */
-    public function contains($entity): bool
+    public function contains(object $object): bool
     {
-        return $this->unitOfWork->isScheduledForInsert($entity)
-            || $this->unitOfWork->isInIdentityMap($entity)
-            && ! $this->unitOfWork->isScheduledForDelete($entity);
+        return $this->unitOfWork->isScheduledForInsert($object)
+            || $this->unitOfWork->isInIdentityMap($object)
+            && ! $this->unitOfWork->isScheduledForDelete($object);
     }
 
     public function getEventManager(): EventManager
@@ -632,10 +584,7 @@ use function ltrim;
         return $this->unitOfWork;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function newHydrator($hydrationMode): AbstractHydrator
+    public function newHydrator(string|int $hydrationMode): AbstractHydrator
     {
         switch ($hydrationMode) {
             case Query::HYDRATE_OBJECT:
@@ -672,10 +621,7 @@ use function ltrim;
         return $this->proxyFactory;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function initializeObject($obj): void
+    public function initializeObject(object $obj): void
     {
         $this->unitOfWork->initializeObject($obj);
     }

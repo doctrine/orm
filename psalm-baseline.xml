@@ -184,12 +184,6 @@
       <code>ltrim($entityName, '\\')</code>
       <code>ltrim($entityName, '\\')</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="4">
-      <code>is_object($entity)</code>
-      <code>is_object($entity)</code>
-      <code>is_object($entity)</code>
-      <code>is_object($entity)</code>
-    </DocblockTypeContradiction>
     <InvalidReturnStatement occurrences="10">
       <code>$entity</code>
       <code>$entity</code>
@@ -209,14 +203,6 @@
       <code>ClassMetadataFactory</code>
       <code>Mapping\ClassMetadata</code>
     </InvalidReturnType>
-    <ParamNameMismatch occurrences="6">
-      <code>$entity</code>
-      <code>$entity</code>
-      <code>$entity</code>
-      <code>$entity</code>
-      <code>$entity</code>
-      <code>$entityName</code>
-    </ParamNameMismatch>
     <PossiblyNullArgument occurrences="2">
       <code>$config-&gt;getProxyDir()</code>
       <code>$config-&gt;getProxyNamespace()</code>
@@ -241,8 +227,8 @@
       <code>new LazyCriteriaCollection($persister, $criteria)</code>
     </InvalidReturnStatement>
     <InvalidReturnType occurrences="2">
-      <code>?T</code>
       <code>AbstractLazyCollection&lt;int, T&gt;&amp;Selectable&lt;int, T&gt;</code>
+      <code>T|null</code>
     </InvalidReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Event/OnClassMetadataNotFoundEventArgs.php">
@@ -367,10 +353,12 @@
     <InvalidArrayOffset occurrences="1">
       <code>$subClass-&gt;table[$indexType][$indexName]</code>
     </InvalidArrayOffset>
-    <MissingConstructor occurrences="2">
-      <code>$driver</code>
-      <code>$evm</code>
-    </MissingConstructor>
+    <InvalidNullableReturnType occurrences="1">
+      <code>MappingDriver</code>
+    </InvalidNullableReturnType>
+    <NullableReturnStatement occurrences="1">
+      <code>$this-&gt;driver</code>
+    </NullableReturnStatement>
     <PossiblyInvalidArrayAssignment occurrences="1">
       <code>$subClass-&gt;table[$indexType][$indexName]</code>
     </PossiblyInvalidArrayAssignment>
@@ -381,26 +369,25 @@
       <code>$this-&gt;em</code>
       <code>$this-&gt;em</code>
     </PossiblyNullArgument>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$this-&gt;em-&gt;getConfiguration()-&gt;getMetadataDriverImpl()</code>
-    </PossiblyNullPropertyAssignmentValue>
-    <PossiblyNullReference occurrences="5">
+    <PossiblyNullReference occurrences="9">
+      <code>getAllClassNames</code>
       <code>getConfiguration</code>
       <code>getConfiguration</code>
       <code>getConfiguration</code>
       <code>getConfiguration</code>
       <code>getConnection</code>
+      <code>hasListeners</code>
+      <code>hasListeners</code>
+      <code>loadMetadataForClass</code>
     </PossiblyNullReference>
     <PropertyTypeCoercion occurrences="1">
       <code>$subClass-&gt;table</code>
     </PropertyTypeCoercion>
-    <RedundantConditionGivenDocblockType occurrences="6">
+    <RedundantConditionGivenDocblockType occurrences="4">
       <code>$parent-&gt;generatorType</code>
       <code>$parent-&gt;generatorType</code>
       <code>$parent-&gt;idGenerator</code>
       <code>$parent-&gt;idGenerator</code>
-      <code>assert($class instanceof ClassMetadata)</code>
-      <code>assert($class instanceof ClassMetadata)</code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php">
@@ -457,10 +444,8 @@
       <code>$this-&gt;reflFields[$name]</code>
       <code>$this-&gt;reflFields[$this-&gt;identifier[0]]</code>
     </NullableReturnStatement>
-    <ParamNameMismatch occurrences="3">
+    <ParamNameMismatch occurrences="1">
       <code>$entity</code>
-      <code>$fieldName</code>
-      <code>$fieldName</code>
     </ParamNameMismatch>
     <PossiblyNullArgument occurrences="7">
       <code>$class</code>
@@ -1133,6 +1118,9 @@
       <code>$metadata-&gt;isEmbeddedClass</code>
       <code>$metadata-&gt;isMappedSuperclass</code>
     </NoInterfaceProperties>
+    <PossiblyNullArgument occurrences="1">
+      <code>$property-&gt;name</code>
+    </PossiblyNullArgument>
     <PossiblyNullPropertyFetch occurrences="1">
       <code>$property-&gt;name</code>
     </PossiblyNullPropertyFetch>
@@ -1890,10 +1878,11 @@
     <PossiblyFalseArgument occurrences="1">
       <code>strrpos($fromClassName, '\\')</code>
     </PossiblyFalseArgument>
-    <PossiblyInvalidArgument occurrences="12">
+    <PossiblyInvalidArgument occurrences="13">
       <code>$AST</code>
       <code>$conditionalExpression</code>
       <code>$expr</code>
+      <code>$field</code>
       <code>$pathExp</code>
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>

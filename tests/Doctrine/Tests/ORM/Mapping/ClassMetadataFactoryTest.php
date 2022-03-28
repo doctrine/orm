@@ -515,19 +515,10 @@ final class Cube extends Shape
 class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
 {
     /** @psalm-var array<class-string<object>, ClassMetadata> */
-    private $mockMetadata = [];
+    private array $mockMetadata = [];
 
-    /** @psalm-var list<class-string<object>> */
-    private $requestedClasses = [];
-
-    /**
-     * @psalm-param class-string<object> $className
-     *
-     * @override
-     */
-    protected function newClassMetadataInstance($className): ClassMetadata
+    protected function newClassMetadataInstance(string $className): ClassMetadata
     {
-        $this->requestedClasses[] = $className;
         if (! isset($this->mockMetadata[$className])) {
             throw new InvalidArgumentException(sprintf(
                 'No mock metadata found for class %s.',
@@ -544,14 +535,6 @@ class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
     public function setMetadataForClass(string $className, ClassMetadata $metadata): void
     {
         $this->mockMetadata[$className] = $metadata;
-    }
-
-    /**
-     * @return list<class-string<object>>
-     */
-    public function getRequestedClasses(): array
-    {
-        return $this->requestedClasses;
     }
 }
 

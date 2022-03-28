@@ -35,7 +35,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         $this->wrapped = $wrapped;
     }
 
-    public function getRepository($className): EntityRepository
+    public function getRepository(string $className): EntityRepository
     {
         return $this->wrapped->getRepository($className);
     }
@@ -45,10 +45,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         return $this->wrapped->getMetadataFactory();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getClassMetadata($className): ClassMetadata
+    public function getClassMetadata(string $className): ClassMetadata
     {
         return $this->wrapped->getClassMetadata($className);
     }
@@ -127,10 +124,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         $this->wrapped->lock($entity, $lockMode, $lockVersion);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function find($className, mixed $id, ?int $lockMode = null, ?int $lockVersion = null): ?object
+    public function find(string $className, mixed $id, ?int $lockMode = null, ?int $lockVersion = null): ?object
     {
         return $this->wrapped->find($className, $id, $lockMode, $lockVersion);
     }
@@ -155,10 +149,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         return $this->wrapped->getUnitOfWork();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function newHydrator($hydrationMode): AbstractHydrator
+    public function newHydrator(string|int $hydrationMode): AbstractHydrator
     {
         return $this->wrapped->newHydrator($hydrationMode);
     }
