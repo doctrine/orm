@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\Enums\Card;
+use Doctrine\Tests\Models\Enums\CardWithDefault;
 use Doctrine\Tests\Models\Enums\Product;
 use Doctrine\Tests\Models\Enums\Quantity;
 use Doctrine\Tests\Models\Enums\Suit;
@@ -18,6 +19,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function dirname;
 use function sprintf;
+use function uniqid;
 
 /**
  * @requires PHP 8.1
@@ -158,5 +160,18 @@ EXCEPTION
 
         $this->assertInstanceOf(Unit::class, $fetchedProduct->quantity->unit);
         $this->assertEquals(Unit::Gram, $fetchedProduct->quantity->unit);
+    }
+
+    public function testEnumWithDefault(): void
+    {
+        $this->setUpEntitySchema([CardWithDefault::class]);
+
+        $table  = $this->_em->getClassMetadata(CardWithDefault::class)->getTableName();
+        $cardId = uniqid('', true);
+
+        $this->_em->getConnection()->insert($table, ['id' => $cardId]);
+        $card = $this->_em->find(CardWithDefault::class, $cardId);
+
+        self::assertSame(Suit::Hearts, $card->suit);
     }
 }
