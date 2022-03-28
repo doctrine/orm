@@ -381,7 +381,7 @@ class DefaultQueryCache implements QueryCache
     }
 
     /**
-     * @psalm-param array<array-key, array{field: string, class: string}> $path
+     * @psalm-param array<array-key, array{field: string, class: class-string}> $path
      *
      * @psalm-return list<mixed>|object|null
      */

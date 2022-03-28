@@ -112,7 +112,7 @@ class UnitOfWork implements PropertyChangedListener
      * Since all classes in a hierarchy must share the same identifier set,
      * we always take the root class name of the hierarchy.
      *
-     * @psalm-var array<class-string, array<string, object|null>>
+     * @psalm-var class-string-map<T, array<string, T|null>>
      */
     private array $identityMap = [];
 
@@ -1525,10 +1525,15 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Gets an entity in the identity map by its identifier hash.
      *
-     * @ignore
+     * @internal
+     *
+     * @psalm-param class-string<T> $rootClassName
+     *
+     * @psalm-return T
+     *
+     * @template T of object
      */
     public function getByIdHash(string $idHash, string $rootClassName): object
     {
@@ -1536,17 +1541,19 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
-     * Tries to get an entity by its identifier hash. If no entity is found for
-     * the given hash, FALSE is returned.
+     * Tries to get an entity by its identifier hash.
      *
-     * @param mixed $idHash (must be possible to cast it to string)
+     * If no entity is found for the given hash, FALSE is returned.
      *
-     * @return false|object The found entity or FALSE.
+     * @internal
      *
-     * @ignore
+     * @psalm-param class-string<T> $rootClassName
+     *
+     * @psalm-return T|false
+     *
+     * @template T of object
      */
-    public function tryGetByIdHash(mixed $idHash, string $rootClassName): object|false
+    public function tryGetByIdHash(int|string|Stringable $idHash, string $rootClassName): object|false
     {
         $stringIdHash = (string) $idHash;
 

@@ -95,6 +95,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *                                 with the joined entity result.
      * @param string[] $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName).
      * @param int|null $renameMode     One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
+     * @psalm-param class-string $class
      * @psalm-param array<string, string> $renamedColumns
      *
      * @return void
@@ -114,6 +115,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * @param string   $class
      * @param string   $alias
      * @param string[] $columnAliasMap
+     * @psalm-param class-string $class
      * @psalm-param array<string, string> $columnAliasMap
      *
      * @return void

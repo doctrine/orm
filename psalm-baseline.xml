@@ -301,6 +301,14 @@
     </ReferenceConstraintViolation>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php">
+    <InvalidReturnStatement occurrences="3">
+      <code>$this-&gt;_uow-&gt;tryGetByIdHash($data[$class-&gt;associationMappings[$class-&gt;identifier[0]]['joinColumns'][0]['name']], $class-&gt;rootEntityName)</code>
+      <code>$this-&gt;_uow-&gt;tryGetByIdHash($data[$class-&gt;identifier[0]], $class-&gt;rootEntityName)</code>
+      <code>$this-&gt;_uow-&gt;tryGetByIdHash(ltrim($idHash), $class-&gt;rootEntityName)</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>T|false</code>
+    </InvalidReturnType>
     <InvalidScalarArgument occurrences="1">
       <code>array_keys($discrMap)</code>
     </InvalidScalarArgument>
@@ -319,12 +327,10 @@
     <PossiblyNullArgument occurrences="1">
       <code>$objectClass</code>
     </PossiblyNullArgument>
-    <PossiblyNullReference occurrences="6">
+    <PossiblyNullReference occurrences="4">
       <code>getValue</code>
       <code>getValue</code>
       <code>getValue</code>
-      <code>setValue</code>
-      <code>setValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset occurrences="1">
@@ -404,7 +410,6 @@
       <code>$this-&gt;em-&gt;getConfiguration()-&gt;getMetadataDriverImpl()</code>
     </PossiblyNullPropertyAssignmentValue>
     <PossiblyNullReference occurrences="5">
-      <code>getConfiguration</code>
       <code>getConfiguration</code>
       <code>getConfiguration</code>
       <code>getConfiguration</code>
@@ -1167,6 +1172,9 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Query.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$className</code>
+    </ArgumentTypeCoercion>
     <InvalidScalarArgument occurrences="1">
       <code>$sqlParams</code>
     </InvalidScalarArgument>
@@ -1722,6 +1730,9 @@
     </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableDeleteExecutor.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$AST-&gt;deleteClause-&gt;abstractSchemaName</code>
+    </ArgumentTypeCoercion>
     <InvalidReturnStatement occurrences="1">
       <code>$numDeleted</code>
     </InvalidReturnStatement>
@@ -1740,6 +1751,9 @@
     </UninitializedProperty>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableUpdateExecutor.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$updateClause-&gt;abstractSchemaName</code>
+    </ArgumentTypeCoercion>
     <InvalidReturnStatement occurrences="1">
       <code>$numUpdated</code>
     </InvalidReturnStatement>
@@ -1834,7 +1848,10 @@
     </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/Parser.php">
-    <ArgumentTypeCoercion occurrences="1">
+    <ArgumentTypeCoercion occurrences="4">
+      <code>$abstractSchemaName</code>
+      <code>$abstractSchemaName</code>
+      <code>$deleteClause-&gt;abstractSchemaName</code>
       <code>$stringPattern</code>
     </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="3">
@@ -2010,7 +2027,6 @@
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$token['type']</code>
       <code>$token['type']</code>
       <code>$token['type']</code>
@@ -2065,6 +2081,14 @@
     </ArgumentTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
+    <ArgumentTypeCoercion occurrences="6">
+      <code>$AST-&gt;deleteClause-&gt;abstractSchemaName</code>
+      <code>$AST-&gt;updateClause-&gt;abstractSchemaName</code>
+      <code>$deleteClause-&gt;abstractSchemaName</code>
+      <code>$joinDeclaration-&gt;abstractSchemaName</code>
+      <code>$rangeVariableDeclaration-&gt;abstractSchemaName</code>
+      <code>$updateClause-&gt;abstractSchemaName</code>
+    </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="5">
       <code>$likeExpr-&gt;stringPattern instanceof AST\Functions\FunctionNode</code>
       <code>$likeExpr-&gt;stringPattern instanceof AST\PathExpression</code>
@@ -2367,7 +2391,7 @@
       <code>new $repositoryClassName($entityManager, $metadata)</code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType occurrences="1">
-      <code>ObjectRepository</code>
+      <code>ObjectRepository&lt;T&gt;</code>
     </MoreSpecificReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/CollectionRegionCommand.php">
@@ -2532,12 +2556,12 @@
     <InvalidArgument occurrences="1">
       <code>$em-&gt;getMetadataFactory()</code>
     </InvalidArgument>
-    <InvalidNullableReturnType occurrences="1">
-      <code>object</code>
-    </InvalidNullableReturnType>
-    <InvalidPropertyAssignmentValue occurrences="2">
+    <InvalidPropertyAssignmentValue occurrences="5">
       <code>$this-&gt;entityChangeSets</code>
       <code>$this-&gt;entityChangeSets</code>
+      <code>$this-&gt;identityMap</code>
+      <code>$this-&gt;identityMap</code>
+      <code>$this-&gt;identityMap</code>
     </InvalidPropertyAssignmentValue>
     <MissingClosureReturnType occurrences="4">
       <code>static function (array $assoc) {</code>
@@ -2545,13 +2569,7 @@
       <code>static function (array $assoc) {</code>
       <code>static function (array $assoc) {</code>
     </MissingClosureReturnType>
-    <NullableReturnStatement occurrences="1">
-      <code>$this-&gt;identityMap[$rootClassName][$idHash]</code>
-    </NullableReturnStatement>
-    <PossiblyInvalidArrayOffset occurrences="1">
-      <code>$this-&gt;identityMap[$rootClassName]</code>
-    </PossiblyInvalidArrayOffset>
-    <PossiblyNullArgument occurrences="9">
+    <PossiblyNullArgument occurrences="8">
       <code>$assoc</code>
       <code>$assoc</code>
       <code>$assoc['targetEntity']</code>
@@ -2559,7 +2577,6 @@
       <code>$collection-&gt;getOwner()</code>
       <code>$collection-&gt;getOwner()</code>
       <code>$collectionToDelete-&gt;getMapping()</code>
-      <code>$entity</code>
       <code>$owner</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess occurrences="2">

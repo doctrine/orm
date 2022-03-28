@@ -250,12 +250,14 @@ class ObjectHydrator extends AbstractHydrator
     }
 
     /**
-     * @psalm-param class-string $className
+     * @psalm-param class-string<T> $className
      * @psalm-param array<string, mixed> $data
      *
-     * @return mixed
+     * @psalm-return T|false
+     *
+     * @template T of object
      */
-    private function getEntityFromIdentityMap(string $className, array $data)
+    private function getEntityFromIdentityMap(string $className, array $data): object|false
     {
         // TODO: Abstract this code and UnitOfWork::createEntity() equivalent?
         $class = $this->_metadataCache[$className];

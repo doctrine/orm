@@ -52,7 +52,8 @@ abstract class AbstractHydrator
     /**
      * Local ClassMetadata cache to avoid going to the EntityManager all the time.
      *
-     * @var array<string, ClassMetadata<object>>
+     * @var ClassMetadata[]
+     * @psalm-var class-string-map<T, ClassMetadata<T>>
      */
     protected array $_metadataCache = [];
 
@@ -482,6 +483,12 @@ abstract class AbstractHydrator
 
     /**
      * Retrieve ClassMetadata associated to entity class name.
+     *
+     * @psalm-param class-string<T> $className
+     *
+     * @psalm-return ClassMetadata<T>
+     *
+     * @template T of object
      */
     protected function getClassMetadata(string $className): ClassMetadata
     {

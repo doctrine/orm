@@ -74,7 +74,7 @@ EOT
     /**
      * Display all the mapping information for a single Entity.
      *
-     * @param string $entityName Full or partial entity class name
+     * @psalm-param class-string $entityName
      */
     private function displayEntity(
         string $entityName,
@@ -148,7 +148,7 @@ EOT
      * Return the class metadata for the given entity
      * name
      *
-     * @param string $entityName Full or partial entity name
+     * @psalm-param class-string $entityName
      */
     private function getClassMetadata(
         string $entityName,

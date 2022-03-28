@@ -36,6 +36,8 @@ class DDC2825Test extends OrmFunctionalTestCase
     }
 
     /**
+     * @psalm-param class-string $className
+     *
      * @dataProvider getTestedClasses
      */
     public function testClassSchemaMappingsValidity(string $className, string $expectedSchemaName, string $expectedTableName): void
@@ -64,6 +66,8 @@ class DDC2825Test extends OrmFunctionalTestCase
     }
 
     /**
+     * @psalm-param class-string $className
+     *
      * @dataProvider getTestedClasses
      */
     public function testPersistenceOfEntityWithSchemaMapping(string $className): void
@@ -85,6 +89,7 @@ class DDC2825Test extends OrmFunctionalTestCase
      * Data provider
      *
      * @return string[][]
+     * @psalm-return list<array{class-string, string, string}>
      */
     public function getTestedClasses(): array
     {

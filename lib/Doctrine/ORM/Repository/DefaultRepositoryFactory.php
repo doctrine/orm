@@ -38,8 +38,11 @@ final class DefaultRepositoryFactory implements RepositoryFactory
     /**
      * Create a new repository instance for an entity class.
      *
-     * @param EntityManagerInterface $entityManager The EntityManager instance.
-     * @param string                 $entityName    The name of the entity.
+     * @psalm-param class-string<T> $entityName
+     *
+     * @psalm-return ObjectRepository<T>
+     *
+     * @template T of object
      */
     private function createRepository(
         EntityManagerInterface $entityManager,

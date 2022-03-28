@@ -38,22 +38,34 @@ interface Cache
      */
     public const MODE_REFRESH = 4;
 
+    /**
+     * @psalm-param class-string $className
+     */
     public function getEntityCacheRegion(string $className): ?Region;
 
+    /**
+     * @psalm-param class-string $className
+     */
     public function getCollectionCacheRegion(string $className, string $association): ?Region;
 
     /**
      * Determine whether the cache contains data for the given entity "instance".
+     *
+     * @psalm-param class-string $className
      */
     public function containsEntity(string $className, mixed $identifier): bool;
 
     /**
      * Evicts the entity data for a particular entity "instance".
+     *
+     * @psalm-param class-string $className
      */
     public function evictEntity(string $className, mixed $identifier): void;
 
     /**
      * Evicts all entity data from the given region.
+     *
+     * @psalm-param class-string $className
      */
     public function evictEntityRegion(string $className): void;
 
@@ -64,16 +76,22 @@ interface Cache
 
     /**
      * Determine whether the cache contains data for the given collection.
+     *
+     * @psalm-param class-string $className
      */
     public function containsCollection(string $className, string $association, mixed $ownerIdentifier): bool;
 
     /**
      * Evicts the cache data for the given identified collection instance.
+     *
+     * @psalm-param class-string $className
      */
     public function evictCollection(string $className, string $association, mixed $ownerIdentifier): void;
 
     /**
      * Evicts all entity data from the given region.
+     *
+     * @psalm-param class-string $className
      */
     public function evictCollectionRegion(string $className, string $association): void;
 
