@@ -403,7 +403,7 @@
     <PossiblyNullPropertyAssignmentValue occurrences="1">
       <code>$this-&gt;em-&gt;getConfiguration()-&gt;getMetadataDriverImpl()</code>
     </PossiblyNullPropertyAssignmentValue>
-    <PossiblyNullReference occurrences="6">
+    <PossiblyNullReference occurrences="5">
       <code>getConfiguration</code>
       <code>getConfiguration</code>
       <code>getConfiguration</code>
@@ -1917,7 +1917,7 @@
     <PossiblyFalseArgument occurrences="1">
       <code>strrpos($fromClassName, '\\')</code>
     </PossiblyFalseArgument>
-    <PossiblyInvalidArgument occurrences="14">
+    <PossiblyInvalidArgument occurrences="13">
       <code>$AST</code>
       <code>$conditionalExpression</code>
       <code>$expr</code>
@@ -1929,7 +1929,6 @@
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$token['value']</code>
       <code>$token['value']</code>
     </PossiblyInvalidArgument>
@@ -1947,7 +1946,7 @@
       <code>$this-&gt;query-&gt;getDQL()</code>
       <code>$token['value']</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess occurrences="73">
+    <PossiblyNullArrayAccess occurrences="72">
       <code>$glimpse['type']</code>
       <code>$glimpse['value']</code>
       <code>$lookahead['type']</code>

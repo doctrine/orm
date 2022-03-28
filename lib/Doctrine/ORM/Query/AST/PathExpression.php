@@ -25,7 +25,10 @@ class PathExpression extends Node
      */
     public $type;
 
-    /** @var int */
+    /**
+     * @var int
+     * @psalm-var int-mask-of<self::TYPE_*>
+     */
     public $expectedType;
 
     /** @var string */
@@ -38,6 +41,7 @@ class PathExpression extends Node
      * @param int         $expectedType
      * @param string      $identificationVariable
      * @param string|null $field
+     * @psalm-param int-mask-of<self::TYPE_*> $expectedType
      */
     public function __construct($expectedType, $identificationVariable, $field = null)
     {

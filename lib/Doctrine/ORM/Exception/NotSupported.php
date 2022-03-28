@@ -15,9 +15,16 @@ final class NotSupported extends LogicException implements ORMException
         return new self('This behaviour is (currently) not supported by Doctrine 2');
     }
 
-    public static function createForDbal3(): self
+    public static function createForDbal3(string $context): self
     {
-        return new self('Feature was deprecated in doctrine/dbal 2.x and is not supported by installed doctrine/dbal:3.x, please see the doctrine/deprecations logs for new alternative approaches.');
+        return new self(sprintf(
+            <<<'EXCEPTION'
+Context: %s
+Problem: Feature was deprecated in doctrine/dbal 2.x and is not supported by installed doctrine/dbal:3.x
+Solution: See the doctrine/deprecations logs for new alternative approaches.
+EXCEPTION,
+            $context
+        ));
     }
 
     public static function createForPersistence3(string $context): self
