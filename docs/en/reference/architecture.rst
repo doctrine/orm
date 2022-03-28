@@ -66,6 +66,8 @@ The root namespace of the ORM package is ``Doctrine\ORM``.
 Terminology
 -----------
 
+.. _terminology_entities:
+
 Entities
 ~~~~~~~~
 
