@@ -73,7 +73,7 @@ class ResultSetMapping
      * Maps column names in the result set to the alias/field name to use in the mapped result.
      *
      * @ignore
-     * @psalm-var array<string, string>
+     * @psalm-var array<string, string|int>
      */
     public $scalarMappings = [];
 
@@ -169,6 +169,7 @@ class ResultSetMapping
      *                                 results or joined entity results within this ResultSetMapping.
      * @param string|null $resultAlias The result alias with which the entity result should be
      *                                 placed in the result structure.
+     * @psalm-param class-string $class
      *
      * @return $this
      *
@@ -315,6 +316,7 @@ class ResultSetMapping
      *                                    the field $fieldName is defined on a subclass, specify that here.
      *                                    If not specified, the field is assumed to belong to the class
      *                                    designated by $alias.
+     * @psalm-param class-string|null $declaringClass
      *
      * @return $this
      *
@@ -344,6 +346,7 @@ class ResultSetMapping
      * @param string $parentAlias The alias of the entity result that is the parent of this joined result.
      * @param string $relation    The association field that connects the parent entity result
      *                            with the joined entity result.
+     * @psalm-param class-string $class
      *
      * @return $this
      *
@@ -361,9 +364,9 @@ class ResultSetMapping
     /**
      * Adds a scalar result mapping.
      *
-     * @param string $columnName The name of the column in the SQL result set.
-     * @param string $alias      The result alias with which the scalar result should be placed in the result structure.
-     * @param string $type       The column type
+     * @param string     $columnName The name of the column in the SQL result set.
+     * @param string|int $alias      The result alias with which the scalar result should be placed in the result structure.
+     * @param string     $type       The column type
      *
      * @return $this
      *
@@ -384,8 +387,8 @@ class ResultSetMapping
     /**
      * Adds a metadata parameter mappings.
      *
-     * @param mixed  $parameter The parameter name in the SQL result set.
-     * @param string $attribute The metadata attribute.
+     * @param string|int $parameter The parameter name in the SQL result set.
+     * @param string     $attribute The metadata attribute.
      *
      * @return void
      */
@@ -426,7 +429,7 @@ class ResultSetMapping
      *
      * @param string $columnName The name of the column in the SQL result set.
      *
-     * @return string
+     * @return string|int
      */
     public function getScalarAlias($columnName)
     {
@@ -549,11 +552,11 @@ class ResultSetMapping
     /**
      * Adds a meta column (foreign key or discriminator column) to the result set.
      *
-     * @param string $alias              The result alias with which the meta result should be placed in the result structure.
-     * @param string $columnName         The name of the column in the SQL result set.
-     * @param string $fieldName          The name of the field on the declaring class.
-     * @param bool   $isIdentifierColumn
-     * @param string $type               The column type
+     * @param string      $alias              The result alias with which the meta result should be placed in the result structure.
+     * @param string      $columnName         The name of the column in the SQL result set.
+     * @param string      $fieldName          The name of the field on the declaring class.
+     * @param bool        $isIdentifierColumn
+     * @param string|null $type               The column type
      *
      * @return $this
      *
