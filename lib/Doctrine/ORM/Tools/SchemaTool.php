@@ -38,6 +38,8 @@ use function is_array;
 use function is_numeric;
 use function method_exists;
 use function strtolower;
+use function substr;
+use function strpos;
 
 /**
  * The SchemaTool is a tool to create/drop/update database schemas based on
@@ -117,7 +119,11 @@ class SchemaTool
 
         if ($filter !== null) {
             foreach ($schema->getTableNames() as $tableName) {
-                if (!$filter(substr($tableName, strpos($tableName, '.') + 1))) {
+                if (($posSchema = strpos($tableName, '.')) !== false) {
+                    $tableName = substr($tableName, $posSchema + 1);
+                };
+
+                if (! $filter($tableName)) {
                     $schema->dropTable($tableName);
                 }
             }
