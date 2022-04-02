@@ -113,6 +113,15 @@ class SchemaTool
     public function getCreateSchemaSql(array $classes)
     {
         $schema = $this->getSchemaFromMetadata($classes);
+        $filter = $this->em->getConnection()->getConfiguration()->getSchemaAssetsFilter();
+
+        if ($filter !== null) {
+            foreach ($schema->getTableNames() as $tableName) {
+                if (!$filter(substr($tableName, strpos($tableName, '.') + 1))) {
+                    $schema->dropTable($tableName);
+                }
+            }
+        }
 
         return $schema->toSql($this->platform);
     }
