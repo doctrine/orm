@@ -37,9 +37,9 @@ use function in_array;
 use function is_array;
 use function is_numeric;
 use function method_exists;
+use function strpos;
 use function strtolower;
 use function substr;
-use function strpos;
 
 /**
  * The SchemaTool is a tool to create/drop/update database schemas based on
@@ -118,10 +118,13 @@ class SchemaTool
         $filter = $this->em->getConnection()->getConfiguration()->getSchemaAssetsFilter();
 
         if ($filter !== null) {
-            foreach ($schema->getTableNames() as $tableName) {
-                if (($posSchema = strpos($tableName, '.')) !== false) {
+            foreach ($schema->getTables() as $table) {
+                $tableName = $table->getName();
+
+                $posSchema = strpos($tableName, '.');
+                if ($posSchema !== false) {
                     $tableName = substr($tableName, $posSchema + 1);
-                };
+                }
 
                 if (! $filter($tableName)) {
                     $schema->dropTable($tableName);
