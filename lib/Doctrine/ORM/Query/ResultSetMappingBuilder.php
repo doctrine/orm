@@ -11,7 +11,9 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Utility\PersisterHelper;
 use InvalidArgumentException;
+use LogicException;
 
+use function assert;
 use function explode;
 use function in_array;
 use function sprintf;
@@ -57,11 +59,13 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * Default column renaming mode.
      *
      * @var int
+     * @psalm-var self::COLUMN_RENAMING_*
      */
     private $defaultRenameMode;
 
     /**
      * @param int $defaultRenameMode
+     * @psalm-param self::COLUMN_RENAMING_* $defaultRenameMode
      */
     public function __construct(EntityManagerInterface $em, $defaultRenameMode = self::COLUMN_RENAMING_NONE)
     {
@@ -76,7 +80,9 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * @param string   $alias          The unique alias to use for the root entity.
      * @param string[] $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName).
      * @param int|null $renameMode     One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
+     * @psalm-param class-string $class
      * @psalm-param array<string, string> $renamedColumns
+     * @psalm-param self::COLUMN_RENAMING_*|null $renameMode
      *
      * @return void
      */
@@ -99,7 +105,9 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *                                 with the joined entity result.
      * @param string[] $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName).
      * @param int|null $renameMode     One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
+     * @psalm-param class-string $class
      * @psalm-param array<string, string> $renamedColumns
+     * @psalm-param self::COLUMN_RENAMING_*|null $renameMode
      *
      * @return void
      */
@@ -186,6 +194,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * Gets column alias for a given column.
      *
      * @psalm-param array<string, string>  $customRenameColumns
+     *
+     * @psalm-assert self::COLUMN_RENAMING_* $mode
      */
     private function getColumnAlias(string $columnName, int $mode, array $customRenameColumns): string
     {
@@ -273,8 +283,10 @@ class ResultSetMappingBuilder extends ResultSetMapping
     public function addNamedNativeQueryResultClassMapping(ClassMetadataInfo $class, $resultClassName)
     {
         $classMetadata = $this->em->getClassMetadata($resultClassName);
-        $shortName     = $classMetadata->reflClass->getShortName();
-        $alias         = strtolower($shortName[0]) . '0';
+        assert($classMetadata->reflClass !== null);
+
+        $shortName = $classMetadata->reflClass->getShortName();
+        $alias     = strtolower($shortName[0]) . '0';
 
         $this->addEntityResult($class->name, $alias);
 
@@ -316,14 +328,19 @@ class ResultSetMappingBuilder extends ResultSetMapping
      */
     public function addNamedNativeQueryResultSetMapping(ClassMetadataInfo $class, $resultSetMappingName)
     {
+        if ($class->reflClass === null) {
+            throw new LogicException('Given class metadata has now class reflector.');
+        }
+
         $counter       = 0;
         $resultMapping = $class->getSqlResultSetMapping($resultSetMappingName);
         $rootShortName = $class->reflClass->getShortName();
         $rootAlias     = strtolower($rootShortName[0]) . $counter;
 
         if (isset($resultMapping['entities'])) {
-            foreach ($resultMapping['entities'] as $key => $entityMapping) {
+            foreach ($resultMapping['entities'] as $entityMapping) {
                 $classMetadata = $this->em->getClassMetadata($entityMapping['entityClass']);
+                assert($classMetadata->reflClass !== null);
 
                 if ($class->reflClass->name === $classMetadata->reflClass->name) {
                     $this->addEntityResult($classMetadata->name, $rootAlias);

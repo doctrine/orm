@@ -2367,29 +2367,10 @@
       <code>Comparison::EQ</code>
     </RedundantConditionGivenDocblockType>
   </file>
-  <file src="lib/Doctrine/ORM/Query/ResultSetMapping.php">
-    <PropertyTypeCoercion occurrences="3">
-      <code>$this-&gt;aliasMap</code>
-      <code>$this-&gt;aliasMap</code>
-      <code>$this-&gt;declaringClasses</code>
-    </PropertyTypeCoercion>
-  </file>
   <file src="lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php">
-    <ArgumentTypeCoercion occurrences="5">
+    <ArgumentTypeCoercion occurrences="1">
       <code>$class</code>
-      <code>$class</code>
-      <code>$class</code>
-      <code>$renameMode</code>
-      <code>$renameMode</code>
     </ArgumentTypeCoercion>
-    <PossiblyNullPropertyFetch occurrences="1">
-      <code>$classMetadata-&gt;reflClass-&gt;name</code>
-    </PossiblyNullPropertyFetch>
-    <PossiblyNullReference occurrences="3">
-      <code>getShortName</code>
-      <code>getShortName</code>
-      <code>getShortName</code>
-    </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
     <DocblockTypeContradiction occurrences="5">
@@ -2411,20 +2392,7 @@
     <InvalidNullableReturnType occurrences="1">
       <code>walkConditionalPrimary</code>
     </InvalidNullableReturnType>
-    <InvalidPropertyAssignmentValue occurrences="7">
-      <code>$this-&gt;scalarResultAliasMap</code>
-      <code>$this-&gt;scalarResultAliasMap</code>
-      <code>$this-&gt;scalarResultAliasMap</code>
-      <code>$this-&gt;scalarResultAliasMap</code>
-      <code>$this-&gt;scalarResultAliasMap</code>
-      <code>$this-&gt;scalarResultAliasMap</code>
-      <code>$this-&gt;scalarResultAliasMap</code>
-    </InvalidPropertyAssignmentValue>
-    <InvalidScalarArgument occurrences="7">
-      <code>$resultAlias</code>
-      <code>$resultAlias</code>
-      <code>$resultAlias</code>
-      <code>$resultAlias</code>
+    <InvalidScalarArgument occurrences="3">
       <code>$this-&gt;queryComponents[$expr]['token']['value']</code>
       <code>$this-&gt;queryComponents[$factor]['token']['value']</code>
       <code>$this-&gt;queryComponents[$term]['token']['value']</code>

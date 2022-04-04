@@ -111,7 +111,7 @@ class SqlWalker implements TreeWalker
     /**
      * Map from result variable names to their SQL column alias names.
      *
-     * @psalm-var array<string, string|list<string>>
+     * @psalm-var array<string|int, string|list<string>>
      */
     private $scalarResultAliasMap = [];
 
