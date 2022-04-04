@@ -40,7 +40,7 @@ class ReflectionEnumProperty extends ReflectionProperty
      *
      * @param object|null $object
      *
-     * @return int|string|array|null
+     * @return int|string|int[]|string[]|null
      */
     #[ReturnTypeWillChange]
     public function getValue($object = null)
