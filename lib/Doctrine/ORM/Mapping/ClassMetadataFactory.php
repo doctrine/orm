@@ -377,7 +377,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass): void
     {
         foreach ($parentClass->associationMappings as $field => $mapping) {
-            if ($parentClass->isMappedSuperclass) {
+            if (! isset($mapping['declared'])) {
+                $mapping['declared'] = $parentClass->name;
+            }
+
+            $declaredInMappedSuperclass = $parentClass->isMappedSuperclass && $mapping['declared'] === $parentClass->name;
+            if ($declaredInMappedSuperclass) {
                 if ($mapping['type'] & ClassMetadata::TO_MANY && ! $mapping['isOwningSide']) {
                     throw MappingException::illegalToManyAssociationOnMappedSuperclass($parentClass->name, $field);
                 }
@@ -386,12 +391,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
 
             //$subclassMapping = $mapping;
-            if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
+            if (! isset($mapping['inherited']) && ! $declaredInMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
-            }
-
-            if (! isset($mapping['declared'])) {
-                $mapping['declared'] = $parentClass->name;
             }
 
             $subClass->addInheritedAssociationMapping($mapping);
