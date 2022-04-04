@@ -59,7 +59,7 @@ class ReflectionEnumProperty extends ReflectionProperty
         }
 
         if (is_array($enum)) {
-            return array_map(static function ($item): mixed {
+            return array_map(static function (BackedEnum $item): mixed {
                 return $item->value;
             }, $enum);
         }
@@ -68,14 +68,14 @@ class ReflectionEnumProperty extends ReflectionProperty
     }
 
     /**
-     * @param object $object
-     * @param mixed  $value
+     * @param object     $object
+     * @param int|string $value
      */
     public function setValue($object, $value = null): void
     {
         if ($value !== null) {
             if (is_array($value)) {
-                $value = array_map(function ($item) use ($object): mixed {
+                $value = array_map(function ($item) use ($object): BackedEnum {
                     return $this->initializeEnumValue($object, $item);
                 }, $value);
             } else {
