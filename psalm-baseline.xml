@@ -2069,15 +2069,6 @@
     <InvalidNullableReturnType occurrences="1">
       <code>walkConditionalPrimary</code>
     </InvalidNullableReturnType>
-    <InvalidPropertyAssignmentValue occurrences="7">
-      <code>$this-&gt;scalarResultAliasMap</code>
-      <code>$this-&gt;scalarResultAliasMap</code>
-      <code>$this-&gt;scalarResultAliasMap</code>
-      <code>$this-&gt;scalarResultAliasMap</code>
-      <code>$this-&gt;scalarResultAliasMap</code>
-      <code>$this-&gt;scalarResultAliasMap</code>
-      <code>$this-&gt;scalarResultAliasMap</code>
-    </InvalidPropertyAssignmentValue>
     <InvalidScalarArgument occurrences="3">
       <code>$this-&gt;queryComponents[$expr]['token']['value']</code>
       <code>$this-&gt;queryComponents[$factor]['token']['value']</code>
