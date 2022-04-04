@@ -76,7 +76,7 @@ final class IdentifierFlattener
 
                 $flatId[$field] = implode(' ', $associatedId);
             } else {
-                if (is_object($id[$field]) && $id[$field] instanceof \BackedEnum) {
+                if ($id[$field] instanceof \BackedEnum) {
                     $flatId[$field] = $id[$field]->value;
                 } else {
                     $flatId[$field] = $id[$field];
