@@ -1,0 +1,107 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Doctrine\Tests\ORM\Utility;
+
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Utility\IdentifierFlattener;
+use Doctrine\Tests\Models\Enums\Suit;
+use Doctrine\Tests\Models\Enums\TypedCardEnumCompositeId;
+use Doctrine\Tests\Models\Enums\TypedCardEnumId;
+use Doctrine\Tests\Models\Enums\Unit;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+/**
+ * Test the IdentifierFlattener utility class
+ *
+ * @requires PHP 8.1
+ * @covers \Doctrine\ORM\Utility\IdentifierFlattener
+ */
+class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
+{
+    /**
+     * Identifier flattener
+     *
+     * @var IdentifierFlattener
+     */
+    private $identifierFlattener;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->identifierFlattener = new IdentifierFlattener(
+            $this->_em->getUnitOfWork(),
+            $this->_em->getMetadataFactory()
+        );
+
+        try {
+            $this->_schemaTool->createSchema(
+                [
+                    $this->_em->getClassMetadata(TypedCardEnumId::class),
+                    $this->_em->getClassMetadata(TypedCardEnumCompositeId::class),
+                ]
+            );
+        } catch (ORMException $e) {
+        }
+    }
+
+    /**
+     * @group utilities
+     */
+    public function testFlattenIdentifierWithEnumId(): void
+    {
+        $typedCardEnumIdEntity       = new TypedCardEnumId();
+        $typedCardEnumIdEntity->suit = Suit::Clubs;
+
+        $this->_em->persist($typedCardEnumIdEntity);
+        $this->_em->flush();
+
+        $findTypedCardEnumIdEntityNotFound = $this->_em->getRepository(TypedCardEnumId::class)->find(Suit::Diamonds);
+
+        self::assertNull($findTypedCardEnumIdEntityNotFound, 'Search by non-cached Enum ID does not work');
+
+        $findTypedCardEnumIdEntity = $this->_em->getRepository(TypedCardEnumId::class)->find(Suit::Clubs);
+
+        self::assertNotNull($findTypedCardEnumIdEntity, 'Search by Enum ID does not work');
+
+        $class = $this->_em->getClassMetadata(TypedCardEnumId::class);
+
+        $id = $class->getIdentifierValues($findTypedCardEnumIdEntity);
+
+        self::assertCount(1, $id, 'We should have 1 identifier');
+
+        self::assertEquals($id['suit'], Suit::Clubs->value);
+    }
+
+    /**
+     * @group utilities
+     */
+    public function testFlattenIdentifierWithCompositeEnumId(): void
+    {
+        $typedCardEnumCompositeIdEntity       = new TypedCardEnumCompositeId();
+        $typedCardEnumCompositeIdEntity->suit = Suit::Clubs;
+        $typedCardEnumCompositeIdEntity->unit = Unit::Gram;
+
+        $this->_em->persist($typedCardEnumCompositeIdEntity);
+        $this->_em->flush();
+
+        $findTypedCardEnumCompositeIdEntityNotFound = $this->_em->getRepository(TypedCardEnumCompositeId::class)->find(['suit' => Suit::Diamonds, 'unit' => Unit::Gram]);
+
+        self::assertNull($findTypedCardEnumCompositeIdEntityNotFound, 'Search by non-cached composite Enum ID does not work');
+
+        $findTypedCardEnumCompositeIdEntity = $this->_em->getRepository(TypedCardEnumCompositeId::class)->find(['suit' => Suit::Clubs, 'unit' => Unit::Gram]);
+
+        self::assertNotNull($findTypedCardEnumCompositeIdEntity, 'Search by composite Enum ID does not work');
+
+        $class = $this->_em->getClassMetadata(TypedCardEnumCompositeId::class);
+
+        $id = $class->getIdentifierValues($findTypedCardEnumCompositeIdEntity);
+
+        self::assertCount(2, $id, 'We should have 1 identifier');
+
+        self::assertEquals($id['suit'], Suit::Clubs->value);
+        self::assertEquals($id['unit'], Unit::Gram->value);
+    }
+}
