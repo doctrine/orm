@@ -180,7 +180,7 @@ EXCEPTION
         $this->assertContains(Unit::Gram, $fetchedScale->supportedUnits);
         $this->assertContains(Unit::Meter, $fetchedScale->supportedUnits);
     }
-  
+
     public function testEnumWithDefault(): void
     {
         $this->setUpEntitySchema([CardWithDefault::class]);
