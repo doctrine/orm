@@ -8,6 +8,8 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Flight;
+use Doctrine\Tests\Models\Enums\Suit;
+use Doctrine\Tests\Models\Enums\TypedCardEnumId;
 use Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity;
 use Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -42,10 +44,34 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(SecondRelatedEntity::class),
                     $this->_em->getClassMetadata(Flight::class),
                     $this->_em->getClassMetadata(City::class),
+                    $this->_em->getClassMetadata(TypedCardEnumId::class),
                 ]
             );
         } catch (ORMException $e) {
         }
+    }
+
+    /**
+     * @group utilities
+     */
+    public function testFlattenIdentifierWithEnumId(): void
+    {
+        $typedCardEnumIdEntity       = new TypedCardEnumId();
+        $typedCardEnumIdEntity->suit = Suit::Clubs;
+
+        $this->_em->persist($typedCardEnumIdEntity);
+        $this->_em->flush();
+
+        $findTypedCardEnumIdEntity = $this->_em->getRepository(TypedCardEnumId::class)
+            ->find(Suit::Clubs->value);
+
+        $class = $this->_em->getClassMetadata(TypedCardEnumId::class);
+
+        $id = $class->getIdentifierValues($findTypedCardEnumIdEntity);
+
+        self::assertCount(1, $id, 'We should have 1 identifier');
+
+        self::assertEquals($id['suit'], Suit::Clubs->value);
     }
 
     /**
