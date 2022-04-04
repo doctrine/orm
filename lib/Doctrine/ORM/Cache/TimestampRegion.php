@@ -10,9 +10,9 @@ namespace Doctrine\ORM\Cache;
 interface TimestampRegion extends Region
 {
     /**
-     * Update an specific key into the cache region.
+     * Update a specific key into the cache region.
      *
-     * @param CacheKey $key The key of the item to update the timestamp.
+     * @return void
      *
      * @throws LockException Indicates a problem accessing the region.
      */

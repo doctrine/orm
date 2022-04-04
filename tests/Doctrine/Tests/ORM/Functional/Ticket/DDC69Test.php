@@ -27,21 +27,11 @@ class DDC69Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(Lemma::class),
-            $this->_em->getClassMetadata(Relation::class),
-            $this->_em->getClassMetadata(RelationType::class),
-        ]);
-    }
 
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        $this->_schemaTool->dropSchema([
-            $this->_em->getClassMetadata(Lemma::class),
-            $this->_em->getClassMetadata(Relation::class),
-            $this->_em->getClassMetadata(RelationType::class),
-        ]);
+        // some of these models are created in other tests, but not all
+        $this->createSchemaForModels(RelationType::class);
+        $this->createSchemaForModels(Relation::class);
+        $this->createSchemaForModels(Lemma::class);
     }
 
     public function testIssue(): void

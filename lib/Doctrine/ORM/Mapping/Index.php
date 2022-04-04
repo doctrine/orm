@@ -31,10 +31,10 @@ final class Index implements Annotation
     public $options;
 
     /**
-     * @param array<string>|null $columns
-     * @param array<string>|null $fields
-     * @param array<string>|null $flags
-     * @param array<string>|null $options
+     * @param array<string>|null       $columns
+     * @param array<string>|null       $fields
+     * @param array<string>|null       $flags
+     * @param array<string,mixed>|null $options
      */
     public function __construct(
         ?array $columns = null,

@@ -394,8 +394,11 @@ class ObjectHydrator extends AbstractHydrator
                                     $reflFieldValue->hydrateSet($indexValue, $element);
                                     $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $indexValue;
                                 } else {
-                                    $reflFieldValue->hydrateAdd($element);
-                                    $reflFieldValue->last();
+                                    if (! $reflFieldValue->contains($element)) {
+                                        $reflFieldValue->hydrateAdd($element);
+                                        $reflFieldValue->last();
+                                    }
+
                                     $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $reflFieldValue->key();
                                 }
 

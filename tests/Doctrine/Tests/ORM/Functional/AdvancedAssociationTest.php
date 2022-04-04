@@ -32,25 +32,13 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(Phrase::class),
-            $this->_em->getClassMetadata(PhraseType::class),
-            $this->_em->getClassMetadata(Definition::class),
-            $this->_em->getClassMetadata(Lemma::class),
-            $this->_em->getClassMetadata(Type::class),
-        ]);
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        $this->_schemaTool->dropSchema([
-            $this->_em->getClassMetadata(Phrase::class),
-            $this->_em->getClassMetadata(PhraseType::class),
-            $this->_em->getClassMetadata(Definition::class),
-            $this->_em->getClassMetadata(Lemma::class),
-            $this->_em->getClassMetadata(Type::class),
-        ]);
+        $this->createSchemaForModels(
+            Phrase::class,
+            PhraseType::class,
+            Definition::class,
+            Lemma::class,
+            Type::class
+        );
     }
 
     public function testIssue(): void

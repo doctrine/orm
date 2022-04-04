@@ -12,23 +12,17 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 class DDC1209Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1209One::class),
-                    $this->_em->getClassMetadata(DDC1209Two::class),
-                    $this->_em->getClassMetadata(DDC1209Three::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(
+            DDC1209One::class,
+            DDC1209Two::class,
+            DDC1209Three::class
+        );
     }
 
     /**

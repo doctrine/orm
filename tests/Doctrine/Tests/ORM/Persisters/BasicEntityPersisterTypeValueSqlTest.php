@@ -7,8 +7,10 @@ namespace Doctrine\Tests\ORM\Persisters;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\DBAL\Types\Type as DBALType;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
+use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
+use Doctrine\Tests\DbalTypes\UpperCaseStringType;
+use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity;
@@ -22,7 +24,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     /** @var BasicEntityPersister */
     protected $persister;
 
-    /** @var EntityManagerInterface */
+    /** @var EntityManagerMock */
     protected $entityManager;
 
     protected function setUp(): void
@@ -30,15 +32,15 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         parent::setUp();
 
         if (DBALType::hasType('negative_to_positive')) {
-            DBALType::overrideType('negative_to_positive', '\Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
         } else {
-            DBALType::addType('negative_to_positive', '\Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::addType('negative_to_positive', NegativeToPositiveType::class);
         }
 
         if (DBALType::hasType('upper_case_string')) {
-            DBALType::overrideType('upper_case_string', '\Doctrine\Tests\DbalTypes\UpperCaseStringType');
+            DBALType::overrideType('upper_case_string', UpperCaseStringType::class);
         } else {
-            DBALType::addType('upper_case_string', '\Doctrine\Tests\DbalTypes\UpperCaseStringType');
+            DBALType::addType('upper_case_string', UpperCaseStringType::class);
         }
 
         $this->entityManager = $this->getTestEntityManager();

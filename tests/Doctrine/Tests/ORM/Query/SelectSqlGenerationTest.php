@@ -57,32 +57,28 @@ class SelectSqlGenerationTest extends OrmTestCase
         array $queryHints = [],
         array $queryParams = []
     ): void {
-        try {
-            $query = $this->entityManager->createQuery($dqlToBeTested);
+        $query = $this->entityManager->createQuery($dqlToBeTested);
 
-            foreach ($queryParams as $name => $value) {
-                $query->setParameter($name, $value);
-            }
-
-            $query->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true)
-                  ->useQueryCache(false);
-
-            foreach ($queryHints as $name => $value) {
-                $query->setHint($name, $value);
-            }
-
-            $sqlGenerated = $query->getSQL();
-
-            parent::assertEquals(
-                $sqlToBeConfirmed,
-                $sqlGenerated,
-                sprintf('"%s" is not equal to "%s"', $sqlGenerated, $sqlToBeConfirmed)
-            );
-
-            $query->free();
-        } catch (Exception $e) {
-            self::fail($e->getMessage() . "\n" . $e->getTraceAsString());
+        foreach ($queryParams as $name => $value) {
+            $query->setParameter($name, $value);
         }
+
+        $query->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true)
+              ->useQueryCache(false);
+
+        foreach ($queryHints as $name => $value) {
+            $query->setHint($name, $value);
+        }
+
+        $sqlGenerated = $query->getSQL();
+
+        parent::assertEquals(
+            $sqlToBeConfirmed,
+            $sqlGenerated,
+            sprintf('"%s" is not equal to "%s"', $sqlGenerated, $sqlToBeConfirmed)
+        );
+
+        $query->free();
     }
 
     /**

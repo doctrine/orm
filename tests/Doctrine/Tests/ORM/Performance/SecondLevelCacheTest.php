@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Performance;
 
-use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Country;
@@ -32,100 +31,76 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    public function createEntityManager(): EntityManagerInterface
-    {
-        $logger = new DebugStack();
-        $em     = $this->getEntityManager();
-
-        $em->getConnection()->getConfiguration()->setSQLLogger($logger);
-        $em->getConfiguration()->setSQLLogger($logger);
-
-        return $em;
-    }
-
-    public function countQuery(EntityManagerInterface $em): int
-    {
-        return count($em->getConfiguration()->getSQLLogger()->queries);
-    }
-
     public function testFindEntityWithoutCache(): void
     {
-        $em = $this->createEntityManager();
+        $this->getQueryLog()->reset()->enable();
+        $this->findEntity($this->_em, __FUNCTION__);
 
-        $this->findEntity($em, __FUNCTION__);
-
-        self::assertEquals(6002, $this->countQuery($em));
+        $this->assertQueryCount(6002);
     }
 
     public function testFindEntityWithCache(): void
     {
         parent::enableSecondLevelCache(false);
 
-        $em = $this->createEntityManager();
+        $this->getQueryLog()->reset()->enable();
+        $this->findEntity($this->_em, __FUNCTION__);
 
-        $this->findEntity($em, __FUNCTION__);
-
-        self::assertEquals(502, $this->countQuery($em));
+        $this->assertQueryCount(502);
     }
 
     public function testFindAllEntityWithoutCache(): void
     {
-        $em = $this->createEntityManager();
+        $this->getQueryLog()->reset()->enable();
+        $this->findAllEntity($this->_em, __FUNCTION__);
 
-        $this->findAllEntity($em, __FUNCTION__);
-
-        self::assertEquals(153, $this->countQuery($em));
+        $this->assertQueryCount(153);
     }
 
     public function testFindAllEntityWithCache(): void
     {
         parent::enableSecondLevelCache(false);
 
-        $em = $this->createEntityManager();
+        $this->getQueryLog()->reset()->enable();
+        $this->findAllEntity($this->_em, __FUNCTION__);
 
-        $this->findAllEntity($em, __FUNCTION__);
-
-        self::assertEquals(53, $this->countQuery($em));
+        $this->assertQueryCount(53);
     }
 
     public function testFindEntityOneToManyWithoutCache(): void
     {
-        $em = $this->createEntityManager();
+        $this->getQueryLog()->reset()->enable();
+        $this->findEntityOneToMany($this->_em, __FUNCTION__);
 
-        $this->findEntityOneToMany($em, __FUNCTION__);
-
-        self::assertEquals(502, $this->countQuery($em));
+        $this->assertQueryCount(502);
     }
 
     public function testFindEntityOneToManyWithCache(): void
     {
         parent::enableSecondLevelCache(false);
 
-        $em = $this->createEntityManager();
+        $this->getQueryLog()->reset()->enable();
+        $this->findEntityOneToMany($this->_em, __FUNCTION__);
 
-        $this->findEntityOneToMany($em, __FUNCTION__);
-
-        self::assertEquals(472, $this->countQuery($em));
+        $this->assertQueryCount(472);
     }
 
     public function testQueryEntityWithoutCache(): void
     {
-        $em = $this->createEntityManager();
+        $this->getQueryLog()->reset()->enable();
+        $this->queryEntity($this->_em, __FUNCTION__);
 
-        $this->queryEntity($em, __FUNCTION__);
-
-        self::assertEquals(602, $this->countQuery($em));
+        $this->assertQueryCount(602);
     }
 
     public function testQueryEntityWithCache(): void
     {
         parent::enableSecondLevelCache(false);
 
-        $em = $this->createEntityManager();
+        $this->getQueryLog()->reset()->enable();
+        $this->queryEntity($this->_em, __FUNCTION__);
 
-        $this->queryEntity($em, __FUNCTION__);
-
-        self::assertEquals(503, $this->countQuery($em));
+        $this->assertQueryCount(503);
     }
 
     private function queryEntity(EntityManagerInterface $em, string $label): void

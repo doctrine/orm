@@ -47,7 +47,7 @@ final class GH6217Test extends OrmFunctionalTestCase
         $filters    = ['eager' => $eager->id];
 
         self::assertCount(1, $repository->findBy($filters));
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         /** @var GH6217FetchedEntity[] $found */
         $found = $repository->findBy($filters);
@@ -56,7 +56,7 @@ final class GH6217Test extends OrmFunctionalTestCase
         self::assertInstanceOf(GH6217FetchedEntity::class, $found[0]);
         self::assertSame($lazy->id, $found[0]->lazy->id);
         self::assertSame($eager->id, $found[0]->eager->id);
-        self::assertEquals($queryCount, $this->getCurrentQueryCount(), 'No queries were executed in `findBy`');
+        $this->assertQueryCount(0, 'No queries were executed in `findBy`');
     }
 }
 

@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
@@ -25,9 +29,6 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
-use Doctrine\Tests\Mocks\ConnectionMock;
-use Doctrine\Tests\Mocks\DatabasePlatformMock;
-use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\MetadataDriverMock;
 use Doctrine\Tests\Models\CMS\CmsArticle;
@@ -46,20 +47,28 @@ use stdClass;
 
 use function array_search;
 use function assert;
+use function class_exists;
 use function count;
 use function sprintf;
 
 class ClassMetadataFactoryTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     public function testGetMetadataForSingleClass(): void
     {
-        $mockDriver    = new MetadataDriverMock();
-        $entityManager = $this->createEntityManager($mockDriver);
+        $platform = $this->createMock(AbstractPlatform::class);
+        $platform->method('supportsSequences')
+            ->willReturn(true);
 
-        $conn         = $entityManager->getConnection();
-        $mockPlatform = $conn->getDatabasePlatform();
-        $mockPlatform->setSupportsSequences(true);
-        $mockPlatform->setSupportsIdentityColumns(false);
+        $driver = $this->createMock(Driver::class);
+        $driver->method('getDatabasePlatform')
+            ->willReturn($platform);
+
+        $conn = new Connection([], $driver);
+
+        $mockDriver    = new MetadataDriverMock();
+        $entityManager = $this->createEntityManager($mockDriver, $conn);
 
         $cm1 = $this->createValidClassMetadata();
 
@@ -90,13 +99,14 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         $cm1 = $this->createValidClassMetadata();
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
-        $entityManager = $this->createEntityManager(new MetadataDriverMock());
-        $connection    = $entityManager->getConnection();
-        assert($connection instanceof ConnectionMock);
-        $platform = $connection->getDatabasePlatform();
-        assert($platform instanceof DatabasePlatformMock);
-        $platform->setSupportsIdentityColumns(false);
-        $cmf = new ClassMetadataFactoryTestSubject();
+
+        $driver = $this->createMock(Driver::class);
+        $driver->method('getDatabasePlatform')
+            ->willReturn($this->createMock(AbstractPlatform::class));
+
+        $connection    = new Connection([], $driver);
+        $entityManager = $this->createEntityManager(new MetadataDriverMock(), $connection);
+        $cmf           = new ClassMetadataFactoryTestSubject();
         $cmf->setEntityManager($entityManager);
         $cmf->setMetadataForClass($cm1->name, $cm1);
         $this->expectException(CannotGenerateIds::class);
@@ -191,6 +201,12 @@ class ClassMetadataFactoryTest extends OrmTestCase
      */
     public function testIsTransientEntityNamespace(): void
     {
+        if (! class_exists(PersistentObject::class)) {
+            $this->markTestSkipped('This test requires doctrine/persistence 2');
+        }
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8818');
+
         $cmf    = new ClassMetadataFactory();
         $driver = $this->createMock(MappingDriver::class);
         $driver->expects(self::exactly(2))
@@ -276,13 +292,20 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
     protected function createEntityManager(MappingDriver $metadataDriver, $conn = null): EntityManagerMock
     {
-        $driverMock = new DriverMock();
-        $config     = new Configuration();
+        $config = new Configuration();
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $eventManager = new EventManager();
         if (! $conn) {
-            $conn = new ConnectionMock([], $driverMock, $config, $eventManager);
+            $platform = $this->createMock(AbstractPlatform::class);
+            $platform->method('supportsIdentityColumns')
+                ->willReturn(true);
+
+            $driver = $this->createMock(Driver::class);
+            $driver->method('getDatabasePlatform')
+                ->willReturn($platform);
+
+            $conn = new Connection([], $driver, $config, $eventManager);
         }
 
         $config->setMetadataDriverImpl($metadataDriver);
@@ -404,7 +427,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
      */
     public function testFallbackLoadingCausesEventTriggeringThatCanModifyFetchedMetadata(): void
     {
-        $test     = $this;
         $metadata = $this->createMock(ClassMetadata::class);
         assert($metadata instanceof ClassMetadata);
         $cmf          = new ClassMetadataFactory();

@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Result;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Tests\Mocks\ConnectionMock;
-use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
@@ -18,6 +19,7 @@ use stdClass;
 
 use function array_keys;
 use function assert;
+use function method_exists;
 
 /**
  * Tests the lazy-loading capabilities of the PersistentCollection and the initialization of collections.
@@ -34,7 +36,22 @@ class PersistentCollectionTest extends OrmTestCase
     {
         parent::setUp();
 
-        $this->_emMock = EntityManagerMock::create(new ConnectionMock([], new DriverMock()));
+        $platform = $this->createMock(AbstractPlatform::class);
+        $platform->method('supportsIdentityColumns')
+            ->willReturn(true);
+
+        if (method_exists($platform, 'getSQLResultCasing')) {
+            $platform->method('getSQLResultCasing')
+                ->willReturnArgument(0);
+        }
+
+        $connection = $this->createMock(Connection::class);
+        $connection->method('getDatabasePlatform')
+            ->willReturn($platform);
+        $connection->method('executeQuery')
+            ->willReturn($this->createMock(Result::class));
+
+        $this->_emMock = EntityManagerMock::create($connection);
 
         $this->setUpPersistentCollection();
     }

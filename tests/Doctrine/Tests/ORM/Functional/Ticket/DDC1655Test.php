@@ -16,7 +16,6 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\PostLoad;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function get_class;
 use function get_debug_type;
@@ -32,16 +31,11 @@ class DDC1655Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1655Foo::class),
-                    $this->_em->getClassMetadata(DDC1655Bar::class),
-                    $this->_em->getClassMetadata(DDC1655Baz::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(
+            DDC1655Foo::class,
+            DDC1655Bar::class,
+            DDC1655Baz::class
+        );
     }
 
     public function testPostLoadOneToManyInheritance(): void

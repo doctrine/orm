@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
@@ -113,7 +112,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     public function testBasicOneToOne(): void
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user           = new CmsUser();
         $user->name     = 'Roman';
         $user->username = 'romanb';
@@ -658,8 +656,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->persist($user);
 
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-
         $this->_em->flush();
         $this->_em->clear();
 
@@ -669,14 +665,10 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertCount(1, $user2->articles);
         self::assertInstanceOf(CmsAddress::class, $user2->address);
 
-        $oldLogger  = $this->_em->getConnection()->getConfiguration()->getSQLLogger();
-        $debugStack = new DebugStack();
-        $this->_em->getConnection()->getConfiguration()->setSQLLogger($debugStack);
-
+        $this->getQueryLog()->reset()->enable();
         $this->_em->flush();
-        self::assertCount(0, $debugStack->queries);
 
-        $this->_em->getConnection()->getConfiguration()->setSQLLogger($oldLogger);
+        $this->assertQueryCount(0);
     }
 
     public function testRemoveEntityByReference(): void
@@ -685,8 +677,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $user->name     = 'Guilherme';
         $user->username = 'gblanco';
         $user->status   = 'developer';
-
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
         $this->_em->persist($user);
         $this->_em->flush();
@@ -698,8 +688,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         self::assertEquals(0, $this->_em->getConnection()->fetchOne('select count(*) from cms_users'));
-
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(null);
     }
 
     public function testQueryEntityByReference(): void
@@ -720,8 +708,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
             $em->persist($user);
         });
         $this->_em->clear();
-
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
         $userRef  = $this->_em->getReference(CmsUser::class, $user->getId());
         $address2 = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsAddress a where a.user = :user')
@@ -1025,7 +1011,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $qc      = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
         $dql     = 'SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.id = ?1';
         $article = $this->_em->createQuery($dql)
                              ->setParameter(1, $article->id)
@@ -1033,7 +1019,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
                              ->getSingleResult();
         self::assertInstanceOf(Proxy::class, $article->user, 'It IS a proxy, ...');
         self::assertTrue($article->user->__isInitialized__, '...but its initialized!');
-        self::assertEquals($qc + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
     }
 
     /**

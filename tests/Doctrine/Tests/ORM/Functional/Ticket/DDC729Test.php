@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function count;
 
@@ -24,16 +22,7 @@ class DDC729Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $schemaTool = new SchemaTool($this->_em);
-            $schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC729A::class),
-                    $this->_em->getClassMetadata(DDC729B::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(DDC729A::class, DDC729B::class);
     }
 
     public function testMergeManyToMany(): void

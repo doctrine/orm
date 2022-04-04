@@ -8,11 +8,6 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Exception;
 
-/**
- * Description of QueryException.
- *
- * @link    www.doctrine-project.org
- */
 class QueryException extends ORMException
 {
     /**
@@ -127,7 +122,7 @@ class QueryException extends ORMException
     }
 
     /**
-     * @param object $pathExpr
+     * @param PathExpression $pathExpr
      *
      * @return QueryException
      */

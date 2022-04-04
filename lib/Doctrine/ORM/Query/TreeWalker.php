@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\AbstractQuery;
-use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Interface for walkers of DQL ASTs (abstract syntax trees).
+ *
+ * @psalm-import-type QueryComponent from Parser
  */
 interface TreeWalker
 {
@@ -18,6 +19,7 @@ interface TreeWalker
      * @param AbstractQuery $query           The parsed Query.
      * @param ParserResult  $parserResult    The result of the parsing process.
      * @param mixed[]       $queryComponents The query components (symbol table).
+     * @psalm-param array<string, QueryComponent> $queryComponents The query components (symbol table).
      */
     public function __construct($query, $parserResult, array $queryComponents);
 
@@ -25,14 +27,7 @@ interface TreeWalker
      * Returns internal queryComponents array.
      *
      * @return array<string, array<string, mixed>>
-     * @psalm-return array<string, array{
-     *                   metadata: ClassMetadata,
-     *                   parent: string,
-     *                   relation: mixed[],
-     *                   map: mixed,
-     *                   nestingLevel: int,
-     *                   token: array
-     *               }>
+     * @psalm-return array<string, QueryComponent>
      */
     public function getQueryComponents();
 
@@ -41,6 +36,7 @@ interface TreeWalker
      *
      * @param string               $dqlAlias       The DQL alias.
      * @param array<string, mixed> $queryComponent
+     * @psalm-param QueryComponent $queryComponent
      *
      * @return void
      */
@@ -438,7 +434,7 @@ interface TreeWalker
     /**
      * Walks down a PathExpression AST node, thereby generating the appropriate SQL.
      *
-     * @param mixed $pathExpr
+     * @param AST\PathExpression $pathExpr
      *
      * @return string The SQL.
      */

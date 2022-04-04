@@ -1,6 +1,11 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Method Doctrine\\\\ORM\\\\AbstractQuery\\:\\:processParameterValue\\(\\) should return array\\|bool\\|float\\|int\\|string but returns mixed\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/AbstractQuery.php
+
+		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\EntityPersister\\:\\:getCacheRegion\\(\\)\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/DefaultEntityHydrator.php
@@ -36,12 +41,12 @@ parameters:
 			path: lib/Doctrine/ORM/Cache/DefaultQueryCache.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between array\\<object\\>\\|object and null will always evaluate to false\\.$#"
+			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Cache\\\\CacheEntry\\:\\:\\$identifiers\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Cache/DefaultQueryCache.php
+			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
 
 		-
-			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Cache\\\\CacheEntry\\:\\:\\$identifiers\\.$#"
+			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
 
@@ -146,6 +151,11 @@ parameters:
 			path: lib/Doctrine/ORM/EntityManagerInterface.php
 
 		-
+			message: "#^Method Doctrine\\\\ORM\\\\EntityRepository\\:\\:matching\\(\\) should return Doctrine\\\\Common\\\\Collections\\\\AbstractLazyCollection\\<int, T of object\\>&Doctrine\\\\Common\\\\Collections\\\\Selectable\\<int, T of object\\> but returns Doctrine\\\\ORM\\\\LazyCriteriaCollection\\<\\(int\\|string\\), object\\>\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/EntityRepository.php
+
+		-
 			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:find\\(\\) invoked with 4 parameters, 2 required\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityRepository.php
@@ -179,11 +189,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$discrMap of static method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\HydrationException\\:\\:invalidDiscriminatorValue\\(\\) expects array\\<string, string\\>, array\\<int, int\\|string\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Internal/Hydration/SimpleObjectHydrator.php
-
-		-
-			message: "#^Call to an undefined method Doctrine\\\\Common\\\\Collections\\\\Collection\\<\\(int\\|string\\), mixed\\>\\:\\:matching\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/LazyCriteriaCollection.php
 
 		-
 			message: "#^Offset 'indexes' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
@@ -261,27 +266,7 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
 
 		-
-			message: "#^Argument of an invalid type Doctrine\\\\ORM\\\\Mapping\\\\InverseJoinColumn supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
-
-		-
-			message: "#^Argument of an invalid type Doctrine\\\\ORM\\\\Mapping\\\\JoinColumn supplied for foreach, only iterables are supported\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
-
-		-
-			message: "#^PHPDoc type array\\<string, int\\> of property Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\AttributeDriver\\:\\:\\$entityAnnotationClasses is not covariant with PHPDoc type array\\<class\\-string, bool\\|int\\> of overridden property Doctrine\\\\Persistence\\\\Mapping\\\\Driver\\\\AnnotationDriver\\:\\:\\$entityAnnotationClasses\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
-
-		-
 			message: "#^Parameter \\#1 \\$metadata of static method Doctrine\\\\ORM\\\\Mapping\\\\Builder\\\\EntityListenerBuilder\\:\\:bindEntityListener\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo&Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<T of object\\> given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
-
-		-
-			message: "#^Parameter \\#1 \\$reader of method Doctrine\\\\Persistence\\\\Mapping\\\\Driver\\\\AnnotationDriver\\:\\:__construct\\(\\) expects Doctrine\\\\Common\\\\Annotations\\\\Reader, Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\AttributeReader given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
 
@@ -876,11 +861,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Expr/Select.php
 
 		-
-			message: "#^Property Doctrine\\\\ORM\\\\Query\\\\FilterCollection\\:\\:\\$filterHash is never written, only read\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/FilterCollection.php
-
-		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 3
 			path: lib/Doctrine/ORM/Query/Parser.php
@@ -891,12 +871,7 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticTerm\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor\\|string\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/Parser.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:SimpleArithmeticExpression\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm\\|string\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticTerm\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor\\|int\\|string\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/Parser.php
 
@@ -981,16 +956,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-
-			message: "#^Offset 'resultVariable' on array\\{metadata\\: Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, parent\\: string, relation\\: array, map\\: mixed, nestingLevel\\: int, token\\: array\\} in isset\\(\\) does not exist\\.$#"
-			count: 3
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
-
-		-
-			message: "#^Offset string on array\\<int, array\\{class\\: Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, dqlAlias\\: string, resultAlias\\: string\\}\\> in isset\\(\\) does not exist\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
-
-		-
 			message: "#^Parameter \\#1 \\$entity of static method Doctrine\\\\ORM\\\\OptimisticLockException\\:\\:lockFailed\\(\\) expects object, class\\-string\\<object\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
@@ -1001,18 +966,8 @@ parameters:
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-
-			message: "#^Property Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:\\$query \\(Doctrine\\\\ORM\\\\Query\\) does not accept Doctrine\\\\ORM\\\\AbstractQuery\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
-
-		-
 			message: "#^Result of && is always false\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between array and null will always evaluate to false\\.$#"
-			count: 1
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-
@@ -1719,16 +1674,6 @@ parameters:
 			message: "#^Return type \\(void\\) of method Doctrine\\\\ORM\\\\Tools\\\\Pagination\\\\CountWalker\\:\\:walkSelectStatement\\(\\) should be compatible with return type \\(string\\) of method Doctrine\\\\ORM\\\\Query\\\\TreeWalker\\:\\:walkSelectStatement\\(\\)$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Pagination/CountWalker.php
-
-		-
-			message: "#^Access to an undefined property object\\:\\:\\$name\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php
-
-		-
-			message: "#^Offset 'parent' on array\\{metadata\\: Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, parent\\: string, relation\\: array, map\\: mixed, nestingLevel\\: int, token\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryWalker.php
 
 		-
 			message: "#^Return type \\(void\\) of method Doctrine\\\\ORM\\\\Tools\\\\Pagination\\\\LimitSubqueryWalker\\:\\:walkSelectStatement\\(\\) should be compatible with return type \\(string\\) of method Doctrine\\\\ORM\\\\Query\\\\TreeWalker\\:\\:walkSelectStatement\\(\\)$#"

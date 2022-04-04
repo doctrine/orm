@@ -17,12 +17,14 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use Doctrine\ORM\Utility\PersisterHelper;
+use LogicException;
 
 use function array_diff;
 use function array_filter;
 use function array_keys;
 use function array_map;
 use function array_merge;
+use function assert;
 use function count;
 use function implode;
 use function in_array;
@@ -40,6 +42,9 @@ use function trim;
 /**
  * The SqlWalker is a TreeWalker that walks over a DQL AST and constructs
  * the corresponding SQL.
+ *
+ * @psalm-import-type QueryComponent from Parser
+ * @psalm-consistent-constructor
  */
 class SqlWalker implements TreeWalker
 {
@@ -127,21 +132,14 @@ class SqlWalker implements TreeWalker
     /**
      * Map of all components/classes that appear in the DQL query.
      *
-     * @psalm-var array<string, array{
-     *                metadata: ClassMetadata,
-     *                parent: string,
-     *                relation: mixed[],
-     *                map: mixed,
-     *                nestingLevel: int,
-     *                token: array
-     *            }>
+     * @psalm-var array<string, QueryComponent>
      */
     private $queryComponents;
 
     /**
      * A list of classes that appear in non-scalar SelectExpressions.
      *
-     * @psalm-var list<array{class: ClassMetadata, dqlAlias: string, resultAlias: string}>
+     * @psalm-var array<string, array{class: ClassMetadata, dqlAlias: string, resultAlias: string|null}>
      */
     private $selectedClasses = [];
 
@@ -175,7 +173,9 @@ class SqlWalker implements TreeWalker
     private $quoteStrategy;
 
     /**
-     * {@inheritDoc}
+     * @param Query        $query        The parsed Query.
+     * @param ParserResult $parserResult The result of the parsing process.
+     * @psalm-param array<string, QueryComponent> $queryComponents The query components (symbol table).
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
@@ -225,18 +225,20 @@ class SqlWalker implements TreeWalker
      * @param string $dqlAlias The DQL alias.
      *
      * @return mixed[]
-     * @psalm-return array{
-     *     metadata: ClassMetadata,
-     *     parent: string,
-     *     relation: mixed[],
-     *     map: mixed,
-     *     nestingLevel: int,
-     *     token: array
-     * }
+     * @psalm-return QueryComponent
      */
     public function getQueryComponent($dqlAlias)
     {
         return $this->queryComponents[$dqlAlias];
+    }
+
+    public function getMetadataForDqlAlias(string $dqlAlias): ClassMetadata
+    {
+        if (! isset($this->queryComponents[$dqlAlias]['metadata'])) {
+            throw new LogicException(sprintf('No metadata for DQL alias: %s', $dqlAlias));
+        }
+
+        return $this->queryComponents[$dqlAlias]['metadata'];
     }
 
     /**
@@ -411,6 +413,7 @@ class SqlWalker implements TreeWalker
                 continue;
             }
 
+            assert(isset($qComp['metadata']));
             $persister = $this->em->getUnitOfWork()->getEntityPersister($qComp['metadata']->name);
 
             foreach ($qComp['relation']['orderBy'] as $fieldName => $orientation) {
@@ -444,7 +447,7 @@ class SqlWalker implements TreeWalker
         $sqlParts = [];
 
         foreach ($dqlAliases as $dqlAlias) {
-            $class = $this->queryComponents[$dqlAlias]['metadata'];
+            $class = $this->getMetadataForDqlAlias($dqlAlias);
 
             if (! $class->isInheritanceTypeSingleTable()) {
                 continue;
@@ -613,7 +616,7 @@ class SqlWalker implements TreeWalker
      */
     public function walkEntityIdentificationVariable($identVariable)
     {
-        $class      = $this->queryComponents[$identVariable]['metadata'];
+        $class      = $this->getMetadataForDqlAlias($identVariable);
         $tableAlias = $this->getSQLTableAlias($class->getTableName(), $identVariable);
         $sqlParts   = [];
 
@@ -634,7 +637,7 @@ class SqlWalker implements TreeWalker
      */
     public function walkIdentificationVariable($identificationVariable, $fieldName = null)
     {
-        $class = $this->queryComponents[$identificationVariable]['metadata'];
+        $class = $this->getMetadataForDqlAlias($identificationVariable);
 
         if (
             $fieldName !== null && $class->isInheritanceTypeJoined() &&
@@ -652,12 +655,13 @@ class SqlWalker implements TreeWalker
     public function walkPathExpression($pathExpr)
     {
         $sql = '';
+        assert($pathExpr->field !== null);
 
         switch ($pathExpr->type) {
             case AST\PathExpression::TYPE_STATE_FIELD:
                 $fieldName = $pathExpr->field;
                 $dqlAlias  = $pathExpr->identificationVariable;
-                $class     = $this->queryComponents[$dqlAlias]['metadata'];
+                $class     = $this->getMetadataForDqlAlias($dqlAlias);
 
                 if ($this->useSqlTableAliases) {
                     $sql .= $this->walkIdentificationVariable($dqlAlias, $fieldName) . '.';
@@ -671,7 +675,7 @@ class SqlWalker implements TreeWalker
                 //    Just use the foreign key, i.e. u.group_id
                 $fieldName = $pathExpr->field;
                 $dqlAlias  = $pathExpr->identificationVariable;
-                $class     = $this->queryComponents[$dqlAlias]['metadata'];
+                $class     = $this->getMetadataForDqlAlias($dqlAlias);
 
                 if (isset($class->associationMappings[$fieldName]['inherited'])) {
                     $class = $this->em->getClassMetadata($class->associationMappings[$fieldName]['inherited']);
@@ -724,9 +728,11 @@ class SqlWalker implements TreeWalker
             $resultAlias = $selectedClass['resultAlias'];
 
             // Register as entity or joined entity result
-            if ($this->queryComponents[$dqlAlias]['relation'] === null) {
+            if (! isset($this->queryComponents[$dqlAlias]['relation'])) {
                 $this->rsm->addEntityResult($class->name, $dqlAlias, $resultAlias);
             } else {
+                assert(isset($this->queryComponents[$dqlAlias]['parent']));
+
                 $this->rsm->addJoinedEntityResult(
                     $class->name,
                     $dqlAlias,
@@ -864,6 +870,7 @@ class SqlWalker implements TreeWalker
     {
         $pathExpression = $indexBy->singleValuedPathExpression;
         $alias          = $pathExpression->identificationVariable;
+        assert($pathExpression->field !== null);
 
         switch ($pathExpression->type) {
             case AST\PathExpression::TYPE_STATE_FIELD:
@@ -873,7 +880,7 @@ class SqlWalker implements TreeWalker
             case AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION:
                 // Just use the foreign key, i.e. u.group_id
                 $fieldName = $pathExpression->field;
-                $class     = $this->queryComponents[$alias]['metadata'];
+                $class     = $this->getMetadataForDqlAlias($alias);
 
                 if (isset($class->associationMappings[$fieldName]['inherited'])) {
                     $class = $this->em->getClassMetadata($class->associationMappings[$fieldName]['inherited']);
@@ -956,6 +963,7 @@ class SqlWalker implements TreeWalker
      * @param AST\JoinAssociationDeclaration $joinAssociationDeclaration
      * @param int                            $joinType
      * @param AST\ConditionalExpression      $condExpr
+     * @psalm-param AST\Join::JOIN_TYPE_* $joinType
      *
      * @return string
      *
@@ -969,7 +977,8 @@ class SqlWalker implements TreeWalker
         $joinedDqlAlias            = $joinAssociationDeclaration->aliasIdentificationVariable;
         $indexBy                   = $joinAssociationDeclaration->indexBy;
 
-        $relation        = $this->queryComponents[$joinedDqlAlias]['relation'];
+        $relation = $this->queryComponents[$joinedDqlAlias]['relation'] ?? null;
+        assert($relation !== null);
         $targetClass     = $this->em->getClassMetadata($relation['targetEntity']);
         $sourceClass     = $this->em->getClassMetadata($relation['sourceEntity']);
         $targetTableName = $this->quoteStrategy->getTableName($targetClass, $this->platform);
@@ -1321,10 +1330,10 @@ class SqlWalker implements TreeWalker
                     throw QueryException::invalidPathExpression($expr);
                 }
 
+                assert($expr->field !== null);
                 $fieldName = $expr->field;
                 $dqlAlias  = $expr->identificationVariable;
-                $qComp     = $this->queryComponents[$dqlAlias];
-                $class     = $qComp['metadata'];
+                $class     = $this->getMetadataForDqlAlias($dqlAlias);
 
                 $resultAlias = $selectExpression->fieldIdentificationVariable ?: $fieldName;
                 $tableName   = $class->isInheritanceTypeJoined()
@@ -1418,8 +1427,7 @@ class SqlWalker implements TreeWalker
                     $partialFieldSet = [];
                 }
 
-                $queryComp   = $this->queryComponents[$dqlAlias];
-                $class       = $queryComp['metadata'];
+                $class       = $this->getMetadataForDqlAlias($dqlAlias);
                 $resultAlias = $selectExpression->fieldIdentificationVariable ?: null;
 
                 if (! isset($this->selectedClasses[$dqlAlias])) {
@@ -1590,12 +1598,12 @@ class SqlWalker implements TreeWalker
                     break;
 
                 case $e instanceof AST\PathExpression:
+                    assert($e->field !== null);
                     $dqlAlias     = $e->identificationVariable;
-                    $qComp        = $this->queryComponents[$dqlAlias];
-                    $class        = $qComp['metadata'];
-                    $fieldType    = $class->fieldMappings[$e->field]['type'];
+                    $class        = $this->getMetadataForDqlAlias($dqlAlias);
                     $fieldName    = $e->field;
                     $fieldMapping = $class->fieldMappings[$fieldName];
+                    $fieldType    = $fieldMapping['type'];
                     $col          = trim($e->dispatch($this));
 
                     if (isset($fieldMapping['requireSQLConversion'])) {
@@ -1730,7 +1738,7 @@ class SqlWalker implements TreeWalker
                 return $this->walkPathExpression($resultVariable);
             }
 
-            if (isset($resultVariable->pathExpression)) {
+            if ($resultVariable instanceof AST\Node && isset($resultVariable->pathExpression)) {
                 return $this->walkPathExpression($resultVariable->pathExpression);
             }
 
@@ -1740,14 +1748,14 @@ class SqlWalker implements TreeWalker
         // IdentificationVariable
         $sqlParts = [];
 
-        foreach ($this->queryComponents[$groupByItem]['metadata']->fieldNames as $field) {
+        foreach ($this->getMetadataForDqlAlias($groupByItem)->fieldNames as $field) {
             $item       = new AST\PathExpression(AST\PathExpression::TYPE_STATE_FIELD, $groupByItem, $field);
             $item->type = AST\PathExpression::TYPE_STATE_FIELD;
 
             $sqlParts[] = $this->walkPathExpression($item);
         }
 
-        foreach ($this->queryComponents[$groupByItem]['metadata']->associationMappings as $mapping) {
+        foreach ($this->getMetadataForDqlAlias($groupByItem)->associationMappings as $mapping) {
             if ($mapping['isOwningSide'] && $mapping['type'] & ClassMetadataInfo::TO_ONE) {
                 $item       = new AST\PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $groupByItem, $mapping['fieldName']);
                 $item->type = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
@@ -1830,7 +1838,7 @@ class SqlWalker implements TreeWalker
         if ($this->em->hasFilters()) {
             $filterClauses = [];
             foreach ($this->rootAliases as $dqlAlias) {
-                $class      = $this->queryComponents[$dqlAlias]['metadata'];
+                $class      = $this->getMetadataForDqlAlias($dqlAlias);
                 $tableAlias = $this->getSQLTableAlias($class->table['name'], $dqlAlias);
 
                 $filterExpr = $this->generateFilterConditionSQL($class, $tableAlias);
@@ -1937,11 +1945,12 @@ class SqlWalker implements TreeWalker
 
         $entityExpr   = $collMemberExpr->entityExpression;
         $collPathExpr = $collMemberExpr->collectionValuedPathExpression;
+        assert($collPathExpr->field !== null);
 
         $fieldName = $collPathExpr->field;
         $dqlAlias  = $collPathExpr->identificationVariable;
 
-        $class = $this->queryComponents[$dqlAlias]['metadata'];
+        $class = $this->getMetadataForDqlAlias($dqlAlias);
 
         switch (true) {
             // InputParameter
@@ -2081,7 +2090,7 @@ class SqlWalker implements TreeWalker
         $sql = '';
 
         $dqlAlias   = $instanceOfExpr->identificationVariable;
-        $discrClass = $class = $this->queryComponents[$dqlAlias]['metadata'];
+        $discrClass = $class = $this->getMetadataForDqlAlias($dqlAlias);
 
         if ($class->discriminatorColumn) {
             $discrClass = $this->em->getClassMetadata($class->rootEntityName);

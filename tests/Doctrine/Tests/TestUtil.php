@@ -10,13 +10,14 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use UnexpectedValueException;
 
+use function assert;
 use function explode;
 use function fwrite;
 use function get_debug_type;
 use function method_exists;
 use function sprintf;
+use function str_starts_with;
 use function strlen;
-use function strpos;
 use function substr;
 
 use const STDERR;
@@ -47,26 +48,28 @@ class TestUtil
      * IMPORTANT:
      * 1) Each invocation of this method returns a NEW database connection.
      * 2) The database is dropped and recreated to ensure it's clean.
-     *
-     * @return Connection The database connection instance.
      */
-    public static function getConnection(): Connection
+    public static function getConnection(): DbalExtensions\Connection
     {
         if (! self::$initialized) {
             self::initializeDatabase();
             self::$initialized = true;
         }
 
-        $conn = DriverManager::getConnection(self::getTestConnectionParameters());
+        $connection = DriverManager::getConnection(self::getTestConnectionParameters());
+        assert($connection instanceof DbalExtensions\Connection);
 
-        self::addDbEventSubscribers($conn);
+        self::addDbEventSubscribers($connection);
 
-        return $conn;
+        return $connection;
     }
 
-    public static function getPrivilegedConnection(): Connection
+    public static function getPrivilegedConnection(): DbalExtensions\Connection
     {
-        return DriverManager::getConnection(self::getPrivilegedConnectionParameters());
+        $connection = DriverManager::getConnection(self::getPrivilegedConnectionParameters());
+        assert($connection instanceof DbalExtensions\Connection);
+
+        return $connection;
     }
 
     private static function initializeDatabase(): void
@@ -187,12 +190,14 @@ class TestUtil
         }
 
         foreach ($configuration as $param => $value) {
-            if (strpos($param, $prefix . 'driver_option_') !== 0) {
+            if (! str_starts_with($param, $prefix . 'driver_option_')) {
                 continue;
             }
 
             $parameters['driverOptions'][substr($param, strlen($prefix . 'driver_option_'))] = $value;
         }
+
+        $parameters['wrapperClass'] = DbalExtensions\Connection::class;
 
         return $parameters;
     }

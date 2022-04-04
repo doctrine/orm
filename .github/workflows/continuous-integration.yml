@@ -12,6 +12,51 @@ env:
   fail-fast: true
 
 jobs:
+  phpunit-unstable:
+    name: "PHPUnit with unstable dependencies"
+    runs-on: "ubuntu-20.04"
+
+    strategy:
+      matrix:
+        php-version:
+          - "8.1"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+        with:
+          fetch-depth: 2
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          extensions: "pdo, pdo_sqlite"
+          coverage: "pcov"
+          ini-values: "zend.assertions=1"
+
+      - name: "Require specific doctrine/persistence version"
+        run: "composer require doctrine/persistence '3.0.x-dev as 2.4.0' --no-update"
+
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v1"
+
+      - name: "Run PHPUnit"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/sqlite.xml --coverage-clover=coverage-no-cache.xml"
+        env:
+            ENABLE_SECOND_LEVEL_CACHE: 0
+
+      - name: "Run PHPUnit with Second Level Cache"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/sqlite.xml --exclude-group performance,non-cacheable,locking_functional --coverage-clover=coverage-cache.xml"
+        env:
+            ENABLE_SECOND_LEVEL_CACHE: 1
+
+      - name: "Upload coverage file"
+        uses: "actions/upload-artifact@v2"
+        with:
+          name: "phpunit-sqlite-${{ matrix.php-version }}-unstable-coverage"
+          path: "coverage*.xml"
+
   phpunit-smoke-check:
     name: "PHPUnit with SQLite"
     runs-on: "ubuntu-20.04"
@@ -30,7 +75,7 @@ jobs:
           - php-version: "8.0"
             dbal-version: "2.13"
           - php-version: "8.1"
-            dbal-version: "3.2@dev"
+            dbal-version: "3@dev"
 
     steps:
       - name: "Checkout"
@@ -42,7 +87,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
-          extensions: "pdo, pdo_sqlite"
+          extensions: "apcu, pdo, pdo_sqlite"
           coverage: "pcov"
           ini-values: "zend.assertions=1"
 

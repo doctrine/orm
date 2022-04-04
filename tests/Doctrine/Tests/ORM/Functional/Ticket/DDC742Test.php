@@ -16,7 +16,6 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function class_exists;
 use function mkdir;
@@ -43,15 +42,7 @@ class DDC742Test extends OrmFunctionalTestCase
         // using a Filesystemcache to ensure that the cached data is serialized
         $this->_em->getMetadataFactory()->setCacheDriver(new FilesystemCache($testDir));
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC742User::class),
-                    $this->_em->getClassMetadata(DDC742Comment::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(DDC742User::class, DDC742Comment::class);
 
         // make sure classes will be deserialized from caches
         $this->_em->getMetadataFactory()->setMetadataFor(DDC742User::class, null);

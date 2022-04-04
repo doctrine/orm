@@ -14,6 +14,7 @@ use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\ORMSetup;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -31,7 +32,7 @@ abstract class OrmTestCase extends DoctrineTestCase
      *
      * @var CacheItemPoolInterface|null
      */
-    private static $_metadataCache = null;
+    private static $metadataCache = null;
 
     /**
      * The query cache that is shared between all ORM tests (except functional tests).
@@ -53,7 +54,7 @@ abstract class OrmTestCase extends DoctrineTestCase
     protected $secondLevelCacheLogger;
 
     /** @var CacheItemPoolInterface|null */
-    protected $secondLevelCache = null;
+    private $secondLevelCache = null;
 
     protected function createAnnotationDriver(array $paths = []): AnnotationDriver
     {
@@ -87,16 +88,12 @@ abstract class OrmTestCase extends DoctrineTestCase
         $config = new Configuration();
 
         $config->setMetadataCache($metadataCache);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], false));
         $config->setQueryCache(self::getSharedQueryCache());
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
-            [
-                realpath(__DIR__ . '/Models/Cache'),
-            ],
-            false
-        ));
+        $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver([
+            realpath(__DIR__ . '/Models/Cache'),
+        ]));
 
         if ($this->isSecondLevelCacheEnabled) {
             $cacheConfig = new CacheConfiguration();
@@ -128,28 +125,22 @@ abstract class OrmTestCase extends DoctrineTestCase
         return EntityManagerMock::create($conn, $config, $eventManager);
     }
 
-    protected function enableSecondLevelCache($log = true): void
+    protected function enableSecondLevelCache(bool $log = true): void
     {
         $this->isSecondLevelCacheEnabled    = true;
         $this->isSecondLevelCacheLogEnabled = $log;
     }
 
-    private static function getSharedMetadataCacheImpl(): ?CacheItemPoolInterface
+    private static function getSharedMetadataCacheImpl(): CacheItemPoolInterface
     {
-        if (self::$_metadataCache === null) {
-            self::$_metadataCache = new ArrayAdapter();
-        }
-
-        return self::$_metadataCache;
+        return self::$metadataCache
+            ?? self::$metadataCache = new ArrayAdapter();
     }
 
     private static function getSharedQueryCache(): CacheItemPoolInterface
     {
-        if (self::$queryCache === null) {
-            self::$queryCache = new ArrayAdapter();
-        }
-
-        return self::$queryCache;
+        return self::$queryCache
+            ?? self::$queryCache = new ArrayAdapter();
     }
 
     protected function getSharedSecondLevelCache(): CacheItemPoolInterface

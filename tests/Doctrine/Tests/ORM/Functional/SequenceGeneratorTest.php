@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\SequenceGenerator;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 /**
  * Description of SequenceGeneratorTest
@@ -25,14 +24,7 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
             self::markTestSkipped('Only working for Databases that support sequences.');
         }
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(SequenceEntity::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(SequenceEntity::class);
     }
 
     public function testHighAllocationSizeSequence(): void

@@ -42,6 +42,8 @@ class OnClearEventArgs extends EventArgs
     /**
      * Name of the entity class that is cleared, or empty if all are cleared.
      *
+     * @deprecated Clearing the entity manager partially is deprecated. This method will be removed in 3.0.
+     *
      * @return string|null
      */
     public function getEntityClass()
@@ -51,6 +53,8 @@ class OnClearEventArgs extends EventArgs
 
     /**
      * Checks if event clears all entities.
+     *
+     * @deprecated Clearing the entity manager partially is deprecated. This method will be removed in 3.0.
      *
      * @return bool
      */

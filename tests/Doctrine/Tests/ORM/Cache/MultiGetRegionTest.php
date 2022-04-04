@@ -10,6 +10,9 @@ use Doctrine\ORM\Cache\Region\DefaultMultiGetRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
 
+/**
+ * @extends AbstractRegionTest<DefaultMultiGetRegion>
+ */
 class MultiGetRegionTest extends AbstractRegionTest
 {
     protected function createRegion(): Region

@@ -8,7 +8,8 @@ use ArrayObject;
 use Doctrine\ORM\Mapping\Annotation;
 
 /**
- * @template-extends ArrayObject<int,Annotation>
+ * @template-extends ArrayObject<int, T>
+ * @template T of Annotation
  */
 final class RepeatableAttributeCollection extends ArrayObject
 {

@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\Enums\Card;
+use Doctrine\Tests\Models\Enums\CardWithDefault;
 use Doctrine\Tests\Models\Enums\Product;
 use Doctrine\Tests\Models\Enums\Quantity;
 use Doctrine\Tests\Models\Enums\Scale;
@@ -19,6 +20,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function dirname;
 use function sprintf;
+use function uniqid;
 
 /**
  * @requires PHP 8.1
@@ -57,6 +59,30 @@ class EnumTest extends OrmFunctionalTestCase
 
         $this->assertInstanceOf(Suit::class, $fetchedCard->suit);
         $this->assertEquals(Suit::Clubs, $fetchedCard->suit);
+    }
+
+    public function testFindByEnum(): void
+    {
+        $this->setUpEntitySchema([Card::class]);
+
+        $card1       = new Card();
+        $card1->suit = Suit::Clubs;
+        $card2       = new Card();
+        $card2->suit = Suit::Hearts;
+
+        $this->_em->persist($card1);
+        $this->_em->persist($card2);
+        $this->_em->flush();
+
+        unset($card1, $card2);
+        $this->_em->clear();
+
+        /** @var list<Card> $foundCards */
+        $foundCards = $this->_em->getRepository(Card::class)->findBy(['suit' => Suit::Clubs]);
+        $this->assertNotEmpty($foundCards);
+        foreach ($foundCards as $card) {
+            $this->assertSame(Suit::Clubs, $card->suit);
+        }
     }
 
     /**
@@ -153,5 +179,18 @@ EXCEPTION
         $this->assertIsArray($fetchedScale->supportedUnits);
         $this->assertContains(Unit::Gram, $fetchedScale->supportedUnits);
         $this->assertContains(Unit::Meter, $fetchedScale->supportedUnits);
+    }
+  
+    public function testEnumWithDefault(): void
+    {
+        $this->setUpEntitySchema([CardWithDefault::class]);
+
+        $table  = $this->_em->getClassMetadata(CardWithDefault::class)->getTableName();
+        $cardId = uniqid('', true);
+
+        $this->_em->getConnection()->insert($table, ['id' => $cardId]);
+        $card = $this->_em->find(CardWithDefault::class, $cardId);
+
+        self::assertSame(Suit::Hearts, $card->suit);
     }
 }

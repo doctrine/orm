@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\Common\Lexer\AbstractLexer;
+use Doctrine\Deprecations\Deprecation;
 
 use function constant;
 use function ctype_alpha;
 use function defined;
 use function is_numeric;
+use function str_contains;
 use function str_replace;
 use function stripos;
 use function strlen;
-use function strpos;
 use function strtoupper;
 use function substr;
 
@@ -44,6 +45,7 @@ class Lexer extends AbstractLexer
     public const T_CLOSE_CURLY_BRACE = 19;
 
     // All tokens that are identifiers or keywords that could be considered as identifiers should be >= 100
+    /** @deprecated No Replacement planned. */
     public const T_ALIASED_NAME         = 100;
     public const T_FULLY_QUALIFIED_NAME = 101;
     public const T_IDENTIFIER           = 102;
@@ -149,7 +151,7 @@ class Lexer extends AbstractLexer
         switch (true) {
             // Recognize numeric values
             case is_numeric($value):
-                if (strpos($value, '.') !== false || stripos($value, 'e') !== false) {
+                if (str_contains($value, '.') || stripos($value, 'e') !== false) {
                     return self::T_FLOAT;
                 }
 
@@ -173,11 +175,18 @@ class Lexer extends AbstractLexer
                     }
                 }
 
-                if (strpos($value, ':') !== false) {
+                if (str_contains($value, ':')) {
+                    Deprecation::trigger(
+                        'doctrine/orm',
+                        'https://github.com/doctrine/orm/issues/8818',
+                        'Short namespace aliases such as "%s" are deprecated and will be removed in Doctrine ORM 3.0.',
+                        $value
+                    );
+
                     return self::T_ALIASED_NAME;
                 }
 
-                if (strpos($value, '\\') !== false) {
+                if (str_contains($value, '\\')) {
                     return self::T_FULLY_QUALIFIED_NAME;
                 }
 

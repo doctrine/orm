@@ -134,9 +134,9 @@ class SchemaValidator
                             'field ' . $assoc['targetEntity'] . '#' . $assoc['inversedBy'] . ' which does not exist.';
                 } elseif ($targetMetadata->associationMappings[$assoc['inversedBy']]['mappedBy'] === null) {
                     $ce[] = 'The field ' . $class->name . '#' . $fieldName . ' is on the owning side of a ' .
-                            'bi-directional relationship, but the specified mappedBy association on the target-entity ' .
-                            $assoc['targetEntity'] . '#' . $assoc['mappedBy'] . ' does not contain the required ' .
-                            "'inversedBy' attribute.";
+                            'bi-directional relationship, but the specified inversedBy association on the target-entity ' .
+                            $assoc['targetEntity'] . '#' . $assoc['inversedBy'] . ' does not contain the required ' .
+                            "'mappedBy=\"" . $fieldName . "\"' attribute.";
                 } elseif ($targetMetadata->associationMappings[$assoc['inversedBy']]['mappedBy'] !== $fieldName) {
                     $ce[] = 'The mappings ' . $class->name . '#' . $fieldName . ' and ' .
                             $assoc['targetEntity'] . '#' . $assoc['inversedBy'] . ' are ' .
@@ -262,10 +262,20 @@ class SchemaValidator
      */
     public function schemaInSyncWithMetadata()
     {
+        return count($this->getUpdateSchemaList()) === 0;
+    }
+
+    /**
+     * Returns the list of missing Database Schema updates.
+     *
+     * @return array<string>
+     */
+    public function getUpdateSchemaList(): array
+    {
         $schemaTool = new SchemaTool($this->em);
 
         $allMetadata = $this->em->getMetadataFactory()->getAllMetadata();
 
-        return count($schemaTool->getUpdateSchemaSql($allMetadata, true)) === 0;
+        return $schemaTool->getUpdateSchemaSql($allMetadata, true);
     }
 }

@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Cache\Persister\Collection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Util\ClassUtils;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\CollectionHydrator;
 use Doctrine\ORM\Cache\EntityCacheKey;
@@ -108,7 +109,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
-     * @return object[]|null
+     * {@inheritdoc}
      */
     public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key)
     {
@@ -224,10 +225,18 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     /**
      * Clears cache entries related to the current collection
      *
+     * @deprecated This method is not used anymore.
+     *
      * @return void
      */
     protected function evictCollectionCache(PersistentCollection $collection)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9512',
+            'The method %s() is deprecated and will be removed without replacement.'
+        );
+
         $key = new CollectionCacheKey(
             $this->sourceEntity->rootEntityName,
             $this->association['fieldName'],
@@ -242,13 +251,22 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
+     * @deprecated This method is not used anymore.
+     *
      * @param string $targetEntity
      * @param object $element
+     * @psalm-param class-string $targetEntity
      *
      * @return void
      */
     protected function evictElementCache($targetEntity, $element)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9512',
+            'The method %s() is deprecated and will be removed without replacement.'
+        );
+
         $targetPersister = $this->uow->getEntityPersister($targetEntity);
         assert($targetPersister instanceof CachedEntityPersister);
         $targetRegion = $targetPersister->getCacheRegion();

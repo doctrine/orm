@@ -25,6 +25,9 @@
                 <!-- The exception is thrown by a deprecated method. -->
                 <referencedClass name="Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver"/>
                 <!-- Remove on 3.0.x -->
+                <referencedClass name="Doctrine\Common\Persistence\PersistentObject"/>
+                <referencedClass name="Doctrine\ORM\Exception\UnknownEntityNamespace"/>
+                <referencedClass name="Doctrine\ORM\Mapping\Driver\YamlDriver"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\Command\ConvertDoctrine1SchemaCommand"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\Command\ConvertMappingCommand"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand"/>
@@ -32,6 +35,18 @@
                 <referencedClass name="Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand"/>
             </errorLevel>
         </DeprecatedClass>
+        <DeprecatedConstant>
+            <errorLevel type="suppress">
+                <file name="lib/Doctrine/ORM/Configuration.php"/>
+                <file name="lib/Doctrine/ORM/Query/Lexer.php"/>
+                <file name="lib/Doctrine/ORM/Query/Parser.php"/>
+            </errorLevel>
+        </DeprecatedConstant>
+        <DeprecatedInterface>
+            <errorLevel type="suppress">
+                <referencedClass name="Doctrine\ORM\Cache\MultiGetRegion"/>
+            </errorLevel>
+        </DeprecatedInterface>
         <DeprecatedMethod>
             <errorLevel type="suppress">
                 <!-- We're calling the deprecated method for BC here. -->
@@ -46,7 +61,9 @@
                 <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\ORM\Internal\Hydration\AbstractHydrator::hydrateRow"/>
                 <referencedMethod name="Doctrine\ORM\Configuration::ensureProductionSettings"/>
+                <referencedMethod name="Doctrine\ORM\Configuration::newDefaultAnnotationDriver"/>
                 <referencedMethod name="Doctrine\ORM\Id\AbstractIdGenerator::generate"/>
+                <referencedMethod name="Doctrine\ORM\ORMInvalidArgumentException::invalidEntityName"/>
             </errorLevel>
         </DeprecatedMethod>
         <DeprecatedProperty>

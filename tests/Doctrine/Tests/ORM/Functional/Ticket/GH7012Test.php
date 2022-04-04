@@ -54,11 +54,15 @@ final class GH7012Test extends OrmFunctionalTestCase
         self::assertNotEquals('name', $quotedColumn);
         self::assertNotEquals('user-id', $quotedIdentifier);
 
-        $queries = $this->_sqlLoggerStack->queries;
+        $lastLoggedQuery = $this->getLastLoggedQuery()['sql'];
+        // DBAL 2 logs a commit as last query.
+        if ($lastLoggedQuery === '"COMMIT"') {
+            $lastLoggedQuery = $this->getLastLoggedQuery(1)['sql'];
+        }
 
         $this->assertSQLEquals(
             sprintf('UPDATE %s SET %s = ? WHERE %s = ?', $quotedTableName, $quotedColumn, $quotedIdentifier),
-            $queries[$this->_sqlLoggerStack->currentQuery - 1]['sql']
+            $lastLoggedQuery
         );
     }
 }

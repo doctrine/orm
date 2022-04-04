@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
@@ -19,8 +18,6 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 /**
  * @group DDC-1595
  * @group DDC-1596
@@ -31,8 +28,6 @@ class DDC1595Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->_em->getConnection()->getConfiguration()->setSQLLogger(new DebugStack());
 
         $this->_schemaTool->createSchema(
             [
@@ -51,7 +46,6 @@ class DDC1595Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $sqlLogger  = $this->_em->getConnection()->getConfiguration()->getSQLLogger();
         $repository = $this->_em->getRepository(DDC1595InheritedEntity1::class);
 
         $entity1 = $repository->find($e1->id);
@@ -59,14 +53,14 @@ class DDC1595Test extends OrmFunctionalTestCase
         // DDC-1596
         $this->assertSQLEquals(
             "SELECT t0.id AS id_1, t0.type FROM base t0 WHERE t0.id = ? AND t0.type IN ('Entity1')",
-            $sqlLogger->queries[count($sqlLogger->queries)]['sql']
+            $this->getLastLoggedQuery()['sql']
         );
 
         $entities = $entity1->getEntities()->getValues();
 
         self::assertEquals(
             "SELECT t0.id AS id_1, t0.type FROM base t0 INNER JOIN entity1_entity2 ON t0.id = entity1_entity2.item WHERE entity1_entity2.parent = ? AND t0.type IN ('Entity2')",
-            $sqlLogger->queries[count($sqlLogger->queries)]['sql']
+            $this->getLastLoggedQuery()['sql']
         );
 
         $this->_em->clear();
@@ -76,7 +70,7 @@ class DDC1595Test extends OrmFunctionalTestCase
 
         $this->assertSQLEquals(
             'SELECT COUNT(*) FROM entity1_entity2 t WHERE t.parent = ?',
-            $sqlLogger->queries[count($sqlLogger->queries)]['sql']
+            $this->getLastLoggedQuery()['sql']
         );
     }
 }

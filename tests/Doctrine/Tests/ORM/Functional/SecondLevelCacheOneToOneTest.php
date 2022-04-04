@@ -110,7 +110,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
         // load from cache
         $t3 = $this->_em->find(Traveler::class, $entity1->getId());
         $t4 = $this->_em->find(Traveler::class, $entity2->getId());
@@ -126,7 +126,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         self::assertEquals($entity1->getProfile()->getName(), $t3->getProfile()->getName());
         self::assertEquals($entity2->getProfile()->getName(), $t4->getProfile()->getName());
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
     }
 
     public function testPutAndLoadOneToOneBidirectionalRelation(): void
@@ -171,7 +171,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $p3 = $this->_em->find(TravelerProfile::class, $entity1->getId());
         $p4 = $this->_em->find(TravelerProfile::class, $entity2->getId());
@@ -191,7 +191,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         self::assertEquals($entity2->getInfo()->getId(), $p4->getInfo()->getId());
         self::assertEquals($entity2->getInfo()->getDescription(), $p4->getInfo()->getDescription());
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
     }
 
     public function testInverseSidePutAndLoadOneToOneBidirectionalRelation(): void
@@ -232,7 +232,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $p3 = $this->_em->find(Person::class, $entity1->id);
         $p4 = $this->_em->find(Person::class, $entity2->id);
@@ -252,7 +252,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         self::assertEquals($entity2->address->id, $p4->address->id);
         self::assertEquals($entity2->address->location, $p4->address->location);
 
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
     }
 
     public function testPutAndLoadNonCacheableOneToOne(): void
@@ -268,7 +268,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         $this->_em->flush();
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         self::assertTrue($this->cache->containsEntity(Token::class, $token->token));
         self::assertFalse($this->cache->containsEntity(Client::class, $client->id));
@@ -278,9 +278,9 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         self::assertInstanceOf(Token::class, $entity);
         self::assertInstanceOf(Client::class, $entity->getClient());
         self::assertEquals('token-hash', $entity->token);
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
 
         self::assertEquals('FabioBatSilva', $entity->getClient()->name);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
     }
 }

@@ -35,12 +35,12 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
-        $result1    = $this->_em->createQuery($dql)->setCacheable(true)->getResult();
+        $this->getQueryLog()->reset()->enable();
+        $dql     = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
+        $result1 = $this->_em->createQuery($dql)->setCacheable(true)->getResult();
 
         self::assertCount(2, $result1);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertEquals($this->countries[0]->getId(), $result1[0]->getId());
         self::assertEquals($this->countries[1]->getId(), $result1[1]->getId());
         self::assertEquals($this->countries[0]->getName(), $result1[0]->getName());
@@ -57,7 +57,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->setCacheable(true)
             ->getResult();
 
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertCount(2, $result2);
 
         self::assertEquals(1, $this->secondLevelCacheLogger->getPutCount());
@@ -98,32 +98,32 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
-        $queryGet   = $this->_em->createQuery($dql)
+        $this->getQueryLog()->reset()->enable();
+        $dql      = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
+        $queryGet = $this->_em->createQuery($dql)
             ->setCacheMode(Cache::MODE_GET)
             ->setCacheable(true);
 
         // MODE_GET should never add items to the cache.
         self::assertCount(2, $queryGet->getResult());
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         self::assertCount(2, $queryGet->getResult());
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
 
         $result = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
         self::assertCount(2, $result);
-        self::assertEquals($queryCount + 3, $this->getCurrentQueryCount());
+        $this->assertQueryCount(3);
 
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         // MODE_GET should read items if exists.
         self::assertCount(2, $queryGet->getResult());
-        self::assertEquals($queryCount + 3, $this->getCurrentQueryCount());
+        $this->assertQueryCount(3);
     }
 
     public function testQueryCacheModePut(): void
@@ -138,9 +138,9 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
-        $result     = $this->_em->createQuery($dql)
+        $this->getQueryLog()->reset()->enable();
+        $dql    = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
+        $result = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
@@ -148,7 +148,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         self::assertCount(2, $result);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         $queryPut = $this->_em->createQuery($dql)
             ->setCacheMode(Cache::MODE_PUT)
@@ -156,12 +156,12 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         // MODE_PUT should never read itens from cache.
         self::assertCount(2, $queryPut->getResult());
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         self::assertCount(2, $queryPut->getResult());
-        self::assertEquals($queryCount + 3, $this->getCurrentQueryCount());
+        $this->assertQueryCount(3);
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
     }
@@ -178,10 +178,10 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
-        $region     = $this->cache->getEntityCacheRegion(Country::class);
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
-        $result     = $this->_em->createQuery($dql)
+        $region = $this->cache->getEntityCacheRegion(Country::class);
+        $this->getQueryLog()->reset()->enable();
+        $dql    = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
+        $result = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
@@ -189,7 +189,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         self::assertCount(2, $result);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         $countryId1   = $this->countries[0]->getId();
         $countryId2   = $this->countries[1]->getId();
@@ -214,7 +214,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertCount(2, $result1);
         self::assertEquals($countryName1, $result1[0]->getName());
         self::assertEquals($countryName2, $result1[1]->getName());
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
 
         $this->_em->clear();
 
@@ -222,7 +222,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertCount(2, $result2);
         self::assertEquals($countryName1, $result2[0]->getName());
         self::assertEquals($countryName2, $result2[1]->getName());
-        self::assertEquals($queryCount + 3, $this->getCurrentQueryCount());
+        $this->assertQueryCount(3);
     }
 
     public function testBasicQueryCachePutEntityCache(): void
@@ -234,12 +234,12 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->secondLevelCacheLogger->clearStats();
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
-        $result1    = $this->_em->createQuery($dql)->setCacheable(true)->getResult();
+        $this->getQueryLog()->reset()->enable();
+        $dql     = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
+        $result1 = $this->_em->createQuery($dql)->setCacheable(true)->getResult();
 
         self::assertCount(2, $result1);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertEquals($this->countries[0]->getId(), $result1[0]->getId());
         self::assertEquals($this->countries[1]->getId(), $result1[1]->getId());
         self::assertEquals($this->countries[0]->getName(), $result1[0]->getName());
@@ -260,7 +260,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->setCacheable(true)
             ->getResult();
 
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertCount(2, $result2);
 
         self::assertEquals(3, $this->secondLevelCacheLogger->getPutCount());
@@ -308,14 +308,14 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->evictRegions();
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT s, c, a FROM Doctrine\Tests\Models\Cache\State s JOIN s.cities c JOIN c.attractions a';
-        $result1    = $this->_em->createQuery($dql)
+        $this->getQueryLog()->reset()->enable();
+        $dql     = 'SELECT s, c, a FROM Doctrine\Tests\Models\Cache\State s JOIN s.cities c JOIN c.attractions a';
+        $result1 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
         self::assertCount(2, $result1);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         self::assertTrue($this->cache->containsEntity(State::class, $this->states[0]->getId()));
         self::assertTrue($this->cache->containsEntity(State::class, $this->states[1]->getId()));
@@ -353,7 +353,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getResult();
 
         self::assertCount(2, $result2);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         self::assertInstanceOf(State::class, $result2[0]);
         self::assertInstanceOf(State::class, $result2[1]);
@@ -382,15 +382,15 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $name       = $this->countries[0]->getName();
-        $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c WHERE c.name = :name';
-        $result1    = $this->_em->createQuery($dql)
+        $this->getQueryLog()->reset()->enable();
+        $name    = $this->countries[0]->getName();
+        $dql     = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c WHERE c.name = :name';
+        $result1 = $this->_em->createQuery($dql)
                 ->setCacheable(true)
                 ->setParameter('name', $name)
                 ->getResult();
 
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertEquals($this->countries[0]->getId(), $result1[0]->getId());
         self::assertEquals($this->countries[0]->getName(), $result1[0]->getName());
 
@@ -400,7 +400,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
                 ->setParameter('name', $name)
                 ->getResult();
 
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertCount(1, $result2);
 
         self::assertInstanceOf(Country::class, $result2[0]);
@@ -419,12 +419,12 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
-        $result1    = $this->_em->createQuery($dql)->setCacheable(true)->getResult();
+        $this->getQueryLog()->reset()->enable();
+        $dql     = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
+        $result1 = $this->_em->createQuery($dql)->setCacheable(true)->getResult();
 
         self::assertCount(2, $result1);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertEquals($this->countries[0]->getId(), $result1[0]->getId());
         self::assertEquals($this->countries[1]->getId(), $result1[1]->getId());
         self::assertEquals($this->countries[0]->getName(), $result1[0]->getName());
@@ -444,7 +444,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->setCacheable(true)
             ->getResult();
 
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
         self::assertCount(2, $result2);
 
         self::assertEquals(5, $this->secondLevelCacheLogger->getPutCount());
@@ -461,7 +461,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertEquals($result1[0]->getName(), $result2[0]->getName());
         self::assertEquals($result1[1]->getName(), $result2[1]->getName());
 
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
     }
 
     public function testBasicQueryFetchJoinsOneToMany(): void
@@ -473,13 +473,13 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->evictRegions();
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT s, c FROM Doctrine\Tests\Models\Cache\State s JOIN s.cities c';
-        $result1    = $this->_em->createQuery($dql)
+        $this->getQueryLog()->reset()->enable();
+        $dql     = 'SELECT s, c FROM Doctrine\Tests\Models\Cache\State s JOIN s.cities c';
+        $result1 = $this->_em->createQuery($dql)
                 ->setCacheable(true)
                 ->getResult();
 
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertInstanceOf(State::class, $result1[0]);
         self::assertInstanceOf(State::class, $result1[1]);
         self::assertCount(2, $result1[0]->getCities());
@@ -526,7 +526,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertNotNull($result2[1]->getCities()->get(0)->getName());
         self::assertNotNull($result2[1]->getCities()->get(1)->getName());
 
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
     }
 
     public function testBasicQueryFetchJoinsManyToOne(): void
@@ -539,9 +539,9 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->evictRegions();
         $this->secondLevelCacheLogger->clearStats();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT c, s FROM Doctrine\Tests\Models\Cache\City c JOIN c.state s';
-        $result1    = $this->_em->createQuery($dql)
+        $this->getQueryLog()->reset()->enable();
+        $dql     = 'SELECT c, s FROM Doctrine\Tests\Models\Cache\City c JOIN c.state s';
+        $result1 = $this->_em->createQuery($dql)
                 ->setCacheable(true)
                 ->getResult();
 
@@ -563,7 +563,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(State::class)));
         self::assertEquals(4, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(City::class)));
 
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         $this->_em->clear();
         $this->secondLevelCacheLogger->clearStats();
@@ -593,7 +593,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertEquals($result1[0]->getState()->getName(), $result2[0]->getState()->getName());
         self::assertEquals($result1[1]->getState()->getName(), $result2[1]->getState()->getName());
 
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
     }
 
     public function testReloadQueryIfToOneIsNotFound(): void
@@ -606,9 +606,9 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->evictRegions();
         $this->secondLevelCacheLogger->clearStats();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT c, s FROM Doctrine\Tests\Models\Cache\City c JOIN c.state s';
-        $result1    = $this->_em->createQuery($dql)
+        $this->getQueryLog()->reset()->enable();
+        $dql     = 'SELECT c, s FROM Doctrine\Tests\Models\Cache\City c JOIN c.state s';
+        $result1 = $this->_em->createQuery($dql)
                 ->setCacheable(true)
                 ->getResult();
 
@@ -622,7 +622,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(City::class, $result1[1]->getId()));
         self::assertTrue($this->cache->containsEntity(State::class, $result1[0]->getState()->getId()));
         self::assertTrue($this->cache->containsEntity(State::class, $result1[1]->getState()->getId()));
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         $this->_em->clear();
 
@@ -638,7 +638,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertInstanceOf(State::class, $result2[0]->getState());
         self::assertInstanceOf(State::class, $result2[1]->getState());
 
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
     }
 
     public function testReloadQueryIfToManyAssociationItemIsNotFound(): void
@@ -650,13 +650,13 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->evictRegions();
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT s, c FROM Doctrine\Tests\Models\Cache\State s JOIN s.cities c';
-        $result1    = $this->_em->createQuery($dql)
+        $this->getQueryLog()->reset()->enable();
+        $dql     = 'SELECT s, c FROM Doctrine\Tests\Models\Cache\State s JOIN s.cities c';
+        $result1 = $this->_em->createQuery($dql)
                 ->setCacheable(true)
                 ->getResult();
 
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertInstanceOf(State::class, $result1[0]);
         self::assertInstanceOf(State::class, $result1[1]);
         self::assertCount(2, $result1[0]->getCities());
@@ -685,7 +685,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertInstanceOf(City::class, $result2[1]->getCities()->get(0));
         self::assertInstanceOf(City::class, $result2[1]->getCities()->get(1));
 
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
     }
 
     public function testBasicNativeQueryCache(): void
@@ -704,12 +704,12 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $rsm->addFieldResult('c', 'name', 'name');
         $rsm->addFieldResult('c', 'id', 'id');
 
-        $queryCount = $this->getCurrentQueryCount();
-        $sql        = 'SELECT id, name FROM cache_country';
-        $result1    = $this->_em->createNativeQuery($sql, $rsm)->setCacheable(true)->getResult();
+        $this->getQueryLog()->reset()->enable();
+        $sql     = 'SELECT id, name FROM cache_country';
+        $result1 = $this->_em->createNativeQuery($sql, $rsm)->setCacheable(true)->getResult();
 
         self::assertCount(2, $result1);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertEquals($this->countries[0]->getId(), $result1[0]->getId());
         self::assertEquals($this->countries[1]->getId(), $result1[1]->getId());
         self::assertEquals($this->countries[0]->getName(), $result1[0]->getName());
@@ -726,7 +726,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->setCacheable(true)
             ->getResult();
 
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertCount(2, $result2);
 
         self::assertEquals(1, $this->secondLevelCacheLogger->getPutCount());
@@ -763,15 +763,15 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->secondLevelCacheLogger->clearStats();
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
-        $result1    = $this->_em->createQuery($dql)
+        $this->getQueryLog()->reset()->enable();
+        $dql     = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
+        $result1 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->setFirstResult(1)
             ->setMaxResults(1)
             ->getResult();
 
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertEquals(1, $this->secondLevelCacheLogger->getPutCount());
         self::assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
 
@@ -783,7 +783,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->setMaxResults(1)
             ->getResult();
 
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
         self::assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
         self::assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
 
@@ -793,7 +793,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->setCacheable(true)
             ->getResult();
 
-        self::assertEquals($queryCount + 3, $this->getCurrentQueryCount());
+        $this->assertQueryCount(3);
         self::assertEquals(3, $this->secondLevelCacheLogger->getPutCount());
         self::assertEquals(3, $this->secondLevelCacheLogger->getMissCount());
     }
@@ -813,15 +813,15 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             return $method->invoke($query);
         };
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
-        $query      = $this->_em->createQuery($dql);
-        $result1    = $query->setCacheable(true)
+        $this->getQueryLog()->reset()->enable();
+        $dql     = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
+        $query   = $this->_em->createQuery($dql);
+        $result1 = $query->setCacheable(true)
             ->setLifetime(3600)
             ->getResult();
 
         self::assertNotEmpty($result1);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertEquals(1, $this->secondLevelCacheLogger->getPutCount());
         self::assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
 
@@ -845,7 +845,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getResult();
 
         self::assertNotEmpty($result2);
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
         self::assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
         self::assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
     }
@@ -858,9 +858,9 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->secondLevelCacheLogger->clearStats();
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
-        $query      = $this->_em->createQuery($dql);
+        $this->getQueryLog()->reset()->enable();
+        $dql   = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
+        $query = $this->_em->createQuery($dql);
 
         $query1  = clone $query;
         $result1 = $query1->setCacheable(true)
@@ -868,7 +868,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getResult();
 
         self::assertNotEmpty($result1);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertEquals(0, $this->secondLevelCacheLogger->getHitCount());
         self::assertEquals(1, $this->secondLevelCacheLogger->getPutCount());
         self::assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
@@ -881,7 +881,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getResult();
 
         self::assertNotEmpty($result2);
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
         self::assertEquals(0, $this->secondLevelCacheLogger->getHitCount());
         self::assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
         self::assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
@@ -894,7 +894,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getResult();
 
         self::assertNotEmpty($result3);
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
         self::assertEquals(3, $this->secondLevelCacheLogger->getHitCount());
         self::assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
         self::assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
@@ -908,7 +908,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getResult();
 
         self::assertNotEmpty($result3);
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
         self::assertEquals(6, $this->secondLevelCacheLogger->getHitCount());
         self::assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
         self::assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
@@ -929,7 +929,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $countryName = $this->states[0]->getCountry()->getName();
         $dql         = 'SELECT s FROM Doctrine\Tests\Models\Cache\State s WHERE s.id = :id';
         $query       = $this->_em->createQuery($dql);
-        $queryCount  = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $query1 = clone $query;
         $state1 = $query1
@@ -940,7 +940,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         self::assertNotNull($state1);
         self::assertNotNull($state1->getCountry());
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertInstanceOf(State::class, $state1);
         self::assertInstanceOf(Proxy::class, $state1->getCountry());
         self::assertEquals($countryName, $state1->getCountry()->getName());
@@ -948,9 +948,9 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $query2     = clone $query;
-        $state2     = $query2
+        $this->getQueryLog()->reset()->enable();
+        $query2 = clone $query;
+        $state2 = $query2
             ->setParameter('id', $stateId)
             ->setCacheable(true)
             ->setMaxResults(1)
@@ -958,7 +958,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         self::assertNotNull($state2);
         self::assertNotNull($state2->getCountry());
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
         self::assertInstanceOf(State::class, $state2);
         self::assertInstanceOf(Proxy::class, $state2->getCountry());
         self::assertEquals($countryName, $state2->getCountry()->getName());
@@ -975,10 +975,10 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $cityId     = $this->cities[0]->getId();
-        $dql        = 'SELECT c, s FROM Doctrine\Tests\Models\Cache\City c JOIN c.state s WHERE c.id = :id';
-        $query      = $this->_em->createQuery($dql);
-        $queryCount = $this->getCurrentQueryCount();
+        $cityId = $this->cities[0]->getId();
+        $dql    = 'SELECT c, s FROM Doctrine\Tests\Models\Cache\City c JOIN c.state s WHERE c.id = :id';
+        $query  = $this->_em->createQuery($dql);
+        $this->getQueryLog()->reset()->enable();
 
         $query1 = clone $query;
         $city1  = $query1
@@ -987,7 +987,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->setMaxResults(1)
             ->getSingleResult();
 
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertInstanceOf(City::class, $city1);
         self::assertInstanceOf(State::class, $city1->getState());
         self::assertInstanceOf(City::class, $city1->getState()->getCities()->get(0));
@@ -995,15 +995,15 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $query2     = clone $query;
-        $city2      = $query2
+        $this->getQueryLog()->reset()->enable();
+        $query2 = clone $query;
+        $city2  = $query2
             ->setParameter('id', $cityId)
             ->setCacheable(true)
             ->setMaxResults(1)
             ->getSingleResult();
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
         self::assertInstanceOf(City::class, $city2);
         self::assertInstanceOf(State::class, $city2->getState());
         self::assertInstanceOf(City::class, $city2->getState()->getCities()->get(0));
@@ -1020,10 +1020,10 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $stateId    = $this->states[0]->getId();
-        $dql        = 'SELECT s, c FROM Doctrine\Tests\Models\Cache\State s JOIN s.cities c WHERE s.id = :id';
-        $query      = $this->_em->createQuery($dql);
-        $queryCount = $this->getCurrentQueryCount();
+        $stateId = $this->states[0]->getId();
+        $dql     = 'SELECT s, c FROM Doctrine\Tests\Models\Cache\State s JOIN s.cities c WHERE s.id = :id';
+        $query   = $this->_em->createQuery($dql);
+        $this->getQueryLog()->reset()->enable();
 
         $query1 = clone $query;
         $state1 = $query1
@@ -1032,7 +1032,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->setMaxResults(1)
             ->getSingleResult();
 
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
         self::assertInstanceOf(State::class, $state1);
         self::assertInstanceOf(Proxy::class, $state1->getCountry());
         self::assertInstanceOf(City::class, $state1->getCities()->get(0));
@@ -1041,15 +1041,15 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $query2     = clone $query;
-        $state2     = $query2
+        $this->getQueryLog()->reset()->enable();
+        $query2 = clone $query;
+        $state2 = $query2
             ->setParameter('id', $stateId)
             ->setCacheable(true)
             ->setMaxResults(1)
             ->getSingleResult();
 
-        self::assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertQueryCount(0);
         self::assertInstanceOf(State::class, $state2);
         self::assertInstanceOf(Proxy::class, $state2->getCountry());
         self::assertInstanceOf(City::class, $state2->getCities()->get(0));
@@ -1137,28 +1137,28 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
-        $dql        = 'SELECT country FROM Doctrine\Tests\Models\Cache\Country country';
+        $this->getQueryLog()->reset()->enable();
+        $dql = 'SELECT country FROM Doctrine\Tests\Models\Cache\Country country';
 
         $result1 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
         self::assertCount(2, $result1);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         $this->_em->persist(new Country('France'));
         $this->_em->flush();
         $this->_em->clear();
 
-        $queryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $result2 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
         self::assertCount(3, $result2);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         foreach ($result2 as $entity) {
             self::assertInstanceOf(Country::class, $entity);
