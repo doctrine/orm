@@ -14,6 +14,8 @@ use Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity;
 use Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use const PHP_VERSION_ID;
+
 /**
  * Test the IdentifierFlattener utility class
  *
@@ -38,21 +40,25 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         );
 
         try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(FirstRelatedEntity::class),
-                    $this->_em->getClassMetadata(SecondRelatedEntity::class),
-                    $this->_em->getClassMetadata(Flight::class),
-                    $this->_em->getClassMetadata(City::class),
-                    $this->_em->getClassMetadata(TypedCardEnumId::class),
-                ]
-            );
+            $schemaArray = [
+                $this->_em->getClassMetadata(FirstRelatedEntity::class),
+                $this->_em->getClassMetadata(SecondRelatedEntity::class),
+                $this->_em->getClassMetadata(Flight::class),
+                $this->_em->getClassMetadata(City::class),
+            ];
+
+            if (PHP_VERSION_ID >= 80100) {
+                $schemaArray[] = $this->_em->getClassMetadata(TypedCardEnumId::class);
+            }
+
+            $this->_schemaTool->createSchema($schemaArray);
         } catch (ORMException $e) {
         }
     }
 
     /**
      * @group utilities
+     * @requires PHP 8.1
      */
     public function testFlattenIdentifierWithEnumId(): void
     {
