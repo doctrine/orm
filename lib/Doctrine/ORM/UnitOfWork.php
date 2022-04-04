@@ -1604,6 +1604,10 @@ class UnitOfWork implements PropertyChangedListener
             return self::STATE_NEW;
         }
 
+        if ($class->containsForeignIdentifier) {
+            $id = $this->identifierFlattener->flattenIdentifier($class, $id);
+        }
+
         switch (true) {
             case $class->isIdentifierNatural():
                 // Check for a version field, if available, to avoid a db lookup.
@@ -1614,7 +1618,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // Last try before db lookup: check the identity map.
-                if ($this->tryGetById($id, $class)) {
+                if ($this->tryGetById($id, $class->rootEntityName)) {
                     return self::STATE_DETACHED;
                 }
 
@@ -1631,7 +1635,7 @@ class UnitOfWork implements PropertyChangedListener
                 // the last resort: a db lookup
 
                 // Last try before db lookup: check the identity map.
-                if ($this->tryGetById($id, $class)) {
+                if ($this->tryGetById($id, $class->rootEntityName)) {
                     return self::STATE_DETACHED;
                 }
 
@@ -1981,7 +1985,11 @@ class UnitOfWork implements PropertyChangedListener
                 $this->mergeEntityStateIntoManagedCopy($entity, $managedCopy);
                 $this->persistNew($class, $managedCopy);
             } else {
-                $managedCopy = $this->tryGetById($id, $class);
+                $flatId = $class->containsForeignIdentifier
+                    ? $this->identifierFlattener->flattenIdentifier($class, $id)
+                    : $id;
+
+                $managedCopy = $this->tryGetById($flatId, $class->rootEntityName);
 
                 if ($managedCopy) {
                     // We have the entity in-memory already, just make sure its not removed.
@@ -1990,7 +1998,7 @@ class UnitOfWork implements PropertyChangedListener
                     }
                 } else {
                     // We need to fetch the managed copy in order to merge.
-                    $managedCopy = $this->em->find($class->name, $id);
+                    $managedCopy = $this->em->find($class->name, $flatId);
                 }
 
                 if ($managedCopy === null) {
@@ -3106,21 +3114,18 @@ class UnitOfWork implements PropertyChangedListener
      * Tries to find an entity with the given identifier in the identity map of
      * this UnitOfWork.
      *
-     * @param mixed                 $id        The entity identifier to look for.
-     * @param Mapping\ClassMetadata $rootClass The name of the root class of the mapped entity hierarchy.
+     * @param mixed  $id            The entity identifier to look for.
+     * @param string $rootClassName The name of the root class of the mapped entity hierarchy.
+     * @psalm-param class-string $rootClassName
      *
      * @return object|false Returns the entity with the specified identifier if it exists in
      *                      this UnitOfWork, FALSE otherwise.
      */
-    public function tryGetById($id, $rootClass)
+    public function tryGetById($id, $rootClassName)
     {
-        if ($rootClass->containsForeignIdentifier || $rootClass->containsEnumIdentifier) {
-             $id = $this->identifierFlattener->flattenIdentifier($rootClass, $id);
-        }
-
         $idHash = implode(' ', (array) $id);
 
-        return $this->identityMap[$rootClass->rootEntityName][$idHash] ?? false;
+        return $this->identityMap[$rootClassName][$idHash] ?? false;
     }
 
     /**

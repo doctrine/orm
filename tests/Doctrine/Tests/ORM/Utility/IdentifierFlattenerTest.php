@@ -68,7 +68,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         $this->_em->persist($typedCardEnumIdEntity);
         $this->_em->flush();
 
-        $findTypedCardEnumIdEntity = $this->_em->getRepository(TypedCardEnumId::class)->find(Suit::Clubs);
+        $findTypedCardEnumIdEntity = $this->_em->getRepository(TypedCardEnumId::class)->find(Suit::Clubs->value);
 
         $class = $this->_em->getClassMetadata(TypedCardEnumId::class);
 
