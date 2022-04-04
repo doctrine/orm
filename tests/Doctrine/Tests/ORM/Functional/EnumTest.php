@@ -12,6 +12,7 @@ use Doctrine\Tests\Models\Enums\Card;
 use Doctrine\Tests\Models\Enums\CardWithDefault;
 use Doctrine\Tests\Models\Enums\Product;
 use Doctrine\Tests\Models\Enums\Quantity;
+use Doctrine\Tests\Models\Enums\Scale;
 use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Enums\TypedCard;
 use Doctrine\Tests\Models\Enums\Unit;
@@ -160,6 +161,24 @@ EXCEPTION
 
         $this->assertInstanceOf(Unit::class, $fetchedProduct->quantity->unit);
         $this->assertEquals(Unit::Gram, $fetchedProduct->quantity->unit);
+    }
+
+    public function testEnumArrayMapping(): void
+    {
+        $this->setUpEntitySchema([Scale::class]);
+
+        $scale                 = new Scale();
+        $scale->supportedUnits = [Unit::Gram, Unit::Meter];
+
+        $this->_em->persist($scale);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $fetchedScale = $this->_em->find(Scale::class, $scale->id);
+
+        $this->assertIsArray($fetchedScale->supportedUnits);
+        $this->assertContains(Unit::Gram, $fetchedScale->supportedUnits);
+        $this->assertContains(Unit::Meter, $fetchedScale->supportedUnits);
     }
 
     public function testEnumWithDefault(): void
