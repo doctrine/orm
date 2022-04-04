@@ -20,21 +20,10 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
 {
-    /**
-     * Identifier flattener
-     *
-     * @var IdentifierFlattener
-     */
-    private $identifierFlattener;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->identifierFlattener = new IdentifierFlattener(
-            $this->_em->getUnitOfWork(),
-            $this->_em->getMetadataFactory()
-        );
 
         try {
             $this->_schemaTool->createSchema(
