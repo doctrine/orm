@@ -770,12 +770,12 @@ class BasicEntityPersister implements EntityPersister
      */
     public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = [])
     {
-        $foundEntity = $this->em->getUnitOfWork()->tryGetById($identifier, $assoc['targetEntity']);
+        $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+
+        $foundEntity = $this->em->getUnitOfWork()->tryGetById($identifier, $targetClass);
         if ($foundEntity !== false) {
             return $foundEntity;
         }
-
-        $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
         if ($assoc['isOwningSide']) {
             $isInverseSingleValued = $assoc['inversedBy'] && ! $targetClass->isCollectionValuedAssociation($assoc['inversedBy']);
