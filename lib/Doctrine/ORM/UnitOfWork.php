@@ -1614,7 +1614,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // Last try before db lookup: check the identity map.
-                if ($this->tryGetById($id, $class)) {
+                if ($this->tryGetById($id, $class->rootEntityName)) {
                     return self::STATE_DETACHED;
                 }
 
@@ -1631,7 +1631,7 @@ class UnitOfWork implements PropertyChangedListener
                 // the last resort: a db lookup
 
                 // Last try before db lookup: check the identity map.
-                if ($this->tryGetById($id, $class)) {
+                if ($this->tryGetById($id, $class->rootEntityName)) {
                     return self::STATE_DETACHED;
                 }
 
@@ -1981,7 +1981,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->mergeEntityStateIntoManagedCopy($entity, $managedCopy);
                 $this->persistNew($class, $managedCopy);
             } else {
-                $managedCopy = $this->tryGetById($id, $class);
+                $managedCopy = $this->tryGetById($id, $class->rootEntityName);
 
                 if ($managedCopy) {
                     // We have the entity in-memory already, just make sure its not removed.
@@ -3106,14 +3106,17 @@ class UnitOfWork implements PropertyChangedListener
      * Tries to find an entity with the given identifier in the identity map of
      * this UnitOfWork.
      *
-     * @param mixed                 $id        The entity identifier to look for.
-     * @param Mapping\ClassMetadata $rootClass The name of the root class of the mapped entity hierarchy.
+     * @param mixed  $id            The entity identifier to look for.
+     * @param string $rootClassName The name of the root class of the mapped entity hierarchy.
+     * @psalm-param class-string $rootClassName
      *
      * @return object|false Returns the entity with the specified identifier if it exists in
      *                      this UnitOfWork, FALSE otherwise.
      */
-    public function tryGetById($id, $rootClass)
+    public function tryGetById($id, $rootClassName)
     {
+        $rootClass = $this->em->getClassMetadata($rootClassName);
+
         if ($rootClass->containsForeignIdentifier || $rootClass->containsEnumIdentifier) {
              $id = $this->identifierFlattener->flattenIdentifier($rootClass, $id);
         }

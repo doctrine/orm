@@ -459,7 +459,7 @@ use function sprintf;
 
         $unitOfWork = $this->getUnitOfWork();
 
-        $entity = $unitOfWork->tryGetById($sortedId, $class);
+        $entity = $unitOfWork->tryGetById($sortedId, $class->rootEntityName);
 
         // Check identity map first
         if ($entity !== false) {
@@ -530,7 +530,7 @@ use function sprintf;
             throw UnrecognizedIdentifierFields::fromClassAndFieldNames($class->name, array_keys($id));
         }
 
-        $entity = $this->unitOfWork->tryGetById($sortedId, $class);
+        $entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName);
 
         // Check identity map first, if its already in there just return it.
         if ($entity !== false) {
@@ -555,7 +555,7 @@ use function sprintf;
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
-        $entity = $this->unitOfWork->tryGetById($identifier, $class);
+        $entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName);
 
         // Check identity map first, if its already in there just return it.
         if ($entity !== false) {
