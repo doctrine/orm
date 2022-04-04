@@ -68,8 +68,8 @@ class ReflectionEnumProperty extends ReflectionProperty
     }
 
     /**
-     * @param object     $object
-     * @param int|string $value
+     * @param object                    $object
+     * @param int|string|int[]|string[] $value
      */
     public function setValue($object, $value = null): void
     {
