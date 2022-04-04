@@ -10,11 +10,8 @@ use ReturnTypeWillChange;
 use ValueError;
 
 use function array_map;
-use function assert;
 use function get_class;
 use function is_array;
-use function is_int;
-use function is_string;
 
 class ReflectionEnumProperty extends ReflectionProperty
 {
@@ -68,8 +65,8 @@ class ReflectionEnumProperty extends ReflectionProperty
     }
 
     /**
-     * @param object                    $object
-     * @param int|string|int[]|string[] $value
+     * @param object                         $object
+     * @param int|string|int[]|string[]|null $value
      */
     public function setValue($object, $value = null): void
     {
@@ -87,8 +84,8 @@ class ReflectionEnumProperty extends ReflectionProperty
     }
 
     /**
-     * @param object $object
-     * @param mixed  $value
+     * @param object     $object
+     * @param int|string $value
      */
     private function initializeEnumValue($object, $value): BackedEnum
     {
@@ -97,8 +94,6 @@ class ReflectionEnumProperty extends ReflectionProperty
         try {
             return $enumType::from($value);
         } catch (ValueError $e) {
-            assert(is_string($value) || is_int($value));
-
             throw MappingException::invalidEnumValue(
                 get_class($object),
                 $this->originalReflectionProperty->getName(),
