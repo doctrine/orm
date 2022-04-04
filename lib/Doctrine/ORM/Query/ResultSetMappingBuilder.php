@@ -43,26 +43,15 @@ class ResultSetMappingBuilder extends ResultSetMapping
      */
     public const COLUMN_RENAMING_INCREMENT = 3;
 
-    /** @var int */
-    private $sqlCounter = 0;
-
-    /** @var EntityManagerInterface */
-    private $em;
+    private int $sqlCounter = 0;
 
     /**
-     * Default column renaming mode.
-     *
-     * @var int
+     * @psalm-param self::COLUMN_RENAMING_* $defaultRenameMode
      */
-    private $defaultRenameMode;
-
-    /**
-     * @param int $defaultRenameMode
-     */
-    public function __construct(EntityManagerInterface $em, $defaultRenameMode = self::COLUMN_RENAMING_NONE)
-    {
-        $this->em                = $em;
-        $this->defaultRenameMode = $defaultRenameMode;
+    public function __construct(
+        private EntityManagerInterface $em,
+        private int $defaultRenameMode = self::COLUMN_RENAMING_NONE,
+    ) {
     }
 
     /**
@@ -71,13 +60,16 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * @param string   $class          The class name of the root entity.
      * @param string   $alias          The unique alias to use for the root entity.
      * @param string[] $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName).
-     * @param int|null $renameMode     One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
+     * @psalm-param class-string $class
      * @psalm-param array<string, string> $renamedColumns
-     *
-     * @return void
+     * @psalm-param self::COLUMN_RENAMING_*|null $renameMode
      */
-    public function addRootEntityFromClassMetadata($class, $alias, $renamedColumns = [], $renameMode = null)
-    {
+    public function addRootEntityFromClassMetadata(
+        string $class,
+        string $alias,
+        array $renamedColumns = [],
+        ?int $renameMode = null
+    ): void {
         $renameMode     = $renameMode ?: $this->defaultRenameMode;
         $columnAliasMap = $this->getColumnAliasMap($class, $renameMode, $renamedColumns);
 
@@ -94,13 +86,18 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * @param string   $relation       The association field that connects the parent entity result
      *                                 with the joined entity result.
      * @param string[] $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName).
-     * @param int|null $renameMode     One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
+     * @psalm-param class-string $class
      * @psalm-param array<string, string> $renamedColumns
-     *
-     * @return void
+     * @psalm-param self::COLUMN_RENAMING_*|null $renameMode
      */
-    public function addJoinedEntityFromClassMetadata($class, $alias, $parentAlias, $relation, $renamedColumns = [], $renameMode = null)
-    {
+    public function addJoinedEntityFromClassMetadata(
+        string $class,
+        string $alias,
+        string $parentAlias,
+        string $relation,
+        array $renamedColumns = [],
+        ?int $renameMode = null
+    ): void {
         $renameMode     = $renameMode ?: $this->defaultRenameMode;
         $columnAliasMap = $this->getColumnAliasMap($class, $renameMode, $renamedColumns);
 
@@ -111,16 +108,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
     /**
      * Adds all fields of the given class to the result set mapping (columns and meta fields).
      *
-     * @param string   $class
-     * @param string   $alias
      * @param string[] $columnAliasMap
      * @psalm-param array<string, string> $columnAliasMap
      *
-     * @return void
-     *
      * @throws InvalidArgumentException
      */
-    protected function addAllClassFields($class, $alias, $columnAliasMap = [])
+    protected function addAllClassFields(string $class, string $alias, array $columnAliasMap = []): void
     {
         $classMetadata = $this->em->getClassMetadata($class);
         $platform      = $this->em->getConnection()->getDatabasePlatform();
@@ -182,25 +175,17 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * Gets column alias for a given column.
      *
      * @psalm-param array<string, string>  $customRenameColumns
+     *
+     * @psalm-assert self::COLUMN_RENAMING_* $mode
      */
     private function getColumnAlias(string $columnName, int $mode, array $customRenameColumns): string
     {
-        switch ($mode) {
-            case self::COLUMN_RENAMING_INCREMENT:
-                return $columnName . $this->sqlCounter++;
-
-            case self::COLUMN_RENAMING_CUSTOM:
-                return $customRenameColumns[$columnName] ?? $columnName;
-
-            case self::COLUMN_RENAMING_NONE:
-                return $columnName;
-
-            default:
-                throw new InvalidArgumentException(sprintf(
-                    '%d is not a valid value for $mode',
-                    $mode
-                ));
-        }
+        return match ($mode) {
+            self::COLUMN_RENAMING_INCREMENT => $columnName . $this->sqlCounter++,
+            self::COLUMN_RENAMING_CUSTOM => $customRenameColumns[$columnName] ?? $columnName,
+            self::COLUMN_RENAMING_NONE => $columnName,
+            default => throw new InvalidArgumentException(sprintf('%d is not a valid value for $mode', $mode)),
+        };
     }
 
     /**
@@ -251,10 +236,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @param string[] $tableAliases
      * @psalm-param array<string, string> $tableAliases
-     *
-     * @return string
      */
-    public function generateSelectClause($tableAliases = [])
+    public function generateSelectClause(array $tableAliases = []): string
     {
         $sql = '';
 
@@ -289,10 +272,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         return $sql;
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->generateSelectClause([]);
     }
