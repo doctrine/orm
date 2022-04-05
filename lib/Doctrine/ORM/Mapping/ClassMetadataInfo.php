@@ -1689,7 +1689,7 @@ class ClassMetadataInfo implements ClassMetadata
                 throw MappingException::nonEnumTypeMapped($this->name, $mapping['fieldName'], $mapping['enumType']);
             }
 
-            if (!empty($mapping['id'])) {
+            if (! empty($mapping['id'])) {
                 $this->containsEnumIdentifier = true;
             }
         }

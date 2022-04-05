@@ -1603,6 +1603,10 @@ class UnitOfWork implements PropertyChangedListener
             return self::STATE_NEW;
         }
 
+        if ($class->containsForeignIdentifier || $class->containsEnumIdentifier) {
+            $id = $this->identifierFlattener->flattenIdentifier($class, $id);
+        }
+
         switch (true) {
             case $class->isIdentifierNatural():
                 // Check for a version field, if available, to avoid a db lookup.
@@ -1980,7 +1984,11 @@ class UnitOfWork implements PropertyChangedListener
                 $this->mergeEntityStateIntoManagedCopy($entity, $managedCopy);
                 $this->persistNew($class, $managedCopy);
             } else {
-                $managedCopy = $this->tryGetById($id, $class->rootEntityName);
+                $flatId = $class->containsForeignIdentifier || $class->containsEnumIdentifier
+                    ? $this->identifierFlattener->flattenIdentifier($class, $id)
+                    : $id;
+
+                $managedCopy = $this->tryGetById($flatId, $class->rootEntityName);
 
                 if ($managedCopy) {
                     // We have the entity in-memory already, just make sure its not removed.
@@ -1989,7 +1997,7 @@ class UnitOfWork implements PropertyChangedListener
                     }
                 } else {
                     // We need to fetch the managed copy in order to merge.
-                    $managedCopy = $this->em->find($class->name, $id);
+                    $managedCopy = $this->em->find($class->name, $flatId);
                 }
 
                 if ($managedCopy === null) {
@@ -3114,15 +3122,9 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function tryGetById($id, $rootClassName)
     {
-        $rootClass = $this->em->getClassMetadata($rootClassName);
-
-        if ($rootClass->containsForeignIdentifier || $rootClass->containsEnumIdentifier) {
-            $id = $this->identifierFlattener->flattenIdentifier($rootClass, $id);
-        }
-
         $idHash = implode(' ', (array) $id);
 
-        return $this->identityMap[$rootClass->rootEntityName][$idHash] ?? false;
+        return $this->identityMap[$rootClassName][$idHash] ?? false;
     }
 
     /**

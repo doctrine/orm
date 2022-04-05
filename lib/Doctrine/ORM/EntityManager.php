@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use BackedEnum;
 use BadMethodCallException;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\EventManager;
@@ -452,7 +453,12 @@ use function strpos;
                 throw MissingIdentifierField::fromFieldAndClass($identifier, $class->name);
             }
 
-            $sortedId[$identifier] = $id[$identifier];
+            if ($id[$identifier] instanceof BackedEnum) {
+                $sortedId[$identifier] = $id[$identifier]->value;
+            } else {
+                $sortedId[$identifier] = $id[$identifier];
+            }
+
             unset($id[$identifier]);
         }
 
