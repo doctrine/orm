@@ -59,7 +59,7 @@ class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
 
         self::assertCount(1, $id, 'We should have 1 identifier');
 
-        self::assertEquals($id['suit'], Suit::Clubs->value);
+        self::assertEquals(Suit::Clubs, $findTypedCardEnumIdEntity->suit);
     }
 
     /**
@@ -86,9 +86,9 @@ class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
 
         $id = $class->getIdentifierValues($findTypedCardEnumCompositeIdEntity);
 
-        self::assertCount(2, $id, 'We should have 1 identifier');
+        self::assertCount(2, $id, 'We should have 2 identifiers');
 
-        self::assertEquals($id['suit'], Suit::Clubs->value);
-        self::assertEquals($id['unit'], Unit::Gram->value);
+        self::assertEquals(Suit::Clubs, $findTypedCardEnumCompositeIdEntity->suit);
+        self::assertEquals(Unit::Gram, $findTypedCardEnumCompositeIdEntity->unit);
     }
 }
