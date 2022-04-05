@@ -967,6 +967,10 @@ class ClassMetadataInfo implements ClassMetadata
             $serialized[] = 'containsForeignIdentifier';
         }
 
+        if ($this->containsEnumIdentifier) {
+            $serialized[] = 'containsEnumIdentifier';
+        }
+
         if ($this->isVersioned) {
             $serialized[] = 'isVersioned';
             $serialized[] = 'versionField';

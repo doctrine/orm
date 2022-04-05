@@ -108,6 +108,7 @@ EOT
                     $this->formatField('Table', $metadata->table),
                     $this->formatField('Composite identifier?', $metadata->isIdentifierComposite),
                     $this->formatField('Foreign identifier?', $metadata->containsForeignIdentifier),
+                    $this->formatField('Enum identifier?', $metadata->containsEnumIdentifier),
                     $this->formatField('Sequence generator definition', $metadata->sequenceGeneratorDefinition),
                     $this->formatField('Change tracking policy', $metadata->changeTrackingPolicy),
                     $this->formatField('Versioned?', $metadata->isVersioned),
