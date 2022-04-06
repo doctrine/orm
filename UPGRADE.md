@@ -251,6 +251,14 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.12
 
+## Deprecate custom repository classes that don't extend `EntityRepository`
+
+Although undocumented, it is currently possible to configure a custom repository
+class that implements `ObjectRepository` but does not extend the
+`EntityRepository` base class.
+
+This is now deprecated. Please extend `EntityRepository` instead.
+
 ## Deprecated more APIs related to entity namespace aliases
 
 ```diff

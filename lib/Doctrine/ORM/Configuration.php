@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -22,8 +23,9 @@ use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectRepository;
 use Psr\Cache\CacheItemPoolInterface;
-use ReflectionClass;
 
+use function class_exists;
+use function is_a;
 use function strtolower;
 
 /**
@@ -446,6 +448,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Sets default repository class.
      *
      * @param string $className
+     * @psalm-param class-string<EntityRepository> $className
      *
      * @return void
      *
@@ -453,10 +456,18 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setDefaultRepositoryClassName($className)
     {
-        $reflectionClass = new ReflectionClass($className);
-
-        if (! $reflectionClass->implementsInterface(ObjectRepository::class)) {
+        if (! class_exists($className) || ! is_a($className, ObjectRepository::class, true)) {
             throw InvalidEntityRepository::fromClassName($className);
+        }
+
+        if (! is_a($className, EntityRepository::class, true)) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/9533',
+                'Configuring %s as default repository class is deprecated because it does not extend %s.',
+                $className,
+                EntityRepository::class
+            );
         }
 
         $this->_attributes['defaultRepositoryClassName'] = $className;
@@ -466,7 +477,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Get default repository class.
      *
      * @return string
-     * @psalm-return class-string
+     * @psalm-return class-string<EntityRepository>
      */
     public function getDefaultRepositoryClassName()
     {

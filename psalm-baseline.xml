@@ -169,8 +169,7 @@
     </NoInterfaceProperties>
   </file>
   <file src="lib/Doctrine/ORM/Configuration.php">
-    <ArgumentTypeCoercion occurrences="2">
-      <code>$className</code>
+    <ArgumentTypeCoercion occurrences="1">
       <code>$className</code>
     </ArgumentTypeCoercion>
     <RedundantCastGivenDocblockType occurrences="1">
@@ -404,7 +403,6 @@
       <code>$this-&gt;em-&gt;getConfiguration()-&gt;getMetadataDriverImpl()</code>
     </PossiblyNullPropertyAssignmentValue>
     <PossiblyNullReference occurrences="5">
-      <code>getConfiguration</code>
       <code>getConfiguration</code>
       <code>getConfiguration</code>
       <code>getConfiguration</code>
@@ -1572,9 +1570,6 @@
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$not</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/NewObjectExpression.php">
     <ParamNameMismatch occurrences="1">
@@ -1917,12 +1912,11 @@
     <PossiblyFalseArgument occurrences="1">
       <code>strrpos($fromClassName, '\\')</code>
     </PossiblyFalseArgument>
-    <PossiblyInvalidArgument occurrences="13">
+    <PossiblyInvalidArgument occurrences="12">
       <code>$AST</code>
       <code>$conditionalExpression</code>
       <code>$expr</code>
       <code>$pathExp</code>
-      <code>$stringExpr</code>
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
@@ -2010,7 +2004,6 @@
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$token['type']</code>
       <code>$token['type']</code>
       <code>$token['type']</code>
@@ -2050,12 +2043,9 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
-    <DocblockTypeContradiction occurrences="5">
-      <code>$likeExpr-&gt;stringPattern instanceof AST\Functions\FunctionNode</code>
-      <code>$likeExpr-&gt;stringPattern instanceof AST\PathExpression</code>
+    <DocblockTypeContradiction occurrences="2">
       <code>''</code>
       <code>is_string($expression)</code>
-      <code>is_string($stringExpr)</code>
     </DocblockTypeContradiction>
     <ImplicitToStringCast occurrences="1">
       <code>$expr</code>
@@ -2098,8 +2088,7 @@
     <PossiblyNullReference occurrences="1">
       <code>dispatch</code>
     </PossiblyNullReference>
-    <RedundantConditionGivenDocblockType occurrences="3">
-      <code>$likeExpr-&gt;stringPattern instanceof AST\InputParameter</code>
+    <RedundantConditionGivenDocblockType occurrences="2">
       <code>$whereClause !== null</code>
       <code>($factor-&gt;not ? 'NOT ' : '') . $this-&gt;walkConditionalPrimary($factor-&gt;conditionalPrimary)</code>
     </RedundantConditionGivenDocblockType>
@@ -2335,12 +2324,12 @@
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Repository/DefaultRepositoryFactory.php">
-    <LessSpecificReturnStatement occurrences="1">
+    <TypeDoesNotContainType occurrences="1">
+      <code>$repository instanceof EntityRepository</code>
+    </TypeDoesNotContainType>
+    <UnsafeInstantiation occurrences="1">
       <code>new $repositoryClassName($entityManager, $metadata)</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
-      <code>ObjectRepository</code>
-    </MoreSpecificReturnType>
+    </UnsafeInstantiation>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/CollectionRegionCommand.php">
     <PossiblyNullReference occurrences="1">

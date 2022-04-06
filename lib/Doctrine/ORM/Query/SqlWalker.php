@@ -17,6 +17,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use Doctrine\ORM\Utility\PersisterHelper;
+use InvalidArgumentException;
 use LogicException;
 
 use function array_diff;
@@ -2161,9 +2162,15 @@ class SqlWalker implements TreeWalker
     public function walkLikeExpression($likeExpr)
     {
         $stringExpr = $likeExpr->stringExpression;
-        $leftExpr   = is_string($stringExpr) && isset($this->queryComponents[$stringExpr]['resultVariable'])
-            ? $this->walkResultVariable($stringExpr)
-            : $stringExpr->dispatch($this);
+        if (is_string($stringExpr)) {
+            if (! isset($this->queryComponents[$stringExpr]['resultVariable'])) {
+                throw new LogicException(sprintf('No result variable found for string expression "%s".', $stringExpr));
+            }
+
+            $leftExpr = $this->walkResultVariable($stringExpr);
+        } else {
+            $leftExpr = $stringExpr->dispatch($this);
+        }
 
         $sql = $leftExpr . ($likeExpr->not ? ' NOT' : '') . ' LIKE ';
 
@@ -2332,6 +2339,10 @@ class SqlWalker implements TreeWalker
      */
     public function walkResultVariable($resultVariable)
     {
+        if (! isset($this->scalarResultAliasMap[$resultVariable])) {
+            throw new InvalidArgumentException(sprintf('Unknown result variable: %s', $resultVariable));
+        }
+
         $resultAlias = $this->scalarResultAliasMap[$resultVariable];
 
         if (is_array($resultAlias)) {

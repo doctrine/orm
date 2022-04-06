@@ -18,7 +18,7 @@ interface RepositoryFactory
      * @param EntityManagerInterface $entityManager The EntityManager instance.
      * @param class-string<T>        $entityName    The name of the entity.
      *
-     * @return ObjectRepository<T>
+     * @return ObjectRepository<T> This type will change to {@see EntityRepository} in 3.0.
      *
      * @template T of object
      */

@@ -335,7 +335,7 @@ interface TreeWalker
     /**
      * Walks down a literal that represents an AST node, thereby generating the appropriate SQL.
      *
-     * @param mixed $literal
+     * @param AST\Literal $literal
      *
      * @return string The SQL.
      */
