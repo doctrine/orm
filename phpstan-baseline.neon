@@ -896,7 +896,7 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
-			message: "#^Parameter \\#2 \\$stringPattern of class Doctrine\\\\ORM\\\\Query\\\\AST\\\\LikeExpression constructor expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\InputParameter, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
+			message: "#^Parameter \\#2 \\$stringPattern of class Doctrine\\\\ORM\\\\Query\\\\AST\\\\LikeExpression constructor expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\Functions\\\\FunctionNode\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\InputParameter\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\Literal\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\PathExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/Parser.php
 
@@ -922,31 +922,11 @@ parameters:
 
 		-
 			message: "#^Call to function is_string\\(\\) with Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node will always evaluate to false\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
-
-		-
-			message: "#^Else branch is unreachable because previous condition is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
-
-		-
-			message: "#^Elseif branch is unreachable because previous condition is always true\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
-
-		-
-			message: "#^Instanceof between \\*NEVER\\* and Doctrine\\\\ORM\\\\Query\\\\AST\\\\Functions\\\\FunctionNode will always evaluate to false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
-
-		-
-			message: "#^Instanceof between \\*NEVER\\* and Doctrine\\\\ORM\\\\Query\\\\AST\\\\PathExpression will always evaluate to false\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
@@ -962,7 +942,7 @@ parameters:
 
 		-
 			message: "#^Result of && is always false\\.$#"
-			count: 2
+			count: 1
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-
@@ -1764,4 +1744,3 @@ parameters:
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$subClasses\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Utility/HierarchyDiscriminatorResolver.php
-

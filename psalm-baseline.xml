@@ -1883,9 +1883,6 @@
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$not</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/NewObjectExpression.php">
     <ParamNameMismatch occurrences="1">
@@ -2234,12 +2231,11 @@
     <PossiblyFalseArgument occurrences="1">
       <code>strrpos($fromClassName, '\\')</code>
     </PossiblyFalseArgument>
-    <PossiblyInvalidArgument occurrences="14">
+    <PossiblyInvalidArgument occurrences="13">
       <code>$AST</code>
       <code>$conditionalExpression</code>
       <code>$expr</code>
       <code>$pathExp</code>
-      <code>$stringExpr</code>
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
@@ -2373,12 +2369,9 @@
     </ArgumentTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
-    <DocblockTypeContradiction occurrences="5">
-      <code>$likeExpr-&gt;stringPattern instanceof AST\Functions\FunctionNode</code>
-      <code>$likeExpr-&gt;stringPattern instanceof AST\PathExpression</code>
+    <DocblockTypeContradiction occurrences="2">
       <code>''</code>
       <code>is_string($expression)</code>
-      <code>is_string($stringExpr)</code>
     </DocblockTypeContradiction>
     <ImplicitToStringCast occurrences="1">
       <code>$expr</code>
@@ -2421,8 +2414,7 @@
     <PossiblyNullReference occurrences="1">
       <code>dispatch</code>
     </PossiblyNullReference>
-    <RedundantConditionGivenDocblockType occurrences="3">
-      <code>$likeExpr-&gt;stringPattern instanceof AST\InputParameter</code>
+    <RedundantConditionGivenDocblockType occurrences="2">
       <code>$whereClause !== null</code>
       <code>($factor-&gt;not ? 'NOT ' : '') . $this-&gt;walkConditionalPrimary($factor-&gt;conditionalPrimary)</code>
     </RedundantConditionGivenDocblockType>
