@@ -11,7 +11,7 @@ use Doctrine\Persistence\Event\LifecycleEventArgs as BaseLifecycleEventArgs;
  * Lifecycle Events are triggered by the UnitOfWork during lifecycle transitions
  * of entities.
  *
- * @link   www.doctrine-project.org
+ * @extends BaseLifecycleEventArgs<EntityManagerInterface>
  */
 class LifecycleEventArgs extends BaseLifecycleEventArgs
 {
