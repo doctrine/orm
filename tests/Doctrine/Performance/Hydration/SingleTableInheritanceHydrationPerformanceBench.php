@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Performance\Hydration;
 
+use Doctrine\ORM\EntityRepository;
 use Doctrine\Performance\EntityManagerFactory;
-use Doctrine\Persistence\ObjectRepository;
 use Doctrine\Tests\Models\Company;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
@@ -14,16 +14,16 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
  */
 final class SingleTableInheritanceHydrationPerformanceBench
 {
-    /** @var ObjectRepository */
+    /** @var EntityRepository */
     private $contractsRepository;
 
-    /** @var ObjectRepository */
+    /** @var EntityRepository */
     private $fixContractsRepository;
 
-    /** @var ObjectRepository */
+    /** @var EntityRepository */
     private $flexContractRepository;
 
-    /** @var ObjectRepository */
+    /** @var EntityRepository */
     private $ultraContractRepository;
 
     public function init(): void
