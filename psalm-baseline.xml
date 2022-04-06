@@ -205,12 +205,6 @@
       <code>ClassMetadataFactory</code>
       <code>Mapping\ClassMetadata</code>
     </InvalidReturnType>
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$this-&gt;repositoryFactory-&gt;getRepository($this, $entityName)</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
-      <code>EntityRepository&lt;T&gt;</code>
-    </MoreSpecificReturnType>
     <ParamNameMismatch occurrences="6">
       <code>$entity</code>
       <code>$entity</code>
@@ -2324,9 +2318,12 @@
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Repository/DefaultRepositoryFactory.php">
-    <TypeDoesNotContainType occurrences="1">
-      <code>$repository instanceof EntityRepository</code>
-    </TypeDoesNotContainType>
+    <InvalidReturnStatement occurrences="1">
+      <code>$this-&gt;repositoryList[$repositoryHash] ??= $this-&gt;createRepository($entityManager, $entityName)</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>EntityRepository</code>
+    </InvalidReturnType>
     <UnsafeInstantiation occurrences="1">
       <code>new $repositoryClassName($entityManager, $metadata)</code>
     </UnsafeInstantiation>

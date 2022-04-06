@@ -13,14 +13,11 @@ use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Mapping as AnnotationNamespace;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
-use Doctrine\ORM\Mapping\PrePersist;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Persistence\ObjectRepository;
 use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
 use Psr\Cache\CacheItemPoolInterface;
-use stdClass;
 
 /**
  * Tests for the Configuration object
@@ -171,14 +168,6 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->setDefaultRepositoryClassName(self::class);
     }
 
-    public function testSetDeprecatedDefaultRepositoryClassName(): void
-    {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9533');
-
-        $this->configuration->setDefaultRepositoryClassName(DeprecatedRepository::class);
-        self::assertSame(DeprecatedRepository::class, $this->configuration->getDefaultRepositoryClassName());
-    }
-
     public function testSetGetNamingStrategy(): void
     {
         self::assertInstanceOf(NamingStrategy::class, $this->configuration->getNamingStrategy());
@@ -217,52 +206,5 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertNull($this->configuration->getSecondLevelCacheConfiguration());
         $this->configuration->setSecondLevelCacheConfiguration($mockClass);
         self::assertEquals($mockClass, $this->configuration->getSecondLevelCacheConfiguration());
-    }
-}
-
-class ConfigurationTestAnnotationReaderChecker
-{
-    /** @PrePersist */
-    public function simpleAnnotationMethod(): void
-    {
-    }
-
-    /** @AnnotationNamespace\PrePersist */
-    public function namespacedAnnotationMethod(): void
-    {
-    }
-}
-
-class DeprecatedRepository implements ObjectRepository
-{
-    /**
-     * {@inheritdoc}
-     */
-    public function find($id)
-    {
-        return null;
-    }
-
-    public function findAll(): array
-    {
-        return [];
-    }
-
-    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
-    {
-        return [];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function findOneBy(array $criteria)
-    {
-        return null;
-    }
-
-    public function getClassName(): string
-    {
-        return stdClass::class;
     }
 }

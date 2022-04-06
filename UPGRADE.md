@@ -1,12 +1,18 @@
 # Upgrade to 3.0
 
-## Removed: support for entity namespace alias
+## BC BREAK: Repository classes have to extend `EntityRepository`
+
+Although undocumented, it was possible to configure a custom repository
+class that implements `ObjectRepository` but does not extend the
+`EntityRepository` base class. Repository classes have to extend
+`EntityRepository` now.
+
+## BC BREAK: Removed support for entity namespace alias
 
 - `EntityManager::getRepository()` no longer accepts the entity namespace alias
   notation.
 - `Configuration::addEntityNamespace()` and
   `Configuration::getEntityNamespace()` have been removed.
-
 
 ## BC BREAK: Remove helper methods from `AbstractCollectionPersister`
 

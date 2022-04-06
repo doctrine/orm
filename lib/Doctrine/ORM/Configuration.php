@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Proxy\AbstractProxyFactory;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -21,7 +20,6 @@ use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Persistence\ObjectRepository;
 use Psr\Cache\CacheItemPoolInterface;
 
 use function class_exists;
@@ -456,18 +454,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setDefaultRepositoryClassName($className)
     {
-        if (! class_exists($className) || ! is_a($className, ObjectRepository::class, true)) {
+        if (! class_exists($className) || ! is_a($className, EntityRepository::class, true)) {
             throw InvalidEntityRepository::fromClassName($className);
-        }
-
-        if (! is_a($className, EntityRepository::class, true)) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/9533',
-                'Configuring %s as default repository class is deprecated because it does not extend %s.',
-                $className,
-                EntityRepository::class
-            );
         }
 
         $this->_attributes['defaultRepositoryClassName'] = $className;
