@@ -80,7 +80,7 @@ class MappingException extends ORMException
     public static function missingFieldName($entity)
     {
         return new self(sprintf(
-            "The field or association mapping misses the 'fieldName' attribute in entity '%s'.",
+            "The field or association mapping misses the 'field' attribute in entity '%s'.",
             $entity
         ));
     }

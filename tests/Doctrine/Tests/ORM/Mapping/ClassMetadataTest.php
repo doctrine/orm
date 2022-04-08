@@ -630,7 +630,7 @@ class ClassMetadataTest extends OrmTestCase
     public function testEmptyFieldNameThrowsException(): void
     {
         $this->expectException(MappingException::class);
-        $this->expectExceptionMessage("The field or association mapping misses the 'fieldName' attribute in entity '" . CMS\CmsUser::class . "'.");
+        $this->expectExceptionMessage("The field or association mapping misses the 'field' attribute in entity '" . CMS\CmsUser::class . "'.");
 
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
