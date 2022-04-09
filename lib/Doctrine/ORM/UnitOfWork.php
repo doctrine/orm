@@ -1604,7 +1604,7 @@ class UnitOfWork implements PropertyChangedListener
             return self::STATE_NEW;
         }
 
-        if ($class->containsForeignIdentifier) {
+        if ($class->containsForeignIdentifier || $class->containsEnumIdentifier) {
             $id = $this->identifierFlattener->flattenIdentifier($class, $id);
         }
 
@@ -1985,7 +1985,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->mergeEntityStateIntoManagedCopy($entity, $managedCopy);
                 $this->persistNew($class, $managedCopy);
             } else {
-                $flatId = $class->containsForeignIdentifier
+                $flatId = $class->containsForeignIdentifier || $class->containsEnumIdentifier
                     ? $this->identifierFlattener->flattenIdentifier($class, $id)
                     : $id;
 
