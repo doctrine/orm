@@ -19,7 +19,6 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use function assert;
 use function count;
 use function iterator_to_array;
-use function method_exists;
 use function sprintf;
 
 class ResultCacheTest extends OrmFunctionalTestCase
@@ -368,12 +367,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
     private function setResultCache(AbstractQuery $query, CacheItemPoolInterface $cache): void
     {
         $profile = new QueryCacheProfile();
-
-        if (method_exists($profile, 'setResultCache')) {
-            $profile = $profile->setResultCache($cache);
-        } else {
-            $profile = $profile->setResultCacheDriver(DoctrineProvider::wrap($cache));
-        }
+        $profile = $profile->setResultCache($cache);
 
         $query->setResultCacheProfile($profile);
     }

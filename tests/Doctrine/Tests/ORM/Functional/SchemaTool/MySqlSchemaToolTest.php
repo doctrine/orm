@@ -14,9 +14,6 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function method_exists;
-use function sprintf;
-
 class MySqlSchemaToolTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -63,11 +60,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
 
     private function getColumnCollationDeclarationSQL(string $collation): string
     {
-        if (method_exists($this->_em->getConnection()->getDatabasePlatform(), 'getColumnCollationDeclarationSQL')) {
-            return $this->_em->getConnection()->getDatabasePlatform()->getColumnCollationDeclarationSQL($collation);
-        }
-
-        return sprintf('COLLATE %s', $collation);
+        return $this->_em->getConnection()->getDatabasePlatform()->getColumnCollationDeclarationSQL($collation);
     }
 
     public function testGetCreateSchemaSql2(): void

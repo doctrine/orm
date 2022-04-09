@@ -19,9 +19,6 @@
     <issueHandlers>
         <DeprecatedClass>
             <errorLevel type="suppress">
-                <!-- DBAL 2 compatibility -->
-                <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ImportCommand"/>
-                <referencedClass name="Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper"/>
                 <!-- The exception is thrown by a deprecated method. -->
                 <referencedClass name="Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver"/>
                 <!-- Remove on 3.0.x -->
@@ -56,8 +53,6 @@
                 <referencedMethod name="Doctrine\DBAL\Cache\QueryCacheProfile::setResultCacheDriver"/>
                 <referencedMethod name="Doctrine\DBAL\Configuration::getResultCacheImpl"/>
                 <referencedMethod name="Doctrine\DBAL\Configuration::setResultCacheImpl"/>
-                <referencedMethod name="Doctrine\DBAL\Connection::getSchemaManager"/>
-                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
                 <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\ORM\Internal\Hydration\AbstractHydrator::hydrateRow"/>
                 <referencedMethod name="Doctrine\ORM\Configuration::ensureProductionSettings"/>
@@ -114,12 +109,6 @@
                 <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
             </errorLevel>
         </RedundantCastGivenDocblockType>
-        <RedundantCondition>
-            <errorLevel type="suppress">
-                <!-- The SQLAnywherePlatform class may or may not exist depending on the DBAL version -->
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
-            </errorLevel>
-        </RedundantCondition>
         <TooManyArguments>
             <errorLevel type="suppress">
                 <!-- Symfony cache supports passing a key prefix to the clear method. -->
@@ -138,22 +127,11 @@
                 <referencedClass name="Doctrine\Common\Cache\ArrayCache"/>
                 <referencedClass name="Doctrine\Common\Cache\XcacheCache"/>
 
-                <!-- DBAL 2 compatibility -->
-                <referencedClass name="Doctrine\DBAL\Driver\ResultStatement"/>
-                <referencedClass name="Doctrine\DBAL\ForwardCompatibility\Result"/>
-                <referencedClass name="Doctrine\DBAL\Platforms\SQLAnywherePlatform"/>
-
                 <!-- DBAL 3.2 forward compatibility -->
                 <referencedClass name="Doctrine\DBAL\Platforms\PostgreSQLPlatform"/>
                 <referencedClass name="Doctrine\DBAL\Platforms\SQLServerPlatform"/>
             </errorLevel>
         </UndefinedClass>
-        <UndefinedDocblockClass>
-            <errorLevel type="suppress">
-                <!-- DBAL 2 compatibility -->
-                <referencedClass name="Doctrine\DBAL\Driver\ResultStatement"/>
-            </errorLevel>
-        </UndefinedDocblockClass>
         <UndefinedMethod>
             <errorLevel type="suppress">
                 <!-- See https://github.com/doctrine/orm/issues/8884 -->

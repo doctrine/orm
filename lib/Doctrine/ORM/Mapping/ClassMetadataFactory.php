@@ -668,7 +668,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function truncateSequenceName(string $schemaElementName): string
     {
         $platform = $this->getTargetPlatform();
-        if (! $platform instanceof Platforms\OraclePlatform && ! $platform instanceof Platforms\SQLAnywherePlatform) {
+        if (! $platform instanceof Platforms\OraclePlatform) {
             return $schemaElementName;
         }
 

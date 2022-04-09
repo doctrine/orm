@@ -48,7 +48,6 @@ use Psr\Cache\CacheItemPoolInterface;
 
 use function class_exists;
 use function is_a;
-use function method_exists;
 use function sprintf;
 use function strtolower;
 use function trim;
@@ -282,36 +281,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function getMetadataDriverImpl()
     {
         return $this->_attributes['metadataDriverImpl'] ?? null;
-    }
-
-    /**
-     * Gets the cache driver implementation that is used for query result caching.
-     */
-    public function getResultCache(): ?CacheItemPoolInterface
-    {
-        // Compatibility with DBAL 2
-        if (! method_exists(parent::class, 'getResultCache')) {
-            $cacheImpl = $this->getResultCacheImpl();
-
-            return $cacheImpl ? CacheAdapter::wrap($cacheImpl) : null;
-        }
-
-        return parent::getResultCache();
-    }
-
-    /**
-     * Sets the cache driver implementation that is used for query result caching.
-     */
-    public function setResultCache(CacheItemPoolInterface $cache): void
-    {
-        // Compatibility with DBAL 2
-        if (! method_exists(parent::class, 'setResultCache')) {
-            $this->setResultCacheImpl(DoctrineProvider::wrap($cache));
-
-            return;
-        }
-
-        parent::setResultCache($cache);
     }
 
     /**

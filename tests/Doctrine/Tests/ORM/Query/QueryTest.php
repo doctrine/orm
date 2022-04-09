@@ -10,7 +10,6 @@ use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
@@ -35,7 +34,6 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function array_map;
 use function assert;
-use function method_exists;
 
 use const PHP_VERSION_ID;
 
@@ -149,10 +147,6 @@ class QueryTest extends OrmTestCase
      */
     public function testQueryDefaultResultCache(): void
     {
-        if (! method_exists(QueryCacheProfile::class, 'getResultCache')) {
-            self::markTestSkipped('This test requires DBAL 3.2 or newer.');
-        }
-
         $this->entityManager->getConfiguration()->setResultCache(new ArrayAdapter());
         $q = $this->entityManager->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
         $q->enableResultCache();

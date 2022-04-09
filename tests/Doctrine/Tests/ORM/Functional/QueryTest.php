@@ -238,18 +238,10 @@ class QueryTest extends OrmFunctionalTestCase
                   ->setParameters($parameters)
                   ->getResult();
 
-        if (! class_exists(LoggingMiddleware::class)) {
-            // DBAL 2 logs queries before resolving parameter positions
-            self::assertSame(
-                ['jwage', 'active'],
-                $this->getLastLoggedQuery()['params']
-            );
-        } else {
-            self::assertSame(
-                [1 => 'jwage', 2 => 'active'],
-                $this->getLastLoggedQuery()['params']
-            );
-        }
+        self::assertSame(
+            [1 => 'jwage', 2 => 'active'],
+            $this->getLastLoggedQuery()['params']
+        );
     }
 
     public function testSetParametersBackwardsCompatible(): void

@@ -175,13 +175,10 @@ class LockTest extends OrmFunctionalTestCase
             $this->_em->rollback();
         }
 
-        $lastLoggedQuery = $this->getLastLoggedQuery()['sql'];
-        // DBAL 2 logs a commit as last query.
-        if ($lastLoggedQuery === '"COMMIT"') {
-            $lastLoggedQuery = $this->getLastLoggedQuery(1)['sql'];
-        }
-
-        self::assertStringContainsString($writeLockSql, $lastLoggedQuery);
+        self::assertStringContainsString(
+            $writeLockSql,
+            $this->getLastLoggedQuery()['sql']
+        );
     }
 
     /**
@@ -211,13 +208,10 @@ class LockTest extends OrmFunctionalTestCase
             $this->_em->rollback();
         }
 
-        $lastLoggedQuery = $this->getLastLoggedQuery()['sql'];
-        // DBAL 2 logs a commit as last query.
-        if ($lastLoggedQuery === '"COMMIT"') {
-            $lastLoggedQuery = $this->getLastLoggedQuery(1)['sql'];
-        }
-
-        self::assertStringContainsString($readLockSql, $lastLoggedQuery);
+        self::assertStringContainsString(
+            $readLockSql,
+            $this->getLastLoggedQuery()['sql']
+        );
     }
 
     /**

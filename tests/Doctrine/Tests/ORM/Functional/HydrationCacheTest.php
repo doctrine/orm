@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\Tests\Models\Cms\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
-
-use function method_exists;
 
 /**
  * @group DDC-1766
@@ -35,8 +32,7 @@ class HydrationCacheTest extends OrmFunctionalTestCase
 
     public function testHydrationCache(): void
     {
-        $arrayAdapter = new ArrayAdapter();
-        $cache        = method_exists(QueryCacheProfile::class, 'getResultCache') ? $arrayAdapter : DoctrineProvider::wrap($arrayAdapter);
+        $cache = new ArrayAdapter();
 
         $dql = 'SELECT u FROM Doctrine\Tests\Models\Cms\CmsUser u';
 
@@ -67,7 +63,7 @@ class HydrationCacheTest extends OrmFunctionalTestCase
                   ->setHydrationCacheProfile(new QueryCacheProfile(0, 'cachekey', $cache))
                   ->getArrayResult();
 
-        self::assertTrue($arrayAdapter->hasItem('cachekey'), 'Explicit cache key');
+        self::assertTrue($cache->hasItem('cachekey'), 'Explicit cache key');
 
         $this->_em->createQuery($dql)
                       ->setHydrationCacheProfile(new QueryCacheProfile(0, 'cachekey', $cache))
@@ -78,9 +74,6 @@ class HydrationCacheTest extends OrmFunctionalTestCase
     public function testHydrationParametersSerialization(): void
     {
         $cache = new ArrayAdapter();
-        if (! method_exists(QueryCacheProfile::class, 'getResultCache')) {
-            $cache = DoctrineProvider::wrap($cache);
-        }
 
         $dql   = 'SELECT u FROM Doctrine\Tests\Models\Cms\CmsUser u WHERE u.id = ?1';
         $query = $this->_em->createQuery($dql)

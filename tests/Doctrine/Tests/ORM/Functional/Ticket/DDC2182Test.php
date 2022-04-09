@@ -13,9 +13,6 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function method_exists;
-use function sprintf;
-
 class DDC2182Test extends OrmFunctionalTestCase
 {
     public function testPassColumnOptionsToJoinColumns(): void
@@ -39,11 +36,7 @@ class DDC2182Test extends OrmFunctionalTestCase
 
     private function getColumnCollationDeclarationSQL(string $collation): string
     {
-        if (method_exists($this->_em->getConnection()->getDatabasePlatform(), 'getColumnCollationDeclarationSQL')) {
-            return $this->_em->getConnection()->getDatabasePlatform()->getColumnCollationDeclarationSQL($collation);
-        }
-
-        return sprintf('COLLATE %s', $collation);
+        return $this->_em->getConnection()->getDatabasePlatform()->getColumnCollationDeclarationSQL($collation);
     }
 }
 

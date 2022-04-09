@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -15,7 +13,6 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
-use function class_exists;
 
 /**
  * Verifies that the type of parameters being bound to an SQL query is the same
@@ -60,12 +57,7 @@ class DDC2214Test extends OrmFunctionalTestCase
             ->setParameter('ids', [$bar])
             ->getResult();
 
-        if (! class_exists(LoggingMiddleware::class)) {
-            // DBAL 2 logs queries before resolving parameter positions
-            self::assertEquals([Connection::PARAM_INT_ARRAY], $this->getLastLoggedQuery()['types']);
-        } else {
-            self::assertEquals([1 => ParameterType::INTEGER], $this->getLastLoggedQuery()['types']);
-        }
+        self::assertEquals([1 => ParameterType::INTEGER], $this->getLastLoggedQuery()['types']);
     }
 }
 

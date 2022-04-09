@@ -8,9 +8,7 @@ use BadMethodCallException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\PersistentObject;
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
-use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityRepository;
@@ -724,26 +722,14 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $repo = $this->_em->getRepository(CmsAddress::class);
         $repo->findBy(['user' => [1, 2, 3]]);
 
-        if (! class_exists(LoggingMiddleware::class)) {
-            // DBAL 2 logs queries before resolving parameter positions
-            self::assertSame(
-                [
-                    'sql' => 'SELECT t0.id AS id_1, t0.country AS country_2, t0.zip AS zip_3, t0.city AS city_4, t0.user_id AS user_id_5 FROM cms_addresses t0 WHERE t0.user_id IN (?)',
-                    'params' => [[1, 2, 3]],
-                    'types' => [Connection::PARAM_INT_ARRAY],
-                ],
-                $this->getLastLoggedQuery()
-            );
-        } else {
-            self::assertSame(
-                [
-                    'sql' => 'SELECT t0.id AS id_1, t0.country AS country_2, t0.zip AS zip_3, t0.city AS city_4, t0.user_id AS user_id_5 FROM cms_addresses t0 WHERE t0.user_id IN (?, ?, ?)',
-                    'params' => [1 => 1, 2 => 2, 3 => 3],
-                    'types' => array_fill(1, 3, ParameterType::INTEGER),
-                ],
-                $this->getLastLoggedQuery()
-            );
-        }
+        self::assertSame(
+            [
+                'sql' => 'SELECT t0.id AS id_1, t0.country AS country_2, t0.zip AS zip_3, t0.city AS city_4, t0.user_id AS user_id_5 FROM cms_addresses t0 WHERE t0.user_id IN (?, ?, ?)',
+                'params' => [1 => 1, 2 => 2, 3 => 3],
+                'types' => array_fill(1, 3, ParameterType::INTEGER),
+            ],
+            $this->getLastLoggedQuery()
+        );
     }
 
     /**

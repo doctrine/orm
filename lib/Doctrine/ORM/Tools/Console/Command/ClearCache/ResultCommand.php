@@ -8,7 +8,6 @@ use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\ClearableCache;
 use Doctrine\Common\Cache\FlushableCache;
 use Doctrine\Common\Cache\XcacheCache;
-use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Tools\Console\Command\AbstractEntityManagerCommand;
 use InvalidArgumentException;
 use LogicException;
@@ -19,7 +18,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 use function get_debug_type;
-use function method_exists;
 use function sprintf;
 
 /**
@@ -69,7 +67,7 @@ EOT
 
         $em          = $this->getEntityManager($input);
         $cache       = $em->getConfiguration()->getResultCache();
-        $cacheDriver = method_exists(Configuration::class, 'getResultCacheImpl') ? $em->getConfiguration()->getResultCacheImpl() : null;
+        $cacheDriver = $em->getConfiguration()->getResultCacheImpl();
 
         if (! $cacheDriver && ! $cache) {
             throw new InvalidArgumentException('No Result cache driver is configured on given EntityManager.');

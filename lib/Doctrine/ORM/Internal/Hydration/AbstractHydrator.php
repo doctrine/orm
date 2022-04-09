@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\ForwardCompatibility\Result as ForwardCompatibilityResult;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
@@ -108,8 +106,8 @@ abstract class AbstractHydrator
      *
      * @deprecated
      *
-     * @param Result|ResultStatement $stmt
-     * @param ResultSetMapping       $resultSetMapping
+     * @param Result           $stmt
+     * @param ResultSetMapping $resultSetMapping
      * @psalm-param array<string, mixed> $hints
      *
      * @return IterableResult
@@ -123,7 +121,7 @@ abstract class AbstractHydrator
             __METHOD__
         );
 
-        $this->_stmt  = $stmt instanceof ResultStatement ? ForwardCompatibilityResult::ensure($stmt) : $stmt;
+        $this->_stmt  = $stmt;
         $this->_rsm   = $resultSetMapping;
         $this->_hints = $hints;
 
@@ -139,37 +137,17 @@ abstract class AbstractHydrator
     /**
      * Initiates a row-by-row hydration.
      *
-     * @param Result|ResultStatement $stmt
      * @psalm-param array<string, mixed> $hints
      *
      * @return Generator<array-key, mixed>
      *
      * @final
      */
-    public function toIterable($stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
-    {
-        if (! $stmt instanceof Result) {
-            if (! $stmt instanceof ResultStatement) {
-                throw new TypeError(sprintf(
-                    '%s: Expected parameter $stmt to be an instance of %s or %s, got %s',
-                    __METHOD__,
-                    Result::class,
-                    ResultStatement::class,
-                    get_debug_type($stmt)
-                ));
-            }
-
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/8796',
-                '%s: Passing a result as $stmt that does not implement %s is deprecated and will cause a TypeError on 3.0',
-                __METHOD__,
-                Result::class
-            );
-
-            $stmt = ForwardCompatibilityResult::ensure($stmt);
-        }
-
+    public function toIterable(
+        Result $stmt,
+        ResultSetMapping $resultSetMapping,
+        array $hints = []
+    ): iterable {
         $this->_stmt  = $stmt;
         $this->_rsm   = $resultSetMapping;
         $this->_hints = $hints;
@@ -227,8 +205,8 @@ abstract class AbstractHydrator
     /**
      * Hydrates all rows returned by the passed statement instance at once.
      *
-     * @param Result|ResultStatement $stmt
-     * @param ResultSetMapping       $resultSetMapping
+     * @param Result           $stmt
+     * @param ResultSetMapping $resultSetMapping
      * @psalm-param array<string, string> $hints
      *
      * @return mixed[]
@@ -236,25 +214,12 @@ abstract class AbstractHydrator
     public function hydrateAll($stmt, $resultSetMapping, array $hints = [])
     {
         if (! $stmt instanceof Result) {
-            if (! $stmt instanceof ResultStatement) {
-                throw new TypeError(sprintf(
-                    '%s: Expected parameter $stmt to be an instance of %s or %s, got %s',
-                    __METHOD__,
-                    Result::class,
-                    ResultStatement::class,
-                    get_debug_type($stmt)
-                ));
-            }
-
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/8796',
-                '%s: Passing a result as $stmt that does not implement %s is deprecated and will cause a TypeError on 3.0',
+            throw new TypeError(sprintf(
+                '%s: Expected parameter $stmt to be an instance of %s, got %s',
                 __METHOD__,
-                Result::class
-            );
-
-            $stmt = ForwardCompatibilityResult::ensure($stmt);
+                Result::class,
+                get_debug_type($stmt)
+            ));
         }
 
         $this->_stmt  = $stmt;

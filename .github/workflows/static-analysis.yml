@@ -19,16 +19,10 @@ jobs:
       matrix:
         php-version:
           - "8.1"
-        dbal-version:
-          - "default"
         persistence-version:
           - "default"
         include:
           - php-version: "8.1"
-            dbal-version: "2.13"
-            persistence-version: "default"
-          - php-version: "8.1"
-            dbal-version: "default"
             persistence-version: "'3.0.x-dev as 2.4.0'"
 
     steps:
@@ -41,10 +35,6 @@ jobs:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
 
-      - name: "Require specific DBAL version"
-        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
-        if: "${{ matrix.dbal-version != 'default' }}"
-
       - name: "Require specific persistence version"
         run: "composer require doctrine/persistence ${{ matrix.persistence-version }} --no-update"
         if: "${{ matrix.persistence-version != 'default' }}"
@@ -56,15 +46,11 @@ jobs:
 
       - name: "Run a static analysis with phpstan/phpstan"
         run: "vendor/bin/phpstan analyse"
-        if: "${{ matrix.dbal-version == 'default' && matrix.persistence-version == 'default'}}"
-
-      - name: "Run a static analysis with phpstan/phpstan"
-        run: "vendor/bin/phpstan analyse -c phpstan-dbal2.neon"
-        if: "${{ matrix.dbal-version == '2.13' }}"
+        if: "${{ matrix.persistence-version == 'default'}}"
 
       - name: "Run a static analysis with phpstan/phpstan"
         run: "vendor/bin/phpstan analyse -c phpstan-persistence3.neon"
-        if: "${{ matrix.dbal-version == 'default' && matrix.persistence-version != 'default'}}"
+        if: "${{ matrix.persistence-version != 'default'}}"
 
   static-analysis-psalm:
     name: "Static Analysis with Psalm"

@@ -465,12 +465,6 @@ class DDC3634LastInsertIdMockingConnection extends Connection
     }
 
     /** {@inheritDoc} */
-    public function getSchemaManager()
-    {
-        return $this->forwardCall();
-    }
-
-    /** {@inheritDoc} */
     public function setRollbackOnly()
     {
         $this->forwardCall();

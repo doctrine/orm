@@ -8,7 +8,6 @@ use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\Deprecations\Deprecation;
@@ -35,7 +34,6 @@ use function get_debug_type;
 use function in_array;
 use function ksort;
 use function md5;
-use function method_exists;
 use function reset;
 use function serialize;
 use function sha1;
@@ -340,9 +338,7 @@ final class Query extends AbstractQuery
             return;
         }
 
-        $cache = method_exists(QueryCacheProfile::class, 'getResultCache')
-            ? $this->_queryCacheProfile->getResultCache()
-            : $this->_queryCacheProfile->getResultCacheDriver();
+        $cache = $this->_queryCacheProfile->getResultCache();
 
         assert($cache !== null);
 
@@ -351,9 +347,7 @@ final class Query extends AbstractQuery
         foreach ($statements as $statement) {
             $cacheKeys = $this->_queryCacheProfile->generateCacheKeys($statement, $sqlParams, $types, $connectionParams);
 
-            $cache instanceof CacheItemPoolInterface
-                ? $cache->deleteItem(reset($cacheKeys))
-                : $cache->delete(reset($cacheKeys));
+            $cache->deleteItem(reset($cacheKeys));
         }
     }
 

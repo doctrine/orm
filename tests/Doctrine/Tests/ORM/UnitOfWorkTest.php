@@ -45,7 +45,6 @@ use function assert;
 use function count;
 use function gc_collect_cycles;
 use function get_class;
-use function method_exists;
 use function random_int;
 use function uniqid;
 
@@ -88,19 +87,7 @@ class UnitOfWorkTest extends OrmTestCase
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 
-        if (method_exists($platform, 'getSQLResultCasing')) {
-            $platform->method('getSQLResultCasing')
-                ->willReturnCallback(static function (string $column): string {
-                    return $column;
-                });
-        }
-
         $driverStatement = $this->createMock(Driver\Statement::class);
-
-        if (method_exists($driverStatement, 'rowCount')) {
-            $driverStatement->method('rowCount')
-                ->willReturn(0);
-        }
 
         $driverConnection = $this->createMock(Driver\Connection::class);
         $driverConnection->method('prepare')

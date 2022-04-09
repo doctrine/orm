@@ -14,7 +14,6 @@ use function assert;
 use function explode;
 use function fwrite;
 use function get_debug_type;
-use function method_exists;
 use function sprintf;
 use function str_starts_with;
 use function strlen;
@@ -107,9 +106,7 @@ class TestUtil
 
     private static function createSchemaManager(Connection $connection): AbstractSchemaManager
     {
-        return method_exists(Connection::class, 'createSchemaManager')
-            ? $connection->createSchemaManager()
-            : $connection->getSchemaManager();
+        return $connection->createSchemaManager();
     }
 
     private static function addDbEventSubscribers(Connection $conn): void
