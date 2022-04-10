@@ -1,5 +1,11 @@
 # Upgrade to 2.12
 
+## Deprecate omitting `$class` argument to `ORMInvalidArgumentException::invalidIdentifierBindingEntity()`
+
+To make it easier to identify understand the cause for that exception, it is
+deprecated to omit the class name when calling
+`ORMInvalidArgumentException::invalidIdentifierBindingEntity()`.
+
 ## Deprecate `Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper`
 
 Using a console helper to provide the ORM's console commands with one or
@@ -7,7 +13,6 @@ multiple entity managers had been deprecated with 2.9 already. This leaves
 The `EntityManagerHelper` class with no purpose which is why it is now
 deprecated too. Applications that still rely on the `em` console helper, can
 easily recreate that class in their own codebase.
-
 ## Deprecate custom repository classes that don't extend `EntityRepository`
 
 Although undocumented, it is currently possible to configure a custom repository
