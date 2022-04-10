@@ -877,12 +877,13 @@ class XmlDriver extends FileDriver
             $mapping['enumType'] = (string) $fieldMapping['enum-type'];
 
             if (isset($fieldMapping['enum-default-value'])) {
-                if (empty($fieldMapping['enum-default-value'])) {
+                $enumDefaultValueString = (string) $fieldMapping['enum-default-value'];
+                if (empty($enumDefaultValueString)) {
                     $mapping['enumDefaultValue'] = null;
                 } else {
                     /** @psalm-var class-string<BackedEnum> $enumClass */
                     $enumClass                   = $mapping['enumType'];
-                    $mapping['enumDefaultValue'] = ($enumClass)::from((string) $fieldMapping['enum-default-value']);
+                    $mapping['enumDefaultValue'] = ($enumClass)::from($enumDefaultValueString);
                 }
             }
         }
