@@ -12,6 +12,7 @@ use ValueError;
 use function array_keys;
 use function array_map;
 use function array_values;
+use function get_class;
 use function get_debug_type;
 use function get_parent_class;
 use function implode;
@@ -981,7 +982,7 @@ class MappingException extends ORMException
         return new self(sprintf(
             'Attempting to assign default value %s of enum %s as enum in entity %s::$%s of type %s',
             $defaultEnumValue->name,
-            $defaultEnumValue::class,
+            get_class($defaultEnumValue),
             $className,
             $fieldName,
             $enumType
