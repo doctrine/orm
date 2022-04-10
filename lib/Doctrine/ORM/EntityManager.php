@@ -438,11 +438,14 @@ use function strpos;
         }
 
         foreach ($id as $i => $value) {
-            if (is_object($value) && $this->metadataFactory->hasMetadataFor(ClassUtils::getClass($value))) {
-                $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+            if (is_object($value)) {
+                $className = ClassUtils::getClass($value);
+                if ($this->metadataFactory->hasMetadataFor($className)) {
+                    $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
 
-                if ($id[$i] === null) {
-                    throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+                    if ($id[$i] === null) {
+                        throw ORMInvalidArgumentException::invalidIdentifierBindingEntity($className);
+                    }
                 }
             }
         }
