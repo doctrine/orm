@@ -673,7 +673,7 @@ class AttributeDriver implements MappingDriver
      *                   nullable: bool,
      *                   precision: int,
      *                   enumType?: class-string,
-     *                   enumDefaultValue?: ?BackedEnum,
+     *                   enumDefaultValue?: ?\BackedEnum,
      *                   options?: mixed[],
      *                   columnName?: string,
      *                   columnDefinition?: string

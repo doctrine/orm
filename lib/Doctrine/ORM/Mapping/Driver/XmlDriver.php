@@ -812,7 +812,7 @@ class XmlDriver extends FileDriver
       *                   notInsertable?: bool,
       *                   notUpdatable?: bool,
       *                   enumType?: string,
-      *                   enumDefaultValue?: ?BackedEnum,
+      *                   enumDefaultValue?: ?\BackedEnum,
       *                   version?: bool,
       *                   columnDefinition?: string,
       *                   options?: array

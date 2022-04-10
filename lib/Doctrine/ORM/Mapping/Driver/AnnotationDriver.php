@@ -766,7 +766,7 @@ class AnnotationDriver implements MappingDriver
      *                   notUpdateble?: bool,
      *                   generated?: ClassMetadataInfo::GENERATED_*,
      *                   enumType?: class-string,
-     *                   enumDefaultValue?: ?BackedEnum,
+     *                   enumDefaultValue?: ?\BackedEnum,
      *                   options?: mixed[],
      *                   columnName?: string,
      *                   columnDefinition?: string

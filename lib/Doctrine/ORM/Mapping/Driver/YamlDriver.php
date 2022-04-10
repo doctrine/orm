@@ -801,7 +801,7 @@ class YamlDriver extends FileDriver
      *                   updatable?: mixed,
      *                   generated?: mixed,
      *                   enumType?: class-string,
-     *                   enumDefaultValue?: ?BackedEnum,
+     *                   enumDefaultValue?: ?\BackedEnum,
      *                   version?: mixed,
      *                   columnDefinition?: mixed
      *              }|null $column
@@ -821,7 +821,7 @@ class YamlDriver extends FileDriver
      *                   notUpdatable?: mixed,
      *                   generated?: mixed,
      *                   enumType?: class-string,
-     *                   enumDefaultValue?: ?BackedEnum,
+     *                   enumDefaultValue?: ?\BackedEnum,
      *                   version?: mixed,
      *                   columnDefinition?: mixed
      *               }
