@@ -1,0 +1,26 @@
+Doctrine\Tests\Models\Enums\TypedCardEnumDefaultValue:
+  type: entity
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    suit:
+      type: string
+      enumType: Doctrine\Tests\Models\Enums\Suit
+      enumDefaultValue: S
+    suitDefaultNull:
+      type: string
+      enumType: Doctrine\Tests\Models\Enums\Suit
+      enumDefaultValue: ~
+    suitDefaultNullNullable:
+      type: string
+      nullable: true
+      enumType: Doctrine\Tests\Models\Enums\Suit
+      enumDefaultValue: ~
+    suitDefaultNotNullNullable:
+      type: string
+      nullable: true
+      enumType: Doctrine\Tests\Models\Enums\Suit
+      enumDefaultValue: S
