@@ -976,11 +976,12 @@ class MappingException extends ORMException
         ));
     }
 
-    public static function wrongDefaultEnumValueType(string $className, string $fieldName, string $enumType, mixed $defaultEnumValue): self
+    public static function wrongDefaultEnumValueType(string $className, string $fieldName, string $enumType, BackedEnum $defaultEnumValue): self
     {
         return new self(sprintf(
-            'Attempting to assign default value %s as enum in entity %s::$%s of type %s',
-            $defaultEnumValue,
+            'Attempting to assign default value %s of enum %s as enum in entity %s::$%s of type %s',
+            $defaultEnumValue->name,
+            $defaultEnumValue::class,
             $className,
             $fieldName,
             $enumType

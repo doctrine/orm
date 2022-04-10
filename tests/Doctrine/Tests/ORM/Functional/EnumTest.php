@@ -16,6 +16,7 @@ use Doctrine\Tests\Models\Enums\Scale;
 use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Enums\TypedCard;
 use Doctrine\Tests\Models\Enums\TypedCardEnumDefaultValue;
+use Doctrine\Tests\Models\Enums\TypedCardEnumDefaultValueIncorrect;
 use Doctrine\Tests\Models\Enums\Unit;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -60,6 +61,21 @@ class EnumTest extends OrmFunctionalTestCase
 
         $this->assertInstanceOf(Suit::class, $fetchedCard->suit);
         $this->assertEquals(Suit::Clubs, $fetchedCard->suit);
+    }
+
+    public function testIncorrectDefaultEnumValue(): void
+    {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(sprintf(
+            'Attempting to assign default value %s of enum %s as enum in entity %s::$%s of type %s',
+            Unit::Gram->name,
+            Unit::class,
+            TypedCardEnumDefaultValueIncorrect::class,
+            'suit',
+            Suit::class
+        ));
+
+        $this->setUpEntitySchema([TypedCardEnumDefaultValueIncorrect::class]);
     }
 
     public function testDefaultEnumValue(): void
