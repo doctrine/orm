@@ -37,8 +37,7 @@ will have to run a composer installation in the project:
 ```sh
 git clone git@github.com:doctrine/orm.git
 cd orm
-curl -sS https://getcomposer.org/installer | php --
-./composer.phar install
+composer install
 ```
 
 To run the testsuite against another database, copy the ``phpunit.xml.dist``
