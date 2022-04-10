@@ -149,6 +149,7 @@
 
     <rule ref="SlevomatCodingStandard.PHP.UselessParentheses">
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/EnumTest.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification">

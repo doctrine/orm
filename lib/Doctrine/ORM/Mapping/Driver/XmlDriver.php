@@ -877,9 +877,9 @@ class XmlDriver extends FileDriver
 
             if (isset($fieldMapping['enum-default-value'])) {
                 if (empty($fieldMapping['enum-default-value'])) {
-                    $mapping['enumType'] = null;
+                    $mapping['enumDefaultValue'] = null;
                 } else {
-                    $mapping['enumType'] = ($mapping['enumType'])::from($fieldMapping['enum-default-value']);
+                    $mapping['enumDefaultValue'] = ($mapping['enumType'])::from($fieldMapping['enum-default-value']);
                 }
             }
         }
