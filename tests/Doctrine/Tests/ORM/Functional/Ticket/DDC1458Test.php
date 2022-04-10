@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC1258Test extends OrmFunctionalTestCase
+class DDC1458Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
