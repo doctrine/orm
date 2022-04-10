@@ -6,14 +6,10 @@ namespace Doctrine\ORM\Tools\Console;
 
 use Composer\InstalledVersions;
 use Doctrine\DBAL\Tools\Console as DBALConsole;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\ConnectionFromManagerProvider;
-use Doctrine\ORM\Tools\Console\EntityManagerProvider\HelperSetManagerProvider;
-use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use OutOfBoundsException;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
-use Symfony\Component\Console\Helper\HelperSet;
 
 use function assert;
 
@@ -23,23 +19,13 @@ use function assert;
 final class ConsoleRunner
 {
     /**
-     * Create a Symfony Console HelperSet
-     *
-     * @deprecated This method will be removed in ORM 3.0 without replacement.
-     */
-    public static function createHelperSet(EntityManagerInterface $entityManager): HelperSet
-    {
-        return new HelperSet(['em' => new EntityManagerHelper($entityManager)]);
-    }
-
-    /**
      * Runs console with the given helper set.
      *
      * @param SymfonyCommand[] $commands
      */
-    public static function run(HelperSet|EntityManagerProvider $helperSetOrProvider, array $commands = []): void
+    public static function run(EntityManagerProvider $entityManagerProvider, array $commands = []): void
     {
-        $cli = self::createApplication($helperSetOrProvider, $commands);
+        $cli = self::createApplication($entityManagerProvider, $commands);
         $cli->run();
     }
 
@@ -52,7 +38,7 @@ final class ConsoleRunner
      * @throws OutOfBoundsException
      */
     public static function createApplication(
-        HelperSet|EntityManagerProvider $helperSetOrProvider,
+        EntityManagerProvider $entityManagerProvider,
         array $commands = []
     ): Application {
         $version = InstalledVersions::getVersion('doctrine/orm');
@@ -61,24 +47,14 @@ final class ConsoleRunner
         $cli = new Application('Doctrine Command Line Interface', $version);
         $cli->setCatchExceptions(true);
 
-        if ($helperSetOrProvider instanceof HelperSet) {
-            $cli->setHelperSet($helperSetOrProvider);
-
-            $helperSetOrProvider = new HelperSetManagerProvider($helperSetOrProvider);
-        }
-
-        self::addCommands($cli, $helperSetOrProvider);
+        self::addCommands($cli, $entityManagerProvider);
         $cli->addCommands($commands);
 
         return $cli;
     }
 
-    public static function addCommands(Application $cli, ?EntityManagerProvider $entityManagerProvider = null): void
+    public static function addCommands(Application $cli, EntityManagerProvider $entityManagerProvider): void
     {
-        if ($entityManagerProvider === null) {
-            $entityManagerProvider = new HelperSetManagerProvider($cli->getHelperSet());
-        }
-
         $connectionProvider = new ConnectionFromManagerProvider($entityManagerProvider);
 
         $cli->addCommands(
