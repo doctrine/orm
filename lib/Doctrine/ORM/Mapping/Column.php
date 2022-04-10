@@ -86,7 +86,7 @@ final class Column implements Annotation
         bool $insertable = true,
         bool $updatable = true,
         ?string $enumType = null,
-        mixed $enumDefaultValue = false,
+        $enumDefaultValue = false,
         array $options = [],
         ?string $columnDefinition = null,
         ?string $generated = null
