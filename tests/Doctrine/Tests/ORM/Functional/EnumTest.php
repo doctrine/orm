@@ -15,6 +15,7 @@ use Doctrine\Tests\Models\Enums\Quantity;
 use Doctrine\Tests\Models\Enums\Scale;
 use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Enums\TypedCard;
+use Doctrine\Tests\Models\Enums\TypedCardEnumDefaultValue;
 use Doctrine\Tests\Models\Enums\Unit;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -59,6 +60,57 @@ class EnumTest extends OrmFunctionalTestCase
 
         $this->assertInstanceOf(Suit::class, $fetchedCard->suit);
         $this->assertEquals(Suit::Clubs, $fetchedCard->suit);
+    }
+
+    public function testDefaultEnumValue(): void
+    {
+        $this->setUpEntitySchema([TypedCardEnumDefaultValue::class]);
+
+        $card                             = new TypedCardEnumDefaultValue();
+        $card->suit                       = Suit::Clubs;
+        $card->suitDefaultNull            = Suit::Clubs;
+        $card->suitDefaultNullNullable    = Suit::Clubs;
+        $card->suitDefaultNotNullNullable = Suit::Clubs;
+
+        $this->_em->persist($card);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $metadata = $this->_em->getClassMetadata(TypedCardEnumDefaultValue::class);
+        $this->_em->getConnection()->update(
+            $metadata->table['name'],
+            [
+                $metadata->fieldMappings['suit']['columnName'] => 'invalid',
+                $metadata->fieldMappings['suitDefaultNull']['columnName'] => 'invalid',
+                $metadata->fieldMappings['suitDefaultNullNullable']['columnName'] => 'invalid',
+                $metadata->fieldMappings['suitDefaultNotNullNullable']['columnName'] => 'invalid',
+            ],
+            [$metadata->fieldMappings['id']['columnName'] => $card->id]
+        );
+
+        $class = $this->_em->find(TypedCardEnumDefaultValue::class, $card->id);
+
+        $this->assertSame(Suit::Spades, $class->suit);
+        $this->assertNull($class->suitDefaultNull);
+        $this->assertNull($class->suitDefaultNullNullable);
+        $this->assertSame(Suit::Spades, $class->suitDefaultNotNullNullable);
+
+        $this->_em->clear();
+        unset($class);
+
+        $this->_em->getConnection()->update(
+            $metadata->table['name'],
+            [
+                $metadata->fieldMappings['suitDefaultNullNullable']['columnName'] => null,
+                $metadata->fieldMappings['suitDefaultNotNullNullable']['columnName'] => null,
+            ],
+            [$metadata->fieldMappings['id']['columnName'] => $card->id]
+        );
+
+        $class = $this->_em->find(TypedCardEnumDefaultValue::class, $card->id);
+
+        $this->assertNull($class->suitDefaultNullNullable);
+        $this->assertNull($class->suitDefaultNotNullNullable);
     }
 
     public function testFindByEnum(): void

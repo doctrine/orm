@@ -31,6 +31,7 @@ use RuntimeException;
 use function array_diff;
 use function array_flip;
 use function array_intersect;
+use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_merge;
@@ -44,6 +45,7 @@ use function explode;
 use function gettype;
 use function in_array;
 use function interface_exists;
+use function is_a;
 use function is_array;
 use function is_subclass_of;
 use function ltrim;
@@ -84,6 +86,7 @@ use const PHP_VERSION_ID;
  *      notUpdatable?: bool,
  *      generated?: string,
  *      enumType?: class-string<BackedEnum>,
+ *      enumDefaultValue?: ?BackedEnum,
  *      columnDefinition?: string,
  *      precision?: int,
  *      scale?: int,
@@ -1075,7 +1078,9 @@ class ClassMetadataInfo implements ClassMetadata
                 if (isset($mapping['enumType'])) {
                     $childProperty = new ReflectionEnumProperty(
                         $childProperty,
-                        $mapping['enumType']
+                        $mapping['enumType'],
+                        array_key_exists('enumDefaultValue', $mapping),
+                        $mapping['enumDefaultValue'] ?? null
                     );
                 }
 
@@ -1094,7 +1099,9 @@ class ClassMetadataInfo implements ClassMetadata
             if (isset($mapping['enumType']) && $this->reflFields[$field] !== null) {
                 $this->reflFields[$field] = new ReflectionEnumProperty(
                     $this->reflFields[$field],
-                    $mapping['enumType']
+                    $mapping['enumType'],
+                    array_key_exists('enumDefaultValue', $mapping),
+                    $mapping['enumDefaultValue'] ?? null
                 );
             }
         }
@@ -1691,6 +1698,10 @@ class ClassMetadataInfo implements ClassMetadata
 
             if (! empty($mapping['id'])) {
                 $this->containsEnumIdentifier = true;
+            }
+
+            if (isset($mapping['enumDefaultValue']) && ! is_a($mapping['enumDefaultValue'], $mapping['enumType'])) {
+                throw MappingException::wrongDefaultEnumValueType($this->name, $mapping['fieldName'], $mapping['enumType'], $mapping['enumDefaultValue']);
             }
         }
 

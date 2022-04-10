@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use BackedEnum;
+use ReflectionException;
 use ReflectionProperty;
 use ReturnTypeWillChange;
 use ValueError;
@@ -21,13 +22,23 @@ class ReflectionEnumProperty extends ReflectionProperty
     /** @var class-string<BackedEnum> */
     private $enumType;
 
+    /** @var bool */
+    private $setDefaultIfNotExists;
+
+    /** @var ?BackedEnum */
+    private $defaultIfNotExists;
+
     /**
      * @param class-string<BackedEnum> $enumType
+     *
+     * @throws ReflectionException
      */
-    public function __construct(ReflectionProperty $originalReflectionProperty, string $enumType)
+    public function __construct(ReflectionProperty $originalReflectionProperty, string $enumType, bool $setDefaultIfNotExists = false, ?BackedEnum $defaultIfNotExists = null)
     {
         $this->originalReflectionProperty = $originalReflectionProperty;
         $this->enumType                   = $enumType;
+        $this->setDefaultIfNotExists      = $setDefaultIfNotExists;
+        $this->defaultIfNotExists         = $defaultIfNotExists;
 
         parent::__construct(
             $originalReflectionProperty->getDeclaringClass()->getName(),
@@ -67,12 +78,14 @@ class ReflectionEnumProperty extends ReflectionProperty
     /**
      * @param object                         $object
      * @param int|string|int[]|string[]|null $value
+     *
+     * @throws MappingException
      */
     public function setValue($object, $value = null): void
     {
         if ($value !== null) {
             if (is_array($value)) {
-                $value = array_map(function ($item) use ($object): BackedEnum {
+                $value = array_map(function ($item) use ($object): ?BackedEnum {
                     return $this->initializeEnumValue($object, $item);
                 }, $value);
             } else {
@@ -86,13 +99,19 @@ class ReflectionEnumProperty extends ReflectionProperty
     /**
      * @param object     $object
      * @param int|string $value
+     *
+     * @throws MappingException
      */
-    private function initializeEnumValue($object, $value): BackedEnum
+    private function initializeEnumValue($object, $value): ?BackedEnum
     {
         $enumType = $this->enumType;
 
         try {
-            return $enumType::from($value);
+            if ($this->setDefaultIfNotExists) {
+                return $enumType::tryFrom($value) ?? $this->defaultIfNotExists;
+            } else {
+                return $enumType::from($value);
+            }
         } catch (ValueError $e) {
             throw MappingException::invalidEnumValue(
                 get_class($object),

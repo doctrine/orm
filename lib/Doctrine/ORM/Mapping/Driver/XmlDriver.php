@@ -812,6 +812,7 @@ class XmlDriver extends FileDriver
       *                   notInsertable?: bool,
       *                   notUpdatable?: bool,
       *                   enumType?: string,
+      *                   enumDefaultValue?: ?BackedEnum,
       *                   version?: bool,
       *                   columnDefinition?: string,
       *                   options?: array
@@ -873,6 +874,14 @@ class XmlDriver extends FileDriver
 
         if (isset($fieldMapping['enum-type'])) {
             $mapping['enumType'] = (string) $fieldMapping['enum-type'];
+
+            if (isset($fieldMapping['enum-default-value'])) {
+                if (empty($fieldMapping['enum-default-value'])) {
+                    $mapping['enumType'] = null;
+                } else {
+                    $mapping['enumType'] = ($mapping['enumType'])::from($fieldMapping['enum-default-value']);
+                }
+            }
         }
 
         if (isset($fieldMapping->options)) {

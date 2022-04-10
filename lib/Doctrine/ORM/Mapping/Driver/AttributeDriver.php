@@ -673,6 +673,7 @@ class AttributeDriver implements MappingDriver
      *                   nullable: bool,
      *                   precision: int,
      *                   enumType?: class-string,
+     *                   enumDefaultValue?: ?BackedEnum,
      *                   options?: mixed[],
      *                   columnName?: string,
      *                   columnDefinition?: string
@@ -716,6 +717,10 @@ class AttributeDriver implements MappingDriver
 
         if ($column->enumType) {
             $mapping['enumType'] = $column->enumType;
+
+            if ($column->enumDefaultValue !== false) {
+                $mapping['enumDefaultValue'] = $column->enumDefaultValue;
+            }
         }
 
         return $mapping;

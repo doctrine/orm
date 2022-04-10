@@ -14,6 +14,7 @@ use InvalidArgumentException;
 use LogicException;
 use Symfony\Component\Yaml\Yaml;
 
+use function array_key_exists;
 use function array_map;
 use function class_exists;
 use function constant;
@@ -800,6 +801,7 @@ class YamlDriver extends FileDriver
      *                   updatable?: mixed,
      *                   generated?: mixed,
      *                   enumType?: class-string,
+     *                   enumDefaultValue?: ?BackedEnum,
      *                   version?: mixed,
      *                   columnDefinition?: mixed
      *              }|null $column
@@ -819,6 +821,7 @@ class YamlDriver extends FileDriver
      *                   notUpdatable?: mixed,
      *                   generated?: mixed,
      *                   enumType?: class-string,
+     *                   enumDefaultValue?: ?BackedEnum,
      *                   version?: mixed,
      *                   columnDefinition?: mixed
      *               }
@@ -888,6 +891,10 @@ class YamlDriver extends FileDriver
 
         if (isset($column['enumType'])) {
             $mapping['enumType'] = $column['enumType'];
+
+            if (array_key_exists('enumDefaultValue', $column)) {
+                $mapping['enumDefaultValue'] = $column['enumDefaultValue'];
+            }
         }
 
         return $mapping;

@@ -53,6 +53,9 @@ final class Column implements Annotation
     /** @var class-string<\BackedEnum>|null */
     public $enumType = null;
 
+    /** @var \BackedEnum|false|null */
+    public $enumDefaultValue = false;
+
     /** @var array<string,mixed> */
     public $options = [];
 
@@ -68,6 +71,7 @@ final class Column implements Annotation
 
     /**
      * @param class-string<\BackedEnum>|null $enumType
+     * @param \BackedEnum|false|null         $enumDefaultValue
      * @param array<string,mixed>            $options
      * @psalm-param 'NEVER'|'INSERT'|'ALWAYS'|null $generated
      */
@@ -82,6 +86,7 @@ final class Column implements Annotation
         bool $insertable = true,
         bool $updatable = true,
         ?string $enumType = null,
+        mixed $enumDefaultValue = false,
         array $options = [],
         ?string $columnDefinition = null,
         ?string $generated = null
@@ -96,6 +101,7 @@ final class Column implements Annotation
         $this->insertable       = $insertable;
         $this->updatable        = $updatable;
         $this->enumType         = $enumType;
+        $this->enumDefaultValue = $enumDefaultValue;
         $this->options          = $options;
         $this->columnDefinition = $columnDefinition;
         $this->generated        = $generated;

@@ -30,6 +30,7 @@ use function array_diff_key;
 use function array_filter;
 use function array_flip;
 use function array_intersect_key;
+use function array_key_exists;
 use function assert;
 use function count;
 use function current;
@@ -807,6 +808,10 @@ class SchemaTool
 
         if (isset($mapping['enumType'])) {
             $mappingOptions['enumType'] = $mapping['enumType'];
+
+            if (array_key_exists('enumDefaultValue', $mapping)) {
+                $mappingOptions['enumDefaultValue'] = $mapping['enumDefaultValue'];
+            }
         }
 
         if (($mappingOptions['default'] ?? null) instanceof BackedEnum) {
