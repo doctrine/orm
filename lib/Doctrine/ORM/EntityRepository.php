@@ -30,7 +30,7 @@ use function substr;
  * This class is designed for inheritance and users can subclass this class to
  * write their own repositories with business-specific methods to locate entities.
  *
- * @template T
+ * @template T of object
  * @template-implements Selectable<int,T>
  * @template-implements ObjectRepository<T>
  */
