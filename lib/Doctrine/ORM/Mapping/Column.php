@@ -71,8 +71,8 @@ final class Column implements Annotation
 
     /**
      * @param class-string<\BackedEnum>|null $enumType
-     * @param \BackedEnum|false|null         $enumDefaultValue
      * @param array<string,mixed>            $options
+     * @psalm-param \BackedEnum|false|null         $enumDefaultValue
      * @psalm-param 'NEVER'|'INSERT'|'ALWAYS'|null $generated
      */
     public function __construct(
