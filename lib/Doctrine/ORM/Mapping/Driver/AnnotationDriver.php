@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Driver;
 
+use BackedEnum;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Deprecations\Deprecation;
@@ -766,7 +767,7 @@ class AnnotationDriver implements MappingDriver
      *                   notUpdateble?: bool,
      *                   generated?: ClassMetadataInfo::GENERATED_*,
      *                   enumType?: class-string,
-     *                   enumDefaultValue?: ?\BackedEnum,
+     *                   enumDefaultValue?: ?BackedEnum,
      *                   options?: mixed[],
      *                   columnName?: string,
      *                   columnDefinition?: string

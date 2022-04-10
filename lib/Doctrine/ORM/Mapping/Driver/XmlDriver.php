@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Driver;
 
+use BackedEnum;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata as Metadata;
@@ -812,7 +813,7 @@ class XmlDriver extends FileDriver
       *                   notInsertable?: bool,
       *                   notUpdatable?: bool,
       *                   enumType?: string,
-      *                   enumDefaultValue?: ?\BackedEnum,
+      *                   enumDefaultValue?: ?BackedEnum,
       *                   version?: bool,
       *                   columnDefinition?: string,
       *                   options?: array

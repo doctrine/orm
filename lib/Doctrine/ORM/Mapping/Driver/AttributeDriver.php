@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Driver;
 
+use BackedEnum;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
@@ -673,7 +674,7 @@ class AttributeDriver implements MappingDriver
      *                   nullable: bool,
      *                   precision: int,
      *                   enumType?: class-string,
-     *                   enumDefaultValue?: ?\BackedEnum,
+     *                   enumDefaultValue?: ?BackedEnum,
      *                   options?: mixed[],
      *                   columnName?: string,
      *                   columnDefinition?: string
