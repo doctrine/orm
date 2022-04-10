@@ -147,6 +147,10 @@
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
+    <rule ref="SlevomatCodingStandard.PHP.UselessParentheses">
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/EnumTest.php</exclude-pattern>
+    </rule>
+
     <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification">
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>

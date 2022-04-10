@@ -68,7 +68,7 @@ class EnumTest extends OrmFunctionalTestCase
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(sprintf(
             'Attempting to assign default value %s of enum %s as enum in entity %s::$%s of type %s',
-            Unit::Gram->name,
+            (Unit::Gram)->name,
             Unit::class,
             TypedCardEnumDefaultValueIncorrect::class,
             'suit',
