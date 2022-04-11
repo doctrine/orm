@@ -730,15 +730,6 @@ class SchemaTool
 
                 // Only do this for DBAL v3 or higher.
                 if (! method_exists(AbstractPlatform::class, 'getGuidExpression')) {
-                    $theJoinTableCharset = $theJoinTable->hasOption('charset') ? $theJoinTable->getOption('charset') : null;
-                    if (
-                        ! isset($columnOptions['customSchemaOptions']['charset'])
-                        && isset($class->table['options']['charset'])
-                        && $theJoinTableCharset !== $class->table['options']['charset']
-                    ) {
-                        $columnOptions['customSchemaOptions']['charset'] = $class->table['options']['charset'];
-                    }
-
                     $theJoinTableCollation = $theJoinTable->hasOption('collation') ? $theJoinTable->getOption('collation') : null;
                     if (
                         ! isset($columnOptions['customSchemaOptions']['collation'])

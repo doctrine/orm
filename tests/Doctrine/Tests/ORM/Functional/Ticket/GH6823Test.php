@@ -30,14 +30,17 @@ class GH6823Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             GH6823User::class,
             GH6823Group::class,
-            GH6823Status::class
+            GH6823Status::class,
+            GH6823Tag::class
         );
 
-        self::assertSQLEquals('CREATE TABLE gh6823_user (id VARCHAR(255) NOT NULL, group_id VARCHAR(255) CHARACTER SET ascii DEFAULT NULL COLLATE `ascii_general_ci`, status_id VARCHAR(255) CHARACTER SET latin1 DEFAULT NULL COLLATE `latin1_bin`, INDEX idx_70dd1774fe54d947 (group_id), INDEX idx_70dd17746bf700bd (status_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_bin` ENGINE = InnoDB', $this->getLastLoggedQuery(4)['sql']);
-        self::assertSQLEquals('CREATE TABLE gh6823_group (id VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET ascii COLLATE `ascii_general_ci` ENGINE = InnoDB', $this->getLastLoggedQuery(3)['sql']);
-        self::assertSQLEquals('CREATE TABLE gh6823_status (id VARCHAR(255) CHARACTER SET latin1 NOT NULL COLLATE `latin1_bin`, PRIMARY KEY(id)) DEFAULT CHARACTER SET koi8r COLLATE `koi8r_bin` ENGINE = InnoDB', $this->getLastLoggedQuery(2)['sql']);
-        self::assertSQLEquals('ALTER TABLE gh6823_user ADD CONSTRAINT fk_70dd1774fe54d947 FOREIGN KEY (group_id) REFERENCES gh6823_group (id)', $this->getLastLoggedQuery(1)['sql']);
-        self::assertSQLEquals('ALTER TABLE gh6823_user ADD CONSTRAINT fk_70dd17746bf700bd FOREIGN KEY (status_id) REFERENCES gh6823_status (id)', $this->getLastLoggedQuery(0)['sql']);
+        self::assertSQLEquals('CREATE TABLE gh6823_user (id VARCHAR(255) NOT NULL, group_id VARCHAR(255) DEFAULT NULL COLLATE `ascii_general_ci`, status_id VARCHAR(255) CHARACTER SET latin1 DEFAULT NULL COLLATE `latin1_bin`, tag_id INT DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, INDEX IDX_70DD1774FE54D947 (group_id), INDEX IDX_70DD17746BF700BD (status_id), INDEX IDX_70DD1774BAD26311 (tag_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_bin` ENGINE = InnoDB', $this->getLastLoggedQuery(6)['sql']);
+        self::assertSQLEquals('CREATE TABLE gh6823_group (id VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET ascii COLLATE `ascii_general_ci` ENGINE = InnoDB', $this->getLastLoggedQuery(5)['sql']);
+        self::assertSQLEquals('CREATE TABLE gh6823_status (id VARCHAR(255) CHARACTER SET latin1 NOT NULL COLLATE `latin1_bin`, PRIMARY KEY(id)) DEFAULT CHARACTER SET koi8r COLLATE `koi8r_bin` ENGINE = InnoDB', $this->getLastLoggedQuery(4)['sql']);
+        self::assertSQLEquals('CREATE TABLE gh6823_tag (id INT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB', $this->getLastLoggedQuery(3)['sql']);
+        self::assertSQLEquals('ALTER TABLE gh6823_user ADD CONSTRAINT fk_70dd1774fe54d947 FOREIGN KEY (group_id) REFERENCES gh6823_group (id)', $this->getLastLoggedQuery(2)['sql']);
+        self::assertSQLEquals('ALTER TABLE gh6823_user ADD CONSTRAINT fk_70dd17746bf700bd FOREIGN KEY (status_id) REFERENCES gh6823_status (id)', $this->getLastLoggedQuery(1)['sql']);
+        self::assertSQLEquals('ALTER TABLE gh6823_user ADD CONSTRAINT FK_70DD1774BAD26311 FOREIGN KEY (tag_id) REFERENCES gh6823_tag (id)', $this->getLastLoggedQuery(0)['sql']);
     }
 }
 
@@ -68,6 +71,12 @@ class GH6823User
      * @ManyToOne(targetEntity="GH6823Status")
      */
     public $status;
+
+    /**
+     * @var GH6823Tag
+     * @ManyToOne(targetEntity="GH6823Tag")
+     */
+    public $tag;
 }
 
 /**
@@ -100,6 +109,23 @@ class GH6823Status
      * @var string
      * @Id
      * @Column(type="string", options={"charset"="latin1", "collation"="latin1_bin"})
+     */
+    public $id;
+}
+
+/**
+ * @Entity
+ * @Table(name="gh6823_tag", options={
+ *     "charset"="utf8mb4",
+ *     "collation"="utf8mb4_unicode_ci"
+ * })
+ */
+class GH6823Tag
+{
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
      */
     public $id;
 }
