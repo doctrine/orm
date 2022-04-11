@@ -12,7 +12,7 @@ use Doctrine\Tests\ORM\Functional\DatabaseDriverTestCase;
  *
  * Github issue: 7684
  */
-class GH7684 extends DatabaseDriverTestCase
+class GH7684Test extends DatabaseDriverTestCase
 {
     public function testIssue(): void
     {
