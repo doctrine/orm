@@ -1,5 +1,24 @@
 # Upgrade to 3.0
 
+## BC Break: Removed `EntityManagerHelper` and related logic
+
+All console commands require a `$entityManagerProvider` to be passed via the
+constructor. Commands won't try to get the entity manager from a previously
+registered `em` console helper.
+
+The following classes have been removed:
+
+* `Doctrine\ORM\Tools\Console\EntityManagerProvider\HelperSetManagerProvider`
+* `Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper`
+
+The following breaking changes have been applied to `Doctrine\ORM\Tools\Console\ConsoleRunner`:
+
+* The method `createHelperSet()` has been removed.
+* The methods `run()` and `createApplication()` don't accept an instance of
+  `HelperSet` as first argument anymore.
+* The method `addCommands()` requires an instance of `EntityManagerProvider`
+  as second argument now.
+
 ## BC Break: `Exception\ORMException` is no longer a class, but an interface
 
 All methods in `Doctrine\ORM\ORMException` have been extracted to dedicated exceptions.
