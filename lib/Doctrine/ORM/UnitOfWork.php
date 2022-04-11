@@ -1444,7 +1444,7 @@ class UnitOfWork implements PropertyChangedListener
             return self::STATE_NEW;
         }
 
-        if ($class->containsForeignIdentifier) {
+        if ($class->containsForeignIdentifier || $class->containsEnumIdentifier) {
             $id = $this->identifierFlattener->flattenIdentifier($class, $id);
         }
 

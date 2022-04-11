@@ -234,9 +234,12 @@ class DefaultCache implements Cache
      */
     private function toIdentifierArray(ClassMetadata $metadata, mixed $identifier): array
     {
-        if (is_object($identifier) && $this->em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($identifier))) {
-            $identifier = $this->uow->getSingleIdentifierValue($identifier)
-                ?? throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+        if (is_object($identifier)) {
+            $class = ClassUtils::getClass($identifier);
+            if ($this->em->getMetadataFactory()->hasMetadataFor($class)) {
+                $identifier = $this->uow->getSingleIdentifierValue($identifier)
+                    ?? throw ORMInvalidArgumentException::invalidIdentifierBindingEntity($class);
+            }
         }
 
         return [$metadata->identifier[0] => $identifier];

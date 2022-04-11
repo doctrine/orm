@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use InvalidArgumentException;
 use Stringable;
 
 use function array_map;
 use function count;
+use function func_get_arg;
+use function func_num_args;
 use function get_debug_type;
 use function gettype;
 use function implode;
@@ -197,9 +200,27 @@ class ORMInvalidArgumentException extends InvalidArgumentException
     /**
      * @return ORMInvalidArgumentException
      */
-    public static function invalidIdentifierBindingEntity()
+    public static function invalidIdentifierBindingEntity(/* string $class */)
     {
-        return new self('Binding entities to query parameters only allowed for entities that have an identifier.');
+        if (func_num_args() === 0) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/9642',
+                'Omitting the class name in the exception method %s is deprecated.',
+                __METHOD__
+            );
+
+            return new self('Binding entities to query parameters only allowed for entities that have an identifier.');
+        }
+
+        return new self(sprintf(
+            <<<'EXCEPTION'
+Binding entities to query parameters only allowed for entities that have an identifier.
+Class "%s" does not have an identifier.
+EXCEPTION
+            ,
+            func_get_arg(0)
+        ));
     }
 
     /**

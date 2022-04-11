@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use BackedEnum;
 use BadMethodCallException;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Util\ClassUtils;
@@ -287,11 +288,14 @@ use function ltrim;
         }
 
         foreach ($id as $i => $value) {
-            if (is_object($value) && $this->metadataFactory->hasMetadataFor(ClassUtils::getClass($value))) {
-                $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+            if (is_object($value)) {
+                $className = ClassUtils::getClass($value);
+                if ($this->metadataFactory->hasMetadataFor($className)) {
+                    $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
 
-                if ($id[$i] === null) {
-                    throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+                    if ($id[$i] === null) {
+                        throw ORMInvalidArgumentException::invalidIdentifierBindingEntity($className);
+                    }
                 }
             }
         }
@@ -303,7 +307,12 @@ use function ltrim;
                 throw MissingIdentifierField::fromFieldAndClass($identifier, $class->name);
             }
 
-            $sortedId[$identifier] = $id[$identifier];
+            if ($id[$identifier] instanceof BackedEnum) {
+                $sortedId[$identifier] = $id[$identifier]->value;
+            } else {
+                $sortedId[$identifier] = $id[$identifier];
+            }
+
             unset($id[$identifier]);
         }
 

@@ -131,16 +131,6 @@ parameters:
 			path: lib/Doctrine/ORM/EntityRepository.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Event\\\\LifecycleEventArgs\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManagerInterface but returns Doctrine\\\\Persistence\\\\ObjectManager\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Event/LifecycleEventArgs.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Event\\\\LoadClassMetadataEventArgs\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManagerInterface but returns Doctrine\\\\Persistence\\\\ObjectManager\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Event/LoadClassMetadataEventArgs.php
-
-		-
 			message: "#^Parameter \\#2 \\$discrMap of static method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\HydrationException\\:\\:invalidDiscriminatorValue\\(\\) expects array\\<string, string\\>, array\\<int, int\\|string\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php

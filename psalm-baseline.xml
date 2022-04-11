@@ -241,22 +241,6 @@
       <code>AbstractLazyCollection&lt;int, T&gt;&amp;Selectable&lt;int, T&gt;</code>
     </InvalidReturnType>
   </file>
-  <file src="lib/Doctrine/ORM/Event/LifecycleEventArgs.php">
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$this-&gt;getObjectManager()</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
-      <code>EntityManagerInterface</code>
-    </MoreSpecificReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Event/LoadClassMetadataEventArgs.php">
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$this-&gt;getObjectManager()</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
-      <code>EntityManagerInterface</code>
-    </MoreSpecificReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Event/OnClassMetadataNotFoundEventArgs.php">
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(string) $className</code>

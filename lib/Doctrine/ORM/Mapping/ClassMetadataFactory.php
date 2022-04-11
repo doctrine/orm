@@ -193,6 +193,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $class->containsForeignIdentifier = true;
             }
 
+            if ($parent->containsEnumIdentifier) {
+                $class->containsEnumIdentifier = true;
+            }
+
             if (! empty($parent->sqlResultSetMappings)) {
                 $this->addInheritedSqlResultSetMappings($class, $parent);
             }

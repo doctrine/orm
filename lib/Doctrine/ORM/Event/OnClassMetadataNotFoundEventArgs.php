@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Event;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\Event\ManagerEventArgs;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
@@ -13,6 +14,8 @@ use Doctrine\Persistence\ObjectManager;
  *
  * This object is mutable by design, allowing callbacks having access to it to set the
  * found metadata in it, and therefore "cancelling" a `onClassMetadataNotFound` event
+ *
+ * @extends ManagerEventArgs<EntityManagerInterface>
  */
 class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
 {
@@ -23,7 +26,8 @@ class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
     private $foundMetadata;
 
     /**
-     * @param string $className
+     * @param string                 $className
+     * @param EntityManagerInterface $objectManager
      */
     public function __construct($className, ObjectManager $objectManager)
     {

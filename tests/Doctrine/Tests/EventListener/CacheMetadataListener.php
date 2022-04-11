@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\EventListener;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\Persistence\Event\LoadClassMetadataEventArgs;
 
-use function assert;
 use function strstr;
 
 class CacheMetadataListener
@@ -26,8 +25,7 @@ class CacheMetadataListener
     public function loadClassMetadata(LoadClassMetadataEventArgs $event): void
     {
         $metadata = $event->getClassMetadata();
-        assert($metadata instanceof ClassMetadata);
-        $em = $event->getObjectManager();
+        $em       = $event->getObjectManager();
 
         if (strstr($metadata->name, 'Doctrine\Tests\Models\Cache')) {
             return;

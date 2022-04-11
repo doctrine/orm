@@ -17,6 +17,13 @@
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
+        <DeprecatedClass>
+            <errorLevel type="suppress">
+                <!-- Remove on 3.0.x -->
+                <referencedClass name="Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper"/>
+                <referencedClass name="Doctrine\ORM\Tools\Console\EntityManagerProvider\HelperSetManagerProvider"/>
+            </errorLevel>
+        </DeprecatedClass>
         <DeprecatedMethod>
             <errorLevel type="suppress">
                 <!-- We're calling the deprecated method for BC here. -->

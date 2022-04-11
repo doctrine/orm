@@ -599,6 +599,15 @@ class ClassMetadataInfo implements ClassMetadata
     public $containsForeignIdentifier = false;
 
     /**
+     * READ-ONLY: Flag indicating whether the identifier/primary key contains at least one ENUM type.
+     *
+     * This flag is necessary because some code blocks require special treatment of this cases.
+     *
+     * @var bool
+     */
+    public $containsEnumIdentifier = false;
+
+    /**
      * READ-ONLY: The ID generator used for generating IDs for this class.
      *
      * @var AbstractIdGenerator
@@ -905,6 +914,10 @@ class ClassMetadataInfo implements ClassMetadata
 
         if ($this->containsForeignIdentifier) {
             $serialized[] = 'containsForeignIdentifier';
+        }
+
+        if ($this->containsEnumIdentifier) {
+            $serialized[] = 'containsEnumIdentifier';
         }
 
         if ($this->isVersioned) {
@@ -1552,6 +1565,10 @@ class ClassMetadataInfo implements ClassMetadata
 
             if (! enum_exists($mapping['enumType'])) {
                 throw MappingException::nonEnumTypeMapped($this->name, $mapping['fieldName'], $mapping['enumType']);
+            }
+
+            if (! empty($mapping['id'])) {
+                $this->containsEnumIdentifier = true;
             }
         }
 
