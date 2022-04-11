@@ -26,6 +26,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use ReturnTypeWillChange;
 use RuntimeException;
 
 use function array_combine;
@@ -46,7 +47,6 @@ use function spl_object_hash;
  * Similarly, if you remove entities from a collection that is part of a one-many
  * mapping this will only result in the nulling out of the foreign keys on flush.
  *
- * @phpstan-template TKey
  * @psalm-template TKey of array-key
  * @psalm-template T
  * @template-implements Collection<TKey,T>
@@ -499,6 +499,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * {@inheritdoc}
      */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->get($offset);
@@ -523,6 +524,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return object|null
      */
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         return $this->remove($offset);

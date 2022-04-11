@@ -25,6 +25,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
+use ReturnTypeWillChange;
 
 /**
  * A lazy collection that allow a fast count when using criteria object
@@ -54,6 +55,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
      *
      * @return int
      */
+    #[ReturnTypeWillChange]
     public function count()
     {
         if ($this->isInitialized()) {
