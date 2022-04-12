@@ -346,22 +346,6 @@
       <code>find</code>
     </TooManyArguments>
   </file>
-  <file src="lib/Doctrine/ORM/Event/LifecycleEventArgs.php">
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$this-&gt;getObjectManager()</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
-      <code>EntityManagerInterface</code>
-    </MoreSpecificReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Event/LoadClassMetadataEventArgs.php">
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$this-&gt;getObjectManager()</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
-      <code>EntityManagerInterface</code>
-    </MoreSpecificReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Event/OnClassMetadataNotFoundEventArgs.php">
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(string) $className</code>
@@ -2662,6 +2646,12 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Repository/DefaultRepositoryFactory.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>$this-&gt;repositoryList[$repositoryHash] = $this-&gt;createRepository($entityManager, $entityName)</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>ObjectRepository</code>
+    </InvalidReturnType>
     <TypeDoesNotContainType occurrences="1">
       <code>$repository instanceof EntityRepository</code>
     </TypeDoesNotContainType>

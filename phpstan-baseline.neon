@@ -161,16 +161,6 @@ parameters:
 			path: lib/Doctrine/ORM/EntityRepository.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Event\\\\LifecycleEventArgs\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManagerInterface but returns Doctrine\\\\Persistence\\\\ObjectManager\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Event/LifecycleEventArgs.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Event\\\\LoadClassMetadataEventArgs\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManagerInterface but returns Doctrine\\\\Persistence\\\\ObjectManager\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Event/LoadClassMetadataEventArgs.php
-
-		-
 			message: "#^Call to an undefined method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getTableHiLoCurrentValSql\\(\\)\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Id/TableGenerator.php
@@ -1744,3 +1734,4 @@ parameters:
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$subClasses\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Utility/HierarchyDiscriminatorResolver.php
+
