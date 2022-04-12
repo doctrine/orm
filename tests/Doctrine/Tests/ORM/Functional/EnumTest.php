@@ -61,16 +61,11 @@ class EnumTest extends OrmFunctionalTestCase
         $this->assertEquals(Suit::Clubs, $fetchedCard->suit);
     }
 
-    /**
-     * @param class-string $cardClass
-     *
-     * @dataProvider provideCardClasses
-     */
-    public function testEnumHydration(string $cardClass): void
+    public function testEnumHydration(): void
     {
-        $this->setUpEntitySchema([$cardClass]);
+        $this->setUpEntitySchema([Card::class]);
 
-        $card       = new $cardClass();
+        $card       = new Card();
         $card->suit = Suit::Clubs;
 
         $this->_em->persist($card);
@@ -78,13 +73,37 @@ class EnumTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $result = $this->_em->createQueryBuilder()
-            ->from($cardClass, 'c')
+            ->from(Card::class, 'c')
             ->select('c.id, c.suit')
             ->getQuery()
             ->getResult();
 
         $this->assertInstanceOf(Suit::class, $result[0]['suit']);
         $this->assertEquals(Suit::Clubs, $result[0]['suit']);
+    }
+
+    public function testEnumArrayHydration(): void
+    {
+        self::markTestSkipped('This test is broken, see https://github.com/doctrine/orm/pull/9657');
+
+        $this->setUpEntitySchema([Scale::class]);
+
+        $scale                 = new Scale();
+        $scale->supportedUnits = [Unit::Gram, Unit::Meter];
+
+        $this->_em->persist($scale);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(Scale::class, 's')
+            ->select('s.id, s.supportedUnits')
+            ->getQuery()
+            ->getResult();
+
+        $this->assertIsArray($result->supportedUnits);
+        $this->assertContains(Unit::Gram, $result->supportedUnits);
+        $this->assertContains(Unit::Meter, $result->supportedUnits);
     }
 
     public function testFindByEnum(): void

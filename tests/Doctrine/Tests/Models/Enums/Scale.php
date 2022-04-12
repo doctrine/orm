@@ -23,7 +23,7 @@ class Scale
 
     /**
      * @Column(type="simple_array", enumType=Unit::class)
-     * @var Unit
+     * @var Unit[]
      */
     #[Column(type: 'simple_array', enumType: Unit::class)]
     public $supportedUnits;
