@@ -9,18 +9,18 @@ Doctrine\Tests\Models\Enums\TypedCardEnumFallbackValue:
     suit:
       type: string
       enumType: Doctrine\Tests\Models\Enums\Suit
-      enumDefaultValue: S
+      enumFallbackValue: S
     suitDefaultNull:
       type: string
       enumType: Doctrine\Tests\Models\Enums\Suit
-      enumDefaultValue: ~
+      enumFallbackValue: ~
     suitDefaultNullNullable:
       type: string
       nullable: true
       enumType: Doctrine\Tests\Models\Enums\Suit
-      enumDefaultValue: ~
+      enumFallbackValue: ~
     suitDefaultNotNullNullable:
       type: string
       nullable: true
       enumType: Doctrine\Tests\Models\Enums\Suit
-      enumDefaultValue: S
+      enumFallbackValue: S
