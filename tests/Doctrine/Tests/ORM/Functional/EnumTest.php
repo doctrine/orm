@@ -61,6 +61,32 @@ class EnumTest extends OrmFunctionalTestCase
         $this->assertEquals(Suit::Clubs, $fetchedCard->suit);
     }
 
+    /**
+     * @param class-string $cardClass
+     *
+     * @dataProvider provideCardClasses
+     */
+    public function testEnumHydration(string $cardClass): void
+    {
+        $this->setUpEntitySchema([$cardClass]);
+
+        $card       = new $cardClass();
+        $card->suit = Suit::Clubs;
+
+        $this->_em->persist($card);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from($cardClass, 'c')
+            ->select('c.id, c.suit')
+            ->getQuery()
+            ->getResult();
+
+        $this->assertInstanceOf(Suit::class, $result[0]['suit']);
+        $this->assertEquals(Suit::Clubs, $result[0]['suit']);
+    }
+
     public function testFindByEnum(): void
     {
         $this->setUpEntitySchema([Card::class]);

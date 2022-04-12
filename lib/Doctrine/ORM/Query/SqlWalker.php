@@ -1359,6 +1359,10 @@ class SqlWalker implements TreeWalker
                 if (! $hidden) {
                     $this->rsm->addScalarResult($columnAlias, $resultAlias, $fieldMapping['type']);
                     $this->scalarFields[$dqlAlias][$fieldName] = $columnAlias;
+
+                    if (! empty($fieldMapping['enumType'])) {
+                        $this->rsm->addEnumResult($columnAlias, $fieldMapping['enumType']);
+                    }
                 }
 
                 break;

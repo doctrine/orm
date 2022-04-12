@@ -429,7 +429,12 @@ abstract class AbstractHydrator
                     $type  = $cacheKeyInfo['type'];
                     $value = $type->convertToPHPValue($value, $this->_platform);
 
-                    $rowData['scalars'][$fieldName] = $value;
+                    if (isset($cacheKeyInfo['enumType'])) {
+                        $rowData['scalars'][$fieldName] = ($cacheKeyInfo['enumType'])::from($value);
+                    } else {
+                        $rowData['scalars'][$fieldName] = $value;
+                    }
+
                     break;
 
                 //case (isset($cacheKeyInfo['isMetaColumn'])):
@@ -572,6 +577,7 @@ abstract class AbstractHydrator
                     'fieldName' => $this->_rsm->scalarMappings[$key],
                     'type'      => Type::getType($this->_rsm->typeMappings[$key]),
                     'dqlAlias'  => '',
+                    'enumType'  => $this->_rsm->enumMappings[$key] ?? null,
                 ];
 
             case isset($this->_rsm->scalarMappings[$key]):
@@ -579,6 +585,7 @@ abstract class AbstractHydrator
                     'isScalar'  => true,
                     'fieldName' => $this->_rsm->scalarMappings[$key],
                     'type'      => Type::getType($this->_rsm->typeMappings[$key]),
+                    'enumType'  => $this->_rsm->enumMappings[$key] ?? null,
                 ];
 
             case isset($this->_rsm->metaMappings[$key]):
