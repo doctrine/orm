@@ -16,14 +16,14 @@ class TypedCardEnumFallbackValue
     public int $id;
 
     #[Column(enumType: Suit::class, enumFallbackValue: Suit::Spades)]
-    public Suit $suit;
+    public Suit $suitFallbackNotNull;
 
     #[Column(enumType: Suit::class, enumFallbackValue: null)]
-    public ?Suit $suitDefaultNull;
-
-    #[Column(nullable: true, enumType: Suit::class, enumFallbackValue: null)]
-    public ?Suit $suitDefaultNullNullable;
+    public ?Suit $suitFallbackNull;
 
     #[Column(nullable: true, enumType: Suit::class, enumFallbackValue: Suit::Spades)]
-    public ?Suit $suitDefaultNotNullNullable;
+    public ?Suit $suitFallbackNotNullNullable;
+
+    #[Column(nullable: true, enumType: Suit::class, enumFallbackValue: null)]
+    public ?Suit $suitFallbackNullNullable;
 }

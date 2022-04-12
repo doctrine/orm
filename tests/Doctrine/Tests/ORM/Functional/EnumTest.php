@@ -82,11 +82,11 @@ class EnumTest extends OrmFunctionalTestCase
     {
         $this->setUpEntitySchema([TypedCardEnumFallbackValue::class]);
 
-        $card                             = new TypedCardEnumFallbackValue();
-        $card->suit                       = Suit::Clubs;
-        $card->suitDefaultNull            = Suit::Clubs;
-        $card->suitDefaultNullNullable    = Suit::Clubs;
-        $card->suitDefaultNotNullNullable = Suit::Clubs;
+        $card                              = new TypedCardEnumFallbackValue();
+        $card->suitFallbackNotNull         = Suit::Clubs;
+        $card->suitFallbackNull            = Suit::Clubs;
+        $card->suitFallbackNullNullable    = Suit::Clubs;
+        $card->suitFallbackNotNullNullable = Suit::Clubs;
 
         $this->_em->persist($card);
         $this->_em->flush();
@@ -96,20 +96,20 @@ class EnumTest extends OrmFunctionalTestCase
         $this->_em->getConnection()->update(
             $metadata->table['name'],
             [
-                $metadata->fieldMappings['suit']['columnName'] => 'invalid',
-                $metadata->fieldMappings['suitDefaultNull']['columnName'] => 'invalid',
-                $metadata->fieldMappings['suitDefaultNullNullable']['columnName'] => 'invalid',
-                $metadata->fieldMappings['suitDefaultNotNullNullable']['columnName'] => 'invalid',
+                $metadata->fieldMappings['suitFallbackNotNull']['columnName'] => 'invalid',
+                $metadata->fieldMappings['suitFallbackNull']['columnName'] => 'invalid',
+                $metadata->fieldMappings['suitFallbackNotNullNullable']['columnName'] => 'invalid',
+                $metadata->fieldMappings['suitFallbackNullNullable']['columnName'] => 'invalid',
             ],
             [$metadata->fieldMappings['id']['columnName'] => $card->id]
         );
 
         $class = $this->_em->find(TypedCardEnumFallbackValue::class, $card->id);
 
-        $this->assertSame(Suit::Spades, $class->suit);
-        $this->assertNull($class->suitDefaultNull);
-        $this->assertNull($class->suitDefaultNullNullable);
-        $this->assertSame(Suit::Spades, $class->suitDefaultNotNullNullable);
+        $this->assertSame(Suit::Spades, $class->suitFallbackNotNull);
+        $this->assertNull($class->suitFallbackNull);
+        $this->assertSame(Suit::Spades, $class->suitFallbackNotNullNullable);
+        $this->assertNull($class->suitFallbackNullNullable);
 
         $this->_em->clear();
         unset($class);
@@ -117,16 +117,16 @@ class EnumTest extends OrmFunctionalTestCase
         $this->_em->getConnection()->update(
             $metadata->table['name'],
             [
-                $metadata->fieldMappings['suitDefaultNullNullable']['columnName'] => null,
-                $metadata->fieldMappings['suitDefaultNotNullNullable']['columnName'] => null,
+                $metadata->fieldMappings['suitFallbackNullNullable']['columnName'] => null,
+                $metadata->fieldMappings['suitFallbackNotNullNullable']['columnName'] => null,
             ],
             [$metadata->fieldMappings['id']['columnName'] => $card->id]
         );
 
         $class = $this->_em->find(TypedCardEnumFallbackValue::class, $card->id);
 
-        $this->assertNull($class->suitDefaultNullNullable);
-        $this->assertNull($class->suitDefaultNotNullNullable);
+        $this->assertNull($class->suitFallbackNullNullable);
+        $this->assertNull($class->suitFallbackNotNullNullable);
     }
 
     /**
@@ -136,11 +136,11 @@ class EnumTest extends OrmFunctionalTestCase
     {
         $this->setUpEntitySchema([TypedCardEnumFallbackValue::class]);
 
-        $card                             = new TypedCardEnumFallbackValue();
-        $card->suit                       = Suit::Clubs;
-        $card->suitDefaultNull            = Suit::Clubs;
-        $card->suitDefaultNullNullable    = Suit::Clubs;
-        $card->suitDefaultNotNullNullable = Suit::Clubs;
+        $card                              = new TypedCardEnumFallbackValue();
+        $card->suitFallbackNotNull         = Suit::Clubs;
+        $card->suitFallbackNull            = Suit::Clubs;
+        $card->suitFallbackNullNullable    = Suit::Clubs;
+        $card->suitFallbackNotNullNullable = Suit::Clubs;
 
         $this->_em->persist($card);
         $this->_em->flush();
@@ -150,9 +150,9 @@ class EnumTest extends OrmFunctionalTestCase
         $this->_em->getConnection()->update(
             $metadata->table['name'],
             [
-                $metadata->fieldMappings['suit']['columnName'] => 'invalid',
-                $metadata->fieldMappings['suitDefaultNullNullable']['columnName'] => 'invalid',
-                $metadata->fieldMappings['suitDefaultNotNullNullable']['columnName'] => 'invalid',
+                $metadata->fieldMappings['suitFallbackNotNull']['columnName'] => 'invalid',
+                $metadata->fieldMappings['suitFallbackNullNullable']['columnName'] => 'invalid',
+                $metadata->fieldMappings['suitFallbackNotNullNullable']['columnName'] => 'invalid',
             ],
             [$metadata->fieldMappings['id']['columnName'] => $card->id]
         );
@@ -167,9 +167,9 @@ class EnumTest extends OrmFunctionalTestCase
 
         $originalEntityData = $this->_em->getUnitOfWork()->getOriginalEntityData($class);
 
-        $this->assertSame((Suit::Spades)->value, $originalEntityData['suit']);
-        $this->assertNull($originalEntityData['suitDefaultNullNullable']);
-        $this->assertSame((Suit::Spades)->value, $originalEntityData['suitDefaultNotNullNullable']);
+        $this->assertSame((Suit::Spades)->value, $originalEntityData['suitFallbackNotNull']);
+        $this->assertNull($originalEntityData['suitFallbackNullNullable']);
+        $this->assertSame((Suit::Spades)->value, $originalEntityData['suitFallbackNotNullNullable']);
     }
 
     public function testFindByEnum(): void
