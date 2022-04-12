@@ -430,7 +430,8 @@ abstract class AbstractHydrator
                     $value = $type->convertToPHPValue($value, $this->_platform);
 
                     if (isset($cacheKeyInfo['enumType'])) {
-                        $rowData['scalars'][$fieldName] = ($cacheKeyInfo['enumType'])::from($value);
+                        $enumType                       = $cacheKeyInfo['enumType'];
+                        $rowData['scalars'][$fieldName] = $enumType::from($value);
                     } else {
                         $rowData['scalars'][$fieldName] = $value;
                     }
