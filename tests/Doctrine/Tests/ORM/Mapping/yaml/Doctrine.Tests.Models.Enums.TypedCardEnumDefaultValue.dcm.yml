@@ -1,4 +1,4 @@
-Doctrine\Tests\Models\Enums\TypedCardEnumDefaultValue:
+Doctrine\Tests\Models\Enums\TypedCardEnumFallbackValue:
   type: entity
   id:
     id:

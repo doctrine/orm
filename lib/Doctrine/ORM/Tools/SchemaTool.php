@@ -809,8 +809,8 @@ class SchemaTool
         if (isset($mapping['enumType'])) {
             $mappingOptions['enumType'] = $mapping['enumType'];
 
-            if (array_key_exists('enumDefaultValue', $mapping)) {
-                $mappingOptions['enumDefaultValue'] = $mapping['enumDefaultValue'];
+            if (array_key_exists('enumFallbackValue', $mapping)) {
+                $mappingOptions['enumFallbackValue'] = $mapping['enumFallbackValue'];
             }
         }
 

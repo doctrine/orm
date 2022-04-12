@@ -23,22 +23,22 @@ class ReflectionEnumProperty extends ReflectionProperty
     private $enumType;
 
     /** @var bool */
-    private $setDefaultIfNotExists;
+    private $setFallbackIfNotExists;
 
     /** @var ?BackedEnum */
-    private $defaultIfNotExists;
+    private $fallbackIfNotExists;
 
     /**
      * @param class-string<BackedEnum> $enumType
      *
      * @throws ReflectionException
      */
-    public function __construct(ReflectionProperty $originalReflectionProperty, string $enumType, bool $setDefaultIfNotExists = false, ?BackedEnum $defaultIfNotExists = null)
+    public function __construct(ReflectionProperty $originalReflectionProperty, string $enumType, bool $setFallbackIfNotExists = false, ?BackedEnum $fallbackIfNotExists = null)
     {
         $this->originalReflectionProperty = $originalReflectionProperty;
         $this->enumType                   = $enumType;
-        $this->setDefaultIfNotExists      = $setDefaultIfNotExists;
-        $this->defaultIfNotExists         = $defaultIfNotExists;
+        $this->setFallbackIfNotExists     = $setFallbackIfNotExists;
+        $this->fallbackIfNotExists        = $fallbackIfNotExists;
 
         parent::__construct(
             $originalReflectionProperty->getDeclaringClass()->getName(),
@@ -107,8 +107,8 @@ class ReflectionEnumProperty extends ReflectionProperty
         $enumType = $this->enumType;
 
         try {
-            if ($this->setDefaultIfNotExists) {
-                return $enumType::tryFrom($value) ?? $this->defaultIfNotExists;
+            if ($this->setFallbackIfNotExists) {
+                return $enumType::tryFrom($value) ?? $this->fallbackIfNotExists;
             } else {
                 return $enumType::from($value);
             }

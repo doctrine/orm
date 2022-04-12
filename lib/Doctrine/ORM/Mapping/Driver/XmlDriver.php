@@ -813,7 +813,7 @@ class XmlDriver extends FileDriver
       *                   notInsertable?: bool,
       *                   notUpdatable?: bool,
       *                   enumType?: string,
-      *                   enumDefaultValue?: ?BackedEnum,
+      *                   enumFallbackValue?: ?BackedEnum,
       *                   version?: bool,
       *                   columnDefinition?: string,
       *                   options?: array
@@ -876,14 +876,14 @@ class XmlDriver extends FileDriver
         if (isset($fieldMapping['enum-type'])) {
             $mapping['enumType'] = (string) $fieldMapping['enum-type'];
 
-            if (isset($fieldMapping['enum-default-value'])) {
-                $enumDefaultValueString = (string) $fieldMapping['enum-default-value'];
-                if (empty($enumDefaultValueString)) {
-                    $mapping['enumDefaultValue'] = null;
+            if (isset($fieldMapping['enum-fallback-value'])) {
+                $enumFallbackValueString = (string) $fieldMapping['enum-fallback-value'];
+                if (empty($enumFallbackValueString)) {
+                    $mapping['enumFallbackValue'] = null;
                 } else {
                     /** @psalm-var class-string<BackedEnum> $enumClass */
-                    $enumClass                   = $mapping['enumType'];
-                    $mapping['enumDefaultValue'] = ($enumClass)::from($enumDefaultValueString);
+                    $enumClass                    = $mapping['enumType'];
+                    $mapping['enumFallbackValue'] = ($enumClass)::from($enumFallbackValueString);
                 }
             }
         }

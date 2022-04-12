@@ -4,18 +4,18 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                           https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="Doctrine\Tests\Models\Enums\TypedCardEnumDefaultValue">
+    <entity name="Doctrine\Tests\Models\Enums\TypedCardEnumFallbackValue">
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>
 
-        <field name="suit" type="string" enum-type="Doctrine\Tests\Models\Enums\Suit" enum-default-value="S" />
+        <field name="suit" type="string" enum-type="Doctrine\Tests\Models\Enums\Suit" enum-fallback-value="S" />
 
-        <field name="suitDefaultNull" type="string" enum-type="Doctrine\Tests\Models\Enums\Suit" enum-default-value="" />
+        <field name="suitDefaultNull" type="string" enum-type="Doctrine\Tests\Models\Enums\Suit" enum-fallback-value="" />
 
-        <field name="suitDefaultNullNullable" type="string" nullable="true" enum-type="Doctrine\Tests\Models\Enums\Suit" enum-default-value="" />
+        <field name="suitDefaultNullNullable" type="string" nullable="true" enum-type="Doctrine\Tests\Models\Enums\Suit" enum-fallback-value="" />
 
-        <field name="suitDefaultNotNullNullable" type="string" nullable="true" enum-type="Doctrine\Tests\Models\Enums\Suit" enum-default-value="S" />
+        <field name="suitDefaultNotNullNullable" type="string" nullable="true" enum-type="Doctrine\Tests\Models\Enums\Suit" enum-fallback-value="S" />
 
     </entity>
 

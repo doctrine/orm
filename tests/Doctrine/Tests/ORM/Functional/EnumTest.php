@@ -15,8 +15,8 @@ use Doctrine\Tests\Models\Enums\Quantity;
 use Doctrine\Tests\Models\Enums\Scale;
 use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Enums\TypedCard;
-use Doctrine\Tests\Models\Enums\TypedCardEnumDefaultValue;
-use Doctrine\Tests\Models\Enums\TypedCardEnumDefaultValueIncorrect;
+use Doctrine\Tests\Models\Enums\TypedCardEnumFallbackValue;
+use Doctrine\Tests\Models\Enums\TypedCardEnumFallbackValueIncorrect;
 use Doctrine\Tests\Models\Enums\Unit;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -70,19 +70,19 @@ class EnumTest extends OrmFunctionalTestCase
             'Attempting to assign default value %s of enum %s as enum in entity %s::$%s of type %s',
             (Unit::Gram)->name,
             Unit::class,
-            TypedCardEnumDefaultValueIncorrect::class,
+            TypedCardEnumFallbackValueIncorrect::class,
             'suit',
             Suit::class
         ));
 
-        $this->setUpEntitySchema([TypedCardEnumDefaultValueIncorrect::class]);
+        $this->setUpEntitySchema([TypedCardEnumFallbackValueIncorrect::class]);
     }
 
-    public function testDefaultEnumValue(): void
+    public function testFallbackEnumValue(): void
     {
-        $this->setUpEntitySchema([TypedCardEnumDefaultValue::class]);
+        $this->setUpEntitySchema([TypedCardEnumFallbackValue::class]);
 
-        $card                             = new TypedCardEnumDefaultValue();
+        $card                             = new TypedCardEnumFallbackValue();
         $card->suit                       = Suit::Clubs;
         $card->suitDefaultNull            = Suit::Clubs;
         $card->suitDefaultNullNullable    = Suit::Clubs;
@@ -92,7 +92,7 @@ class EnumTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $metadata = $this->_em->getClassMetadata(TypedCardEnumDefaultValue::class);
+        $metadata = $this->_em->getClassMetadata(TypedCardEnumFallbackValue::class);
         $this->_em->getConnection()->update(
             $metadata->table['name'],
             [
@@ -104,7 +104,7 @@ class EnumTest extends OrmFunctionalTestCase
             [$metadata->fieldMappings['id']['columnName'] => $card->id]
         );
 
-        $class = $this->_em->find(TypedCardEnumDefaultValue::class, $card->id);
+        $class = $this->_em->find(TypedCardEnumFallbackValue::class, $card->id);
 
         $this->assertSame(Suit::Spades, $class->suit);
         $this->assertNull($class->suitDefaultNull);
@@ -123,10 +123,52 @@ class EnumTest extends OrmFunctionalTestCase
             [$metadata->fieldMappings['id']['columnName'] => $card->id]
         );
 
-        $class = $this->_em->find(TypedCardEnumDefaultValue::class, $card->id);
+        $class = $this->_em->find(TypedCardEnumFallbackValue::class, $card->id);
 
         $this->assertNull($class->suitDefaultNullNullable);
         $this->assertNull($class->suitDefaultNotNullNullable);
+    }
+
+    /**
+     * check if persisting entity which loaded default values actually pushes the new values into DB
+     */
+    public function testFallbackEnumValueIsPersisted(): void
+    {
+        $this->setUpEntitySchema([TypedCardEnumFallbackValue::class]);
+
+        $card                             = new TypedCardEnumFallbackValue();
+        $card->suit                       = Suit::Clubs;
+        $card->suitDefaultNull            = Suit::Clubs;
+        $card->suitDefaultNullNullable    = Suit::Clubs;
+        $card->suitDefaultNotNullNullable = Suit::Clubs;
+
+        $this->_em->persist($card);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $metadata = $this->_em->getClassMetadata(TypedCardEnumFallbackValue::class);
+        $this->_em->getConnection()->update(
+            $metadata->table['name'],
+            [
+                $metadata->fieldMappings['suit']['columnName'] => 'invalid',
+                $metadata->fieldMappings['suitDefaultNullNullable']['columnName'] => 'invalid',
+                $metadata->fieldMappings['suitDefaultNotNullNullable']['columnName'] => 'invalid',
+            ],
+            [$metadata->fieldMappings['id']['columnName'] => $card->id]
+        );
+
+        $class = $this->_em->find(TypedCardEnumFallbackValue::class, $card->id);
+
+        // persist without changes means that we check if the enumFallbackValue is persisted properly
+        $this->_em->persist($class);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $class = $this->_em->find(TypedCardEnumFallbackValue::class, $card->id);
+
+        $this->assertSame(Suit::Spades, $class->suit);
+        $this->assertNull($class->suitDefaultNullNullable);
+        $this->assertSame(Suit::Spades, $class->suitDefaultNotNullNullable);
     }
 
     public function testFindByEnum(): void

@@ -86,7 +86,7 @@ use const PHP_VERSION_ID;
  *      notUpdatable?: bool,
  *      generated?: string,
  *      enumType?: class-string<BackedEnum>,
- *      enumDefaultValue?: ?BackedEnum,
+ *      enumFallbackValue?: ?BackedEnum,
  *      columnDefinition?: string,
  *      precision?: int,
  *      scale?: int,
@@ -1079,8 +1079,8 @@ class ClassMetadataInfo implements ClassMetadata
                     $childProperty = new ReflectionEnumProperty(
                         $childProperty,
                         $mapping['enumType'],
-                        array_key_exists('enumDefaultValue', $mapping),
-                        $mapping['enumDefaultValue'] ?? null
+                        array_key_exists('enumFallbackValue', $mapping),
+                        $mapping['enumFallbackValue'] ?? null
                     );
                 }
 
@@ -1100,8 +1100,8 @@ class ClassMetadataInfo implements ClassMetadata
                 $this->reflFields[$field] = new ReflectionEnumProperty(
                     $this->reflFields[$field],
                     $mapping['enumType'],
-                    array_key_exists('enumDefaultValue', $mapping),
-                    $mapping['enumDefaultValue'] ?? null
+                    array_key_exists('enumFallbackValue', $mapping),
+                    $mapping['enumFallbackValue'] ?? null
                 );
             }
         }
@@ -1700,8 +1700,8 @@ class ClassMetadataInfo implements ClassMetadata
                 $this->containsEnumIdentifier = true;
             }
 
-            if (isset($mapping['enumDefaultValue']) && ! is_a($mapping['enumDefaultValue'], $mapping['enumType'])) {
-                throw MappingException::wrongDefaultEnumValueType($this->name, $mapping['fieldName'], $mapping['enumType'], $mapping['enumDefaultValue']);
+            if (isset($mapping['enumFallbackValue']) && ! is_a($mapping['enumFallbackValue'], $mapping['enumType'])) {
+                throw MappingException::wrongDefaultEnumValueType($this->name, $mapping['fieldName'], $mapping['enumType'], $mapping['enumFallbackValue']);
             }
         }
 

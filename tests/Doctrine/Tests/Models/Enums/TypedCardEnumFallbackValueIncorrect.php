@@ -10,11 +10,11 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
 #[Entity]
-class TypedCardEnumDefaultValueIncorrect
+class TypedCardEnumFallbackValueIncorrect
 {
     #[Id, GeneratedValue, Column]
     public int $id;
 
-    #[Column(enumType: Suit::class, enumDefaultValue: Unit::Gram)]
+    #[Column(enumType: Suit::class, enumFallbackValue: Unit::Gram)]
     public Suit $suit;
 }

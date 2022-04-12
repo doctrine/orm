@@ -767,7 +767,7 @@ class AnnotationDriver implements MappingDriver
      *                   notUpdateble?: bool,
      *                   generated?: ClassMetadataInfo::GENERATED_*,
      *                   enumType?: class-string,
-     *                   enumDefaultValue?: ?BackedEnum,
+     *                   enumFallbackValue?: ?BackedEnum,
      *                   options?: mixed[],
      *                   columnName?: string,
      *                   columnDefinition?: string
@@ -812,8 +812,8 @@ class AnnotationDriver implements MappingDriver
         if ($column->enumType !== null) {
             $mapping['enumType'] = $column->enumType;
 
-            if ($column->enumDefaultValue !== false) {
-                $mapping['enumDefaultValue'] = $column->enumDefaultValue;
+            if ($column->enumFallbackValue !== false) {
+                $mapping['enumFallbackValue'] = $column->enumFallbackValue;
             }
         }
 

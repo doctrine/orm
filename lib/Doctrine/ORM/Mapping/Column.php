@@ -54,7 +54,7 @@ final class Column implements Annotation
     public $enumType = null;
 
     /** @var \BackedEnum|false|null */
-    public $enumDefaultValue = false;
+    public $enumFallbackValue = false;
 
     /** @var array<string,mixed> */
     public $options = [];
@@ -72,7 +72,7 @@ final class Column implements Annotation
     /**
      * @param class-string<\BackedEnum>|null $enumType
      * @param array<string,mixed>            $options
-     * @psalm-param \BackedEnum|false|null         $enumDefaultValue
+     * @psalm-param \BackedEnum|false|null         $enumFallbackValue
      * @psalm-param 'NEVER'|'INSERT'|'ALWAYS'|null $generated
      */
     public function __construct(
@@ -86,24 +86,24 @@ final class Column implements Annotation
         bool $insertable = true,
         bool $updatable = true,
         ?string $enumType = null,
-        $enumDefaultValue = false,
+        $enumFallbackValue = false,
         array $options = [],
         ?string $columnDefinition = null,
         ?string $generated = null
     ) {
-        $this->name             = $name;
-        $this->type             = $type;
-        $this->length           = $length;
-        $this->precision        = $precision;
-        $this->scale            = $scale;
-        $this->unique           = $unique;
-        $this->nullable         = $nullable;
-        $this->insertable       = $insertable;
-        $this->updatable        = $updatable;
-        $this->enumType         = $enumType;
-        $this->enumDefaultValue = $enumDefaultValue;
-        $this->options          = $options;
-        $this->columnDefinition = $columnDefinition;
-        $this->generated        = $generated;
+        $this->name              = $name;
+        $this->type              = $type;
+        $this->length            = $length;
+        $this->precision         = $precision;
+        $this->scale             = $scale;
+        $this->unique            = $unique;
+        $this->nullable          = $nullable;
+        $this->insertable        = $insertable;
+        $this->updatable         = $updatable;
+        $this->enumType          = $enumType;
+        $this->enumFallbackValue = $enumFallbackValue;
+        $this->options           = $options;
+        $this->columnDefinition  = $columnDefinition;
+        $this->generated         = $generated;
     }
 }

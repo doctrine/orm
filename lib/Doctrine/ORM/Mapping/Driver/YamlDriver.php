@@ -802,7 +802,7 @@ class YamlDriver extends FileDriver
      *                   updatable?: mixed,
      *                   generated?: mixed,
      *                   enumType?: class-string,
-     *                   enumDefaultValue?: ?BackedEnum,
+     *                   enumFallbackValue?: ?BackedEnum,
      *                   version?: mixed,
      *                   columnDefinition?: mixed
      *              }|null $column
@@ -822,7 +822,7 @@ class YamlDriver extends FileDriver
      *                   notUpdatable?: mixed,
      *                   generated?: mixed,
      *                   enumType?: class-string,
-     *                   enumDefaultValue?: ?BackedEnum,
+     *                   enumFallbackValue?: ?BackedEnum,
      *                   version?: mixed,
      *                   columnDefinition?: mixed
      *               }
@@ -893,8 +893,8 @@ class YamlDriver extends FileDriver
         if (isset($column['enumType'])) {
             $mapping['enumType'] = $column['enumType'];
 
-            if (array_key_exists('enumDefaultValue', $column)) {
-                $mapping['enumDefaultValue'] = $column['enumDefaultValue'];
+            if (array_key_exists('enumFallbackValue', $column)) {
+                $mapping['enumFallbackValue'] = $column['enumFallbackValue'];
             }
         }
 
