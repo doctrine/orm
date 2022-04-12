@@ -159,16 +159,17 @@ class EnumTest extends OrmFunctionalTestCase
 
         $class = $this->_em->find(TypedCardEnumFallbackValue::class, $card->id);
 
-        // persist without changes means that we check if the enumFallbackValue is persisted properly
-        $this->_em->persist($class);
+        // flush without changes means that we check if the enumFallbackValue is persisted properly
         $this->_em->flush();
         $this->_em->clear();
 
         $class = $this->_em->find(TypedCardEnumFallbackValue::class, $card->id);
 
-        $this->assertSame(Suit::Spades, $class->suit);
-        $this->assertNull($class->suitDefaultNullNullable);
-        $this->assertSame(Suit::Spades, $class->suitDefaultNotNullNullable);
+        $originalEntityData = $this->_em->getUnitOfWork()->getOriginalEntityData($class);
+
+        $this->assertSame((Suit::Spades)->value, $originalEntityData['suit']);
+        $this->assertNull($originalEntityData['suitDefaultNullNullable']);
+        $this->assertSame((Suit::Spades)->value, $originalEntityData['suitDefaultNotNullNullable']);
     }
 
     public function testFindByEnum(): void
