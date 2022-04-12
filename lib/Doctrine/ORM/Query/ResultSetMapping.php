@@ -403,6 +403,8 @@ class ResultSetMapping
     public function addEnumResult($columnName, $enumType)
     {
         $this->enumMappings[$columnName] = $enumType;
+
+        return $this;
     }
 
     /**
