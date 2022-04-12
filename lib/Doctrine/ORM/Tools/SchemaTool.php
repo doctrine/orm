@@ -728,27 +728,6 @@ class SchemaTool
                     $columnOptions['precision'] = $fieldMapping['precision'];
                 }
 
-                // Only do this for DBAL v3 or higher.
-                if (! method_exists(AbstractPlatform::class, 'getGuidExpression')) {
-                    $theJoinTableCharset = $theJoinTable->hasOption('charset') ? $theJoinTable->getOption('charset') : null;
-                    if (
-                        ! isset($columnOptions['customSchemaOptions']['charset'])
-                        && isset($class->table['options']['charset'])
-                        && $theJoinTableCharset !== $class->table['options']['charset']
-                    ) {
-                        $columnOptions['customSchemaOptions']['charset'] = $class->table['options']['charset'];
-                    }
-
-                    $theJoinTableCollation = $theJoinTable->hasOption('collation') ? $theJoinTable->getOption('collation') : null;
-                    if (
-                        ! isset($columnOptions['customSchemaOptions']['collation'])
-                        && isset($class->table['options']['collation'])
-                        && $theJoinTableCollation !== $class->table['options']['collation']
-                    ) {
-                        $columnOptions['customSchemaOptions']['collation'] = $class->table['options']['collation'];
-                    }
-                }
-
                 $theJoinTable->addColumn($quotedColumnName, $fieldMapping['type'], $columnOptions);
             }
 
