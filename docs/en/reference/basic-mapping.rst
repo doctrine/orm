@@ -239,6 +239,7 @@ Here is a complete list of ``Column``s attributes (all optional):
 - ``insertable`` (default: ``true``): Whether the column should be inserted.
 - ``updatable`` (default: ``true``): Whether the column should be updated.
 - ``enumType`` (requires PHP 8.1 and ``doctrine/orm`` 2.11): The PHP enum class name to convert the database value into.
+- ``enumFallbackValue`` (requires PHP 8.1 and ``doctrine/orm`` 2.12): If ``enumType`` is set and DB value cannot be cast into PHP enum, then fallback to default value (of the ``enumType`` class or ``null``)
 - ``precision`` (default: 0): The precision for a decimal (exact numeric) column
   (applies only for decimal column),
   which is the maximum number of digits that are stored for the values.
@@ -285,7 +286,9 @@ These are the "automatic" mapping rules:
 +-----------------------+-------------------------------+
 
 As of version 2.11 Doctrine can also automatically map typed properties using a
-PHP 8.1 enum to set the right ``type`` and ``enumType``.
+PHP 8.1 enum to set the right ``type`` and ``enumType``. From version 2.12 a
+fallback value can be specified with ``enumFallbackValue`` (it has to be of
+``enumType`` PHP enum or ``null``)
 
 .. _reference-mapping-types:
 
