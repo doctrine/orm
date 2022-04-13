@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\Enums\Card;
 use Doctrine\Tests\Models\Enums\CardWithDefault;
+use Doctrine\Tests\Models\Enums\CardWithNullable;
 use Doctrine\Tests\Models\Enums\Product;
 use Doctrine\Tests\Models\Enums\Quantity;
 use Doctrine\Tests\Models\Enums\Scale;
@@ -63,12 +64,16 @@ class EnumTest extends OrmFunctionalTestCase
 
     public function testEnumHydration(): void
     {
-        $this->setUpEntitySchema([Card::class]);
+        $this->setUpEntitySchema([Card::class, CardWithNullable::class]);
 
         $card       = new Card();
         $card->suit = Suit::Clubs;
 
+        $cardWithNullable       = new CardWithNullable();
+        $cardWithNullable->suit = null;
+
         $this->_em->persist($card);
+        $this->_em->persist($cardWithNullable);
         $this->_em->flush();
         $this->_em->clear();
 
@@ -80,12 +85,18 @@ class EnumTest extends OrmFunctionalTestCase
 
         $this->assertInstanceOf(Suit::class, $result[0]['suit']);
         $this->assertEquals(Suit::Clubs, $result[0]['suit']);
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(CardWithNullable::class, 'c')
+            ->select('c.id, c.suit')
+            ->getQuery()
+            ->getResult();
+
+        $this->assertNull($result[0]['suit']);
     }
 
     public function testEnumArrayHydration(): void
     {
-        self::markTestSkipped('This test is broken, see https://github.com/doctrine/orm/pull/9657');
-
         $this->setUpEntitySchema([Scale::class]);
 
         $scale                 = new Scale();

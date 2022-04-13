@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use BackedEnum;
 use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\ForwardCompatibility\Result as ForwardCompatibilityResult;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -27,6 +28,7 @@ use function count;
 use function end;
 use function get_debug_type;
 use function in_array;
+use function is_array;
 use function sprintf;
 
 /**
@@ -429,12 +431,19 @@ abstract class AbstractHydrator
                     $type  = $cacheKeyInfo['type'];
                     $value = $type->convertToPHPValue($value, $this->_platform);
 
-                    if (isset($cacheKeyInfo['enumType'])) {
-                        $enumType                       = $cacheKeyInfo['enumType'];
-                        $rowData['scalars'][$fieldName] = $enumType::from($value);
-                    } else {
-                        $rowData['scalars'][$fieldName] = $value;
+                    // Reimplement ReflectionEnumProperty code
+                    if ($value !== null && isset($cacheKeyInfo['enumType'])) {
+                        $enumType = $cacheKeyInfo['enumType'];
+                        if (is_array($value)) {
+                            $value = array_map(static function ($value) use ($enumType): BackedEnum {
+                                return $enumType::from($value);
+                            }, $value);
+                        } else {
+                            $value = $enumType::from($value);
+                        }
                     }
+
+                    $rowData['scalars'][$fieldName] = $value;
 
                     break;
 
