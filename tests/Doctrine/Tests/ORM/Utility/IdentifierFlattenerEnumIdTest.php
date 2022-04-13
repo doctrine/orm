@@ -44,10 +44,11 @@ class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
 
         $this->_em->persist($typedCardEnumIdEntity);
         $this->_em->flush();
+        $this->_em->clear();
 
         $findTypedCardEnumIdEntityNotFound = $this->_em->getRepository(TypedCardEnumId::class)->find(Suit::Diamonds);
 
-        self::assertNull($findTypedCardEnumIdEntityNotFound, 'Search by non-cached Enum ID does not work');
+        self::assertNull($findTypedCardEnumIdEntityNotFound, 'Search by non-persisted Enum ID does not work');
 
         $findTypedCardEnumIdEntity = $this->_em->getRepository(TypedCardEnumId::class)->find(Suit::Clubs);
 
@@ -73,10 +74,11 @@ class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
 
         $this->_em->persist($typedCardEnumCompositeIdEntity);
         $this->_em->flush();
+        $this->_em->clear();
 
         $findTypedCardEnumCompositeIdEntityNotFound = $this->_em->getRepository(TypedCardEnumCompositeId::class)->find(['suit' => Suit::Diamonds, 'unit' => Unit::Gram]);
 
-        self::assertNull($findTypedCardEnumCompositeIdEntityNotFound, 'Search by non-cached composite Enum ID does not work');
+        self::assertNull($findTypedCardEnumCompositeIdEntityNotFound, 'Search by non-persisted composite Enum ID does not work');
 
         $findTypedCardEnumCompositeIdEntity = $this->_em->getRepository(TypedCardEnumCompositeId::class)->find(['suit' => Suit::Clubs, 'unit' => Unit::Gram]);
 
