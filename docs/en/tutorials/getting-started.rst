@@ -191,22 +191,35 @@ Generating the Database Schema
 
 Doctrine has a command-line interface that allows you to access the SchemaTool,
 a component that can generate a relational database schema based entirely on the
-defined entity classes and their metadata. For this tool to work, a
-``cli-config.php`` file must exist in the project root directory:
+defined entity classes and their metadata. For this tool to work, you need to
+create an executable console script as described in the
+:doc:`tools chapter <../reference/tools>`.
+
+If you created the ``bootstrap.php`` file as described in the previous section,
+that script could look like this:
 
 .. code-block:: php
 
+    #!/usr/bin/env php
     <?php
-    // cli-config.php
-    require_once "bootstrap.php";
+    // bin/doctrine
 
-    return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet($entityManager);
+    use Doctrine\ORM\Tools\Console\ConsoleRunner;
+    use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 
-Now call the Doctrine command-line tool:
+    // Adjust this path to your actual bootstrap.php
+    require __DIR__ . 'path/to/your/bootstrap.php';
+
+    ConsoleRunner::run(
+        new SingleManagerProvider($entityManager)
+    );
+
+In the following examples, we will assume that this script has been created as
+``bin/doctrine``.
 
 ::
 
-    $ vendor/bin/doctrine orm:schema-tool:create
+    $ php bin/doctrine orm:schema-tool:create
 
 Since we haven't added any entity metadata in ``src`` yet, you'll see a message
 stating "No Metadata Classes to process." In the next section, we'll create a
@@ -218,14 +231,14 @@ You can easily recreate the database using the following commands:
 
 ::
 
-    $ vendor/bin/doctrine orm:schema-tool:drop --force
-    $ vendor/bin/doctrine orm:schema-tool:create
+    $ php bin/doctrine orm:schema-tool:drop --force
+    $ php bin/doctrine orm:schema-tool:create
 
 Or you can use the update functionality:
 
 ::
 
-    $ vendor/bin/doctrine orm:schema-tool:update --force
+    $ php bin/doctrine orm:schema-tool:update --force
 
 The updating of databases uses a diff algorithm for a given
 database schema. This is a cornerstone of the ``Doctrine\DBAL`` package,
@@ -571,7 +584,7 @@ let's update the database schema:
 
 ::
 
-    $ vendor/bin/doctrine orm:schema-tool:update --force --dump-sql
+    $ php bin/doctrine orm:schema-tool:update --force --dump-sql
 
 Specifying both flags ``--force`` and ``--dump-sql`` will cause the DDL
 statements to be executed and then printed to the screen.
@@ -1268,7 +1281,7 @@ class that holds the owning sides.
 Update your database schema by running:
 ::
 
-    $ vendor/bin/doctrine orm:schema-tool:update --force
+    $ php bin/doctrine orm:schema-tool:update --force
 
 
 Implementing more Requirements

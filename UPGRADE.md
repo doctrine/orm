@@ -1,5 +1,13 @@
 # Upgrade to 2.12
 
+## Deprecated the `doctrine` binary.
+
+The documentation explains how the console tools can be bootstrapped for
+standalone usage.
+
+The method `ConsoleRunner::printCliConfigTemplate()` is deprecated because it
+was only useful in the context of the `doctrine` binary.
+
 ## Deprecate omitting `$class` argument to `ORMInvalidArgumentException::invalidIdentifierBindingEntity()`
 
 To make it easier to identify understand the cause for that exception, it is
@@ -13,6 +21,7 @@ multiple entity managers had been deprecated with 2.9 already. This leaves
 The `EntityManagerHelper` class with no purpose which is why it is now
 deprecated too. Applications that still rely on the `em` console helper, can
 easily recreate that class in their own codebase.
+
 ## Deprecate custom repository classes that don't extend `EntityRepository`
 
 Although undocumented, it is currently possible to configure a custom repository
