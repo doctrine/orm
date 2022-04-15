@@ -112,9 +112,7 @@ class EnumTest extends OrmFunctionalTestCase
             ->getQuery()
             ->getResult();
 
-        $this->assertIsArray($result[0]['supportedUnits']);
-        $this->assertContains(Unit::Gram, $result[0]['supportedUnits']);
-        $this->assertContains(Unit::Meter, $result[0]['supportedUnits']);
+        self::assertEqualsCanonicalizing([Unit::Gram, Unit::Meter], $result[0]['supportedUnits']);
     }
 
     public function testFindByEnum(): void
