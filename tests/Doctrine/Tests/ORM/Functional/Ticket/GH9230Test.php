@@ -116,7 +116,6 @@ class GH9230Test extends OrmFunctionalTestCase
 
         $query = $counterRepository->createQueryBuilder('counter')
             ->select('counter.' . $property)
-            ->orderBy('counter.position')
             ->getQuery();
 
         $values = $query->getSingleColumnResult();
@@ -134,9 +133,6 @@ class GH9230Test extends OrmFunctionalTestCase
  */
 class GH9230Entity
 {
-    /** @var int */
-    private static $POSITION = 0;
-
     /**
      * @var int
      * @Column(name="id", type="integer")
@@ -144,12 +140,6 @@ class GH9230Entity
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-
-    /**
-     * @var int
-     * @Column(name="position", type="integer", nullable=false)
-     */
-    public $position;
 
     /**
      * @var ?string
@@ -180,9 +170,4 @@ class GH9230Entity
      * @Column(name="extra", type="json", nullable=true)
      */
     public $extra;
-
-    public function __construct()
-    {
-        $this->position = ++self::$POSITION;
-    }
 }
