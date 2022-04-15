@@ -722,7 +722,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     }
 
     /**
-     * {@inheritDoc}
+     * @deprecated This method will be removed in ORM 3.0.
+     *
+     * @return class-string
      */
     protected function getFqcnFromAlias($namespaceAlias, $simpleClassName)
     {
