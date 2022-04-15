@@ -62,7 +62,6 @@
             "Doctrine\\Performance\\": "tests/Doctrine/Performance"
         }
     },
-    "bin": ["bin/doctrine"],
     "archive": {
         "exclude": ["!vendor", "tests", "*phpunit.xml", "build.xml", "build.properties", "composer.phar", "vendor/satooshi", "lib/vendor", "*.swp"]
     }
