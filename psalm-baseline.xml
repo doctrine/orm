@@ -177,8 +177,12 @@
     </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/EntityManager.php">
-    <ArgumentTypeCoercion occurrences="1">
+    <ArgumentTypeCoercion occurrences="5">
+      <code>$className</code>
       <code>$connection</code>
+      <code>ltrim($className, '\\')</code>
+      <code>ltrim($entityName, '\\')</code>
+      <code>ltrim($entityName, '\\')</code>
     </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="4">
       <code>is_object($entity)</code>
@@ -1129,9 +1133,6 @@
       <code>$metadata-&gt;isEmbeddedClass</code>
       <code>$metadata-&gt;isMappedSuperclass</code>
     </NoInterfaceProperties>
-    <PossiblyNullArgument occurrences="1">
-      <code>$property-&gt;name</code>
-    </PossiblyNullArgument>
     <PossiblyNullPropertyFetch occurrences="1">
       <code>$property-&gt;name</code>
     </PossiblyNullPropertyFetch>
@@ -1851,8 +1852,7 @@
       <code>string</code>
       <code>string</code>
     </InvalidReturnType>
-    <InvalidScalarArgument occurrences="14">
-      <code>$field</code>
+    <InvalidScalarArgument occurrences="13">
       <code>$field</code>
       <code>$field</code>
       <code>$functionName</code>

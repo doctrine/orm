@@ -66,6 +66,14 @@
                 <file name="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php"/>
             </errorLevel>
         </MissingDependency>
+        <MissingParamType>
+            <errorLevel type="suppress">
+                <!-- Persistence 2 compatibility -->
+                <file name="lib/Doctrine/ORM/EntityManager.php"/>
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php"/>
+            </errorLevel>
+        </MissingParamType>
         <RedundantCastGivenDocblockType>
             <errorLevel type="suppress">
                 <!-- Can be removed once the "getMaxResults" methods of those classes have native parameter types -->
@@ -77,6 +85,9 @@
             <errorLevel type="suppress">
                 <!-- Symfony cache supports passing a key prefix to the clear method. -->
                 <referencedFunction name="Psr\Cache\CacheItemPoolInterface::clear"/>
+
+                <!-- Persistence 2 compatibility -->
+                <referencedFunction name="Doctrine\Persistence\ObjectManager::clear"/>
             </errorLevel>
         </TooManyArguments>
         <TypeDoesNotContainType>
@@ -94,6 +105,9 @@
                 <!-- DBAL 3.2 forward compatibility -->
                 <referencedClass name="Doctrine\DBAL\Platforms\PostgreSQLPlatform"/>
                 <referencedClass name="Doctrine\DBAL\Platforms\SQLServerPlatform"/>
+                
+                <!-- Persistence 2 compatibility -->
+                <referencedClass name="Doctrine\Persistence\ObjectManagerAware"/>
             </errorLevel>
         </UndefinedClass>
     </issueHandlers>

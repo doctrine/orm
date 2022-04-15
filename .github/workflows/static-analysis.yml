@@ -26,7 +26,7 @@ jobs:
         include:
           - php-version: "8.1"
             dbal-version: "default"
-            persistence-version: "'3.0.x-dev as 2.4.0'"
+            persistence-version: "2.5"
 
     steps:
       - name: "Checkout code"
@@ -43,7 +43,7 @@ jobs:
         if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Require specific persistence version"
-        run: "composer require doctrine/persistence ${{ matrix.persistence-version }} --no-update"
+        run: "composer require doctrine/persistence ^${{ matrix.persistence-version }} --no-update"
         if: "${{ matrix.persistence-version != 'default' }}"
 
       - name: "Install dependencies with Composer"

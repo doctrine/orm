@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-class Ticket4646MultipleInstanceOfWithMultipleParametersTest extends OrmFunctionalTestCase
+class Ticket4646InstanceOfWithMultipleParametersTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {

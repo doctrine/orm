@@ -667,9 +667,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     }
 
     /**
-     * {@inheritDoc}
+     * @deprecated This method will be removed in ORM 3.0.
      */
-    protected function getFqcnFromAlias($namespaceAlias, $simpleClassName)
+    protected function getFqcnFromAlias($namespaceAlias, $simpleClassName): string
     {
         throw new BadMethodCallException(__METHOD__ . ' is no longer supported by ' . self::class);
     }
