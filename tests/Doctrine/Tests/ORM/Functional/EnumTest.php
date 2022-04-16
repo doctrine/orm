@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\Enums\Card;
 use Doctrine\Tests\Models\Enums\CardWithDefault;
+use Doctrine\Tests\Models\Enums\CardWithNullable;
 use Doctrine\Tests\Models\Enums\Product;
 use Doctrine\Tests\Models\Enums\Quantity;
 use Doctrine\Tests\Models\Enums\Scale;
@@ -59,6 +60,59 @@ class EnumTest extends OrmFunctionalTestCase
 
         $this->assertInstanceOf(Suit::class, $fetchedCard->suit);
         $this->assertEquals(Suit::Clubs, $fetchedCard->suit);
+    }
+
+    public function testEnumHydration(): void
+    {
+        $this->setUpEntitySchema([Card::class, CardWithNullable::class]);
+
+        $card       = new Card();
+        $card->suit = Suit::Clubs;
+
+        $cardWithNullable       = new CardWithNullable();
+        $cardWithNullable->suit = null;
+
+        $this->_em->persist($card);
+        $this->_em->persist($cardWithNullable);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(Card::class, 'c')
+            ->select('c.id, c.suit')
+            ->getQuery()
+            ->getResult();
+
+        $this->assertInstanceOf(Suit::class, $result[0]['suit']);
+        $this->assertEquals(Suit::Clubs, $result[0]['suit']);
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(CardWithNullable::class, 'c')
+            ->select('c.id, c.suit')
+            ->getQuery()
+            ->getResult();
+
+        $this->assertNull($result[0]['suit']);
+    }
+
+    public function testEnumArrayHydration(): void
+    {
+        $this->setUpEntitySchema([Scale::class]);
+
+        $scale                 = new Scale();
+        $scale->supportedUnits = [Unit::Gram, Unit::Meter];
+
+        $this->_em->persist($scale);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(Scale::class, 's')
+            ->select('s.id, s.supportedUnits')
+            ->getQuery()
+            ->getResult();
+
+        self::assertEqualsCanonicalizing([Unit::Gram, Unit::Meter], $result[0]['supportedUnits']);
     }
 
     public function testFindByEnum(): void

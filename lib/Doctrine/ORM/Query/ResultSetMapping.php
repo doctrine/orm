@@ -78,6 +78,14 @@ class ResultSetMapping
     public $scalarMappings = [];
 
     /**
+     * Maps scalar columns to enums
+     *
+     * @ignore
+     * @psalm-var array<string, string>
+     */
+    public $enumMappings = [];
+
+    /**
      * Maps column names in the result set to the alias/field type to use in the mapped result.
      *
      * @ignore
@@ -380,6 +388,21 @@ class ResultSetMapping
         if (! $this->isMixed && $this->fieldMappings) {
             $this->isMixed = true;
         }
+
+        return $this;
+    }
+
+    /**
+     * Adds a scalar result mapping.
+     *
+     * @param string $columnName The name of the column in the SQL result set.
+     * @param string $enumType   The enum type
+     *
+     * @return $this
+     */
+    public function addEnumResult($columnName, $enumType)
+    {
+        $this->enumMappings[$columnName] = $enumType;
 
         return $this;
     }

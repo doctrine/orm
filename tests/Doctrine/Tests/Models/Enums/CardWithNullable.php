@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 
 /** @Entity */
 #[Entity]
-class Scale
+class CardWithNullable
 {
     /**
      * @Id @GeneratedValue @Column(type="integer")
@@ -22,11 +22,11 @@ class Scale
     public $id;
 
     /**
-     * @Column(type="simple_array", enumType=Unit::class)
-     * @var Unit[]
+     * @Column(type="string", enumType=Suit::class, nullable=true)
+     * @var ?Suit
      */
-    #[Column(type: 'simple_array', enumType: Unit::class)]
-    public $supportedUnits;
+    #[Column(type: 'string', nullable: true, enumType: Suit::class)]
+    public $suit;
 
     public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
@@ -39,9 +39,10 @@ class Scale
         );
         $metadata->mapField(
             [
-                'fieldName' => 'supportedUnits',
-                'type' => 'simple_array',
-                'enumType' => Unit::class,
+                'fieldName' => 'suit',
+                'type' => 'string',
+                'enumType' => Suit::class,
+                'nullable' => true,
             ]
         );
     }
