@@ -7,24 +7,10 @@ Doctrine Console
 The Doctrine Console is a Command Line Interface tool for simplifying common
 administration tasks during the development of a project that uses ORM.
 
-Take a look at the :doc:`Installation and Configuration <configuration>`
-chapter for more information how to setup the console command.
+For the following examples, we will set up the CLI as ``bin/doctrine``.
 
-Display Help Information
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-Type ``php vendor/bin/doctrine`` on the command line and you should see an
-overview of the available commands or use the --help flag to get
-information on the available commands. If you want to know more
-about the use of generate entities for example, you can call:
-
-.. code-block:: php
-
-    $> php vendor/bin/doctrine orm:generate-entities --help
-
-
-Configuration
-~~~~~~~~~~~~~
+Setting Up the Console
+~~~~~~~~~~~~~~~~~~~~~~
 
 Whenever the ``doctrine`` command line tool is invoked, it can
 access all Commands that were registered by a developer. There is no
@@ -34,31 +20,51 @@ Doctrine DBAL and ORM. If you want to use additional commands you
 have to register them yourself.
 
 All the commands of the Doctrine Console require access to the
-``EntityManager``. You have to inject it into the console application with
-``ConsoleRunner::createHelperSet``. Whenever you invoke the Doctrine
-binary, it searches the current directory for the file ``cli-config.php``.
-This file contains the project-specific configuration.
+``EntityManager``. You have to inject it into the console application.
 
-Here is an example of a the project-specific ``cli-config.php``:
+Here is an example of a the project-specific ``bin/doctrine`` binary.
 
 .. code-block:: php
 
+    #!/usr/bin/env php
     <?php
-    use Doctrine\ORM\Tools\Console\ConsoleRunner;
 
-    // replace this with the path to your own project bootstrap file.
+    use Doctrine\ORM\Tools\Console\ConsoleRunner;
+    use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
+
+    // replace with path to your own project bootstrap file
     require_once 'bootstrap.php';
 
     // replace with mechanism to retrieve EntityManager in your app
     $entityManager = GetEntityManager();
 
-    return ConsoleRunner::createHelperSet($entityManager);
+    $commands = [
+        // If you want to add your own custom console commands,
+        // you can do so here.
+    ];
+
+    ConsoleRunner::run(
+        new SingleManagerProvider($entityManager),
+        $commands
+    );
 
 .. note::
 
     You have to adjust this snippet for your specific application or framework
     and use their facilities to access the Doctrine EntityManager and
     Connection Resources.
+
+Display Help Information
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Type ``php bin/doctrine`` on the command line and you should see an
+overview of the available commands or use the ``--help`` flag to get
+information on the available commands. If you want to know more
+about the use of generate entities for example, you can call:
+
+::
+
+    $> php bin/doctrine orm:generate-entities --help
 
 Command Overview
 ~~~~~~~~~~~~~~~~
@@ -189,38 +195,35 @@ To create the schema use the ``create`` command:
 
 .. code-block:: php
 
-    $ php doctrine orm:schema-tool:create
+    $ php bin/doctrine orm:schema-tool:create
 
 To drop the schema use the ``drop`` command:
 
 .. code-block:: php
 
-    $ php doctrine orm:schema-tool:drop
+    $ php bin/doctrine orm:schema-tool:drop
 
 If you want to drop and then recreate the schema then use both
 options:
 
 .. code-block:: php
 
-    $ php doctrine orm:schema-tool:drop
-    $ php doctrine orm:schema-tool:create
+    $ php bin/doctrine orm:schema-tool:drop
+    $ php bin/doctrine orm:schema-tool:create
 
 As you would think, if you want to update your schema use the
 ``update`` command:
 
 .. code-block:: php
 
-    $ php doctrine orm:schema-tool:update
+    $ php bin/doctrine orm:schema-tool:update
 
 All of the above commands also accept a ``--dump-sql`` option that
 will output the SQL for the ran operation.
 
 .. code-block:: php
 
-    $ php doctrine orm:schema-tool:create --dump-sql
-
-Before using the orm:schema-tool commands, remember to configure
-your cli-config.php properly.
+    $ php bin/doctrine orm:schema-tool:create --dump-sql
 
 Entity Generation
 -----------------
@@ -229,9 +232,9 @@ Generate entity classes and method stubs from your mapping information.
 
 .. code-block:: php
 
-    $ php doctrine orm:generate-entities
-    $ php doctrine orm:generate-entities --update-entities
-    $ php doctrine orm:generate-entities --regenerate-entities
+    $ php bin/doctrine orm:generate-entities
+    $ php bin/doctrine orm:generate-entities --update-entities
+    $ php bin/doctrine orm:generate-entities --regenerate-entities
 
 This command is not suited for constant usage. It is a little helper and does
 not support all the mapping edge cases very well. You still have to put work
@@ -316,7 +319,7 @@ convert to and the path to generate it:
 
 .. code-block:: php
 
-    $ php doctrine orm:convert-mapping xml /path/to/mapping-path-converted-to-xml
+    $ php bin/doctrine orm:convert-mapping xml /path/to/mapping-path-converted-to-xml
 
 Reverse Engineering
 -------------------
@@ -366,7 +369,7 @@ You can also reverse engineer a database using the
 
 .. code-block:: php
 
-    $ php doctrine orm:convert-mapping --from-database yml /path/to/mapping-path-converted-to-yml
+    $ php bin/doctrine orm:convert-mapping --from-database yml /path/to/mapping-path-converted-to-yml
 
 .. note::
 

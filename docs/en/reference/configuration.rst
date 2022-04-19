@@ -111,26 +111,6 @@ Setting up the Commandline Tool
 -------------------------------
 
 Doctrine ships with a number of command line tools that are very helpful
-during development. You can call this command from the Composer binary
-directory:
-
-.. code-block:: sh
-
-    $ php vendor/bin/doctrine
-
-You need to register your applications EntityManager to the console tool
-to make use of the tasks by creating a ``cli-config.php`` file with the
-following content:
-
-.. code-block:: php
-
-    <?php
-    use Doctrine\ORM\Tools\Console\ConsoleRunner;
-
-    // replace with file to your own project bootstrap
-    require_once 'bootstrap.php';
-
-    // replace with mechanism to retrieve EntityManager in your app
-    $entityManager = GetEntityManager();
-
-    return ConsoleRunner::createHelperSet($entityManager);
+during development. In order to make use of them, create an executable PHP
+script in your project as described in the
+:doc:`tools chapter <../reference/tools>`.
