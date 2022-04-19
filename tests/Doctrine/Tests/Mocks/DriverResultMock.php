@@ -64,7 +64,12 @@ class DriverResultMock implements Result, ResultStatement
 
     public function fetchAllNumeric(): array
     {
-        throw new BadMethodCallException('Not implemented');
+        $values = [];
+        while (($row = $this->fetchNumeric()) !== false) {
+            $values[] = $row;
+        }
+
+        return $values;
     }
 
     public function fetchAllAssociative(): array
