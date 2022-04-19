@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use BackedEnum;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
@@ -22,6 +23,7 @@ use function array_merge;
 use function count;
 use function end;
 use function in_array;
+use function is_array;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
@@ -285,7 +287,20 @@ abstract class AbstractHydrator
                     $type  = $cacheKeyInfo['type'];
                     $value = $type->convertToPHPValue($value, $this->_platform);
 
+                    // Reimplement ReflectionEnumProperty code
+                    if ($value !== null && isset($cacheKeyInfo['enumType'])) {
+                        $enumType = $cacheKeyInfo['enumType'];
+                        if (is_array($value)) {
+                            $value = array_map(static function ($value) use ($enumType): BackedEnum {
+                                return $enumType::from($value);
+                            }, $value);
+                        } else {
+                            $value = $enumType::from($value);
+                        }
+                    }
+
                     $rowData['scalars'][$fieldName] = $value;
+
                     break;
 
                 //case (isset($cacheKeyInfo['isMetaColumn'])):
@@ -428,6 +443,7 @@ abstract class AbstractHydrator
                     'fieldName' => $this->_rsm->scalarMappings[$key],
                     'type'      => Type::getType($this->_rsm->typeMappings[$key]),
                     'dqlAlias'  => '',
+                    'enumType'  => $this->_rsm->enumMappings[$key] ?? null,
                 ];
 
             case isset($this->_rsm->scalarMappings[$key]):
@@ -435,6 +451,7 @@ abstract class AbstractHydrator
                     'isScalar'  => true,
                     'fieldName' => $this->_rsm->scalarMappings[$key],
                     'type'      => Type::getType($this->_rsm->typeMappings[$key]),
+                    'enumType'  => $this->_rsm->enumMappings[$key] ?? null,
                 ];
 
             case isset($this->_rsm->metaMappings[$key]):

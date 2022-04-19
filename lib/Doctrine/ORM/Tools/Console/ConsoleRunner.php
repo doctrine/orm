@@ -82,6 +82,9 @@ final class ConsoleRunner
         );
     }
 
+    /**
+     * @deprecated This method will be removed in ORM 3.0 without replacement.
+     */
     public static function printCliConfigTemplate(): void
     {
         echo <<<'HELP'
