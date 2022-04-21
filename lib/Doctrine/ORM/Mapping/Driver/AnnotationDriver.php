@@ -5,16 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\Reader;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata;
-use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
-use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -32,19 +29,8 @@ use function is_numeric;
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
  */
-class AnnotationDriver implements MappingDriver
+class AnnotationDriver extends AbstractAnnotationDriver
 {
-    use ColocatedMappingDriver;
-
-    /**
-     * The annotation reader.
-     *
-     * @internal this property will be private in 3.0
-     *
-     * @var Reader
-     */
-    protected $reader;
-
     /**
      * @var int[]
      * @psalm-var array<class-string, int>
@@ -53,20 +39,6 @@ class AnnotationDriver implements MappingDriver
         Mapping\Entity::class => 1,
         Mapping\MappedSuperclass::class => 2,
     ];
-
-    /**
-     * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
-     * docblock annotations.
-     *
-     * @param Reader               $reader The AnnotationReader to use
-     * @param string|string[]|null $paths  One or multiple paths where mapping classes can be found.
-     */
-    public function __construct($reader, $paths = null)
-    {
-        $this->reader = $reader;
-
-        $this->addPaths((array) $paths);
-    }
 
     /**
      * {@inheritDoc}
@@ -812,39 +784,6 @@ class AnnotationDriver implements MappingDriver
         }
 
         return $mapping;
-    }
-
-    /**
-     * Retrieve the current annotation reader
-     *
-     * @return Reader
-     */
-    public function getReader()
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/9587',
-            '%s is deprecated with no replacement',
-            __METHOD__
-        );
-
-        return $this->reader;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function isTransient($className)
-    {
-        $classAnnotations = $this->reader->getClassAnnotations(new ReflectionClass($className));
-
-        foreach ($classAnnotations as $annot) {
-            if (isset($this->entityAnnotationClasses[get_class($annot)])) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /**
