@@ -1232,13 +1232,8 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * Checks whether a field is part of the identifier/primary key field(s).
-     *
-     * @param string $fieldName The field name.
-     *
-     * @return bool TRUE if the field is part of the table identifier/primary key field(s),
-     * FALSE otherwise.
      */
-    public function isIdentifier($fieldName)
+    public function isIdentifier(string $fieldName): bool
     {
         if (! $this->identifier) {
             return false;
@@ -2016,7 +2011,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * {@inheritDoc}
      */
-    public function getIdentifierFieldNames()
+    public function getIdentifierFieldNames(): array
     {
         return $this->identifier;
     }
@@ -2073,15 +2068,12 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * {@inheritDoc}
      */
-    public function getIdentifier()
+    public function getIdentifier(): array
     {
         return $this->identifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function hasField($fieldName)
+    public function hasField(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]) || isset($this->embeddedClasses[$fieldName]);
     }
@@ -2229,13 +2221,9 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets the type of a field.
      *
-     * @param string $fieldName
-     *
-     * @return string|null
-     *
      * @todo 3.0 Remove this. PersisterHelper should fix it somehow
      */
-    public function getTypeOfField($fieldName)
+    public function getTypeOfField(string $fieldName): ?string
     {
         return isset($this->fieldMappings[$fieldName])
             ? $this->fieldMappings[$fieldName]['type']
@@ -2988,27 +2976,18 @@ class ClassMetadataInfo implements ClassMetadata
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function hasAssociation($fieldName)
+    public function hasAssociation(string $fieldName): bool
     {
         return isset($this->associationMappings[$fieldName]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function isSingleValuedAssociation($fieldName)
+    public function isSingleValuedAssociation(string $fieldName): bool
     {
         return isset($this->associationMappings[$fieldName])
             && ($this->associationMappings[$fieldName]['type'] & self::TO_ONE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function isCollectionValuedAssociation($fieldName)
+    public function isCollectionValuedAssociation(string $fieldName): bool
     {
         return isset($this->associationMappings[$fieldName])
             && ! ($this->associationMappings[$fieldName]['type'] & self::TO_ONE);
@@ -3230,7 +3209,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * {@inheritDoc}
      */
-    public function getFieldNames()
+    public function getFieldNames(): array
     {
         return array_keys($this->fieldMappings);
     }
@@ -3238,7 +3217,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * {@inheritDoc}
      */
-    public function getAssociationNames()
+    public function getAssociationNames(): array
     {
         return array_keys($this->associationMappings);
     }
@@ -3246,64 +3225,30 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * {@inheritDoc}
      *
-     * @param string $assocName
-     *
-     * @return string
      * @psalm-return class-string
      *
      * @throws InvalidArgumentException
      */
-    public function getAssociationTargetClass($assocName)
+    public function getAssociationTargetClass(string $assocName): string
     {
-        if (! isset($this->associationMappings[$assocName])) {
-            throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");
-        }
-
-        return $this->associationMappings[$assocName]['targetEntity'];
+        return $this->associationMappings[$assocName]['targetEntity']
+            ?? throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function isAssociationInverseSide($fieldName)
+    public function isAssociationInverseSide(string $assocName): bool
     {
-        return isset($this->associationMappings[$fieldName])
-            && ! $this->associationMappings[$fieldName]['isOwningSide'];
+        return isset($this->associationMappings[$assocName])
+            && ! $this->associationMappings[$assocName]['isOwningSide'];
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getAssociationMappedByTargetField($fieldName)
+    public function getAssociationMappedByTargetField(string $assocName): string
     {
-        return $this->associationMappings[$fieldName]['mappedBy'];
-    }
-
-    /**
-     * @param string $targetClass
-     *
-     * @return mixed[][]
-     * @psalm-return array<string, array<string, mixed>>
-     */
-    public function getAssociationsByTargetClass($targetClass)
-    {
-        $relations = [];
-
-        foreach ($this->associationMappings as $mapping) {
-            if ($mapping['targetEntity'] === $targetClass) {
-                $relations[$mapping['fieldName']] = $mapping;
-            }
-        }
-
-        return $relations;
+        return $this->associationMappings[$assocName]['mappedBy'];
     }
 
     /**

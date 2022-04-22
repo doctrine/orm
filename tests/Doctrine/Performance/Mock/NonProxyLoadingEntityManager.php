@@ -51,10 +51,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
         return $this->realEntityManager->getMetadataFactory();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getClassMetadata($className): ClassMetadata
+    public function getClassMetadata(string $className): ClassMetadata
     {
         return $this->realEntityManager->getClassMetadata($className);
     }
@@ -181,58 +178,32 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
         return $this->realEntityManager->hasFilters();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function find($className, mixed $id, ?int $lockMode = null, ?int $lockVersion = null): ?object
+    public function find(string $className, mixed $id, ?int $lockMode = null, ?int $lockVersion = null): ?object
     {
         return $this->realEntityManager->find($className, $id, $lockMode, $lockVersion);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function persist($object): void
+    public function persist(object $object): void
     {
         $this->realEntityManager->persist($object);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function remove($object): void
+    public function remove(object $object): void
     {
         $this->realEntityManager->remove($object);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function merge($object): object
+    public function clear(): void
     {
-        return $this->realEntityManager->merge($object);
+        $this->realEntityManager->clear();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function clear($objectName = null): void
-    {
-        $this->realEntityManager->clear($objectName);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function detach($object): void
+    public function detach(object $object): void
     {
         $this->realEntityManager->detach($object);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function refresh($object): void
+    public function refresh(object $object): void
     {
         $this->realEntityManager->refresh($object);
     }
@@ -242,26 +213,17 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
         $this->realEntityManager->flush();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getRepository($className): EntityRepository
+    public function getRepository(string $className): EntityRepository
     {
         return $this->realEntityManager->getRepository($className);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function initializeObject($obj): void
+    public function initializeObject(object $obj): void
     {
         $this->realEntityManager->initializeObject($obj);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function contains($object): bool
+    public function contains(object $object): bool
     {
         return $this->realEntityManager->contains($object);
     }

@@ -101,15 +101,11 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Finds entities by a set of criteria.
      *
-     * @param int|null $limit
-     * @param int|null $offset
-     * @psalm-param array<string, mixed> $criteria
-     * @psalm-param array<string, string>|null $orderBy
+     * {@inheritdoc}
      *
-     * @return object[] The objects.
      * @psalm-return list<T>
      */
-    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
+    public function findBy(array $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null): array
     {
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
 
@@ -122,8 +118,7 @@ class EntityRepository implements ObjectRepository, Selectable
      * @psalm-param array<string, mixed> $criteria
      * @psalm-param array<string, string>|null $orderBy
      *
-     * @return object|null The entity instance or NULL if the entity can not be found.
-     * @psalm-return ?T
+     * @psalm-return T|null
      */
     public function findOneBy(array $criteria, ?array $orderBy = null): ?object
     {

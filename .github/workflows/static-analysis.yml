@@ -10,74 +10,8 @@ on:
       - "*.x"
 
 jobs:
-  static-analysis-phpstan:
-    name: "Static Analysis with PHPStan"
-    runs-on: "ubuntu-20.04"
-
-    strategy:
-      fail-fast: false
-      matrix:
-        php-version:
-          - "8.1"
-        dbal-version:
-          - "default"
-        persistence-version:
-          - "default"
-        include:
-          - php-version: "8.1"
-            dbal-version: "default"
-            persistence-version: "2.5"
-
-    steps:
-      - name: "Checkout code"
-        uses: "actions/checkout@v2"
-
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          coverage: "none"
-          php-version: "${{ matrix.php-version }}"
-
-      - name: "Require specific DBAL version"
-        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
-        if: "${{ matrix.dbal-version != 'default' }}"
-
-      - name: "Require specific persistence version"
-        run: "composer require doctrine/persistence ^${{ matrix.persistence-version }} --no-update"
-        if: "${{ matrix.persistence-version != 'default' }}"
-
-      - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v1"
-        with:
-          dependency-versions: "highest"
-
-      - name: "Run a static analysis with phpstan/phpstan"
-        run: "vendor/bin/phpstan analyse"
-
-  static-analysis-psalm:
-    name: "Static Analysis with Psalm"
-    runs-on: "ubuntu-20.04"
-
-    strategy:
-      fail-fast: false
-      matrix:
-        php-version:
-          - "8.1"
-
-    steps:
-      - name: "Checkout code"
-        uses: "actions/checkout@v2"
-
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          coverage: "none"
-          php-version: "${{ matrix.php-version }}"
-
-      - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v1"
-        with:
-          dependency-versions: "highest"
-
-      - name: "Run a static analysis with vimeo/psalm"
-        run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc)"
+  static-analysis:
+    name: "Static Analysis"
+    uses: "doctrine/.github/.github/workflows/static-analysis.yml@1.4.1"
+    with:
+      php-version: "8.1"

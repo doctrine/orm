@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-use BadMethodCallException;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Platforms;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -49,43 +48,27 @@ use function substr;
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
-    /** @var EntityManagerInterface|null */
-    private $em;
-
-    /** @var AbstractPlatform|null */
-    private $targetPlatform;
-
-    /** @var MappingDriver */
-    private $driver;
-
-    /** @var EventManager */
-    private $evm;
+    private ?EntityManagerInterface $em       = null;
+    private ?AbstractPlatform $targetPlatform = null;
+    private ?MappingDriver $driver            = null;
+    private ?EventManager $evm                = null;
 
     /** @var mixed[] */
-    private $embeddablesActiveNesting = [];
+    private array $embeddablesActiveNesting = [];
 
-    /**
-     * @return void
-     */
-    public function setEntityManager(EntityManagerInterface $em)
+    public function setEntityManager(EntityManagerInterface $em): void
     {
         $this->em = $em;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->driver      = $this->em->getConfiguration()->getMetadataDriverImpl();
         $this->evm         = $this->em->getEventManager();
         $this->initialized = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function onNotFoundMetadata($className)
+    protected function onNotFoundMetadata(string $className): ?ClassMetadata
     {
         if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
             return null;
@@ -103,8 +86,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents)
-    {
+    protected function doLoadMetadata(
+        ClassMetadataInterface $class,
+        ?ClassMetadataInterface $parent,
+        bool $rootEntityFound,
+        array $nonSuperclassParents
+    ): void {
         if ($parent) {
             $class->setInheritanceType($parent->inheritanceType);
             $class->setDiscriminatorColumn($parent->discriminatorColumn);
@@ -232,14 +219,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Validate runtime metadata is correctly defined.
      *
-     * @param ClassMetadata               $class
-     * @param ClassMetadataInterface|null $parent
-     *
-     * @return void
-     *
      * @throws MappingException
      */
-    protected function validateRuntimeMetadata($class, $parent)
+    protected function validateRuntimeMetadata(ClassMetadata $class, ?ClassMetadataInterface $parent): void
     {
         if (! $class->reflClass) {
             // only validate if there is a reflection class instance
@@ -281,10 +263,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function newClassMetadataInstance($className)
+    protected function newClassMetadataInstance(string $className): ClassMetadata
     {
         return new ClassMetadata($className, $this->em->getConfiguration()->getNamingStrategy());
     }
@@ -648,44 +627,22 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService)
+    protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
-        assert($class instanceof ClassMetadata);
         $class->wakeupReflection($reflService);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService)
+    protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
-        assert($class instanceof ClassMetadata);
         $class->initializeReflection($reflService);
     }
 
-    /**
-     * @deprecated This method will be removed in ORM 3.0.
-     */
-    protected function getFqcnFromAlias($namespaceAlias, $simpleClassName): string
-    {
-        throw new BadMethodCallException(__METHOD__ . ' is no longer supported by ' . self::class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function getDriver()
+    protected function getDriver(): MappingDriver
     {
         return $this->driver;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function isEntity(ClassMetadataInterface $class)
+    protected function isEntity(ClassMetadataInterface $class): bool
     {
         return ! $class->isMappedSuperclass;
     }

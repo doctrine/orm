@@ -2724,12 +2724,9 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Notifies this UnitOfWork of a property change in an entity.
      *
-     * @param object $sender       The entity that owns the property.
-     * @param string $propertyName The name of the property that changed.
-     * @param mixed  $oldValue     The old value of the property.
-     * @param mixed  $newValue     The new value of the property.
+     * {@inheritdoc}
      */
-    public function propertyChanged($sender, $propertyName, mixed $oldValue, mixed $newValue): void
+    public function propertyChanged(object $sender, string $propertyName, mixed $oldValue, mixed $newValue): void
     {
         $oid   = spl_object_id($sender);
         $class = $this->em->getClassMetadata(get_class($sender));
