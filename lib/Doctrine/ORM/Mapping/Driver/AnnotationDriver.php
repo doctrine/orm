@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
-use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -32,7 +31,7 @@ use function is_numeric;
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
  */
-class AnnotationDriver implements MappingDriver
+class AnnotationDriver extends CompatibilityAnnotationDriver
 {
     use ColocatedMappingDriver;
 

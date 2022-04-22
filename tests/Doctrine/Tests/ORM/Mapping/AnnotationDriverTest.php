@@ -26,6 +26,7 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\PostLoad;
 use Doctrine\ORM\Mapping\PreUpdate;
+use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as PersistenceAnnotationDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -35,6 +36,9 @@ use Doctrine\Tests\Models\DirectoryTree\Directory;
 use Doctrine\Tests\Models\DirectoryTree\File;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Generator;
+
+use function class_exists;
+use function is_subclass_of;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
@@ -302,6 +306,15 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         yield [DiscriminatorColumnWithNoLength::class, 255];
         yield [DiscriminatorColumnWithZeroLength::class, 0];
         yield [DiscriminatorColumnWithNonZeroLength::class, 60];
+    }
+
+    public function testLegacyInheritance(): void
+    {
+        if (! class_exists(PersistenceAnnotationDriver::class)) {
+            self::markTestSkipped('This test requires doctrine/persistence 2.');
+        }
+
+        self::assertTrue(is_subclass_of(AnnotationDriver::class, PersistenceAnnotationDriver::class));
     }
 }
 

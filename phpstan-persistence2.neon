@@ -41,3 +41,14 @@ parameters:
 
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'
+
+        # Compatibility layer for AttributeDriver
+        -
+            message: "#^PHPDoc type Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\AttributeReader of property Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\AttributeDriver\\:\\:\\$reader is not covariant with PHPDoc type Doctrine\\\\Common\\\\Annotations\\\\Reader of overridden property Doctrine\\\\Persistence\\\\Mapping\\\\Driver\\\\AnnotationDriver\\:\\:\\$reader\\.$#"
+            path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
+        -
+            message: "#^PHPDoc type array\\<string, int\\> of property Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\AttributeDriver\\:\\:\\$entityAnnotationClasses is not covariant with PHPDoc type array\\<class\\-string, bool\\|int\\> of overridden property Doctrine\\\\Persistence\\\\Mapping\\\\Driver\\\\AnnotationDriver\\:\\:\\$entityAnnotationClasses\\.$#"
+            path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
+        -
+            message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\AttributeReader\\) of method Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\AttributeDriver\\:\\:getReader\\(\\) should be compatible with return type \\(Doctrine\\\\Common\\\\Annotations\\\\Reader\\) of method Doctrine\\\\Persistence\\\\Mapping\\\\Driver\\\\AnnotationDriver\\:\\:getReader\\(\\)$#"
+            path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php

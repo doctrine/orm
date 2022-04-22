@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
-use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use LogicException;
 use ReflectionClass;
 use ReflectionMethod;
@@ -27,7 +26,7 @@ use function sprintf;
 
 use const PHP_VERSION_ID;
 
-class AttributeDriver implements MappingDriver
+class AttributeDriver extends CompatibilityAnnotationDriver
 {
     use ColocatedMappingDriver;
 
