@@ -1,5 +1,15 @@
 # Upgrade to 3.0
 
+## BC Break: Removed the `doctrine` binary.
+
+The documentation explains how the console tools can be bootstrapped for
+standalone usage:
+
+https://www.doctrine-project.org/projects/doctrine-orm/en/stable/reference/tools.html
+
+The method `ConsoleRunner::printCliConfigTemplate()` has been removed as well
+because it was only useful in the context of the `doctrine` binary.
+
 ## BC Break: Removed `EntityManagerHelper` and related logic
 
 All console commands require a `$entityManagerProvider` to be passed via the
