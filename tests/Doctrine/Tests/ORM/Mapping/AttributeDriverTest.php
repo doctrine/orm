@@ -8,8 +8,12 @@ use Attribute;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Annotation;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
+use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as PersistenceAnnotationDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use stdClass;
+
+use function class_exists;
+use function is_subclass_of;
 
 use const PHP_VERSION_ID;
 
@@ -109,6 +113,15 @@ class AttributeDriverTest extends AbstractMappingDriverTest
         self::assertFalse($driver->isTransient(AttributeEntityWithoutOriginalParents::class));
 
         self::assertFalse($driver->isTransient(AttributeEntityStartingWithRepeatableAttributes::class));
+    }
+
+    public function testLegacyInheritance(): void
+    {
+        if (! class_exists(PersistenceAnnotationDriver::class)) {
+            self::markTestSkipped('This test requires doctrine/persistence 2.');
+        }
+
+        self::assertTrue(is_subclass_of(AttributeDriver::class, PersistenceAnnotationDriver::class));
     }
 }
 

@@ -41,11 +41,6 @@ This is now deprecated. Please extend `EntityRepository` instead.
 +$entityManager->getRepository(CmsUser::class);
 ```
 
-## BC Break: `AttributeDriver` and `AnnotationDriver` no longer extends parent class from `doctrine/persistence`
-
-Both these classes used to extend an abstract `AnnotationDriver` class defined
-in `doctrine/persistence`, and no longer do.
-
 ## Deprecate `AttributeDriver::getReader()` and `AnnotationDriver::getReader()`
 
 That method was inherited from the abstract `AnnotationDriver` class of
