@@ -421,9 +421,6 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php">
-    <InvalidScalarArgument occurrences="1">
-      <code>array_keys($discrMap)</code>
-    </InvalidScalarArgument>
     <PossiblyFalseArgument occurrences="1">
       <code>$index</code>
     </PossiblyFalseArgument>
@@ -452,9 +449,6 @@
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/SimpleObjectHydrator.php">
-    <InvalidScalarArgument occurrences="1">
-      <code>array_keys($discrMap)</code>
-    </InvalidScalarArgument>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$class</code>
     </PropertyNotSetInConstructor>

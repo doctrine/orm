@@ -84,17 +84,17 @@ class HydrationException extends ORMException
 
     /**
      * @param string   $discrValue
-     * @param string[] $discrMap
-     * @psalm-param array<string, string> $discrMap
+     * @param string[] $discrValues
+     * @psalm-param list<string> $discrValues
      *
      * @return HydrationException
      */
-    public static function invalidDiscriminatorValue($discrValue, $discrMap)
+    public static function invalidDiscriminatorValue($discrValue, $discrValues)
     {
         return new self(sprintf(
             'The discriminator value "%s" is invalid. It must be one of "%s".',
             $discrValue,
-            implode('", "', $discrMap)
+            implode('", "', $discrValues)
         ));
     }
 }
