@@ -519,7 +519,9 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @see discriminatorColumn
      *
-     * @var mixed
+     * @var array<string, string>
+     *
+     * @psalm-var array<string, class-string>
      */
     public $discriminatorMap = [];
 
