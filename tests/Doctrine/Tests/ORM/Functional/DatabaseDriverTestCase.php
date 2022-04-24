@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -31,7 +31,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
 
         $metadatas = [];
         foreach ($driver->getAllClassNames() as $className) {
-            $class = new ClassMetadataInfo($className);
+            $class = new ClassMetadata($className);
             $driver->loadMetadataForClass($className, $class);
             $metadatas[$className] = $class;
         }
@@ -57,7 +57,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
                 continue;
             }
 
-            $class = new ClassMetadataInfo($className);
+            $class = new ClassMetadata($className);
             $driver->loadMetadataForClass($className, $class);
             $metadatas[$className] = $class;
         }
