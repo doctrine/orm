@@ -2766,6 +2766,16 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         foreach ($class->associationMappings as $field => $assoc) {
+            // If identity through foreign key is used, then
+            // further eager loading of related entities might raise an error, because id is not set at that time.
+            // Trying to fill ids using identity map before main cycle starts.
+            if (isset($assoc['id']) && $assoc['id'] && isset($id[$field], $this->identityMap[$assoc['targetEntity']][$id[$field]])) {
+                $targetEntity = $this->identityMap[$assoc['targetEntity']][$id[$field]];
+                $class->reflFields[$field]->setValue($entity, $targetEntity);
+            }
+        }
+
+        foreach ($class->associationMappings as $field => $assoc) {
             // Check if the association is not among the fetch-joined associations already.
             if (isset($hints['fetchAlias'], $hints['fetched'][$hints['fetchAlias']][$field])) {
                 continue;
