@@ -16,6 +16,9 @@ use function str_contains;
 
 class DBAL483Test extends OrmFunctionalTestCase
 {
+    /** @var Tools\SchemaTool */
+    private $schemaTool;
+
     protected function setUp(): void
     {
         parent::setUp();

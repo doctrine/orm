@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
@@ -31,12 +30,6 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         $this->useModelSet('ecommerce');
         $this->useModelSet('company');
         parent::setUp();
-        $this->_factory = new ProxyFactory(
-            $this->_em,
-            __DIR__ . '/../../Proxies',
-            'Doctrine\Tests\Proxies',
-            true
-        );
     }
 
     public function createProduct(): int

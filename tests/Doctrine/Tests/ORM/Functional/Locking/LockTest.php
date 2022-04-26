@@ -23,8 +23,6 @@ class LockTest extends OrmFunctionalTestCase
     {
         $this->useModelSet('cms');
         parent::setUp();
-
-        $this->handles = [];
     }
 
     /**

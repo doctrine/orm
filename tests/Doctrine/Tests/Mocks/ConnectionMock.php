@@ -51,9 +51,6 @@ class ConnectionMock extends Connection
         $this->_platformMock = new DatabasePlatformMock();
 
         parent::__construct($params, $driver ?? new DriverMock(), $config, $eventManager);
-
-        // Override possible assignment of platform to database platform mock
-        $this->_platform = $this->_platformMock;
     }
 
     public function getDatabase(): string
