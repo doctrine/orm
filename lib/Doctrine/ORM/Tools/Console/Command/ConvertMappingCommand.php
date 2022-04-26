@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
+use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 use Doctrine\ORM\Tools\Export\Driver\AbstractExporter;
@@ -109,7 +109,7 @@ EOT
             }
         }
 
-        $cmf = new ClassMetadataFactory();
+        $cmf = new DisconnectedClassMetadataFactory();
         $cmf->setEntityManager($em);
         $metadata = $cmf->getAllMetadata();
         $metadata = MetadataFilter::filter($metadata, $input->getOption('filter'));
