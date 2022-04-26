@@ -25,7 +25,6 @@ class DDC1885Test extends OrmFunctionalTestCase
 
         $user           = new User();
         $user->name     = 'FabioBatSilva';
-        $user->email    = 'fabio.bat.silva@gmail.com';
         $user->groups[] = new Group('G 1');
         $user->groups[] = new Group('G 2');
         $this->user     = $user;

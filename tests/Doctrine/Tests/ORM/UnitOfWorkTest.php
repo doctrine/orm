@@ -734,8 +734,8 @@ class UnitOfWorkTest extends OrmTestCase
         // the cascading association not set. Having the "cascading path" involve
         // a non-new object is important to show that the ORM should be considering
         // cascades across entity changesets in subsequent flushes.
-        $cascading->cascaded    = $cascadePersisted;
-        $nonCascading->cascaded = $cascadePersisted;
+        $cascading->cascaded       = $cascadePersisted;
+        $nonCascading->nonCascaded = $cascadePersisted;
 
         $this->_unitOfWork->persist($cascading);
         $this->_unitOfWork->persist($nonCascading);
@@ -1115,7 +1115,7 @@ class EntityWithCascadingAssociation
     private $id;
 
     /**
-     * @var CascadePersistedEntity
+     * @var CascadePersistedEntity|null
      * @ManyToOne(targetEntity=CascadePersistedEntity::class, cascade={"persist"})
      */
     public $cascaded;
@@ -1138,7 +1138,7 @@ class EntityWithNonCascadingAssociation
     private $id;
 
     /**
-     * @var CascadePersistedEntity
+     * @var CascadePersistedEntity|null
      * @ManyToOne(targetEntity=CascadePersistedEntity::class)
      */
     public $nonCascaded;
