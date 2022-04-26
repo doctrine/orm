@@ -12,6 +12,7 @@ use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Exception\EntityManagerClosed;
@@ -381,6 +382,8 @@ use function strpos;
      * @throws OptimisticLockException If a version check on an entity that
      * makes use of optimistic locking fails.
      * @throws ORMException
+     * @throws ForeignKeyConstraintViolationException
+     * @throws Throwable
      */
     public function flush($entity = null)
     {

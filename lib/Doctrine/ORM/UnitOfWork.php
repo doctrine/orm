@@ -337,7 +337,8 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return void
      *
-     * @throws Throwable|ForeignKeyConstraintViolationException
+     * @throws Throwable
+     * @throws ForeignKeyConstraintViolationException
      */
     public function commit($entity = null)
     {
@@ -456,7 +457,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 throw new OptimisticLockException('Commit failed', $object);
             }
-        } catch (Throwable | ForeignKeyConstraintViolationException $e) {
+        } catch (Throwable $e) {
             $this->em->close();
 
             if ($conn->isTransactionActive()) {
