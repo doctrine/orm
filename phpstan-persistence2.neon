@@ -52,3 +52,8 @@ parameters:
         -
             message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\AttributeReader\\) of method Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\AttributeDriver\\:\\:getReader\\(\\) should be compatible with return type \\(Doctrine\\\\Common\\\\Annotations\\\\Reader\\) of method Doctrine\\\\Persistence\\\\Mapping\\\\Driver\\\\AnnotationDriver\\:\\:getReader\\(\\)$#"
             path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
+
+        # See https://github.com/phpstan/phpstan/issues/7096
+        -
+            message: '#^Method Doctrine\\ORM\\Mapping\\ReflectionEnumProperty\:\:initializeEnumValue\(\) should return BackedEnum but returns static\.$#'
+            path: lib/Doctrine/ORM/Mapping/ReflectionEnumProperty.php
