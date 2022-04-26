@@ -52,8 +52,3 @@ parameters:
         -
             message: '#^Call to method injectObjectManager\(\) on an unknown class Doctrine\\Persistence\\ObjectManagerAware\.$#'
             path: lib/Doctrine/ORM/UnitOfWork.php
-
-        # See https://github.com/phpstan/phpstan/issues/7096
-        -
-            message: '#^Method Doctrine\\ORM\\Mapping\\ReflectionEnumProperty\:\:initializeEnumValue\(\) should return BackedEnum but returns static\.$#'
-            path: lib/Doctrine/ORM/Mapping/ReflectionEnumProperty.php
