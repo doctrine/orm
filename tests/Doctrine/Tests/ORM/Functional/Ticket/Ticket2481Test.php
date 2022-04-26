@@ -20,8 +20,6 @@ class Ticket2481Test extends OrmFunctionalTestCase
         $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(Ticket2481Product::class),
         ]);
-
-        $this->_conn = $this->_em->getConnection();
     }
 
     public function testEmptyInsert(): void

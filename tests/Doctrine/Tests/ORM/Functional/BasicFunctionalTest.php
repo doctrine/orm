@@ -1209,7 +1209,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $article1         = new CmsArticle();
         $article1->topic  = 'Foo';
         $article1->text   = 'Foo Text';
-        $article1->author = $user;
+        $article1->user   = $user;
         $user->articles[] = $article1;
 
         $this->expectException(InvalidArgumentException::class);

@@ -38,16 +38,12 @@ class DDC1193Test extends OrmFunctionalTestCase
         $account = new DDC1193Account();
 
         $person->account = $account;
-        $person->company = $company;
-
         $company->member = $person;
 
         $this->_em->persist($company);
-
         $this->_em->flush();
 
         $companyId = $company->id;
-        $accountId = $account->id;
         $this->_em->clear();
 
         $company = $this->_em->find(get_class($company), $companyId);

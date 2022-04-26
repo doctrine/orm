@@ -60,17 +60,14 @@ class DDC2519Test extends OrmFunctionalTestCase
         $user1           = new LegacyUser();
         $user1->username = 'FabioBatSilva';
         $user1->name     = 'Fabio B. Silva';
-        $user1->_status  = 'active';
 
         $user2           = new LegacyUser();
         $user2->username = 'doctrinebot';
         $user2->name     = 'Doctrine Bot';
-        $user2->_status  = 'active';
 
         $user3           = new LegacyUser();
         $user3->username = 'test';
         $user3->name     = 'Tester';
-        $user3->_status  = 'active';
 
         $this->_em->persist($user1);
         $this->_em->persist($user2);
