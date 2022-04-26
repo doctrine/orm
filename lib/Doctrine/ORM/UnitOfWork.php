@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Proxy\Proxy;
 use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
@@ -39,7 +40,6 @@ use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\ObjectManagerAware;
 use Doctrine\Persistence\PropertyChangedListener;
-use Exception;
 use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
@@ -337,7 +337,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return void
      *
-     * @throws Exception
+     * @throws Throwable|ForeignKeyConstraintViolationException
      */
     public function commit($entity = null)
     {
@@ -456,7 +456,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 throw new OptimisticLockException('Commit failed', $object);
             }
-        } catch (Throwable $e) {
+        } catch (Throwable | ForeignKeyConstraintViolationException $e) {
             $this->em->close();
 
             if ($conn->isTransactionActive()) {
