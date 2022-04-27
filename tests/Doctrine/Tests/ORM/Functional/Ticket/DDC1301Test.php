@@ -90,17 +90,14 @@ class DDC1301Test extends OrmFunctionalTestCase
         $user1           = new Models\Legacy\LegacyUser();
         $user1->username = 'beberlei';
         $user1->name     = 'Benjamin';
-        $user1->_status  = 'active';
 
         $user2           = new Models\Legacy\LegacyUser();
         $user2->username = 'jwage';
         $user2->name     = 'Jonathan';
-        $user2->_status  = 'active';
 
         $user3           = new Models\Legacy\LegacyUser();
         $user3->username = 'romanb';
         $user3->name     = 'Roman';
-        $user3->_status  = 'active';
 
         $this->_em->persist($user1);
         $this->_em->persist($user2);

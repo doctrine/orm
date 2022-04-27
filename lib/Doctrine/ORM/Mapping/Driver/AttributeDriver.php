@@ -8,9 +8,9 @@ use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use ReflectionClass;
@@ -88,10 +88,16 @@ class AttributeDriver implements MappingDriver
         return true;
     }
 
-    public function loadMetadataForClass($className, ClassMetadata $metadata): void
+    /**
+     * {@inheritDoc}
+     *
+     * @psalm-param class-string<T> $className
+     * @psalm-param ClassMetadata<T> $metadata
+     *
+     * @template T of object
+     */
+    public function loadMetadataForClass($className, PersistenceClassMetadata $metadata): void
     {
-        assert($metadata instanceof ClassMetadataInfo);
-
         $reflectionClass = $metadata->getReflectionClass();
 
         $classAttributes = $this->reader->getClassAnnotations($reflectionClass);
@@ -228,7 +234,7 @@ class AttributeDriver implements MappingDriver
                 constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAttribute->value)
             );
 
-            if ($metadata->inheritanceType !== Mapping\ClassMetadata::INHERITANCE_TYPE_NONE) {
+            if ($metadata->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
                 // Evaluate DiscriminatorColumn annotation
                 if (isset($classAttributes[Mapping\DiscriminatorColumn::class])) {
                     $discrColumnAttribute = $classAttributes[Mapping\DiscriminatorColumn::class];
@@ -481,7 +487,7 @@ class AttributeDriver implements MappingDriver
 
                 // Check for `fetch`
                 if ($associationOverride->fetch) {
-                    $override['fetch'] = constant(Mapping\ClassMetadata::class . '::FETCH_' . $associationOverride->fetch);
+                    $override['fetch'] = constant(ClassMetadata::class . '::FETCH_' . $associationOverride->fetch);
                 }
 
                 $metadata->setAssociationOverride($fieldName, $override);
@@ -548,7 +554,7 @@ class AttributeDriver implements MappingDriver
      * @param string $className The class name.
      * @param string $fetchMode The fetch mode.
      *
-     * @return int The fetch mode as defined in ClassMetadata.
+     * @return ClassMetadata::FETCH_* The fetch mode as defined in ClassMetadata.
      *
      * @throws MappingException If the fetch mode is not valid.
      */

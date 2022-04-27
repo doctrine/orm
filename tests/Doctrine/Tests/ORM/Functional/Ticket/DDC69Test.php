@@ -135,7 +135,6 @@ class Lemma
 
     public function __construct()
     {
-        $this->types     = new ArrayCollection();
         $this->relations = new ArrayCollection();
     }
 

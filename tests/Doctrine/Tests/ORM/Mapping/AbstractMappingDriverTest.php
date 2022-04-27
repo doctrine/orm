@@ -1788,3 +1788,11 @@ class ReservedWordInTableColumn
         );
     }
 }
+
+class UserIncorrectAttributes extends User
+{
+}
+
+class UserMissingAttributes extends User
+{
+}

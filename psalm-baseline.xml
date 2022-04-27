@@ -268,9 +268,6 @@
     </ReferenceConstraintViolation>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php">
-    <InvalidScalarArgument occurrences="1">
-      <code>array_keys($discrMap)</code>
-    </InvalidScalarArgument>
     <PossiblyFalseArgument occurrences="1">
       <code>$index</code>
     </PossiblyFalseArgument>
@@ -297,11 +294,6 @@
     <PossiblyUndefinedArrayOffset occurrences="1">
       <code>$newObject['args']</code>
     </PossiblyUndefinedArrayOffset>
-  </file>
-  <file src="lib/Doctrine/ORM/Internal/Hydration/SimpleObjectHydrator.php">
-    <InvalidScalarArgument occurrences="1">
-      <code>array_keys($discrMap)</code>
-    </InvalidScalarArgument>
   </file>
   <file src="lib/Doctrine/ORM/LazyCriteriaCollection.php">
     <PropertyNotSetInConstructor occurrences="1">
@@ -482,7 +474,8 @@
       <code>$sequenceGeneratorDefinition</code>
       <code>$table</code>
     </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="10">
+    <PropertyTypeCoercion occurrences="11">
+      <code>$this-&gt;discriminatorMap</code>
       <code>$this-&gt;entityListeners</code>
       <code>$this-&gt;fieldMappings</code>
       <code>$this-&gt;fullyQualifiedClassName($repositoryClassName)</code>
@@ -550,6 +543,9 @@
     <LessSpecificReturnStatement occurrences="1">
       <code>$mapping</code>
     </LessSpecificReturnStatement>
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$metadata</code>
+    </MoreSpecificImplementedParamType>
     <MoreSpecificReturnType occurrences="1"/>
     <PossiblyNullArgument occurrences="1">
       <code>$listenerClassName</code>
@@ -570,9 +566,6 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$metadata</code>
-    </ArgumentTypeCoercion>
     <InvalidArrayAccess occurrences="4">
       <code>$value[0]</code>
       <code>$value[0]</code>
@@ -582,6 +575,9 @@
     <LessSpecificReturnStatement occurrences="1">
       <code>$mapping</code>
     </LessSpecificReturnStatement>
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$metadata</code>
+    </MoreSpecificImplementedParamType>
     <MoreSpecificReturnType occurrences="1"/>
     <PossiblyNullArgument occurrences="1">
       <code>$listenerClassName</code>
@@ -596,22 +592,16 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php">
-    <ArgumentTypeCoercion occurrences="3">
-      <code>$metadata</code>
-      <code>$metadata</code>
-      <code>$metadata</code>
-    </ArgumentTypeCoercion>
     <LessSpecificReturnStatement occurrences="2">
       <code>$this-&gt;namespace . $this-&gt;classNamesForTables[$tableName]</code>
       <code>$this-&gt;namespace . $this-&gt;inflector-&gt;classify(strtolower($tableName))</code>
     </LessSpecificReturnStatement>
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$metadata</code>
+    </MoreSpecificImplementedParamType>
     <MoreSpecificReturnType occurrences="1">
       <code>class-string</code>
     </MoreSpecificReturnType>
-    <NoInterfaceProperties occurrences="2">
-      <code>$metadata-&gt;name</code>
-      <code>$metadata-&gt;table</code>
-    </NoInterfaceProperties>
     <PossiblyNullArgument occurrences="2">
       <code>$this-&gt;tables[$tableName]</code>
       <code>$this-&gt;tables[$tableName]</code>
@@ -627,9 +617,9 @@
       <code>getColumns</code>
       <code>getIndexes</code>
     </PossiblyNullReference>
-    <UndefinedInterfaceMethod occurrences="1">
-      <code>mapManyToMany</code>
-    </UndefinedInterfaceMethod>
+    <PropertyTypeCoercion occurrences="1">
+      <code>$metadata-&gt;table</code>
+    </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/SimplifiedXmlDriver.php">
     <MissingParamType occurrences="2">
@@ -638,34 +628,38 @@
     </MissingParamType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$metadata</code>
+    <ArgumentTypeCoercion occurrences="3">
+      <code>$map</code>
+      <code>(string) $xmlRoot['repository-class']</code>
+      <code>isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null</code>
     </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="3">
       <code>$xmlRoot-&gt;getName() === 'embeddable'</code>
       <code>$xmlRoot-&gt;getName() === 'entity'</code>
       <code>$xmlRoot-&gt;getName() === 'mapped-superclass'</code>
     </DocblockTypeContradiction>
+    <InvalidArgument occurrences="4">
+      <code>$this-&gt;cacheToArray($manyToManyElement-&gt;cache)</code>
+      <code>$this-&gt;cacheToArray($manyToOneElement-&gt;cache)</code>
+      <code>$this-&gt;cacheToArray($oneToManyElement-&gt;cache)</code>
+      <code>$this-&gt;cacheToArray($oneToOneElement-&gt;cache)</code>
+    </InvalidArgument>
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>$metadata-&gt;table</code>
+    </InvalidPropertyAssignmentValue>
     <LessSpecificReturnStatement occurrences="1"/>
     <MissingParamType occurrences="2">
       <code>$fileExtension</code>
       <code>$locator</code>
     </MissingParamType>
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$metadata</code>
+    </MoreSpecificImplementedParamType>
     <MoreSpecificReturnType occurrences="1">
       <code>array{usage: int|null, region?: string}</code>
     </MoreSpecificReturnType>
-    <NoInterfaceProperties occurrences="12">
+    <NoInterfaceProperties occurrences="2">
       <code>$indexXml-&gt;options</code>
-      <code>$metadata-&gt;inheritanceType</code>
-      <code>$metadata-&gt;isEmbeddedClass</code>
-      <code>$metadata-&gt;isMappedSuperclass</code>
-      <code>$metadata-&gt;table</code>
-      <code>$metadata-&gt;table</code>
-      <code>$metadata-&gt;table</code>
-      <code>$metadata-&gt;table</code>
-      <code>$metadata-&gt;table</code>
-      <code>$metadata-&gt;table</code>
-      <code>$metadata-&gt;table</code>
       <code>$uniqueXml-&gt;options</code>
     </NoInterfaceProperties>
     <PossiblyInvalidPropertyFetch occurrences="2">
@@ -691,40 +685,6 @@
       <code>isset($xmlRoot-&gt;{'sql-result-set-mappings'})</code>
       <code>isset($xmlRoot-&gt;{'unique-constraints'})</code>
     </RedundantCondition>
-    <UndefinedInterfaceMethod occurrences="32">
-      <code>addEntityListener</code>
-      <code>addLifecycleCallback</code>
-      <code>addSqlResultSetMapping</code>
-      <code>enableCache</code>
-      <code>getAssociationCacheDefaults</code>
-      <code>getAssociationCacheDefaults</code>
-      <code>getAssociationCacheDefaults</code>
-      <code>getAssociationCacheDefaults</code>
-      <code>mapEmbedded</code>
-      <code>mapField</code>
-      <code>mapField</code>
-      <code>mapField</code>
-      <code>mapManyToMany</code>
-      <code>mapManyToOne</code>
-      <code>mapOneToMany</code>
-      <code>mapOneToOne</code>
-      <code>markReadOnly</code>
-      <code>setAssociationOverride</code>
-      <code>setAttributeOverride</code>
-      <code>setChangeTrackingPolicy</code>
-      <code>setCustomGeneratorDefinition</code>
-      <code>setCustomRepositoryClass</code>
-      <code>setCustomRepositoryClass</code>
-      <code>setDiscriminatorColumn</code>
-      <code>setDiscriminatorColumn</code>
-      <code>setDiscriminatorMap</code>
-      <code>setIdGeneratorType</code>
-      <code>setInheritanceType</code>
-      <code>setPrimaryTable</code>
-      <code>setSequenceGeneratorDefinition</code>
-      <code>setVersionMapping</code>
-      <code>setVersionMapping</code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Embedded.php">
     <MissingParamType occurrences="1">

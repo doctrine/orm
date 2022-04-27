@@ -77,7 +77,6 @@ class DDC522Test extends OrmFunctionalTestCase
     public function testJoinColumnWithNullSameNameAssociationField(): void
     {
         $fkCust       = new DDC522ForeignKeyTest();
-        $fkCust->name = 'name';
         $fkCust->cart = null;
 
         $this->_em->persist($fkCust);
@@ -153,13 +152,13 @@ class DDC522ForeignKeyTest
     public $id;
 
     /**
-     * @var int
+     * @var int|null
      * @Column(type="integer", name="cart_id", nullable=true)
      */
     public $cartId;
 
     /**
-     * @var DDC522Cart
+     * @var DDC522Cart|null
      * @OneToOne(targetEntity="DDC522Cart")
      * @JoinColumn(name="cart_id", referencedColumnName="id")
      */
