@@ -170,14 +170,6 @@ entity when needed.
 
 You have all the methods you need to manually specify the mapping
 information instead of using some mapping file to populate it from.
-The base ``ClassMetadataInfo`` class is responsible for only data
-storage and is not meant for runtime use. It does not require that
-the class actually exists yet so it is useful for describing some
-entity before it exists and using that information to generate for
-example the entities themselves. The class ``ClassMetadata``
-extends ``ClassMetadataInfo`` and adds some functionality required
-for runtime usage and requires that the PHP class is present and
-can be autoloaded.
 
 You can read more about the API of the ``ClassMetadata`` classes in
 the PHP Mapping chapter.
