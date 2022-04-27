@@ -81,7 +81,9 @@ class ValidateSchemaCommand extends AbstractEntityManagerCommand
             if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
                 $sqls = $validator->getUpdateSchemaList();
                 $ui->comment(sprintf('<info>%d</info> schema diff(s) detected:', count($sqls)));
-                $ui->listing($sqls);
+                foreach ($sqls as $sql) {
+                    $ui->text(sprintf('    %s;', $sql));
+                }
             }
 
             $exit += 2;
