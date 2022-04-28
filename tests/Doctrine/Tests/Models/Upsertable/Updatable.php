@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Upsertable;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -60,7 +59,7 @@ class Updatable
             [
                 'fieldName' => 'nonUpdatableContent',
                 'notUpdatable' => true,
-                'generated' => ClassMetadataInfo::GENERATED_ALWAYS,
+                'generated' => ClassMetadata::GENERATED_ALWAYS,
             ]
         );
         $metadata->mapField(

@@ -8,7 +8,7 @@ use DateInterval;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Embedded;
 use Doctrine\ORM\Mapping\Entity;
@@ -82,9 +82,9 @@ class UserTyped
     #[ORM\Embedded]
     public ?Contact $contact = null;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
-        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(
             ['name' => 'cms_users_typed']
         );
@@ -95,7 +95,7 @@ class UserTyped
                 'fieldName' => 'id',
             ]
         );
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
         $metadata->mapField(
             [

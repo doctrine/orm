@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 $metadata->mapField(
     [
@@ -19,4 +19,4 @@ $metadata->mapField(
     ]
 );
 
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);

@@ -21,7 +21,7 @@ use function strtolower;
 abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
 {
     /**
-     * @psalm-return array<string, ClassMetadataInfo>
+     * @psalm-return array<string, ClassMetadata>
      */
     protected function convertToClassMetadata(array $entityTables, array $manyTables = []): array
     {
@@ -42,7 +42,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
     /**
      * @param string[] $classNames
      *
-     * @psalm-return array<class-string, ClassMetadataInfo>
+     * @psalm-return array<class-string, ClassMetadata>
      */
     protected function extractClassMetadata(array $classNames): array
     {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC3579;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
@@ -105,6 +105,6 @@ class DDC3579User
             ]
         );
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
     }
 }

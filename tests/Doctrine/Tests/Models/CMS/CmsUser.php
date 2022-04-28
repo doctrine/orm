@@ -6,7 +6,7 @@ namespace Doctrine\Tests\Models\CMS;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\ColumnResult;
 use Doctrine\ORM\Mapping\Entity;
@@ -336,7 +336,7 @@ class CmsUser
         }
     }
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->setPrimaryTable(
             ['name' => 'cms_users']

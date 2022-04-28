@@ -3,20 +3,20 @@
 declare(strict_types=1);
 
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\ORM\Tools\Export;
 use Doctrine\Tests\ORM\Tools\Export\AddressListener;
 use Doctrine\Tests\ORM\Tools\Export\GroupListener;
 use Doctrine\Tests\ORM\Tools\Export\UserListener;
 
-$metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
 $metadata->setPrimaryTable(
     [
         'name' => 'cms_users',
         'options' => ['engine' => 'MyISAM', 'foo' => ['bar' => 'baz']],
     ]
 );
-$metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
+$metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 $metadata->addLifecycleCallback('doStuffOnPrePersist', Events::prePersist);
 $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', Events::prePersist);
 $metadata->addLifecycleCallback('doStuffOnPostPersist', Events::postPersist);
@@ -53,7 +53,7 @@ $metadata->mapField(
         'options' => ['unsigned' => true],
     ]
 );
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 $metadata->mapManyToOne(
     [
         'fieldName' => 'mainGroup',
@@ -78,7 +78,7 @@ $metadata->mapOneToOne(
             ],
         ],
         'orphanRemoval' => true,
-        'fetch' => ClassMetadataInfo::FETCH_EAGER,
+        'fetch' => ClassMetadata::FETCH_EAGER,
     ]
 );
 $metadata->mapOneToOne(
@@ -90,7 +90,7 @@ $metadata->mapOneToOne(
         [0 => 'persist'],
         'inversedBy' => null,
         'orphanRemoval' => false,
-        'fetch' => ClassMetadataInfo::FETCH_EAGER,
+        'fetch' => ClassMetadata::FETCH_EAGER,
     ]
 );
 $metadata->mapOneToMany(
@@ -104,7 +104,7 @@ $metadata->mapOneToMany(
         ],
         'mappedBy' => 'user',
         'orphanRemoval' => true,
-        'fetch' => ClassMetadataInfo::FETCH_LAZY,
+        'fetch' => ClassMetadata::FETCH_LAZY,
         'orderBy' =>
         ['number' => 'ASC'],
     ]
@@ -113,7 +113,7 @@ $metadata->mapManyToMany(
     [
         'fieldName' => 'groups',
         'targetEntity' => Export\Group::class,
-        'fetch' => ClassMetadataInfo::FETCH_EXTRA_LAZY,
+        'fetch' => ClassMetadata::FETCH_EXTRA_LAZY,
         'cascade' =>
         [
             0 => 'remove',

@@ -6,7 +6,7 @@ namespace Doctrine\Tests\Models\CMS;
 
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\ColumnResult;
 use Doctrine\ORM\Mapping\Entity;
@@ -157,7 +157,7 @@ class CmsAddress
         }
     }
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->setPrimaryTable(
             ['name' => 'company_person']

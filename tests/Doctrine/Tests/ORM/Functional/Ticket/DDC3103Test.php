@@ -18,7 +18,7 @@ use function unserialize;
 class DDC3103Test extends OrmFunctionalTestCase
 {
     /**
-     * @covers \Doctrine\ORM\Mapping\ClassMetadataInfo::__sleep
+     * @covers \Doctrine\ORM\Mapping\ClassMetadata::__sleep
      */
     public function testIssue(): void
     {
