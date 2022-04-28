@@ -407,6 +407,10 @@ class AttributeDriver implements MappingDriver
                         'name' => $joinTableAttribute->name,
                         'schema' => $joinTableAttribute->schema,
                     ];
+
+                    if ($joinTableAttribute->options) {
+                        $joinTable['options'] = $joinTableAttribute->options;
+                    }
                 }
 
                 foreach ($this->reader->getPropertyAnnotationCollection($property, Mapping\JoinColumn::class) as $joinColumn) {
@@ -645,12 +649,13 @@ class AttributeDriver implements MappingDriver
      *                   nullable: bool,
      *                   onDelete: mixed,
      *                   columnDefinition: string|null,
-     *                   referencedColumnName: string
+     *                   referencedColumnName: string,
+     *                   options?: array<string, mixed>
      *               }
      */
     private function joinColumnToArray($joinColumn): array
     {
-        return [
+        $mapping = [
             'name' => $joinColumn->name,
             'unique' => $joinColumn->unique,
             'nullable' => $joinColumn->nullable,
@@ -658,6 +663,12 @@ class AttributeDriver implements MappingDriver
             'columnDefinition' => $joinColumn->columnDefinition,
             'referencedColumnName' => $joinColumn->referencedColumnName,
         ];
+
+        if ($joinColumn->options) {
+            $mapping['options'] = $joinColumn->options;
+        }
+
+        return $mapping;
     }
 
     /**

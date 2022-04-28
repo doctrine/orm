@@ -584,6 +584,10 @@ class XmlDriver extends FileDriver
                         $joinTable['schema'] = (string) $joinTableElement['schema'];
                     }
 
+                    if (isset($joinTableElement->options)) {
+                        $joinTable['options'] = $this->parseOptions($joinTableElement->options->children());
+                    }
+
                     foreach ($joinTableElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
                         $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumnElement);
                     }
@@ -662,6 +666,10 @@ class XmlDriver extends FileDriver
                         'name'      => (string) $joinTableElement['name'],
                         'schema'    => (string) $joinTableElement['schema'],
                     ];
+
+                    if (isset($joinTableElement->options)) {
+                        $joinTable['options'] = $this->parseOptions($joinTableElement->options->children());
+                    }
 
                     if (isset($joinTableElement->{'join-columns'})) {
                         foreach ($joinTableElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
@@ -767,7 +775,8 @@ class XmlDriver extends FileDriver
      *                   unique?: bool,
      *                   nullable?: bool,
      *                   onDelete?: string,
-     *                   columnDefinition?: string
+     *                   columnDefinition?: string,
+     *                   options?: mixed[]
      *               }
      */
     private function joinColumnToArray(SimpleXMLElement $joinColumnElement): array
@@ -791,6 +800,10 @@ class XmlDriver extends FileDriver
 
         if (isset($joinColumnElement['column-definition'])) {
             $joinColumn['columnDefinition'] = (string) $joinColumnElement['column-definition'];
+        }
+
+        if (isset($joinColumnElement['options'])) {
+            $joinColumn['options'] = $this->parseOptions($joinColumnElement['options']->children());
         }
 
         return $joinColumn;
