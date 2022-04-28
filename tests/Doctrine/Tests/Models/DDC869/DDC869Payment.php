@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC869;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
@@ -33,7 +33,7 @@ class DDC869Payment
     #[ORM\Column(type: 'float')]
     protected $value;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->mapField(
             [
@@ -51,6 +51,6 @@ class DDC869Payment
         );
         $metadata->isMappedSuperclass = true;
         $metadata->setCustomRepositoryClass(DDC869PaymentRepository::class);
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
     }
 }

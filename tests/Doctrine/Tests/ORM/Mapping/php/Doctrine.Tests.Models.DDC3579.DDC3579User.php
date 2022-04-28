@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 $metadata->isMappedSuperclass = true;
 
@@ -34,4 +34,4 @@ $metadata->mapManyToMany(
     ]
 );
 
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);

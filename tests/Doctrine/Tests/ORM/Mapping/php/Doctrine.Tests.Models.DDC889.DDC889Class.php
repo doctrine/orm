@@ -11,4 +11,4 @@ $metadata->mapField(
     ]
 );
 
-//$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+//$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);

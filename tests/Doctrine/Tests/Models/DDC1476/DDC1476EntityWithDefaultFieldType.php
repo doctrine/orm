@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC1476;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -48,7 +48,7 @@ class DDC1476EntityWithDefaultFieldType
         $this->name = $name;
     }
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->mapField(
             [
@@ -60,6 +60,6 @@ class DDC1476EntityWithDefaultFieldType
             ['fieldName' => 'name']
         );
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
     }
 }

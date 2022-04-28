@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Enums;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -28,7 +28,7 @@ class Scale
     #[Column(type: 'simple_array', enumType: Unit::class)]
     public $supportedUnits;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->mapField(
             [

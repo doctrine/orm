@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Upsertable;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -62,7 +61,7 @@ class Insertable
                 'fieldName' => 'nonInsertableContent',
                 'notInsertable' => true,
                 'options' => ['default' => '1234'],
-                'generated' => ClassMetadataInfo::GENERATED_INSERT,
+                'generated' => ClassMetadata::GENERATED_INSERT,
             ]
         );
         $metadata->mapField(

@@ -12,7 +12,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
@@ -137,7 +136,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testExportDirectoryAndFilesAreCreated
      */
-    public function testExportedMetadataCanBeReadBackIn(): ClassMetadataInfo
+    public function testExportedMetadataCanBeReadBackIn(): ClassMetadata
     {
         $type = $this->getType();
 
@@ -158,7 +157,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testExportedMetadataCanBeReadBackIn
      */
-    public function testTableIsExported(ClassMetadataInfo $class): ClassMetadataInfo
+    public function testTableIsExported(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('cms_users', $class->table['name']);
         self::assertEquals(
@@ -172,7 +171,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testTableIsExported
      */
-    public function testTypeIsExported(ClassMetadataInfo $class): ClassMetadataInfo
+    public function testTypeIsExported(ClassMetadata $class): ClassMetadata
     {
         self::assertFalse($class->isMappedSuperclass);
 
@@ -182,9 +181,9 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testTypeIsExported
      */
-    public function testIdentifierIsExported(ClassMetadataInfo $class): ClassMetadataInfo
+    public function testIdentifierIsExported(ClassMetadata $class): ClassMetadata
     {
-        self::assertEquals(ClassMetadataInfo::GENERATOR_TYPE_IDENTITY, $class->generatorType, 'Generator Type wrong');
+        self::assertEquals(ClassMetadata::GENERATOR_TYPE_IDENTITY, $class->generatorType, 'Generator Type wrong');
         self::assertEquals(['id'], $class->identifier);
         self::assertTrue(isset($class->fieldMappings['id']['id']) && $class->fieldMappings['id']['id'] === true);
 
@@ -194,7 +193,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testIdentifierIsExported
      */
-    public function testFieldsAreExported(ClassMetadataInfo $class): ClassMetadataInfo
+    public function testFieldsAreExported(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->fieldMappings['id']['id']) && $class->fieldMappings['id']['id'] === true);
         self::assertEquals('id', $class->fieldMappings['id']['fieldName']);
@@ -240,7 +239,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testFieldsAreExported
      */
-    public function testOneToOneAssociationsAreExported(ClassMetadataInfo $class): ClassMetadataInfo
+    public function testOneToOneAssociationsAreExported(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->associationMappings['address']));
         self::assertEquals(Address::class, $class->associationMappings['address']['targetEntity']);
@@ -254,7 +253,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertFalse($class->associationMappings['address']['isCascadeMerge']);
         self::assertFalse($class->associationMappings['address']['isCascadeDetach']);
         self::assertTrue($class->associationMappings['address']['orphanRemoval']);
-        self::assertEquals(ClassMetadataInfo::FETCH_EAGER, $class->associationMappings['address']['fetch']);
+        self::assertEquals(ClassMetadata::FETCH_EAGER, $class->associationMappings['address']['fetch']);
 
         return $class;
     }
@@ -271,7 +270,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testOneToOneAssociationsAreExported
      */
-    public function testOneToManyAssociationsAreExported(ClassMetadataInfo $class): ClassMetadataInfo
+    public function testOneToManyAssociationsAreExported(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->associationMappings['phonenumbers']));
         self::assertEquals(Phonenumber::class, $class->associationMappings['phonenumbers']['targetEntity']);
@@ -284,7 +283,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
         self::assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
         self::assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
-        self::assertEquals(ClassMetadataInfo::FETCH_LAZY, $class->associationMappings['phonenumbers']['fetch']);
+        self::assertEquals(ClassMetadata::FETCH_LAZY, $class->associationMappings['phonenumbers']['fetch']);
 
         return $class;
     }
@@ -292,7 +291,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testOneToManyAssociationsAreExported
      */
-    public function testManyToManyAssociationsAreExported(ClassMetadataInfo $class): ClassMetadataInfo
+    public function testManyToManyAssociationsAreExported(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->associationMappings['groups']));
         self::assertEquals(Group::class, $class->associationMappings['groups']['targetEntity']);
@@ -310,7 +309,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertTrue($class->associationMappings['groups']['isCascadeRefresh']);
         self::assertTrue($class->associationMappings['groups']['isCascadeMerge']);
         self::assertTrue($class->associationMappings['groups']['isCascadeDetach']);
-        self::assertEquals(ClassMetadataInfo::FETCH_EXTRA_LAZY, $class->associationMappings['groups']['fetch']);
+        self::assertEquals(ClassMetadata::FETCH_EXTRA_LAZY, $class->associationMappings['groups']['fetch']);
 
         return $class;
     }
@@ -318,7 +317,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testManyToManyAssociationsAreExported
      */
-    public function testLifecycleCallbacksAreExported(ClassMetadataInfo $class): ClassMetadataInfo
+    public function testLifecycleCallbacksAreExported(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->lifecycleCallbacks['prePersist']));
         self::assertCount(2, $class->lifecycleCallbacks['prePersist']);
@@ -335,7 +334,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testLifecycleCallbacksAreExported
      */
-    public function testCascadeIsExported(ClassMetadataInfo $class): ClassMetadataInfo
+    public function testCascadeIsExported(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
         self::assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
@@ -350,7 +349,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testCascadeIsExported
      */
-    public function testInversedByIsExported(ClassMetadataInfo $class): void
+    public function testInversedByIsExported(ClassMetadata $class): void
     {
         self::assertEquals('user', $class->associationMappings['address']['inversedBy']);
     }
