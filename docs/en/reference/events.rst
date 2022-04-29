@@ -637,6 +637,9 @@ A simple example for this event looks like:
 .. code-block:: php
 
     <?php
+
+    use Doctrine\ORM\Event\PreUpdateEventArgs;
+
     class NeverAliceOnlyBobListener
     {
         public function preUpdate(PreUpdateEventArgs $eventArgs)
