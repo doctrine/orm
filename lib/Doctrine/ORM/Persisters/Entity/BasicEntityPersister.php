@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
@@ -659,7 +660,11 @@ class BasicEntityPersister implements EntityPersister
                     continue;
                 }
 
-                $this->columnTypes[$columnName] = $fieldMapping['type'];
+                if ($newVal === null && $fieldMapping['type'] === Types::BLOB) {
+                    $this->columnTypes[$columnName] = ParameterType::NULL;
+                } else {
+                    $this->columnTypes[$columnName] = $fieldMapping['type'];
+                }
 
                 $result[$this->getOwningTable($field)][$columnName] = $newVal;
 
