@@ -10,7 +10,6 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\CustomIdGenerator;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
@@ -547,7 +546,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals('id', $class->fieldMappings['id']['columnName']);
         self::assertEquals('name', $class->fieldMappings['name']['columnName']);
 
-        self::assertEquals(ClassMetadataInfo::GENERATOR_TYPE_NONE, $class->generatorType);
+        self::assertEquals(ClassMetadata::GENERATOR_TYPE_NONE, $class->generatorType);
     }
 
     /**
@@ -1076,7 +1075,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         self::assertArrayHasKey('notInsertable', $mapping);
         self::assertArrayHasKey('generated', $mapping);
-        self::assertSame(ClassMetadataInfo::GENERATED_INSERT, $mapping['generated']);
+        self::assertSame(ClassMetadata::GENERATED_INSERT, $mapping['generated']);
         self::assertArrayNotHasKey('notInsertable', $metadata->getFieldMapping('insertableContent'));
     }
 
@@ -1088,7 +1087,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         self::assertArrayHasKey('notUpdatable', $mapping);
         self::assertArrayHasKey('generated', $mapping);
-        self::assertSame(ClassMetadataInfo::GENERATED_ALWAYS, $mapping['generated']);
+        self::assertSame(ClassMetadata::GENERATED_ALWAYS, $mapping['generated']);
         self::assertArrayNotHasKey('notUpdatable', $metadata->getFieldMapping('updatableContent'));
     }
 
@@ -1209,16 +1208,16 @@ class User
     {
     }
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
-        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(
             [
                 'name' => 'cms_users',
                 'options' => ['foo' => 'bar', 'baz' => ['key' => 'val']],
             ]
         );
-        $metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
+        $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
         $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
         $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
         $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
@@ -1253,7 +1252,7 @@ class User
         $mapping = ['fieldName' => 'version', 'type' => 'integer'];
         $metadata->setVersionMapping($mapping);
         $metadata->mapField($mapping);
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
         $metadata->mapOneToOne(
             [
                 'fieldName' => 'address',
@@ -1372,9 +1371,9 @@ class UserIncorrectIndex
      */
     public $email;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
-        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable([]);
         $metadata->mapField(
             [
@@ -1431,9 +1430,9 @@ class UserIncorrectUniqueConstraint
      */
     public $email;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
-        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable([]);
         $metadata->mapField(
             [
@@ -1483,9 +1482,9 @@ abstract class Animal
     #[ORM\CustomIdGenerator(class: 'stdClass')]
     public $id;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
         $metadata->setCustomGeneratorDefinition(['class' => 'stdClass']);
     }
 }
@@ -1494,7 +1493,7 @@ abstract class Animal
 #[ORM\Entity]
 class Cat extends Animal
 {
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
     }
 }
@@ -1503,7 +1502,7 @@ class Cat extends Animal
 #[ORM\Entity]
 class Dog extends Animal
 {
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
     }
 }
@@ -1546,7 +1545,7 @@ class DDC1170Entity
         return $this->value;
     }
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->mapField(
             [
@@ -1563,7 +1562,7 @@ class DDC1170Entity
             ]
         );
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
     }
 }
 
@@ -1587,7 +1586,7 @@ class DDC807Entity
     #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'NONE')]
     public $id;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
          $metadata->mapField(
              [
@@ -1604,7 +1603,7 @@ class DDC807Entity
             ]
         );
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
     }
 }
 
@@ -1640,9 +1639,9 @@ class Comment
     #[ORM\Column(type: 'text')]
     private $content;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
-        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(
             [
                 'indexes' => [
@@ -1687,7 +1686,7 @@ class SingleTableEntityNoDiscriminatorColumnMapping
     #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'NONE')]
     public $id;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->mapField(
             [
@@ -1696,7 +1695,7 @@ class SingleTableEntityNoDiscriminatorColumnMapping
             ]
         );
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
     }
 }
 
@@ -1730,7 +1729,7 @@ class SingleTableEntityIncompleteDiscriminatorColumnMapping
     #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'NONE')]
     public $id;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->mapField(
             [
@@ -1739,7 +1738,7 @@ class SingleTableEntityIncompleteDiscriminatorColumnMapping
             ]
         );
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
     }
 }
 
@@ -1770,7 +1769,7 @@ class ReservedWordInTableColumn
     #[ORM\Column(name: '`count`', type: 'integer')]
     public $count;
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->mapField(
             [

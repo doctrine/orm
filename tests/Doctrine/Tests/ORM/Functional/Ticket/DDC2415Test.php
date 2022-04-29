@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Id\AbstractIdGenerator;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Driver\StaticPHPDriver;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -63,7 +63,7 @@ class DDC2415ParentEntity
         return $this->id;
     }
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->mapField(
             [
@@ -73,7 +73,7 @@ class DDC2415ParentEntity
             ]
         );
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
         $metadata->setCustomGeneratorDefinition(['class' => DDC2415Generator::class]);
 
         $metadata->isMappedSuperclass = true;
@@ -95,7 +95,7 @@ class DDC2415ChildEntity extends DDC2415ParentEntity
         return $this->name;
     }
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->mapField(
             [

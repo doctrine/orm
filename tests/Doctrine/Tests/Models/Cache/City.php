@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Cache;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -136,16 +136,16 @@ class City
         return $this->attractions;
     }
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
-        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(['name' => 'cache_city']);
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_IDENTITY);
-        $metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
+        $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 
         $metadata->enableCache(
             [
-                'usage' => ClassMetadataInfo::CACHE_USAGE_READ_ONLY,
+                'usage' => ClassMetadata::CACHE_USAGE_READ_ONLY,
             ]
         );
 
@@ -179,7 +179,7 @@ class City
             ]
         );
         $metadata->enableAssociationCache('state', [
-            'usage' => ClassMetadataInfo::CACHE_USAGE_READ_ONLY,
+            'usage' => ClassMetadata::CACHE_USAGE_READ_ONLY,
         ]);
 
         $metadata->mapManyToMany(
@@ -199,7 +199,7 @@ class City
             ]
         );
         $metadata->enableAssociationCache('attractions', [
-            'usage' => ClassMetadataInfo::CACHE_USAGE_READ_ONLY,
+            'usage' => ClassMetadata::CACHE_USAGE_READ_ONLY,
         ]);
     }
 }
