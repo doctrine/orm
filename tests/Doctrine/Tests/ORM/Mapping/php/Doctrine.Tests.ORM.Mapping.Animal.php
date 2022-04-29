@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\ORM\Mapping\Cat;
 use Doctrine\Tests\ORM\Mapping\Dog;
 
-/** @var ClassMetadataInfo $metadata */
-$metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_TABLE);
+/** @var ClassMetadata $metadata */
+$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
 $metadata->setDiscriminatorColumn(
     [
         'name' => 'dtype',
@@ -22,7 +22,7 @@ $metadata->setDiscriminatorMap(
         'dog' => Dog::class,
     ]
 );
-$metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
+$metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
 $metadata->mapField(
     [
         'fieldName' => 'id',
@@ -36,5 +36,5 @@ $metadata->mapField(
         'columnName' => 'id',
     ]
 );
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM);
+$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
 $metadata->setCustomGeneratorDefinition(['class' => 'stdClass']);

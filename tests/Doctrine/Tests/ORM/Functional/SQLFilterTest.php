@@ -9,7 +9,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Query\Filter\FilterException;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Query\FilterCollection;
@@ -93,8 +92,8 @@ class SQLFilterTest extends OrmFunctionalTestCase
         parent::tearDown();
 
         $class                                           = $this->_em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['groups']['fetch']   = ClassMetadataInfo::FETCH_LAZY;
-        $class->associationMappings['articles']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
+        $class->associationMappings['groups']['fetch']   = ClassMetadata::FETCH_LAZY;
+        $class->associationMappings['articles']['fetch'] = ClassMetadata::FETCH_LAZY;
     }
 
     public function testConfigureFilter(): void
@@ -589,8 +588,8 @@ class SQLFilterTest extends OrmFunctionalTestCase
     private function loadLazyFixtureData(): void
     {
         $class                                           = $this->_em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['articles']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
-        $class->associationMappings['groups']['fetch']   = ClassMetadataInfo::FETCH_EXTRA_LAZY;
+        $class->associationMappings['articles']['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class->associationMappings['groups']['fetch']   = ClassMetadata::FETCH_EXTRA_LAZY;
         $this->loadFixtureData();
     }
 

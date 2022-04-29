@@ -55,51 +55,66 @@ Implementing Metadata Drivers
 
 In addition to the included metadata drivers you can very easily
 implement your own. All you need to do is define a class which
-implements the ``Driver`` interface:
+implements the ``MappingDriver`` interface:
 
 .. code-block:: php
 
     <?php
-    namespace Doctrine\ORM\Mapping\Driver;
-    
-    use Doctrine\ORM\Mapping\ClassMetadataInfo;
-    
-    interface Driver
+
+    declare(strict_types=1);
+
+    namespace Doctrine\Persistence\Mapping\Driver;
+
+    use Doctrine\Persistence\Mapping\ClassMetadata;
+
+    /**
+     * Contract for metadata drivers.
+     */
+    interface MappingDriver
     {
         /**
          * Loads the metadata for the specified class into the provided container.
-         * 
-         * @param string $className
-         * @param ClassMetadataInfo $metadata
+         *
+         * @psalm-param class-string<T> $className
+         * @psalm-param ClassMetadata<T> $metadata
+         *
+         * @return void
+         *
+         * @template T of object
          */
-        function loadMetadataForClass($className, ClassMetadataInfo $metadata);
-    
+        public function loadMetadataForClass(string $className, ClassMetadata $metadata);
+
         /**
          * Gets the names of all mapped classes known to this driver.
-         * 
-         * @return array The names of all mapped classes known to this driver.
-         */
-        function getAllClassNames(); 
-    
-        /**
-         * Whether the class with the specified name should have its metadata loaded.
-         * This is only the case if it is either mapped as an Entity or a
-         * MappedSuperclass.
          *
-         * @param string $className
-         * @return boolean
+         * @return array<int, string> The names of all mapped classes known to this driver.
+         * @psalm-return list<class-string>
          */
-        function isTransient($className);
+        public function getAllClassNames();
+
+        /**
+         * Returns whether the class with the specified name should have its metadata loaded.
+         * This is only the case if it is either mapped as an Entity or a MappedSuperclass.
+         *
+         * @psalm-param class-string $className
+         *
+         * @return bool
+         */
+        public function isTransient(string $className);
     }
 
 If you want to write a metadata driver to parse information from
 some file format we've made your life a little easier by providing
-the ``AbstractFileDriver`` implementation for you to extend from:
+the ``FileDriver`` implementation for you to extend from:
 
 .. code-block:: php
 
     <?php
-    class MyMetadataDriver extends AbstractFileDriver
+
+    use Doctrine\Persistence\Mapping\ClassMetadata;
+    use Doctrine\Persistence\Mapping\Driver\FileDriver;
+
+    class MyMetadataDriver extends FileDriver
     {
         /**
          * {@inheritdoc}
@@ -109,11 +124,11 @@ the ``AbstractFileDriver`` implementation for you to extend from:
         /**
          * {@inheritdoc}
          */
-        public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
+        public function loadMetadataForClass($className, ClassMetadata $metadata)
         {
             $data = $this->_loadMappingFile($file);
     
-            // populate ClassMetadataInfo instance from $data
+            // populate ClassMetadata instance from $data
         }
     
         /**
@@ -127,13 +142,12 @@ the ``AbstractFileDriver`` implementation for you to extend from:
 
 .. note::
 
-    When using the ``AbstractFileDriver`` it requires that you
-    only have one entity defined per file and the file named after the
-    class described inside where namespace separators are replaced by
-    periods. So if you have an entity named ``Entities\User`` and you
-    wanted to write a mapping file for your driver above you would need
-    to name the file ``Entities.User.dcm.ext`` for it to be
-    recognized.
+    When using the ``FileDriver`` it requires that you only have one
+    entity defined per file and the file named after the class described
+    inside where namespace separators are replaced by periods. So if you
+    have an entity named ``Entities\User`` and you wanted to write a
+    mapping file for your driver above you would need to name the file
+    ``Entities.User.dcm.ext`` for it to be recognized.
 
 
 Now you can use your ``MyMetadataDriver`` implementation by setting
@@ -156,14 +170,6 @@ entity when needed.
 
 You have all the methods you need to manually specify the mapping
 information instead of using some mapping file to populate it from.
-The base ``ClassMetadataInfo`` class is responsible for only data
-storage and is not meant for runtime use. It does not require that
-the class actually exists yet so it is useful for describing some
-entity before it exists and using that information to generate for
-example the entities themselves. The class ``ClassMetadata``
-extends ``ClassMetadataInfo`` and adds some functionality required
-for runtime usage and requires that the PHP class is present and
-can be autoloaded.
 
 You can read more about the API of the ``ClassMetadata`` classes in
 the PHP Mapping chapter.

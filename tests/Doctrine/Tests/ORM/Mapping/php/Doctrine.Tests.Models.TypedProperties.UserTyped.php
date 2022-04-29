@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
-$metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+$metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
 $metadata->setPrimaryTable(
     ['name' => 'cms_users_typed']
 );
@@ -15,7 +15,7 @@ $metadata->mapField(
         'fieldName' => 'id',
     ]
 );
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
 $metadata->mapField(
     [

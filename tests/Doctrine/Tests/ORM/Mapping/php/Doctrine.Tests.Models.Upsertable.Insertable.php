@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 $metadata->setPrimaryTable(
     ['name' => 'insertable_column']
@@ -14,14 +14,14 @@ $metadata->mapField(
         'fieldName' => 'id',
     ]
 );
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
 $metadata->mapField(
     [
         'fieldName' => 'nonInsertableContent',
         'notInsertable' => true,
         'options' => ['default' => '1234'],
-        'generated' => ClassMetadataInfo::GENERATED_INSERT,
+        'generated' => ClassMetadata::GENERATED_INSERT,
     ]
 );
 $metadata->mapField(
