@@ -615,7 +615,7 @@ Changes to associations of the updated entity are never allowed in
 this event, since Doctrine cannot guarantee to correctly handle
 referential integrity at this point of the flush operation. This
 event has a powerful feature however, it is executed with a
-`_PreUpdateEventArgs`_ instance, which contains a reference to the
+`PreUpdateEventArgs`_ instance, which contains a reference to the
 computed change-set of this entity.
 
 This means you have access to all the fields that have changed for
