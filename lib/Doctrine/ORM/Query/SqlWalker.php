@@ -2361,7 +2361,7 @@ class SqlWalker implements TreeWalker
      * @throws QueryException
      */
     private function getChildDiscriminatorsFromClassMetadata(
-        ClassMetadataInfo $rootClass,
+        ClassMetadata $rootClass,
         AST\InstanceOfExpression $instanceOfExpr
     ): string {
         $sqlParameterList = [];
