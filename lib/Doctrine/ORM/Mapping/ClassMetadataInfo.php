@@ -10,7 +10,6 @@ use DateInterval;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\Instantiator\Instantiator;
@@ -92,7 +91,6 @@ use const PHP_VERSION_ID;
  *      originalClass?: class-string,
  *      originalField?: string,
  *      quoted?: bool,
- *      requireSQLConversion?: bool,
  *      declared?: class-string,
  *      declaredField?: string,
  *      options?: array<string, mixed>
@@ -1535,14 +1533,6 @@ class ClassMetadataInfo implements ClassMetadata
             if (! $this->isIdentifierComposite && count($this->identifier) > 1) {
                 $this->isIdentifierComposite = true;
             }
-        }
-
-        if (Type::hasType($mapping['type']) && Type::getType($mapping['type'])->canRequireSQLConversion()) {
-            if (isset($mapping['id']) && $mapping['id'] === true) {
-                 throw MappingException::sqlConversionNotAllowedForIdentifiers($this->name, $mapping['fieldName'], $mapping['type']);
-            }
-
-            $mapping['requireSQLConversion'] = true;
         }
 
         if (isset($mapping['generated'])) {

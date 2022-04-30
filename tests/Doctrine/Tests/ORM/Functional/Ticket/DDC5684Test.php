@@ -81,11 +81,6 @@ class DDC5684ObjectIdType extends DBALTypes\BigIntType
     {
         return self::class;
     }
-
-    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
-    {
-        return true;
-    }
 }
 
 class DDC5684ObjectId

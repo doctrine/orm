@@ -595,24 +595,6 @@ class MappingException extends Exception implements ORMException
 
     /**
      * @param string $className
-     * @param string $fieldName
-     * @param string $type
-     *
-     * @return MappingException
-     */
-    public static function sqlConversionNotAllowedForIdentifiers($className, $fieldName, $type)
-    {
-        return new self(sprintf(
-            "It is not possible to set id field '%s' to type '%s' in entity class '%s'. The type '%s' requires conversion SQL which is not allowed for identifiers.",
-            $fieldName,
-            $type,
-            $className,
-            $type
-        ));
-    }
-
-    /**
-     * @param string $className
      * @param string $columnName
      *
      * @return MappingException

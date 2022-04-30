@@ -1,5 +1,13 @@
 # Upgrade to 3.0
 
+## BC BREAK: Remove support for `Type::canRequireSQLConversion()`
+
+This feature was deprecated in DBAL 3.3.0 and will be removed in DBAL 4.0.
+The value conversion methods are now called regardless of the type.
+
+The `MappingException::sqlConversionNotAllowedForIdentifiers()` method has been removed
+as no longer relevant.
+
 ## BC Break: Removed the `doctrine` binary.
 
 The documentation explains how the console tools can be bootstrapped for

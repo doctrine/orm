@@ -383,9 +383,6 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php">
-    <DeprecatedMethod occurrences="1">
-      <code>canRequireSQLConversion</code>
-    </DeprecatedMethod>
     <DeprecatedProperty occurrences="4">
       <code>$this-&gt;columnNames</code>
       <code>$this-&gt;columnNames</code>

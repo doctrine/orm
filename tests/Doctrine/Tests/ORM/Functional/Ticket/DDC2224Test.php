@@ -66,14 +66,6 @@ class DDC2224Type extends Type
     /**
      * {@inheritdoc}
      */
-    public function canRequireSQLConversion()
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform): string
     {
         return sprintf('FUNCTION(%s)', $sqlExpr);
