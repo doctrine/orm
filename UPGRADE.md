@@ -1,3 +1,15 @@
+# Upgrade to 2.13
+
+## Deprecate `ClassMetadataInfo` usage
+
+It is deprecated to pass `Doctrine\ORM\Mapping\ClassMetadataInfo` instances
+that are not also instances of `Doctrine\ORM\ClassMetadata` to the following
+methods:
+
+- `Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder::__construct()`
+- `Doctrine\ORM\Mapping\Driver\DatabaseDriver::loadMetadataForClass()`
+- `Doctrine\ORM\Tools\SchemaValidator::validateClass()`
+
 # Upgrade to 2.12
 
 ## Deprecated the `doctrine` binary.

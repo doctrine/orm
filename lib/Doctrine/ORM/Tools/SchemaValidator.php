@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 use function array_diff;
@@ -15,6 +17,7 @@ use function array_values;
 use function class_exists;
 use function class_parents;
 use function count;
+use function get_class;
 use function implode;
 use function in_array;
 
@@ -69,6 +72,17 @@ class SchemaValidator
      */
     public function validateClass(ClassMetadataInfo $class)
     {
+        if (! $class instanceof ClassMetadata) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/249',
+                'Passing an instance of %s to %s is deprecated, please pass a ClassMetadata instance instead.',
+                get_class($class),
+                __METHOD__,
+                ClassMetadata::class
+            );
+        }
+
         $ce  = [];
         $cmf = $this->em->getMetadataFactory();
 
