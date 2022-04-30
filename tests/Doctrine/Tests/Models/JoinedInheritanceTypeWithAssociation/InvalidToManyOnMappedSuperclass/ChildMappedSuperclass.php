@@ -13,6 +13,9 @@ use Doctrine\Tests\Models\JoinedInheritanceTypeWithAssociation\RootEntity;
  */
 abstract class ChildMappedSuperclass extends RootEntity
 {
-    /** @OneToMany(targetEntity=InvalidAssociatedEntity::class, mappedBy="childMappedSuperclass") */
-    private InvalidAssociatedEntity $invalidToManyAssociation;
+    /**
+     * @var InvalidAssociatedEntity
+     * @OneToMany(targetEntity=InvalidAssociatedEntity::class, mappedBy="childMappedSuperclass")
+     */
+    private $invalidToManyAssociation;
 }

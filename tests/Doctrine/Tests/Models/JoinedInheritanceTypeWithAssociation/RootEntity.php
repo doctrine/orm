@@ -31,6 +31,9 @@ class RootEntity
      */
     public $id;
 
-    /** @OneToMany(targetEntity=AssociatedEntity::class, mappedBy="root") */
-    public AssociatedEntity $toManyAssociation;
+    /**
+     * @var AssociatedEntity
+     * @OneToMany(targetEntity=AssociatedEntity::class, mappedBy="root")
+     */
+    public $toManyAssociation;
 }

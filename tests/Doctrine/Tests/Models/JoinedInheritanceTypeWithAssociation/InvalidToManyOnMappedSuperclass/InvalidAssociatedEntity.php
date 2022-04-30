@@ -23,6 +23,9 @@ class InvalidAssociatedEntity
      */
     public $id;
 
-    /** @ManyToOne(targetEntity=ChildMappedSuperclass::class, inversedBy="invalidToManyAssociation") */
-    private ChildMappedSuperclass $childMappedSuperclass;
+    /**
+     * @var ChildMappedSuperclass
+     * @ManyToOne(targetEntity=ChildMappedSuperclass::class, inversedBy="invalidToManyAssociation")
+     */
+    private $childMappedSuperclass;
 }

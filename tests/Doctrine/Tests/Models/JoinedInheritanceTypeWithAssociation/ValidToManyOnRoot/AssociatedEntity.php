@@ -24,6 +24,9 @@ class AssociatedEntity
      */
     public $id;
 
-    /** @ManyToOne(targetEntity=RootEntity::class, inversedBy="toManyAssociation") */
-    private RootEntity $root;
+    /**
+     * @var RootEntity
+     * @ManyToOne(targetEntity=RootEntity::class, inversedBy="toManyAssociation")
+     */
+    private $root;
 }
