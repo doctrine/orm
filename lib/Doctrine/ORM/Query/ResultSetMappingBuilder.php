@@ -261,6 +261,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
     /**
      * Adds the mappings of the results of native SQL queries to the result set.
      *
+     * @deprecated This method is deprecated and will be removed in Doctrine ORM 3.0.
+     *
      * @param mixed[] $queryMapping
      *
      * @return ResultSetMappingBuilder
@@ -276,6 +278,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
     /**
      * Adds the class mapping of the results of native SQL queries to the result set.
+     *
+     * @deprecated This method is deprecated and will be removed in Doctrine ORM 3.0.
      *
      * @param string $resultClassName
      *
@@ -322,6 +326,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
     /**
      * Adds the result set mapping of the results of native SQL queries to the result set.
+     *
+     * @deprecated This method is deprecated and will be removed in Doctrine ORM 3.0.
      *
      * @param string $resultSetMappingName
      *
@@ -375,6 +381,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
     /**
      * Adds the entity result mapping of the results of native SQL queries to the result set.
+     *
+     * @deprecated This method is deprecated and will be removed in Doctrine ORM 3.0.
      *
      * @param mixed[] $entityMapping
      * @param string  $alias

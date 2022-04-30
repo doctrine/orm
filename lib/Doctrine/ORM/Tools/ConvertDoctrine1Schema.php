@@ -25,6 +25,8 @@ use function strtolower;
 /**
  * Class to help with converting Doctrine 1 schema files to Doctrine 2 mapping files
  *
+ * @deprecated This class is being removed from the ORM and won't have any replacement
+ *
  * @link    www.doctrine-project.org
  */
 class ConvertDoctrine1Schema

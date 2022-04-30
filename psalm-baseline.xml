@@ -340,6 +340,9 @@
     </UnsafeInstantiation>
   </file>
   <file src="lib/Doctrine/ORM/EntityRepository.php">
+    <DeprecatedMethod occurrences="1">
+      <code>addNamedNativeQueryMapping</code>
+    </DeprecatedMethod>
     <InvalidReturnStatement occurrences="2">
       <code>$persister-&gt;load($criteria, null, null, [], null, 1, $orderBy)</code>
       <code>new LazyCriteriaCollection($persister, $criteria)</code>
@@ -773,6 +776,9 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php">
+    <DocblockTypeContradiction occurrences="1">
+      <code>$metadata instanceof ClassMetadata</code>
+    </DocblockTypeContradiction>
     <LessSpecificReturnStatement occurrences="2">
       <code>$this-&gt;namespace . $this-&gt;classNamesForTables[$tableName]</code>
       <code>$this-&gt;namespace . $this-&gt;inflector-&gt;classify(strtolower($tableName))</code>
@@ -2276,6 +2282,12 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$class</code>
     </ArgumentTypeCoercion>
+    <DeprecatedMethod occurrences="4">
+      <code>addNamedNativeQueryEntityResultMapping</code>
+      <code>addNamedNativeQueryEntityResultMapping</code>
+      <code>addNamedNativeQueryResultClassMapping</code>
+      <code>addNamedNativeQueryResultSetMapping</code>
+    </DeprecatedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
     <DocblockTypeContradiction occurrences="2">
@@ -2634,7 +2646,7 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$metadata</code>
     </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="10">
+    <DeprecatedClass occurrences="11">
       <code>ClassMetadataExporter</code>
       <code>ClassMetadataExporter</code>
       <code>ClassMetadataExporter|null</code>
@@ -2642,6 +2654,7 @@
       <code>EntityGenerator</code>
       <code>EntityGenerator|null</code>
       <code>new ClassMetadataExporter()</code>
+      <code>new ConvertDoctrine1Schema($fromPaths)</code>
       <code>new EntityGenerator()</code>
       <code>private $entityGenerator = null;</code>
       <code>private $metadataExporter = null;</code>
@@ -2654,9 +2667,10 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$metadata</code>
     </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="3">
+    <DeprecatedClass occurrences="4">
       <code>AbstractExporter</code>
       <code>new ClassMetadataExporter()</code>
+      <code>new DisconnectedClassMetadataFactory()</code>
       <code>new EntityGenerator()</code>
     </DeprecatedClass>
     <MissingReturnType occurrences="1">
@@ -2675,7 +2689,8 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$metadatas</code>
     </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="1">
+    <DeprecatedClass occurrences="2">
+      <code>new DisconnectedClassMetadataFactory()</code>
       <code>new EntityGenerator()</code>
     </DeprecatedClass>
     <MissingReturnType occurrences="1">
