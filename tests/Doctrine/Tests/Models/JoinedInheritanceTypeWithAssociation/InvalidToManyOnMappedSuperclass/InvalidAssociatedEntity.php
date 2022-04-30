@@ -16,11 +16,12 @@ use Doctrine\ORM\Mapping\ManyToOne;
 class InvalidAssociatedEntity
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
      */
-    public int $id;
+    public $id;
 
     /** @ManyToOne(targetEntity=ChildMappedSuperclass::class, inversedBy="invalidToManyAssociation") */
     private ChildMappedSuperclass $childMappedSuperclass;

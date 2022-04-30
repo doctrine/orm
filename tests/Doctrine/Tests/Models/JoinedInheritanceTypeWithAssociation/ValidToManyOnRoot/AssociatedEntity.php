@@ -17,11 +17,12 @@ use Doctrine\Tests\Models\JoinedInheritanceTypeWithAssociation\RootEntity;
 class AssociatedEntity
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
      */
-    public int $id;
+    public $id;
 
     /** @ManyToOne(targetEntity=RootEntity::class, inversedBy="toManyAssociation") */
     private RootEntity $root;

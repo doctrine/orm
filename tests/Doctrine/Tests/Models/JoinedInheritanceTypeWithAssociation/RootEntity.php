@@ -24,11 +24,12 @@ use Doctrine\Tests\Models\JoinedInheritanceTypeWithAssociation\ValidToManyOnRoot
 class RootEntity
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
      */
-    public int $id;
+    public $id;
 
     /** @OneToMany(targetEntity=AssociatedEntity::class, mappedBy="root") */
     public AssociatedEntity $toManyAssociation;
