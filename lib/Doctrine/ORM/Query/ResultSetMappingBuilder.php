@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Query;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\SQLResultCasing;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -156,7 +157,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         }
 
         foreach ($classMetadata->associationMappings as $associationMapping) {
-            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
+            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE) {
                 $targetClass  = $this->em->getClassMetadata($associationMapping['targetEntity']);
                 $isIdentifier = isset($associationMapping['id']) && $associationMapping['id'] === true;
 
@@ -246,7 +247,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         }
 
         foreach ($class->associationMappings as $associationMapping) {
-            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
+            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE) {
                 foreach ($associationMapping['joinColumns'] as $joinColumn) {
                     $columnName               = $joinColumn['name'];
                     $columnAlias[$columnName] = $this->getColumnAlias($columnName, $mode, $customRenameColumns);
@@ -304,7 +305,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         }
 
         foreach ($classMetadata->associationMappings as $associationMapping) {
-            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
+            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE) {
                 $targetClass = $this->em->getClassMetadata($associationMapping['targetEntity']);
 
                 foreach ($associationMapping['joinColumns'] as $joinColumn) {
