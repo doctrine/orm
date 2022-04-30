@@ -14,14 +14,6 @@ use Doctrine\DBAL\ParameterType;
  */
 class DriverConnectionMock implements Connection
 {
-    /** @var Result|null */
-    private $resultMock;
-
-    public function setResultMock(?Result $resultMock): void
-    {
-        $this->resultMock = $resultMock;
-    }
-
     public function prepare(string $sql): Statement
     {
         return new StatementMock();
@@ -29,7 +21,7 @@ class DriverConnectionMock implements Connection
 
     public function query(string $sql): Result
     {
-        return $this->resultMock ?? new DriverResultMock();
+        return new DriverResultMock();
     }
 
     /**

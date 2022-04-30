@@ -6,7 +6,8 @@ namespace Doctrine\Tests;
 
 use Doctrine\Common\Annotations;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -99,12 +100,7 @@ abstract class OrmTestCase extends DoctrineTestCase
         }
 
         if ($connection === null) {
-            $connection = DriverManager::getConnection([
-                'driverClass'  => Mocks\DriverMock::class,
-                'wrapperClass' => Mocks\ConnectionMock::class,
-                'user'         => 'john',
-                'password'     => 'wayne',
-            ], $config);
+            $connection = new Mocks\ConnectionMock([], $this->createDriverMock());
         }
 
         return EntityManagerMock::create($connection, $config);
@@ -132,5 +128,24 @@ abstract class OrmTestCase extends DoctrineTestCase
     {
         return $this->secondLevelCache
             ?? $this->secondLevelCache = new ArrayAdapter();
+    }
+
+    private function createDriverMock(): Driver
+    {
+        $result = $this->createMock(Driver\Result::class);
+        $result->method('fetchAssociative')
+            ->willReturn(false);
+
+        $connection = $this->createMock(Driver\Connection::class);
+        $connection->method('query')
+            ->willReturn($result);
+
+        $driver = $this->createMock(Driver::class);
+        $driver->method('connect')
+            ->willReturn($connection);
+        $driver->method('getSchemaManager')
+            ->willReturn($this->createMock(AbstractSchemaManager::class));
+
+        return $driver;
     }
 }
