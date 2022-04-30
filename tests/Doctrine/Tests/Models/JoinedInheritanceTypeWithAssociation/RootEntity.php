@@ -16,7 +16,8 @@ use Doctrine\Tests\Models\JoinedInheritanceTypeWithAssociation\ValidToManyOnRoot
 /**
  * @DiscriminatorMap({
  *     "validToManyOnRoot" = ValidToManyOnRoot\GrandchildEntity::class,
- *     "invalidToManyOnMappedSuperclass" = InvalidToManyOnMappedSuperclass\GreatGrandchildEntity::class
+ *     "invalidToManyOnMappedSuperclass" = InvalidToManyOnMappedSuperclass\GreatGrandchildEntity::class,
+ *     "toOneOnMappedSuperclass" = ToOneOnMappedSuperclass\GreatGrandchildEntity::class
  * })
  * @Entity
  * @InheritanceType("JOINED")

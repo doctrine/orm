@@ -381,8 +381,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $mapping['declared'] = $parentClass->name;
             }
 
-            $declaredInMappedSuperclass = $parentClass->isMappedSuperclass && $mapping['declared'] === $parentClass->name;
-            if ($declaredInMappedSuperclass) {
+            $declaredInParent = $mapping['declared'] === $parentClass->name;
+            if ($parentClass->isMappedSuperclass && $declaredInParent) {
                 if ($mapping['type'] & ClassMetadata::TO_MANY && ! $mapping['isOwningSide']) {
                     throw MappingException::illegalToManyAssociationOnMappedSuperclass($parentClass->name, $field);
                 }
@@ -391,7 +391,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
 
             //$subclassMapping = $mapping;
-            if (! isset($mapping['inherited']) && ! $declaredInMappedSuperclass) {
+            if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
 
