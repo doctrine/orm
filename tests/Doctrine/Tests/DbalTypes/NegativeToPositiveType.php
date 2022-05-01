@@ -27,14 +27,6 @@ class NegativeToPositiveType extends Type
     /**
      * {@inheritdoc}
      */
-    public function canRequireSQLConversion()
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform): string
     {
         return 'ABS(' . $sqlExpr . ')';

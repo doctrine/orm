@@ -1347,10 +1347,8 @@ class SqlWalker implements TreeWalker
                 $columnAlias   = $this->getSQLColumnAlias($fieldMapping['columnName']);
                 $col           = $sqlTableAlias . '.' . $columnName;
 
-                if (isset($fieldMapping['requireSQLConversion'])) {
-                    $type = Type::getType($fieldMapping['type']);
-                    $col  = $type->convertToPHPValueSQL($col, $this->conn->getDatabasePlatform());
-                }
+                $type = Type::getType($fieldMapping['type']);
+                $col  = $type->convertToPHPValueSQL($col, $this->conn->getDatabasePlatform());
 
                 $sql .= $col . ' AS ' . $columnAlias;
 
@@ -1461,10 +1459,8 @@ class SqlWalker implements TreeWalker
 
                     $col = $sqlTableAlias . '.' . $quotedColumnName;
 
-                    if (isset($mapping['requireSQLConversion'])) {
-                        $type = Type::getType($mapping['type']);
-                        $col  = $type->convertToPHPValueSQL($col, $this->platform);
-                    }
+                    $type = Type::getType($mapping['type']);
+                    $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
                     $sqlParts[] = $col . ' AS ' . $columnAlias;
 
@@ -1492,10 +1488,8 @@ class SqlWalker implements TreeWalker
 
                             $col = $sqlTableAlias . '.' . $quotedColumnName;
 
-                            if (isset($mapping['requireSQLConversion'])) {
-                                $type = Type::getType($mapping['type']);
-                                $col  = $type->convertToPHPValueSQL($col, $this->platform);
-                            }
+                            $type = Type::getType($mapping['type']);
+                            $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
                             $sqlParts[] = $col . ' AS ' . $columnAlias;
 
@@ -1611,10 +1605,8 @@ class SqlWalker implements TreeWalker
                     $fieldType    = $fieldMapping['type'];
                     $col          = trim($e->dispatch($this));
 
-                    if (isset($fieldMapping['requireSQLConversion'])) {
-                        $type = Type::getType($fieldType);
-                        $col  = $type->convertToPHPValueSQL($col, $this->platform);
-                    }
+                    $type = Type::getType($fieldType);
+                    $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
                     $sqlSelectExpressions[] = $col . ' AS ' . $columnAlias;
                     break;

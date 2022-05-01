@@ -66,11 +66,6 @@ final class GH8061Type extends Type
         return 'GH8061';
     }
 
-    public function canRequireSQLConversion(): bool
-    {
-        return true;
-    }
-
     public function convertToPHPValueSQL($sqlExpr, $platform): string
     {
         return sprintf('DatabaseFunction(%s)', $sqlExpr);

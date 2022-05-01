@@ -254,10 +254,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 $classFieldMapping = $class->fieldMappings[$fieldName];
                 $columnSql         = $tableAlias . '.' . $classFieldMapping['columnName'];
 
-                if (isset($classFieldMapping['requireSQLConversion']) && $classFieldMapping['requireSQLConversion'] === true) {
-                    $type      = Type::getType($classFieldMapping['type']);
-                    $columnSql = $type->convertToPHPValueSQL($columnSql, $this->em->getConnection()->getDatabasePlatform());
-                }
+                $type      = Type::getType($classFieldMapping['type']);
+                $columnSql = $type->convertToPHPValueSQL($columnSql, $this->em->getConnection()->getDatabasePlatform());
 
                 $sql .= $columnSql;
             } elseif (isset($this->metaMappings[$columnName])) {

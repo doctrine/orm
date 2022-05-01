@@ -19,14 +19,6 @@ class UpperCaseStringType extends StringType
     /**
      * {@inheritdoc}
      */
-    public function canRequireSQLConversion()
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform): string
     {
         return 'UPPER(' . $sqlExpr . ')';

@@ -182,14 +182,6 @@ class DDC2012TsVectorType extends Type
         return sprintf('UPPER(%s)', $sqlExpr);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function canRequireSQLConversion()
-    {
-        return true;
-    }
-
     public function getName(): string
     {
         return self::MYTYPE;
