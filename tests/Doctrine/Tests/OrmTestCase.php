@@ -7,6 +7,7 @@ namespace Doctrine\Tests;
 use Doctrine\Common\Annotations;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\CacheFactory;
@@ -140,11 +141,17 @@ abstract class OrmTestCase extends DoctrineTestCase
         $connection->method('query')
             ->willReturn($result);
 
+        $platform = $this->createMock(AbstractPlatform::class);
+        $platform->method('supportsIdentityColumns')
+            ->willReturn(true);
+
         $driver = $this->createMock(Driver::class);
         $driver->method('connect')
             ->willReturn($connection);
         $driver->method('getSchemaManager')
             ->willReturn($this->createMock(AbstractSchemaManager::class));
+        $driver->method('getDatabasePlatform')
+            ->willReturn($platform);
 
         return $driver;
     }

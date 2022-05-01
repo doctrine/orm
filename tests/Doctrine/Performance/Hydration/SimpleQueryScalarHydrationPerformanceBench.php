@@ -7,8 +7,8 @@ namespace Doctrine\Performance\Hydration;
 use Doctrine\DBAL\Result;
 use Doctrine\ORM\Internal\Hydration\ScalarHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Performance\ArrayResultFactory;
 use Doctrine\Performance\EntityManagerFactory;
-use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
