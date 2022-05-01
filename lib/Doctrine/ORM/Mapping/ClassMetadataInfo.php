@@ -545,10 +545,10 @@ class ClassMetadataInfo implements ClassMetadata
      * @var mixed[]
      * @psalm-var array{
      *               name: string,
-     *               schema: string,
-     *               indexes: array,
-     *               uniqueConstraints: array,
-     *               options: array<string, mixed>,
+     *               schema?: string,
+     *               indexes?: array,
+     *               uniqueConstraints?: array,
+     *               options?: array<string, mixed>,
      *               quoted?: bool
      *           }
      */
