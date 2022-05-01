@@ -9,12 +9,9 @@ The following methods have been deprecated:
 - `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativQueryResultSetMapping()`
 - `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativQueryEntityResultMapping()`
 
-# Deprecated classes related to Doctrine 1 and reverse engineering
+# Deprecated `Doctrine\ORM\Tools\ConvertDoctrine1Schema`
 
-The following classes have been deprecated:
-
-- `Doctrine\ORM\Tools\ConvertDoctrine1Schema`
-- `Doctrine\ORM\Tools\DisconnectedClassMetadataFactory`
+No replacement is planned.
 
 ## Deprecate `ClassMetadataInfo` usage
 
