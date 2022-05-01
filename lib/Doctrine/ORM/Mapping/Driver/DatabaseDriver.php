@@ -14,7 +14,6 @@ use Doctrine\Deprecations\Deprecation;
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -319,7 +318,7 @@ class DatabaseDriver implements MappingDriver
     /**
      * Build indexes from a class metadata.
      */
-    private function buildIndexes(ClassMetadataInfo $metadata): void
+    private function buildIndexes(ClassMetadata $metadata): void
     {
         $tableName = $metadata->table['name'];
         $indexes   = $this->tables[$tableName]->getIndexes();
@@ -342,7 +341,7 @@ class DatabaseDriver implements MappingDriver
     /**
      * Build field mapping from class metadata.
      */
-    private function buildFieldMappings(ClassMetadataInfo $metadata): void
+    private function buildFieldMappings(ClassMetadata $metadata): void
     {
         $tableName      = $metadata->table['name'];
         $columns        = $this->tables[$tableName]->getColumns();
@@ -457,7 +456,7 @@ class DatabaseDriver implements MappingDriver
      *
      * @return void
      */
-    private function buildToOneAssociationMappings(ClassMetadataInfo $metadata)
+    private function buildToOneAssociationMappings(ClassMetadata $metadata)
     {
         $tableName   = $metadata->table['name'];
         $primaryKeys = $this->getTablePrimaryKeys($this->tables[$tableName]);
