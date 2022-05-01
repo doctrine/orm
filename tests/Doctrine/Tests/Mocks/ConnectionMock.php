@@ -6,13 +6,11 @@ namespace Doctrine\Tests\Mocks;
 
 use BadMethodCallException;
 use Doctrine\Common\EventManager;
-use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
-use Exception;
 
 use function is_string;
 use function sprintf;
@@ -22,23 +20,8 @@ use function sprintf;
  */
 class ConnectionMock extends Connection
 {
-    /** @var mixed */
-    private $_fetchOneResult;
-
-    /** @var Exception|null */
-    private $_fetchOneException;
-
-    /** @var Result|null */
-    private $_queryResult;
-
     /** @var DatabasePlatformMock */
     private $_platformMock;
-
-    /** @var int */
-    private $_lastInsertId = 0;
-
-    /** @var array */
-    private $_inserts = [];
 
     /** @var array */
     private $_executeStatements = [];
@@ -71,7 +54,6 @@ class ConnectionMock extends Connection
      */
     public function insert($tableName, array $data, array $types = [])
     {
-        $this->_inserts[$tableName][] = $data;
     }
 
     /**
@@ -103,26 +85,6 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function lastInsertId($seqName = null)
-    {
-        return $this->_lastInsertId;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function fetchOne(string $sql, array $params = [], array $types = [])
-    {
-        if ($this->_fetchOneException !== null) {
-            throw $this->_fetchOneException;
-        }
-
-        return $this->_fetchOneResult;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function fetchColumn($statement, array $params = [], $colunm = 0, array $types = [])
     {
         throw new BadMethodCallException('Call to deprecated method.');
@@ -131,11 +93,6 @@ class ConnectionMock extends Connection
     public function query(?string $sql = null): Result
     {
         throw new BadMethodCallException('Call to deprecated method.');
-    }
-
-    public function executeQuery($sql, array $params = [], $types = [], ?QueryCacheProfile $qcp = null): Result
-    {
-        return $this->_queryResult ?? parent::executeQuery($sql, $params, $types, $qcp);
     }
 
     /**
@@ -150,42 +107,9 @@ class ConnectionMock extends Connection
         return $input;
     }
 
-    /* Mock API */
-
-    /**
-     * @param mixed $fetchOneResult
-     */
-    public function setFetchOneResult($fetchOneResult): void
-    {
-        $this->_fetchOneResult = $fetchOneResult;
-    }
-
-    public function setFetchOneException(?Exception $exception = null): void
-    {
-        $this->_fetchOneException = $exception;
-    }
-
     public function setDatabasePlatform(AbstractPlatform $platform): void
     {
         $this->_platformMock = $platform;
-    }
-
-    public function setLastInsertId(int $id): void
-    {
-        $this->_lastInsertId = $id;
-    }
-
-    public function setQueryResult(Result $result): void
-    {
-        $this->_queryResult = $result;
-    }
-
-    /**
-     * @return array
-     */
-    public function getInserts(): array
-    {
-        return $this->_inserts;
     }
 
     /**
@@ -202,11 +126,5 @@ class ConnectionMock extends Connection
     public function getDeletes(): array
     {
         return $this->_deletes;
-    }
-
-    public function reset(): void
-    {
-        $this->_inserts      = [];
-        $this->_lastInsertId = 0;
     }
 }
