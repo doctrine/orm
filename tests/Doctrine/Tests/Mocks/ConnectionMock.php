@@ -6,8 +6,6 @@ namespace Doctrine\Tests\Mocks;
 
 use BadMethodCallException;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 
 use function is_string;
@@ -18,33 +16,15 @@ use function sprintf;
  */
 class ConnectionMock extends Connection
 {
-    /** @var AbstractPlatform */
-    private $_platformMock;
-
     /** @var array */
     private $_executeStatements = [];
 
     /** @var array */
     private $_deletes = [];
 
-    public function __construct(array $params, Driver $driver)
-    {
-        $this->_platformMock = new DatabasePlatformMock();
-
-        parent::__construct($params, $driver);
-    }
-
     public function getDatabase(): string
     {
         return 'mock';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDatabasePlatform()
-    {
-        return $this->_platformMock;
     }
 
     /**
@@ -95,11 +75,6 @@ class ConnectionMock extends Connection
         }
 
         return $input;
-    }
-
-    public function setDatabasePlatform(AbstractPlatform $platform): void
-    {
-        $this->_platformMock = $platform;
     }
 
     /**

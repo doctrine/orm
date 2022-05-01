@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -26,13 +27,23 @@ class PaginatorTest extends OrmTestCase
 
     protected function setUp(): void
     {
+        $platform = $this->getMockBuilder(AbstractPlatform::class)
+            ->onlyMethods(['supportsIdentityColumns'])
+            ->getMockForAbstractClass();
+        $platform->method('supportsIdentityColumns')
+            ->willReturn(true);
+
+        $driver = $this->createMock(Driver::class);
+        $driver->method('getDatabasePlatform')
+            ->willReturn($platform);
+
         $this->connection = $this->getMockBuilder(ConnectionMock::class)
-            ->setConstructorArgs([[], $this->createMock(Driver::class)])
+            ->setConstructorArgs([[], $driver])
             ->setMethods(['executeQuery'])
             ->getMock();
 
         $this->em = $this->getMockBuilder(EntityManagerDecorator::class)
-            ->setConstructorArgs([$this->getTestEntityManager($this->connection)])
+            ->setConstructorArgs([$this->createTestEntityManagerWithConnection($this->connection)])
             ->setMethods(['newHydrator'])
             ->getMock();
 

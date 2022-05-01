@@ -333,17 +333,12 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testSupportsAggregateCountFunctionWithSimpleArithmetic(): void
     {
-        $connMock    = $this->entityManager->getConnection();
-        $orgPlatform = $connMock->getDatabasePlatform();
-
-        $connMock->setDatabasePlatform(new MySQLPlatform());
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
 
         $this->assertSqlGeneration(
             'SELECT COUNT(CONCAT(u.id, u.name)) FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY u.id',
             'SELECT COUNT(CONCAT(c0_.id, c0_.name)) AS sclr_0 FROM cms_users c0_ GROUP BY c0_.id'
         );
-
-        $connMock->setDatabasePlatform($orgPlatform);
     }
 
     public function testSupportsWhereClauseWithPositionalParameter(): void
@@ -650,10 +645,8 @@ class SelectSqlGenerationTest extends OrmTestCase
 
     public function testSupportsConcatFunctionForMysqlAndPostgresql(): void
     {
-        $connMock    = $this->entityManager->getConnection();
-        $orgPlatform = $connMock->getDatabasePlatform();
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
 
-        $connMock->setDatabasePlatform(new MySQLPlatform());
         $this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, 's') = ?1",
             "SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE CONCAT(c0_.name, 's') = ?"
@@ -663,7 +656,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT CONCAT(c0_.id, c0_.name) AS sclr_0 FROM cms_users c0_ WHERE c0_.id = ?'
         );
 
-        $connMock->setDatabasePlatform(new PostgreSQLPlatform());
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new PostgreSQLPlatform());
         $this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, 's') = ?1",
             "SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE c0_.name || 's' = ?"
@@ -672,8 +665,6 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT CONCAT(u.id, u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1',
             'SELECT c0_.id || c0_.name AS sclr_0 FROM cms_users c0_ WHERE c0_.id = ?'
         );
-
-        $connMock->setDatabasePlatform($orgPlatform);
     }
 
     public function testSupportsExistsExpressionInWherePartWithCorrelatedSubquery(): void
@@ -940,9 +931,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
     public function testBooleanLiteralInWhereOnSqlite(): void
     {
-        $oldPlat = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new SqlitePlatform());
-
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new SqlitePlatform());
         $this->assertSqlGeneration(
             'SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true',
             'SELECT b0_.id AS id_0, b0_.booleanField AS booleanField_1 FROM boolean_model b0_ WHERE b0_.booleanField = 1'
@@ -952,15 +941,11 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = false',
             'SELECT b0_.id AS id_0, b0_.booleanField AS booleanField_1 FROM boolean_model b0_ WHERE b0_.booleanField = 0'
         );
-
-        $this->entityManager->getConnection()->setDatabasePlatform($oldPlat);
     }
 
     public function testBooleanLiteralInWhereOnPostgres(): void
     {
-        $oldPlat = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQLPlatform());
-
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new PostgreSQLPlatform());
         $this->assertSqlGeneration(
             'SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true',
             'SELECT b0_.id AS id_0, b0_.booleanField AS booleanfield_1 FROM boolean_model b0_ WHERE b0_.booleanField = true'
@@ -970,8 +955,6 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = false',
             'SELECT b0_.id AS id_0, b0_.booleanField AS booleanfield_1 FROM boolean_model b0_ WHERE b0_.booleanField = false'
         );
-
-        $this->entityManager->getConnection()->setDatabasePlatform($oldPlat);
     }
 
     public function testSingleValuedAssociationFieldInWhere(): void
@@ -1101,7 +1084,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testPessimisticReadLockQueryHintPostgreSql(): void
     {
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQLPlatform());
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new PostgreSQLPlatform());
 
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
@@ -1142,7 +1125,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testPessimisticReadLockQueryHintMySql(): void
     {
-        $this->entityManager->getConnection()->setDatabasePlatform(new MySQLPlatform());
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
 
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
@@ -1158,7 +1141,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testPessimisticReadLockQueryHintOracle(): void
     {
-        $this->entityManager->getConnection()->setDatabasePlatform(new OraclePlatform());
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new OraclePlatform());
 
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
@@ -2108,10 +2091,8 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testSupportsMoreThanTwoParametersInConcatFunction(): void
     {
-        $connMock    = $this->entityManager->getConnection();
-        $orgPlatform = $connMock->getDatabasePlatform();
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
 
-        $connMock->setDatabasePlatform(new MySQLPlatform());
         $this->assertSqlGeneration(
             "SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, 's') = ?1",
             "SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE CONCAT(c0_.name, c0_.status, 's') = ?"
@@ -2120,8 +2101,6 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1',
             'SELECT CONCAT(c0_.id, c0_.name, c0_.status) AS sclr_0 FROM cms_users c0_ WHERE c0_.id = ?'
         );
-
-        $connMock->setDatabasePlatform($orgPlatform);
     }
 
      /**
