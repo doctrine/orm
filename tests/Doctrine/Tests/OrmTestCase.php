@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests;
 
 use Doctrine\Common\Annotations;
-use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\Cache\CacheConfiguration;
@@ -19,7 +18,6 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-use function is_array;
 use function realpath;
 
 /**
@@ -71,19 +69,10 @@ abstract class OrmTestCase extends DoctrineTestCase
      * mocked out using a DriverMock, ConnectionMock, etc. These mocks can then
      * be configured in the tests to simulate the DBAL behavior that is desired
      * for a particular test,
-     *
-     * @param Connection|array $conn
-     * @param mixed            $conf
      */
-    protected function getTestEntityManager(
-        $conn = null,
-        $conf = null,
-        ?EventManager $eventManager = null,
-        bool $withSharedMetadata = true
-    ): EntityManagerMock {
-        $metadataCache = $withSharedMetadata
-            ? self::getSharedMetadataCacheImpl()
-            : new ArrayAdapter();
+    protected function getTestEntityManager(?Connection $connection = null): EntityManagerMock
+    {
+        $metadataCache = self::getSharedMetadataCacheImpl();
 
         $config = new Configuration();
 
@@ -105,24 +94,20 @@ abstract class OrmTestCase extends DoctrineTestCase
             $this->secondLevelCacheFactory = $factory;
 
             $cacheConfig->setCacheFactory($factory);
-            $config->setSecondLevelCacheEnabled(true);
+            $config->setSecondLevelCacheEnabled();
             $config->setSecondLevelCacheConfiguration($cacheConfig);
         }
 
-        if ($conn === null) {
-            $conn = [
+        if ($connection === null) {
+            $connection = DriverManager::getConnection([
                 'driverClass'  => Mocks\DriverMock::class,
                 'wrapperClass' => Mocks\ConnectionMock::class,
                 'user'         => 'john',
                 'password'     => 'wayne',
-            ];
+            ], $config);
         }
 
-        if (is_array($conn)) {
-            $conn = DriverManager::getConnection($conn, $config, $eventManager);
-        }
-
-        return EntityManagerMock::create($conn, $config, $eventManager);
+        return EntityManagerMock::create($connection, $config);
     }
 
     protected function enableSecondLevelCache(bool $log = true): void

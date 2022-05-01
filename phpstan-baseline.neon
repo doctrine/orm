@@ -171,27 +171,12 @@ parameters:
 			path: lib/Doctrine/ORM/Id/TableGenerator.php
 
 		-
-			message: "#^Offset 'indexes' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php
-
-		-
-			message: "#^Offset 'uniqueConstraints' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php
-
-		-
 			message: "#^If condition is always true\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
-
-		-
-			message: "#^Offset 'indexes'\\|'uniqueConstraints' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
@@ -207,11 +192,6 @@ parameters:
 
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
-
-		-
-			message: "#^Offset 'schema' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} on left side of \\?\\? always exists and is not nullable\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
 
@@ -1136,37 +1116,17 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
 
 		-
-			message: "#^Offset 'indexes' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
-
-		-
 			message: "#^Offset 'initialValue' on array\\{sequenceName\\: string, allocationSize\\: string, initialValue\\: string, quoted\\?\\: mixed\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
 
 		-
-			message: "#^Offset 'name' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
-
-		-
-			message: "#^Offset 'options' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
-
-		-
-			message: "#^Offset 'schema' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
+			message: "#^Offset 'name' on array\\{name\\: string, schema\\?\\: string, indexes\\?\\: array, uniqueConstraints\\?\\: array, options\\?\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
 
 		-
 			message: "#^Offset 'sequenceName' on array\\{sequenceName\\: string, allocationSize\\: string, initialValue\\: string, quoted\\?\\: mixed\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
-
-		-
-			message: "#^Offset 'uniqueConstraints' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
 
@@ -1206,27 +1166,7 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
 		-
-			message: "#^Offset 'indexes' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
-
-		-
-			message: "#^Offset 'name' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
-
-		-
-			message: "#^Offset 'options' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
-
-		-
-			message: "#^Offset 'schema' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
-
-		-
-			message: "#^Offset 'uniqueConstraints' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
+			message: "#^Offset 'name' on array\\{name\\: string, schema\\?\\: string, indexes\\?\\: array, uniqueConstraints\\?\\: array, options\\?\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
@@ -1249,26 +1189,6 @@ parameters:
 			message: "#^Right side of && is always true\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
-
-		-
-			message: "#^Offset 'indexes' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php
-
-		-
-			message: "#^Offset 'options' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php
-
-		-
-			message: "#^Offset 'schema' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php
-
-		-
-			message: "#^Offset 'uniqueConstraints' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php
 
 		-
 			message: "#^Property Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\<object\\>\\:\\:\\$lifecycleCallbacks \\(array\\<string, array\\<int, string\\>\\>\\) in isset\\(\\) is not nullable\\.$#"
@@ -1321,21 +1241,6 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/SchemaTool.php
 
 		-
-			message: "#^Offset 'indexes' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/SchemaTool.php
-
-		-
-			message: "#^Offset 'options' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/SchemaTool.php
-
-		-
-			message: "#^Offset 'uniqueConstraints' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/SchemaTool.php
-
-		-
 			message: "#^Binary operation \"&\" between string and 3 results in an error\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/UnitOfWork.php
@@ -1379,4 +1284,3 @@ parameters:
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$subClasses\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Utility/HierarchyDiscriminatorResolver.php
-
