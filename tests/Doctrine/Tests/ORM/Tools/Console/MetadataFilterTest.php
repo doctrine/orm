@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Console;
 
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
-use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\Tests\OrmTestCase;
 
 use function count;
@@ -20,7 +20,7 @@ use function count;
  */
 class MetadataFilterTest extends OrmTestCase
 {
-    /** @var DisconnectedClassMetadataFactory */
+    /** @var ClassMetadataFactory */
     private $cmf;
 
     protected function setUp(): void
@@ -32,7 +32,7 @@ class MetadataFilterTest extends OrmTestCase
 
         $em->getConfiguration()->setMetadataDriverImpl($driver);
 
-        $this->cmf = new DisconnectedClassMetadataFactory();
+        $this->cmf = new ClassMetadataFactory();
         $this->cmf->setEntityManager($em);
     }
 

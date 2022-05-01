@@ -1,5 +1,9 @@
 # Upgrade to 3.0
 
+## BC BREAK: Remove `Doctrine\ORM\Tools\DisconnectedClassMetadataFactory`
+
+No replacement is provided.
+
 ## BC BREAK: Remove support for `Type::canRequireSQLConversion()`
 
 This feature was deprecated in DBAL 3.3.0 and will be removed in DBAL 4.0.
