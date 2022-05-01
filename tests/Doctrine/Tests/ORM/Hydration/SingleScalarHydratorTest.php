@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Hydration;
 use Doctrine\ORM\Internal\Hydration\SingleScalarHydrator;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Generator;
 
@@ -62,7 +61,7 @@ class SingleScalarHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new SingleScalarHydrator($this->entityManager);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
@@ -80,7 +79,7 @@ class SingleScalarHydratorTest extends HydrationTestCase
         $rsm->addScalarResult('u__id', 'id', 'string');
         $rsm->addScalarResult('u__name', 'name', 'string');
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new SingleScalarHydrator($this->entityManager);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
@@ -152,7 +151,7 @@ class SingleScalarHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new SingleScalarHydrator($this->entityManager);
 
         $this->expectException(NonUniqueResultException::class);
@@ -170,7 +169,7 @@ class SingleScalarHydratorTest extends HydrationTestCase
         $rsm->addScalarResult('u__id', 'id', 'string');
         $rsm->addScalarResult('u__name', 'name', 'string');
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new SingleScalarHydrator($this->entityManager);
 
         $this->expectException(NonUniqueResultException::class);

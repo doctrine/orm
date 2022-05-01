@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Mocks;
 
 use BadMethodCallException;
-use Doctrine\Common\EventManager;
-use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -29,11 +27,11 @@ class ConnectionMock extends Connection
     /** @var array */
     private $_deletes = [];
 
-    public function __construct(array $params = [], ?Driver $driver = null, ?Configuration $config = null, ?EventManager $eventManager = null)
+    public function __construct(array $params, Driver $driver)
     {
         $this->_platformMock = new DatabasePlatformMock();
 
-        parent::__construct($params, $driver ?? new DriverMock(), $config, $eventManager);
+        parent::__construct($params, $driver);
     }
 
     public function getDatabase(): string
