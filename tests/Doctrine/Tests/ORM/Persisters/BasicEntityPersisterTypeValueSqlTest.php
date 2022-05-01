@@ -6,6 +6,9 @@ namespace Doctrine\Tests\ORM\Persisters;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
@@ -16,8 +19,6 @@ use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity;
 use Doctrine\Tests\OrmTestCase;
 use ReflectionMethod;
-
-use function array_shift;
 
 class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 {
@@ -161,26 +162,39 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
     public function testDeleteManyToManyUsesTypeValuesSQL(): void
     {
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setConstructorArgs([[], $this->createMock(Driver::class)])
+            ->onlyMethods(['delete', 'getDatabasePlatform'])
+            ->getMock();
+        $connection->method('getDatabasePlatform')
+            ->willReturn($this->createMock(AbstractPlatform::class));
+
+        $entityManager = $this->createTestEntityManagerWithConnection($connection);
+
+        $persister = new BasicEntityPersister($entityManager, $this->entityManager->getClassMetadata(CustomTypeParent::class));
+
         $friend = new CustomTypeParent();
         $parent = new CustomTypeParent();
         $parent->addMyFriend($friend);
 
-        $this->entityManager->getUnitOfWork()->registerManaged($parent, ['id' => 1], []);
-        $this->entityManager->getUnitOfWork()->registerManaged($friend, ['id' => 2], []);
+        $entityManager->getUnitOfWork()->registerManaged($parent, ['id' => 1], []);
+        $entityManager->getUnitOfWork()->registerManaged($friend, ['id' => 2], []);
 
-        $this->persister->delete($parent);
+        $connection->expects($this->atLeast(2))
+            ->method('delete')
+            ->will($this->onConsecutiveCalls(
+                [
+                    'customtype_parent_friends',
+                    ['friend_customtypeparent_id' => 1],
+                    ['integer'],
+                ],
+                [
+                    'customtype_parent_friends',
+                    ['customtypeparent_id' => 1],
+                    ['integer'],
+                ]
+            ));
 
-        $deletes = $this->entityManager->getConnection()->getDeletes();
-
-        self::assertEquals([
-            'table' => 'customtype_parent_friends',
-            'criteria' => ['friend_customtypeparent_id' => 1],
-            'types' => ['integer'],
-        ], array_shift($deletes));
-        self::assertEquals([
-            'table' => 'customtype_parent_friends',
-            'criteria' => ['customtypeparent_id' => 1],
-            'types' => ['integer'],
-        ], array_shift($deletes));
+        $persister->delete($parent);
     }
 }
