@@ -222,6 +222,9 @@
     </UnsafeInstantiation>
   </file>
   <file src="lib/Doctrine/ORM/EntityRepository.php">
+    <DeprecatedMethod occurrences="1">
+      <code>addNamedNativeQueryMapping</code>
+    </DeprecatedMethod>
     <InvalidReturnStatement occurrences="2">
       <code>$persister-&gt;load($criteria, null, null, [], null, 1, $orderBy)</code>
       <code>new LazyCriteriaCollection($persister, $criteria)</code>
@@ -592,6 +595,9 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php">
+    <DocblockTypeContradiction occurrences="1">
+      <code>$metadata instanceof ClassMetadata</code>
+    </DocblockTypeContradiction>
     <LessSpecificReturnStatement occurrences="2">
       <code>$this-&gt;namespace . $this-&gt;classNamesForTables[$tableName]</code>
       <code>$this-&gt;namespace . $this-&gt;inflector-&gt;classify(strtolower($tableName))</code>

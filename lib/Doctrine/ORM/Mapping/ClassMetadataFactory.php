@@ -204,7 +204,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
         }
 
-        if ($class->changeTrackingPolicy === ClassMetadataInfo::CHANGETRACKING_NOTIFY) {
+        if ($class->changeTrackingPolicy === ClassMetadata::CHANGETRACKING_NOTIFY) {
             Deprecation::trigger(
                 'doctrine/orm',
                 'https://github.com/doctrine/orm/issues/8383',
