@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions\IdentityFunction;
 use Doctrine\ORM\Query\AST\Node;
@@ -135,7 +135,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                     if (
                         isset($queryComponent['parent'])
                         && isset($queryComponent['relation'])
-                        && $queryComponent['relation']['type'] & ClassMetadataInfo::TO_MANY
+                        && $queryComponent['relation']['type'] & ClassMetadata::TO_MANY
                     ) {
                         throw new RuntimeException('Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.');
                     }

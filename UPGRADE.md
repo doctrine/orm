@@ -1,3 +1,31 @@
+# Upgrade to 2.13
+
+# Deprecated methods related to named queries
+
+The following methods have been deprecated:
+
+- `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativeQueryMapping()`
+- `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativeQueryResultClassMapping()`
+- `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativQueryResultSetMapping()`
+- `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativQueryEntityResultMapping()`
+
+# Deprecated classes related to Doctrine 1 and reverse engineering
+
+The following classes have been deprecated:
+
+- `Doctrine\ORM\Tools\ConvertDoctrine1Schema`
+- `Doctrine\ORM\Tools\DisconnectedClassMetadataFactory`
+
+## Deprecate `ClassMetadataInfo` usage
+
+It is deprecated to pass `Doctrine\ORM\Mapping\ClassMetadataInfo` instances
+that are not also instances of `Doctrine\ORM\ClassMetadata` to the following
+methods:
+
+- `Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder::__construct()`
+- `Doctrine\ORM\Mapping\Driver\DatabaseDriver::loadMetadataForClass()`
+- `Doctrine\ORM\Tools\SchemaValidator::validateClass()`
+
 # Upgrade to 2.12
 
 ## Deprecated the `doctrine` binary.

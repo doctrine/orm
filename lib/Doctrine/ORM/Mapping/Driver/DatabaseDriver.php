@@ -10,6 +10,7 @@ use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -24,6 +25,7 @@ use function array_keys;
 use function array_merge;
 use function count;
 use function current;
+use function get_class;
 use function in_array;
 use function preg_replace;
 use function sort;
@@ -175,6 +177,17 @@ class DatabaseDriver implements MappingDriver
      */
     public function loadMetadataForClass($className, PersistenceClassMetadata $metadata)
     {
+        if (! $metadata instanceof ClassMetadata) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/249',
+                'Passing an instance of %s to %s is deprecated, please pass a ClassMetadata instance instead.',
+                get_class($metadata),
+                __METHOD__,
+                ClassMetadata::class
+            );
+        }
+
         $this->reverseEngineerMappingFromDatabase();
 
         if (! isset($this->classToTableNames[$className])) {
@@ -368,7 +381,7 @@ class DatabaseDriver implements MappingDriver
 
         // We need to check for the columns here, because we might have associations as id as well.
         if ($ids && count($primaryKeys) === 1) {
-            $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+            $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
         }
 
         foreach ($fieldMappings as $fieldMapping) {
