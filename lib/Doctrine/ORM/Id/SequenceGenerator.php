@@ -42,7 +42,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
                 $connection->ensureConnectedToPrimary();
             }
 
-            $this->nextValue = (int) $connection->executeQuery($sql)->fetchOne();
+            $this->nextValue = (int) $connection->fetchOne($sql);
             $this->maxValue  = $this->nextValue + $this->allocationSize;
         }
 

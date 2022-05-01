@@ -79,7 +79,9 @@ array of events it should be subscribed to.
 .. code-block:: php
 
     <?php
-    class TestEventSubscriber implements \Doctrine\Common\EventSubscriber
+    use Doctrine\Common\EventSubscriber;
+
+    class TestEventSubscriber implements EventSubscriber
     {
         public $preFooInvoked = false;
 
@@ -211,7 +213,6 @@ specific to a particular entity class's lifecycle.
     .. code-block:: attribute
 
         <?php
-
         use Doctrine\DBAL\Types\Types;
         use Doctrine\Persistence\Event\LifecycleEventArgs;
 
@@ -245,7 +246,6 @@ specific to a particular entity class's lifecycle.
     .. code-block:: annotation
 
         <?php
-
         use Doctrine\Persistence\Event\LifecycleEventArgs;
 
         /**
@@ -493,7 +493,6 @@ result in an infinite loop.
 .. code-block:: php
 
     <?php
-
     use Doctrine\ORM\Event\PreFlushEventArgs;
 
     class PreFlushExampleListener
@@ -579,7 +578,6 @@ This event is not a lifecycle callback.
 .. code-block:: php
 
     <?php
-
     use Doctrine\ORM\Event\PostFlushEventArgs;
 
     class PostFlushExampleListener
@@ -604,7 +602,7 @@ Changes to associations of the updated entity are never allowed in
 this event, since Doctrine cannot guarantee to correctly handle
 referential integrity at this point of the flush operation. This
 event has a powerful feature however, it is executed with a
-`_PreUpdateEventArgs`_ instance, which contains a reference to the
+`PreUpdateEventArgs`_ instance, which contains a reference to the
 computed change-set of this entity.
 
 This means you have access to all the fields that have changed for
@@ -626,6 +624,8 @@ A simple example for this event looks like:
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Event\PreUpdateEventArgs;
+
     class NeverAliceOnlyBobListener
     {
         public function preUpdate(PreUpdateEventArgs $eventArgs)
@@ -645,6 +645,8 @@ lifecycle callback when there are expensive validations to call:
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Event\PreUpdateEventArgs;
+
     class ValidCreditCardListener
     {
         public function preUpdate(PreUpdateEventArgs $eventArgs)
@@ -789,6 +791,8 @@ An ``Entity Listener`` could be any class, by default it should be a class with 
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Event\PreUpdateEventArgs;
+
     class UserListener
     {
         public function preUpdate(User $user, PreUpdateEventArgs $event)
@@ -805,6 +809,10 @@ you need to map the listener method using the event type mapping:
     .. code-block:: php
 
         <?php
+        use Doctrine\ORM\Event\LifecycleEventArgs;
+        use Doctrine\ORM\Event\PreUpdateEventArgs;
+        use Doctrine\ORM\Event\PreFlushEventArgs;
+
         class UserListener
         {
             /** @PrePersist */
@@ -871,6 +879,8 @@ Specifying an entity listener instance :
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Event\PreUpdateEventArgs;
+
     // User.php
 
     /** @Entity @EntityListeners({"UserListener"}) */
@@ -897,12 +907,14 @@ Specifying an entity listener instance :
     $listener = $container->get('user_listener');
     $em->getConfiguration()->getEntityListenerResolver()->register($listener);
 
-Implementing your own resolver :
+Implementing your own resolver:
 
 .. code-block:: php
 
     <?php
-    class MyEntityListenerResolver extends \Doctrine\ORM\Mapping\DefaultEntityListenerResolver
+    use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
+
+    class MyEntityListenerResolver extends DefaultEntityListenerResolver
     {
         public function __construct($container)
         {
@@ -936,13 +948,15 @@ This event is not a lifecycle callback.
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+
     $test = new TestEventListener();
     $evm = $em->getEventManager();
     $evm->addEventListener(Doctrine\ORM\Events::loadClassMetadata, $test);
 
     class TestEventListener
     {
-        public function loadClassMetadata(\Doctrine\ORM\Event\LoadClassMetadataEventArgs $eventArgs)
+        public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
         {
             $classMetadata = $eventArgs->getClassMetadata();
             $fieldMapping = array(
@@ -975,13 +989,16 @@ instance and class metadata.
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Tools\ToolEvents;
+    use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
+
     $test = new TestEventListener();
     $evm = $em->getEventManager();
-    $evm->addEventListener(\Doctrine\ORM\Tools\ToolEvents::postGenerateSchemaTable, $test);
+    $evm->addEventListener(ToolEvents::postGenerateSchemaTable, $test);
 
     class TestEventListener
     {
-        public function postGenerateSchemaTable(\Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs $eventArgs)
+        public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $eventArgs)
         {
             $classMetadata = $eventArgs->getClassMetadata();
             $schema = $eventArgs->getSchema();
@@ -999,13 +1016,16 @@ and the EntityManager.
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Tools\ToolEvents;
+    use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
+
     $test = new TestEventListener();
     $evm = $em->getEventManager();
-    $evm->addEventListener(\Doctrine\ORM\Tools\ToolEvents::postGenerateSchema, $test);
+    $evm->addEventListener(ToolEvents::postGenerateSchema, $test);
 
     class TestEventListener
     {
-        public function postGenerateSchema(\Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs $eventArgs)
+        public function postGenerateSchema(GenerateSchemaEventArgs $eventArgs)
         {
             $schema = $eventArgs->getSchema();
             $em = $eventArgs->getEntityManager();
