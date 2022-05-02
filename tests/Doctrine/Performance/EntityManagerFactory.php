@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Performance;
 
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Cache\ArrayResult;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\PDO\SQLite\Driver;
@@ -15,7 +16,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\Tests\Mocks\DriverResultMock;
 
 use function array_map;
 use function realpath;
@@ -67,7 +67,7 @@ final class EntityManagerFactory
             /** {@inheritdoc} */
             public function executeQuery(string $sql, array $params = [], $types = [], ?QueryCacheProfile $qcp = null): Result
             {
-                return new Result(new DriverResultMock(), $this);
+                return new Result(new ArrayResult([]), $this);
             }
         };
 
