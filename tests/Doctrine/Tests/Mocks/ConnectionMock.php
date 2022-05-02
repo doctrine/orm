@@ -8,7 +8,6 @@ use BadMethodCallException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Result;
 
-use function is_string;
 use function sprintf;
 
 /**
@@ -39,17 +38,5 @@ class ConnectionMock extends Connection
     public function query(?string $sql = null): Result
     {
         throw new BadMethodCallException('Call to deprecated method.');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function quote($input, $type = null)
-    {
-        if (is_string($input)) {
-            return "'" . $input . "'";
-        }
-
-        return $input;
     }
 }

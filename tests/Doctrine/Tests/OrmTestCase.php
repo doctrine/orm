@@ -16,12 +16,12 @@ use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\ORMSetup;
-use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function realpath;
+use function sprintf;
 
 /**
  * Base testcase class for all ORM testcases.
@@ -147,9 +147,17 @@ abstract class OrmTestCase extends DoctrineTestCase
             ?? $this->secondLevelCache = new ArrayAdapter();
     }
 
-    private function createConnectionMock(AbstractPlatform $platform): ConnectionMock
+    private function createConnectionMock(AbstractPlatform $platform): Connection
     {
-        return new ConnectionMock([], $this->createDriverMock($platform));
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setConstructorArgs([[], $this->createDriverMock($platform)])
+            ->onlyMethods(['quote'])
+            ->getMockForAbstractClass();
+        $connection->method('quote')->willReturnCallback(static function (string $input) {
+            return sprintf("'%s'", $input);
+        });
+
+        return $connection;
     }
 
     private function createPlatformMock(): AbstractPlatform
