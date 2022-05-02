@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.22.0@fc2c6ab4d5fa5d644d8617089f012f3bb84b8703">
+<files psalm-version="4.23.0@f1fe6ff483bf325c803df9f510d09a03fd796f88">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <FalsableReturnStatement occurrences="1">
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
@@ -222,9 +222,6 @@
     </UnsafeInstantiation>
   </file>
   <file src="lib/Doctrine/ORM/EntityRepository.php">
-    <DeprecatedMethod occurrences="1">
-      <code>addNamedNativeQueryMapping</code>
-    </DeprecatedMethod>
     <InvalidReturnStatement occurrences="2">
       <code>$persister-&gt;load($criteria, null, null, [], null, 1, $orderBy)</code>
       <code>new LazyCriteriaCollection($persister, $criteria)</code>
@@ -378,9 +375,6 @@
       <code>hasListeners</code>
       <code>loadMetadataForClass</code>
     </PossiblyNullReference>
-    <PropertyTypeCoercion occurrences="1">
-      <code>$subClass-&gt;table</code>
-    </PropertyTypeCoercion>
     <RedundantConditionGivenDocblockType occurrences="4">
       <code>$parent-&gt;generatorType</code>
       <code>$parent-&gt;generatorType</code>
