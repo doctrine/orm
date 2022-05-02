@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
-
-use function get_class;
 
 /**
  * Builder Object for ClassMetadata
@@ -17,29 +13,15 @@ use function get_class;
  */
 class ClassMetadataBuilder
 {
-    /** @var ClassMetadataInfo */
+    /** @var ClassMetadata */
     private $cm;
 
-    public function __construct(ClassMetadataInfo $cm)
+    public function __construct(ClassMetadata $cm)
     {
-        if (! $cm instanceof ClassMetadata) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/249',
-                'Passing an instance of %s to %s is deprecated, please pass a ClassMetadata instance instead.',
-                get_class($cm),
-                __METHOD__,
-                ClassMetadata::class
-            );
-        }
-
         $this->cm = $cm;
     }
 
-    /**
-     * @return ClassMetadataInfo
-     */
-    public function getClassMetadata()
+    public function getClassMetadata(): ClassMetadata
     {
         return $this->cm;
     }

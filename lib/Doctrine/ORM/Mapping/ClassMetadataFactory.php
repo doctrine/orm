@@ -249,7 +249,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     }
                 }
             } else {
-                assert($parent instanceof ClassMetadataInfo); // https://github.com/doctrine/orm/issues/8746
+                assert($parent instanceof ClassMetadata); // https://github.com/doctrine/orm/issues/8746
                 if (
                     ! $class->reflClass->isAbstract()
                     && ! in_array($class->name, $class->discriminatorMap, true)
@@ -477,7 +477,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @throws ORMException
      */
-    private function completeIdGeneratorMapping(ClassMetadataInfo $class): void
+    private function completeIdGeneratorMapping(ClassMetadata $class): void
     {
         $idGenType = $class->generatorType;
         if ($idGenType === ClassMetadata::GENERATOR_TYPE_AUTO) {
@@ -612,7 +612,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Inherits the ID generator mapping from a parent class.
      */
-    private function inheritIdGeneratorMapping(ClassMetadataInfo $class, ClassMetadataInfo $parent): void
+    private function inheritIdGeneratorMapping(ClassMetadata $class, ClassMetadata $parent): void
     {
         if ($parent->isIdGeneratorSequence()) {
             $class->setSequenceGeneratorDefinition($parent->sequenceGeneratorDefinition);
