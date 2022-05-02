@@ -36,7 +36,7 @@ class SequenceGeneratorTest extends OrmTestCase
                 return $i;
             });
 
-        $entityManager = $this->getTestEntityManager($connection);
+        $entityManager = $this->createTestEntityManagerWithConnection($connection);
 
         for ($i = 0; $i < 42; ++$i) {
             $id = $sequenceGenerator->generateId($entityManager, null);

@@ -16,6 +16,7 @@ use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\ORMSetup;
+use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -72,7 +73,26 @@ abstract class OrmTestCase extends DoctrineTestCase
      * be configured in the tests to simulate the DBAL behavior that is desired
      * for a particular test,
      */
-    protected function getTestEntityManager(?Connection $connection = null): EntityManagerMock
+    protected function getTestEntityManager(): EntityManagerMock
+    {
+        return $this->buildTestEntityManagerWithPlatform(
+            $this->createConnectionMock($this->createPlatformMock())
+        );
+    }
+
+    protected function createTestEntityManagerWithConnection(Connection $connection): EntityManagerMock
+    {
+        return $this->buildTestEntityManagerWithPlatform($connection);
+    }
+
+    protected function createTestEntityManagerWithPlatform(AbstractPlatform $platform): EntityManagerMock
+    {
+        return $this->buildTestEntityManagerWithPlatform(
+            $this->createConnectionMock($platform)
+        );
+    }
+
+    private function buildTestEntityManagerWithPlatform(Connection $connection): EntityManagerMock
     {
         $metadataCache = self::getSharedMetadataCacheImpl();
 
@@ -98,10 +118,6 @@ abstract class OrmTestCase extends DoctrineTestCase
             $cacheConfig->setCacheFactory($factory);
             $config->setSecondLevelCacheEnabled();
             $config->setSecondLevelCacheConfiguration($cacheConfig);
-        }
-
-        if ($connection === null) {
-            $connection = new Mocks\ConnectionMock([], $this->createDriverMock());
         }
 
         return EntityManagerMock::create($connection, $config);
@@ -131,7 +147,23 @@ abstract class OrmTestCase extends DoctrineTestCase
             ?? $this->secondLevelCache = new ArrayAdapter();
     }
 
-    private function createDriverMock(): Driver
+    private function createConnectionMock(AbstractPlatform $platform): ConnectionMock
+    {
+        return new ConnectionMock([], $this->createDriverMock($platform));
+    }
+
+    private function createPlatformMock(): AbstractPlatform
+    {
+        $platform = $this->getMockBuilder(AbstractPlatform::class)
+            ->onlyMethods(['supportsIdentityColumns'])
+            ->getMockForAbstractClass();
+        $platform->method('supportsIdentityColumns')
+            ->willReturn(true);
+
+        return $platform;
+    }
+
+    private function createDriverMock(AbstractPlatform $platform): Driver
     {
         $result = $this->createMock(Driver\Result::class);
         $result->method('fetchAssociative')
@@ -140,10 +172,6 @@ abstract class OrmTestCase extends DoctrineTestCase
         $connection = $this->createMock(Driver\Connection::class);
         $connection->method('query')
             ->willReturn($result);
-
-        $platform = $this->createMock(AbstractPlatform::class);
-        $platform->method('supportsIdentityColumns')
-            ->willReturn(true);
 
         $driver = $this->createMock(Driver::class);
         $driver->method('connect')

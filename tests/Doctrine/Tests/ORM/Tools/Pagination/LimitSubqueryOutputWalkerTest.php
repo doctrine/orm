@@ -29,10 +29,9 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
 
     public function testLimitSubqueryWithSortPg(): void
     {
-        $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQLPlatform());
+        $entityManager = $this->createTestEntityManagerWithPlatform(new PostgreSQLPlatform());
 
-        $query      = $this->entityManager->createQuery(
+        $query      = $entityManager->createQuery(
             'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN p.category c JOIN p.author a ORDER BY p.title'
         );
         $limitQuery = clone $query;
@@ -42,16 +41,13 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
             'SELECT DISTINCT id_0, MIN(sclr_5) AS dctrn_minrownum FROM (SELECT m0_.id AS id_0, m0_.title AS title_1, c1_.id AS id_2, a2_.id AS id_3, a2_.name AS name_4, ROW_NUMBER() OVER(ORDER BY m0_.title ASC) AS sclr_5, m0_.author_id AS author_id_6, m0_.category_id AS category_id_7 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id) dctrn_result GROUP BY id_0 ORDER BY dctrn_minrownum ASC',
             $limitQuery->getSQL()
         );
-
-        $this->entityManager->getConnection()->setDatabasePlatform($odp);
     }
 
     public function testLimitSubqueryWithScalarSortPg(): void
     {
-        $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQLPlatform());
+        $entityManager = $this->createTestEntityManagerWithPlatform(new PostgreSQLPlatform());
 
-        $query      = $this->entityManager->createQuery(
+        $query      = $entityManager->createQuery(
             'SELECT u, g, COUNT(g.id) AS g_quantity FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g ORDER BY g_quantity'
         );
         $limitQuery = clone $query;
@@ -61,16 +57,13 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
             'SELECT DISTINCT id_1, MIN(sclr_3) AS dctrn_minrownum FROM (SELECT COUNT(g0_.id) AS sclr_0, u1_.id AS id_1, g0_.id AS id_2, ROW_NUMBER() OVER(ORDER BY COUNT(g0_.id) ASC) AS sclr_3 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id) dctrn_result GROUP BY id_1 ORDER BY dctrn_minrownum ASC',
             $limitQuery->getSQL()
         );
-
-        $this->entityManager->getConnection()->setDatabasePlatform($odp);
     }
 
     public function testLimitSubqueryWithMixedSortPg(): void
     {
-        $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQLPlatform());
+        $entityManager = $this->createTestEntityManagerWithPlatform(new PostgreSQLPlatform());
 
-        $query      = $this->entityManager->createQuery(
+        $query      = $entityManager->createQuery(
             'SELECT u, g, COUNT(g.id) AS g_quantity FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g ORDER BY g_quantity, u.id DESC'
         );
         $limitQuery = clone $query;
@@ -80,16 +73,13 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
             'SELECT DISTINCT id_1, MIN(sclr_3) AS dctrn_minrownum FROM (SELECT COUNT(g0_.id) AS sclr_0, u1_.id AS id_1, g0_.id AS id_2, ROW_NUMBER() OVER(ORDER BY COUNT(g0_.id) ASC, u1_.id DESC) AS sclr_3 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id) dctrn_result GROUP BY id_1 ORDER BY dctrn_minrownum ASC',
             $limitQuery->getSQL()
         );
-
-        $this->entityManager->getConnection()->setDatabasePlatform($odp);
     }
 
     public function testLimitSubqueryWithHiddenScalarSortPg(): void
     {
-        $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQLPlatform());
+        $entityManager = $this->createTestEntityManagerWithPlatform(new PostgreSQLPlatform());
 
-        $query      = $this->entityManager->createQuery(
+        $query      = $entityManager->createQuery(
             'SELECT u, g, COUNT(g.id) AS hidden g_quantity FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g ORDER BY g_quantity, u.id DESC'
         );
         $limitQuery = clone $query;
@@ -99,26 +89,20 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
             'SELECT DISTINCT id_1, MIN(sclr_3) AS dctrn_minrownum FROM (SELECT COUNT(g0_.id) AS sclr_0, u1_.id AS id_1, g0_.id AS id_2, ROW_NUMBER() OVER(ORDER BY COUNT(g0_.id) ASC, u1_.id DESC) AS sclr_3 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id) dctrn_result GROUP BY id_1 ORDER BY dctrn_minrownum ASC',
             $limitQuery->getSQL()
         );
-
-        $this->entityManager->getConnection()->setDatabasePlatform($odp);
     }
 
     public function testLimitSubqueryPg(): void
     {
-        $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQLPlatform());
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new PostgreSQLPlatform());
 
         $this->testLimitSubquery();
-
-        $this->entityManager->getConnection()->setDatabasePlatform($odp);
     }
 
     public function testLimitSubqueryWithSortOracle(): void
     {
-        $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new OraclePlatform());
+        $entityManager = $this->createTestEntityManagerWithPlatform(new OraclePlatform());
 
-        $query = $this->entityManager->createQuery(
+        $query = $entityManager->createQuery(
             'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN p.category c JOIN p.author a ORDER BY p.title'
         );
         $query->expireQueryCache(true);
@@ -129,16 +113,13 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
             'SELECT DISTINCT ID_0, MIN(SCLR_5) AS dctrn_minrownum FROM (SELECT m0_.id AS ID_0, m0_.title AS TITLE_1, c1_.id AS ID_2, a2_.id AS ID_3, a2_.name AS NAME_4, ROW_NUMBER() OVER(ORDER BY m0_.title ASC) AS SCLR_5, m0_.author_id AS AUTHOR_ID_6, m0_.category_id AS CATEGORY_ID_7 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id) dctrn_result GROUP BY ID_0 ORDER BY dctrn_minrownum ASC',
             $limitQuery->getSQL()
         );
-
-        $this->entityManager->getConnection()->setDatabasePlatform($odp);
     }
 
     public function testLimitSubqueryWithScalarSortOracle(): void
     {
-        $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new OraclePlatform());
+        $entityManager = $this->createTestEntityManagerWithPlatform(new OraclePlatform());
 
-        $query = $this->entityManager->createQuery(
+        $query = $entityManager->createQuery(
             'SELECT u, g, COUNT(g.id) AS g_quantity FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g ORDER BY g_quantity'
         );
         $query->expireQueryCache(true);
@@ -149,16 +130,13 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
             'SELECT DISTINCT ID_1, MIN(SCLR_3) AS dctrn_minrownum FROM (SELECT COUNT(g0_.id) AS SCLR_0, u1_.id AS ID_1, g0_.id AS ID_2, ROW_NUMBER() OVER(ORDER BY COUNT(g0_.id) ASC) AS SCLR_3 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id) dctrn_result GROUP BY ID_1 ORDER BY dctrn_minrownum ASC',
             $limitQuery->getSQL()
         );
-
-        $this->entityManager->getConnection()->setDatabasePlatform($odp);
     }
 
     public function testLimitSubqueryWithMixedSortOracle(): void
     {
-        $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new OraclePlatform());
+        $entityManager = $this->createTestEntityManagerWithPlatform(new OraclePlatform());
 
-        $query = $this->entityManager->createQuery(
+        $query = $entityManager->createQuery(
             'SELECT u, g, COUNT(g.id) AS g_quantity FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g ORDER BY g_quantity, u.id DESC'
         );
         $query->expireQueryCache(true);
@@ -169,16 +147,13 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
             'SELECT DISTINCT ID_1, MIN(SCLR_3) AS dctrn_minrownum FROM (SELECT COUNT(g0_.id) AS SCLR_0, u1_.id AS ID_1, g0_.id AS ID_2, ROW_NUMBER() OVER(ORDER BY COUNT(g0_.id) ASC, u1_.id DESC) AS SCLR_3 FROM User u1_ INNER JOIN user_group u2_ ON u1_.id = u2_.user_id INNER JOIN groups g0_ ON g0_.id = u2_.group_id) dctrn_result GROUP BY ID_1 ORDER BY dctrn_minrownum ASC',
             $limitQuery->getSQL()
         );
-
-        $this->entityManager->getConnection()->setDatabasePlatform($odp);
     }
 
     public function testLimitSubqueryOracle(): void
     {
-        $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new OraclePlatform());
+        $entityManager = $this->createTestEntityManagerWithPlatform(new OraclePlatform());
 
-        $query = $this->entityManager->createQuery(
+        $query = $entityManager->createQuery(
             'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN p.category c JOIN p.author a'
         );
         $query->expireQueryCache(true);
@@ -189,8 +164,6 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
             'SELECT DISTINCT ID_0 FROM (SELECT m0_.id AS ID_0, m0_.title AS TITLE_1, c1_.id AS ID_2, a2_.id AS ID_3, a2_.name AS NAME_4, m0_.author_id AS AUTHOR_ID_5, m0_.category_id AS CATEGORY_ID_6 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id) dctrn_result',
             $limitQuery->getSQL()
         );
-
-        $this->entityManager->getConnection()->setDatabasePlatform($odp);
     }
 
     public function testCountQueryMixedResultsWithName(): void
@@ -212,10 +185,11 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
      */
     public function testCountQueryWithArithmeticOrderByCondition(): void
     {
-        $query = $this->entityManager->createQuery(
+        $entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
+
+        $query = $entityManager->createQuery(
             'SELECT a FROM Doctrine\Tests\ORM\Tools\Pagination\Author a ORDER BY (1 - 1000) * 1 DESC'
         );
-        $this->entityManager->getConnection()->setDatabasePlatform(new MySQLPlatform());
 
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
@@ -227,10 +201,11 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
 
     public function testCountQueryWithComplexScalarOrderByItem(): void
     {
-        $query = $this->entityManager->createQuery(
+        $entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
+
+        $query = $entityManager->createQuery(
             'SELECT a FROM Doctrine\Tests\ORM\Tools\Pagination\Avatar a ORDER BY a.imageHeight * a.imageWidth DESC'
         );
-        $this->entityManager->getConnection()->setDatabasePlatform(new MySQLPlatform());
 
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
@@ -242,10 +217,11 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
 
     public function testCountQueryWithComplexScalarOrderByItemJoined(): void
     {
-        $query = $this->entityManager->createQuery(
+        $entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
+
+        $query = $entityManager->createQuery(
             'SELECT u FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.avatar a ORDER BY a.imageHeight * a.imageWidth DESC'
         );
-        $this->entityManager->getConnection()->setDatabasePlatform(new MySQLPlatform());
 
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
@@ -257,10 +233,11 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
 
     public function testCountQueryWithComplexScalarOrderByItemJoinedWithPartial(): void
     {
-        $query = $this->entityManager->createQuery(
+        $entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
+
+        $query = $entityManager->createQuery(
             'SELECT u, partial a.{id, imageAltDesc} FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.avatar a ORDER BY a.imageHeight * a.imageWidth DESC'
         );
-        $this->entityManager->getConnection()->setDatabasePlatform(new MySQLPlatform());
 
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
@@ -272,10 +249,11 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
 
     public function testCountQueryWithComplexScalarOrderByItemOracle(): void
     {
-        $query = $this->entityManager->createQuery(
+        $entityManager = $this->createTestEntityManagerWithPlatform(new OraclePlatform());
+
+        $query = $entityManager->createQuery(
             'SELECT a FROM Doctrine\Tests\ORM\Tools\Pagination\Avatar a ORDER BY a.imageHeight * a.imageWidth DESC'
         );
-        $this->entityManager->getConnection()->setDatabasePlatform(new OraclePlatform());
 
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
@@ -304,10 +282,11 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
 
     public function testLimitSubqueryWithColumnWithSortDirectionInName(): void
     {
-        $query = $this->entityManager->createQuery(
+        $entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
+
+        $query = $entityManager->createQuery(
             'SELECT a FROM Doctrine\Tests\ORM\Tools\Pagination\Avatar a ORDER BY a.imageAltDesc DESC'
         );
-        $this->entityManager->getConnection()->setDatabasePlatform(new MySQLPlatform());
 
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
@@ -333,8 +312,8 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
 
     public function testLimitSubqueryWithOrderByAndSubSelectInWhereClauseMySql(): void
     {
-        $this->entityManager->getConnection()->setDatabasePlatform(new MySQLPlatform());
-        $query = $this->entityManager->createQuery(
+        $entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
+        $query         = $entityManager->createQuery(
             'SELECT b FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost b
 WHERE  ((SELECT COUNT(simple.id) FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost simple) = 1)
 ORDER BY b.id DESC'
@@ -349,8 +328,8 @@ ORDER BY b.id DESC'
 
     public function testLimitSubqueryWithOrderByAndSubSelectInWhereClausePgSql(): void
     {
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQLPlatform());
-        $query = $this->entityManager->createQuery(
+        $entityManager = $this->createTestEntityManagerWithPlatform(new PostgreSQLPlatform());
+        $query         = $entityManager->createQuery(
             'SELECT b FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost b
 WHERE  ((SELECT COUNT(simple.id) FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost simple) = 1)
 ORDER BY b.id DESC'
@@ -368,10 +347,10 @@ ORDER BY b.id DESC'
      */
     public function testLimitSubqueryOrderByFieldFromMappedSuperclass(): void
     {
-        $this->entityManager->getConnection()->setDatabasePlatform(new MySQLPlatform());
+        $entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
 
         // now use the third one in query
-        $query = $this->entityManager->createQuery(
+        $query = $entityManager->createQuery(
             'SELECT b FROM Doctrine\Tests\ORM\Tools\Pagination\Banner b ORDER BY b.id DESC'
         );
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
@@ -387,9 +366,9 @@ ORDER BY b.id DESC'
      */
     public function testLimitSubqueryOrderBySubSelectOrderByExpression(): void
     {
-        $this->entityManager->getConnection()->setDatabasePlatform(new MySQLPlatform());
+        $entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
 
-        $query = $this->entityManager->createQuery(
+        $query = $entityManager->createQuery(
             'SELECT a,
                 (
                     SELECT MIN(bp.title)
@@ -412,9 +391,9 @@ ORDER BY b.id DESC'
      */
     public function testLimitSubqueryOrderBySubSelectOrderByExpressionPg(): void
     {
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQLPlatform());
+        $entityManager = $this->createTestEntityManagerWithPlatform(new PostgreSQLPlatform());
 
-        $query = $this->entityManager->createQuery(
+        $query = $entityManager->createQuery(
             'SELECT a,
                 (
                     SELECT MIN(bp.title)
@@ -437,9 +416,9 @@ ORDER BY b.id DESC'
      */
     public function testLimitSubqueryOrderBySubSelectOrderByExpressionOracle(): void
     {
-        $this->entityManager->getConnection()->setDatabasePlatform(new OraclePlatform());
+        $entityManager = $this->createTestEntityManagerWithPlatform(new OraclePlatform());
 
-        $query = $this->entityManager->createQuery(
+        $query = $entityManager->createQuery(
             'SELECT a,
                 (
                     SELECT MIN(bp.title)

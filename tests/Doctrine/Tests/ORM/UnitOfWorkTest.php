@@ -600,9 +600,17 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testCommitThrowOptimisticLockExceptionWhenConnectionCommitReturnFalse(): void
     {
+        $platform = $this->getMockBuilder(AbstractPlatform::class)
+            ->onlyMethods(['supportsIdentityColumns'])
+            ->getMockForAbstractClass();
+        $platform->method('supportsIdentityColumns')
+            ->willReturn(true);
+
         $driver = $this->createMock(Driver::class);
         $driver->method('connect')
             ->willReturn($this->createMock(Driver\Connection::class));
+        $driver->method('getDatabasePlatform')
+            ->willReturn($platform);
 
         // Set another connection mock that fail on commit
         $this->_connectionMock = $this->getMockBuilder(ConnectionMock::class)

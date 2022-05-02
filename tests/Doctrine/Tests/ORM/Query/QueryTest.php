@@ -11,6 +11,7 @@ use Doctrine\DBAL\Cache\ArrayResult;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
@@ -332,7 +333,7 @@ class QueryTest extends OrmTestCase
      */
     public function testResultCacheCaching(): void
     {
-        $entityManager = $this->getTestEntityManager(
+        $entityManager = $this->createTestEntityManagerWithConnection(
             $this->createConnection(
                 new ArrayResult([
                     ['id_0' => 1],
@@ -374,7 +375,7 @@ class QueryTest extends OrmTestCase
      */
     public function testResultCacheEviction(): void
     {
-        $entityManager = $this->getTestEntityManager(
+        $entityManager = $this->createTestEntityManagerWithConnection(
             $this->createConnection(
                 new ArrayResult([
                     ['id_0' => 1],
@@ -583,9 +584,17 @@ class QueryTest extends OrmTestCase
         $driverConnection->method('query')
             ->will($this->onConsecutiveCalls(...$results));
 
+        $platform = $this->getMockBuilder(AbstractPlatform::class)
+            ->onlyMethods(['supportsIdentityColumns'])
+            ->getMockForAbstractClass();
+        $platform->method('supportsIdentityColumns')
+            ->willReturn(true);
+
         $driver = $this->createMock(Driver::class);
         $driver->method('connect')
             ->willReturn($driverConnection);
+        $driver->method('getDatabasePlatform')
+            ->willReturn($platform);
 
         return new ConnectionMock([], $driver);
     }
