@@ -12,7 +12,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -37,7 +36,7 @@ class PaginatorTest extends OrmTestCase
         $driver->method('getDatabasePlatform')
             ->willReturn($platform);
 
-        $this->connection = $this->getMockBuilder(ConnectionMock::class)
+        $this->connection = $this->getMockBuilder(Connection::class)
             ->setConstructorArgs([[], $driver])
             ->setMethods(['executeQuery'])
             ->getMock();

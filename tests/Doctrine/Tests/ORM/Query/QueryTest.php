@@ -17,7 +17,6 @@ use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
-use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsGroup;
@@ -596,6 +595,6 @@ class QueryTest extends OrmTestCase
         $driver->method('getDatabasePlatform')
             ->willReturn($platform);
 
-        return new ConnectionMock([], $driver);
+        return new Connection([], $driver);
     }
 }
