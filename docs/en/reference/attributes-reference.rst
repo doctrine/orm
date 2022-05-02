@@ -207,6 +207,8 @@ Optional parameters:
    -  ``comment``: The comment of the column in the schema (might not
       be supported by all vendors).
 
+   -  ``charset``: The charset of the column (only supported by Mysql, PostgreSQL, Sqlite and SQLServer).
+
    -  ``collation``: The collation of the column (only supported by Mysql, PostgreSQL, Sqlite and SQLServer).
 
    -  ``check``: Adds a check constraint type to the column (might not
@@ -681,6 +683,8 @@ Optional parameters:
    "columnDefinition" attribute on :ref:`#[Column] <attrref_column>` also sets
    the related ``#[JoinColumn]``'s columnDefinition. This is necessary to
    make foreign keys work.
+-  **options**:
+   See "options" attribute on :ref:`#[Column] <attrref_column>`.
 
 Example:
 

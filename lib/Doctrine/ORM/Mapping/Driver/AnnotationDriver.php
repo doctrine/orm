@@ -613,6 +613,10 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
                     'schema' => $joinTableAnnot->schema,
                 ];
 
+                if ($joinTableAnnot->options) {
+                    $joinTable['options'] = $joinTableAnnot->options;
+                }
+
                 foreach ($joinTableAnnot->joinColumns as $joinColumn) {
                     $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
                 }
@@ -738,12 +742,13 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
      *                   nullable: bool,
      *                   onDelete: mixed,
      *                   columnDefinition: string|null,
-     *                   referencedColumnName: string
+     *                   referencedColumnName: string,
+     *                   options?: array<string, mixed>
      *               }
      */
     private function joinColumnToArray(Mapping\JoinColumn $joinColumn): array
     {
-        return [
+        $mapping = [
             'name' => $joinColumn->name,
             'unique' => $joinColumn->unique,
             'nullable' => $joinColumn->nullable,
@@ -751,6 +756,12 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
             'columnDefinition' => $joinColumn->columnDefinition,
             'referencedColumnName' => $joinColumn->referencedColumnName,
         ];
+
+        if ($joinColumn->options) {
+            $mapping['options'] = $joinColumn->options;
+        }
+
+        return $mapping;
     }
 
     /**

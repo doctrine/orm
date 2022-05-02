@@ -27,11 +27,18 @@ final class JoinTable implements Annotation
     /** @var array<\Doctrine\ORM\Mapping\JoinColumn> */
     public $inverseJoinColumns = [];
 
+    /** @var array<string, mixed> */
+    public $options = [];
+
+    /**
+     * @param array<string, mixed> $options
+     */
     public function __construct(
         ?string $name = null,
         ?string $schema = null,
         $joinColumns = [],
-        $inverseJoinColumns = []
+        $inverseJoinColumns = [],
+        array $options = []
     ) {
         $this->name               = $name;
         $this->schema             = $schema;
@@ -39,5 +46,6 @@ final class JoinTable implements Annotation
         $this->inverseJoinColumns = $inverseJoinColumns instanceof JoinColumn
             ? [$inverseJoinColumns]
             : $inverseJoinColumns;
+        $this->options            = $options;
     }
 }
