@@ -19,9 +19,6 @@ class ConnectionMock extends Connection
     /** @var array */
     private $_executeStatements = [];
 
-    /** @var array */
-    private $_deletes = [];
-
     public function getDatabase(): string
     {
         return 'mock';
@@ -52,14 +49,6 @@ class ConnectionMock extends Connection
         return 1;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function delete($table, array $criteria, array $types = [])
-    {
-        $this->_deletes[] = ['table' => $table, 'criteria' => $criteria, 'types' => $types];
-    }
-
     public function query(?string $sql = null): Result
     {
         throw new BadMethodCallException('Call to deprecated method.');
@@ -83,13 +72,5 @@ class ConnectionMock extends Connection
     public function getExecuteStatements(): array
     {
         return $this->_executeStatements;
-    }
-
-    /**
-     * @return array
-     */
-    public function getDeletes(): array
-    {
-        return $this->_deletes;
     }
 }
