@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.22.0@fc2c6ab4d5fa5d644d8617089f012f3bb84b8703">
+<files psalm-version="4.23.0@f1fe6ff483bf325c803df9f510d09a03fd796f88">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass occurrences="1">
       <code>IterableResult</code>
@@ -548,9 +548,6 @@
       <code>getConfiguration</code>
       <code>getConnection</code>
     </PossiblyNullReference>
-    <PropertyTypeCoercion occurrences="1">
-      <code>$subClass-&gt;table</code>
-    </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php">
     <DeprecatedConstant occurrences="1">
