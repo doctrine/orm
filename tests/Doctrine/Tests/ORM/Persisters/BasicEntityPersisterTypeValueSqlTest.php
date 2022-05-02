@@ -58,23 +58,44 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
     public function testUpdateUsesTypeValuesSQL(): void
     {
+        $driver = $this->createMock(Driver::class);
+        $driver->method('connect')
+            ->willReturn($this->createMock(Driver\Connection::class));
+
+        $platform = $this->getMockBuilder(AbstractPlatform::class)
+            ->onlyMethods(['supportsIdentityColumns'])
+            ->getMockForAbstractClass();
+        $platform->method('supportsIdentityColumns')
+            ->willReturn(true);
+
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setConstructorArgs([[], $driver])
+            ->onlyMethods(['executeStatement', 'getDatabasePlatform'])
+            ->getMock();
+        $connection->method('getDatabasePlatform')
+            ->willReturn($platform);
+
         $child = new CustomTypeChild();
 
         $parent                = new CustomTypeParent();
         $parent->customInteger = 1;
         $parent->child         = $child;
 
-        $this->entityManager->getUnitOfWork()->registerManaged($parent, ['id' => 1], ['customInteger' => 0, 'child' => null]);
-        $this->entityManager->getUnitOfWork()->registerManaged($child, ['id' => 1], []);
+        $entityManager = $this->createTestEntityManagerWithConnection($connection);
 
-        $this->entityManager->getUnitOfWork()->propertyChanged($parent, 'customInteger', 0, 1);
-        $this->entityManager->getUnitOfWork()->propertyChanged($parent, 'child', null, $child);
+        $entityManager->getUnitOfWork()->registerManaged($parent, ['id' => 1], ['customInteger' => 0, 'child' => null]);
+        $entityManager->getUnitOfWork()->registerManaged($child, ['id' => 1], []);
 
-        $this->persister->update($parent);
+        $entityManager->getUnitOfWork()->propertyChanged($parent, 'customInteger', 0, 1);
+        $entityManager->getUnitOfWork()->propertyChanged($parent, 'child', null, $child);
 
-        $executeStatements = $this->entityManager->getConnection()->getExecuteStatements();
+        $persister = new BasicEntityPersister($entityManager, $entityManager->getClassMetadata(CustomTypeParent::class));
 
-        self::assertEquals('UPDATE customtype_parents SET customInteger = ABS(?), child_id = ? WHERE id = ?', $executeStatements[0]['sql']);
+        $connection->expects($this->once())
+            ->method('executeStatement')
+            ->with('UPDATE customtype_parents SET customInteger = ABS(?), child_id = ? WHERE id = ?');
+
+        $persister->update($parent);
     }
 
     public function testGetSelectConditionSQLUsesTypeValuesSQL(): void

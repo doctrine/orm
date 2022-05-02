@@ -24,7 +24,6 @@ use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
-use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
@@ -55,9 +54,9 @@ class UnitOfWorkTest extends OrmTestCase
     /**
      * Provides a sequence mock to the UnitOfWork
      *
-     * @var ConnectionMock&MockObject
+     * @var Connection&MockObject
      */
-    private $_connectionMock;
+    private $connection;
 
     /**
      * The EntityManager mock that provides the mock persisters
@@ -94,11 +93,9 @@ class UnitOfWorkTest extends OrmTestCase
         $driver->method('connect')
             ->willReturn($driverConnection);
 
-        $connection = new Connection([], $driver);
-
-        $this->_connectionMock = $connection;
-        $this->eventManager    = $this->getMockBuilder(EventManager::class)->getMock();
-        $this->_emMock         = EntityManagerMock::create($connection, null, $this->eventManager);
+        $this->connection   = new Connection([], $driver);
+        $this->eventManager = $this->getMockBuilder(EventManager::class)->getMock();
+        $this->_emMock      = EntityManagerMock::create($this->connection, null, $this->eventManager);
         // SUT
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
@@ -613,15 +610,15 @@ class UnitOfWorkTest extends OrmTestCase
             ->willReturn($platform);
 
         // Set another connection mock that fail on commit
-        $this->_connectionMock = $this->getMockBuilder(ConnectionMock::class)
+        $this->connection  = $this->getMockBuilder(Connection::class)
             ->setConstructorArgs([[], $driver])
             ->setMethods(['commit'])
             ->getMock();
-        $this->_emMock         = EntityManagerMock::create($this->_connectionMock, null, $this->eventManager);
-        $this->_unitOfWork     = new UnitOfWorkMock($this->_emMock);
+        $this->_emMock     = EntityManagerMock::create($this->connection, null, $this->eventManager);
+        $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
 
-        $this->_connectionMock->method('commit')->willReturn(false);
+        $this->connection->method('commit')->willReturn(false);
 
         // Setup fake persister and id generator
         $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
