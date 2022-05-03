@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
 use Doctrine\Tests\DbalTypes\CustomIdObjectType;
@@ -712,6 +713,34 @@ class PaginationTest extends OrmFunctionalTestCase
         self::assertCount(9, $paginator);
     }
 
+    public function testCountWithGroupByQueryStripsParametersInSelect(): void
+    {
+        $query = $this->_em->createQuery(
+            'SELECT a, (CASE WHEN u.status IS NULL THEN u.id ELSE u.status END) AS hidden state
+            FROM Doctrine\\Tests\\Models\\CMS\\CmsArticle a
+            JOIN Doctrine\\Tests\\Models\\CMS\\CmsUser u WITH u = a.user
+            GROUP BY state
+            '
+        );
+        $query->setFirstResult(null)->setMaxResults(null);
+
+        $paginator = new Paginator($query);
+
+        $getCountQuery = new ReflectionMethod($paginator, 'getCountQuery');
+
+        $getCountQuery->setAccessible(true);
+
+        self::assertCount(2, $paginator);
+
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
+
+        $paginator = new Paginator($query);
+
+        // if select part of query is replaced with count(...) paginator should remove
+        // parameters from query object not used in new query.
+        self::assertCount(2, $paginator);
+    }
+
     /**
      * @dataProvider useOutputWalkersAndFetchJoinCollection
      */
@@ -750,7 +779,7 @@ SQL
             $user               = new CmsUser();
             $user->name         = 'Name' . $i;
             $user->username     = 'username' . $i;
-            $user->status       = 'active';
+            $user->status       = $i % 3 === 0 ? 'active' : 'inactive';
             $user->email        = new CmsEmail();
             $user->email->user  = $user;
             $user->email->email = sprintf('email%d', $i);
