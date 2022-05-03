@@ -7,6 +7,7 @@ namespace Doctrine\Tests;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use UnexpectedValueException;
 
@@ -92,9 +93,18 @@ class TestUtil
             $dbname = $testConnParams['dbname'] ?? $testConn->getDatabase();
             $testConn->close();
 
-            self::createSchemaManager($privConn)->dropAndCreateDatabase($dbname);
+            if ($dbname !== null) {
+                $schemaManager = self::createSchemaManager($privConn);
 
-            $privConn->close();
+                try {
+                    $schemaManager->dropDatabase($dbname);
+                } catch (DriverException $e) {
+                }
+
+                $schemaManager->createDatabase($dbname);
+
+                $privConn->close();
+            }
         } else {
             $schema = self::createSchemaManager($testConn)->createSchema();
             $stmts  = $schema->toDropSql($testConn->getDatabasePlatform());
