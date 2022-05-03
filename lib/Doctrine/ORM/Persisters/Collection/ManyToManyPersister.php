@@ -764,10 +764,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $limit  = $criteria->getMaxResults();
         $offset = $criteria->getFirstResult();
-        if ($limit !== null || $offset !== null) {
-            return $this->platform->modifyLimitQuery('', $limit, $offset ?? 0);
-        }
 
-        return '';
+        return $this->platform->modifyLimitQuery('', $limit, $offset ?? 0);
     }
 }
