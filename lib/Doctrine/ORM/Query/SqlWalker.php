@@ -2225,7 +2225,7 @@ class SqlWalker implements TreeWalker
 
         if ($parameter) {
             $type = $parameter->getType();
-            if (Type::hasType($type)) {
+            if (is_string($type) && Type::hasType($type)) {
                 return Type::getType($type)->convertToDatabaseValueSQL('?', $this->platform);
             }
         }
