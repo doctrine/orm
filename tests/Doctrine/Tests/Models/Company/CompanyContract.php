@@ -33,7 +33,7 @@ use Doctrine\ORM\Mapping\Table;
  * @Entity
  * @Table(name="company_contracts")
  * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
+ * @DiscriminatorColumn(name="discr", type="string", length=255)
  * @EntityListeners({"CompanyContractListener"})
  * @DiscriminatorMap({
  *     "fix"       = "CompanyFixContract",

@@ -83,7 +83,7 @@ class DDC2996UserPreference
     public $id;
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $value;
 

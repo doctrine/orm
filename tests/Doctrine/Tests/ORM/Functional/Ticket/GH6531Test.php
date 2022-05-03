@@ -157,13 +157,13 @@ class GH6531ArticleAttribute
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $attribute;
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $value;
 

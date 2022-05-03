@@ -28,7 +28,7 @@ class Stock
     /**
      * @var string
      * For real this column would have to be unique=true. But I want to test behavior of non-unique overrides.
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $symbol;
 

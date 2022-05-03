@@ -77,7 +77,7 @@ class GH7496EntityA
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 
@@ -102,7 +102,7 @@ class GH7496EntityB
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 

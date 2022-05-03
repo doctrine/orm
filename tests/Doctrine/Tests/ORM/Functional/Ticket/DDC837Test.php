@@ -208,7 +208,7 @@ class DDC837Aggregate
 
     /**
      * @var string
-     * @Column(name="sysname", type="string")
+     * @Column(name="sysname", type="string", length=255)
      */
     protected $sysname;
 

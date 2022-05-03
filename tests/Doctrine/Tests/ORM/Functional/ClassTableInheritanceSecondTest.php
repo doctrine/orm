@@ -132,7 +132,7 @@ class CTIChild extends CTIParent
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $data;
 

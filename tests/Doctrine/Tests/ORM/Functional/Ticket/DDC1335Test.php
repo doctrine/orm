@@ -169,13 +169,13 @@ class DDC1335User
 
     /**
      * @var string
-     * @Column(type="string", unique=true)
+     * @Column(type="string", length=255, unique=true)
      */
     public $email;
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 

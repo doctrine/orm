@@ -69,7 +69,7 @@ class GH6217AssociatedEntity
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @GeneratedValue(strategy="NONE")
      */
     public $id;

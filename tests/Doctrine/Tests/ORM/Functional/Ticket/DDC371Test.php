@@ -76,7 +76,7 @@ class DDC371Child
     private $id;
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $data;
     /**
@@ -99,7 +99,7 @@ class DDC371Parent
     private $id;
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $data;
 

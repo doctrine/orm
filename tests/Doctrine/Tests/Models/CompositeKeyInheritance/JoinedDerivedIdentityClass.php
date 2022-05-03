@@ -18,7 +18,7 @@ class JoinedDerivedIdentityClass
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @Id
      */
     protected $id = 'part-0';

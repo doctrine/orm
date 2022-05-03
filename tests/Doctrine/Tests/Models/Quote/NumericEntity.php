@@ -26,7 +26,7 @@ class NumericEntity
 
     /**
      * @var string
-     * @Column(type="string", name="`2:2`")
+     * @Column(type="string", length=255, name="`2:2`")
      */
     public $value;
 

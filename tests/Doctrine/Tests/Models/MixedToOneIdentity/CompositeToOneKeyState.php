@@ -17,7 +17,7 @@ class CompositeToOneKeyState
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @GeneratedValue(strategy="NONE")
      */
     public $state;

@@ -24,7 +24,7 @@ class DDC753EntityWithInvalidRepository
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     protected $name;
 }

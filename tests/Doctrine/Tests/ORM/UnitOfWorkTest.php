@@ -897,7 +897,7 @@ class NotifyChangedEntity implements NotifyPropertyChanged
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $data;
 
@@ -1028,7 +1028,7 @@ class EntityWithStringIdentifier
 {
     /**
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string|null
      */
     public $id;
@@ -1050,14 +1050,14 @@ class EntityWithCompositeStringIdentifier
 {
     /**
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string|null
      */
     public $id1;
 
     /**
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string|null
      */
     public $id2;
@@ -1069,7 +1069,7 @@ class EntityWithRandomlyGeneratedField
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $id;
 
@@ -1092,7 +1092,7 @@ class CascadePersistedEntity
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @GeneratedValue(strategy="NONE")
      */
     private $id;
@@ -1109,7 +1109,7 @@ class EntityWithCascadingAssociation
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @GeneratedValue(strategy="NONE")
      */
     private $id;
@@ -1132,7 +1132,7 @@ class EntityWithNonCascadingAssociation
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @GeneratedValue(strategy="NONE")
      */
     private $id;

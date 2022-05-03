@@ -117,7 +117,7 @@ class DDC881User
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $name;
 
@@ -159,7 +159,7 @@ class DDC881PhoneNumber
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $phonenumber;
 

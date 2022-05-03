@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping\Table;
  * @Entity
  * @Table(name="`quote-address`")
  * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string")
+ * @DiscriminatorColumn(name="type", type="string", length=255)
  * @DiscriminatorMap({"simple" = Address::class, "full" = FullAddress::class})
  */
 class Address

@@ -80,7 +80,7 @@ class DDC6460Embeddable
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $field;
 }

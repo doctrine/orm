@@ -200,7 +200,7 @@ class DDC1163Tag
     private $id;
     /**
      * @var string
-     * @Column(name="name", type="string")
+     * @Column(name="name", type="string", length=255)
      */
     private $name;
     /**

@@ -171,16 +171,16 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $table->addColumn('id', 'integer', ['unsigned' => true]);
         $table->setPrimaryKey(['id']);
         $table->addColumn('column_unsigned', 'integer', ['unsigned' => true]);
-        $table->addColumn('column_comment', 'string', ['comment' => 'test_comment']);
-        $table->addColumn('column_default', 'string', ['default' => 'test_default']);
+        $table->addColumn('column_comment', 'string', ['length' => 16, 'comment' => 'test_comment']);
+        $table->addColumn('column_default', 'string', ['length' => 16, 'default' => 'test_default']);
         $table->addColumn('column_decimal', 'decimal', ['precision' => 4, 'scale' => 3]);
 
-        $table->addColumn('column_index1', 'string');
-        $table->addColumn('column_index2', 'string');
+        $table->addColumn('column_index1', 'string', ['length' => 16]);
+        $table->addColumn('column_index2', 'string', ['length' => 16]);
         $table->addIndex(['column_index1', 'column_index2'], 'index1');
 
-        $table->addColumn('column_unique_index1', 'string');
-        $table->addColumn('column_unique_index2', 'string');
+        $table->addColumn('column_unique_index1', 'string', ['length' => 16]);
+        $table->addColumn('column_unique_index2', 'string', ['length' => 16]);
         $table->addUniqueIndex(['column_unique_index1', 'column_unique_index2'], 'unique_index1');
 
         $this->dropAndCreateTable($table);

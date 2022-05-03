@@ -17,7 +17,7 @@ class DDC869CreditCardPayment extends DDC869Payment
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     #[ORM\Column(type: 'string')]
     protected $creditCardNumber;

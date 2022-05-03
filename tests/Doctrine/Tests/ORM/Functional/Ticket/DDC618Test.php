@@ -149,7 +149,7 @@ class DDC618Author
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 
@@ -186,7 +186,7 @@ class DDC618Book
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $title;
 

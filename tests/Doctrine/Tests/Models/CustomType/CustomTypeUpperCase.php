@@ -26,13 +26,13 @@ class CustomTypeUpperCase
 
     /**
      * @var string
-     * @Column(type="upper_case_string")
+     * @Column(type="upper_case_string", length=255)
      */
     public $lowerCaseString;
 
     /**
      * @var string
-     * @Column(type="upper_case_string", name="named_lower_case_string", nullable = true)
+     * @Column(type="upper_case_string", length=255, name="named_lower_case_string", nullable = true)
      */
     public $namedLowerCaseString;
 }

@@ -33,7 +33,7 @@ class User
 
     /**
      * @var string
-     * @Column(type="string", name="`user-name`")
+     * @Column(type="string", length=255, name="`user-name`")
      */
     public $name;
 

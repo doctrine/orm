@@ -90,7 +90,7 @@ class DDC237EntityX
     public $id;
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $data;
     /**
@@ -117,7 +117,7 @@ class DDC237EntityY
     public $id;
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $data;
 }
@@ -137,7 +137,7 @@ class DDC237EntityZ
     public $id;
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $data;
 

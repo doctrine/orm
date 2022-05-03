@@ -96,7 +96,7 @@ class DDC1080Foo
 
     /**
      * @var string
-     * @Column(name="fooTitle", type="string")
+     * @Column(name="fooTitle", type="string", length=255)
      */
     protected $fooTitle;
 
@@ -162,7 +162,7 @@ class DDC1080Bar
 
     /**
      * @var string
-     * @Column(name="barTitle", type="string")
+     * @Column(name="barTitle", type="string", length=255)
      */
     protected $barTitle;
 

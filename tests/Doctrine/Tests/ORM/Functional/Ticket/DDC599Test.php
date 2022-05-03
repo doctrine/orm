@@ -131,7 +131,7 @@ class DDC599Subitem extends DDC599Item
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $elem;
 }

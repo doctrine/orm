@@ -162,7 +162,7 @@ class DDC832Like
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $word;
 
@@ -198,7 +198,7 @@ class DDC832JoinedIndex
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 

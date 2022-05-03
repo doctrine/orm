@@ -376,7 +376,7 @@ class DDC93Person
 
     /**
      * @var string|null
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 
@@ -478,19 +478,19 @@ class DDC93Address
 {
     /**
      * @var string|null
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $street;
 
     /**
      * @var string|null
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $zip;
 
     /**
      * @var string|null
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $city;
 
@@ -536,7 +536,7 @@ class DDC93ContactInfo
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $email;
 
@@ -620,7 +620,7 @@ class DDC3028Id
     /**
      * @var string|null
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $id;
 

@@ -89,7 +89,7 @@ class DDC1228User
     public $id;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string
      */
     public $name = 'Bar';
@@ -120,7 +120,7 @@ class DDC1228Profile
     public $id;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string
      */
     public $name;

@@ -89,7 +89,7 @@ abstract class DDC279EntityXAbstract
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $data;
 }
@@ -122,7 +122,7 @@ class DDC279EntityY
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $data;
 
@@ -149,7 +149,7 @@ class DDC279EntityZ
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $data;
 }

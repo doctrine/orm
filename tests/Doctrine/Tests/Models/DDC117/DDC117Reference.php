@@ -34,7 +34,7 @@ class DDC117Reference
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $description;
 

@@ -80,7 +80,7 @@ class GH7864User
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 
@@ -117,7 +117,7 @@ class GH7864Tweet
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $content;
 

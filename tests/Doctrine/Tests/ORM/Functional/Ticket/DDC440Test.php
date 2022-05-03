@@ -110,7 +110,7 @@ class DDC440Phone
 
     /**
      * @var string
-     * @Column(name="phonenumber", type="string")
+     * @Column(name="phonenumber", type="string", length=255)
      */
     protected $number;
 
@@ -180,7 +180,7 @@ class DDC440Client
 
     /**
      * @var string
-     * @Column(name="name", type="string")
+     * @Column(name="name", type="string", length=255)
      */
     protected $name;
 
