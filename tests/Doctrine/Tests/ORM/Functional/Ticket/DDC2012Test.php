@@ -20,6 +20,7 @@ use function explode;
 use function get_class;
 use function implode;
 use function is_array;
+use function method_exists;
 use function sprintf;
 use function strtolower;
 
@@ -131,6 +132,10 @@ class DDC2012TsVectorType extends Type
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
+        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
+            return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
+        }
+
         return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 

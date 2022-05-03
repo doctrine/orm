@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmTestCase;
 
+use function method_exists;
 use function sprintf;
 
 /**
@@ -58,6 +59,10 @@ final class GH8061Type extends Type
 {
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
+        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
+            return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
+        }
+
         return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
