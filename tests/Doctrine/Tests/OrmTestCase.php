@@ -9,6 +9,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\SchemaConfig;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -181,11 +182,15 @@ abstract class OrmTestCase extends DoctrineTestCase
         $connection->method('query')
             ->willReturn($result);
 
+        $schemaManager = $this->createMock(AbstractSchemaManager::class);
+        $schemaManager->method('createSchemaConfig')
+            ->willReturn(new SchemaConfig());
+
         $driver = $this->createMock(Driver::class);
         $driver->method('connect')
             ->willReturn($connection);
         $driver->method('getSchemaManager')
-            ->willReturn($this->createMock(AbstractSchemaManager::class));
+            ->willReturn($schemaManager);
         $driver->method('getDatabasePlatform')
             ->willReturn($platform);
 

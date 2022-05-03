@@ -203,7 +203,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
         $connection->expects($this->atLeast(2))
             ->method('delete')
-            ->will($this->onConsecutiveCalls(
+            ->withConsecutive(
                 [
                     'customtype_parent_friends',
                     ['friend_customtypeparent_id' => 1],
@@ -214,7 +214,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
                     ['customtypeparent_id' => 1],
                     ['integer'],
                 ]
-            ));
+            );
 
         $persister->delete($parent);
     }
