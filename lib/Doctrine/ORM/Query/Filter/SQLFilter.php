@@ -105,9 +105,7 @@ abstract class SQLFilter
             throw FilterException::cannotConvertListParameterIntoSingleValue($name);
         }
 
-        $param = $this->parameters[$name];
-
-        return $this->em->getConnection()->quote($param['value'], $param['type']);
+        return $this->em->getConnection()->quote((string) $this->parameters[$name]['value']);
     }
 
     /**
@@ -133,7 +131,7 @@ abstract class SQLFilter
         $connection = $this->em->getConnection();
 
         $quoted = array_map(
-            static fn (mixed $value): string => (string) $connection->quote($value, $param['type']),
+            static fn (mixed $value): string => $connection->quote((string) $value),
             $param['value']
         );
 

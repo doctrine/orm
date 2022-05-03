@@ -1063,6 +1063,9 @@
     <PossiblyUndefinedVariable occurrences="1">
       <code>$columnList</code>
     </PossiblyUndefinedVariable>
+    <RedundantCastGivenDocblockType occurrences="1">
+      <code>(string) $discrValues[$subclassName]</code>
+    </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Proxy/ProxyFactory.php">
     <ArgumentTypeCoercion occurrences="2">
