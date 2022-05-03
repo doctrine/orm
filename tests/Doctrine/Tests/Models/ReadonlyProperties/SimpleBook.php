@@ -19,7 +19,7 @@ class SimpleBook
     private readonly int $id;
 
     #[Column]
-    private readonly string $title;
+    public readonly string $title;
 
     #[ManyToOne, JoinColumn(nullable: false)]
     private readonly Author $author;
