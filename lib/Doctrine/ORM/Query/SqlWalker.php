@@ -1396,7 +1396,7 @@ class SqlWalker implements TreeWalker
                     break;
                 }
 
-                $this->rsm->addScalarResult($columnAlias, $resultAlias, $expr->getReturnType()->getName());
+                $this->rsm->addScalarResult($columnAlias, $resultAlias, Type::getTypeRegistry()->lookupName($expr->getReturnType()));
 
                 break;
 
