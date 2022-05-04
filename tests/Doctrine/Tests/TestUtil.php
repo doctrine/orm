@@ -182,11 +182,15 @@ class TestUtil
         }
 
         foreach ($configuration as $param => $value) {
-            if (! str_starts_with($param, $prefix . 'driver_option_')) {
+            if (str_starts_with($param, $prefix . 'driver_option_')) {
+                $parameters['driverOptions'][substr($param, strlen($prefix . 'driver_option_'))] = $value;
+            }
+
+            if (! str_starts_with($param, $prefix . 'default_table_option_')) {
                 continue;
             }
 
-            $parameters['driverOptions'][substr($param, strlen($prefix . 'driver_option_'))] = $value;
+            $parameters['defaultTableOptions'][substr($param, strlen($prefix . 'default_table_option_'))] = $value;
         }
 
         $parameters['wrapperClass'] = DbalExtensions\Connection::class;
