@@ -726,9 +726,11 @@ class SchemaTool
 
                 $columnOptions += $this->gatherColumnOptions($fieldMapping);
 
-                if ($fieldMapping['type'] === 'string' && isset($fieldMapping['length'])) {
+                if (isset($fieldMapping['length'])) {
                     $columnOptions['length'] = $fieldMapping['length'];
-                } elseif ($fieldMapping['type'] === 'decimal') {
+                }
+
+                if ($fieldMapping['type'] === 'decimal') {
                     $columnOptions['scale']     = $fieldMapping['scale'];
                     $columnOptions['precision'] = $fieldMapping['precision'];
                 }
