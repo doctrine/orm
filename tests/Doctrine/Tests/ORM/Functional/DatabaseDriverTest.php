@@ -66,7 +66,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $table->setPrimaryKey(['id']);
         $table->addColumn('bar', 'string', ['notnull' => false, 'length' => 200]);
 
-        $this->schemaManager->dropAndCreateTable($table);
+        $this->dropAndCreateTable($table);
 
         $metadatas = $this->extractClassMetadata(['DbdriverFoo']);
 
@@ -96,7 +96,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $tableB->addColumn('id', 'integer');
         $tableB->setPrimaryKey(['id']);
 
-        $this->schemaManager->dropAndCreateTable($tableB);
+        $this->dropAndCreateTable($tableB);
 
         $tableA = new Table('dbdriver_baz');
         $tableA->addColumn('id', 'integer');
@@ -104,7 +104,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $tableA->addColumn('bar_id', 'integer');
         $tableA->addForeignKeyConstraint('dbdriver_bar', ['bar_id'], ['id']);
 
-        $this->schemaManager->dropAndCreateTable($tableA);
+        $this->dropAndCreateTable($tableA);
 
         $metadatas = $this->extractClassMetadata(['DbdriverBar', 'DbdriverBaz']);
 
@@ -183,7 +183,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $table->addColumn('column_unique_index2', 'string');
         $table->addUniqueIndex(['column_unique_index1', 'column_unique_index2'], 'unique_index1');
 
-        $this->schemaManager->dropAndCreateTable($table);
+        $this->dropAndCreateTable($table);
 
         $metadatas = $this->extractClassMetadata(['DbdriverFoo']);
 
