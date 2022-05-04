@@ -14,6 +14,9 @@
         <var name="db_port" value="3306"/>
         <var name="db_user" value="root" />
         <var name="db_dbname" value="doctrine_tests" />
+        <var name="db_default_table_option_charset" value="utf8mb4" />
+        <var name="db_default_table_option_collation" value="utf8mb4_unicode_ci" />
+        <var name="db_default_table_option_engine" value="InnoDB" />
 
         <!-- necessary change for some CLI/console output test assertions -->
         <env name="COLUMNS" value="120"/>
