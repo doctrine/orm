@@ -138,9 +138,9 @@ final class Query extends AbstractQuery
     /**
      * The first result to return (the "offset").
      *
-     * @var int|null
+     * @var int
      */
-    private $firstResult = null;
+    private $firstResult = 0;
 
     /**
      * The maximum number of results to return (the "limit").
@@ -592,11 +592,7 @@ final class Query extends AbstractQuery
      */
     public function setFirstResult($firstResult): self
     {
-        if ($firstResult !== null) {
-            $firstResult = (int) $firstResult;
-        }
-
-        $this->firstResult = $firstResult;
+        $this->firstResult = (int) $firstResult;
         $this->_state      = self::STATE_DIRTY;
 
         return $this;

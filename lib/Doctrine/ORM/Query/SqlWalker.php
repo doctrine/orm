@@ -553,9 +553,7 @@ class SqlWalker implements TreeWalker
             $sql .= ' ORDER BY ' . $orderBySql;
         }
 
-        if ($limit !== null || $offset !== null) {
-            $sql = $this->platform->modifyLimitQuery($sql, $limit, $offset ?? 0);
-        }
+        $sql = $this->platform->modifyLimitQuery($sql, $limit, $offset ?? 0);
 
         if ($lockMode === LockMode::NONE) {
             return $sql;
@@ -1394,7 +1392,7 @@ class SqlWalker implements TreeWalker
                     break;
                 }
 
-                $this->rsm->addScalarResult($columnAlias, $resultAlias, $expr->getReturnType()->getName());
+                $this->rsm->addScalarResult($columnAlias, $resultAlias, Type::getTypeRegistry()->lookupName($expr->getReturnType()));
 
                 break;
 

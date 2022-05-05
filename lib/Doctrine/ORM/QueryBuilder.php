@@ -92,7 +92,7 @@ class QueryBuilder
     /**
      * The index of the first result to retrieve.
      */
-    private ?int $firstResult = null;
+    private int $firstResult = 0;
 
     /**
      * The maximum number of results to retrieve.
@@ -554,7 +554,7 @@ class QueryBuilder
      */
     public function setFirstResult(?int $firstResult): static
     {
-        $this->firstResult = $firstResult;
+        $this->firstResult = (int) $firstResult;
 
         return $this;
     }
@@ -1207,7 +1207,7 @@ class QueryBuilder
 
         // Overwrite limits only if they was set in criteria
         $firstResult = $criteria->getFirstResult();
-        if ($firstResult !== null) {
+        if ($firstResult > 0) {
             $this->setFirstResult($firstResult);
         }
 

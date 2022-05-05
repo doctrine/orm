@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function method_exists;
 use function str_replace;
 
 /**
@@ -78,6 +79,10 @@ class GH5988CustomIdObjectHashType extends DBALType
      */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
+        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
+            return $platform->getStringTypeDeclarationSQL($column);
+        }
+
         return $platform->getVarcharTypeDeclarationSQL($column);
     }
 

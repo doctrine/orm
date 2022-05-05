@@ -9,6 +9,7 @@ use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\Inflector\Inflector;
@@ -406,7 +407,7 @@ class DatabaseDriver implements MappingDriver
         $fieldMapping = [
             'fieldName'  => $this->getFieldNameForColumn($tableName, $column->getName(), false),
             'columnName' => $column->getName(),
-            'type'       => $column->getType()->getName(),
+            'type'       => Type::getTypeRegistry()->lookupName($column->getType()),
             'nullable'   => ! $column->getNotnull(),
         ];
 

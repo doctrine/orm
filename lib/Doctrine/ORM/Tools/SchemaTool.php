@@ -707,14 +707,13 @@ class SchemaTool
 
                 $fieldMapping = $definingClass->getFieldMapping($referencedFieldName);
 
-                $columnDef = null;
-                if (isset($joinColumn['columnDefinition'])) {
-                    $columnDef = $joinColumn['columnDefinition'];
-                } elseif (isset($fieldMapping['columnDefinition'])) {
-                    $columnDef = $fieldMapping['columnDefinition'];
-                }
+                $columnOptions = ['notnull' => false];
 
-                $columnOptions = ['notnull' => false, 'columnDefinition' => $columnDef];
+                if (isset($joinColumn['columnDefinition'])) {
+                    $columnOptions['columnDefinition'] = $joinColumn['columnDefinition'];
+                } elseif (isset($fieldMapping['columnDefinition'])) {
+                    $columnOptions['columnDefinition'] = $fieldMapping['columnDefinition'];
+                }
 
                 if (isset($joinColumn['nullable'])) {
                     $columnOptions['notnull'] = ! $joinColumn['nullable'];

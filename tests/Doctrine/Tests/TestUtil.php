@@ -8,6 +8,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Exception\DatabaseObjectNotFoundException;
 use UnexpectedValueException;
 
 use function assert;
@@ -91,7 +92,14 @@ class TestUtil
             $dbname = $testConnParams['dbname'] ?? $testConn->getDatabase();
             $testConn->close();
 
-            $privConn->createSchemaManager()->dropAndCreateDatabase($dbname);
+            $schemaManager = $privConn->createSchemaManager();
+
+            try {
+                $schemaManager->dropDatabase($dbname);
+            } catch (DatabaseObjectNotFoundException $e) {
+            }
+
+            $schemaManager->createDatabase($dbname);
 
             $privConn->close();
         } else {

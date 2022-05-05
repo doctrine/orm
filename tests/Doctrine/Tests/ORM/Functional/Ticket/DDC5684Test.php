@@ -59,7 +59,7 @@ class DDC5684Test extends OrmFunctionalTestCase
     }
 }
 
-class DDC5684ObjectIdType extends DBALTypes\BigIntType
+class DDC5684ObjectIdType extends DBALTypes\Type
 {
     /**
      * {@inheritDoc}
@@ -80,6 +80,11 @@ class DDC5684ObjectIdType extends DBALTypes\BigIntType
     public function getName(): string
     {
         return self::class;
+    }
+
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
+    {
+        return $platform->getIntegerTypeDeclarationSQL($column);
     }
 }
 

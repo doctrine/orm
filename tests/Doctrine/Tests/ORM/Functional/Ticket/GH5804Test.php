@@ -16,6 +16,8 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function method_exists;
+
 /**
  * @group GH-5804
  */
@@ -71,6 +73,10 @@ final class GH5804Type extends Type
      */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
+        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
+            return $platform->getStringTypeDeclarationSQL($column);
+        }
+
         return $platform->getVarcharTypeDeclarationSQL($column);
     }
 

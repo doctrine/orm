@@ -103,7 +103,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         // Reset limit and offset
         $this->firstResult = $query->getFirstResult();
         $this->maxResults  = $query->getMaxResults();
-        $query->setFirstResult(null)->setMaxResults(null);
+        $query->setFirstResult(0)->setMaxResults(null);
 
         $this->em            = $query->getEntityManager();
         $this->quoteStrategy = $this->em->getConfiguration()->getQuoteStrategy();

@@ -14,6 +14,7 @@ use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
+use function method_exists;
 use function sprintf;
 
 /**
@@ -55,6 +56,10 @@ class DDC2224Type extends Type
      */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
+        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
+            return $platform->getStringTypeDeclarationSQL($column);
+        }
+
         return $platform->getVarcharTypeDeclarationSQL($column);
     }
 
