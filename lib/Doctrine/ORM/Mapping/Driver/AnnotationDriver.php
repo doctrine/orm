@@ -574,6 +574,10 @@ class AnnotationDriver implements MappingDriver
                     'schema' => $joinTableAnnot->schema,
                 ];
 
+                if ($joinTableAnnot->options) {
+                    $joinTable['options'] = $joinTableAnnot->options;
+                }
+
                 foreach ($joinTableAnnot->joinColumns as $joinColumn) {
                     $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
                 }
@@ -699,12 +703,13 @@ class AnnotationDriver implements MappingDriver
      *                   nullable: bool,
      *                   onDelete: mixed,
      *                   columnDefinition: string|null,
-     *                   referencedColumnName: string
+     *                   referencedColumnName: string,
+     *                   options?: array<string, mixed>
      *               }
      */
     private function joinColumnToArray(Mapping\JoinColumn $joinColumn): array
     {
-        return [
+        $mapping = [
             'name' => $joinColumn->name,
             'unique' => $joinColumn->unique,
             'nullable' => $joinColumn->nullable,
@@ -712,6 +717,12 @@ class AnnotationDriver implements MappingDriver
             'columnDefinition' => $joinColumn->columnDefinition,
             'referencedColumnName' => $joinColumn->referencedColumnName,
         ];
+
+        if ($joinColumn->options) {
+            $mapping['options'] = $joinColumn->options;
+        }
+
+        return $mapping;
     }
 
     /**

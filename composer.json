@@ -26,7 +26,7 @@
         "doctrine/collections": "^1.5",
         "doctrine/common": "^3.3",
         "doctrine/dbal": "^3.3",
-        "doctrine/deprecations": "^0.5.3",
+        "doctrine/deprecations": "^0.5.3 || ^1",
         "doctrine/event-manager": "^1.1",
         "doctrine/inflector": "^1.4 || ^2.0",
         "doctrine/instantiator": "^1.3",

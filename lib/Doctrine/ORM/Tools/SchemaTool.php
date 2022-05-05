@@ -574,6 +574,12 @@ class SchemaTool
                     $this->quoteStrategy->getJoinTableName($mapping, $foreignClass, $this->platform)
                 );
 
+                if (isset($joinTable['options'])) {
+                    foreach ($joinTable['options'] as $key => $val) {
+                        $theJoinTable->addOption($key, $val);
+                    }
+                }
+
                 $primaryKeyColumns = [];
 
                 // Build first FK constraint (relation table => source table)
@@ -722,6 +728,8 @@ class SchemaTool
                     $columnOptions['scale']     = $fieldMapping['scale'];
                     $columnOptions['precision'] = $fieldMapping['precision'];
                 }
+
+                $columnOptions = $this->gatherColumnOptions($joinColumn) + $columnOptions;
 
                 $theJoinTable->addColumn($quotedColumnName, $fieldMapping['type'], $columnOptions);
             }
