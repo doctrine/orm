@@ -133,6 +133,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = [
+                'name'    => $idColumnName,
                 'notnull' => true,
                 'type'    => Type::getType(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
             ];

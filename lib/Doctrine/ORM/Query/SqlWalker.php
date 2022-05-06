@@ -461,7 +461,7 @@ class SqlWalker implements TreeWalker
             }
 
             foreach ($class->subClasses as $subclassName) {
-                $values[] = $conn->quote($this->em->getClassMetadata($subclassName)->discriminatorValue);
+                $values[] = $conn->quote((string) $this->em->getClassMetadata($subclassName)->discriminatorValue);
             }
 
             $sqlTableAlias = $this->useSqlTableAliases
@@ -1812,7 +1812,7 @@ class SqlWalker implements TreeWalker
                 break;
 
             default:
-                $sql .= $this->conn->quote($newValue);
+                $sql .= $this->conn->quote((string) $newValue);
                 break;
         }
 
@@ -2225,7 +2225,7 @@ class SqlWalker implements TreeWalker
 
         if ($parameter) {
             $type = $parameter->getType();
-            if (Type::hasType($type)) {
+            if (is_string($type) && Type::hasType($type)) {
                 return Type::getType($type)->convertToDatabaseValueSQL('?', $this->platform);
             }
         }

@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Proxy\Proxy;
+use Doctrine\DBAL;
 use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Deprecations\Deprecation;
@@ -406,9 +407,17 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            // Commit failed silently
-            if ($conn->commit() === false) {
-                throw new OptimisticLockException('Commit failed', null);
+            $commitFailed = false;
+            try {
+                if ($conn->commit() === false) {
+                    $commitFailed = true;
+                }
+            } catch (DBAL\Exception $e) {
+                $commitFailed = true;
+            }
+
+            if ($commitFailed) {
+                throw new OptimisticLockException('Commit failed', null, $e ?? null);
             }
         } catch (Throwable $e) {
             $this->em->close();

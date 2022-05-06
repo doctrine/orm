@@ -87,6 +87,7 @@ class AnnotationDriver implements MappingDriver
                 continue;
             }
 
+            unset($classAnnotations[$key]);
             $classAnnotations[get_class($annot)] = $annot;
         }
 

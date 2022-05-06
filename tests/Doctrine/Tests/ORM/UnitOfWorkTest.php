@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -595,7 +596,7 @@ class UnitOfWorkTest extends OrmTestCase
     /**
      * @group #7946 Throw OptimisticLockException when connection::commit() returns false.
      */
-    public function testCommitThrowOptimisticLockExceptionWhenConnectionCommitReturnFalse(): void
+    public function testCommitThrowOptimisticLockExceptionWhenConnectionCommitFails(): void
     {
         $platform = $this->getMockBuilder(AbstractPlatform::class)
             ->onlyMethods(['supportsIdentityColumns'])
@@ -618,7 +619,8 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
 
-        $this->connection->method('commit')->willReturn(false);
+        $this->connection->method('commit')
+            ->willThrowException(new DBAL\Exception());
 
         // Setup fake persister and id generator
         $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
