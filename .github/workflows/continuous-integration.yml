@@ -135,6 +135,7 @@ jobs:
           - "8.1"
         dbal-version:
           - "default"
+          - "4@dev"
         mariadb-version:
           - "10.6"
         extension:
@@ -202,6 +203,15 @@ jobs:
         extension:
           - "mysqli"
           - "pdo_mysql"
+        include:
+          - php-version: "8.1"
+            dbal-version: "4@dev"
+            mysql-version: "8.0"
+            extension: "mysqli"
+          - php-version: "8.1"
+            dbal-version: "4@dev"
+            mysql-version: "8.0"
+            extension: "pdo_mysql"
 
     services:
       mysql:
