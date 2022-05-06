@@ -26,6 +26,8 @@ jobs:
         include:
           - php-version: "8.1"
             dbal-version: "3@dev"
+          - php-version: "8.1"
+            dbal-version: "4@dev"
 
     steps:
       - name: "Checkout"
