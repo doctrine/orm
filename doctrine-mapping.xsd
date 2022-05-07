@@ -235,7 +235,6 @@
       <xs:enumeration value="SEQUENCE"/>
       <xs:enumeration value="IDENTITY"/>
       <xs:enumeration value="AUTO"/>
-      <xs:enumeration value="UUID"/>
       <xs:enumeration value="CUSTOM" />
     </xs:restriction>
   </xs:simpleType>

@@ -483,9 +483,8 @@ used as default.
 Optional parameters:
 
 -  **strategy**: Set the name of the identifier generation strategy.
-   Valid values are ``AUTO``, ``SEQUENCE``, ``IDENTITY``, ``UUID``
-   (deprecated), ``CUSTOM`` and ``NONE``.
-   If not specified, the default value is ``AUTO``.
+   Valid values are ``AUTO``, ``SEQUENCE``, ``IDENTITY``, ``CUSTOM`` and
+   ``NONE``. If not specified, the default value is ``AUTO``.
 
 Example:
 
