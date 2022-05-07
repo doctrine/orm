@@ -81,6 +81,10 @@ jobs:
         postgres-version:
           - "9.6"
           - "14"
+        include:
+        - php-version: "8.1"
+          dbal-version: "4@dev"
+          postgres-version: "14"
 
     services:
       postgres:
