@@ -1,5 +1,9 @@
 # Upgrade to 3.0
 
+## BC BREAK: Remove `Doctrine\ORM\Proxy\Autoloader`
+
+Use `Doctrine\Common\Proxy\Autoloader` instead.
+
 ## BC BREAK: Remove `Doctrine\ORM\Tools\DisconnectedClassMetadataFactory`
 
 No replacement is provided.
