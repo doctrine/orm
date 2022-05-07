@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping\Table;
  * @Entity
  * @Table(name="pagination_user")
  * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string")
+ * @DiscriminatorColumn(name="type", type="string", length=255)
  * @DiscriminatorMap({"user1"="User1"})
  */
 abstract class User
@@ -32,7 +32,7 @@ abstract class User
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 }

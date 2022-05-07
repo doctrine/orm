@@ -78,7 +78,7 @@ class DDC2579Entity
     /**
      * @var DDC2579Id
      * @Id
-     * @Column(type="ddc2579")
+     * @Column(type="ddc2579", length=255)
      */
     public $id;
 
@@ -131,7 +131,7 @@ class DDC2579AssocAssoc
     /**
      * @var DDC2579Id
      * @Id
-     * @Column(type="ddc2579")
+     * @Column(type="ddc2579", length=255)
      */
     public $associationId;
 

@@ -106,12 +106,12 @@ class DefaultValueUser
     public $id;
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name = '';
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $type = 'Poweruser';
     /**

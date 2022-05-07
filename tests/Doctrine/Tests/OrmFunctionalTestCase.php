@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests;
 
+use Doctrine\DBAL\Exception\DatabaseObjectNotFoundException;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -912,5 +914,35 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         return $lastQuery;
+    }
+
+    /**
+     * Drops the table with the specified name, if it exists.
+     *
+     * @throws Exception
+     */
+    protected function dropTableIfExists(string $name): void
+    {
+        $schemaManager = $this->createSchemaManager();
+
+        try {
+            $schemaManager->dropTable($name);
+        } catch (DatabaseObjectNotFoundException $e) {
+        }
+    }
+
+    /**
+     * Drops and creates a new table.
+     *
+     * @throws Exception
+     */
+    protected function dropAndCreateTable(Table $table): void
+    {
+        $schemaManager = $this->createSchemaManager();
+        $platform      = $schemaManager->getDatabasePlatform();
+        $tableName     = $table->getQuotedName($platform);
+
+        $this->dropTableIfExists($tableName);
+        $schemaManager->createTable($table);
     }
 }

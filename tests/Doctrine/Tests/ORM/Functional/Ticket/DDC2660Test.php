@@ -139,7 +139,7 @@ class DDC2660CustomerOrder
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 

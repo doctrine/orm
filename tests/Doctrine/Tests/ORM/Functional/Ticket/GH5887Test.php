@@ -120,7 +120,7 @@ class GH5887Customer
     /**
      * @var GH5887CustomIdObject
      * @Id
-     * @Column(type="GH5887CustomIdObject")
+     * @Column(type="GH5887CustomIdObject", length=255)
      * @GeneratedValue(strategy="NONE")
      */
     private $id;

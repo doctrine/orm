@@ -22,7 +22,7 @@ class CardWithNullable
     public $id;
 
     /**
-     * @Column(type="string", enumType=Suit::class, nullable=true)
+     * @Column(type="string", length=255, enumType=Suit::class, nullable=true)
      * @var ?Suit
      */
     #[Column(type: 'string', nullable: true, enumType: Suit::class)]

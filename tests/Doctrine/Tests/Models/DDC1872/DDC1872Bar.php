@@ -16,7 +16,7 @@ class DDC1872Bar
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $id;
 }

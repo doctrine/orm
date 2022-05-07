@@ -161,7 +161,7 @@ class DDC1430Order
 
     /**
      * @var string
-     * @Column(name="order_status", type="string")
+     * @Column(name="order_status", type="string", length=255)
      */
     private $status;
 

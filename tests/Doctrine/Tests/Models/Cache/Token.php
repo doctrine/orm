@@ -31,7 +31,7 @@ class Token
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $token;
 

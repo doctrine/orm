@@ -92,7 +92,7 @@ class DDC2224Entity
 
     /**
      * @var mixed
-     * @Column(type="DDC2224Type")
+     * @Column(type="DDC2224Type", length=255)
      */
     public $field;
 }

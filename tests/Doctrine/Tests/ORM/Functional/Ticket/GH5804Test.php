@@ -101,7 +101,7 @@ class GH5804Article
     /**
      * @var string
      * @Id
-     * @Column(type="GH5804Type")
+     * @Column(type="GH5804Type", length=255)
      * @GeneratedValue(strategy="CUSTOM")
      * @CustomIdGenerator(class=\Doctrine\Tests\ORM\Functional\Ticket\GH5804Generator::class)
      */

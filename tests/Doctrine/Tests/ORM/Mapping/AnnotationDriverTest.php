@@ -402,7 +402,7 @@ class SuperEntity
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $id;
 }
@@ -414,7 +414,7 @@ class MiddleMappedSuperclass extends SuperEntity
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $name;
 }
@@ -426,7 +426,7 @@ class ChildEntity extends MiddleMappedSuperclass
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $text;
 }
@@ -463,7 +463,7 @@ class AnnotationSLCFoo
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $id;
 }

@@ -19,7 +19,7 @@ class CustomIdObjectTypeChild
 {
     /**
      * @Id
-     * @Column(type="CustomIdObject")
+     * @Column(type="CustomIdObject", length=255)
      * @var CustomIdObject
      */
     public $id;

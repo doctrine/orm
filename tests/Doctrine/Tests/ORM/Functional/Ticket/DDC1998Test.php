@@ -59,7 +59,7 @@ class DDC1998Entity
     /**
      * @var string
      * @Id
-     * @Column(type="ddc1998")
+     * @Column(type="ddc1998", length=255)
      */
     public $id;
 

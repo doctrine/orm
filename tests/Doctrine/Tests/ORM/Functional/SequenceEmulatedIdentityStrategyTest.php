@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\DBAL\Schema\Sequence;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -39,7 +38,7 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
         // drop sequence manually due to dependency
         $connection->executeStatement(
             $platform->getDropSequenceSQL(
-                new Sequence($platform->getIdentitySequenceName('seq_identity', 'id'))
+                $platform->getIdentitySequenceName('seq_identity', 'id')
             )
         );
     }
@@ -72,7 +71,7 @@ class SequenceEmulatedIdentityEntity
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $value;
 

@@ -14,7 +14,7 @@ class Directory extends AbstractContentItem
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     protected $path;
 

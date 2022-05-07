@@ -120,7 +120,7 @@ class GH7820Line
     /**
      * @var GH7820LineText
      * @Id()
-     * @Column(type="Doctrine\Tests\ORM\Functional\Ticket\GH7820LineTextType")
+     * @Column(type="Doctrine\Tests\ORM\Functional\Ticket\GH7820LineTextType", length=255)
      */
     private $text;
 

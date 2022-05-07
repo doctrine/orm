@@ -108,7 +108,7 @@ abstract class DDC6303BaseClass
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @GeneratedValue(strategy="NONE")
      */
     public $id;
@@ -122,7 +122,7 @@ class DDC6303ChildA extends DDC6303BaseClass
 {
     /**
      * @var mixed
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $originalData;
 

@@ -67,7 +67,7 @@ class DDC2175Entity
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $field;
 

@@ -16,7 +16,7 @@ class CompanyAuction extends CompanyEvent
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $data;
 

@@ -103,7 +103,7 @@ abstract class GH5988CustomIdObjectTypeParent
 {
     /**
      * @Id
-     * @Column(type="Doctrine\Tests\ORM\Functional\GH5988CustomIdObjectHashType")
+     * @Column(type="Doctrine\Tests\ORM\Functional\GH5988CustomIdObjectHashType", length=255)
      * @var CustomIdObject
      */
     public $id;

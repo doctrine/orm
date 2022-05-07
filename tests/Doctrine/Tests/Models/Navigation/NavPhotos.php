@@ -39,7 +39,7 @@ class NavPhotos
 
     /**
      * @var string
-     * @Column(type="string", name="file_name")
+     * @Column(type="string", length=255, name="file_name")
      */
     private $file;
 

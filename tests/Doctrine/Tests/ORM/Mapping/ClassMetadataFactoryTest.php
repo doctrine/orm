@@ -500,7 +500,7 @@ abstract class Shape
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;

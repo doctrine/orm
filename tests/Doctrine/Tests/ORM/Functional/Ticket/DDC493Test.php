@@ -85,7 +85,7 @@ class DDC493Contact
     public $id;
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $data;
 }

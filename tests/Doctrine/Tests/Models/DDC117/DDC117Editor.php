@@ -31,7 +31,7 @@ class DDC117Editor
 
     /**
      * @var string|null
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 

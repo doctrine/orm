@@ -78,7 +78,7 @@ class DDC2984User
 {
     /**
      * @Id
-     * @Column(type="ddc2984_domain_user_id")
+     * @Column(type="ddc2984_domain_user_id", length=255)
      * @GeneratedValue(strategy="NONE")
      * @var DDC2984DomainUserId
      */

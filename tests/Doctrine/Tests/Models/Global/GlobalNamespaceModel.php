@@ -26,7 +26,7 @@ class DoctrineGlobalArticle
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     protected $headline;
 

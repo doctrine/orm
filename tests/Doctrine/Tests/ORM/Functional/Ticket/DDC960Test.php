@@ -80,7 +80,7 @@ class DDC960Root
 class DDC960Child extends DDC960Root
 {
     /**
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string
      */
     private $name;
