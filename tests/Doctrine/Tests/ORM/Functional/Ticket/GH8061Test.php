@@ -50,7 +50,7 @@ final class GH8061Entity
 
     /**
      * @var mixed
-     * @Column(type="GH8061Type")
+     * @Column(type="GH8061Type", length=255)
      */
     public $field;
 }

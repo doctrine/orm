@@ -15,13 +15,13 @@ class JoinedChildClass extends JoinedRootClass
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $extension = 'ext';
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @Id
      */
     private $additionalId = 'additional';

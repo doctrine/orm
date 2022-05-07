@@ -29,16 +29,16 @@ class Updatable
 
     /**
      * @var string
-     * @Column(type="string", name="non_updatable_content", updatable=false, generated="ALWAYS")
+     * @Column(type="string", length=255, name="non_updatable_content", updatable=false, generated="ALWAYS")
      */
-    #[Column(type: 'string', name: 'non_updatable_content', updatable: false, generated: 'ALWAYS')]
+    #[Column(name: 'non_updatable_content', type: 'string', length: 255, updatable: false, generated: 'ALWAYS')]
     public $nonUpdatableContent;
 
     /**
      * @var string
-     * @Column(type="string", updatable=true)
+     * @Column(type="string", length=255, updatable=true)
      */
-    #[Column(type: 'string', updatable: true)]
+    #[Column(type: 'string', length: 255, updatable: true)]
     public $updatableContent;
 
     public static function loadMetadata(ClassMetadata $metadata): ClassMetadata

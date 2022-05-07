@@ -163,13 +163,13 @@ class GH9109User
 
     /**
      * @var string
-     * @Column(name="`first_name`", type="string")
+     * @Column(name="`first_name`", type="string", length=255)
      */
     private $firstName;
 
     /**
      * @var string
-     * @Column(name="last_name", type="string")
+     * @Column(name="last_name", type="string", length=255)
      */
     private $lastName;
 

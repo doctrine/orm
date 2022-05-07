@@ -71,7 +71,7 @@ class GH8055BaseClass
 class GH8055SubClass extends GH8055BaseClass
 {
     /**
-     * @Column(name="test", type="string")
+     * @Column(name="test", type="string", length=255)
      * @var string
      */
     public $value;

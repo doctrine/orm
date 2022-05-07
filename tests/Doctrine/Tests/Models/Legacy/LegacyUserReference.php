@@ -36,7 +36,7 @@ class LegacyUserReference
 
     /**
      * @var string
-     * @Column(type="string", name="description")
+     * @Column(type="string", length=255, name="description")
      */
     private $_description;
 

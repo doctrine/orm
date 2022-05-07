@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping\Table;
  * @Entity
  * @Table(name="gh8565_persons")
  * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
+ * @DiscriminatorColumn(name="discr", type="string", length=255)
  * @DiscriminatorMap({
  *      "person"    = "GH8565Person",
  *      "manager"   = "GH8565Manager",

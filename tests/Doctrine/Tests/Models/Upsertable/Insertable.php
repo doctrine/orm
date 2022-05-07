@@ -30,14 +30,14 @@ class Insertable
 
     /**
      * @var string
-     * @Column(type="string", insertable=false, options={"default": "1234"}, generated="INSERT")
+     * @Column(type="string", length=255, insertable=false, options={"default": "1234"}, generated="INSERT")
      */
     #[Column(type: 'string', insertable: false, options: ['default' => '1234'], generated: 'INSERT')]
     public $nonInsertableContent;
 
     /**
      * @var string
-     * @Column(type="string", insertable=true)
+     * @Column(type="string", length=255, insertable=true)
      */
     #[Column(type: 'string', insertable: true)]
     public $insertableContent;

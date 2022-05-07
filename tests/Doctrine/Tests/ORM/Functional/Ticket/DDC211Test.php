@@ -72,7 +72,7 @@ class DDC211User
 
     /**
      * @var string
-     * @Column(name="name", type="string")
+     * @Column(name="name", type="string", length=255)
      */
     protected $name;
 
@@ -121,7 +121,7 @@ class DDC211Group
 
     /**
      * @var string
-     * @Column(name="name", type="string")
+     * @Column(name="name", type="string", length=255)
      */
     protected $name;
 

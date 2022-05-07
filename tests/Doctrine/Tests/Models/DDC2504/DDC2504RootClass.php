@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 /**
  * @Entity
  * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
+ * @DiscriminatorColumn(name="discr", type="string", length=255)
  * @DiscriminatorMap({
  *     "root"  = "DDC2504RootClass",
  *     "child" = "DDC2504ChildClass"

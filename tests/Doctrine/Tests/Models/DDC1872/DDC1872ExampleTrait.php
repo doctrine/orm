@@ -14,7 +14,7 @@ trait DDC1872ExampleTrait
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $id;
 

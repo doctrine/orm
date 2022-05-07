@@ -59,7 +59,7 @@ class GH6823User
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $id;
 
@@ -101,7 +101,7 @@ class GH6823Group
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $id;
 }
@@ -118,7 +118,7 @@ class GH6823Status
     /**
      * @var string
      * @Id
-     * @Column(type="string", options={"charset"="latin1", "collation"="latin1_bin"})
+     * @Column(type="string", length=255, options={"charset"="latin1", "collation"="latin1_bin"})
      */
     public $id;
 }
@@ -135,7 +135,7 @@ class GH6823Tag
     /**
      * @var string
      * @Id
-     * @Column(type="string", options={"charset"="latin1", "collation"="latin1_bin"})
+     * @Column(type="string", length=255, options={"charset"="latin1", "collation"="latin1_bin"})
      */
     public $id;
 }

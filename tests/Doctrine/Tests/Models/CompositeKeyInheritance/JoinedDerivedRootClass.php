@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping\Table;
  * @Entity
  * @Table(name = "joined_derived_root")
  * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
+ * @DiscriminatorColumn(name="discr", type="string", length=255)
  * @DiscriminatorMap({"child" = "JoinedDerivedChildClass", "root" = "JoinedDerivedRootClass"})
  */
 class JoinedDerivedRootClass
@@ -34,7 +34,7 @@ class JoinedDerivedRootClass
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @Id
      */
     protected $keyPart2 = 'part-2';

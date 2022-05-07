@@ -14,7 +14,7 @@ class User1 extends User
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $email;
 }

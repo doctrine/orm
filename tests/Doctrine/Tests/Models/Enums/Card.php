@@ -22,7 +22,7 @@ class Card
     public $id;
 
     /**
-     * @Column(type="string", enumType=Suit::class)
+     * @Column(type="string", length=255, enumType=Suit::class)
      * @var Suit
      */
     #[Column(type: 'string', enumType: Suit::class)]

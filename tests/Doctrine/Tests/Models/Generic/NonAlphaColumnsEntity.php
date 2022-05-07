@@ -26,7 +26,7 @@ class NonAlphaColumnsEntity
 
     /**
      * @var string
-     * @Column(type="string", name="`simple-entity-value`")
+     * @Column(type="string", length=255, name="`simple-entity-value`")
      */
     public $value;
 

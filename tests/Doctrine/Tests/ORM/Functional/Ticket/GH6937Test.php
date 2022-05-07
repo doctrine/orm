@@ -109,7 +109,7 @@ abstract class GH6937Person
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 }
@@ -121,7 +121,7 @@ abstract class GH6937Employee extends GH6937Person
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $phoneNumber;
 }
@@ -133,7 +133,7 @@ class GH6937Manager extends GH6937Employee
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $department;
 }

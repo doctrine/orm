@@ -25,7 +25,7 @@ class PersistentEntity extends PersistentObject
     protected $id;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string
      */
     protected $name;

@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping\Table;
  * @Entity
  * @Table(name="dc3899_contracts")
  * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
+ * @DiscriminatorColumn(name="discr", type="string", length=255)
  * @DiscriminatorMap({
  *     "fix"       = "DDC3899FixContract",
  *     "flexible"  = "DDC3899FlexContract"

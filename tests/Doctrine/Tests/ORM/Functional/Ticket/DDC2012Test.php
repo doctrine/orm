@@ -107,7 +107,7 @@ class DDC2012Item
 
     /**
      * @psalm-var list<string>
-     * @Column(name="tsv", type="tsvector", nullable=true)
+     * @Column(name="tsv", type="tsvector", length=255, nullable=true)
      */
     public $tsv;
 }

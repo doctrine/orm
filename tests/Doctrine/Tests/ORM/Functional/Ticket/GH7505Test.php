@@ -94,7 +94,7 @@ class GH7505ArrayResponse extends GH7505AbstractResponse
 class GH7505TextResponse extends GH7505AbstractResponse
 {
     /**
-     * @Column(name="value_string", type="string")
+     * @Column(name="value_string", type="string", length=255)
      * @var string|null
      */
     public $value;

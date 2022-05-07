@@ -31,7 +31,7 @@ abstract class AbstractContentItem
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     protected $name;
 

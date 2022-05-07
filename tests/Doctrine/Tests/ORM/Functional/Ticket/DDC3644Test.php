@@ -155,7 +155,7 @@ class DDC3644User
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 
@@ -212,7 +212,7 @@ class DDC3644Address
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $address;
 
@@ -240,7 +240,7 @@ abstract class DDC3644Animal
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 

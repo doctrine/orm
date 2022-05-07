@@ -139,7 +139,7 @@ class GH7062Season
 {
     /**
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string
      */
     public $id;
@@ -166,7 +166,7 @@ class GH7062Team
 {
     /**
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string
      */
     public $id;
