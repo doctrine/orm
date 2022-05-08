@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\AST\ASTException;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\SqlWalker;
 
+use function assert;
+use function is_numeric;
 use function strtolower;
 
 /**
@@ -26,43 +29,43 @@ class DateSubFunction extends DateAddFunction
             case 'second':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubSecondsExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
-                    $this->intervalExpression->dispatch($sqlWalker)
+                    $this->dispatchIntervalExpression($sqlWalker)
                 );
 
             case 'minute':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubMinutesExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
-                    $this->intervalExpression->dispatch($sqlWalker)
+                    $this->dispatchIntervalExpression($sqlWalker)
                 );
 
             case 'hour':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubHourExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
-                    $this->intervalExpression->dispatch($sqlWalker)
+                    $this->dispatchIntervalExpression($sqlWalker)
                 );
 
             case 'day':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubDaysExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
-                    $this->intervalExpression->dispatch($sqlWalker)
+                    $this->dispatchIntervalExpression($sqlWalker)
                 );
 
             case 'week':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubWeeksExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
-                    $this->intervalExpression->dispatch($sqlWalker)
+                    $this->dispatchIntervalExpression($sqlWalker)
                 );
 
             case 'month':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubMonthExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
-                    $this->intervalExpression->dispatch($sqlWalker)
+                    $this->dispatchIntervalExpression($sqlWalker)
                 );
 
             case 'year':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubYearsExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
-                    $this->intervalExpression->dispatch($sqlWalker)
+                    $this->dispatchIntervalExpression($sqlWalker)
                 );
 
             default:
@@ -70,5 +73,18 @@ class DateSubFunction extends DateAddFunction
                     'DATE_SUB() only supports units of type second, minute, hour, day, week, month and year.'
                 );
         }
+    }
+
+    /**
+     * @return numeric-string
+     *
+     * @throws ASTException
+     */
+    private function dispatchIntervalExpression(SqlWalker $sqlWalker)
+    {
+        $sql = $this->intervalExpression->dispatch($sqlWalker);
+        assert(is_numeric($sql));
+
+        return $sql;
     }
 }
