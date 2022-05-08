@@ -88,6 +88,9 @@
 
                 <!-- Persistence 2 compatibility -->
                 <referencedFunction name="Doctrine\Persistence\ObjectManager::clear"/>
+
+                <!-- See https://github.com/doctrine/orm/issues/8850 -->
+                <referencedFunction name="Doctrine\DBAL\Connection::lastInsertId"/>
             </errorLevel>
         </TooManyArguments>
         <TypeDoesNotContainType>
