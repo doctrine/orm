@@ -46,7 +46,7 @@ class NamingStrategyTest extends OrmTestCase
     /**
      * Data Provider for NamingStrategy#classToTableName
      *
-     * @return array<NamingStrategy|string>
+     * @return array<array{NamingStrategy, string, string}>
      */
     public static function dataClassToTableName(): array
     {
@@ -88,7 +88,7 @@ class NamingStrategyTest extends OrmTestCase
     /**
      * Data Provider for NamingStrategy#propertyToColumnName
      *
-     * @return array<NamingStrategy|string>
+     * @return array<array{NamingStrategy, string, string}>
      */
     public static function dataPropertyToColumnName(): array
     {
@@ -133,7 +133,7 @@ class NamingStrategyTest extends OrmTestCase
     /**
      * Data Provider for NamingStrategy#referenceColumnName
      *
-     * @return array<NamingStrategy|string>
+     * @return array<array{NamingStrategy, string}>
      */
     public static function dataReferenceColumnName(): array
     {
@@ -162,7 +162,7 @@ class NamingStrategyTest extends OrmTestCase
     /**
      * Data Provider for NamingStrategy#joinColumnName
      *
-     * @return array<NamingStrategy|string|null>
+     * @return array<array{NamingStrategy, string, string}>
      */
     public static function dataJoinColumnName(): array
     {
@@ -208,7 +208,7 @@ class NamingStrategyTest extends OrmTestCase
     /**
      * Data Provider for NamingStrategy#joinTableName
      *
-     * @return array<NamingStrategy|string|null>
+     * @return array<array{NamingStrategy, string, string, string|null}>
      */
     public static function dataJoinTableName(): array
     {
@@ -256,7 +256,7 @@ class NamingStrategyTest extends OrmTestCase
     /**
      * Data Provider for NamingStrategy#joinKeyColumnName
      *
-     * @return array<NamingStrategy|string|null>
+     * @return array<array{NamingStrategy, string, string, string|null, string|null}>
      */
     public static function dataJoinKeyColumnName(): array
     {
