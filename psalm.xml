@@ -52,6 +52,18 @@
                 <referencedClass name="Doctrine\DBAL\Platforms\PostgreSQLPlatform" />
             </errorLevel>
         </InvalidClass>
+        <LessSpecificReturnStatement>
+            <errorLevel type="suppress">
+                <!-- In DBAL 4, column precision is nullable. See https://github.com/doctrine/dbal/pull/3511 -->
+                <file name="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php"/>
+            </errorLevel>
+        </LessSpecificReturnStatement>
+        <MoreSpecificReturnType>
+            <errorLevel type="suppress">
+                <!-- In DBAL 4, the default column value is mixed. See https://github.com/doctrine/dbal/pull/3511 -->
+                <file name="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php"/>
+            </errorLevel>
+        </MoreSpecificReturnType>
         <MethodSignatureMismatch>
             <errorLevel type="suppress">
                 <!-- See https://github.com/vimeo/psalm/issues/7357 -->
