@@ -3111,6 +3111,33 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Processes an entity instance to extract their identifier values and convert them to DatabaseValue.
+     *
+     * @param object $entity The entity instance.
+     *
+     * @return mixed A scalar value.
+     *
+     * @throws ORMInvalidArgumentException
+     */
+    public function getSingleIdentifierDbValue($entity)
+    {
+        $class = $this->em->getClassMetadata(get_class($entity));
+
+        if ($class->isIdentifierComposite) {
+            throw ORMInvalidArgumentException::invalidCompositeIdentifier();
+        }
+
+        $values = $this->isInIdentityMap($entity)
+            ? $this->getEntityIdentifier($entity)
+            : $class->getIdentifierValues($entity);
+
+        $value = $values[$class->identifier[0]] ?? null;
+        $type  = $class->getTypeOfField($class->identifier[0]);
+
+        return $type ? $this->em->getConnection()->convertToDatabaseValue($value, $type) : $value;
+    }
+
+    /**
      * Tries to find an entity with the given identifier in the identity map of
      * this UnitOfWork.
      *
