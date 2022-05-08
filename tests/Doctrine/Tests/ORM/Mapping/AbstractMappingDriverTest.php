@@ -582,7 +582,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         self::assertEquals('ID', $class->getColumnName('id'));
         self::assertEquals('NAME', $class->getColumnName('name'));
-        self::assertEquals('DDC1476ENTITY_WITH_DEFAULT_FIELD_TYPE', $class->table['name']);
+        self::assertEquals('DDC1476_ENTITY_WITH_DEFAULT_FIELD_TYPE', $class->table['name']);
     }
 
     /**

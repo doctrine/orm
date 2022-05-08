@@ -1,5 +1,10 @@
 # Upgrade to 3.0
 
+## BC BREAK: `UnderscoreNamingStrategy` is number aware only
+
+The second argument to `UnderscoreNamingStrategy::__construct()` was dropped,
+the strategy can no longer be unaware of numbers.
+
 ## BC BREAK: Remove `Doctrine\ORM\Proxy\Autoloader`
 
 Use `Doctrine\Common\Proxy\Autoloader` instead.
