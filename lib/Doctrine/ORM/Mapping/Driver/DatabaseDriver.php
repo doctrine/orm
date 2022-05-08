@@ -391,11 +391,11 @@ class DatabaseDriver implements MappingDriver
      *     columnName: string,
      *     type: string,
      *     nullable: bool,
-     *     options?: array{
+     *     options: array{
      *         unsigned?: bool,
      *         fixed?: bool,
-     *         comment?: string,
-     *         default?: string
+     *         comment: string|null,
+     *         default?: mixed
      *     },
      *     precision?: int,
      *     scale?: int,
@@ -409,6 +409,9 @@ class DatabaseDriver implements MappingDriver
             'columnName' => $column->getName(),
             'type'       => Type::getTypeRegistry()->lookupName($column->getType()),
             'nullable'   => ! $column->getNotnull(),
+            'options'    => [
+                'comment' => $column->getComment(),
+            ],
         ];
 
         // Type specific elements
@@ -435,12 +438,6 @@ class DatabaseDriver implements MappingDriver
             case Types::SMALLINT:
                 $fieldMapping['options']['unsigned'] = $column->getUnsigned();
                 break;
-        }
-
-        // Comment
-        $comment = $column->getComment();
-        if ($comment !== null) {
-            $fieldMapping['options']['comment'] = $comment;
         }
 
         // Default

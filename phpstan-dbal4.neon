@@ -1,0 +1,23 @@
+includes:
+    - phpstan.neon
+
+parameters:
+    ignoreErrors:
+        # Compatibility with DBAL 3
+        # See https://github.com/doctrine/dbal/pull/3480
+        -
+            message: '~^Result of method Doctrine\\DBAL\\Connection::commit\(\) \(void\) is used\.$~'
+            path: lib/Doctrine/ORM/UnitOfWork.php
+        -
+            message: '~^Strict comparison using === between void and false will always evaluate to false\.$~'
+            path: lib/Doctrine/ORM/UnitOfWork.php
+        -
+            message: '~^Variable \$e on left side of \?\? always exists and is not nullable\.$~'
+            path: lib/Doctrine/ORM/UnitOfWork.php
+
+        # See https://github.com/doctrine/orm/issues/8850
+        -
+            message: '~^Method Doctrine\\DBAL\\Connection::lastInsertId\(\) invoked with 1 parameter, 0 required\.$~'
+            paths:
+                - lib/Doctrine/ORM/Id/BigIntegerIdentityGenerator.php
+                - lib/Doctrine/ORM/Id/IdentityGenerator.php
