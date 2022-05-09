@@ -66,6 +66,7 @@ class DDC2917Test extends OrmFunctionalTestCase
 class DDC2917User
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -78,7 +79,10 @@ class DDC2917User
  */
 class DDC2917Admin extends DDC2917User
 {
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $name;
 }
 
@@ -87,7 +91,10 @@ class DDC2917Admin extends DDC2917User
  */
 class DDC2917SuperAdmin extends DDC2917Admin
 {
-    /** @Column(type="boolean") */
+    /**
+     * @var boolean
+     * @Column(type="boolean")
+     */
     public $foo;
 }
 
@@ -96,6 +103,9 @@ class DDC2917SuperAdmin extends DDC2917Admin
  */
 class DDC2917Client extends DDC2917User
 {
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $name;
 }
