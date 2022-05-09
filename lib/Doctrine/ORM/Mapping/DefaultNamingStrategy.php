@@ -44,12 +44,7 @@ class DefaultNamingStrategy implements NamingStrategy
         return 'id';
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @param class-string $className
-     */
-    public function joinColumnName(string $propertyName, ?string $className = null): string
+    public function joinColumnName(string $propertyName, string $className): string
     {
         return $propertyName . '_' . $this->referenceColumnName();
     }
