@@ -1,6 +1,6 @@
 # Upgrade to 2.13
 
-# Deprecated methods related to named queries
+## Deprecated methods related to named queries
 
 The following methods have been deprecated:
 
@@ -9,7 +9,7 @@ The following methods have been deprecated:
 - `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativQueryResultSetMapping()`
 - `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativQueryEntityResultMapping()`
 
-# Deprecated classes related to Doctrine 1 and reverse engineering
+## Deprecated classes related to Doctrine 1 and reverse engineering
 
 The following classes have been deprecated:
 
