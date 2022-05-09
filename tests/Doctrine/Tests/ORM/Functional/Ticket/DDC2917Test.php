@@ -13,27 +13,10 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use Throwable;
 use function strtolower;
 
 class DDC2917Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-        try {
-                $this->_schemaTool->createSchema(
-                    [
-                        $this->_em->getClassMetadata(DDC2917Admin::class),
-                        $this->_em->getClassMetadata(DDC2917SuperAdmin::class),
-                        $this->_em->getClassMetadata(DDC2917Client::class),
-                        $this->_em->getClassMetadata(DDC2917User::class),
-                    ]
-                );
-        } catch (Throwable $e) {
-        }
-    }
-
     /**
      * @dataProvider provideDqlToSqlCases
      */
@@ -52,19 +35,19 @@ class DDC2917Test extends OrmFunctionalTestCase
         return [
             [
                 'select u from ' . __NAMESPACE__ . '\\DDC2917User u GROUP BY u.id',
-                'SELECT d0_.id AS id_0, d1_.name AS name_1, d2_.foo AS foo_2, d3_.name AS name_3, d0_.type AS type_4 FROM DDC2917User d0_ LEFT JOIN DDC2917Admin d1_ ON d0_.id = d1_.id LEFT JOIN DDC2917SuperAdmin d2_ ON d0_.id = d2_.id LEFT JOIN DDC2917Client d3_ ON d0_.id = d3_.id GROUP BY d0_.id, d1_.id, d2_.id, d3_.id'
+                'SELECT d0_.id AS id_0, d1_.name AS name_1, d2_.foo AS foo_2, d3_.name AS name_3, d0_.type AS type_4 FROM DDC2917User d0_ LEFT JOIN DDC2917Admin d1_ ON d0_.id = d1_.id LEFT JOIN DDC2917SuperAdmin d2_ ON d0_.id = d2_.id LEFT JOIN DDC2917Client d3_ ON d0_.id = d3_.id GROUP BY d0_.id, d1_.id, d2_.id, d3_.id',
             ],
             [
                 'select u from ' . __NAMESPACE__ . '\\DDC2917User u GROUP BY u',
-                'SELECT d0_.id AS id_0, d1_.name AS name_1, d2_.foo AS foo_2, d3_.name AS name_3, d0_.type AS type_4 FROM DDC2917User d0_ LEFT JOIN DDC2917Admin d1_ ON d0_.id = d1_.id LEFT JOIN DDC2917SuperAdmin d2_ ON d0_.id = d2_.id LEFT JOIN DDC2917Client d3_ ON d0_.id = d3_.id GROUP BY d0_.id, d1_.id, d2_.id, d3_.id'
+                'SELECT d0_.id AS id_0, d1_.name AS name_1, d2_.foo AS foo_2, d3_.name AS name_3, d0_.type AS type_4 FROM DDC2917User d0_ LEFT JOIN DDC2917Admin d1_ ON d0_.id = d1_.id LEFT JOIN DDC2917SuperAdmin d2_ ON d0_.id = d2_.id LEFT JOIN DDC2917Client d3_ ON d0_.id = d3_.id GROUP BY d0_.id, d1_.id, d2_.id, d3_.id',
             ],
             [
                 'select a from ' . __NAMESPACE__ . '\\DDC2917Admin a GROUP BY a.id',
-                'SELECT d0_.id AS id_0, d1_.name AS name_1, d2_.foo AS foo_2, d0_.type AS type_3 FROM DDC2917Admin d1_ INNER JOIN DDC2917User d0_ ON d1_.id = d0_.id LEFT JOIN DDC2917SuperAdmin d2_ ON d1_.id = d2_.id GROUP BY d0_.id, d1_.id, d2_.id'
+                'SELECT d0_.id AS id_0, d1_.name AS name_1, d2_.foo AS foo_2, d0_.type AS type_3 FROM DDC2917Admin d1_ INNER JOIN DDC2917User d0_ ON d1_.id = d0_.id LEFT JOIN DDC2917SuperAdmin d2_ ON d1_.id = d2_.id GROUP BY d0_.id, d1_.id, d2_.id',
             ],
             [
                 'select a from ' . __NAMESPACE__ . '\\DDC2917SuperAdmin a GROUP BY a.id',
-                'SELECT d0_.id AS id_0, d1_.name AS name_1, d2_.foo AS foo_2, d0_.type AS type_3 FROM DDC2917SuperAdmin d2_ INNER JOIN DDC2917Admin d1_ ON d2_.id = d1_.id INNER JOIN DDC2917User d0_ ON d2_.id = d0_.id GROUP BY d0_.id, d1_.id, d2_.id'
+                'SELECT d0_.id AS id_0, d1_.name AS name_1, d2_.foo AS foo_2, d0_.type AS type_3 FROM DDC2917SuperAdmin d2_ INNER JOIN DDC2917Admin d1_ ON d2_.id = d1_.id INNER JOIN DDC2917User d0_ ON d2_.id = d0_.id GROUP BY d0_.id, d1_.id, d2_.id',
             ],
         ];
     }
@@ -95,9 +78,7 @@ class DDC2917User
  */
 class DDC2917Admin extends DDC2917User
 {
-    /**
-     * @Column(type="string", length=255)
-     */
+    /* @Column(type="string", length=255) */
     public $name;
 }
 
@@ -106,9 +87,7 @@ class DDC2917Admin extends DDC2917User
  */
 class DDC2917SuperAdmin extends DDC2917Admin
 {
-    /**
-     * @Column(type="boolean")
-     */
+    /** @Column(type="boolean") */
     public $foo;
 }
 
@@ -117,8 +96,6 @@ class DDC2917SuperAdmin extends DDC2917Admin
  */
 class DDC2917Client extends DDC2917User
 {
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     public $name;
 }

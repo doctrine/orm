@@ -1726,7 +1726,7 @@ class SqlWalker implements TreeWalker
         return ' GROUP BY ' . implode(', ', $sqlParts);
     }
 
-    public function walkGroupByPathExpression(Ast\PathExpression $pathExpr): string
+    public function walkGroupByPathExpression(AST\PathExpression $pathExpr): string
     {
         $fieldName = $pathExpr->field;
         $dqlAlias  = $pathExpr->identificationVariable;
