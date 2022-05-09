@@ -78,7 +78,7 @@ class DDC2917User
  */
 class DDC2917Admin extends DDC2917User
 {
-    /* @Column(type="string", length=255) */
+    /** @Column(type="string", length=255) */
     public $name;
 }
 
