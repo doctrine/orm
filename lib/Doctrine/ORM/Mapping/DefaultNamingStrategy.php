@@ -54,6 +54,9 @@ class DefaultNamingStrategy implements NamingStrategy
 
     /**
      * {@inheritdoc}
+     *
+     * @param string       $propertyName
+     * @param class-string $className
      */
     public function joinColumnName($propertyName, $className = null)
     {
