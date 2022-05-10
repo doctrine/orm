@@ -5,7 +5,7 @@
 
 [<h1 align="center">🇺🇦 UKRAINE NEEDS YOUR HELP NOW!</h1>](https://www.doctrine-project.org/stop-war.html)
 
-Doctrine 2 is an object-relational mapper (ORM) for PHP 7.1+ that provides transparent persistence
+Doctrine ORM is an object-relational mapper for PHP 7.1+ that provides transparent persistence
 for PHP objects. It sits on top of a powerful database abstraction layer (DBAL). One of its key features
 is the option to write database queries in a proprietary object oriented SQL dialect called Doctrine Query Language (DQL),
 inspired by Hibernate's HQL. This provides developers with a powerful alternative to SQL that maintains flexibility
