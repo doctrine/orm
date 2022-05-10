@@ -92,7 +92,7 @@ class DDC2917Admin extends DDC2917User
 class DDC2917SuperAdmin extends DDC2917Admin
 {
     /**
-     * @var boolean
+     * @var bool
      * @Column(type="boolean")
      */
     public $foo;
