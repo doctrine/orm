@@ -771,7 +771,7 @@
       <code>assert($method instanceof ReflectionMethod)</code>
       <code>assert($property instanceof ReflectionProperty)</code>
     </RedundantCondition>
-    <RedundantConditionGivenDocblockType occurrences="1">
+    <RedundantConditionGivenDocblockType occurrences="2">
       <code>assert($cacheAttribute instanceof Mapping\Cache)</code>
       <code>$metadata-&gt;getReflectionClass()</code>
     </RedundantConditionGivenDocblockType>
