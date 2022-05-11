@@ -176,5 +176,11 @@
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
             </errorLevel>
         </UndefinedMethod>
+        <ArgumentTypeCoercion>
+            <errorLevel type="suppress">
+                <!-- See https://github.com/JetBrains/phpstorm-stubs/pull/1383 -->
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php"/>
+            </errorLevel>
+        </ArgumentTypeCoercion>
     </issueHandlers>
 </psalm>
