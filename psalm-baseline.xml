@@ -516,9 +516,6 @@
     </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DefaultNamingStrategy.php">
-    <MissingParamType occurrences="1">
-      <code>$className</code>
-    </MissingParamType>
     <PossiblyFalseOperand occurrences="1">
       <code>strrpos($className, '\\')</code>
     </PossiblyFalseOperand>
@@ -768,9 +765,6 @@
     </MissingConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/UnderscoreNamingStrategy.php">
-    <MissingParamType occurrences="1">
-      <code>$className</code>
-    </MissingParamType>
     <PossiblyFalseOperand occurrences="1">
       <code>strrpos($className, '\\')</code>
     </PossiblyFalseOperand>
