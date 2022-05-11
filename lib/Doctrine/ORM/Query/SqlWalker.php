@@ -25,6 +25,7 @@ use function array_filter;
 use function array_keys;
 use function array_map;
 use function array_merge;
+use function array_reverse;
 use function assert;
 use function count;
 use function implode;
@@ -35,7 +36,6 @@ use function is_numeric;
 use function is_string;
 use function preg_match;
 use function reset;
-use function sort;
 use function sprintf;
 use function strtolower;
 use function strtoupper;
@@ -1739,7 +1739,7 @@ class SqlWalker implements TreeWalker
             return $this->walkPathExpression($pathExpr);
         }
 
-        $relatedClassesNames = array_merge([$class->name], $class->subClasses, $class->parentClasses);
+        $relatedClassesNames = array_merge(array_reverse($class->parentClasses), [$class->name], $class->subClasses);
         $relatedClasses      = array_map([$this->em, 'getClassMetadata'], $relatedClassesNames);
 
         $sqlParts = [];
@@ -1747,9 +1747,6 @@ class SqlWalker implements TreeWalker
         foreach ($relatedClasses as $subClassMetadata) {
             $sqlParts[] = $this->getSQLTableAlias($subClassMetadata->getTableName(), $dqlAlias) . '.' . $this->quoteStrategy->getColumnName($fieldName, $subClassMetadata, $this->platform);
         }
-
-        // for more predictability of group by order
-        sort($sqlParts);
 
         return implode(', ', $sqlParts);
     }
