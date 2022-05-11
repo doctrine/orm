@@ -332,9 +332,7 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php">
-    <ArgumentTypeCoercion occurrences="4">
-      <code>$class</code>
-      <code>$class</code>
+    <ArgumentTypeCoercion occurrences="2">
       <code>$nonSuperclassParents</code>
       <code>new $definition['class']()</code>
     </ArgumentTypeCoercion>
@@ -589,16 +587,9 @@
     <DocblockTypeContradiction occurrences="1">
       <code>$metadata instanceof ClassMetadata</code>
     </DocblockTypeContradiction>
-    <LessSpecificReturnStatement occurrences="2">
-      <code>$this-&gt;namespace . $this-&gt;classNamesForTables[$tableName]</code>
-      <code>$this-&gt;namespace . $this-&gt;inflector-&gt;classify(strtolower($tableName))</code>
-    </LessSpecificReturnStatement>
     <MoreSpecificImplementedParamType occurrences="1">
       <code>$metadata</code>
     </MoreSpecificImplementedParamType>
-    <MoreSpecificReturnType occurrences="1">
-      <code>class-string</code>
-    </MoreSpecificReturnType>
     <PossiblyNullArgument occurrences="2">
       <code>$this-&gt;tables[$tableName]</code>
       <code>$this-&gt;tables[$tableName]</code>
@@ -1253,15 +1244,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php">
-    <InvalidScalarArgument occurrences="7">
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-    </InvalidScalarArgument>
     <PossiblyInvalidPropertyAssignmentValue occurrences="2">
       <code>$parser-&gt;ArithmeticPrimary()</code>
       <code>$parser-&gt;ArithmeticPrimary()</code>
@@ -1286,15 +1268,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php">
-    <InvalidScalarArgument occurrences="7">
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-    </InvalidScalarArgument>
     <UndefinedPropertyFetch occurrences="1">
       <code>$this-&gt;unit-&gt;value</code>
     </UndefinedPropertyFetch>
