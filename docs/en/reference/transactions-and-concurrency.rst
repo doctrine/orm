@@ -75,7 +75,7 @@ looks like this:
         $em->flush();
         $em->getConnection()->commit();
     } catch (Exception $e) {
-        $em->getConnection()->rollBack();
+        $em->getConnection()->rollback();
         throw $e;
     }
 
