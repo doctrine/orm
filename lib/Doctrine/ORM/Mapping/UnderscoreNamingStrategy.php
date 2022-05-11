@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Deprecations\Deprecation;
-
 use function preg_replace;
 use function str_contains;
 use function strrpos;
@@ -24,33 +22,17 @@ use const CASE_UPPER;
  */
 class UnderscoreNamingStrategy implements NamingStrategy
 {
-    private const DEFAULT_PATTERN      = '/(?<=[a-z])([A-Z])/';
-    private const NUMBER_AWARE_PATTERN = '/(?<=[a-z0-9])([A-Z])/';
-
     /** @var int */
     private $case;
-
-    /** @var string */
-    private $pattern;
 
     /**
      * Underscore naming strategy construct.
      *
      * @param int $case CASE_LOWER | CASE_UPPER
      */
-    public function __construct($case = CASE_LOWER, bool $numberAware = false)
+    public function __construct($case = CASE_LOWER)
     {
-        if (! $numberAware) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/7908',
-                'Creating %s without setting second argument $numberAware=true is deprecated and will be removed in Doctrine ORM 3.0.',
-                self::class
-            );
-        }
-
-        $this->case    = $case;
-        $this->pattern = $numberAware ? self::NUMBER_AWARE_PATTERN : self::DEFAULT_PATTERN;
+        $this->case = $case;
     }
 
     /**
@@ -140,7 +122,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
 
     private function underscore(string $string): string
     {
-        $string = preg_replace($this->pattern, '_$1', $string);
+        $string = preg_replace('/(?<=[a-z0-9])([A-Z])/', '_$1', $string);
 
         if ($this->case === CASE_UPPER) {
             return strtoupper($string);
