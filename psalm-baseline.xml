@@ -367,7 +367,6 @@
       <code>getConfiguration</code>
       <code>getConfiguration</code>
       <code>getConfiguration</code>
-      <code>getConfiguration</code>
       <code>getConnection</code>
       <code>hasListeners</code>
       <code>hasListeners</code>
@@ -733,17 +732,19 @@
     </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ReflectionEmbeddedProperty.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$this-&gt;embeddedClass</code>
-    </ArgumentTypeCoercion>
-    <MissingParamType occurrences="3">
+    <MethodSignatureMismatch occurrences="2">
       <code>$object</code>
       <code>$object</code>
-      <code>$value</code>
-    </MissingParamType>
-    <RedundantCastGivenDocblockType occurrences="1">
-      <code>(string) $embeddedClass</code>
-    </RedundantCastGivenDocblockType>
+    </MethodSignatureMismatch>
+    <PossiblyNullArgument occurrences="1">
+      <code>$object</code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/ReflectionEnumProperty.php">
+    <MethodSignatureMismatch occurrences="2">
+      <code>$object</code>
+      <code>$object</code>
+    </MethodSignatureMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/SequenceGenerator.php">
     <PossiblyNullPropertyAssignmentValue occurrences="1">

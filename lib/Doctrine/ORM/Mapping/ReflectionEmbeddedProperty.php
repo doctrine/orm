@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\Instantiator\Instantiator;
 use ReflectionProperty;
-use ReturnTypeWillChange;
 
 /**
  * Acts as a proxy to a nested Property structure, making it look like
@@ -17,39 +16,24 @@ use ReturnTypeWillChange;
  *
  * TODO: Move this class into Common\Reflection
  */
-class ReflectionEmbeddedProperty extends ReflectionProperty
+final class ReflectionEmbeddedProperty extends ReflectionProperty
 {
-    /** @var ReflectionProperty reflection property of the class where the embedded object has to be put */
-    private $parentProperty;
-
-    /** @var ReflectionProperty reflection property of the embedded object */
-    private $childProperty;
-
-    /** @var string name of the embedded class to be eventually instantiated */
-    private $embeddedClass;
-
-    /** @var Instantiator|null */
-    private $instantiator;
+    private ?Instantiator $instantiator = null;
 
     /**
-     * @param string $embeddedClass
+     * @param ReflectionProperty $parentProperty reflection property of the class where the embedded object has to be put
+     * @param ReflectionProperty $childProperty  reflection property of the embedded object
+     * @psalm-param class-string $embeddedClass
      */
-    public function __construct(ReflectionProperty $parentProperty, ReflectionProperty $childProperty, $embeddedClass)
-    {
-        $this->parentProperty = $parentProperty;
-        $this->childProperty  = $childProperty;
-        $this->embeddedClass  = (string) $embeddedClass;
-
+    public function __construct(
+        private ReflectionProperty $parentProperty,
+        private ReflectionProperty $childProperty,
+        private string $embeddedClass
+    ) {
         parent::__construct($childProperty->getDeclaringClass()->getName(), $childProperty->getName());
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return mixed
-     */
-    #[ReturnTypeWillChange]
-    public function getValue($object = null)
+    public function getValue(?object $object = null): mixed
     {
         $embeddedObject = $this->parentProperty->getValue($object);
 
@@ -60,18 +44,12 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
         return $this->childProperty->getValue($embeddedObject);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return void
-     */
-    #[ReturnTypeWillChange]
-    public function setValue($object, $value = null)
+    public function setValue(mixed $object, mixed $value = null): void
     {
         $embeddedObject = $this->parentProperty->getValue($object);
 
         if ($embeddedObject === null) {
-            $this->instantiator = $this->instantiator ?: new Instantiator();
+            $this->instantiator ??= new Instantiator();
 
             $embeddedObject = $this->instantiator->instantiate($this->embeddedClass);
 
