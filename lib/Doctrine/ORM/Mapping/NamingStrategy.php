@@ -52,7 +52,8 @@ interface NamingStrategy
     /**
      * Returns a join column name for a property.
      *
-     * @param string $propertyName A property name.
+     * @param string       $propertyName A property name.
+     * @param class-string $className    The fully-qualified class name.
      *
      * @return string A join column name.
      */

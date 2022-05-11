@@ -1284,3 +1284,7 @@ parameters:
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$subClasses\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Utility/HierarchyDiscriminatorResolver.php
+
+		-
+			message: '#PHPDoc tag @param references unknown parameter: \$className#'
+			path: lib/Doctrine/ORM/Mapping/NamingStrategy.php

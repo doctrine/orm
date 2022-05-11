@@ -265,6 +265,8 @@
     <rule ref="Squiz.Commenting.FunctionComment.ExtraParamComment">
         <!-- https://github.com/doctrine/orm/issues/8537 -->
         <exclude-pattern>lib/Doctrine/ORM/QueryBuilder.php</exclude-pattern>
+        <!-- To be removed in 3.0 -->
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/NamingStrategy.php</exclude-pattern>
     </rule>
 
     <rule ref="Generic.WhiteSpace.ScopeIndent.Incorrect">

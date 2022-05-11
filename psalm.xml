@@ -115,6 +115,9 @@
                 <file name="lib/Doctrine/ORM/EntityManager.php"/>
                 <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
                 <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php"/>
+                <!-- Backward compatibility -->
+                <file name="lib/Doctrine/ORM/Mapping/DefaultNamingStrategy.php"/>
+                <file name="lib/Doctrine/ORM/Mapping/UnderscoreNamingStrategy.php"/>
             </errorLevel>
         </MissingParamType>
         <RedundantCastGivenDocblockType>
