@@ -176,7 +176,7 @@ class NamingStrategyTest extends OrmTestCase
     /**
      * Data Provider for NamingStrategy#joinTableName
      *
-     * @return array<array{NamingStrategy, string, string, string|null}>
+     * @return array<array{NamingStrategy, string, string, string}>
      */
     public static function dataJoinTableName(): array
     {

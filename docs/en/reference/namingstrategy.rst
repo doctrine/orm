@@ -110,28 +110,28 @@ You need to create a class which implements ``Doctrine\ORM\Mapping\NamingStrateg
     <?php
     class MyAppNamingStrategy implements NamingStrategy
     {
-        public function classToTableName($className)
+        public function classToTableName(string $className): string
         {
             return 'MyApp_' . substr($className, strrpos($className, '\\') + 1);
         }
-        public function propertyToColumnName($propertyName)
+        public function propertyToColumnName(string $propertyName): string
         {
             return $propertyName;
         }
-        public function referenceColumnName()
+        public function referenceColumnName(): string
         {
             return 'id';
         }
-        public function joinColumnName($propertyName, $className = null)
+        public function joinColumnName(string $propertyName, ?string $className = null): string
         {
             return $propertyName . '_' . $this->referenceColumnName();
         }
-        public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
+        public function joinTableName(string $sourceEntity, string $targetEntity, string $propertyName): string
         {
             return strtolower($this->classToTableName($sourceEntity) . '_' .
                     $this->classToTableName($targetEntity));
         }
-        public function joinKeyColumnName($entityName, $referencedColumnName = null)
+        public function joinKeyColumnName(string $entityName, ?string $referencedColumnName): string
         {
             return strtolower($this->classToTableName($entityName) . '_' .
                     ($referencedColumnName ?: $this->referenceColumnName()));

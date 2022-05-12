@@ -3325,6 +3325,8 @@ class ClassMetadataInfo implements ClassMetadata
             if (! empty($this->embeddedClasses[$property]['columnPrefix'])) {
                 $fieldMapping['columnName'] = $this->embeddedClasses[$property]['columnPrefix'] . $fieldMapping['columnName'];
             } elseif ($this->embeddedClasses[$property]['columnPrefix'] !== false) {
+                assert($this->reflClass !== null);
+                assert($embeddable->reflClass !== null);
                 $fieldMapping['columnName'] = $this->namingStrategy
                     ->embeddedFieldToColumnName(
                         $property,

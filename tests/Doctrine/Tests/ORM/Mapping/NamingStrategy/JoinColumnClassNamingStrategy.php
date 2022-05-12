@@ -13,10 +13,7 @@ use function strtolower;
  */
 class JoinColumnClassNamingStrategy extends DefaultNamingStrategy
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function joinColumnName($propertyName, $className = null)
+    public function joinColumnName(string $propertyName, ?string $className = null): string
     {
         return strtolower($this->classToTableName($className))
             . '_' . $propertyName
