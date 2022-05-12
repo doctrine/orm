@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use ArrayObject;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
@@ -45,6 +46,8 @@ require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
 class ClassMetadataTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     public function testClassMetadataInstanceSerialization(): void
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
@@ -1365,6 +1368,14 @@ class ClassMetadataTest extends OrmTestCase
         );
 
         self::assertTrue($classMetadata->hasField('test'));
+    }
+
+    public function testDiscriminatorMapWithSameClassMultipleTimesDeprecated(): void
+    {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/3519');
+
+        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm->setDiscriminatorMap(['foo' => CMS\CmsUser::class, 'bar' => CMS\CmsUser::class]);
     }
 }
 

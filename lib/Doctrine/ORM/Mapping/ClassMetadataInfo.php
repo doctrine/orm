@@ -3225,6 +3225,14 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function setDiscriminatorMap(array $map)
     {
+        if (count(array_flip($map)) !== count($map)) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/3519',
+                'Mapping a class to multiple discriminator values is deprecated.'
+            );
+        }
+
         foreach ($map as $value => $className) {
             $this->addDiscriminatorMapClass($value, $className);
         }
