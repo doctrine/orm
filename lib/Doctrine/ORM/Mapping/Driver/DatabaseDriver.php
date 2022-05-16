@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Column;
-use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
@@ -24,6 +23,7 @@ use InvalidArgumentException;
 use function array_diff;
 use function array_keys;
 use function array_merge;
+use function assert;
 use function count;
 use function current;
 use function get_class;
@@ -289,9 +289,7 @@ class DatabaseDriver implements MappingDriver
         $this->tables = $this->manyToManyTables = $this->classToTableNames = [];
 
         foreach ($tables as $tableName => $table) {
-            $foreignKeys = $this->_sm->getDatabasePlatform()->supportsForeignKeyConstraints()
-                ? $table->getForeignKeys()
-                : [];
+            $foreignKeys = $table->getForeignKeys();
 
             $allForeignKeyColumns = [];
 
@@ -355,7 +353,7 @@ class DatabaseDriver implements MappingDriver
         $tableName      = $metadata->table['name'];
         $columns        = $this->tables[$tableName]->getColumns();
         $primaryKeys    = $this->getTablePrimaryKeys($this->tables[$tableName]);
-        $foreignKeys    = $this->getTableForeignKeys($this->tables[$tableName]);
+        $foreignKeys    = $this->tables[$tableName]->getForeignKeys();
         $allForeignKeys = [];
 
         foreach ($foreignKeys as $foreignKey) {
@@ -468,9 +466,11 @@ class DatabaseDriver implements MappingDriver
      */
     private function buildToOneAssociationMappings(ClassMetadataInfo $metadata)
     {
+        assert($this->tables !== null);
+
         $tableName   = $metadata->table['name'];
         $primaryKeys = $this->getTablePrimaryKeys($this->tables[$tableName]);
-        $foreignKeys = $this->getTableForeignKeys($this->tables[$tableName]);
+        $foreignKeys = $this->tables[$tableName]->getForeignKeys();
 
         foreach ($foreignKeys as $foreignKey) {
             $foreignTableName   = $foreignKey->getForeignTableName();
@@ -504,19 +504,6 @@ class DatabaseDriver implements MappingDriver
                 $metadata->mapManyToOne($associationMapping);
             }
         }
-    }
-
-    /**
-     * Retrieve schema table definition foreign keys.
-     *
-     * @return ForeignKeyConstraint[]
-     * @psalm-return array<string, ForeignKeyConstraint>
-     */
-    private function getTableForeignKeys(Table $table): array
-    {
-        return $this->_sm->getDatabasePlatform()->supportsForeignKeyConstraints()
-            ? $table->getForeignKeys()
-            : [];
     }
 
     /**
