@@ -22,25 +22,8 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
                 'This test is special to platforms emulating IDENTITY key generation strategy through sequences.'
             );
         } else {
-            $this->_schemaTool->createSchema(
-                [$this->_em->getClassMetadata(SequenceEmulatedIdentityEntity::class)]
-            );
+            $this->createSchemaForModels(SequenceEmulatedIdentityEntity::class);
         }
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
-        $connection = $this->_em->getConnection();
-        $platform   = $connection->getDatabasePlatform();
-
-        // drop sequence manually due to dependency
-        $connection->executeStatement(
-            $platform->getDropSequenceSQL(
-                $platform->getIdentitySequenceName('seq_identity', 'id')
-            )
-        );
     }
 
     public function testPreSavePostSaveCallbacksAreInvoked(): void
