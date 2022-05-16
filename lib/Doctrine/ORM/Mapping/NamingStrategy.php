@@ -78,7 +78,10 @@ interface NamingStrategy
      * Returns the foreign key column name for the given parameters.
      *
      * @param class-string $entityName           An entity.
-     * @param string       $referencedColumnName A property.
+     * @param string|null  $referencedColumnName A property name or null in
+     *                                           case of a self-referencing
+     *                                           entity with join columns
+     *                                           defined in the mapping
      *
      * @return string A join column name.
      */
