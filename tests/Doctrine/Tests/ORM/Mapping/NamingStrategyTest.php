@@ -70,36 +70,40 @@ class NamingStrategyTest extends OrmTestCase
     /**
      * Data Provider for NamingStrategy#propertyToColumnName
      *
-     * @return array<array{NamingStrategy, string, string}>
+     * @return array<array{NamingStrategy, string, string, string}>
      */
     public static function dataPropertyToColumnName(): array
     {
         return [
             // DefaultNamingStrategy
-            [self::defaultNaming(), 'someProperty', 'someProperty'],
-            [self::defaultNaming(), 'SOME_PROPERTY', 'SOME_PROPERTY'],
-            [self::defaultNaming(), 'some_property', 'some_property'],
-            [self::defaultNaming(), 'base64Encoded', 'base64Encoded'],
-            [self::defaultNaming(), 'base64_encoded', 'base64_encoded'],
+            [self::defaultNaming(), 'someProperty', 'someProperty', 'Some\Class'],
+            [self::defaultNaming(), 'SOME_PROPERTY', 'SOME_PROPERTY', 'Some\Class'],
+            [self::defaultNaming(), 'some_property', 'some_property', 'Some\Class'],
+            [self::defaultNaming(), 'base64Encoded', 'base64Encoded', 'Some\Class'],
+            [self::defaultNaming(), 'base64_encoded', 'base64_encoded', 'Some\Class'],
 
             // UnderscoreNamingStrategy
-            [self::underscoreNamingLower(), 'some_property', 'someProperty'],
-            [self::underscoreNamingLower(), 'base64_encoded', 'base64Encoded'],
-            [self::underscoreNamingLower(), 'base64encoded', 'base64encoded'],
-            [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'someProperty'],
-            [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'some_property'],
-            [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'SOME_PROPERTY'],
-            [self::underscoreNamingUpper(), 'BASE64_ENCODED', 'base64Encoded'],
-            [self::underscoreNamingUpper(), 'BASE64ENCODED', 'base64encoded'],
+            [self::underscoreNamingLower(), 'some_property', 'someProperty', 'Some\Class'],
+            [self::underscoreNamingLower(), 'base64_encoded', 'base64Encoded', 'Some\Class'],
+            [self::underscoreNamingLower(), 'base64encoded', 'base64encoded', 'Some\Class'],
+            [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'someProperty', 'Some\Class'],
+            [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'some_property', 'Some\Class'],
+            [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'SOME_PROPERTY', 'Some\Class'],
+            [self::underscoreNamingUpper(), 'BASE64_ENCODED', 'base64Encoded', 'Some\Class'],
+            [self::underscoreNamingUpper(), 'BASE64ENCODED', 'base64encoded', 'Some\Class'],
         ];
     }
 
     /**
      * @dataProvider dataPropertyToColumnName
      */
-    public function testPropertyToColumnName(NamingStrategy $strategy, string $expected, string $propertyName): void
-    {
-        self::assertSame($expected, $strategy->propertyToColumnName($propertyName));
+    public function testPropertyToColumnName(
+        NamingStrategy $strategy,
+        string $expected,
+        string $propertyName,
+        string $className
+    ): void {
+        self::assertSame($expected, $strategy->propertyToColumnName($propertyName, $className));
     }
 
     /**
@@ -178,19 +182,19 @@ class NamingStrategyTest extends OrmTestCase
     {
         return [
             // DefaultNamingStrategy
-            [self::defaultNaming(), 'someclassname_classname', 'SomeClassName', 'Some\ClassName', null],
-            [self::defaultNaming(), 'someclassname_classname', '\SomeClassName', 'ClassName', null],
-            [self::defaultNaming(), 'name_classname', '\Some\Class\Name', 'ClassName', null],
+            [self::defaultNaming(), 'someclassname_classname', 'SomeClassName', 'Some\ClassName', 'some_property'],
+            [self::defaultNaming(), 'someclassname_classname', '\SomeClassName', 'ClassName', 'some_property'],
+            [self::defaultNaming(), 'name_classname', '\Some\Class\Name', 'ClassName', 'some_property'],
 
             // UnderscoreNamingStrategy
-            [self::underscoreNamingLower(), 'some_class_name_class_name', 'SomeClassName', 'Some\ClassName', null],
-            [self::underscoreNamingLower(), 'class1_test_class2_test', 'Class1Test', 'Some\Class2Test', null],
-            [self::underscoreNamingLower(), 'some_class_name_class_name', '\SomeClassName', 'ClassName', null],
-            [self::underscoreNamingLower(), 'name_class_name', '\Some\Class\Name', 'ClassName', null],
-            [self::underscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME', 'SomeClassName', 'Some\ClassName', null],
-            [self::underscoreNamingUpper(), 'CLASS1_TEST_CLASS2_TEST', 'Class1Test', 'Some\Class2Test', null],
-            [self::underscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME', '\SomeClassName', 'ClassName', null],
-            [self::underscoreNamingUpper(), 'NAME_CLASS_NAME', '\Some\Class\Name', 'ClassName', null],
+            [self::underscoreNamingLower(), 'some_class_name_class_name', 'SomeClassName', 'Some\ClassName', 'some_property'],
+            [self::underscoreNamingLower(), 'class1_test_class2_test', 'Class1Test', 'Some\Class2Test', 'some_property'],
+            [self::underscoreNamingLower(), 'some_class_name_class_name', '\SomeClassName', 'ClassName', 'some_property'],
+            [self::underscoreNamingLower(), 'name_class_name', '\Some\Class\Name', 'ClassName', 'some_property'],
+            [self::underscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME', 'SomeClassName', 'Some\ClassName', 'some_property'],
+            [self::underscoreNamingUpper(), 'CLASS1_TEST_CLASS2_TEST', 'Class1Test', 'Some\Class2Test', 'some_property'],
+            [self::underscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME', '\SomeClassName', 'ClassName', 'some_property'],
+            [self::underscoreNamingUpper(), 'NAME_CLASS_NAME', '\Some\Class\Name', 'ClassName', 'some_property'],
         ];
     }
 
@@ -202,7 +206,7 @@ class NamingStrategyTest extends OrmTestCase
         string $expected,
         string $ownerEntity,
         string $associatedEntity,
-        ?string $propertyName = null
+        string $propertyName
     ): void {
         self::assertSame($expected, $strategy->joinTableName($ownerEntity, $associatedEntity, $propertyName));
     }
