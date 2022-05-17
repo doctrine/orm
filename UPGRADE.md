@@ -1,5 +1,29 @@
 # Upgrade to 2.13
 
+## Deprecated omitting alias argument for `QueryBuilder::update` and `QueryBuilder::delete`
+
+When making an Update or Delete Query and when passing a class/type to the function, the alias argument should not be omitted.
+
+### Before
+
+```php
+$qb = $em->createQueryBuilder()
+    ->delete('User u')
+    ->where('u.id = :user_id')
+    ->setParameter('user_id', 1);
+```
+
+### After
+
+For backward-compatibility reasons, the parameter has to be optional and to make it possible to call `update()` and `delete()` without class/type argument.
+
+```php
+$qb = $em->createQueryBuilder()
+    ->delete('User', 'u')
+    ->where('u.id = :user_id')
+    ->setParameter('user_id', 1);
+```
+
 ## Deprecated omitting second argument to `NamingStrategy::joinColumnName`
 
 When implementing `NamingStrategy`, it is deprecated to implement
