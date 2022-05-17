@@ -16,10 +16,7 @@ use function substr;
  */
 class DefaultNamingStrategy implements NamingStrategy
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function classToTableName($className)
+    public function classToTableName(string $className): string
     {
         if (str_contains($className, '\\')) {
             return substr($className, strrpos($className, '\\') + 1);
@@ -28,26 +25,21 @@ class DefaultNamingStrategy implements NamingStrategy
         return $className;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function propertyToColumnName($propertyName, $className = null)
+    public function propertyToColumnName(string $propertyName, string $className): string
     {
         return $propertyName;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function embeddedFieldToColumnName($propertyName, $embeddedColumnName, $className = null, $embeddedClassName = null)
-    {
+    public function embeddedFieldToColumnName(
+        string $propertyName,
+        string $embeddedColumnName,
+        string $className,
+        string $embeddedClassName,
+    ): string {
         return $propertyName . '_' . $embeddedColumnName;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function referenceColumnName()
+    public function referenceColumnName(): string
     {
         return 'id';
     }
@@ -55,28 +47,26 @@ class DefaultNamingStrategy implements NamingStrategy
     /**
      * {@inheritdoc}
      *
-     * @param string       $propertyName
      * @param class-string $className
      */
-    public function joinColumnName($propertyName, $className = null)
+    public function joinColumnName(string $propertyName, ?string $className = null): string
     {
         return $propertyName . '_' . $this->referenceColumnName();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
-    {
+    public function joinTableName(
+        string $sourceEntity,
+        string $targetEntity,
+        string $propertyName,
+    ): string {
         return strtolower($this->classToTableName($sourceEntity) . '_' .
             $this->classToTableName($targetEntity));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function joinKeyColumnName($entityName, $referencedColumnName = null)
-    {
+    public function joinKeyColumnName(
+        string $entityName,
+        ?string $referencedColumnName,
+    ): string {
         return strtolower($this->classToTableName($entityName) . '_' .
             ($referencedColumnName ?: $this->referenceColumnName()));
     }

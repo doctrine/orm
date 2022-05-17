@@ -1128,10 +1128,7 @@ class DDC2700MappedSuperClass
 
 class MyNamespacedNamingStrategy extends DefaultNamingStrategy
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function classToTableName($className)
+    public function classToTableName(string $className): string
     {
         if (str_contains($className, '\\')) {
             $className = str_replace('\\', '_', str_replace('Doctrine\Tests\Models\\', '', $className));
@@ -1143,10 +1140,7 @@ class MyNamespacedNamingStrategy extends DefaultNamingStrategy
 
 class MyPrefixNamingStrategy extends DefaultNamingStrategy
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function propertyToColumnName($propertyName, $className = null)
+    public function propertyToColumnName(string $propertyName, string $className): string
     {
         return strtolower($this->classToTableName($className)) . '_' . $propertyName;
     }

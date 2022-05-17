@@ -22,15 +22,14 @@ use const CASE_UPPER;
  */
 class UnderscoreNamingStrategy implements NamingStrategy
 {
-    /** @var int */
-    private $case;
+    private int $case;
 
     /**
      * Underscore naming strategy construct.
      *
      * @param int $case CASE_LOWER | CASE_UPPER
      */
-    public function __construct($case = CASE_LOWER)
+    public function __construct(int $case = CASE_LOWER)
     {
         $this->case = $case;
     }
@@ -38,7 +37,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
     /**
      * @return int CASE_LOWER | CASE_UPPER
      */
-    public function getCase()
+    public function getCase(): int
     {
         return $this->case;
     }
@@ -46,20 +45,13 @@ class UnderscoreNamingStrategy implements NamingStrategy
     /**
      * Sets string case CASE_LOWER | CASE_UPPER.
      * Alphabetic characters converted to lowercase or uppercase.
-     *
-     * @param int $case
-     *
-     * @return void
      */
-    public function setCase($case)
+    public function setCase(int $case): void
     {
         $this->case = $case;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function classToTableName($className)
+    public function classToTableName(string $className): string
     {
         if (str_contains($className, '\\')) {
             $className = substr($className, strrpos($className, '\\') + 1);
@@ -68,26 +60,21 @@ class UnderscoreNamingStrategy implements NamingStrategy
         return $this->underscore($className);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function propertyToColumnName($propertyName, $className = null)
+    public function propertyToColumnName(string $propertyName, string $className): string
     {
         return $this->underscore($propertyName);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function embeddedFieldToColumnName($propertyName, $embeddedColumnName, $className = null, $embeddedClassName = null)
-    {
+    public function embeddedFieldToColumnName(
+        string $propertyName,
+        string $embeddedColumnName,
+        string $className,
+        string $embeddedClassName,
+    ): string {
         return $this->underscore($propertyName) . '_' . $embeddedColumnName;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function referenceColumnName()
+    public function referenceColumnName(): string
     {
         return $this->case === CASE_UPPER ?  'ID' : 'id';
     }
@@ -95,27 +82,25 @@ class UnderscoreNamingStrategy implements NamingStrategy
     /**
      * {@inheritdoc}
      *
-     * @param string       $propertyName
      * @param class-string $className
      */
-    public function joinColumnName($propertyName, $className = null)
+    public function joinColumnName(string $propertyName, ?string $className = null): string
     {
         return $this->underscore($propertyName) . '_' . $this->referenceColumnName();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
-    {
+    public function joinTableName(
+        string $sourceEntity,
+        string $targetEntity,
+        string $propertyName,
+    ): string {
         return $this->classToTableName($sourceEntity) . '_' . $this->classToTableName($targetEntity);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function joinKeyColumnName($entityName, $referencedColumnName = null)
-    {
+    public function joinKeyColumnName(
+        string $entityName,
+        ?string $referencedColumnName
+    ): string {
         return $this->classToTableName($entityName) . '_' .
                 ($referencedColumnName ?: $this->referenceColumnName());
     }
