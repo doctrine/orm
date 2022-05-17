@@ -6,6 +6,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
@@ -844,6 +845,14 @@ class QueryBuilder
             return $this;
         }
 
+        if (! $alias) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/9733',
+                'Omitting the alias is deprecated and will throw an exception in Doctrine 3.0.'
+            );
+        }
+
         return $this->add('from', new Expr\From($delete, $alias));
     }
 
@@ -869,6 +878,14 @@ class QueryBuilder
 
         if (! $update) {
             return $this;
+        }
+
+        if (! $alias) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/9733',
+                'Omitting the alias is deprecated and will throw an exception in Doctrine 3.0.'
+            );
         }
 
         return $this->add('from', new Expr\From($update, $alias));
