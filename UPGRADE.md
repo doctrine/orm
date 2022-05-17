@@ -15,8 +15,6 @@ $qb = $em->createQueryBuilder()
 
 ### After
 
-For backward-compatibility reasons, the parameter has to be optional and to make it possible to call `update()` and `delete()` without class/type argument.
-
 ```php
 $qb = $em->createQueryBuilder()
     ->delete('User', 'u')
