@@ -880,7 +880,7 @@ class QueryBuilder
             return $this;
         }
 
-        if (! $alias) [
+        if (! $alias) {
             Deprecation::trigger(
                 'doctrine/orm',
                 'https://github.com/doctrine/orm/issues/9733',
