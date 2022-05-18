@@ -7,7 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\Driver\StaticPHPDriver;
+use Doctrine\Persistence\Mapping\Driver\StaticPHPDriver;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function md5;
