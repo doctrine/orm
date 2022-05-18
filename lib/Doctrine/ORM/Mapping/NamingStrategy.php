@@ -46,7 +46,7 @@ interface NamingStrategy
     /**
      * Returns a join column name for a property.
      */
-    public function joinColumnName(string $propertyName/*, $className = null */): string;
+    public function joinColumnName(string $propertyName/*, string $className */): string;
 
     /**
      * Returns a join table name.

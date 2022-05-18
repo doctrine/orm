@@ -1,5 +1,10 @@
 # Upgrade to 3.0
 
+## BC BREAK: Remove StaticPHPDriver
+
+Use `Doctrine\Persistence\Mapping\Driver\StaticPHPDriver` from
+`doctrine/persistence` instead.
+
 ## BC BREAK: `UnderscoreNamingStrategy` is number aware only
 
 The second argument to `UnderscoreNamingStrategy::__construct()` was dropped,
