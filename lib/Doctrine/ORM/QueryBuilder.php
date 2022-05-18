@@ -887,7 +887,7 @@ class QueryBuilder
                 'Omitting the alias is deprecated and will throw an exception in Doctrine 3.0.'
             );
         }
-        
+
         return $this->add('from', new Expr\From($update, $alias));
     }
 
