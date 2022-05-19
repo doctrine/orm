@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
@@ -29,6 +30,8 @@ use function get_class;
  */
 class QueryBuilderTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     /** @var EntityManagerMock */
     private $entityManager;
 
@@ -1278,5 +1281,26 @@ class QueryBuilderTest extends OrmTestCase
             ->innerJoin(CmsArticle::class, 'a1');
 
         self::assertSame('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN Doctrine\Tests\Models\CMS\CmsArticle a0 INNER JOIN Doctrine\Tests\Models\CMS\CmsArticle a1', $builder->getDQL());
+    }
+
+    public function testUpdateDeprecationMessage(): void
+    {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/9733');
+
+        $qb = $this->entityManager->createQueryBuilder()
+            ->update(CmsUser::class . ' u')
+            ->set('u.username', ':username');
+
+        $this->assertValidQueryBuilder($qb, 'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.username = :username');
+    }
+
+    public function testDeleteDeprecationMessage(): void
+    {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/9733');
+
+        $qb = $this->entityManager->createQueryBuilder()
+            ->delete(CmsUser::class . ' u');
+
+        $this->assertValidQueryBuilder($qb, 'DELETE Doctrine\Tests\Models\CMS\CmsUser u');
     }
 }
