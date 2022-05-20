@@ -1291,7 +1291,7 @@ class QueryBuilderTest extends OrmTestCase
             ->update(CmsUser::class . ' u')
             ->set('u.username', ':username');
 
-        $this->assertValidQueryBuilder($qb, 'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.username = :username');
+        $this->assertValidQueryBuilder($qb, 'UPDATE Doctrine\Tests\Models\CMS\CmsUser u  SET u.username = :username');
     }
 
     public function testDeleteDeprecationMessage(): void
@@ -1301,6 +1301,6 @@ class QueryBuilderTest extends OrmTestCase
         $qb = $this->entityManager->createQueryBuilder()
             ->delete(CmsUser::class . ' u');
 
-        $this->assertValidQueryBuilder($qb, 'DELETE Doctrine\Tests\Models\CMS\CmsUser u');
+        $this->assertValidQueryBuilder($qb, 'DELETE Doctrine\Tests\Models\CMS\CmsUser u ');
     }
 }
