@@ -79,12 +79,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
         return $this->case === CASE_UPPER ?  'ID' : 'id';
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @param class-string $className
-     */
-    public function joinColumnName(string $propertyName, ?string $className = null): string
+    public function joinColumnName(string $propertyName, string $className): string
     {
         return $this->underscore($propertyName) . '_' . $this->referenceColumnName();
     }

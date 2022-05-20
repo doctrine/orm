@@ -1,5 +1,42 @@
 # Upgrade to 3.0
 
+## BC BREAK: New argument to `NamingStrategy::joinColumnName()`
+
+### Before
+
+```php
+<?php
+class MyStrategy implements NamingStrategy
+{
+    /**
+     * @param string $propertyName A property name.
+     */
+    public function joinColumnName($propertyName): string
+    {
+        // …
+    }
+}
+```
+
+### After
+
+The `class-string` type for `$className` can be inherited from the signature of
+the interface.
+
+```php
+<?php
+class MyStrategy implements NamingStrategy
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function joinColumnName(string $propertyName, string $className): string
+    {
+        // …
+    }
+}
+```
+
 ## BC BREAK: Remove StaticPHPDriver
 
 Use `Doctrine\Persistence\Mapping\Driver\StaticPHPDriver` from

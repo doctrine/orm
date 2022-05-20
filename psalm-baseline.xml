@@ -488,10 +488,6 @@
     <RedundantFunctionCall occurrences="1">
       <code>array_values</code>
     </RedundantFunctionCall>
-    <TooManyArguments occurrences="2">
-      <code>joinColumnName</code>
-      <code>joinColumnName</code>
-    </TooManyArguments>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ColumnResult.php">
     <MissingConstructor occurrences="1">
