@@ -1044,9 +1044,6 @@
     </PossiblyFalseOperand>
   </file>
   <file src="lib/Doctrine/ORM/NativeQuery.php">
-    <LessSpecificImplementedReturnType occurrences="1">
-      <code>mixed</code>
-    </LessSpecificImplementedReturnType>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$sql</code>
     </PropertyNotSetInConstructor>
@@ -1384,9 +1381,6 @@
     <InvalidScalarArgument occurrences="1">
       <code>$sqlParams</code>
     </InvalidScalarArgument>
-    <LessSpecificImplementedReturnType occurrences="1">
-      <code>mixed</code>
-    </LessSpecificImplementedReturnType>
     <LessSpecificReturnStatement occurrences="2">
       <code>parent::setHint($name, $value)</code>
       <code>parent::setHydrationMode($hydrationMode)</code>
@@ -1970,6 +1964,9 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>MultiTableUpdateExecutor</code>
     </PropertyNotSetInConstructor>
+    <PropertyTypeCoercion occurrences="1">
+      <code>$this-&gt;_sqlStatements</code>
+    </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/SingleSelectExecutor.php">
     <PossiblyInvalidArgument occurrences="1">
