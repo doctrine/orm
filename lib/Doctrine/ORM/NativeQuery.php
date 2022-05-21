@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use Doctrine\DBAL\Result;
+
 use function array_values;
 use function is_int;
 use function key;
@@ -14,35 +16,24 @@ use function ksort;
  */
 final class NativeQuery extends AbstractQuery
 {
-    /** @var string */
-    private $sql;
+    private string $sql;
 
     /**
-     * Sets the SQL of the query.
-     *
-     * @param string $sql
-     *
      * @return $this
      */
-    public function setSQL($sql): self
+    public function setSQL(string $sql): self
     {
         $this->sql = $sql;
 
         return $this;
     }
 
-    /**
-     * Gets the SQL query.
-     */
     public function getSQL(): string
     {
         return $this->sql;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function _doExecute()
+    protected function _doExecute(): Result|int
     {
         $parameters = [];
         $types      = [];
