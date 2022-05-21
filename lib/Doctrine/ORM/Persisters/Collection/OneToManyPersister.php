@@ -14,7 +14,9 @@ use Doctrine\ORM\Utility\PersisterHelper;
 use function array_merge;
 use function array_reverse;
 use function array_values;
+use function assert;
 use function implode;
+use function is_string;
 
 /**
  * Persister for one-to-many collections.

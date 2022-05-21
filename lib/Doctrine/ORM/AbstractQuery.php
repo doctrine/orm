@@ -353,7 +353,6 @@ abstract class AbstractQuery
      */
     public function setParameters($parameters)
     {
-        // BC compatibility with 2.3-
         if (is_array($parameters)) {
             /** @psalm-var ArrayCollection<int, Parameter> $parameterCollection */
             $parameterCollection = new ArrayCollection();
