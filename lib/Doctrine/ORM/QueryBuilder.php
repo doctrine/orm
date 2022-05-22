@@ -17,7 +17,6 @@ use function array_merge;
 use function array_unshift;
 use function assert;
 use function count;
-use function class_exists;
 use function implode;
 use function in_array;
 use function is_array;
@@ -402,9 +401,8 @@ class QueryBuilder
             if (is_string($fromClause)) {
                 $spacePos = strrpos($fromClause, ' ');
 
-                $from = substr($fromClause, 0, $spacePos);
-                assert(class_exists($from));
-
+                /** @psalm-var class-string $from */
+                $from  = substr($fromClause, 0, $spacePos);
                 $alias = substr($fromClause, $spacePos + 1);
 
                 $fromClause = new Query\Expr\From($from, $alias);
@@ -460,9 +458,8 @@ class QueryBuilder
             if (is_string($fromClause)) {
                 $spacePos = strrpos($fromClause, ' ');
 
-                $from = substr($fromClause, 0, $spacePos);
-                assert(class_exists($from));
-
+                /** @psalm-var class-string $from */
+                $from  = substr($fromClause, 0, $spacePos);
                 $alias = substr($fromClause, $spacePos + 1);
 
                 $fromClause = new Query\Expr\From($from, $alias);
@@ -759,12 +756,9 @@ class QueryBuilder
      *         ->where('u.id = ?2');
      * </code>
      *
-<<<<<<< HEAD
-=======
      * @param class-string|null $update The class/type whose instances are subject to the update.
      * @param string|null       $alias  The class/type alias used in the constructed query.
      *
->>>>>>> 58f1f3c48 (Restrict from param)
      * @return $this
      */
     public function update(?string $update = null, ?string $alias = null): static
@@ -788,13 +782,10 @@ class QueryBuilder
      *         ->from('User', 'u');
      * </code>
      *
-<<<<<<< HEAD
-=======
      * @param class-string $from    The class name.
      * @param string       $alias   The alias of the class.
      * @param string|null  $indexBy The index for the from.
      *
->>>>>>> 58f1f3c48 (Restrict from param)
      * @return $this
      */
     public function from(string $from, string $alias, ?string $indexBy = null): static
