@@ -23,7 +23,6 @@ class LengthFunction extends FunctionNode implements TypedExpression
     public $stringPrimary;
 
     /**
-     * @override
      * @inheritdoc
      */
     public function getSql(SqlWalker $sqlWalker)
@@ -34,7 +33,6 @@ class LengthFunction extends FunctionNode implements TypedExpression
     }
 
     /**
-     * @override
      * @inheritdoc
      */
     public function parse(Parser $parser)

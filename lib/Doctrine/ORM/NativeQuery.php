@@ -35,8 +35,6 @@ final class NativeQuery extends AbstractQuery
      * Gets the SQL query.
      *
      * @return mixed The built SQL query or an array of all SQL queries.
-     *
-     * @override
      */
     public function getSQL()
     {
