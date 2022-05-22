@@ -446,7 +446,7 @@ class QueryBuilder
      * </code>
      *
      * @return string[]
-     * @psalm-return list<string>
+     * @psalm-return list<class-string>
      */
     public function getRootEntities(): array
     {
