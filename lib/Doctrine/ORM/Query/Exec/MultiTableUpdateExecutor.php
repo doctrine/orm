@@ -139,7 +139,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         }
 
         $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
-                . $platform->getColumnDeclarationListSQL($columnDefinitions) . ', PRIMARY KEY(' . $idColumnNames[0] . '))';
+                . $platform->getColumnDeclarationListSQL($columnDefinitions) . ', PRIMARY KEY(' . implode(',', $idColumnNames) . '))';
 
         $this->_dropTempTableSql = $platform->getDropTemporaryTableSQL($tempTable);
     }
