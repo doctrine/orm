@@ -2061,8 +2061,7 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$stringPattern</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="3">
-      <code>call_user_func($functionClass, $functionName)</code>
+    <DocblockTypeContradiction occurrences="2">
       <code>call_user_func($functionClass, $functionName)</code>
       <code>call_user_func($functionClass, $functionName)</code>
     </DocblockTypeContradiction>
@@ -2117,6 +2116,9 @@
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
     </InvalidScalarArgument>
+    <InvalidStringClass occurrences="1">
+      <code>new $functionClass($functionName)</code>
+    </InvalidStringClass>
     <LessSpecificReturnStatement occurrences="4">
       <code>$function</code>
       <code>$function</code>
@@ -2250,9 +2252,8 @@
     <PossiblyUndefinedVariable occurrences="1">
       <code>$args</code>
     </PossiblyUndefinedVariable>
-    <RedundantConditionGivenDocblockType occurrences="4">
+    <RedundantConditionGivenDocblockType occurrences="3">
       <code>$AST instanceof AST\SelectStatement</code>
-      <code>is_string($functionClass)</code>
       <code>is_string($functionClass)</code>
       <code>is_string($functionClass)</code>
     </RedundantConditionGivenDocblockType>

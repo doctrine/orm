@@ -477,7 +477,7 @@ parameters:
 
 		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
-			count: 3
+			count: 2
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
