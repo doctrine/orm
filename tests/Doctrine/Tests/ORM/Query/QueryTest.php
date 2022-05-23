@@ -13,6 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
@@ -41,6 +42,8 @@ use const PHP_VERSION_ID;
 
 class QueryTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     /** @var EntityManagerMock */
     protected $entityManager;
 
@@ -127,6 +130,13 @@ class QueryTest extends OrmTestCase
           ->setMaxResults(10);
 
         self::assertSame($q2, $q);
+    }
+
+    public function testSettingNullDqlIsDeprecated(): void
+    {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9784');
+        $q = $this->entityManager->createQuery();
+        $q->setDQL(null);
     }
 
     /**
