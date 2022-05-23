@@ -20,7 +20,6 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function call_user_func_array;
 use function debug_backtrace;
 
 use const PHP_INT_MAX;
@@ -149,7 +148,7 @@ class DDC3634LastInsertIdMockingConnection extends Connection
     {
         $trace = debug_backtrace(0, 2)[1];
 
-        return call_user_func_array([$this->realConnection, $trace['function']], $trace['args']);
+        return $this->realConnection->{$trace['function']}(...$trace['args']);
     }
 
     /** {@inheritDoc} */

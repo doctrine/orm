@@ -2049,10 +2049,7 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$stringPattern</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="2">
-      <code>call_user_func($functionClass, $functionName)</code>
-      <code>call_user_func($functionClass, $functionName)</code>
-    </DocblockTypeContradiction>
+    <DocblockTypeContradiction occurrences="2"/>
     <InvalidArgument occurrences="1">
       <code>$lookaheadType</code>
     </InvalidArgument>
