@@ -32,6 +32,7 @@ use function array_map;
 use function array_shift;
 use function assert;
 use function count;
+use function in_array;
 use function is_array;
 use function is_numeric;
 use function is_object;
@@ -827,7 +828,13 @@ abstract class AbstractQuery
      */
     public function setFetchMode($class, $assocName, $fetchMode)
     {
-        if ($fetchMode !== Mapping\ClassMetadata::FETCH_EAGER) {
+        if (! in_array($fetchMode, [Mapping\ClassMetadata::FETCH_EAGER, Mapping\ClassMetadata::FETCH_LAZY], true)) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/9777',
+                'Calling %s() with something else than ClassMetadata::FETCH_EAGER or ClassMetadata::FETCH_LAZY is deprecated.',
+                __METHOD__
+            );
             $fetchMode = Mapping\ClassMetadata::FETCH_LAZY;
         }
 

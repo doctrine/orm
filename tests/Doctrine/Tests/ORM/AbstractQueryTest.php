@@ -82,4 +82,16 @@ final class AbstractQueryTest extends TestCase
         self::assertSame($cache, CacheAdapter::wrap($query->getResultCacheDriver()));
         $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/dbal/pull/4620');
     }
+
+    public function testSettingTheFetchModeToRandomIntegersIsDeprecated(): void
+    {
+        $query = $this->getMockForAbstractClass(
+            AbstractQuery::class,
+            [],
+            '',
+            false // no need to call the constructor
+        );
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9777');
+        $query->setFetchMode(stdClass::class, 'foo', 42);
+    }
 }

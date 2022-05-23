@@ -1,5 +1,12 @@
 # Upgrade to 2.13
 
+## Deprecated passing invalid fetch modes to `AbstractQuery::setFetchMode()`
+
+Calling `AbstractQuery::setFetchMode()` with anything else than
+`Doctrine\ORM\Mapping::FETCH_EAGER` results in
+`Doctrine\ORM\Mapping::FETCH_LAZY` being used. Relying on that behavior is
+deprecated and will result in an exception in 3.0.
+
 ## Prepare split of output walkers and tree walkers
 
 In 3.0, `SqlWalker` and its child classes won't implement the `TreeWalker`
