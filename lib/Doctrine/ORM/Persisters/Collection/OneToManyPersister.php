@@ -14,7 +14,9 @@ use Doctrine\ORM\Utility\PersisterHelper;
 use function array_merge;
 use function array_reverse;
 use function array_values;
+use function assert;
 use function implode;
+use function is_string;
 
 /**
  * Persister for one-to-many collections.
@@ -225,7 +227,9 @@ class OneToManyPersister extends AbstractCollectionPersister
             . ' FROM ' . $targetClass->name . ' t0 WHERE t0.' . $mapping['mappedBy'] . ' = :owner'
         )->setParameter('owner', $collection->getOwner());
 
-        $statement  = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ') ' . $query->getSQL();
+        $sql = $query->getSQL();
+        assert(is_string($sql));
+        $statement  = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ') ' . $sql;
         $parameters = array_values($sourceClass->getIdentifierValues($collection->getOwner()));
         $numDeleted = $this->conn->executeStatement($statement, $parameters);
 
