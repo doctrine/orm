@@ -1,5 +1,9 @@
 # Upgrade to 2.13
 
+## Deprecated passing `null` to `Doctrine\ORM\Query::setDQL()`
+
+Doing `$query->setDQL(null);` achieves nothing.
+
 ## Deprecated omitting second argument to `NamingStrategy::joinColumnName`
 
 When implementing `NamingStrategy`, it is deprecated to implement

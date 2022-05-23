@@ -595,10 +595,19 @@ final class Query extends AbstractQuery
      */
     public function setDQL($dqlQuery): self
     {
-        if ($dqlQuery !== null) {
-            $this->dql    = $dqlQuery;
-            $this->_state = self::STATE_DIRTY;
+        if ($dqlQuery === null) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/9784',
+                'Calling %s with null is deprecated and will result in a TypeError in Doctrine 3.0',
+                __METHOD__
+            );
+
+            return $this;
         }
+
+        $this->dql    = $dqlQuery;
+        $this->_state = self::STATE_DIRTY;
 
         return $this;
     }
