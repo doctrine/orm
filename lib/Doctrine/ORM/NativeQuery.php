@@ -33,10 +33,8 @@ final class NativeQuery extends AbstractQuery
 
     /**
      * Gets the SQL query.
-     *
-     * @return mixed The built SQL query or an array of all SQL queries.
      */
-    public function getSQL()
+    public function getSQL(): string
     {
         return $this->sql;
     }

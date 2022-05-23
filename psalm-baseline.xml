@@ -786,11 +786,7 @@
     <MoreSpecificReturnType occurrences="1">
       <code>class-string</code>
     </MoreSpecificReturnType>
-    <PossiblyNullArgument occurrences="2">
-      <code>$this-&gt;tables[$tableName]</code>
-      <code>$this-&gt;tables[$tableName]</code>
-    </PossiblyNullArgument>
-    <PossiblyNullArrayAccess occurrences="3">
+    <PossiblyNullArrayAccess occurrences="2">
       <code>$this-&gt;tables[$tableName]</code>
       <code>$this-&gt;tables[$tableName]</code>
       <code>$this-&gt;tables[$tableName]</code>
@@ -1044,9 +1040,6 @@
     </PossiblyFalseOperand>
   </file>
   <file src="lib/Doctrine/ORM/NativeQuery.php">
-    <LessSpecificImplementedReturnType occurrences="1">
-      <code>mixed</code>
-    </LessSpecificImplementedReturnType>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$sql</code>
     </PropertyNotSetInConstructor>
@@ -1384,9 +1377,6 @@
     <InvalidScalarArgument occurrences="1">
       <code>$sqlParams</code>
     </InvalidScalarArgument>
-    <LessSpecificImplementedReturnType occurrences="1">
-      <code>mixed</code>
-    </LessSpecificImplementedReturnType>
     <LessSpecificReturnStatement occurrences="2">
       <code>parent::setHint($name, $value)</code>
       <code>parent::setHydrationMode($hydrationMode)</code>
@@ -1401,18 +1391,13 @@
     <PossiblyNullArgument occurrences="1">
       <code>$this-&gt;getDQL()</code>
     </PossiblyNullArgument>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$timeToLive</code>
-    </PossiblyNullPropertyAssignmentValue>
     <PossiblyNullReference occurrences="1">
       <code>evictEntityRegion</code>
     </PossiblyNullReference>
-    <PropertyNotSetInConstructor occurrences="2">
+    <PropertyNotSetInConstructor occurrences="1">
       <code>$parserResult</code>
-      <code>$queryCacheTTL</code>
     </PropertyNotSetInConstructor>
-    <RedundantConditionGivenDocblockType occurrences="2">
-      <code>$dqlQuery !== null</code>
+    <RedundantConditionGivenDocblockType occurrences="1">
       <code>$timeToLive !== null</code>
     </RedundantConditionGivenDocblockType>
   </file>
@@ -1970,6 +1955,9 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>MultiTableUpdateExecutor</code>
     </PropertyNotSetInConstructor>
+    <PropertyTypeCoercion occurrences="1">
+      <code>$this-&gt;_sqlStatements</code>
+    </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/SingleSelectExecutor.php">
     <PossiblyInvalidArgument occurrences="1">
@@ -2061,8 +2049,7 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$stringPattern</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="3">
-      <code>call_user_func($functionClass, $functionName)</code>
+    <DocblockTypeContradiction occurrences="2">
       <code>call_user_func($functionClass, $functionName)</code>
       <code>call_user_func($functionClass, $functionName)</code>
     </DocblockTypeContradiction>
@@ -2117,6 +2104,9 @@
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
     </InvalidScalarArgument>
+    <InvalidStringClass occurrences="1">
+      <code>new $functionClass($functionName)</code>
+    </InvalidStringClass>
     <LessSpecificReturnStatement occurrences="4">
       <code>$function</code>
       <code>$function</code>
@@ -2250,9 +2240,8 @@
     <PossiblyUndefinedVariable occurrences="1">
       <code>$args</code>
     </PossiblyUndefinedVariable>
-    <RedundantConditionGivenDocblockType occurrences="4">
+    <RedundantConditionGivenDocblockType occurrences="3">
       <code>$AST instanceof AST\SelectStatement</code>
-      <code>is_string($functionClass)</code>
       <code>is_string($functionClass)</code>
       <code>is_string($functionClass)</code>
     </RedundantConditionGivenDocblockType>

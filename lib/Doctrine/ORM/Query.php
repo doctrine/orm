@@ -174,7 +174,7 @@ final class Query extends AbstractQuery
     /**
      * The query cache lifetime.
      *
-     * @var int
+     * @var int|null
      */
     private $queryCacheTTL;
 
@@ -188,7 +188,7 @@ final class Query extends AbstractQuery
     /**
      * Gets the SQL query/queries that correspond to this DQL query.
      *
-     * @return mixed The built sql query or an array of all sql queries.
+     * @return list<string>|string The built sql query or an array of all sql queries.
      */
     public function getSQL()
     {
@@ -591,7 +591,7 @@ final class Query extends AbstractQuery
     /**
      * Sets a DQL query string.
      *
-     * @param string $dqlQuery DQL Query.
+     * @param string|null $dqlQuery DQL Query.
      */
     public function setDQL($dqlQuery): self
     {
