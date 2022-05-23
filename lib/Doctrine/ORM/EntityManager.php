@@ -35,7 +35,6 @@ use InvalidArgumentException;
 use Throwable;
 
 use function array_keys;
-use function call_user_func;
 use function class_exists;
 use function get_debug_type;
 use function gettype;
@@ -242,7 +241,7 @@ use function strpos;
         $this->conn->beginTransaction();
 
         try {
-            $return = call_user_func($func, $this);
+            $return = $func($this);
 
             $this->flush();
             $this->conn->commit();
