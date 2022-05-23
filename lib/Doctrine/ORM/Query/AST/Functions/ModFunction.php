@@ -23,7 +23,6 @@ class ModFunction extends FunctionNode
     public $secondSimpleArithmeticExpression;
 
     /**
-     * @override
      * @inheritdoc
      */
     public function getSql(SqlWalker $sqlWalker)
@@ -35,7 +34,6 @@ class ModFunction extends FunctionNode
     }
 
     /**
-     * @override
      * @inheritdoc
      */
     public function parse(Parser $parser)

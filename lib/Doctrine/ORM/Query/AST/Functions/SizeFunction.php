@@ -23,7 +23,6 @@ class SizeFunction extends FunctionNode
     public $collectionPathExpression;
 
     /**
-     * @override
      * @inheritdoc
      * @todo If the collection being counted is already joined, the SQL can be simpler (more efficient).
      */
@@ -104,7 +103,6 @@ class SizeFunction extends FunctionNode
     }
 
     /**
-     * @override
      * @inheritdoc
      */
     public function parse(Parser $parser)

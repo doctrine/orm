@@ -189,8 +189,6 @@ final class Query extends AbstractQuery
      * Gets the SQL query/queries that correspond to this DQL query.
      *
      * @return mixed The built sql query or an array of all sql queries.
-     *
-     * @override
      */
     public function getSQL()
     {
@@ -582,9 +580,6 @@ final class Query extends AbstractQuery
         return $this->expireQueryCache;
     }
 
-    /**
-     * @override
-     */
     public function free(): void
     {
         parent::free();

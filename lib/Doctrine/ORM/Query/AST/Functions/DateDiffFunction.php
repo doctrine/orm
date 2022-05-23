@@ -23,7 +23,6 @@ class DateDiffFunction extends FunctionNode
     public $date2;
 
     /**
-     * @override
      * @inheritdoc
      */
     public function getSql(SqlWalker $sqlWalker)
@@ -35,7 +34,6 @@ class DateDiffFunction extends FunctionNode
     }
 
     /**
-     * @override
      * @inheritdoc
      */
     public function parse(Parser $parser)

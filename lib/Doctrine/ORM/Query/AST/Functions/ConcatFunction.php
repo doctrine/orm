@@ -26,7 +26,6 @@ class ConcatFunction extends FunctionNode
     public $concatExpressions = [];
 
     /**
-     * @override
      * @inheritdoc
      */
     public function getSql(SqlWalker $sqlWalker)
@@ -43,7 +42,6 @@ class ConcatFunction extends FunctionNode
     }
 
     /**
-     * @override
      * @inheritdoc
      */
     public function parse(Parser $parser)

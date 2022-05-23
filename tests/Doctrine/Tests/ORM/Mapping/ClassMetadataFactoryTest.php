@@ -557,8 +557,6 @@ class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
 
     /**
      * @psalm-param class-string<object> $className
-     *
-     * @override
      */
     protected function newClassMetadataInstance($className): ClassMetadata
     {
