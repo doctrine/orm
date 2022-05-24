@@ -34,6 +34,8 @@ interface TreeWalker
     /**
      * Sets or overrides a query component for a given dql alias.
      *
+     * @deprecated This method will be removed from the interface in 3.0.
+     *
      * @param string               $dqlAlias       The DQL alias.
      * @param array<string, mixed> $queryComponent
      * @psalm-param QueryComponent $queryComponent
@@ -43,414 +45,503 @@ interface TreeWalker
     public function setQueryComponent($dqlAlias, array $queryComponent);
 
     /**
-     * Walks down a SelectStatement AST node, thereby generating the appropriate SQL.
+     * Walks down a SelectStatement AST node.
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkSelectStatement(AST\SelectStatement $AST);
 
     /**
-     * Walks down a SelectClause AST node, thereby generating the appropriate SQL.
+     * Walks down a SelectClause AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\SelectClause $selectClause
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkSelectClause($selectClause);
 
     /**
-     * Walks down a FromClause AST node, thereby generating the appropriate SQL.
+     * Walks down a FromClause AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\FromClause $fromClause
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkFromClause($fromClause);
 
     /**
-     * Walks down a FunctionNode AST node, thereby generating the appropriate SQL.
+     * Walks down a FunctionNode AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\Functions\FunctionNode $function
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkFunction($function);
 
     /**
-     * Walks down an OrderByClause AST node, thereby generating the appropriate SQL.
+     * Walks down an OrderByClause AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\OrderByClause $orderByClause
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkOrderByClause($orderByClause);
 
     /**
      * Walks down an OrderByItem AST node, thereby generating the appropriate SQL.
      *
+     * @deprecated This method will be removed from the interface in 3.0.
+     *
      * @param AST\OrderByItem $orderByItem
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkOrderByItem($orderByItem);
 
     /**
-     * Walks down a HavingClause AST node, thereby generating the appropriate SQL.
+     * Walks down a HavingClause AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\HavingClause $havingClause
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkHavingClause($havingClause);
 
     /**
-     * Walks down a Join AST node and creates the corresponding SQL.
+     * Walks down a Join AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\Join $join
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkJoin($join);
 
     /**
-     * Walks down a SelectExpression AST node and generates the corresponding SQL.
+     * Walks down a SelectExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\SelectExpression $selectExpression
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkSelectExpression($selectExpression);
 
     /**
-     * Walks down a QuantifiedExpression AST node, thereby generating the appropriate SQL.
+     * Walks down a QuantifiedExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\QuantifiedExpression $qExpr
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkQuantifiedExpression($qExpr);
 
     /**
-     * Walks down a Subselect AST node, thereby generating the appropriate SQL.
+     * Walks down a Subselect AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\Subselect $subselect
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkSubselect($subselect);
 
     /**
-     * Walks down a SubselectFromClause AST node, thereby generating the appropriate SQL.
+     * Walks down a SubselectFromClause AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\SubselectFromClause $subselectFromClause
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkSubselectFromClause($subselectFromClause);
 
     /**
-     * Walks down a SimpleSelectClause AST node, thereby generating the appropriate SQL.
+     * Walks down a SimpleSelectClause AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\SimpleSelectClause $simpleSelectClause
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkSimpleSelectClause($simpleSelectClause);
 
     /**
-     * Walks down a SimpleSelectExpression AST node, thereby generating the appropriate SQL.
+     * Walks down a SimpleSelectExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\SimpleSelectExpression $simpleSelectExpression
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkSimpleSelectExpression($simpleSelectExpression);
 
     /**
-     * Walks down an AggregateExpression AST node, thereby generating the appropriate SQL.
+     * Walks down an AggregateExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\AggregateExpression $aggExpression
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkAggregateExpression($aggExpression);
 
     /**
-     * Walks down a GroupByClause AST node, thereby generating the appropriate SQL.
+     * Walks down a GroupByClause AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\GroupByClause $groupByClause
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkGroupByClause($groupByClause);
 
     /**
-     * Walks down a GroupByItem AST node, thereby generating the appropriate SQL.
+     * Walks down a GroupByItem AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\PathExpression|string $groupByItem
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkGroupByItem($groupByItem);
 
     /**
-     * Walks down an UpdateStatement AST node, thereby generating the appropriate SQL.
+     * Walks down an UpdateStatement AST node.
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkUpdateStatement(AST\UpdateStatement $AST);
 
     /**
-     * Walks down a DeleteStatement AST node, thereby generating the appropriate SQL.
+     * Walks down a DeleteStatement AST node.
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkDeleteStatement(AST\DeleteStatement $AST);
 
     /**
-     * Walks down a DeleteClause AST node, thereby generating the appropriate SQL.
+     * Walks down a DeleteClause AST node.
      *
-     * @return string The SQL.
+     * @deprecated This method will be removed from the interface in 3.0.
+     *
+     * @return void
      */
     public function walkDeleteClause(AST\DeleteClause $deleteClause);
 
     /**
-     * Walks down an UpdateClause AST node, thereby generating the appropriate SQL.
+     * Walks down an UpdateClause AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\UpdateClause $updateClause
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkUpdateClause($updateClause);
 
     /**
-     * Walks down an UpdateItem AST node, thereby generating the appropriate SQL.
+     * Walks down an UpdateItem AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\UpdateItem $updateItem
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkUpdateItem($updateItem);
 
     /**
-     * Walks down a WhereClause AST node, thereby generating the appropriate SQL.
+     * Walks down a WhereClause AST node.
+     *
      * WhereClause or not, the appropriate discriminator sql is added.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\WhereClause $whereClause
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkWhereClause($whereClause);
 
     /**
-     * Walk down a ConditionalExpression AST node, thereby generating the appropriate SQL.
+     * Walk down a ConditionalExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\ConditionalExpression $condExpr
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkConditionalExpression($condExpr);
 
     /**
-     * Walks down a ConditionalTerm AST node, thereby generating the appropriate SQL.
+     * Walks down a ConditionalTerm AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\ConditionalTerm $condTerm
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkConditionalTerm($condTerm);
 
     /**
-     * Walks down a ConditionalFactor AST node, thereby generating the appropriate SQL.
+     * Walks down a ConditionalFactor AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\ConditionalFactor $factor
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkConditionalFactor($factor);
 
     /**
-     * Walks down a ConditionalPrimary AST node, thereby generating the appropriate SQL.
+     * Walks down a ConditionalPrimary AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\ConditionalPrimary $primary
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkConditionalPrimary($primary);
 
     /**
-     * Walks down an ExistsExpression AST node, thereby generating the appropriate SQL.
+     * Walks down an ExistsExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\ExistsExpression $existsExpr
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkExistsExpression($existsExpr);
 
     /**
-     * Walks down a CollectionMemberExpression AST node, thereby generating the appropriate SQL.
+     * Walks down a CollectionMemberExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\CollectionMemberExpression $collMemberExpr
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkCollectionMemberExpression($collMemberExpr);
 
     /**
-     * Walks down an EmptyCollectionComparisonExpression AST node, thereby generating the appropriate SQL.
+     * Walks down an EmptyCollectionComparisonExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\EmptyCollectionComparisonExpression $emptyCollCompExpr
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkEmptyCollectionComparisonExpression($emptyCollCompExpr);
 
     /**
-     * Walks down a NullComparisonExpression AST node, thereby generating the appropriate SQL.
+     * Walks down a NullComparisonExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\NullComparisonExpression $nullCompExpr
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkNullComparisonExpression($nullCompExpr);
 
     /**
-     * Walks down an InExpression AST node, thereby generating the appropriate SQL.
+     * Walks down an InExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\InExpression $inExpr
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkInExpression($inExpr);
 
     /**
-     * Walks down an InstanceOfExpression AST node, thereby generating the appropriate SQL.
+     * Walks down an InstanceOfExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\InstanceOfExpression $instanceOfExpr
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkInstanceOfExpression($instanceOfExpr);
 
     /**
-     * Walks down a literal that represents an AST node, thereby generating the appropriate SQL.
+     * Walks down a literal that represents an AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\Literal $literal
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkLiteral($literal);
 
     /**
-     * Walks down a BetweenExpression AST node, thereby generating the appropriate SQL.
+     * Walks down a BetweenExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\BetweenExpression $betweenExpr
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkBetweenExpression($betweenExpr);
 
     /**
-     * Walks down a LikeExpression AST node, thereby generating the appropriate SQL.
+     * Walks down a LikeExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\LikeExpression $likeExpr
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkLikeExpression($likeExpr);
 
     /**
-     * Walks down a StateFieldPathExpression AST node, thereby generating the appropriate SQL.
+     * Walks down a StateFieldPathExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\PathExpression $stateFieldPathExpression
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkStateFieldPathExpression($stateFieldPathExpression);
 
     /**
-     * Walks down a ComparisonExpression AST node, thereby generating the appropriate SQL.
+     * Walks down a ComparisonExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\ComparisonExpression $compExpr
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkComparisonExpression($compExpr);
 
     /**
-     * Walks down an InputParameter AST node, thereby generating the appropriate SQL.
+     * Walks down an InputParameter AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\InputParameter $inputParam
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkInputParameter($inputParam);
 
     /**
-     * Walks down an ArithmeticExpression AST node, thereby generating the appropriate SQL.
+     * Walks down an ArithmeticExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\ArithmeticExpression $arithmeticExpr
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkArithmeticExpression($arithmeticExpr);
 
     /**
-     * Walks down an ArithmeticTerm AST node, thereby generating the appropriate SQL.
+     * Walks down an ArithmeticTerm AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param mixed $term
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkArithmeticTerm($term);
 
     /**
-     * Walks down a StringPrimary that represents an AST node, thereby generating the appropriate SQL.
+     * Walks down a StringPrimary that represents an AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param mixed $stringPrimary
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkStringPrimary($stringPrimary);
 
     /**
-     * Walks down an ArithmeticFactor that represents an AST node, thereby generating the appropriate SQL.
+     * Walks down an ArithmeticFactor that represents an AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param mixed $factor
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkArithmeticFactor($factor);
 
     /**
-     * Walks down an SimpleArithmeticExpression AST node, thereby generating the appropriate SQL.
+     * Walks down an SimpleArithmeticExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\SimpleArithmeticExpression $simpleArithmeticExpr
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkSimpleArithmeticExpression($simpleArithmeticExpr);
 
     /**
-     * Walks down a PathExpression AST node, thereby generating the appropriate SQL.
+     * Walks down a PathExpression AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\PathExpression $pathExpr
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkPathExpression($pathExpr);
 
     /**
-     * Walks down a ResultVariable that represents an AST node, thereby generating the appropriate SQL.
+     * Walks down a ResultVariable that represents an AST node.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param string $resultVariable
      *
-     * @return string The SQL.
+     * @return void
      */
     public function walkResultVariable($resultVariable);
 
     /**
      * Gets an executor that can be used to execute the result of this walker.
+     *
+     * @deprecated This method will be removed from the interface in 3.0.
      *
      * @param AST\DeleteStatement|AST\UpdateStatement|AST\SelectStatement $AST
      *

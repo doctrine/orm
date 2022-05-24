@@ -11,11 +11,4 @@ use Doctrine\ORM\Query\TreeWalkerAdapter;
  */
 class MockTreeWalker extends TreeWalkerAdapter
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getExecutor($AST)
-    {
-        return null;
-    }
 }

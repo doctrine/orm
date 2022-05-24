@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\AST\ArithmeticExpression;
 use Doctrine\ORM\Query\AST\ConditionalExpression;
 use Doctrine\ORM\Query\AST\ConditionalFactor;
@@ -28,7 +27,13 @@ use function is_array;
 use function reset;
 
 /**
- * Appends a condition "id IN (:foo_1, :foo_2)" to the whereClause of the AST.
+ * Appends a condition equivalent to "WHERE IN (:dpid_1, :dpid_2, ...)" to the whereClause of the AST.
+ *
+ * The parameter namespace (dpid) is defined by
+ * the PAGINATOR_ID_ALIAS
+ *
+ * The total number of parameters is retrieved from
+ * the HINT_PAGINATOR_ID_COUNT query hint.
  */
 class WhereInWalker extends TreeWalkerAdapter
 {
@@ -42,19 +47,6 @@ class WhereInWalker extends TreeWalkerAdapter
      */
     public const PAGINATOR_ID_ALIAS = 'dpid';
 
-    /**
-     * Appends a condition equivalent to "WHERE IN (:dpid_1, :dpid_2, ...)" to the whereClause of the AST.
-     *
-     * The parameter namespace (dpid) is defined by
-     * the PAGINATOR_ID_ALIAS
-     *
-     * The total number of parameters is retrieved from
-     * the HINT_PAGINATOR_ID_COUNT query hint.
-     *
-     * @return void
-     *
-     * @throws RuntimeException
-     */
     public function walkSelectStatement(SelectStatement $AST)
     {
         $queryComponents = $this->_getQueryComponents();
@@ -67,8 +59,8 @@ class WhereInWalker extends TreeWalkerAdapter
 
         $fromRoot  = reset($from);
         $rootAlias = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
-        $rootClass = $queryComponents[$rootAlias]['metadata'];
-        assert($rootClass instanceof ClassMetadata);
+        assert(isset($queryComponents[$rootAlias]['metadata']));
+        $rootClass           = $queryComponents[$rootAlias]['metadata'];
         $identifierFieldName = $rootClass->getSingleIdentifierFieldName();
 
         $pathType = PathExpression::TYPE_STATE_FIELD;
