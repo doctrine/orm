@@ -7,6 +7,9 @@
     <DeprecatedMethod occurrences="1">
       <code>iterate</code>
     </DeprecatedMethod>
+    <DocblockTypeContradiction occurrences="1">
+      <code>in_array($fetchMode, [Mapping\ClassMetadata::FETCH_EAGER, Mapping\ClassMetadata::FETCH_LAZY], true)</code>
+    </DocblockTypeContradiction>
     <FalsableReturnStatement occurrences="1">
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
     </FalsableReturnStatement>
@@ -2244,11 +2247,6 @@
       <code>is_string($functionClass)</code>
       <code>is_string($functionClass)</code>
     </RedundantConditionGivenDocblockType>
-    <UnsafeInstantiation occurrences="3">
-      <code>new $funcClass($funcNameLower)</code>
-      <code>new $funcClass($funcNameLower)</code>
-      <code>new $funcClass($funcNameLower)</code>
-    </UnsafeInstantiation>
   </file>
   <file src="lib/Doctrine/ORM/Query/ParserResult.php">
     <PropertyNotSetInConstructor occurrences="1">

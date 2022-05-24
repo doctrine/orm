@@ -119,6 +119,7 @@ final class Query extends AbstractQuery
      * The current state of this query.
      *
      * @var int
+     * @psalm-var self::STATE_*
      */
     private $_state = self::STATE_DIRTY;
 
@@ -629,6 +630,7 @@ final class Query extends AbstractQuery
      * @see AbstractQuery::STATE_DIRTY
      *
      * @return int The query state.
+     * @psalm-return self::STATE_* The query state.
      */
     public function getState(): int
     {
