@@ -325,7 +325,7 @@ abstract class AbstractQuery
     /**
      * Gets a query parameter.
      *
-     * @param mixed $key The key (index or name) of the bound parameter.
+     * @param int|string $key The key (index or name) of the bound parameter.
      *
      * @return Parameter|null The value of the bound parameter, or NULL if not available.
      */
