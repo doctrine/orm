@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST;
-use Doctrine\ORM\Query\AST\SelectClause;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
@@ -87,19 +86,10 @@ class DisableFetchJoinTreeWalker extends TreeWalkerAdapter
 {
     public function walkSelectStatement(AST\SelectStatement $AST): void
     {
-        $this->walkSelectClause($AST->selectClause);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function walkSelectClause($selectClause): void
-    {
-        assert($selectClause instanceof SelectClause);
-        foreach ($selectClause->selectExpressions as $key => $selectExpr) {
+        foreach ($AST->selectClause->selectExpressions as $key => $selectExpr) {
             assert($selectExpr instanceof SelectExpression);
             if ($selectExpr->expression === 'c') {
-                unset($selectClause->selectExpressions[$key]);
+                unset($AST->selectClause->selectExpressions[$key]);
                 break;
             }
         }

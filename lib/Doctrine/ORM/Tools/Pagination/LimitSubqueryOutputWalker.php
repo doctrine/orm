@@ -155,11 +155,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     }
 
     /**
-     * Walks down a SelectStatement AST node, wrapping it in a SELECT DISTINCT.
-     *
-     * @return string
-     *
-     * @throws RuntimeException
+     * {@inheritdoc}
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
