@@ -72,4 +72,16 @@ class TestQuery extends AbstractQuery
     {
         return $this->_queryCacheProfile->getResultCache();
     }
+
+    public function testSettingTheFetchModeToRandomIntegersIsDeprecated(): void
+    {
+        $query = $this->getMockForAbstractClass(
+            AbstractQuery::class,
+            [],
+            '',
+            false // no need to call the constructor
+        );
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9777');
+        $query->setFetchMode(stdClass::class, 'foo', 42);
+    }
 }

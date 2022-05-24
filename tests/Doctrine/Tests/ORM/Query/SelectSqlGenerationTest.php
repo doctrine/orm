@@ -2319,17 +2319,11 @@ class MyAbsFunction extends FunctionNode
     /** @var SimpleArithmeticExpression */
     public $simpleArithmeticExpression;
 
-    /**
-     * @override
-     */
     public function getSql(SqlWalker $sqlWalker): string
     {
         return 'ABS(' . $sqlWalker->walkSimpleArithmeticExpression($this->simpleArithmeticExpression) . ')';
     }
 
-    /**
-     * @override
-     */
     public function parse(Parser $parser): void
     {
         $lexer = $parser->getLexer();

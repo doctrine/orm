@@ -13,7 +13,6 @@ use Doctrine\Tests\Models\Cache\State;
 use Exception;
 use RuntimeException;
 
-use function call_user_func;
 use function uniqid;
 
 /**
@@ -354,7 +353,7 @@ class ListenerSecondLevelCacheTest
     private function dispatch(string $eventName, EventArgs $args): void
     {
         if (isset($this->callbacks[$eventName])) {
-            call_user_func($this->callbacks[$eventName], $args);
+            ($this->callbacks[$eventName])($args);
         }
     }
 

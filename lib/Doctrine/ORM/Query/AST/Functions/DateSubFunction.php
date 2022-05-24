@@ -20,7 +20,6 @@ use function strtolower;
 class DateSubFunction extends DateAddFunction
 {
     /**
-     * @override
      * @inheritdoc
      */
     public function getSql(SqlWalker $sqlWalker)

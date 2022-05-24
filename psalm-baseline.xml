@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="4.23.0@f1fe6ff483bf325c803df9f510d09a03fd796f88">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
+    <DocblockTypeContradiction occurrences="1">
+      <code>in_array($fetchMode, [Mapping\ClassMetadata::FETCH_EAGER, Mapping\ClassMetadata::FETCH_LAZY], true)</code>
+    </DocblockTypeContradiction>
     <FalsableReturnStatement occurrences="1">
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
     </FalsableReturnStatement>
@@ -346,15 +349,15 @@
     <InvalidNullableReturnType occurrences="1">
       <code>MappingDriver</code>
     </InvalidNullableReturnType>
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>$subClass-&gt;table</code>
+    </InvalidPropertyAssignmentValue>
     <NullableReturnStatement occurrences="1">
       <code>$this-&gt;driver</code>
     </NullableReturnStatement>
     <PossiblyInvalidArrayAssignment occurrences="1">
       <code>$subClass-&gt;table[$indexType][$indexName]</code>
     </PossiblyInvalidArrayAssignment>
-    <InvalidPropertyAssignmentValue occurrences="1">
-      <code>$subClass-&gt;table</code>
-    </InvalidPropertyAssignmentValue>
     <PossiblyInvalidIterator occurrences="1">
       <code>$parentClass-&gt;table[$indexType]</code>
     </PossiblyInvalidIterator>
@@ -364,6 +367,7 @@
     </PossiblyNullArgument>
     <PossiblyNullReference occurrences="9">
       <code>getAllClassNames</code>
+      <code>getConfiguration</code>
       <code>getConfiguration</code>
       <code>getConfiguration</code>
       <code>getConfiguration</code>
@@ -442,10 +446,6 @@
       <code>$parentReflFields[$embeddedClass['declaredField']]</code>
       <code>$parentReflFields[$mapping['declaredField']]</code>
     </PossiblyNullArgument>
-    <PossiblyNullPropertyFetch occurrences="2">
-      <code>$embeddable-&gt;reflClass-&gt;name</code>
-      <code>$this-&gt;reflClass-&gt;name</code>
-    </PossiblyNullPropertyFetch>
     <PossiblyNullReference occurrences="9">
       <code>getProperty</code>
       <code>getProperty</code>
@@ -585,12 +585,7 @@
     <MoreSpecificImplementedParamType occurrences="1">
       <code>$metadata</code>
     </MoreSpecificImplementedParamType>
-    <PossiblyNullArgument occurrences="2">
-      <code>$this-&gt;tables[$tableName]</code>
-      <code>$this-&gt;tables[$tableName]</code>
-    </PossiblyNullArgument>
-    <PossiblyNullArrayAccess occurrences="3">
-      <code>$this-&gt;tables[$tableName]</code>
+    <PossiblyNullArrayAccess occurrences="2">
       <code>$this-&gt;tables[$tableName]</code>
       <code>$this-&gt;tables[$tableName]</code>
     </PossiblyNullArrayAccess>
@@ -758,9 +753,6 @@
     </PossiblyFalseOperand>
   </file>
   <file src="lib/Doctrine/ORM/NativeQuery.php">
-    <LessSpecificImplementedReturnType occurrences="1">
-      <code>mixed</code>
-    </LessSpecificImplementedReturnType>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$sql</code>
     </PropertyNotSetInConstructor>
@@ -1080,9 +1072,6 @@
     <InvalidScalarArgument occurrences="1">
       <code>$sqlParams</code>
     </InvalidScalarArgument>
-    <LessSpecificImplementedReturnType occurrences="1">
-      <code>mixed</code>
-    </LessSpecificImplementedReturnType>
     <LessSpecificReturnStatement occurrences="2">
       <code>parent::setHint($name, $value)</code>
       <code>parent::setHydrationMode($hydrationMode)</code>
@@ -1094,18 +1083,13 @@
     <PossiblyNullArgument occurrences="1">
       <code>$this-&gt;getDQL()</code>
     </PossiblyNullArgument>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$timeToLive</code>
-    </PossiblyNullPropertyAssignmentValue>
     <PossiblyNullReference occurrences="1">
       <code>evictEntityRegion</code>
     </PossiblyNullReference>
-    <PropertyNotSetInConstructor occurrences="2">
+    <PropertyNotSetInConstructor occurrences="1">
       <code>$parserResult</code>
-      <code>$queryCacheTTL</code>
     </PropertyNotSetInConstructor>
-    <RedundantConditionGivenDocblockType occurrences="2">
-      <code>$dqlQuery !== null</code>
+    <RedundantConditionGivenDocblockType occurrences="1">
       <code>$timeToLive !== null</code>
     </RedundantConditionGivenDocblockType>
   </file>
@@ -1641,6 +1625,9 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>MultiTableUpdateExecutor</code>
     </PropertyNotSetInConstructor>
+    <PropertyTypeCoercion occurrences="1">
+      <code>$this-&gt;_sqlStatements</code>
+    </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/SingleSelectExecutor.php">
     <PossiblyInvalidArgument occurrences="1">
@@ -1726,10 +1713,9 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$stringPattern</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="3">
-      <code>call_user_func($functionClass, $functionName)</code>
-      <code>call_user_func($functionClass, $functionName)</code>
-      <code>call_user_func($functionClass, $functionName)</code>
+    <DocblockTypeContradiction occurrences="2">
+      <code>$functionClass($functionName)</code>
+      <code>$functionClass($functionName)</code>
     </DocblockTypeContradiction>
     <InvalidArgument occurrences="1">
       <code>$lookaheadType</code>
@@ -1782,6 +1768,9 @@
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
     </InvalidScalarArgument>
+    <InvalidStringClass occurrences="1">
+      <code>new $functionClass($functionName)</code>
+    </InvalidStringClass>
     <LessSpecificReturnStatement occurrences="4">
       <code>$function</code>
       <code>$function</code>
@@ -1914,17 +1903,11 @@
     <PossiblyUndefinedVariable occurrences="1">
       <code>$args</code>
     </PossiblyUndefinedVariable>
-    <RedundantConditionGivenDocblockType occurrences="4">
+    <RedundantConditionGivenDocblockType occurrences="3">
       <code>$AST instanceof AST\SelectStatement</code>
       <code>is_string($functionClass)</code>
       <code>is_string($functionClass)</code>
-      <code>is_string($functionClass)</code>
     </RedundantConditionGivenDocblockType>
-    <UnsafeInstantiation occurrences="3">
-      <code>new $funcClass($funcNameLower)</code>
-      <code>new $funcClass($funcNameLower)</code>
-      <code>new $funcClass($funcNameLower)</code>
-    </UnsafeInstantiation>
   </file>
   <file src="lib/Doctrine/ORM/Query/ParserResult.php">
     <PropertyNotSetInConstructor occurrences="1">
@@ -1941,6 +1924,54 @@
       <code>''</code>
       <code>is_string($expression)</code>
     </DocblockTypeContradiction>
+    <ImplementedReturnTypeMismatch occurrences="46">
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+    </ImplementedReturnTypeMismatch>
     <ImplicitToStringCast occurrences="1">
       <code>$expr</code>
     </ImplicitToStringCast>
@@ -1951,7 +1982,7 @@
       <code>$selectedClass['class']-&gt;name</code>
     </InvalidArgument>
     <InvalidNullableReturnType occurrences="1">
-      <code>walkConditionalPrimary</code>
+      <code>string</code>
     </InvalidNullableReturnType>
     <InvalidScalarArgument occurrences="3">
       <code>$this-&gt;queryComponents[$expr]['token']['value']</code>
@@ -1988,200 +2019,23 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/TreeWalkerAdapter.php">
-    <ImplementedReturnTypeMismatch occurrences="47">
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-    </ImplementedReturnTypeMismatch>
-    <MissingParamType occurrences="43">
-      <code>$AST</code>
-      <code>$aggExpression</code>
-      <code>$arithmeticExpr</code>
-      <code>$betweenExpr</code>
-      <code>$collMemberExpr</code>
-      <code>$compExpr</code>
-      <code>$condExpr</code>
-      <code>$condTerm</code>
-      <code>$emptyCollCompExpr</code>
-      <code>$existsExpr</code>
-      <code>$factor</code>
-      <code>$factor</code>
-      <code>$fromClause</code>
-      <code>$function</code>
-      <code>$groupByClause</code>
-      <code>$groupByItem</code>
-      <code>$havingClause</code>
-      <code>$inExpr</code>
-      <code>$inputParam</code>
-      <code>$instanceOfExpr</code>
-      <code>$join</code>
-      <code>$likeExpr</code>
-      <code>$literal</code>
-      <code>$nullCompExpr</code>
-      <code>$orderByClause</code>
-      <code>$orderByItem</code>
-      <code>$pathExpr</code>
-      <code>$primary</code>
-      <code>$qExpr</code>
-      <code>$resultVariable</code>
-      <code>$selectClause</code>
-      <code>$selectExpression</code>
-      <code>$simpleArithmeticExpr</code>
-      <code>$simpleSelectClause</code>
-      <code>$simpleSelectExpression</code>
-      <code>$stateFieldPathExpression</code>
-      <code>$stringPrimary</code>
-      <code>$subselect</code>
-      <code>$subselectFromClause</code>
-      <code>$term</code>
-      <code>$updateClause</code>
-      <code>$updateItem</code>
-      <code>$whereClause</code>
-    </MissingParamType>
-    <MissingReturnType occurrences="1">
-      <code>_getQueryComponents</code>
-    </MissingReturnType>
+    <InvalidNullableReturnType occurrences="1">
+      <code>getExecutor</code>
+    </InvalidNullableReturnType>
+    <NullableReturnStatement occurrences="1">
+      <code>null</code>
+    </NullableReturnStatement>
   </file>
   <file src="lib/Doctrine/ORM/Query/TreeWalkerChain.php">
-    <ImplementedReturnTypeMismatch occurrences="47">
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-      <code>void</code>
-    </ImplementedReturnTypeMismatch>
-    <MissingParamType occurrences="44">
-      <code>$AST</code>
-      <code>$aggExpression</code>
-      <code>$arithmeticExpr</code>
-      <code>$betweenExpr</code>
-      <code>$collMemberExpr</code>
-      <code>$compExpr</code>
-      <code>$condExpr</code>
-      <code>$condPrimary</code>
-      <code>$condTerm</code>
+    <InvalidNullableReturnType occurrences="1">
+      <code>getExecutor</code>
+    </InvalidNullableReturnType>
+    <MissingParamType occurrences="1">
       <code>$dqlAlias</code>
-      <code>$emptyCollCompExpr</code>
-      <code>$existsExpr</code>
-      <code>$factor</code>
-      <code>$factor</code>
-      <code>$fromClause</code>
-      <code>$function</code>
-      <code>$groupByClause</code>
-      <code>$groupByItem</code>
-      <code>$havingClause</code>
-      <code>$inExpr</code>
-      <code>$inputParam</code>
-      <code>$instanceOfExpr</code>
-      <code>$join</code>
-      <code>$likeExpr</code>
-      <code>$literal</code>
-      <code>$nullCompExpr</code>
-      <code>$orderByClause</code>
-      <code>$orderByItem</code>
-      <code>$pathExpr</code>
-      <code>$qExpr</code>
-      <code>$resultVariable</code>
-      <code>$selectClause</code>
-      <code>$selectExpression</code>
-      <code>$simpleArithmeticExpr</code>
-      <code>$simpleSelectClause</code>
-      <code>$simpleSelectExpression</code>
-      <code>$stateFieldPathExpression</code>
-      <code>$stringPrimary</code>
-      <code>$subselect</code>
-      <code>$subselectFromClause</code>
-      <code>$term</code>
-      <code>$updateClause</code>
-      <code>$updateItem</code>
-      <code>$whereClause</code>
     </MissingParamType>
+    <NullableReturnStatement occurrences="1">
+      <code>null</code>
+    </NullableReturnStatement>
     <ParamNameMismatch occurrences="1">
       <code>$condPrimary</code>
     </ParamNameMismatch>
@@ -2290,11 +2144,6 @@
       <code>$query</code>
     </MoreSpecificImplementedParamType>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Pagination/CountWalker.php">
-    <ImplementedReturnTypeMismatch occurrences="1">
-      <code>void</code>
-    </ImplementedReturnTypeMismatch>
-  </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php">
     <MoreSpecificImplementedParamType occurrences="1">
       <code>$query</code>
@@ -2313,11 +2162,6 @@
     <PossiblyNullPropertyFetch occurrences="1">
       <code>$orderByClause-&gt;orderByItems</code>
     </PossiblyNullPropertyFetch>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryWalker.php">
-    <ImplementedReturnTypeMismatch occurrences="1">
-      <code>void</code>
-    </ImplementedReturnTypeMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/Paginator.php">
     <ArgumentTypeCoercion occurrences="1">
@@ -2343,9 +2187,6 @@
       <code>$AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalFactor</code>
       <code>$AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalPrimary</code>
     </DocblockTypeContradiction>
-    <ImplementedReturnTypeMismatch occurrences="1">
-      <code>void</code>
-    </ImplementedReturnTypeMismatch>
     <MissingClosureReturnType occurrences="1">
       <code>static function ($id) use ($connection, $type) {</code>
     </MissingClosureReturnType>

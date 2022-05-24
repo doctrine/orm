@@ -66,8 +66,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
     /**
      * Gets the name of the table that owns the column the given field is mapped to.
-     *
-     * @override
      */
     public function getOwningTable(string $fieldName): string
     {

@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
@@ -195,8 +196,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * DQL function names are case-insensitive.
      *
-     * @param string          $name      Function name.
-     * @param string|callable $className Class name or a callable that returns the function.
+     * @param string                $name      Function name.
+     * @param class-string|callable $className Class name or a callable that returns the function.
+     * @psalm-param class-string<FunctionNode>|callable(string):FunctionNode $className
      *
      * @return void
      */
@@ -211,7 +213,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string $name
      *
      * @return string|null
-     * @psalm-return ?class-string
+     * @psalm-return class-string<FunctionNode>|callable(string):FunctionNode|null
      */
     public function getCustomStringFunction($name)
     {
@@ -228,7 +230,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * Any previously added string functions are discarded.
      *
-     * @psalm-param array<string, class-string> $functions The map of custom
+     * @psalm-param array<string, class-string<FunctionNode>|callable(string):FunctionNode> $functions The map of custom
      *                                                     DQL string functions.
      *
      * @return void
