@@ -70,6 +70,31 @@ final class AbstractQueryTest extends TestCase
         $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/dbal/pull/4620');
     }
 
+    /**
+     * @dataProvider provideSettersWithDeprecatedDefault
+     */
+    public function testCallingSettersWithoutArgumentsIsDeprecated(string $setter): void
+    {
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->method('getConfiguration')->willReturn(new Configuration());
+        $query = $this->getMockForAbstractClass(AbstractQuery::class, [$entityManager]);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9791');
+        $query->$setter();
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public function provideSettersWithDeprecatedDefault(): array
+    {
+        return [
+            'setHydrationCacheProfile' => ['setHydrationCacheProfile'],
+            'setResultCache' => ['setResultCache'],
+            'setResultCacheProfile' => ['setResultCacheProfile'],
+        ];
+    }
+
     public function testSettingTheResultCacheIsPossibleWithoutCallingDeprecatedMethods(): void
     {
         $cache = $this->createMock(CacheItemPoolInterface::class);
