@@ -11,7 +11,7 @@ use Doctrine\Persistence\Mapping\ClassMetadataFactory;
 
 use function assert;
 use function implode;
-use function is_object;
+use function is_a;
 
 /**
  * The IdentifierFlattener utility now houses some of the identifier manipulation logic from unit of work, so that it
