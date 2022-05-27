@@ -6,8 +6,7 @@ namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
-use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Mocks\CustomTreeWalkerJoin;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -48,50 +47,6 @@ class CustomTreeWalkersJoinTest extends OrmTestCase
         $this->assertSqlGeneration(
             'select a from Doctrine\Tests\Models\CMS\CmsAddress a',
             'SELECT c0_.id AS id_0, c0_.country AS country_1, c0_.zip AS zip_2, c0_.city AS city_3, c0_.user_id AS user_id_4 FROM cms_addresses c0_'
-        );
-    }
-}
-
-class CustomTreeWalkerJoin extends Query\TreeWalkerAdapter
-{
-    public function walkSelectStatement(Query\AST\SelectStatement $selectStatement): void
-    {
-        foreach ($selectStatement->fromClause->identificationVariableDeclarations as $identificationVariableDeclaration) {
-            $rangeVariableDecl = $identificationVariableDeclaration->rangeVariableDeclaration;
-
-            if ($rangeVariableDecl->abstractSchemaName !== CmsUser::class) {
-                continue;
-            }
-
-            $this->modifySelectStatement($selectStatement, $identificationVariableDeclaration);
-        }
-    }
-
-    private function modifySelectStatement(Query\AST\SelectStatement $selectStatement, $identificationVariableDecl): void
-    {
-        $rangeVariableDecl       = $identificationVariableDecl->rangeVariableDeclaration;
-        $joinAssocPathExpression = new Query\AST\JoinAssociationPathExpression($rangeVariableDecl->aliasIdentificationVariable, 'address');
-        $joinAssocDeclaration    = new Query\AST\JoinAssociationDeclaration($joinAssocPathExpression, $rangeVariableDecl->aliasIdentificationVariable . 'a', null);
-        $join                    = new Query\AST\Join(Query\AST\Join::JOIN_TYPE_LEFT, $joinAssocDeclaration);
-        $selectExpression        = new Query\AST\SelectExpression($rangeVariableDecl->aliasIdentificationVariable . 'a', null, false);
-
-        $identificationVariableDecl->joins[]                = $join;
-        $selectStatement->selectClause->selectExpressions[] = $selectExpression;
-
-        $entityManager   = $this->_getQuery()->getEntityManager();
-        $userMetadata    = $entityManager->getClassMetadata(CmsUser::class);
-        $addressMetadata = $entityManager->getClassMetadata(CmsAddress::class);
-
-        $this->setQueryComponent(
-            $rangeVariableDecl->aliasIdentificationVariable . 'a',
-            [
-                'metadata'     => $addressMetadata,
-                'parent'       => $rangeVariableDecl->aliasIdentificationVariable,
-                'relation'     => $userMetadata->getAssociationMapping('address'),
-                'map'          => null,
-                'nestingLevel' => 0,
-                'token'        => null,
-            ]
         );
     }
 }
