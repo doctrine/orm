@@ -78,6 +78,16 @@
     <InvalidArgument occurrences="1">
       <code>$em-&gt;getMetadataFactory()</code>
     </InvalidArgument>
+    <PossiblyNullArrayOffset occurrences="1">
+      <code>$targetClassMetadata-&gt;associationMappings</code>
+    </PossiblyNullArrayOffset>
+    <PossiblyUndefinedArrayOffset occurrences="5">
+      <code>$assoc['fetch']</code>
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['joinColumnFieldNames']</code>
+      <code>$assoc['mappedBy']</code>
+    </PossiblyUndefinedArrayOffset>
     <UndefinedInterfaceMethod occurrences="1">
       <code>getCacheRegion</code>
     </UndefinedInterfaceMethod>
@@ -169,6 +179,10 @@
       <code>getCacheFactory</code>
       <code>getTimestampRegion</code>
     </PossiblyNullReference>
+    <PossiblyUndefinedArrayOffset occurrences="2">
+      <code>$assoc['fetch']</code>
+      <code>$assoc['isOwningSide']</code>
+    </PossiblyUndefinedArrayOffset>
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>assert($metadata instanceof ClassMetadata)</code>
     </RedundantConditionGivenDocblockType>
@@ -395,6 +409,10 @@
       <code>IterableResult</code>
       <code>new IterableResult($this)</code>
     </DeprecatedClass>
+    <PossiblyUndefinedArrayOffset occurrences="2">
+      <code>$class-&gt;associationMappings[$fieldName]['joinColumns']</code>
+      <code>$class-&gt;associationMappings[$fieldName]['joinColumns']</code>
+    </PossiblyUndefinedArrayOffset>
     <ReferenceConstraintViolation occurrences="1">
       <code>return $rowData;</code>
     </ReferenceConstraintViolation>
@@ -439,9 +457,13 @@
       <code>$parentObject</code>
       <code>$parentObject</code>
     </PossiblyInvalidArgument>
-    <PossiblyNullArgument occurrences="1">
+    <PossiblyNullArgument occurrences="2">
       <code>$objectClass</code>
+      <code>$relation['mappedBy']</code>
     </PossiblyNullArgument>
+    <PossiblyNullArrayOffset occurrences="1">
+      <code>$targetClass-&gt;reflFields</code>
+    </PossiblyNullArrayOffset>
     <PossiblyNullReference occurrences="6">
       <code>getValue</code>
       <code>getValue</code>
@@ -450,8 +472,16 @@
       <code>setValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
-    <PossiblyUndefinedArrayOffset occurrences="1">
+    <PossiblyUndefinedArrayOffset occurrences="9">
+      <code>$assoc['inversedBy']</code>
+      <code>$assoc['mappedBy']</code>
+      <code>$class-&gt;associationMappings[$class-&gt;identifier[0]]['joinColumns']</code>
+      <code>$class-&gt;associationMappings[$fieldName]['joinColumns']</code>
       <code>$newObject['args']</code>
+      <code>$relation['inversedBy']</code>
+      <code>$relation['isOwningSide']</code>
+      <code>$relation['mappedBy']</code>
+      <code>$relation['mappedBy']</code>
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/SimpleObjectHydrator.php">
@@ -551,6 +581,9 @@
       <code>getConfiguration</code>
       <code>getConnection</code>
     </PossiblyNullReference>
+    <PossiblyUndefinedArrayOffset occurrences="1">
+      <code>$mapping['isOwningSide']</code>
+    </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php">
     <DeprecatedConstant occurrences="1">
@@ -566,8 +599,9 @@
       <code>$this-&gt;columnNames</code>
       <code>$this-&gt;columnNames</code>
     </DeprecatedProperty>
-    <DocblockTypeContradiction occurrences="2">
+    <DocblockTypeContradiction occurrences="3">
       <code>! $this-&gt;table</code>
+      <code>! class_exists($mapping['targetEntity'])</code>
       <code>$this-&gt;table</code>
     </DocblockTypeContradiction>
     <InvalidDocblock occurrences="3">
@@ -575,9 +609,10 @@
       <code>protected function _validateAndCompleteManyToManyMapping(array $mapping)</code>
       <code>protected function _validateAndCompleteOneToOneMapping(array $mapping)</code>
     </InvalidDocblock>
-    <InvalidNullableReturnType occurrences="3">
+    <InvalidNullableReturnType occurrences="4">
       <code>ReflectionProperty</code>
       <code>ReflectionProperty</code>
+      <code>getAssociationMappedByTargetField</code>
       <code>getReflectionClass</code>
     </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue occurrences="2">
@@ -590,10 +625,6 @@
       <code>$className</code>
       <code>$this-&gt;namespace . '\\' . $className</code>
     </LessSpecificReturnStatement>
-    <MissingClosureParamType occurrences="2">
-      <code>$joinColumn</code>
-      <code>$joinColumn</code>
-    </MissingClosureParamType>
     <MissingClosureReturnType occurrences="1">
       <code>static function ($joinColumn) {</code>
     </MissingClosureReturnType>
@@ -606,7 +637,8 @@
       <code>array{usage: int, region: string|null}</code>
       <code>class-string|null</code>
     </MoreSpecificReturnType>
-    <NullableReturnStatement occurrences="3">
+    <NullableReturnStatement occurrences="4">
+      <code>$this-&gt;associationMappings[$fieldName]['mappedBy']</code>
       <code>$this-&gt;reflClass</code>
       <code>$this-&gt;reflFields[$name]</code>
       <code>$this-&gt;reflFields[$this-&gt;identifier[0]]</code>
@@ -641,10 +673,17 @@
       <code>setValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
-    <PossiblyUndefinedArrayOffset occurrences="3">
+    <PossiblyUndefinedArrayOffset occurrences="10">
       <code>$mapping['originalClass']</code>
       <code>$mapping['originalField']</code>
       <code>$mapping['targetEntity']</code>
+      <code>$this-&gt;associationMappings[$assocName]['joinColumns']</code>
+      <code>$this-&gt;associationMappings[$fieldName]['isOwningSide']</code>
+      <code>$this-&gt;associationMappings[$fieldName]['joinColumns']</code>
+      <code>$this-&gt;associationMappings[$fieldName]['joinColumns']</code>
+      <code>$this-&gt;associationMappings[$fieldName]['mappedBy']</code>
+      <code>$this-&gt;associationMappings[$idProperty]['joinColumns']</code>
+      <code>$this-&gt;associationMappings[$idProperty]['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
     <PropertyNotSetInConstructor occurrences="5">
       <code>$idGenerator</code>
@@ -653,7 +692,9 @@
       <code>$table</code>
       <code>$tableGeneratorDefinition</code>
     </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="11">
+    <PropertyTypeCoercion occurrences="13">
+      <code>$this-&gt;associationMappings</code>
+      <code>$this-&gt;associationMappings</code>
       <code>$this-&gt;discriminatorMap</code>
       <code>$this-&gt;entityListeners</code>
       <code>$this-&gt;fieldMappings</code>
@@ -707,9 +748,9 @@
       <code>canEmulateSchemas</code>
       <code>canEmulateSchemas</code>
     </DeprecatedMethod>
-    <MissingClosureParamType occurrences="1">
-      <code>$joinColumn</code>
-    </MissingClosureParamType>
+    <PossiblyUndefinedArrayOffset occurrences="1">
+      <code>$class-&gt;associationMappings[$fieldName]['joinColumns']</code>
+    </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DiscriminatorColumn.php">
     <PossiblyNullPropertyAssignmentValue occurrences="1">
@@ -1051,6 +1092,11 @@
       <code>$entity</code>
     </PossiblyInvalidArgument>
   </file>
+  <file src="lib/Doctrine/ORM/ORMSetup.php">
+    <UndefinedClass occurrences="1">
+      <code>MemcachedAdapter::createConnection('memcached://127.0.0.1')</code>
+    </UndefinedClass>
+  </file>
   <file src="lib/Doctrine/ORM/PersistentCollection.php">
     <DocblockTypeContradiction occurrences="1">
       <code>isset($offset)</code>
@@ -1214,6 +1260,9 @@
       <code>getFieldForColumn</code>
       <code>getFieldForColumn</code>
     </PossiblyNullReference>
+    <PossiblyUndefinedArrayOffset occurrences="1">
+      <code>$mapping['joinTable']</code>
+    </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php">
     <ImplementedReturnTypeMismatch occurrences="1">
@@ -1261,6 +1310,9 @@
     <PossiblyNullArrayOffset occurrences="1">
       <code>$targetClass-&gt;associationMappings</code>
     </PossiblyNullArrayOffset>
+    <PossiblyUndefinedArrayOffset occurrences="1">
+      <code>$targetClass-&gt;associationMappings[$mapping['mappedBy']]['joinColumns']</code>
+    </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php">
     <DocblockTypeContradiction occurrences="1">
@@ -1296,13 +1348,18 @@
       <code>$targetEntity</code>
       <code>$targetEntity</code>
     </NullableReturnStatement>
-    <PossiblyNullArgument occurrences="2">
+    <PossiblyNullArgument occurrences="3">
+      <code>$assoc['mappedBy']</code>
       <code>$association</code>
       <code>$type</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess occurrences="1">
       <code>$assoc['isOwningSide']</code>
     </PossiblyNullArrayAccess>
+    <PossiblyNullArrayOffset occurrences="2">
+      <code>$class-&gt;associationMappings</code>
+      <code>$class-&gt;associationMappings</code>
+    </PossiblyNullArrayOffset>
     <PossiblyNullReference occurrences="7">
       <code>getValue</code>
       <code>getValue</code>
@@ -1312,6 +1369,37 @@
       <code>getValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
+    <PossiblyUndefinedArrayOffset occurrences="29">
+      <code>$assoc['fetch']</code>
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['joinColumns']</code>
+      <code>$assoc['joinColumns']</code>
+      <code>$assoc['mappedBy']</code>
+      <code>$assoc['mappedBy']</code>
+      <code>$assoc['relationToTargetKeyColumns']</code>
+      <code>$assoc['sourceToTargetKeyColumns']</code>
+      <code>$association['isOwningSide']</code>
+      <code>$association['isOwningSide']</code>
+      <code>$association['joinColumns']</code>
+      <code>$association['joinColumns']</code>
+      <code>$association['joinColumns']</code>
+      <code>$association['joinTable']</code>
+      <code>$association['joinTable']</code>
+      <code>$association['joinTable']</code>
+      <code>$association['joinTable']</code>
+      <code>$association['sourceEntity']</code>
+      <code>$association['sourceEntity']</code>
+      <code>$mapping['isOwningSide']</code>
+      <code>$mapping['mappedBy']</code>
+      <code>$mapping['sourceEntity']</code>
+      <code>$this-&gt;class-&gt;associationMappings[$fieldName]['isOwningSide']</code>
+      <code>$this-&gt;class-&gt;associationMappings[$fieldName]['joinColumns']</code>
+      <code>$this-&gt;class-&gt;associationMappings[$idField]['joinColumns']</code>
+    </PossiblyUndefinedArrayOffset>
     <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;currentPersisterContext-&gt;sqlTableAliases</code>
     </PropertyTypeCoercion>
@@ -1339,8 +1427,19 @@
     <MoreSpecificReturnType occurrences="1">
       <code>executeInserts</code>
     </MoreSpecificReturnType>
+    <PossiblyUndefinedArrayOffset occurrences="5">
+      <code>$assoc['isOwningSide']</code>
+      <code>$mapping['isOwningSide']</code>
+      <code>$mapping['isOwningSide']</code>
+      <code>$mapping['joinColumns']</code>
+      <code>$mapping['joinColumns']</code>
+    </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/SingleTablePersister.php">
+    <PossiblyUndefinedArrayOffset occurrences="2">
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['joinColumns']</code>
+    </PossiblyUndefinedArrayOffset>
     <PossiblyUndefinedVariable occurrences="1">
       <code>$columnList</code>
     </PossiblyUndefinedVariable>
@@ -1593,6 +1692,10 @@
     <PossiblyNullArrayAccess occurrences="1">
       <code>$parser-&gt;getLexer()-&gt;token['value']</code>
     </PossiblyNullArrayAccess>
+    <PossiblyUndefinedArrayOffset occurrences="2">
+      <code>$assoc['joinColumns']</code>
+      <code>$assoc['sourceEntity']</code>
+    </PossiblyUndefinedArrayOffset>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$pathExpression</code>
     </PropertyNotSetInConstructor>
@@ -1646,6 +1749,16 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/SizeFunction.php">
+    <PossiblyNullArrayOffset occurrences="2">
+      <code>$targetClass-&gt;associationMappings</code>
+      <code>$targetClass-&gt;associationMappings</code>
+    </PossiblyNullArrayOffset>
+    <PossiblyUndefinedArrayOffset occurrences="4">
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['mappedBy']</code>
+      <code>$assoc['mappedBy']</code>
+      <code>$owningAssoc['joinTable']</code>
+    </PossiblyUndefinedArrayOffset>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$collectionPathExpression</code>
     </PropertyNotSetInConstructor>
@@ -2239,6 +2352,9 @@
     <PossiblyNullReference occurrences="1">
       <code>getNumberOfRequiredParameters</code>
     </PossiblyNullReference>
+    <PossiblyUndefinedArrayOffset occurrences="1">
+      <code>$class-&gt;associationMappings[$field]['isOwningSide']</code>
+    </PossiblyUndefinedArrayOffset>
     <PossiblyUndefinedVariable occurrences="1">
       <code>$args</code>
     </PossiblyUndefinedVariable>
@@ -2268,6 +2384,14 @@
       <code>addNamedNativeQueryResultClassMapping</code>
       <code>addNamedNativeQueryResultSetMapping</code>
     </DeprecatedMethod>
+    <PossiblyUndefinedArrayOffset occurrences="6">
+      <code>$associationMapping['isOwningSide']</code>
+      <code>$associationMapping['isOwningSide']</code>
+      <code>$associationMapping['isOwningSide']</code>
+      <code>$associationMapping['joinColumns']</code>
+      <code>$associationMapping['joinColumns']</code>
+      <code>$associationMapping['joinColumns']</code>
+    </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
     <DocblockTypeContradiction occurrences="2">
@@ -2356,13 +2480,30 @@
       <code>$identificationVariableDecl-&gt;rangeVariableDeclaration</code>
       <code>$subselect-&gt;whereClause</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayOffset occurrences="2">
+    <PossiblyNullArrayOffset occurrences="4">
+      <code>$targetClass-&gt;associationMappings</code>
+      <code>$targetClass-&gt;associationMappings</code>
       <code>$this-&gt;scalarResultAliasMap</code>
       <code>$this-&gt;scalarResultAliasMap</code>
     </PossiblyNullArrayOffset>
     <PossiblyNullReference occurrences="1">
       <code>dispatch</code>
     </PossiblyNullReference>
+    <PossiblyUndefinedArrayOffset occurrences="13">
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['joinColumns']</code>
+      <code>$assoc['joinColumns']</code>
+      <code>$assoc['mappedBy']</code>
+      <code>$assoc['mappedBy']</code>
+      <code>$assoc['sourceToTargetKeyColumns']</code>
+      <code>$association['isOwningSide']</code>
+      <code>$association['sourceToTargetKeyColumns']</code>
+      <code>$mapping['isOwningSide']</code>
+      <code>$owningAssoc['joinTable']</code>
+    </PossiblyUndefinedArrayOffset>
     <RedundantConditionGivenDocblockType occurrences="2">
       <code>$whereClause !== null</code>
       <code>($factor-&gt;not ? 'NOT ' : '') . $this-&gt;walkConditionalPrimary($factor-&gt;conditionalPrimary)</code>
@@ -2751,6 +2892,13 @@
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$_extension</code>
     </NonInvariantDocblockPropertyType>
+    <PossiblyUndefinedArrayOffset occurrences="5">
+      <code>$associationMapping['inversedBy']</code>
+      <code>$associationMapping['isOwningSide']</code>
+      <code>$associationMapping['joinColumns']</code>
+      <code>$associationMapping['mappedBy']</code>
+      <code>$associationMapping['orphanRemoval']</code>
+    </PossiblyUndefinedArrayOffset>
     <RedundantConditionGivenDocblockType occurrences="4">
       <code>$metadata-&gt;inheritanceType</code>
       <code>$metadata-&gt;inheritanceType</code>
@@ -2775,6 +2923,13 @@
     <PossiblyNullReference occurrences="1">
       <code>addAttribute</code>
     </PossiblyNullReference>
+    <PossiblyUndefinedArrayOffset occurrences="5">
+      <code>$associationMapping['isCascadeDetach']</code>
+      <code>$associationMapping['isCascadeMerge']</code>
+      <code>$associationMapping['isCascadePersist']</code>
+      <code>$associationMapping['isCascadeRefresh']</code>
+      <code>$associationMapping['isCascadeRemove']</code>
+    </PossiblyUndefinedArrayOffset>
     <RedundantCondition occurrences="2">
       <code>$field['associationKey']</code>
       <code>isset($field['associationKey']) &amp;&amp; $field['associationKey']</code>
@@ -2806,6 +2961,23 @@
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$_extension</code>
     </NonInvariantDocblockPropertyType>
+    <PossiblyUndefinedArrayOffset occurrences="15">
+      <code>$associationMapping['inversedBy']</code>
+      <code>$associationMapping['inversedBy']</code>
+      <code>$associationMapping['inversedBy']</code>
+      <code>$associationMapping['isCascadeDetach']</code>
+      <code>$associationMapping['isCascadeMerge']</code>
+      <code>$associationMapping['isCascadePersist']</code>
+      <code>$associationMapping['isCascadeRefresh']</code>
+      <code>$associationMapping['isCascadeRemove']</code>
+      <code>$associationMapping['isOwningSide']</code>
+      <code>$associationMapping['joinColumns']</code>
+      <code>$associationMapping['mappedBy']</code>
+      <code>$associationMapping['mappedBy']</code>
+      <code>$associationMapping['mappedBy']</code>
+      <code>$associationMapping['orphanRemoval']</code>
+      <code>$associationMapping['orphanRemoval']</code>
+    </PossiblyUndefinedArrayOffset>
     <RedundantConditionGivenDocblockType occurrences="2">
       <code>$metadata-&gt;table</code>
       <code>isset($metadata-&gt;lifecycleCallbacks)</code>
@@ -2815,6 +2987,9 @@
     <MoreSpecificImplementedParamType occurrences="1">
       <code>$query</code>
     </MoreSpecificImplementedParamType>
+    <PossiblyUndefinedArrayOffset occurrences="1">
+      <code>$rootClass-&gt;associationMappings[$property]['joinColumns']</code>
+    </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php">
     <MoreSpecificImplementedParamType occurrences="1">
@@ -2834,6 +3009,9 @@
     <PossiblyNullPropertyFetch occurrences="1">
       <code>$orderByClause-&gt;orderByItems</code>
     </PossiblyNullPropertyFetch>
+    <PossiblyUndefinedArrayOffset occurrences="1">
+      <code>$rootClass-&gt;associationMappings[$property]['joinColumns']</code>
+    </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/Paginator.php">
     <ArgumentTypeCoercion occurrences="1">
@@ -2880,9 +3058,17 @@
     <PossiblyNullReference occurrences="1">
       <code>getColumns</code>
     </PossiblyNullReference>
-    <PossiblyUndefinedArrayOffset occurrences="2">
+    <PossiblyUndefinedArrayOffset occurrences="10">
+      <code>$assoc['joinColumns']</code>
+      <code>$class-&gt;getAssociationMapping($fieldName)['joinColumns']</code>
       <code>$fieldMapping['precision']</code>
       <code>$fieldMapping['scale']</code>
+      <code>$idMapping['joinColumns']</code>
+      <code>$mapping['isOwningSide']</code>
+      <code>$mapping['isOwningSide']</code>
+      <code>$mapping['isOwningSide']</code>
+      <code>$mapping['joinColumns']</code>
+      <code>$mapping['joinTable']</code>
     </PossiblyUndefinedArrayOffset>
     <RedundantCondition occurrences="1">
       <code>is_numeric($indexName)</code>
@@ -2894,6 +3080,29 @@
     <TypeDoesNotContainType occurrences="1">
       <code>$indexName</code>
     </TypeDoesNotContainType>
+  </file>
+  <file src="lib/Doctrine/ORM/Tools/SchemaValidator.php">
+    <DocblockTypeContradiction occurrences="1">
+      <code>! class_exists($assoc['targetEntity'])</code>
+    </DocblockTypeContradiction>
+    <PossiblyUndefinedArrayOffset occurrences="12">
+      <code>$assoc['inversedBy']</code>
+      <code>$assoc['inversedBy']</code>
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['joinColumns']</code>
+      <code>$assoc['joinTable']</code>
+      <code>$assoc['mappedBy']</code>
+      <code>$assoc['relationToSourceKeyColumns']</code>
+      <code>$assoc['relationToTargetKeyColumns']</code>
+      <code>$targetMetadata-&gt;associationMappings[$assoc['inversedBy']]['mappedBy']</code>
+      <code>$targetMetadata-&gt;associationMappings[$assoc['inversedBy']]['mappedBy']</code>
+      <code>$targetMetadata-&gt;associationMappings[$assoc['mappedBy']]['inversedBy']</code>
+      <code>$targetMetadata-&gt;associationMappings[$assoc['mappedBy']]['inversedBy']</code>
+    </PossiblyUndefinedArrayOffset>
+    <RedundantConditionGivenDocblockType occurrences="2">
+      <code>$assoc['orderBy'] !== null</code>
+      <code>isset($assoc['orderBy']) &amp;&amp; $assoc['orderBy'] !== null</code>
+    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Setup.php">
     <DeprecatedClass occurrences="2">
@@ -2912,10 +3121,8 @@
       <code>$collectionToUpdate</code>
       <code>$commitOrder[$i]</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="4">
+    <DocblockTypeContradiction occurrences="2">
       <code>! is_object($object)</code>
-      <code>$association['type'] === ClassMetadata::ONE_TO_MANY</code>
-      <code>$association['type'] === ClassMetadata::ONE_TO_MANY</code>
       <code>is_object($object)</code>
     </DocblockTypeContradiction>
     <InvalidArgument occurrences="1">
@@ -2924,20 +3131,10 @@
     <InvalidNullableReturnType occurrences="1">
       <code>object</code>
     </InvalidNullableReturnType>
-    <InvalidOperand occurrences="1">
-      <code>$association['type']</code>
-    </InvalidOperand>
     <InvalidPropertyAssignmentValue occurrences="2">
       <code>$this-&gt;entityChangeSets</code>
       <code>$this-&gt;entityChangeSets</code>
     </InvalidPropertyAssignmentValue>
-    <MissingClosureReturnType occurrences="5">
-      <code>static function ($assoc) {</code>
-      <code>static function ($assoc) {</code>
-      <code>static function ($assoc) {</code>
-      <code>static function ($assoc) {</code>
-      <code>static function ($assoc) {</code>
-    </MissingClosureReturnType>
     <MissingParamType occurrences="3">
       <code>$managedCopy</code>
       <code>$prevManagedCopy</code>
@@ -2949,7 +3146,9 @@
     <PossiblyInvalidArrayOffset occurrences="1">
       <code>$this-&gt;identityMap[$rootClassName]</code>
     </PossiblyInvalidArrayOffset>
-    <PossiblyNullArgument occurrences="10">
+    <PossiblyNullArgument occurrences="12">
+      <code>$assoc</code>
+      <code>$assoc</code>
       <code>$assoc</code>
       <code>$assoc</code>
       <code>$assoc['targetEntity']</code>
@@ -2965,6 +3164,10 @@
       <code>$assoc['targetEntity']</code>
       <code>$assoc['type']</code>
     </PossiblyNullArrayAccess>
+    <PossiblyNullArrayOffset occurrences="2">
+      <code>$class-&gt;reflFields</code>
+      <code>$targetClass-&gt;reflFields</code>
+    </PossiblyNullArrayOffset>
     <PossiblyNullReference occurrences="33">
       <code>buildCachedCollectionPersister</code>
       <code>buildCachedEntityPersister</code>
@@ -3000,6 +3203,28 @@
       <code>setValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
+    <PossiblyUndefinedArrayOffset occurrences="20">
+      <code>$assoc2['isCascadeMerge']</code>
+      <code>$assoc2['isCascadeMerge']</code>
+      <code>$assoc2['isOwningSide']</code>
+      <code>$assoc['fetch']</code>
+      <code>$assoc['fetch']</code>
+      <code>$assoc['inversedBy']</code>
+      <code>$assoc['isCascadeDetach']</code>
+      <code>$assoc['isCascadeMerge']</code>
+      <code>$assoc['isCascadePersist']</code>
+      <code>$assoc['isCascadeRefresh']</code>
+      <code>$assoc['isCascadeRemove']</code>
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['joinColumns']</code>
+      <code>$assoc['mappedBy']</code>
+      <code>$assoc['orphanRemoval']</code>
+      <code>$association['mappedBy']</code>
+    </PossiblyUndefinedArrayOffset>
     <PossiblyUndefinedMethod occurrences="4">
       <code>addPropertyChangedListener</code>
       <code>unwrap</code>
@@ -3023,5 +3248,20 @@
       <code>$rootClassMetadata-&gt;name</code>
       <code>$rootClassMetadata-&gt;subClasses</code>
     </NoInterfaceProperties>
+  </file>
+  <file src="lib/Doctrine/ORM/Utility/IdentifierFlattener.php">
+    <PossiblyUndefinedArrayOffset occurrences="1">
+      <code>$class-&gt;associationMappings[$field]['joinColumns']</code>
+    </PossiblyUndefinedArrayOffset>
+  </file>
+  <file src="lib/Doctrine/ORM/Utility/PersisterHelper.php">
+    <PossiblyNullArgument occurrences="1">
+      <code>$assoc['mappedBy']</code>
+    </PossiblyNullArgument>
+    <PossiblyUndefinedArrayOffset occurrences="3">
+      <code>$assoc['isOwningSide']</code>
+      <code>$assoc['joinTable']</code>
+      <code>$assoc['mappedBy']</code>
+    </PossiblyUndefinedArrayOffset>
   </file>
 </files>
