@@ -97,6 +97,41 @@ use const PHP_VERSION_ID;
  *      declaredField?: string,
  *      options?: array<string, mixed>
  * }
+ * @psalm-type AssociationMapping = array{
+ *     cache?: array,
+ *     cascade?: array<string>,
+ *     declared?: class-string,
+ *     fetch?: mixed,
+ *     fieldName: string,
+ *     id?: bool,
+ *     inherited?: class-string,
+ *     indexBy?: string,
+ *     inversedBy?: string|null,
+ *     isCascadeRemove?: bool,
+ *     isCascadePersist?: bool,
+ *     isCascadeRefresh?: bool,
+ *     isCascadeMerge?: bool,
+ *     isCascadeDetach?: bool,
+ *     isOnDeleteCascade?: bool,
+ *     isOwningSide?: bool,
+ *     joinColumns?: array,
+ *     joinColumnFieldNames?: array,
+ *     joinTable?: array,
+ *     joinTableColumns?: list<mixed>,
+ *     mappedBy?: string|null,
+ *     orderBy?: array,
+ *     originalClass?: class-string,
+ *     originalField?: string,
+ *     orphanRemoval?: bool,
+ *     relationToSourceKeyColumns?: array,
+ *     relationToTargetKeyColumns?: array,
+ *     sourceEntity?: class-string,
+ *     sourceToTargetKeyColumns?: array,
+ *     targetEntity: class-string,
+ *     targetToSourceKeyColumns: array,
+ *     type: int,
+ *     unique?: bool,
+ * }
  */
 class ClassMetadataInfo implements ClassMetadata
 {
@@ -621,7 +656,7 @@ class ClassMetadataInfo implements ClassMetadata
      * )
      * </pre>
      *
-     * @psalm-var array<string, array<string, mixed>>
+     * @psalm-var array<string, AssociationMapping>
      */
     public $associationMappings = [];
 
@@ -1383,7 +1418,7 @@ class ClassMetadataInfo implements ClassMetadata
      *                          the object model.
      *
      * @return mixed[] The mapping.
-     * @psalm-return array<string, mixed>
+     * @psalm-return AssociationMapping
      *
      * @throws MappingException
      */
@@ -1399,7 +1434,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets all association mappings of the class.
      *
-     * @psalm-return array<string, array<string, mixed>>
+     * @psalm-return array<string, AssociationMapping>
      */
     public function getAssociationMappings()
     {
@@ -2762,7 +2797,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Adds an association mapping without completing/validating it.
      * This is mainly used to add inherited association mappings to derived classes.
      *
-     * @psalm-param array<string, mixed> $mapping
+     * @psalm-param AssociationMapping $mapping
      *
      * @return void
      *
