@@ -512,7 +512,7 @@ class QueryTest extends OrmTestCase
 
         $query = $this->entityManager->createQuery('SELECT u FROM ' . CmsUser::class . ' u');
         $query->enableResultCache();
-        $query->setResultCacheProfile();
+        $query->setResultCacheProfile(null);
 
         self::assertNull($query->getQueryCacheProfile());
     }
