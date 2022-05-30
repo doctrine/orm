@@ -11,7 +11,7 @@ namespace Doctrine\ORM\Query\Expr;
  */
 class From
 {
-    /** @var string */
+    /** @var class-string */
     protected $from;
 
     /** @var string */
@@ -21,9 +21,9 @@ class From
     protected $indexBy;
 
     /**
-     * @param string $from    The class name.
-     * @param string $alias   The alias of the class.
-     * @param string $indexBy The index for the from.
+     * @param class-string $from    The class name.
+     * @param string       $alias   The alias of the class.
+     * @param string       $indexBy The index for the from.
      */
     public function __construct($from, $alias, $indexBy = null)
     {
@@ -33,7 +33,7 @@ class From
     }
 
     /**
-     * @return string
+     * @return class-string
      */
     public function getFrom()
     {

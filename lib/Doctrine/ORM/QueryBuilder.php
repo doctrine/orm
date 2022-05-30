@@ -400,8 +400,10 @@ class QueryBuilder
         foreach ($this->dqlParts['from'] as &$fromClause) {
             if (is_string($fromClause)) {
                 $spacePos = strrpos($fromClause, ' ');
-                $from     = substr($fromClause, 0, $spacePos);
-                $alias    = substr($fromClause, $spacePos + 1);
+
+                /** @psalm-var class-string $from */
+                $from  = substr($fromClause, 0, $spacePos);
+                $alias = substr($fromClause, $spacePos + 1);
 
                 $fromClause = new Query\Expr\From($from, $alias);
             }
@@ -434,7 +436,7 @@ class QueryBuilder
     }
 
     /**
-     * Gets the root entities of the query. This is the entity aliases involved
+     * Gets the root entities of the query. This is the entity classes involved
      * in the construction of the query.
      *
      * <code>
@@ -446,7 +448,7 @@ class QueryBuilder
      * </code>
      *
      * @return string[]
-     * @psalm-return list<string>
+     * @psalm-return list<class-string>
      */
     public function getRootEntities(): array
     {
@@ -455,8 +457,10 @@ class QueryBuilder
         foreach ($this->dqlParts['from'] as &$fromClause) {
             if (is_string($fromClause)) {
                 $spacePos = strrpos($fromClause, ' ');
-                $from     = substr($fromClause, 0, $spacePos);
-                $alias    = substr($fromClause, $spacePos + 1);
+
+                /** @psalm-var class-string $from */
+                $from  = substr($fromClause, 0, $spacePos);
+                $alias = substr($fromClause, $spacePos + 1);
 
                 $fromClause = new Query\Expr\From($from, $alias);
             }
@@ -725,8 +729,8 @@ class QueryBuilder
      *         ->setParameter('user_id', 1);
      * </code>
      *
-     * @param string|null $delete The class/type whose instances are subject to the deletion.
-     * @param string|null $alias  The class/type alias used in the constructed query.
+     * @param class-string|null $delete The class/type whose instances are subject to the deletion.
+     * @param string|null       $alias  The class/type alias used in the constructed query.
      *
      * @return $this
      */
@@ -752,6 +756,9 @@ class QueryBuilder
      *         ->where('u.id = ?2');
      * </code>
      *
+     * @param class-string|null $update The class/type whose instances are subject to the update.
+     * @param string|null       $alias  The class/type alias used in the constructed query.
+     *
      * @return $this
      */
     public function update(?string $update = null, ?string $alias = null): static
@@ -774,6 +781,10 @@ class QueryBuilder
      *         ->select('u')
      *         ->from('User', 'u');
      * </code>
+     *
+     * @param class-string $from    The class name.
+     * @param string       $alias   The alias of the class.
+     * @param string|null  $indexBy The index for the from.
      *
      * @return $this
      */
