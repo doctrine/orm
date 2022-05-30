@@ -2,7 +2,7 @@
 
 ## Deprecated omitting only the alias argument for `QueryBuilder::update` and `QueryBuilder::delete`
 
-When making an Update or Delete Query and when passing a class/type to the function, the alias argument must not be omitted.
+When building an UPDATE or DELETE query and when passing a class/type to the function, the alias argument must not be omitted.
 
 ### Before
 
