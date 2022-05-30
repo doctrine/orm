@@ -12,6 +12,7 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
+use stdClass;
 
 final class AbstractQueryTest extends TestCase
 {
