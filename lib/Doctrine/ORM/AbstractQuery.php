@@ -32,6 +32,7 @@ use function array_map;
 use function array_shift;
 use function assert;
 use function count;
+use function func_num_args;
 use function in_array;
 use function is_array;
 use function is_numeric;
@@ -548,6 +549,15 @@ abstract class AbstractQuery
     public function setHydrationCacheProfile(?QueryCacheProfile $profile = null)
     {
         if ($profile === null) {
+            if (func_num_args() < 1) {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/pull/9791',
+                    'Calling %s without arguments is deprecated, pass null instead.',
+                    __METHOD__
+                );
+            }
+
             $this->_hydrationCacheProfile = null;
 
             return $this;
@@ -592,6 +602,15 @@ abstract class AbstractQuery
     public function setResultCacheProfile(?QueryCacheProfile $profile = null)
     {
         if ($profile === null) {
+            if (func_num_args() < 1) {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/pull/9791',
+                    'Calling %s without arguments is deprecated, pass null instead.',
+                    __METHOD__
+                );
+            }
+
             $this->_queryCacheProfile = null;
 
             return $this;
@@ -646,6 +665,15 @@ abstract class AbstractQuery
     public function setResultCache(?CacheItemPoolInterface $resultCache = null)
     {
         if ($resultCache === null) {
+            if (func_num_args() < 1) {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/pull/9791',
+                    'Calling %s without arguments is deprecated, pass null instead.',
+                    __METHOD__
+                );
+            }
+
             if ($this->_queryCacheProfile) {
                 $this->_queryCacheProfile = new QueryCacheProfile($this->_queryCacheProfile->getLifetime(), $this->_queryCacheProfile->getCacheKey());
             }
