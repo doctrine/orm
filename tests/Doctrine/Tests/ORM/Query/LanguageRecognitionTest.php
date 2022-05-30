@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
-use Doctrine\Tests\Mocks\MockTreeWalker;
+use Doctrine\Tests\Mocks\NullSqlWalker;
 use Doctrine\Tests\OrmTestCase;
 
 use const PHP_EOL;
@@ -74,7 +74,7 @@ class LanguageRecognitionTest extends OrmTestCase
         $parser = new Query\Parser($query);
 
         // We do NOT test SQL output here. That only unnecessarily slows down the tests!
-        $parser->setCustomOutputTreeWalker(MockTreeWalker::class);
+        $parser->setCustomOutputTreeWalker(NullSqlWalker::class);
 
         return $parser->parse();
     }

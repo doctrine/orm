@@ -385,6 +385,16 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.13
 
+## Deprecated calling setters without arguments
+
+The following methods will require an argument in 3.0. Pass `null` instead of
+omitting the argument.
+
+* `Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs::setFoundMetadata()`
+* `Doctrine\ORM\AbstractQuery::setHydrationCacheProfile()`
+* `Doctrine\ORM\AbstractQuery::setResultCache()`
+* `Doctrine\ORM\AbstractQuery::setResultCacheProfile()`
+
 ## Deprecated passing invalid fetch modes to `AbstractQuery::setFetchMode()`
 
 Calling `AbstractQuery::setFetchMode()` with anything else than
