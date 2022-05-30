@@ -23,7 +23,6 @@ class RowNumberOverFunction extends FunctionNode
     public $orderByClause;
 
     /**
-     * @override
      * @inheritdoc
      */
     public function getSql(SqlWalker $sqlWalker)
@@ -36,7 +35,6 @@ class RowNumberOverFunction extends FunctionNode
     /**
      * @throws RowNumberOverFunctionNotEnabled
      *
-     * @override
      * @inheritdoc
      */
     public function parse(Parser $parser)

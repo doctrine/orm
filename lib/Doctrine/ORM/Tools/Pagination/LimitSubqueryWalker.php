@@ -15,6 +15,7 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 use RuntimeException;
 
+use function assert;
 use function count;
 use function is_string;
 use function reset;
@@ -35,14 +36,6 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
      */
     private $_aliasCounter = 0;
 
-    /**
-     * Walks down a SelectStatement AST node, modifying it to retrieve DISTINCT ids
-     * of the root Entity.
-     *
-     * @return void
-     *
-     * @throws RuntimeException
-     */
     public function walkSelectStatement(SelectStatement $AST)
     {
         $queryComponents = $this->_getQueryComponents();
@@ -50,6 +43,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $from      = $AST->fromClause->identificationVariableDeclarations;
         $fromRoot  = reset($from);
         $rootAlias = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
+        assert(isset($queryComponents[$rootAlias]['metadata']));
         $rootClass = $queryComponents[$rootAlias]['metadata'];
 
         $this->validate($AST);

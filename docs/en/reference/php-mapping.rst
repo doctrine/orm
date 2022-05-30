@@ -96,6 +96,8 @@ For this you just need to use the ``StaticPHPDriver``:
 .. code-block:: php
 
     <?php
+    use Doctrine\Persistence\Mapping\Driver\StaticPHPDriver;
+
     $driver = new StaticPHPDriver('/path/to/entities');
     $em->getConfiguration()->setMetadataDriverImpl($driver);
 

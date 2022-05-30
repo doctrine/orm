@@ -27,7 +27,6 @@ class LocateFunction extends FunctionNode
     public $simpleArithmeticExpression = false;
 
     /**
-     * @override
      * @inheritdoc
      */
     public function getSql(SqlWalker $sqlWalker)
@@ -49,7 +48,6 @@ class LocateFunction extends FunctionNode
     }
 
     /**
-     * @override
      * @inheritdoc
      */
     public function parse(Parser $parser)

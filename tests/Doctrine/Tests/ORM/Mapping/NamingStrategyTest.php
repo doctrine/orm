@@ -172,24 +172,24 @@ class NamingStrategyTest extends OrmTestCase
     {
         return [
             // DefaultNamingStrategy
-            [self::defaultNaming(), 'someColumn_id', 'someColumn', null],
-            [self::defaultNaming(), 'some_column_id', 'some_column', null],
-            [self::defaultNaming(), 'base64Encoded_id', 'base64Encoded', null],
-            [self::defaultNaming(), 'base64_encoded_id', 'base64_encoded', null],
+            [self::defaultNaming(), 'someColumn_id', 'someColumn', 'Some\Class'],
+            [self::defaultNaming(), 'some_column_id', 'some_column', 'Some\Class'],
+            [self::defaultNaming(), 'base64Encoded_id', 'base64Encoded', 'Some\Class'],
+            [self::defaultNaming(), 'base64_encoded_id', 'base64_encoded', 'Some\Class'],
 
             // UnderscoreNamingStrategy
-            [self::underscoreNamingLower(), 'some_column_id', 'someColumn', null],
-            [self::underscoreNamingLower(), 'base64encoded_id', 'base64Encoded', null],
-            [self::underscoreNamingUpper(), 'SOME_COLUMN_ID', 'someColumn', null],
-            [self::underscoreNamingUpper(), 'BASE64ENCODED_ID', 'base64Encoded', null],
+            [self::underscoreNamingLower(), 'some_column_id', 'someColumn', 'Some\Class'],
+            [self::underscoreNamingLower(), 'base64encoded_id', 'base64Encoded', 'Some\Class'],
+            [self::underscoreNamingUpper(), 'SOME_COLUMN_ID', 'someColumn', 'Some\Class'],
+            [self::underscoreNamingUpper(), 'BASE64ENCODED_ID', 'base64Encoded', 'Some\Class'],
 
             // NumberAwareUnderscoreNamingStrategy
-            [self::numberAwareUnderscoreNamingLower(), 'some_column_id', 'someColumn', null],
-            [self::numberAwareUnderscoreNamingLower(), 'base64_encoded_id', 'base64Encoded', null],
-            [self::numberAwareUnderscoreNamingLower(), 'base64encoded_id', 'base64encoded', null],
-            [self::numberAwareUnderscoreNamingUpper(), 'SOME_COLUMN_ID', 'someColumn', null],
-            [self::numberAwareUnderscoreNamingUpper(), 'BASE64_ENCODED_ID', 'base64Encoded', null],
-            [self::numberAwareUnderscoreNamingUpper(), 'BASE64ENCODED_ID', 'base64encoded', null],
+            [self::numberAwareUnderscoreNamingLower(), 'some_column_id', 'someColumn', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingLower(), 'base64_encoded_id', 'base64Encoded', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingLower(), 'base64encoded_id', 'base64encoded', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingUpper(), 'SOME_COLUMN_ID', 'someColumn', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingUpper(), 'BASE64_ENCODED_ID', 'base64Encoded', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingUpper(), 'BASE64ENCODED_ID', 'base64encoded', 'Some\Class'],
 
             // JoinColumnClassNamingStrategy
             [new JoinColumnClassNamingStrategy(), 'classname_someColumn_id', 'someColumn', 'Some\ClassName'],

@@ -32,10 +32,12 @@ use function array_map;
 use function array_shift;
 use function assert;
 use function count;
+use function in_array;
 use function is_array;
 use function is_numeric;
 use function is_object;
 use function is_scalar;
+use function is_string;
 use function iterator_count;
 use function iterator_to_array;
 use function ksort;
@@ -282,7 +284,7 @@ abstract class AbstractQuery
      * The returned SQL syntax depends on the connection driver that is used
      * by this query object at the time of this method call.
      *
-     * @return string SQL query
+     * @return list<string>|string SQL query
      */
     abstract public function getSQL();
 
@@ -324,7 +326,7 @@ abstract class AbstractQuery
     /**
      * Gets a query parameter.
      *
-     * @param mixed $key The key (index or name) of the bound parameter.
+     * @param int|string $key The key (index or name) of the bound parameter.
      *
      * @return Parameter|null The value of the bound parameter, or NULL if not available.
      */
@@ -353,7 +355,6 @@ abstract class AbstractQuery
      */
     public function setParameters($parameters)
     {
-        // BC compatibility with 2.3-
         if (is_array($parameters)) {
             /** @psalm-var ArrayCollection<int, Parameter> $parameterCollection */
             $parameterCollection = new ArrayCollection();
@@ -401,8 +402,8 @@ abstract class AbstractQuery
      *
      * @param mixed $value
      *
-     * @return mixed[]|string|int|float|bool
-     * @psalm-return array|scalar
+     * @return mixed[]|string|int|float|bool|object|null
+     * @psalm-return array|scalar|object|null
      *
      * @throws ORMInvalidArgumentException
      */
@@ -817,17 +818,22 @@ abstract class AbstractQuery
     /**
      * Change the default fetch mode of an association for this query.
      *
-     * $fetchMode can be one of ClassMetadata::FETCH_EAGER or ClassMetadata::FETCH_LAZY
-     *
-     * @param string $class
-     * @param string $assocName
-     * @param int    $fetchMode
+     * @param class-string $class
+     * @param string       $assocName
+     * @param int          $fetchMode
+     * @psalm-param Mapping\ClassMetadata::FETCH_EAGER|Mapping\ClassMetadata::FETCH_LAZY $fetchMode
      *
      * @return $this
      */
     public function setFetchMode($class, $assocName, $fetchMode)
     {
-        if ($fetchMode !== Mapping\ClassMetadata::FETCH_EAGER) {
+        if (! in_array($fetchMode, [Mapping\ClassMetadata::FETCH_EAGER, Mapping\ClassMetadata::FETCH_LAZY], true)) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/9777',
+                'Calling %s() with something else than ClassMetadata::FETCH_EAGER or ClassMetadata::FETCH_LAZY is deprecated.',
+                __METHOD__
+            );
             $fetchMode = Mapping\ClassMetadata::FETCH_LAZY;
         }
 
@@ -1302,7 +1308,8 @@ abstract class AbstractQuery
             $parameters[$parameter->getName()] = $this->processParameterValue($parameter->getValue());
         }
 
-        $sql                    = $this->getSQL();
+        $sql = $this->getSQL();
+        assert(is_string($sql));
         $queryCacheProfile      = $this->getHydrationCacheProfile();
         $hints                  = $this->getHints();
         $hints['hydrationMode'] = $this->getHydrationMode();
@@ -1374,7 +1381,8 @@ abstract class AbstractQuery
      */
     protected function getHash()
     {
-        $query  = $this->getSQL();
+        $query = $this->getSQL();
+        assert(is_string($query));
         $hints  = $this->getHints();
         $params = array_map(function (Parameter $parameter) {
             $value = $parameter->getValue();
