@@ -1,5 +1,15 @@
 # Upgrade to 3.0
 
+## BC BREAK: Made setters parameters mandatory
+
+The following methods require an argument when being called. Pass `null`
+instead of omitting the argument.
+
+* `Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs::setFoundMetadata()`
+* `Doctrine\ORM\AbstractQuery::setHydrationCacheProfile()`
+* `Doctrine\ORM\AbstractQuery::setResultCache()`
+* `Doctrine\ORM\AbstractQuery::setResultCacheProfile()`
+
 ## BC BREAK: New argument to `NamingStrategy::joinColumnName()`
 
 ### Before
