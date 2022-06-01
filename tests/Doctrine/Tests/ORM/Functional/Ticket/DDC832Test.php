@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\OraclePlatform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
@@ -41,6 +42,11 @@ class DDC832Test extends OrmFunctionalTestCase
         $sm->dropTable($platform->quoteIdentifier('TREE_INDEX'));
         $sm->dropTable($platform->quoteIdentifier('INDEX'));
         $sm->dropTable($platform->quoteIdentifier('LIKE'));
+
+        if ($platform instanceof PostgreSQLPlatform) {
+            $sm->dropSequence($platform->quoteIdentifier('INDEX_id_seq'));
+            $sm->dropSequence($platform->quoteIdentifier('LIKE_id_seq'));
+        }
     }
 
     /**
