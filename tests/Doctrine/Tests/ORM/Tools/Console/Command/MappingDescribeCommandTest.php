@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
-use Doctrine\ORM\Tools\Console\Command\InfoCommand;
 use Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\Models\Cache\AttractionInfo;
@@ -22,7 +21,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
     /** @var Application */
     private $application;
 
-    /** @var InfoCommand */
+    /** @var MappingDescribeCommand */
     private $command;
 
     /** @var CommandTester */
