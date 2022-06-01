@@ -15,15 +15,13 @@ use Doctrine\ORM\Mapping\Table;
  */
 class OtherParentClass
 {
-    /**
-     * @Id
-     * @Column(name="id", type="integer")
-     * @var int
-     */
-    public $id;
-
-    public function __construct(int $id)
+    public function __construct(
+        /**
+         * @Id
+         * @Column(name="id", type="integer")
+         */
+        public int $id
+    )
     {
-        $this->id = $id;
     }
 }

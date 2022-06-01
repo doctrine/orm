@@ -17,21 +17,18 @@ use Doctrine\ORM\Mapping\Table;
 class NavUser
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
-
-    public function __construct(string $name)
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        private string $name
+    )
     {
-        $this->name = $name;
     }
 }

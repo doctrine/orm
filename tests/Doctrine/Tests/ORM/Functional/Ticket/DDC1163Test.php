@@ -26,11 +26,9 @@ use function get_class;
  */
 class DDC1163Test extends OrmFunctionalTestCase
 {
-    /** @var int|null */
-    private $productId;
+    private ?int $productId = null;
 
-    /** @var int|null */
-    private $proxyHolderId;
+    private ?int $proxyHolderId = null;
 
     protected function setUp(): void
     {
@@ -103,7 +101,7 @@ class DDC1163Test extends OrmFunctionalTestCase
         // this screams violation of law of demeter ;)
         self::assertEquals(
             DDC1163SpecialProduct::class,
-            $this->_em->getUnitOfWork()->getEntityPersister(get_class($specialProduct))->getClassMetadata()->name
+            $this->_em->getUnitOfWork()->getEntityPersister($specialProduct::class)->getClassMetadata()->name
         );
 
         $tag = new DDC1163Tag('Foo');
@@ -118,18 +116,16 @@ class DDC1163Test extends OrmFunctionalTestCase
 class DDC1163ProxyHolder
 {
     /**
-     * @var int
      * @Column(name="id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var DDC1163SpecialProduct
      * @OneToOne(targetEntity="DDC1163SpecialProduct")
      */
-    private $specialProduct;
+    private ?\Doctrine\Tests\ORM\Functional\Ticket\DDC1163SpecialProduct $specialProduct = null;
 
     public function getId(): int
     {
@@ -175,10 +171,9 @@ abstract class DDC1163Product
 class DDC1163SpecialProduct extends DDC1163Product
 {
     /**
-     * @var string
      * @Column(name="subclass_property", type="string", nullable=true)
      */
-    private $subclassProperty;
+    private ?string $subclassProperty = null;
 
     public function setSubclassProperty(string $value): void
     {
@@ -192,17 +187,11 @@ class DDC1163SpecialProduct extends DDC1163Product
 class DDC1163Tag
 {
     /**
-     * @var int
      * @Column(name="id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
-    /**
-     * @var string
-     * @Column(name="name", type="string", length=255)
-     */
-    private $name;
+    private int $id;
     /**
      * @var Product
      * @ManyToOne(targetEntity="DDC1163Product", inversedBy="tags")
@@ -212,9 +201,13 @@ class DDC1163Tag
      */
     private $product;
 
-    public function __construct(string $name)
+    public function __construct(
+        /**
+         * @Column(name="name", type="string", length=255)
+         */
+        private string $name
+    )
     {
-        $this->name = $name;
     }
 
     public function setProduct(DDC1163Product $product): void

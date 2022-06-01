@@ -21,32 +21,23 @@ use function assert;
  */
 class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 {
-    /** @var int */
-    private $userId;
+    private ?int $userId = null;
 
-    /** @var int */
-    private $userId2;
+    private ?int $userId2 = null;
 
-    /** @var int */
-    private $groupId;
+    private ?int $groupId = null;
 
-    /** @var int */
-    private $articleId;
+    private ?int $articleId = null;
 
-    /** @var int */
-    private $ddc2504OtherClassId;
+    private ?int $ddc2504OtherClassId = null;
 
-    /** @var int */
-    private $ddc2504ChildClassId;
+    private ?int $ddc2504ChildClassId = null;
 
-    /** @var string */
-    private $username;
+    private ?string $username = null;
 
-    /** @var string */
-    private $groupname;
+    private ?string $groupname = null;
 
-    /** @var string */
-    private $topic;
+    private ?string $topic = null;
 
     /** @var CmsPhonenumber */
     private $phonenumber;

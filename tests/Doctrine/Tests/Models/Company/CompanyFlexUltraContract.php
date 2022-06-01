@@ -23,9 +23,8 @@ class CompanyFlexUltraContract extends CompanyFlexContract
 {
     /**
      * @Column(type="integer")
-     * @var int
      */
-    private $maxPrice = 0;
+    private int $maxPrice = 0;
 
     public function calculatePrice(): int
     {

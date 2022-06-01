@@ -153,7 +153,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testInvalidMappingFileException(): void
     {
-        $this->expectException('Doctrine\Persistence\Mapping\MappingException');
+        $this->expectException(\Doctrine\Persistence\Mapping\MappingException::class);
         $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.SerializationModel.dcm.xml\' for class \'Doctrine\Tests\Models\Generic\SerializationModel\'.');
         $this->createClassMetadata(SerializationModel::class);
     }

@@ -102,12 +102,11 @@ class Participant
 class Status
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     public function getId(): int
     {

@@ -17,22 +17,17 @@ use Doctrine\Tests\DbalTypes\CustomIdObject;
  */
 class CustomIdObjectTypeChild
 {
-    /**
-     * @Id
-     * @Column(type="CustomIdObject", length=255)
-     * @var CustomIdObject
-     */
-    public $id;
-
-    /**
-     * @var CustomIdObjectTypeParent
-     * @ManyToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent", inversedBy="children")
-     */
-    public $parent;
-
-    public function __construct(CustomIdObject $id, CustomIdObjectTypeParent $parent)
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="CustomIdObject", length=255)
+         */
+        public CustomIdObject $id,
+        /**
+         * @ManyToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent", inversedBy="children")
+         */
+        public CustomIdObjectTypeParent $parent
+    )
     {
-        $this->id     = $id;
-        $this->parent = $parent;
     }
 }

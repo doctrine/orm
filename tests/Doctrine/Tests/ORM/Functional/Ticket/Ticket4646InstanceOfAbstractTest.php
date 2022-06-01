@@ -53,12 +53,11 @@ class Ticket4646InstanceOfAbstractTest extends OrmFunctionalTestCase
 abstract class PersonTicket4646Abstract
 {
     /**
-     * @var int
      * @Id()
      * @GeneratedValue()
      * @Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     public function getId(): ?int
     {

@@ -15,10 +15,9 @@ use Doctrine\ORM\Mapping\Id;
 class DDC4006UserId
 {
     /**
-     * @var int
      * @Id
      * @GeneratedValue("IDENTITY")
      * @Column(type="integer")
      */
-    private $id;
+    private int $id;
 }

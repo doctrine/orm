@@ -31,12 +31,6 @@ class Traveler
     protected $id;
 
     /**
-     * @var string
-     * @Column
-     */
-    protected $name;
-
-    /**
      * @psalm-var Collection<int, Travel>
      * @Cache("NONSTRICT_READ_WRITE")
      * @OneToMany(targetEntity="Travel", mappedBy="traveler", cascade={"persist", "remove"}, orphanRemoval=true)
@@ -50,9 +44,11 @@ class Traveler
      */
      protected $profile;
 
-    public function __construct(string $name)
+    public function __construct(/**
+     * @Column
+     */
+    protected string $name)
     {
-        $this->name    = $name;
         $this->travels = new ArrayCollection();
     }
 

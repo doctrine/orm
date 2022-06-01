@@ -130,12 +130,8 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
 
 class CacheFactorySecondLevelCacheConcurrentTest extends DefaultCacheFactory
 {
-    /** @var CacheItemPoolInterface */
-    private $cache;
-
-    public function __construct(CacheItemPoolInterface $cache)
+    public function __construct(private CacheItemPoolInterface $cache)
     {
-        $this->cache = $cache;
     }
 
     public function getRegion(array $cache): ConcurrentRegionMock

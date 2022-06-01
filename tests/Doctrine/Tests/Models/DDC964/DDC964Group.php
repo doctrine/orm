@@ -17,18 +17,11 @@ use Doctrine\ORM\Mapping\ManyToMany;
 class DDC964Group
 {
     /**
-     * @var int
      * @GeneratedValue
      * @Id
      * @Column(type="integer")
      */
-    private $id;
-
-    /**
-     * @var string|null
-     * @Column
-     */
-    private $name;
+    private int $id;
 
     /**
      * @psalm-var ArrayCollection<int, DDC964User>
@@ -36,9 +29,14 @@ class DDC964Group
      */
     private $users;
 
-    public function __construct($name = null)
+    /**
+     * @param string|null $name
+     */
+    public function __construct(/**
+     * @Column
+     */
+    private ?string $name = null)
     {
-        $this->name  = $name;
         $this->users = new ArrayCollection();
     }
 

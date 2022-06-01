@@ -18,18 +18,16 @@ use Doctrine\ORM\Mapping\Table;
 class DDC2372Address
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Column(type="string", length=255)
      */
-    private $street;
+    private ?string $street = null;
 
     /**
      * @var User

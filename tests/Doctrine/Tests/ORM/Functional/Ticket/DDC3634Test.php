@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Driver\Middleware;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Connection as DriverConnection;
@@ -52,7 +53,7 @@ class DDC3634Test extends OrmFunctionalTestCase
                 $this->_em->getClassMetadata(DDC3634JTIBaseEntity::class),
                 $this->_em->getClassMetadata(DDC3634JTIChildEntity::class),
             ]);
-        } catch (ToolsException $e) {
+        } catch (ToolsException) {
             // schema already in place
         }
     }
@@ -134,12 +135,8 @@ class LastInsertIdMocker
 
 final class LastInsertIdMockConnection extends AbstractConnectionMiddleware
 {
-    private LastInsertIdMocker $idMocker;
-
-    public function __construct(DriverConnection $wrappedConnection, LastInsertIdMocker $idMocker)
+    public function __construct(DriverConnection $wrappedConnection, private LastInsertIdMocker $idMocker)
     {
-        $this->idMocker = $idMocker;
-
         parent::__construct($wrappedConnection);
     }
 
@@ -154,12 +151,8 @@ final class LastInsertIdMockConnection extends AbstractConnectionMiddleware
 
 final class LastInsertIdMockDriver extends AbstractDriverMiddleware
 {
-    private LastInsertIdMocker $idMocker;
-
-    public function __construct(Driver $wrappedDriver, LastInsertIdMocker $idMocker)
+    public function __construct(Driver $wrappedDriver, private LastInsertIdMocker $idMocker)
     {
-        $this->idMocker = $idMocker;
-
         parent::__construct($wrappedDriver);
     }
 
@@ -172,13 +165,10 @@ final class LastInsertIdMockDriver extends AbstractDriverMiddleware
     }
 }
 
-final class LastInsertIdMockMiddleware implements Driver\Middleware
+final class LastInsertIdMockMiddleware implements Middleware
 {
-    private LastInsertIdMocker $idMocker;
-
-    public function __construct(LastInsertIdMocker $idMocker)
+    public function __construct(private LastInsertIdMocker $idMocker)
     {
-        $this->idMocker = $idMocker;
     }
 
     public function wrap(Driver $driver): LastInsertIdMockDriver

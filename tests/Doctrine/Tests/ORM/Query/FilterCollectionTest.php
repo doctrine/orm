@@ -15,8 +15,7 @@ use InvalidArgumentException;
  */
 class FilterCollectionTest extends OrmTestCase
 {
-    /** @var EntityManagerMock */
-    private $em;
+    private EntityManagerMock $em;
 
     protected function setUp(): void
     {

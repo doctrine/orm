@@ -22,18 +22,11 @@ use Doctrine\ORM\Mapping\Table;
 class NavTour
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
+    private int $id;
 
     /**
      * @var Collection<int, NavPointOfInterest>
@@ -46,11 +39,13 @@ class NavTour
      *      }
      * )
      */
-    private $pois;
+    private Collection $pois;
 
-    public function __construct(string $name)
+    public function __construct(/**
+     * @Column(type="string", length=255)
+     */
+    private string $name)
     {
-        $this->name = $name;
         $this->pois = new ArrayCollection();
     }
 

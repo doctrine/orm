@@ -29,23 +29,10 @@ use function strtotime;
 class Token
 {
     /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     */
-    public $token;
-
-    /**
      * @var DateTime
      * @Column(type="date")
      */
     public $expiresAt;
-
-    /**
-     * @var Client|null
-     * @OneToOne(targetEntity="Client")
-     */
-    public $client;
 
     /**
      * @psalm-var Collection<int, Login>
@@ -70,11 +57,16 @@ class Token
      */
     public $complexAction;
 
-    public function __construct(string $token, ?Client $client = null)
+    public function __construct(/**
+     * @Id
+     * @Column(type="string", length=255)
+     */
+    public string $token, /**
+     * @OneToOne(targetEntity="Client")
+     */
+    public ?Client $client = null)
     {
         $this->logins    = new ArrayCollection();
-        $this->token     = $token;
-        $this->client    = $client;
         $this->expiresAt = new DateTime(date('Y-m-d H:i:s', strtotime('+7 day')));
     }
 

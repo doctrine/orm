@@ -227,7 +227,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
             'Generator Type'
         );
         self::assertEquals(
-            ['class' => 'stdClass'],
+            ['class' => \stdClass::class],
             $class->customGeneratorDefinition,
             'Custom Generator Definition'
         );
@@ -1479,13 +1479,13 @@ abstract class Animal
      * @CustomIdGenerator(class="stdClass")
      */
     #[ORM\Id, ORM\Column(type: 'string'), ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: 'stdClass')]
+    #[ORM\CustomIdGenerator(class: \stdClass::class)]
     public $id;
 
     public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
-        $metadata->setCustomGeneratorDefinition(['class' => 'stdClass']);
+        $metadata->setCustomGeneratorDefinition(['class' => \stdClass::class]);
     }
 }
 
@@ -1513,27 +1513,22 @@ class Dog extends Animal
 #[ORM\Entity]
 class DDC1170Entity
 {
-    public function __construct(?string $value = null)
+    public function __construct(
+        /**
+         * @Column(columnDefinition = "VARCHAR(255) NOT NULL")
+         */
+        #[ORM\Column(columnDefinition: 'VARCHAR(255) NOT NULL')] private ?string $value = null
+    )
     {
-        $this->value = $value;
     }
 
     /**
-     * @var int
      * @Id
      * @GeneratedValue(strategy="NONE")
      * @Column(type="integer", columnDefinition = "INT unsigned NOT NULL")
      **/
     #[ORM\Id, ORM\GeneratedValue(strategy: 'NONE'), ORM\Column(type: 'integer', columnDefinition: 'INT UNSIGNED NOT NULL')]
-    private $id;
-
-
-    /**
-     * @var string|null
-     * @Column(columnDefinition = "VARCHAR(255) NOT NULL")
-     */
-    #[ORM\Column(columnDefinition: 'VARCHAR(255) NOT NULL')]
-    private $value;
+    private int $id;
 
     public function getId(): int
     {
@@ -1633,11 +1628,10 @@ class Group
 class Comment
 {
     /**
-     * @var string
      * @Column(type="text")
      */
     #[ORM\Column(type: 'text')]
-    private $content;
+    private string $content;
 
     public static function loadMetadata(ClassMetadata $metadata): void
     {

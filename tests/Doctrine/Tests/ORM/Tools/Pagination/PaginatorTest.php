@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -98,7 +99,7 @@ class PaginatorTest extends OrmTestCase
     public function testgetIteratorDoesCareAboutExtraParametersWithoutOutputWalkersWhenResultIsNotEmpty(): void
     {
         $this->connection->expects(self::exactly(1))->method('executeQuery');
-        $this->expectException(Query\QueryException::class);
+        $this->expectException(QueryException::class);
         $this->expectExceptionMessage('Too many parameters: the query defines 1 parameters and you bound 2');
 
         $this->createPaginatorWithExtraParametersWithoutOutputWalkers([[10]])->getIterator();

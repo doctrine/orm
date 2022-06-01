@@ -15,47 +15,31 @@ use Doctrine\ORM\Mapping\Id;
 class DDC964Address
 {
     /**
-     * @var int
      * @GeneratedValue
      * @Id
      * @Column(type="integer")
      */
-    private $id;
-
-    /**
-     * @var string|null
-     * @Column
-     */
-    private $country;
-
-    /**
-     * @var string|null
-     * @Column
-     */
-    private $zip;
-
-    /**
-     * @var string|null
-     * @Column
-     */
-    private $city;
-
-    /**
-     * @var string|null
-     * @Column
-     */
-    private $street;
+    private int $id;
 
     public function __construct(
-        ?string $zip = null,
-        ?string $country = null,
-        ?string $city = null,
-        ?string $street = null
-    ) {
-        $this->zip     = $zip;
-        $this->country = $country;
-        $this->city    = $city;
-        $this->street  = $street;
+        /**
+         * @Column
+         */
+        private ?string $zip = null,
+        /**
+         * @Column
+         */
+        private ?string $country = null,
+        /**
+         * @Column
+         */
+        private ?string $city = null,
+        /**
+         * @Column
+         */
+        private ?string $street = null
+    )
+    {
     }
 
     public function getId(): int

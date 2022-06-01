@@ -22,32 +22,6 @@ use Doctrine\ORM\Mapping\Table;
 class NavPointOfInterest
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer", name="nav_long")
-     */
-    private $long;
-
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer", name="nav_lat")
-     */
-    private $lat;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
-
-    /**
-     * @var NavCountry
-     * @ManyToOne(targetEntity="NavCountry", inversedBy="pois")
-     */
-    private $country;
-
-    /**
      * @psalm-var Collection<int, NavUser>
      * @ManyToMany(targetEntity="NavUser", cascade={"persist"})
      * @JoinTable(name="navigation_pois_visitors",
@@ -60,12 +34,22 @@ class NavPointOfInterest
      */
     private $visitors;
 
-    public function __construct(int $lat, int $long, string $name, NavCountry $country)
+    public function __construct(/**
+     * @Id
+     * @Column(type="integer", name="nav_lat")
+     */
+    private int $lat, /**
+     * @Id
+     * @Column(type="integer", name="nav_long")
+     */
+    private int $long, /**
+     * @Column(type="string", length=255)
+     */
+    private string $name, /**
+     * @ManyToOne(targetEntity="NavCountry", inversedBy="pois")
+     */
+    private NavCountry $country)
     {
-        $this->lat      = $lat;
-        $this->long     = $long;
-        $this->name     = $name;
-        $this->country  = $country;
         $this->visitors = new ArrayCollection();
     }
 

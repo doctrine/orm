@@ -75,7 +75,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
      */
     public function testInvalidDiscriminatorValueException(): void
     {
-        $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
+        $this->expectException(HydrationException::class);
         $this->expectExceptionMessage('The discriminator value "subworker" is invalid. It must be one of "person", "manager", "employee".');
         $rsm = new ResultSetMapping();
 

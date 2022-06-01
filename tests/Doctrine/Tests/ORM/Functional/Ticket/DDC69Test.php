@@ -114,24 +114,22 @@ class Lemma
     public const CLASS_NAME = self::class;
 
     /**
-     * @var int
      * @Id
      * @Column(type="integer", name="lemma_id")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Column(type="string", name="lemma_name", unique=true, length=255)
      */
-    private $lemma;
+    private ?string $lemma = null;
 
     /**
      * @var Collection<int, Relation>
      * @OneToMany(targetEntity="Relation", mappedBy="parent", cascade={"persist"})
      */
-    private $relations;
+    private Collection $relations;
 
     public function __construct()
     {
@@ -186,33 +184,29 @@ class Relation
     public const CLASS_NAME = self::class;
 
     /**
-     * @var int
      * @Id
      * @Column(type="integer", name="relation_id")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var Lemma|null
      * @ManyToOne(targetEntity="Lemma", inversedBy="relations")
      * @JoinColumn(name="relation_parent_id", referencedColumnName="lemma_id")
      */
-    private $parent;
+    private ?\Doctrine\Tests\ORM\Functional\Ticket\Lemma $parent = null;
 
     /**
-     * @var Lemma
      * @OneToOne(targetEntity="Lemma")
      * @JoinColumn(name="relation_child_id", referencedColumnName="lemma_id")
      */
-    private $child;
+    private ?\Doctrine\Tests\ORM\Functional\Ticket\Lemma $child = null;
 
     /**
-     * @var RelationType
      * @ManyToOne(targetEntity="RelationType", inversedBy="relations")
      * @JoinColumn(name="relation_type_id", referencedColumnName="relation_type_id")
      */
-    private $type;
+    private ?\Doctrine\Tests\ORM\Functional\Ticket\RelationType $type = null;
 
     public function setParent(Lemma $parent): void
     {
@@ -272,24 +266,21 @@ class RelationType
     public const CLASS_NAME = self::class;
 
     /**
-     * @var int
      * @Id
      * @Column(type="integer", name="relation_type_id")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Column(type="string", name="relation_type_name", unique=true, length=255)
      */
-    private $type;
+    private ?string $type = null;
 
     /**
-     * @var string
      * @Column(type="string", name="relation_type_abbreviation", unique=true, length=255)
      */
-    private $abbreviation;
+    private ?string $abbreviation = null;
 
     /**
      * @var Collection<int, Relation>

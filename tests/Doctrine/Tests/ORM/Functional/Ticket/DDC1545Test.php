@@ -13,14 +13,11 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1545Test extends OrmFunctionalTestCase
 {
-    /** @var int */
-    private $articleId;
+    private ?int $articleId = null;
 
-    /** @var int */
-    private $userId;
+    private ?int $userId = null;
 
-    /** @var int */
-    private $user2Id;
+    private ?int $user2Id = null;
 
     protected function setUp(): void
     {

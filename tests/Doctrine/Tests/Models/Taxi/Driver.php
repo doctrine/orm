@@ -19,18 +19,16 @@ use Doctrine\ORM\Mapping\Table;
 class Driver
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Column(type="string", length=255);
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * @psalm-var Collection<int, Ride>

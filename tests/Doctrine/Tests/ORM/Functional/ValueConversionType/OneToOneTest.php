@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
+use Doctrine\Tests\Models\ValueConversionType\InversedOneToOneEntity;
+use Doctrine\Tests\Models\ValueConversionType\OwningOneToOneEntity;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -65,17 +67,17 @@ class OneToOneTest extends OrmFunctionalTestCase
     public function testThatEntitiesAreFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToOneEntity::class,
+            InversedOneToOneEntity::class,
             'abc'
         );
 
         $owning = $this->_em->find(
-            Models\ValueConversionType\OwningOneToOneEntity::class,
+            OwningOneToOneEntity::class,
             'def'
         );
 
-        self::assertInstanceOf(Models\ValueConversionType\InversedOneToOneEntity::class, $inversed);
-        self::assertInstanceOf(Models\ValueConversionType\OwningOneToOneEntity::class, $owning);
+        self::assertInstanceOf(InversedOneToOneEntity::class, $inversed);
+        self::assertInstanceOf(OwningOneToOneEntity::class, $owning);
     }
 
     /**
@@ -84,12 +86,12 @@ class OneToOneTest extends OrmFunctionalTestCase
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToOneEntity::class,
+            InversedOneToOneEntity::class,
             'abc'
         );
 
         $owning = $this->_em->find(
-            Models\ValueConversionType\OwningOneToOneEntity::class,
+            OwningOneToOneEntity::class,
             'def'
         );
 
@@ -103,7 +105,7 @@ class OneToOneTest extends OrmFunctionalTestCase
     public function testThatTheProxyFromOwningToInversedIsLoaded(): void
     {
         $owning = $this->_em->find(
-            Models\ValueConversionType\OwningOneToOneEntity::class,
+            OwningOneToOneEntity::class,
             'def'
         );
 
@@ -118,10 +120,10 @@ class OneToOneTest extends OrmFunctionalTestCase
     public function testThatTheEntityFromInversedToOwningIsEagerLoaded(): void
     {
         $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToOneEntity::class,
+            InversedOneToOneEntity::class,
             'abc'
         );
 
-        self::assertInstanceOf(Models\ValueConversionType\OwningOneToOneEntity::class, $inversed->associatedEntity);
+        self::assertInstanceOf(OwningOneToOneEntity::class, $inversed->associatedEntity);
     }
 }

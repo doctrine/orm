@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
+use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -16,8 +17,7 @@ use function str_contains;
 
 class DBAL483Test extends OrmFunctionalTestCase
 {
-    /** @var Tools\SchemaTool */
-    private $schemaTool;
+    private SchemaTool $schemaTool;
 
     protected function setUp(): void
     {
@@ -25,7 +25,7 @@ class DBAL483Test extends OrmFunctionalTestCase
 
         $this->_em->getConnection();
 
-        $this->schemaTool = new Tools\SchemaTool($this->_em);
+        $this->schemaTool = new SchemaTool($this->_em);
     }
 
     /**
@@ -39,9 +39,7 @@ class DBAL483Test extends OrmFunctionalTestCase
 
         $updateSql = $this->schemaTool->getUpdateSchemaSql([$class]);
 
-        $updateSql = array_filter($updateSql, static function ($sql) {
-            return str_contains($sql, 'DBAL483');
-        });
+        $updateSql = array_filter($updateSql, static fn($sql) => str_contains($sql, 'DBAL483'));
 
         self::assertCount(0, $updateSql);
     }

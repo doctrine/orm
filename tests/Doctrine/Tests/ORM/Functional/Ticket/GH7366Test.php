@@ -34,7 +34,7 @@ final class GH7366Test extends OrmFunctionalTestCase
     {
         try {
             $entity = $this->_em->find(GH7366Entity::class, 1, LockMode::OPTIMISTIC);
-        } catch (TransactionRequiredException $e) {
+        } catch (TransactionRequiredException) {
             self::fail('EntityManager::find() threw TransactionRequiredException with LockMode::OPTIMISTIC');
         }
 
@@ -62,15 +62,13 @@ class GH7366Entity
      */
     protected $lockVersion = 1;
 
-    /**
-     * @Column(length=32)
-     * @var string
-     */
-    protected $name;
-
-    public function __construct(string $name)
+    public function __construct(
+        /**
+         * @Column(length=32)
+         */
+        protected string $name
+    )
     {
-        $this->name = $name;
     }
 
     public function getName(): string

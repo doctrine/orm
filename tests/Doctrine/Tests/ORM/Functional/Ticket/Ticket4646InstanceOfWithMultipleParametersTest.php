@@ -61,12 +61,11 @@ class Ticket4646InstanceOfWithMultipleParametersTest extends OrmFunctionalTestCa
 class PersonTicket4646Multiple
 {
     /**
-     * @var int
      * @Id()
      * @GeneratedValue()
      * @Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     public function getId(): int
     {

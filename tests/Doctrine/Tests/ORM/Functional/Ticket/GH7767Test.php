@@ -69,12 +69,11 @@ class GH7767Test extends OrmFunctionalTestCase
 class GH7767ParentEntity
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
      * @psalm-var Collection<int, GH7767ChildEntity>
@@ -103,28 +102,22 @@ class GH7767ParentEntity
 class GH7767ChildEntity
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    public $position;
-
-    /**
-     * @var GH7767ParentEntity
-     * @ManyToOne(targetEntity=GH7767ParentEntity::class, inversedBy="children")
-     */
-    private $parent;
-
-    public function __construct(GH7767ParentEntity $parent, int $position)
+    public function __construct(
+        /**
+         * @ManyToOne(targetEntity=GH7767ParentEntity::class, inversedBy="children")
+         */
+        private GH7767ParentEntity $parent,
+        /**
+         * @Column(type="integer")
+         */
+        public int $position
+    )
     {
-        $this->parent   = $parent;
-        $this->position = $position;
     }
 }

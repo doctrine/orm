@@ -20,8 +20,7 @@ use function count;
  */
 class MetadataFilterTest extends OrmTestCase
 {
-    /** @var ClassMetadataFactory */
-    private $cmf;
+    private ClassMetadataFactory $cmf;
 
     protected function setUp(): void
     {

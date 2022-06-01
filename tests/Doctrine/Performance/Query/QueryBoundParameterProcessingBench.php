@@ -17,11 +17,9 @@ use function range;
  */
 final class QueryBoundParameterProcessingBench
 {
-    /** @var Query */
-    private $parsedQueryWithInferredParameterType;
+    private ?Query $parsedQueryWithInferredParameterType = null;
 
-    /** @var Query */
-    private $parsedQueryWithDeclaredParameterType;
+    private ?Query $parsedQueryWithDeclaredParameterType = null;
 
     public function init(): void
     {

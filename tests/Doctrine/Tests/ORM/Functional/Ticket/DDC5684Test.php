@@ -88,14 +88,10 @@ class DDC5684ObjectIdType extends DBALTypes\Type
     }
 }
 
-class DDC5684ObjectId
+class DDC5684ObjectId implements \Stringable
 {
-    /** @var mixed */
-    public $value;
-
-    public function __construct(mixed $value)
+    public function __construct(public mixed $value)
     {
-        $this->value = $value;
     }
 
     public function __toString(): string

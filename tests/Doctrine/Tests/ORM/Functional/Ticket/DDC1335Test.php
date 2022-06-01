@@ -27,7 +27,7 @@ class DDC1335Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(DDC1335User::class, DDC1335Phone::class);
         try {
             $this->loadFixture();
-        } catch (UniqueConstraintViolationException $e) {
+        } catch (UniqueConstraintViolationException) {
         }
     }
 
@@ -168,27 +168,23 @@ class DDC1335User
     public $id;
 
     /**
-     * @var string
-     * @Column(type="string", length=255, unique=true)
-     */
-    public $email;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    /**
      * @psalm-var Collection<int, DDC1335Phone>
      * @OneToMany(targetEntity="DDC1335Phone", mappedBy="user", cascade={"persist", "remove"})
      */
     public $phones;
 
-    public function __construct($email, $name, array $numbers = [])
+    /**
+     * @param string $email
+     * @param string $name
+     */
+    public function __construct(/**
+     * @Column(type="string", length=255, unique=true)
+     */
+    public $email, /**
+     * @Column(type="string", length=255)
+     */
+    public $name, array $numbers = [])
     {
-        $this->name   = $name;
-        $this->email  = $email;
         $this->phones = new ArrayCollection();
 
         foreach ($numbers as $number) {
@@ -211,21 +207,20 @@ class DDC1335Phone
     public $id;
 
     /**
-     * @var string
-     * @Column(name="numericalValue", type="string", nullable = false)
+     * @param string $number
+     * @param \Doctrine\Tests\ORM\Functional\Ticket\DDC1335User $user
      */
-    public $numericalValue;
-
-    /**
-     * @var DDC1335User
-     * @ManyToOne(targetEntity="DDC1335User", inversedBy="phones")
-     * @JoinColumn(name="user_id", referencedColumnName="id", nullable = false)
-     */
-    public $user;
-
-    public function __construct($user, $number)
+    public function __construct(
+        /**
+         * @ManyToOne(targetEntity="DDC1335User", inversedBy="phones")
+         * @JoinColumn(name="user_id", referencedColumnName="id", nullable = false)
+         */
+        public $user,
+        /**
+         * @Column(name="numericalValue", type="string", nullable = false)
+         */
+        public $numericalValue
+    )
     {
-        $this->user           = $user;
-        $this->numericalValue = $number;
     }
 }

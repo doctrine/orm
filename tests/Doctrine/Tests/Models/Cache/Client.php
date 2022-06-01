@@ -25,13 +25,14 @@ class Client
     public $id;
 
     /**
-     * @var string
-     * @Column(unique=true)
+     * @param string $name
      */
-    public $name;
-
-    public function __construct($name)
+    public function __construct(
+        /**
+         * @Column(unique=true)
+         */
+        public $name
+    )
     {
-        $this->name = $name;
     }
 }

@@ -40,11 +40,10 @@ class DDC2182Test extends OrmFunctionalTestCase
 class DDC2182OptionParent
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer", options={"unsigned": true})
      */
-    private $id;
+    private int $id;
 }
 
 /**
@@ -54,16 +53,14 @@ class DDC2182OptionParent
 class DDC2182OptionChild
 {
     /**
-     * @var string
      * @Id
      * @Column
      */
-    private $id;
+    private string $id;
 
     /**
-     * @var DDC2182OptionParent
      * @ManyToOne(targetEntity="DDC2182OptionParent")
      * @JoinColumn(referencedColumnName="id")
      */
-    private $parent;
+    private \Doctrine\Tests\ORM\Functional\Ticket\DDC2182OptionParent $parent;
 }

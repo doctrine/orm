@@ -55,7 +55,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
 
         foreach ($this->attractions as $attraction) {
             self::assertTrue($this->cache->containsEntity(Attraction::class, $attraction->getId()));
-            self::assertTrue($this->cache->containsEntity(get_class($attraction), $attraction->getId()));
+            self::assertTrue($this->cache->containsEntity($attraction::class, $attraction->getId()));
         }
     }
 

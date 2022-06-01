@@ -21,25 +21,22 @@ use Doctrine\ORM\Mapping\Table;
 class CmsEmployee
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Column
      */
-    private $name;
+    private string $name;
 
     /**
-     * @var CmsEmployee
      * @OneToOne(targetEntity="CmsEmployee")
      * @JoinColumn(name="spouse_id", referencedColumnName="id")
      */
-    private $spouse;
+    private \Doctrine\Tests\Models\CMS\CmsEmployee $spouse;
 
     public function getId(): int
     {

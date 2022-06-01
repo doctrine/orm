@@ -21,25 +21,22 @@ use Doctrine\ORM\Mapping\Table;
 class ECommerceFeature
 {
     /**
-     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string|null
      * @Column(length=50)
      */
-    private $description;
+    private ?string $description = null;
 
     /**
-     * @var ECommerceProduct|null
      * @ManyToOne(targetEntity="ECommerceProduct", inversedBy="features")
      * @JoinColumn(name="product_id", referencedColumnName="id")
      */
-    private $product;
+    private ?ECommerceProduct $product = null;
 
     public function getId(): int
     {

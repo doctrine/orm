@@ -20,18 +20,16 @@ use Doctrine\ORM\Mapping\Table;
 class ECommerceShipping
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var int|string
      * @Column(type="integer")
      */
-    private $days;
+    private int|string|null $days = null;
 
     public function getId(): int
     {

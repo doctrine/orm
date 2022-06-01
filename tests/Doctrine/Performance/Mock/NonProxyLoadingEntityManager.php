@@ -27,11 +27,8 @@ use Doctrine\ORM\UnitOfWork;
  */
 class NonProxyLoadingEntityManager implements EntityManagerInterface
 {
-    private EntityManagerInterface $realEntityManager;
-
-    public function __construct(EntityManagerInterface $realEntityManager)
+    public function __construct(private EntityManagerInterface $realEntityManager)
     {
-        $this->realEntityManager = $realEntityManager;
     }
 
     public function getProxyFactory(): ProxyFactory

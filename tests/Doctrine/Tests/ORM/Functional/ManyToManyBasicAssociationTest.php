@@ -81,7 +81,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $user = $this->addCmsUserGblancoWithGroups(2);
         $this->_em->clear();
 
-        $uRep = $this->_em->getRepository(get_class($user));
+        $uRep = $this->_em->getRepository($user::class);
 
         // Get user
         $user = $uRep->findOneById($user->getId());
@@ -125,7 +125,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         // Association should not exist
-        $user2 = $this->_em->find(get_class($user), $user->getId());
+        $user2 = $this->_em->find($user::class, $user->getId());
 
         self::assertNotNull($user2, 'Has to return exactly one entry.');
         self::assertEquals(0, $user2->getGroups()->count());
@@ -219,7 +219,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $this->_em->remove($user);
         $this->_em->flush();
 
-        $newUser = $this->_em->find(get_class($user), $userId);
+        $newUser = $this->_em->find($user::class, $userId);
         self::assertNull($newUser);
     }
 
@@ -237,7 +237,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $newUser = $this->_em->find(get_class($user), $user->getId());
+        $newUser = $this->_em->find($user::class, $user->getId());
         self::assertCount(0, $newUser->getGroups());
     }
 
@@ -249,7 +249,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $newUser = $this->_em->find(get_class($user), $user->getId());
+        $newUser = $this->_em->find($user::class, $user->getId());
         self::assertCount(0, $newUser->getGroups());
     }
 
@@ -277,7 +277,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $newUser = $this->_em->find(get_class($user), $user->getId());
+        $newUser = $this->_em->find($user::class, $user->getId());
         self::assertCount(1, $newUser->groups);
     }
 
@@ -318,7 +318,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->find(get_class($user), $user->id);
+        $user = $this->_em->find($user::class, $user->id);
 
         $coll         = new ArrayCollection([$group1, $group2]);
         $user->groups = $coll;
@@ -332,7 +332,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $user = $this->_em->find(get_class($user), $user->id);
+        $user = $this->_em->find($user::class, $user->id);
         self::assertCount(2, $user->groups);
         self::assertEquals('Developers_New1', $user->groups[0]->name);
         self::assertEquals('Developers_New2', $user->groups[1]->name);
@@ -346,7 +346,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $user = $this->addCmsUserGblancoWithGroups(2);
         $this->_em->clear();
 
-        $user = $this->_em->find(get_class($user), $user->id);
+        $user = $this->_em->find($user::class, $user->id);
 
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
         $this->_em->getUnitOfWork()->initializeObject($user->groups);
@@ -363,13 +363,13 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $user = $this->_em->find(get_class($user), $user->id);
+        $user = $this->_em->find($user::class, $user->id);
         $user->groups->clear();
         self::assertCount(0, $user->groups);
 
         $this->_em->flush();
 
-        $user = $this->_em->find(get_class($user), $user->id);
+        $user = $this->_em->find($user::class, $user->id);
         self::assertCount(0, $user->groups);
     }
 
@@ -397,7 +397,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $user = $this->_em->find(get_class($user), $user->id);
+        $user = $this->_em->find($user::class, $user->id);
 
         $criteria = Criteria::create()
             ->orderBy(['name' => Criteria::ASC]);
@@ -407,9 +407,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
             $user
                 ->getGroups()
                 ->matching($criteria)
-                ->map(static function (CmsGroup $group) {
-                    return $group->getName();
-                })
+                ->map(static fn(CmsGroup $group) => $group->getName())
                 ->toArray()
         );
     }
@@ -441,7 +439,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $user = $this->_em->find(get_class($user), $user->id);
+        $user = $this->_em->find($user::class, $user->id);
 
         $criteria = Criteria::create()
             ->orderBy(['name' => Criteria::ASC]);
@@ -451,9 +449,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
             $user
                 ->getTags()
                 ->matching($criteria)
-                ->map(static function (CmsTag $tag) {
-                    return $tag->getName();
-                })
+                ->map(static fn(CmsTag $tag) => $tag->getName())
                 ->toArray()
         );
     }
@@ -463,7 +459,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $user = $this->addCmsUserGblancoWithGroups(2);
         $this->_em->clear();
 
-        $user = $this->_em->find(get_class($user), $user->id);
+        $user = $this->_em->find($user::class, $user->id);
 
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
@@ -481,7 +477,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $user = $this->addCmsUserGblancoWithGroups(2);
         $this->_em->clear();
 
-        $user = $this->_em->find(get_class($user), $user->id);
+        $user = $this->_em->find($user::class, $user->id);
 
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
@@ -502,7 +498,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $user = $this->addCmsUserGblancoWithGroups(5);
         $this->_em->clear();
 
-        $user = $this->_em->find(get_class($user), $user->id);
+        $user = $this->_em->find($user::class, $user->id);
 
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
@@ -526,7 +522,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $user = $this->addCmsUserGblancoWithGroups(2);
         $this->_em->clear();
 
-        $user = $this->_em->find(get_class($user), $user->id);
+        $user = $this->_em->find($user::class, $user->id);
 
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');

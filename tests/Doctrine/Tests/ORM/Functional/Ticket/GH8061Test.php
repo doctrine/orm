@@ -79,11 +79,7 @@ final class GH8061Type extends Type
 
 final class GH8061Class
 {
-    /** @var string */
-    public $field;
-
-    public function __construct(string $field)
+    public function __construct(public string $field)
     {
-        $this->field = $field;
     }
 }

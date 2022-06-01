@@ -44,14 +44,14 @@ class IdentityMapTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user2 = $this->_em->find(get_class($user), $user->getId());
+        $user2 = $this->_em->find($user::class, $user->getId());
         self::assertNotSame($user2, $user);
-        $user3 = $this->_em->find(get_class($user), $user->getId());
+        $user3 = $this->_em->find($user::class, $user->getId());
         self::assertSame($user2, $user3);
 
-        $address2 = $this->_em->find(get_class($address), $address->getId());
+        $address2 = $this->_em->find($address::class, $address->getId());
         self::assertNotSame($address2, $address);
-        $address3 = $this->_em->find(get_class($address), $address->getId());
+        $address3 = $this->_em->find($address::class, $address->getId());
         self::assertSame($address2, $address3);
 
         self::assertSame($user2->getAddress(), $address2); // !!!

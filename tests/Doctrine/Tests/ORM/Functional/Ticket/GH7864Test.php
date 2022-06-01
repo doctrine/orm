@@ -57,9 +57,7 @@ class GH7864Test extends OrmFunctionalTestCase
 
         $user->tweets->removeElement($tweet);
 
-        $tweets = $user->tweets->map(static function (GH7864Tweet $tweet) {
-            return $tweet->content;
-        });
+        $tweets = $user->tweets->map(static fn(GH7864Tweet $tweet) => $tweet->content);
 
         self::assertEquals(['Goodbye, and thanks for all the fish'], array_values($tweets->toArray()));
     }

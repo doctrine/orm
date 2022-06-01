@@ -18,11 +18,10 @@ use Doctrine\ORM\Mapping\Table;
 class ForumCategory
 {
     /**
-     * @var int
      * @Column(type="integer")
      * @Id
      */
-    private $id;
+    private int $id;
 
     /**
      * @var int

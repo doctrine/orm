@@ -75,25 +75,22 @@ use Doctrine\ORM\Mapping\Table;
 abstract class CompanyContract
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
     #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue]
-    private $id;
+    private int $id;
 
     /**
-     * @var CompanyEmployee
      * @ManyToOne(targetEntity="CompanyEmployee", inversedBy="soldContracts")
      */
-    private $salesPerson;
+    private ?CompanyEmployee $salesPerson = null;
 
     /**
      * @Column(type="boolean")
-     * @var bool
      */
-    private $completed = false;
+    private bool $completed = false;
 
     /**
      * @psalm-var Collection<int, CompanyEmployee>

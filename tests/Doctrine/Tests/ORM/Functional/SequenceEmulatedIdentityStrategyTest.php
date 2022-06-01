@@ -45,18 +45,16 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
 class SequenceEmulatedIdentityEntity
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Column(type="string", length=255)
      */
-    private $value;
+    private ?string $value = null;
 
     public function getId(): int
     {

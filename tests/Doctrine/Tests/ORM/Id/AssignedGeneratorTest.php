@@ -17,11 +17,9 @@ use Doctrine\Tests\OrmTestCase;
  */
 class AssignedGeneratorTest extends OrmTestCase
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /** @var AssignedGenerator */
-    private $assignedGen;
+    private AssignedGenerator $assignedGen;
 
     protected function setUp(): void
     {

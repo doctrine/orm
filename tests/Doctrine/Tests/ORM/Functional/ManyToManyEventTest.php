@@ -14,8 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class ManyToManyEventTest extends OrmFunctionalTestCase
 {
-    /** @var PostUpdateListener */
-    private $listener;
+    private \Doctrine\Tests\ORM\Functional\PostUpdateListener $listener;
 
     protected function setUp(): void
     {

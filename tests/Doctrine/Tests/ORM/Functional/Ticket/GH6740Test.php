@@ -11,14 +11,11 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH6740Test extends OrmFunctionalTestCase
 {
-    /** @var int */
-    private $productId;
+    private int $productId;
 
-    /** @var int */
-    private $firstCategoryId;
+    private int $firstCategoryId;
 
-    /** @var int */
-    private $secondCategoryId;
+    private int $secondCategoryId;
 
     protected function setUp(): void
     {

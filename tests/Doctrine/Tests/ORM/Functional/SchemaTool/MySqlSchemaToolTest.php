@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
+use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\CMS\CmsTag;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsEmail;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\Generic\DecimalModel;
+use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -27,12 +35,12 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetCreateSchemaSql(): void
     {
         $classes = [
-            $this->_em->getClassMetadata(Models\CMS\CmsGroup::class),
-            $this->_em->getClassMetadata(Models\CMS\CmsUser::class),
-            $this->_em->getClassMetadata(Models\CMS\CmsTag::class),
-            $this->_em->getClassMetadata(Models\CMS\CmsAddress::class),
-            $this->_em->getClassMetadata(Models\CMS\CmsEmail::class),
-            $this->_em->getClassMetadata(Models\CMS\CmsPhonenumber::class),
+            $this->_em->getClassMetadata(CmsGroup::class),
+            $this->_em->getClassMetadata(CmsUser::class),
+            $this->_em->getClassMetadata(CmsTag::class),
+            $this->_em->getClassMetadata(CmsAddress::class),
+            $this->_em->getClassMetadata(CmsEmail::class),
+            $this->_em->getClassMetadata(CmsPhonenumber::class),
         ];
 
         $tool = new SchemaTool($this->_em);
@@ -69,7 +77,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
 
     public function testGetCreateSchemaSql2(): void
     {
-        $classes = [$this->_em->getClassMetadata(Models\Generic\DecimalModel::class)];
+        $classes = [$this->_em->getClassMetadata(DecimalModel::class)];
 
         $tool = new SchemaTool($this->_em);
         $sql  = $tool->getCreateSchemaSql($classes);
@@ -80,7 +88,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
 
     public function testGetCreateSchemaSql3(): void
     {
-        $classes = [$this->_em->getClassMetadata(Models\Generic\BooleanModel::class)];
+        $classes = [$this->_em->getClassMetadata(BooleanModel::class)];
 
         $tool = new SchemaTool($this->_em);
         $sql  = $tool->getCreateSchemaSql($classes);

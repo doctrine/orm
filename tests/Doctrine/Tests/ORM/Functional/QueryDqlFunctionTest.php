@@ -31,7 +31,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $salarySum = $this->_em->createQuery('SELECT SUM(m.salary) AS salary FROM Doctrine\Tests\Models\Company\CompanyManager m')
                                ->getSingleResult();
 
-        self::assertEquals(1500000, $salarySum['salary']);
+        self::assertEquals(1_500_000, $salarySum['salary']);
     }
 
     public function testAggregateAvg(): void
@@ -245,7 +245,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEquals(200000, $result[0]['op']);
         self::assertEquals(400000, $result[1]['op']);
         self::assertEquals(800000, $result[2]['op']);
-        self::assertEquals(1600000, $result[3]['op']);
+        self::assertEquals(1_600_000, $result[3]['op']);
     }
 
     /**
@@ -260,7 +260,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEquals(200000, $result[0]['op']);
         self::assertEquals(400000, $result[1]['op']);
         self::assertEquals(800000, $result[2]['op']);
-        self::assertEquals(1600000, $result[3]['op']);
+        self::assertEquals(1_600_000, $result[3]['op']);
     }
 
     public function testConcatFunction(): void

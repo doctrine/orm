@@ -22,21 +22,6 @@ use Doctrine\ORM\Mapping\Table;
 class ChildClass
 {
     /**
-     * @Id
-     * @Column(name="id1", type="integer")
-     * @var int
-     */
-    public $id1;
-
-    /**
-     * @Id
-     * @ManyToOne(targetEntity=OtherParentClass::class, cascade={"persist"})
-     * @JoinColumn(name="other_parent_id", referencedColumnName="id")
-     * @var OtherParentClass
-     */
-    public $otherParent;
-
-    /**
      * @ManyToMany(targetEntity=ParentClass::class, inversedBy="children")
      * @JoinTable(
      *     name="parent_child",
@@ -51,10 +36,17 @@ class ChildClass
      */
     public $parents;
 
-    public function __construct(int $id1, OtherParentClass $otherParent)
+    public function __construct(/**
+     * @Id
+     * @Column(name="id1", type="integer")
+     */
+    public int $id1, /**
+     * @Id
+     * @ManyToOne(targetEntity=OtherParentClass::class, cascade={"persist"})
+     * @JoinColumn(name="other_parent_id", referencedColumnName="id")
+     */
+    public OtherParentClass $otherParent)
     {
-        $this->id1         = $id1;
-        $this->otherParent = $otherParent;
         $this->parents     = new ArrayCollection();
     }
 }

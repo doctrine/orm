@@ -14,11 +14,9 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC3068Test extends OrmFunctionalTestCase
 {
-    /** @var Driver */
-    private $foo;
+    private Driver $foo;
 
-    /** @var Car */
-    private $merc;
+    private Car $merc;
 
     protected function setUp(): void
     {

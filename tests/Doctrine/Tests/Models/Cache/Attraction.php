@@ -40,30 +40,22 @@ abstract class Attraction
     protected $id;
 
     /**
-     * @var string
-     * @Column(unique=true)
-     */
-    protected $name;
-
-    /**
-     * @var City
-     * @Cache
-     * @ManyToOne(targetEntity="City", inversedBy="attractions")
-     * @JoinColumn(name="city_id", referencedColumnName="id")
-     */
-    protected $city;
-
-    /**
      * @psalm-var Collection<int, AttractionInfo>
      * @Cache
      * @OneToMany(targetEntity="AttractionInfo", mappedBy="attraction")
      */
     protected $infos;
 
-    public function __construct(string $name, City $city)
+    public function __construct(/**
+     * @Column(unique=true)
+     */
+    protected string $name, /**
+     * @Cache
+     * @ManyToOne(targetEntity="City", inversedBy="attractions")
+     * @JoinColumn(name="city_id", referencedColumnName="id")
+     */
+    protected City $city)
     {
-        $this->name  = $name;
-        $this->city  = $city;
         $this->infos = new ArrayCollection();
     }
 

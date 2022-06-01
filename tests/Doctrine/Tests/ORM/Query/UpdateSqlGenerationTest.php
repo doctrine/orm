@@ -20,8 +20,7 @@ use Doctrine\Tests\OrmTestCase;
  */
 class UpdateSqlGenerationTest extends OrmTestCase
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     protected function setUp(): void
     {

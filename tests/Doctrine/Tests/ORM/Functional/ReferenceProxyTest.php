@@ -72,7 +72,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         $id = $this->createProduct();
 
         $entity = $this->_em->getReference(ECommerceProduct::class, $id);
-        $class  = $this->_em->getClassMetadata(get_class($entity));
+        $class  = $this->_em->getClassMetadata($entity::class);
 
         self::assertEquals(ECommerceProduct::class, $class->name);
     }
@@ -243,8 +243,8 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertFalse($entity->__isInitialized());
         self::assertEquals(ECommerceProduct::class, $className);
 
-        $restName      = str_replace($this->_em->getConfiguration()->getProxyNamespace(), '', get_class($entity));
-        $restName      = substr(get_class($entity), strlen($this->_em->getConfiguration()->getProxyNamespace()) + 1);
+        $restName      = str_replace($this->_em->getConfiguration()->getProxyNamespace(), '', $entity::class);
+        $restName      = substr($entity::class, strlen($this->_em->getConfiguration()->getProxyNamespace()) + 1);
         $proxyFileName = $this->_em->getConfiguration()->getProxyDir() . DIRECTORY_SEPARATOR . str_replace('\\', '', $restName) . '.php';
         self::assertTrue(file_exists($proxyFileName), 'Proxy file name cannot be found generically.');
 

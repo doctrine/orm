@@ -90,12 +90,11 @@ class GH7836Test extends OrmFunctionalTestCase
 class GH7836ParentEntity
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
      * @var Collection<int, GH7836ChildEntity>
@@ -124,35 +123,26 @@ class GH7836ParentEntity
 class GH7836ChildEntity
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    public $position;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    /**
-     * @var GH7836ParentEntity
-     * @ManyToOne(targetEntity=GH7836ParentEntity::class, inversedBy="children")
-     */
-    private $parent;
-
-    public function __construct(GH7836ParentEntity $parent, int $position, string $name)
+    public function __construct(
+        /**
+         * @ManyToOne(targetEntity=GH7836ParentEntity::class, inversedBy="children")
+         */
+        private GH7836ParentEntity $parent,
+        /**
+         * @Column(type="integer")
+         */
+        public int $position,
+        /**
+         * @Column(type="string", length=255)
+         */
+        public string $name
+    )
     {
-        $this->parent   = $parent;
-        $this->position = $position;
-        $this->name     = $name;
     }
 }

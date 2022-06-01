@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping\Table;
  * @Entity
  * @Table(name="cms_comments")
  */
-class CmsComment
+class CmsComment implements \Stringable
 {
     /**
      * @var int

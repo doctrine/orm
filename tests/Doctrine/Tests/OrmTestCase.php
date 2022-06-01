@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests;
 
+use Doctrine\Common\Annotations\PsrCachedReader;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\DBAL\Driver\Result;
 use Doctrine\Common\Annotations;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
@@ -31,17 +34,13 @@ abstract class OrmTestCase extends DoctrineTestCase
 {
     /**
      * The metadata cache that is shared between all ORM tests (except functional tests).
-     *
-     * @var CacheItemPoolInterface|null
      */
-    private static $metadataCache = null;
+    private static ?CacheItemPoolInterface $metadataCache = null;
 
     /**
      * The query cache that is shared between all ORM tests (except functional tests).
-     *
-     * @var CacheItemPoolInterface|null
      */
-    private static $queryCache = null;
+    private static ?CacheItemPoolInterface $queryCache = null;
 
     /** @var bool */
     protected $isSecondLevelCacheEnabled = false;
@@ -55,13 +54,12 @@ abstract class OrmTestCase extends DoctrineTestCase
     /** @var StatisticsCacheLogger */
     protected $secondLevelCacheLogger;
 
-    /** @var CacheItemPoolInterface|null */
-    private $secondLevelCache = null;
+    private ?CacheItemPoolInterface $secondLevelCache = null;
 
     protected function createAnnotationDriver(array $paths = []): AnnotationDriver
     {
         return new AnnotationDriver(
-            new Annotations\PsrCachedReader(new Annotations\AnnotationReader(), new ArrayAdapter()),
+            new PsrCachedReader(new AnnotationReader(), new ArrayAdapter()),
             $paths
         );
     }
@@ -154,9 +152,7 @@ abstract class OrmTestCase extends DoctrineTestCase
             ->setConstructorArgs([[], $this->createDriverMock($platform)])
             ->onlyMethods(['quote'])
             ->getMockForAbstractClass();
-        $connection->method('quote')->willReturnCallback(static function (string $input) {
-            return sprintf("'%s'", $input);
-        });
+        $connection->method('quote')->willReturnCallback(static fn(string $input) => sprintf("'%s'", $input));
 
         return $connection;
     }
@@ -174,7 +170,7 @@ abstract class OrmTestCase extends DoctrineTestCase
 
     private function createDriverMock(AbstractPlatform $platform): Driver
     {
-        $result = $this->createMock(Driver\Result::class);
+        $result = $this->createMock(Result::class);
         $result->method('fetchAssociative')
             ->willReturn(false);
 

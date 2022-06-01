@@ -66,19 +66,16 @@ class DoctrineGlobalUser
     /**
      * @Id
      * @Column(type="integer")
-     * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @Column(type="string", length=64)
-     * @var string
      */
-    private $username;
+    private string $username;
 
     /**
      * @Column(type="string", length=128)
-     * @var string
      */
-    private $email;
+    private string $email;
 }

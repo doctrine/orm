@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Performance\Hydration;
 
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsEmail;
+use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsTag;
+use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Models\CMS;
@@ -14,30 +22,28 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
  */
 final class SimpleInsertPerformanceBench
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
+    private ?EntityManagerInterface $entityManager = null;
 
     /** @var CMS\CmsUser[] */
-    private $users;
+    private ?array $users = null;
 
-    /** @var string */
-    private $tableName;
+    private ?string $tableName = null;
 
     public function init(): void
     {
         $this->entityManager = EntityManagerFactory::getEntityManager([
-            CMS\CmsUser::class,
-            CMS\CmsPhonenumber::class,
-            CMS\CmsAddress::class,
-            CMS\CmsEmail::class,
-            CMS\CmsGroup::class,
-            CMS\CmsTag::class,
-            CMS\CmsArticle::class,
-            CMS\CmsComment::class,
+            CmsUser::class,
+            CmsPhonenumber::class,
+            CmsAddress::class,
+            CmsEmail::class,
+            CmsGroup::class,
+            CmsTag::class,
+            CmsArticle::class,
+            CmsComment::class,
         ]);
 
         for ($i = 1; $i <= 10000; ++$i) {
-            $user           = new CMS\CmsUser();
+            $user           = new CmsUser();
             $user->status   = 'user';
             $user->username = 'user' . $i;
             $user->name     = 'Mr.Smith-' . $i;
@@ -45,7 +51,7 @@ final class SimpleInsertPerformanceBench
             $this->users[$i] = $user;
         }
 
-        $this->tableName = $this->entityManager->getClassMetadata(CMS\CmsUser::class)->getTableName();
+        $this->tableName = $this->entityManager->getClassMetadata(CmsUser::class)->getTableName();
     }
 
     public function benchHydration(): void

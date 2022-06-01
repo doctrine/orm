@@ -28,25 +28,22 @@ use Doctrine\ORM\Mapping\Table;
 class ECommerceProduct
 {
     /**
-     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Column(type="string", length=50, nullable=true)
      */
-    private $name;
+    private ?string $name = null;
 
     /**
-     * @var ECommerceShipping|null
      * @OneToOne(targetEntity="ECommerceShipping", cascade={"persist"})
      * @JoinColumn(name="shipping_id", referencedColumnName="id")
      */
-    private $shipping;
+    private ?ECommerceShipping $shipping = null;
 
     /**
      * @psalm-var Collection<int, ECommerceFeature>

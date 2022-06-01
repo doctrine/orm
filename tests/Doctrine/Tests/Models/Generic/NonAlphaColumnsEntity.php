@@ -24,14 +24,12 @@ class NonAlphaColumnsEntity
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255, name="`simple-entity-value`")
-     */
-    public $value;
-
-    public function __construct(string $value)
+    public function __construct(
+        /**
+         * @Column(type="string", length=255, name="`simple-entity-value`")
+         */
+        public string $value
+    )
     {
-        $this->value = $value;
     }
 }

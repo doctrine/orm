@@ -10,14 +10,11 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC849Test extends OrmFunctionalTestCase
 {
-    /** @var CmsUser */
-    private $user;
+    private ?CmsUser $user;
 
-    /** @var CmsGroup */
-    private $group1;
+    private CmsGroup $group1;
 
-    /** @var CmsGroup */
-    private $group2;
+    private CmsGroup $group2;
 
     protected function setUp(): void
     {

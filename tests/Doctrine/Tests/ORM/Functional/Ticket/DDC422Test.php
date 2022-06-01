@@ -46,7 +46,7 @@ class DDC422Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $customer = $this->_em->find(get_class($customer), $customer->id);
+        $customer = $this->_em->find($customer::class, $customer->id);
 
         self::assertInstanceOf(PersistentCollection::class, $customer->contacts);
         self::assertFalse($customer->contacts->isInitialized());

@@ -16,22 +16,17 @@ use Doctrine\ORM\Mapping\OneToOne;
 class DDC117ArticleDetails
 {
     /**
-     * @var DDC117Article
+     * @Column(type="text")
+     */
+    private string $text;
+
+    public function __construct(/**
      * @Id
      * @OneToOne(targetEntity="DDC117Article", inversedBy="details")
      * @JoinColumn(name="article_id", referencedColumnName="article_id")
      */
-    private $article;
-
-    /**
-     * @var string
-     * @Column(type="text")
-     */
-    private $text;
-
-    public function __construct(DDC117Article $article, string $text)
+    private DDC117Article $article, string $text)
     {
-        $this->article = $article;
         $article->setDetails($this);
 
         $this->update($text);

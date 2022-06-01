@@ -17,7 +17,7 @@ use function sprintf;
 abstract class DoctrineTestCase extends TestCase
 {
     /** @var array<string,string> */
-    private static $phpunitMethodRenames = [
+    private static array $phpunitMethodRenames = [
         'assertMatchesRegularExpression' => 'assertRegExp', // can be removed when PHPUnit 9 is minimum
         'assertDoesNotMatchRegularExpression' => 'assertNotRegExp', // can be removed when PHPUnit 9 is minimum
         'assertFileDoesNotExist' => 'assertFileNotExists', // can be removed PHPUnit 9 is minimum

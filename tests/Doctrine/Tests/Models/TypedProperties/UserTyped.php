@@ -37,7 +37,7 @@ class UserTyped
 
     /** @Column(length=50) */
     #[ORM\Column(length: 50)]
-    public ?string $status;
+    public ?string $status = null;
 
     /** @Column(length=255, unique=true) */
     #[ORM\Column(length: 255, unique: true)]
@@ -76,7 +76,7 @@ class UserTyped
 
     /** @ManyToOne */
     #[ORM\ManyToOne]
-    public ?CmsEmail $mainEmail;
+    public ?CmsEmail $mainEmail = null;
 
     /** @Embedded */
     #[ORM\Embedded]

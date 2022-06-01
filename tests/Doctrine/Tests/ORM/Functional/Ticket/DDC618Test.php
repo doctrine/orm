@@ -45,7 +45,7 @@ class DDC618Test extends OrmFunctionalTestCase
 
             $this->_em->flush();
             $this->_em->clear();
-        } catch (UniqueConstraintViolationException $e) {
+        } catch (UniqueConstraintViolationException) {
         }
     }
 
@@ -185,20 +185,19 @@ class DDC618Book
     public $id;
 
     /**
-     * @var string
-     * @Column(type="string", length=255)
+     * @param string $title
+     * @param \Doctrine\Tests\ORM\Functional\Ticket\DDC618Author $author
      */
-    public $title;
-
-    /**
-     * @var DDC618Author
-     * @ManyToOne(targetEntity="DDC618Author", inversedBy="books")
-     */
-    public $author;
-
-    public function __construct($title, $author)
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        public $title,
+        /**
+         * @ManyToOne(targetEntity="DDC618Author", inversedBy="books")
+         */
+        public $author
+    )
     {
-        $this->title  = $title;
-        $this->author = $author;
     }
 }

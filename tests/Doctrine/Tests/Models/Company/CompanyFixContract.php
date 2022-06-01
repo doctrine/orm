@@ -17,9 +17,8 @@ class CompanyFixContract extends CompanyContract
 {
     /**
      * @Column(type="integer")
-     * @var int
      */
-    private $fixPrice = 0;
+    private int $fixPrice = 0;
 
     public function calculatePrice(): int
     {

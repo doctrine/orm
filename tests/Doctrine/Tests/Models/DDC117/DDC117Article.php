@@ -19,18 +19,11 @@ use Doctrine\ORM\Mapping\OneToOne;
 class DDC117Article
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer", name="article_id")
      * @GeneratedValue
      */
-    private $id;
-
-    /**
-     * @var string
-     * @Column
-     */
-    private $title;
+    private int $id;
 
     /**
      * @psalm-var Collection<int, DDC117Reference>
@@ -39,10 +32,9 @@ class DDC117Article
     private $references;
 
     /**
-     * @var DDC117ArticleDetails
      * @OneToOne(targetEntity="DDC117ArticleDetails", mappedBy="article", cascade={"persist", "remove"})
      */
-    private $details;
+    private ?DDC117ArticleDetails $details = null;
 
     /**
      * @psalm-var Collection<int, DDC117Translation>
@@ -54,11 +46,13 @@ class DDC117Article
      * @var Collection<int, DDC117Translation>
      * @OneToMany(targetEntity="DDC117Link", mappedBy="source", indexBy="target_id", cascade={"persist", "remove"})
      */
-    private $links;
+    private Collection $links;
 
-    public function __construct(string $title)
+    public function __construct(/**
+     * @Column
+     */
+    private string $title)
     {
-        $this->title        = $title;
         $this->references   = new ArrayCollection();
         $this->translations = new ArrayCollection();
     }

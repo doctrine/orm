@@ -76,7 +76,7 @@ class ClassTableInheritanceSecondTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $mmrel2 = $this->_em->find(get_class($mmrel), $mmrel->getId());
+        $mmrel2 = $this->_em->find($mmrel::class, $mmrel->getId());
         self::assertFalse($mmrel2->getCTIChildren()->isInitialized());
         self::assertEquals(1, count($mmrel2->getCTIChildren()));
         self::assertTrue($mmrel2->getCTIChildren()->isInitialized());
@@ -94,18 +94,16 @@ class ClassTableInheritanceSecondTest extends OrmFunctionalTestCase
 class CTIParent
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var CTIRelated
      * @OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent")
      */
-    private $related;
+    private ?\Doctrine\Tests\ORM\Functional\CTIRelated $related = null;
 
     public function getId(): int
     {
@@ -131,10 +129,9 @@ class CTIParent
 class CTIChild extends CTIParent
 {
     /**
-     * @var string
      * @Column(type="string", length=255)
      */
-    private $data;
+    private ?string $data = null;
 
     public function getData(): string
     {
@@ -151,19 +148,17 @@ class CTIChild extends CTIParent
 class CTIRelated
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var CTIParent
      * @OneToOne(targetEntity="CTIParent")
      * @JoinColumn(name="ctiparent_id", referencedColumnName="id")
      */
-    private $ctiParent;
+    private ?\Doctrine\Tests\ORM\Functional\CTIParent $ctiParent = null;
 
     public function getId(): int
     {
@@ -185,12 +180,11 @@ class CTIRelated
 class CTIRelated2
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
      * @psalm-var Collection<int, CTIChild>

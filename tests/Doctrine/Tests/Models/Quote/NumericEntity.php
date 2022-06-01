@@ -24,14 +24,12 @@ class NumericEntity
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255, name="`2:2`")
-     */
-    public $value;
-
-    public function __construct(string $value)
+    public function __construct(
+        /**
+         * @Column(type="string", length=255, name="`2:2`")
+         */
+        public string $value
+    )
     {
-        $this->value = $value;
     }
 }

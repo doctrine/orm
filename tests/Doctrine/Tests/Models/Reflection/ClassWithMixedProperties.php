@@ -15,9 +15,7 @@ class ClassWithMixedProperties extends ParentClass
     /** @var string */
     protected $protectedProperty = 'protectedProperty';
 
-    /** @var string */
-    private $privateProperty = 'privateProperty';
+    private string $privateProperty = 'privateProperty';
 
-    /** @var string */
-    private $privatePropertyOverride = 'privatePropertyOverride';
+    private string $privatePropertyOverride = 'privatePropertyOverride';
 }

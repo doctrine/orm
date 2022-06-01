@@ -53,12 +53,11 @@ class DDC1225Test extends OrmFunctionalTestCase
 class DDC1225TestEntity1
 {
     /**
-     * @var DDC1225TestEntity2
      * @Id
      * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\DDC1225TestEntity2")
      * @JoinColumn(name="test_entity2_id", referencedColumnName="id", nullable=false)
      */
-    private $testEntity2;
+    private ?\Doctrine\Tests\ORM\Functional\Ticket\DDC1225TestEntity2 $testEntity2 = null;
 
     public function setTestEntity2(DDC1225TestEntity2 $testEntity2): void
     {
@@ -78,10 +77,9 @@ class DDC1225TestEntity1
 class DDC1225TestEntity2
 {
     /**
-     * @var int
      * @Id
      * @GeneratedValue(strategy="AUTO")
      * @Column(type="integer")
      */
-    private $id;
+    private int $id;
 }

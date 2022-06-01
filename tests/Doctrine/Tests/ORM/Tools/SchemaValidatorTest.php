@@ -29,11 +29,9 @@ use Doctrine\Tests\OrmTestCase;
 
 class SchemaValidatorTest extends OrmTestCase
 {
-    /** @var EntityManagerInterface */
-    private $em = null;
+    private ?EntityManagerInterface $em = null;
 
-    /** @var SchemaValidator */
-    private $validator = null;
+    private ?SchemaValidator $validator = null;
 
     protected function setUp(): void
     {
@@ -339,18 +337,16 @@ class InvalidEntity2
 class DDC1587ValidEntity1
 {
     /**
-     * @var int
      * @Id
      * @GeneratedValue
      * @Column(name="pk", type="integer")
      */
-    private $pk;
+    private int $pk;
 
     /**
-     * @var string
      * @Column(name="name", type="string", length=32)
      */
-    private $name;
+    private string $name;
 
     /**
      * @var Identifier
@@ -367,18 +363,16 @@ class DDC1587ValidEntity1
 class DDC1587ValidEntity2
 {
     /**
-     * @var DDC1587ValidEntity1
      * @Id
      * @OneToOne(targetEntity="DDC1587ValidEntity1", inversedBy="identifier")
      * @JoinColumn(name="pk_agent", referencedColumnName="pk", nullable=false)
      */
-    private $agent;
+    private \Doctrine\Tests\ORM\Tools\DDC1587ValidEntity1 $agent;
 
     /**
-     * @var string
      * @Column(name="num", type="string", length=16, nullable=true)
      */
-    private $num;
+    private string $num;
 }
 
 /**
@@ -413,12 +407,11 @@ class DDC1649Two
 class DDC1649Three
 {
     /**
-     * @var DDC1649Two
      * @Id
      * @ManyToOne(targetEntity="DDC1649Two")
      * @JoinColumn(name="id", referencedColumnName="id")
      */
-    private $two;
+    private \Doctrine\Tests\ORM\Tools\DDC1649Two $two;
 }
 
 /**
@@ -435,10 +428,9 @@ class DDC3274One
     private $id;
 
     /**
-     * @var ArrayCollection
      * @OneToMany(targetEntity="DDC3274Two", mappedBy="one")
      */
-    private $two;
+    private ArrayCollection $two;
 }
 
 /**
@@ -447,11 +439,10 @@ class DDC3274One
 class DDC3274Two
 {
     /**
-     * @var DDC3274One
      * @Id
      * @ManyToOne(targetEntity="DDC3274One")
      */
-    private $one;
+    private \Doctrine\Tests\ORM\Tools\DDC3274One $one;
 }
 
 /**
@@ -468,10 +459,9 @@ class Issue9536Target
     private $id;
 
     /**
-     * @var Issue9536Owner
      * @OneToOne(targetEntity="Issue9536Owner")
      */
-    private $two;
+    private \Doctrine\Tests\ORM\Tools\Issue9536Owner $two;
 }
 
 /**
@@ -488,10 +478,9 @@ class Issue9536Owner
     private $id;
 
     /**
-     * @var Issue9536Target
      * @OneToOne(targetEntity="Issue9536Target", inversedBy="two")
      */
-    private $one;
+    private \Doctrine\Tests\ORM\Tools\Issue9536Target $one;
 }
 
 /**
@@ -508,64 +497,54 @@ class DDC3322ValidEntity1
     private $id;
 
     /**
-     * @var DDC3322One
      * @ManyToOne(targetEntity="DDC3322One", inversedBy="validAssoc")
      */
-    private $oneValid;
+    private \Doctrine\Tests\ORM\Tools\DDC3322One $oneValid;
 
     /**
-     * @var DDC3322One
      * @ManyToOne(targetEntity="DDC3322One", inversedBy="invalidAssoc")
      */
-    private $oneInvalid;
+    private \Doctrine\Tests\ORM\Tools\DDC3322One $oneInvalid;
 
     /**
-     * @var DDC3322Two
      * @ManyToOne(targetEntity="DDC3322Two", inversedBy="validAssoc")
      */
-    private $twoValid;
+    private \Doctrine\Tests\ORM\Tools\DDC3322Two $twoValid;
 
     /**
-     * @var DDC3322Two
      * @ManyToOne(targetEntity="DDC3322Two", inversedBy="invalidAssoc")
      */
-    private $twoInvalid;
+    private \Doctrine\Tests\ORM\Tools\DDC3322Two $twoInvalid;
 
     /**
-     * @var DDC3322Three
      * @ManyToOne(targetEntity="DDC3322Three", inversedBy="validAssoc")
      */
-    private $threeValid;
+    private \Doctrine\Tests\ORM\Tools\DDC3322Three $threeValid;
 
     /**
-     * @var DDC3322Three
      * @ManyToOne(targetEntity="DDC3322Three", inversedBy="invalidAssoc")
      */
-    private $threeInvalid;
+    private \Doctrine\Tests\ORM\Tools\DDC3322Three $threeInvalid;
 
     /**
-     * @var DDC3322ValidEntity2
      * @OneToMany(targetEntity="DDC3322ValidEntity2", mappedBy="manyToOne")
      */
-    private $oneToMany;
+    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity2 $oneToMany;
 
     /**
-     * @var DDC3322ValidEntity2
      * @ManyToOne(targetEntity="DDC3322ValidEntity2", inversedBy="oneToMany")
      */
-    private $manyToOne;
+    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity2 $manyToOne;
 
     /**
-     * @var DDC3322ValidEntity2
      * @OneToOne(targetEntity="DDC3322ValidEntity2", mappedBy="oneToOneOwning")
      */
-    private $oneToOneInverse;
+    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity2 $oneToOneInverse;
 
     /**
-     * @var DDC3322ValidEntity2
      * @OneToOne(targetEntity="DDC3322ValidEntity2", inversedBy="oneToOneInverse")
      */
-    private $oneToOneOwning;
+    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity2 $oneToOneOwning;
 }
 
 /**
@@ -574,36 +553,31 @@ class DDC3322ValidEntity1
 class DDC3322ValidEntity2
 {
     /**
-     * @var int
      * @Id
      * @Column
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var DDC3322ValidEntity1
      * @ManyToOne(targetEntity="DDC3322ValidEntity1", inversedBy="oneToMany")
      */
-    private $manyToOne;
+    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 $manyToOne;
 
     /**
-     * @var DDC3322ValidEntity1
      * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="manyToOne")
      */
-    private $oneToMany;
+    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 $oneToMany;
 
     /**
-     * @var DDC3322ValidEntity1
      * @OneToOne(targetEntity="DDC3322ValidEntity1", inversedBy="oneToOneInverse")
      */
-    private $oneToOneOwning;
+    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 $oneToOneOwning;
 
     /**
-     * @var DDC3322ValidEntity1
      * @OneToOne(targetEntity="DDC3322ValidEntity1", mappedBy="oneToOneOwning")
      */
-    private $oneToOneInverse;
+    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 $oneToOneInverse;
 }
 
 /**
@@ -612,12 +586,11 @@ class DDC3322ValidEntity2
 class DDC3322One
 {
     /**
-     * @var int
      * @Id
      * @Column
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
      * @psalm-var Collection<int, DDC3322ValidEntity1>
@@ -640,12 +613,11 @@ class DDC3322One
 class DDC3322Two
 {
     /**
-     * @var int
      * @Id
      * @Column
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
      * @psalm-var Collection<int, DDC3322ValidEntity1>
@@ -668,19 +640,17 @@ class DDC3322Two
 class DDC3322Three
 {
     /**
-     * @var int
      * @Id
      * @Column
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var DDC3322ValidEntity1
      * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="threeValid")
      * @OrderBy({"oneToOneOwning" = "ASC"})
      */
-    private $validAssoc;
+    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 $validAssoc;
 
     /**
      * @psalm-var Collection<int, DDC3322ValidEntity1>
@@ -696,8 +666,7 @@ class DDC3322Three
 class EmbeddableWithAssociation
 {
     /**
-     * @var ECommerceCart
      * @OneToOne(targetEntity="Doctrine\Tests\Models\ECommerce\ECommerceCart")
      */
-    private $cart;
+    private ECommerceCart $cart;
 }

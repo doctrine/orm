@@ -50,13 +50,14 @@ class DDC588Site
     public $id;
 
     /**
-     * @var string
-     * @Column(type="string", length=45)
+     * @param string $name
      */
-    protected $name = null;
-
-    public function __construct($name = '')
+    public function __construct(
+        /**
+         * @Column(type="string", length=45)
+         */
+        protected $name = ''
+    )
     {
-        $this->name = $name;
     }
 }

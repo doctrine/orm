@@ -15,10 +15,9 @@ use Doctrine\ORM\Mapping\Table;
 class CompanyAuction extends CompanyEvent
 {
     /**
-     * @var string
      * @Column(type="string", length=255)
      */
-    private $data;
+    private ?string $data = null;
 
     public function setData(string $data): void
     {

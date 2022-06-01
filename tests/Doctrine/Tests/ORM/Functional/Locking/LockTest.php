@@ -169,7 +169,7 @@ class LockTest extends OrmFunctionalTestCase
         try {
             $this->_em->lock($article, LockMode::PESSIMISTIC_WRITE);
             $this->_em->commit();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->_em->rollback();
         }
 
@@ -205,7 +205,7 @@ class LockTest extends OrmFunctionalTestCase
         try {
             $this->_em->lock($article, LockMode::PESSIMISTIC_READ);
             $this->_em->commit();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->_em->rollback();
         }
 

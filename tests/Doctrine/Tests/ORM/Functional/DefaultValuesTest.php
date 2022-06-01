@@ -41,7 +41,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $userId = $user->id; // e.g. from $_REQUEST
-        $user2  = $this->_em->getReference(get_class($user), $userId);
+        $user2  = $this->_em->getReference($user::class, $userId);
 
         $this->_em->flush();
         self::assertFalse($user2->__isInitialized__);
@@ -59,7 +59,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         self::assertFalse($user2->__isInitialized__);
         $this->_em->clear();
 
-        $a2 = $this->_em->find(get_class($a), $a->id);
+        $a2 = $this->_em->find($a::class, $a->id);
         self::assertInstanceOf(DefaultValueUser::class, $a2->getUser());
         self::assertEquals($userId, $a2->getUser()->getId());
         self::assertEquals('Poweruser', $a2->getUser()->type);

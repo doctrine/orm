@@ -16,18 +16,11 @@ use Doctrine\ORM\Mapping\MappedSuperclass;
 abstract class AbstractContentItem
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
-
-    /**
-     * @var Directory
-     * @ManyToOne(targetEntity="Directory")
-     */
-    protected $parentDirectory;
+    private int $id;
 
     /**
      * @var string
@@ -37,10 +30,8 @@ abstract class AbstractContentItem
 
     /**
      * This field is transient and private on purpose
-     *
-     * @var bool
      */
-    private $nodeIsLoaded = false;
+    private bool $nodeIsLoaded = false;
 
     /**
      * This field is transient on purpose
@@ -49,9 +40,13 @@ abstract class AbstractContentItem
      */
     public static $fileSystem;
 
-    public function __construct(?Directory $parentDir = null)
+    public function __construct(
+        /**
+         * @ManyToOne(targetEntity="Directory")
+         */
+        protected ?Directory $parentDirectory = null
+    )
     {
-        $this->parentDirectory = $parentDir;
     }
 
     public function getId(): int

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\DBAL\Cache\ArrayResult;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Result;
@@ -1896,7 +1897,7 @@ class ObjectHydratorTest extends HydrationTestCase
      */
     public function testMissingMetaMappingException(): void
     {
-        $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
+        $this->expectException(HydrationException::class);
         $this->expectExceptionMessage('The meta mapping for the discriminator column "c_discr" is missing for "Doctrine\Tests\Models\Company\CompanyFixContract" using the DQL alias "c".');
         $rsm = new ResultSetMapping();
 
@@ -1922,7 +1923,7 @@ class ObjectHydratorTest extends HydrationTestCase
      */
     public function testMissingDiscriminatorColumnException(): void
     {
-        $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
+        $this->expectException(HydrationException::class);
         $this->expectExceptionMessage('The discriminator column "discr" is missing for "Doctrine\Tests\Models\Company\CompanyEmployee" using the DQL alias "e".');
         $rsm = new ResultSetMapping();
 
@@ -1955,7 +1956,7 @@ class ObjectHydratorTest extends HydrationTestCase
      */
     public function testInvalidDiscriminatorValueException(): void
     {
-        $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
+        $this->expectException(HydrationException::class);
         $this->expectExceptionMessage('The discriminator value "subworker" is invalid. It must be one of "person", "manager", "employee".');
         $rsm = new ResultSetMapping();
 

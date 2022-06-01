@@ -26,25 +26,22 @@ use Doctrine\ORM\Mapping\Table;
 class ECommerceCart
 {
     /**
-     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Column(length=50, nullable=true)
      */
-    private $payment;
+    private ?string $payment = null;
 
     /**
-     * @var ECommerceCustomer|null
      * @OneToOne(targetEntity="ECommerceCustomer", inversedBy="cart")
      * @JoinColumn(name="customer_id", referencedColumnName="id")
      */
-    private $customer;
+    private ?ECommerceCustomer $customer = null;
 
     /**
      * @psalm-var Collection<int, ECommerceProduct>

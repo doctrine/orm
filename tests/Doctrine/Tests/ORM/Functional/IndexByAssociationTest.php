@@ -16,11 +16,9 @@ use function assert;
  */
 class IndexByAssociationTest extends OrmFunctionalTestCase
 {
-    /** @var Market */
-    private $market;
+    private ?Market $market = null;
 
-    /** @var Bond */
-    private $bond;
+    private ?Bond $bond = null;
 
     protected function setUp(): void
     {

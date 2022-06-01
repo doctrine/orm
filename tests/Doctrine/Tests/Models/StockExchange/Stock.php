@@ -21,34 +21,21 @@ class Stock
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
+    public function __construct(/**
      * For real this column would have to be unique=true. But I want to test behavior of non-unique overrides.
      * @Column(type="string", length=255)
      */
-    private $symbol;
-
-    /**
-     * @var float
+    private string $symbol, /**
      * @Column(type="decimal")
      */
-    private $price;
-
-    /**
+    private float $price, /**
      * @ManyToOne(targetEntity="Market", inversedBy="stocks")
-     * @var Market
      */
-    private $market;
-
-    public function __construct(string $symbol, float $initialOfferingPrice, Market $market)
+    private Market $market)
     {
-        $this->symbol = $symbol;
-        $this->price  = $initialOfferingPrice;
-        $this->market = $market;
         $market->addStock($this);
     }
 

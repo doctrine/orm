@@ -18,11 +18,11 @@ class FieldBuilderTest extends OrmTestCase
         $fieldBuilder = $cmBuilder->createField('aField', 'string');
 
         $fieldBuilder->generatedValue('CUSTOM');
-        $fieldBuilder->setCustomIdGenerator('stdClass');
+        $fieldBuilder->setCustomIdGenerator(\stdClass::class);
 
         $fieldBuilder->build();
 
         self::assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, $cmBuilder->getClassMetadata()->generatorType);
-        self::assertEquals(['class' => 'stdClass'], $cmBuilder->getClassMetadata()->customGeneratorDefinition);
+        self::assertEquals(['class' => \stdClass::class], $cmBuilder->getClassMetadata()->customGeneratorDefinition);
     }
 }

@@ -32,30 +32,22 @@ class State
     protected $id;
 
     /**
-     * @var string
-     * @Column(unique=true)
-     */
-    protected $name;
-
-    /**
-     * @var Country|null
-     * @Cache
-     * @ManyToOne(targetEntity="Country")
-     * @JoinColumn(name="country_id", referencedColumnName="id")
-     */
-    protected $country;
-
-    /**
      * @psalm-var Collection<int, City>
      * @Cache("NONSTRICT_READ_WRITE")
      * @OneToMany(targetEntity="City", mappedBy="state")
      */
     protected $cities;
 
-    public function __construct(string $name, ?Country $country = null)
+    public function __construct(/**
+     * @Column(unique=true)
+     */
+    protected string $name, /**
+     * @Cache
+     * @ManyToOne(targetEntity="Country")
+     * @JoinColumn(name="country_id", referencedColumnName="id")
+     */
+    protected ?Country $country = null)
     {
-        $this->name    = $name;
-        $this->country = $country;
         $this->cities  = new ArrayCollection();
     }
 

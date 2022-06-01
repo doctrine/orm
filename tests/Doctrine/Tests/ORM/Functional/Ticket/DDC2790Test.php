@@ -37,7 +37,7 @@ class DDC2790Test extends OrmFunctionalTestCase
         $entity->name     = 'Roman';
 
         $qb = $this->_em->createQueryBuilder();
-        $qb->from(get_class($entity), 'c');
+        $qb->from($entity::class, 'c');
         $qb->select('count(c)');
         $initial = intval($qb->getQuery()->getSingleScalarResult());
 
@@ -52,7 +52,7 @@ class DDC2790Test extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $qb = $this->_em->createQueryBuilder();
-        $qb->from(get_class($entity), 'c');
+        $qb->from($entity::class, 'c');
         $qb->select('count(c)');
         $count = intval($qb->getQuery()->getSingleScalarResult());
         self::assertEquals($initial, $count);

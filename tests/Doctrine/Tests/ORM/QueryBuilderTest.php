@@ -629,7 +629,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u');
         $q  = $qb->getQuery();
 
-        self::assertEquals(Query::class, get_class($q));
+        self::assertEquals(Query::class, $q::class);
     }
 
     public function testSetParameter(): void

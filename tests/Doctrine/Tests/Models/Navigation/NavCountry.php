@@ -19,18 +19,11 @@ use Doctrine\ORM\Mapping\Table;
 class NavCountry
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
+    private int $id;
 
     /**
      * @psalm-var Collection<int, NavPointOfInterest>
@@ -38,9 +31,13 @@ class NavCountry
      */
     private $pois;
 
-    public function __construct(string $name)
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        private string $name
+    )
     {
-        $this->name = $name;
     }
 
     public function getId(): int

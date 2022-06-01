@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Exception;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
@@ -47,10 +49,8 @@ class UnitOfWorkTest extends OrmTestCase
 {
     /**
      * SUT
-     *
-     * @var UnitOfWorkMock
      */
-    private $_unitOfWork;
+    private UnitOfWorkMock $_unitOfWork;
 
     /**
      * Provides a sequence mock to the UnitOfWork
@@ -61,10 +61,8 @@ class UnitOfWorkTest extends OrmTestCase
 
     /**
      * The EntityManager mock that provides the mock persisters
-     *
-     * @var EntityManagerMock
      */
-    private $_emMock;
+    private EntityManagerMock $_emMock;
 
     /** @var EventManager&MockObject */
     private $eventManager;
@@ -77,7 +75,7 @@ class UnitOfWorkTest extends OrmTestCase
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 
-        $driverStatement = $this->createMock(Driver\Statement::class);
+        $driverStatement = $this->createMock(Statement::class);
 
         if (method_exists($driverStatement, 'rowCount')) {
             $driverStatement->method('rowCount')
@@ -381,7 +379,7 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->persist($entity);
         $this->_unitOfWork->addToIdentityMap($entity);
 
-        self::assertSame($entity, $this->_unitOfWork->getByIdHash($idHash, get_class($entity)));
+        self::assertSame($entity, $this->_unitOfWork->getByIdHash($idHash, $entity::class));
     }
 
     /**
@@ -579,7 +577,7 @@ class UnitOfWorkTest extends OrmTestCase
             $this->_unitOfWork->commit();
 
             self::fail('An exception was supposed to be raised');
-        } catch (ORMInvalidArgumentException $ignored) {
+        } catch (ORMInvalidArgumentException) {
             self::assertEmpty($persister1->getInserts());
             self::assertEmpty($persister2->getInserts());
         }
@@ -620,7 +618,7 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
 
         $this->connection->method('commit')
-            ->willThrowException(new DBAL\Exception());
+            ->willThrowException(new Exception());
 
         // Setup fake persister and id generator
         $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
@@ -649,15 +647,14 @@ class UnitOfWorkTest extends OrmTestCase
 class NotifyChangedEntity implements NotifyPropertyChanged
 {
     /** @psalm-var list<PropertyChangedListener> */
-    private $_listeners = [];
+    private array $_listeners = [];
 
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
      * @var string
@@ -665,8 +662,7 @@ class NotifyChangedEntity implements NotifyPropertyChanged
      */
     private $data;
 
-    /** @var mixed */
-    private $transient; // not persisted
+    private mixed $transient = null; // not persisted
 
     /**
      * @psalm-var Collection<int, NotifyChangedRelatedItem>
@@ -729,18 +725,16 @@ class NotifyChangedEntity implements NotifyPropertyChanged
 class NotifyChangedRelatedItem
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var NotifyChangedEntity|null
      * @ManyToOne(targetEntity="NotifyChangedEntity", inversedBy="items")
      */
-    private $owner;
+    private ?\Doctrine\Tests\ORM\NotifyChangedEntity $owner = null;
 
     public function getId(): int
     {
@@ -843,12 +837,11 @@ class EntityWithRandomlyGeneratedField
 class CascadePersistedEntity
 {
     /**
-     * @var string
      * @Id
      * @Column(type="string", length=255)
      * @GeneratedValue(strategy="NONE")
      */
-    private $id;
+    private string $id;
 
     public function __construct()
     {
@@ -860,12 +853,11 @@ class CascadePersistedEntity
 class EntityWithCascadingAssociation
 {
     /**
-     * @var string
      * @Id
      * @Column(type="string", length=255)
      * @GeneratedValue(strategy="NONE")
      */
-    private $id;
+    private string $id;
 
     /**
      * @var CascadePersistedEntity|null
@@ -883,12 +875,11 @@ class EntityWithCascadingAssociation
 class EntityWithNonCascadingAssociation
 {
     /**
-     * @var string
      * @Id
      * @Column(type="string", length=255)
      * @GeneratedValue(strategy="NONE")
      */
-    private $id;
+    private string $id;
 
     /**
      * @var CascadePersistedEntity|null

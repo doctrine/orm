@@ -20,22 +20,21 @@ use Doctrine\ORM\Mapping\Table;
 class Action
 {
     /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="NONE")
-     */
-    public $name;
-
-    /**
      * @psalm-var Collection<int, Token>
      * @OneToMany(targetEntity="Token", cascade={"persist", "remove"}, mappedBy="action")
      */
     public $tokens;
 
-    public function __construct($name)
+    /**
+     * @param string $name
+     */
+    public function __construct(/**
+     * @Id
+     * @Column(type="string", length=255)
+     * @GeneratedValue(strategy="NONE")
+     */
+    public $name)
     {
-        $this->name   = $name;
         $this->tokens = new ArrayCollection();
     }
 

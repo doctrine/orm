@@ -33,7 +33,7 @@ class DDC1454Test extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(DDC1454Picture::class),
                 ]
             );
-        } catch (Exception $ignored) {
+        } catch (Exception) {
         }
     }
 
@@ -69,7 +69,7 @@ class DDC1454File
 
     public function __construct()
     {
-        $this->fileId = random_int(0, getrandmax());
+        $this->fileId = random_int(0, mt_getrandmax());
     }
 
     public function getFileId(): int

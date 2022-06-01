@@ -68,23 +68,18 @@ final class GH7496WithToIterableTest extends OrmFunctionalTestCase
  */
 class GH7496EntityA
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer", name="a_id")
-     */
-    public $id;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    public function __construct(int $id, string $name)
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="integer", name="a_id")
+         */
+        public int $id,
+        /**
+         * @Column(type="string", length=255)
+         */
+        public string $name
+    )
     {
-        $this->id   = $id;
-        $this->name = $name;
     }
 }
 
@@ -94,22 +89,20 @@ class GH7496EntityA
 class GH7496EntityB
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer", name="b_id")
+     * @param string $name
      */
-    public $id;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    public function __construct(int $id, $name)
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="integer", name="b_id")
+         */
+        public int $id,
+        /**
+         * @Column(type="string", length=255)
+         */
+        public $name
+    )
     {
-        $this->id   = $id;
-        $this->name = $name;
     }
 }
 
@@ -119,30 +112,26 @@ class GH7496EntityB
 class GH7496EntityAinB
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
+     * @param \Doctrine\Tests\ORM\Functional\Ticket\GH7496EntityA $a
+     * @param \Doctrine\Tests\ORM\Functional\Ticket\GH7496EntityB $b
      */
-    public $id;
-
-    /**
-     * @var GH7496EntityA
-     * @ManyToOne(targetEntity=GH7496EntityA::class)
-     * @JoinColumn(name="a_id", referencedColumnName="a_id", nullable=false)
-     */
-    public $eA;
-
-    /**
-     * @var GH7496EntityB
-     * @ManyToOne(targetEntity=GH7496EntityB::class)
-     * @JoinColumn(name="b_id", referencedColumnName="b_id", nullable=false)
-     */
-    public $eB;
-
-    public function __construct(int $id, $a, $b)
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="integer")
+         */
+        public int $id,
+        /**
+         * @ManyToOne(targetEntity=GH7496EntityA::class)
+         * @JoinColumn(name="a_id", referencedColumnName="a_id", nullable=false)
+         */
+        public $eA,
+        /**
+         * @ManyToOne(targetEntity=GH7496EntityB::class)
+         * @JoinColumn(name="b_id", referencedColumnName="b_id", nullable=false)
+         */
+        public $eB
+    )
     {
-        $this->id = $id;
-        $this->eA = $a;
-        $this->eB = $b;
     }
 }

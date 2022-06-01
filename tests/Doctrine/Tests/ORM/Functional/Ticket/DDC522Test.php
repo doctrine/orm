@@ -64,7 +64,7 @@ class DDC522Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $fkt2 = $this->_em->find(get_class($fkt), $fkt->id);
+        $fkt2 = $this->_em->find($fkt::class, $fkt->id);
         self::assertEquals($fkt->cart->id, $fkt2->cartId);
         self::assertInstanceOf(Proxy::class, $fkt2->cart);
         self::assertFalse($fkt2->cart->__isInitialized__);

@@ -21,8 +21,7 @@ use const DIRECTORY_SEPARATOR;
  */
 class ManyToOneOrphanRemovalTest extends OrmFunctionalTestCase
 {
-    /** @var int */
-    private $personId;
+    private int $personId;
 
     /** @var array<string, list<class-string>> */
     protected static $modelSets = [

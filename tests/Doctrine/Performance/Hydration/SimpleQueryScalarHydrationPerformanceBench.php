@@ -17,14 +17,11 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
  */
 final class SimpleQueryScalarHydrationPerformanceBench
 {
-    /** @var ScalarHydrator */
-    private $hydrator;
+    private ?ScalarHydrator $hydrator = null;
 
-    /** @var ResultSetMapping */
-    private $rsm;
+    private ?ResultSetMapping $rsm = null;
 
-    /** @var Result */
-    private $result;
+    private ?Result $result = null;
 
     public function init(): void
     {

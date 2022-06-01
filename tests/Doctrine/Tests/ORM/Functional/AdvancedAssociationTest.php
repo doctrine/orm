@@ -157,24 +157,21 @@ class Lemma
     public const CLASS_NAME = self::class;
 
     /**
-     * @var int
      * @Id
      * @Column(type="integer", name="lemma_id")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Column(type="string", name="lemma_name", unique=true, length=255)
      */
-    private $lemma;
+    private ?string $lemma = null;
 
     /**
-     * @var Collection
      * @ManyToMany(targetEntity="Type", mappedBy="lemmas", cascade={"persist"})
      */
-    private $types;
+    private Collection $types;
 
     public function __construct()
     {
@@ -227,34 +224,30 @@ class Type
     public const CLASS_NAME = self::class;
 
     /**
-     * @var int
      * @Id
      * @Column(type="integer", name="type_id")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Column(type="string", name="type_name", unique=true)
      */
-    private $type;
+    private ?string $type = null;
 
     /**
-     * @var string
      * @Column(type="string", name="type_abbreviation", unique=true)
      */
-    private $abbreviation;
+    private ?string $abbreviation = null;
 
     /**
-     * @var Collection
      * @ManyToMany(targetEntity="Lemma")
      * @JoinTable(name="lemma_type",
      *      joinColumns={@JoinColumn(name="type_id", referencedColumnName="type_id")},
      *      inverseJoinColumns={@JoinColumn(name="lemma_id", referencedColumnName="lemma_id")}
      * )
      */
-    private $lemmas;
+    private Collection $lemmas;
 
     public function __construct()
     {
@@ -318,25 +311,22 @@ class Phrase
     public const CLASS_NAME = self::class;
 
     /**
-     * @var int
      * @Id
      * @Column(type="integer", name="phrase_id")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Column(type="string", name="phrase_name", unique=true, length=255)
      */
-    private $phrase;
+    private ?string $phrase = null;
 
     /**
-     * @var PhraseType
      * @ManyToOne(targetEntity="PhraseType")
      * @JoinColumn(name="phrase_type_id", referencedColumnName="phrase_type_id")
      */
-    private $type;
+    private ?\Doctrine\Tests\ORM\Functional\PhraseType $type = null;
 
     /**
      * @psalm-var Collection<int, Definition>
@@ -395,24 +385,21 @@ class PhraseType
     public const CLASS_NAME = self::class;
 
     /**
-     * @var int
      * @Id
      * @Column(type="integer", name="phrase_type_id")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Column(type="string", name="phrase_type_name", unique=true)
      */
-    private $type;
+    private ?string $type = null;
 
     /**
-     * @var string
      * @Column(type="string", name="phrase_type_abbreviation", unique=true)
      */
-    private $abbreviation;
+    private ?string $abbreviation = null;
 
     /**
      * @psalm-var Collection<int, Phrase>
@@ -470,25 +457,22 @@ class Definition
     public const CLASS_NAME = self::class;
 
     /**
-     * @var int
      * @Id
      * @Column(type="integer", name="definition_id")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var Phrase
      * @ManyToOne(targetEntity="Phrase")
      * @JoinColumn(name="definition_phrase_id", referencedColumnName="phrase_id")
      */
-    private $phrase;
+    private ?\Doctrine\Tests\ORM\Functional\Phrase $phrase = null;
 
     /**
-     * @var string
      * @Column(type="text", name="definition_text")
      */
-    private $definition;
+    private ?string $definition = null;
 
     public function getId(): int
     {

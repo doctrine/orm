@@ -85,14 +85,15 @@ interface DDC3300Boss
 class DDC3300HumanBoss extends DDC3300Person implements DDC3300Boss
 {
     /**
-     * @var string
-     * @Column(type="string", length=255)
+     * @param string $bossCol
      */
-    public $bossCol;
-
-    public function __construct($bossCol)
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        public $bossCol
+    )
     {
-        $this->bossCol = $bossCol;
     }
 }
 
@@ -104,13 +105,14 @@ interface DDC3300Employee
 class DDC3300HumanEmployee extends DDC3300Person implements DDC3300Employee
 {
     /**
-     * @var string
-     * @Column(type="string", length=255)
+     * @param string $employeeCol
      */
-    public $employeeCol;
-
-    public function __construct($employeeCol)
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        public $employeeCol
+    )
     {
-        $this->employeeCol = $employeeCol;
     }
 }

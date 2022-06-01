@@ -22,35 +22,31 @@ use Doctrine\ORM\Mapping\Table;
 class ECommerceCustomer
 {
     /**
-     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Column(type="string", length=50)
      */
-    private $name;
+    private ?string $name = null;
 
     /**
-     * @var ECommerceCart|null
      * @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"persist"})
      */
-    private $cart;
+    private ?ECommerceCart $cart = null;
 
     /**
      * Example of a one-one self referential association. A mentor can follow
      * only one customer at the time, while a customer can choose only one
      * mentor. Not properly appropriate but it works.
      *
-     * @var ECommerceCustomer|null
      * @OneToOne(targetEntity="ECommerceCustomer", cascade={"persist"}, fetch="EAGER")
      * @JoinColumn(name="mentor_id", referencedColumnName="id")
      */
-    private $mentor;
+    private ?\Doctrine\Tests\Models\ECommerce\ECommerceCustomer $mentor = null;
 
     public function getId(): int
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\DBAL\Driver\Result;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -587,7 +588,7 @@ class QueryTest extends OrmTestCase
             ->getSQL();
     }
 
-    private function createConnection(Driver\Result ...$results): Connection
+    private function createConnection(Result ...$results): Connection
     {
         $driverConnection = $this->createMock(Driver\Connection::class);
         $driverConnection->method('query')

@@ -28,19 +28,17 @@ class Person
     public $id;
 
     /**
-     * @var string
-     * @Column(unique=true)
-     */
-    public $name;
-
-    /**
      * @var Address
      * @OneToOne(targetEntity="Address", mappedBy="person")
      */
     public $address;
 
-    public function __construct(string $name)
+    public function __construct(
+        /**
+         * @Column(unique=true)
+         */
+        public string $name
+    )
     {
-        $this->name = $name;
     }
 }

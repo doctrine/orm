@@ -98,7 +98,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $exceptionThrown = false;
         try {
             $filter = $em->getFilters()->enable('foo');
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             $exceptionThrown = true;
         }
 
@@ -136,7 +136,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $exceptionThrown = false;
         try {
             $filter = $em->getFilters()->disable('foo');
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             $exceptionThrown = true;
         }
 
@@ -146,7 +146,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $exceptionThrown = false;
         try {
             $filter = $em->getFilters()->disable('locale');
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             $exceptionThrown = true;
         }
 
@@ -168,7 +168,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $exceptionThrown = false;
         try {
             $filter = $em->getFilters()->getFilter('soft_delete');
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             $exceptionThrown = true;
         }
 
@@ -314,9 +314,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         // Setup mock connection
         $conn = $this->getMockConnection();
         $conn->method('quote')
-             ->will(self::returnCallback(static function ($value) {
-                 return "'" . $value . "'";
-             }));
+             ->will(self::returnCallback(static fn($value) => "'" . $value . "'"));
 
         $em = $this->getMockEntityManager();
         $em->method('getConnection')

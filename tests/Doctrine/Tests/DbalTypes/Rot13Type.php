@@ -19,7 +19,6 @@ class Rot13Type extends Type
      * {@inheritdoc}
      *
      * @param string|null      $value
-     * @param AbstractPlatform $platform
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
@@ -34,7 +33,6 @@ class Rot13Type extends Type
      * {@inheritdoc}
      *
      * @param string|null      $value
-     * @param AbstractPlatform $platform
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?string
     {
@@ -48,10 +46,7 @@ class Rot13Type extends Type
     /**
      * {@inheritdoc}
      *
-     * @param array            $column
-     * @param AbstractPlatform $platform
      *
-     * @return string
      */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
@@ -65,7 +60,6 @@ class Rot13Type extends Type
     /**
      * {@inheritdoc}
      *
-     * @param AbstractPlatform $platform
      *
      * @return int|null
      */
@@ -76,8 +70,6 @@ class Rot13Type extends Type
 
     /**
      * {@inheritdoc}
-     *
-     * @return string
      */
     public function getName(): string
     {

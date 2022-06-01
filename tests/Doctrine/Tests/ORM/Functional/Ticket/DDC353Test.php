@@ -27,7 +27,7 @@ class DDC353Test extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(DDC353Picture::class),
                 ]
             );
-        } catch (Exception $ignored) {
+        } catch (Exception) {
         }
     }
 
@@ -87,21 +87,19 @@ class DDC353Test extends OrmFunctionalTestCase
 class DDC353Picture
 {
     /**
-     * @var int
      * @Column(name="picture_id", type="integer")
      * @Id
      * @GeneratedValue
      */
-    private $pictureId;
+    private int $pictureId;
 
     /**
-     * @var DDC353File
      * @ManyToOne(targetEntity="DDC353File", cascade={"persist", "remove"})
      * @JoinColumns({
      *   @JoinColumn(name="file_id", referencedColumnName="file_id")
      * })
      */
-    private $file;
+    private ?\Doctrine\Tests\ORM\Functional\Ticket\DDC353File $file = null;
 
     public function getPictureId(): int
     {

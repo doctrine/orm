@@ -15,8 +15,7 @@ use RuntimeException;
  */
 class DDC1685Test extends OrmFunctionalTestCase
 {
-    /** @var Paginator */
-    private $paginator;
+    private Paginator $paginator;
 
     protected function setUp(): void
     {

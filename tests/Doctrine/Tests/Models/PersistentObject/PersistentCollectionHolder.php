@@ -42,17 +42,11 @@ class PersistentCollectionHolder extends PersistentObject
         $this->collection->add($element);
     }
 
-    /**
-     * @return Collection
-     */
     public function getCollection(): Collection
     {
         return clone $this->collection;
     }
 
-    /**
-     * @return Collection
-     */
     public function getRawCollection(): Collection
     {
         return $this->collection;

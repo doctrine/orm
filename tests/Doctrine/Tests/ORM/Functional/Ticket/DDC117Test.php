@@ -27,20 +27,15 @@ class DDC117Test extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
-    /** @var DDC117Article */
-    private $article1;
+    private ?DDC117Article $article1;
 
-    /** @var DDC117Article */
-    private $article2;
+    private ?DDC117Article $article2;
 
-    /** @var DDC117Reference */
-    private $reference;
+    private DDC117Reference $reference;
 
-    /** @var DDC117Translation */
-    private $translation;
+    private ?DDC117Translation $translation;
 
-    /** @var DDC117ArticleDetails */
-    private $articleDetails;
+    private DDC117ArticleDetails $articleDetails;
 
     protected function setUp(): void
     {
@@ -259,7 +254,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $article = $this->_em->find(get_class($this->article1), $this->article1->id());
+        $article = $this->_em->find($this->article1::class, $this->article1->id());
         assert($article instanceof DDC117Article);
         self::assertEquals('not so very long text!', $article->getText());
     }
@@ -269,7 +264,7 @@ class DDC117Test extends OrmFunctionalTestCase
      */
     public function testOneToOneCascadeRemove(): void
     {
-        $article = $this->_em->find(get_class($this->article1), $this->article1->id());
+        $article = $this->_em->find($this->article1::class, $this->article1->id());
         $this->_em->remove($article);
         $this->_em->flush();
 
@@ -318,7 +313,7 @@ class DDC117Test extends OrmFunctionalTestCase
      */
     public function testLoadOneToManyCollectionOfForeignKeyEntities(): void
     {
-        $article = $this->_em->find(get_class($this->article1), $this->article1->id());
+        $article = $this->_em->find($this->article1::class, $this->article1->id());
         assert($article instanceof DDC117Article);
 
         $translations = $article->getTranslations();
@@ -358,7 +353,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $editor = $this->_em->find(get_class($editor), $editor->id);
+        $editor = $this->_em->find($editor::class, $editor->id);
         self::assertCount(0, $editor->reviewingTranslations);
     }
 
@@ -400,7 +395,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $editor           = $this->_em->find(get_class($editor), $editor->id);
+        $editor           = $this->_em->find($editor::class, $editor->id);
         $lastTranslatedBy = $editor->reviewingTranslations[0]->getLastTranslatedBy();
         $lastTranslatedBy->count();
 
@@ -411,13 +406,13 @@ class DDC117Test extends OrmFunctionalTestCase
     {
         $editor = new DDC117Editor('beberlei');
 
-        $article1 = $this->_em->find(get_class($this->article1), $this->article1->id());
+        $article1 = $this->_em->find($this->article1::class, $this->article1->id());
         assert($article1 instanceof DDC117Article);
         foreach ($article1->getTranslations() as $translation) {
             $editor->reviewingTranslations[] = $translation;
         }
 
-        $article2 = $this->_em->find(get_class($this->article2), $this->article2->id());
+        $article2 = $this->_em->find($this->article2::class, $this->article2->id());
         assert($article2 instanceof DDC117Article);
         $article2->addTranslation('de', 'Vanille-Krapferl'); // omnomnom
         $article2->addTranslation('fr', "Sorry can't speak french!");
@@ -431,7 +426,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        return $this->_em->find(get_class($editor), $editor->id);
+        return $this->_em->find($editor::class, $editor->id);
     }
 
     /**

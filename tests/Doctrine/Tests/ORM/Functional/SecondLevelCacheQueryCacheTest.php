@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\EntityCacheEntry;
@@ -832,7 +833,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getRegion()
             ->get($key);
 
-        self::assertInstanceOf(Cache\QueryCacheEntry::class, $entry);
+        self::assertInstanceOf(QueryCacheEntry::class, $entry);
         $entry->time /= 2;
 
         $this->cache->getQueryCache()

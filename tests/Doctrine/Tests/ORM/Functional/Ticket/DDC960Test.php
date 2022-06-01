@@ -49,19 +49,17 @@ class DDC960Test extends OrmFunctionalTestCase
 class DDC960Root
 {
     /**
-     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var int
      * @Column(type="integer")
      * @Version
      */
-    private $version;
+    private int $version;
 
     public function getId(): int
     {
@@ -80,14 +78,15 @@ class DDC960Root
 class DDC960Child extends DDC960Root
 {
     /**
-     * @Column(type="string", length=255)
-     * @var string
+     * @param string $name
      */
-    private $name;
-
-    public function __construct($name)
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        private $name
+    )
     {
-        $this->name = $name;
     }
 
     public function setName($name): void

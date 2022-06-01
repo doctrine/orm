@@ -94,18 +94,16 @@ class GH9109Test extends OrmFunctionalTestCase
 class GH9109Product
 {
     /**
-     * @var int $id
      * @Column(name="`id`", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string $title
      * @Column(name="`title`", type="string", length=255)
      */
-    private $title;
+    private ?string $title = null;
 
     /**
      * @var Collection|GH9109User[]
@@ -154,24 +152,21 @@ class GH9109Product
 class GH9109User
 {
     /**
-     * @var int
      * @Column(name="`id`", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Column(name="`first_name`", type="string", length=255)
      */
-    private $firstName;
+    private ?string $firstName = null;
 
     /**
-     * @var string
      * @Column(name="last_name", type="string", length=255)
      */
-    private $lastName;
+    private ?string $lastName = null;
 
     public function getId(): int
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\NoResultException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\NonUniqueResultException;
@@ -418,21 +419,21 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testGetSingleResultThrowsExceptionOnNoResult(): void
     {
-        $this->expectException('Doctrine\ORM\NoResultException');
+        $this->expectException(NoResultException::class);
         $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
              ->getSingleResult();
     }
 
     public function testGetSingleScalarResultThrowsExceptionOnNoResult(): void
     {
-        $this->expectException('Doctrine\ORM\NoResultException');
+        $this->expectException(NoResultException::class);
         $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
              ->getSingleScalarResult();
     }
 
     public function testGetSingleScalarResultThrowsExceptionOnNonUniqueResult(): void
     {
-        $this->expectException('Doctrine\ORM\NonUniqueResultException');
+        $this->expectException(NonUniqueResultException::class);
         $user           = new CmsUser();
         $user->name     = 'Guilherme';
         $user->username = 'gblanco';
@@ -855,7 +856,7 @@ class QueryTest extends OrmFunctionalTestCase
             $this->_em->createQuery($dql)->getSingleResult();
             self::fail('Expected exception "\Doctrine\ORM\NoResultException".');
         } catch (UnexpectedResultException $exc) {
-            self::assertInstanceOf('\Doctrine\ORM\NoResultException', $exc);
+            self::assertInstanceOf(NoResultException::class, $exc);
         }
 
         $this->_em->persist($u1);
@@ -867,7 +868,7 @@ class QueryTest extends OrmFunctionalTestCase
             $this->_em->createQuery($dql)->getSingleResult();
             self::fail('Expected exception "\Doctrine\ORM\NonUniqueResultException".');
         } catch (UnexpectedResultException $exc) {
-            self::assertInstanceOf('\Doctrine\ORM\NonUniqueResultException', $exc);
+            self::assertInstanceOf(NonUniqueResultException::class, $exc);
         }
     }
 

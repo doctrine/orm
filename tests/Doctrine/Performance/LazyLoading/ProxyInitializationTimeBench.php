@@ -16,16 +16,16 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 final class ProxyInitializationTimeBench
 {
     /** @var Proxy[] */
-    private $cmsUsers;
+    private ?array $cmsUsers = null;
 
     /** @var Proxy[] */
-    private $cmsEmployees;
+    private ?array $cmsEmployees = null;
 
     /** @var Proxy[] */
-    private $initializedUsers;
+    private ?array $initializedUsers = null;
 
     /** @var Proxy[] */
-    private $initializedEmployees;
+    private ?array $initializedEmployees = null;
 
     public function init(): void
     {

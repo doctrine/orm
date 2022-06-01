@@ -16,8 +16,7 @@ use Doctrine\Tests\OrmTestCase;
  */
 class CustomTreeWalkersJoinTest extends OrmTestCase
 {
-    /** @var EntityManagerInterface */
-    private $em;
+    private EntityManagerInterface $em;
 
     protected function setUp(): void
     {

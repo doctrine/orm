@@ -31,7 +31,7 @@ class DDC2660Test extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(DDC2660CustomerOrder::class),
                 ]
             );
-        } catch (Exception $e) {
+        } catch (Exception) {
             return;
         }
 
@@ -124,29 +124,24 @@ class DDC2660Customer
 class DDC2660CustomerOrder
 {
     /**
-     * @var DDC2660Product
-     * @Id
-     * @ManyToOne(targetEntity="DDC2660Product")
+     * @param string $name
      */
-    public $product;
-
-    /**
-     * @var DDC2660Customer
-     * @Id
-     * @ManyToOne(targetEntity="DDC2660Customer")
-     */
-    public $customer;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    public function __construct(DDC2660Product $product, DDC2660Customer $customer, $name)
+    public function __construct(
+        /**
+         * @Id
+         * @ManyToOne(targetEntity="DDC2660Product")
+         */
+        public DDC2660Product $product,
+        /**
+         * @Id
+         * @ManyToOne(targetEntity="DDC2660Customer")
+         */
+        public DDC2660Customer $customer,
+        /**
+         * @Column(type="string", length=255)
+         */
+        public $name
+    )
     {
-        $this->product  = $product;
-        $this->customer = $customer;
-        $this->name     = $name;
     }
 }

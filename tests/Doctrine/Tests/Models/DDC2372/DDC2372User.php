@@ -20,18 +20,16 @@ class DDC2372User
     use DDC2372AddressAndAccessors;
 
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Column(type="string", length=50)
      */
-    private $name;
+    private ?string $name = null;
 
     public function getId(): int
     {

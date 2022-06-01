@@ -206,15 +206,13 @@ class DDC837Aggregate
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(name="sysname", type="string", length=255)
-     */
-    protected $sysname;
-
-    public function __construct(string $sysname)
+    public function __construct(
+        /**
+         * @Column(name="sysname", type="string", length=255)
+         */
+        protected string $sysname
+    )
     {
-        $this->sysname = $sysname;
     }
 
     public function getSysname(): string

@@ -22,11 +22,9 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 final class GH7079Test extends OrmFunctionalTestCase
 {
-    /** @var DefaultQuoteStrategy */
-    private $strategy;
+    private DefaultQuoteStrategy $strategy;
 
-    /** @var AbstractPlatform */
-    private $platform;
+    private AbstractPlatform $platform;
 
     protected function setUp(): void
     {

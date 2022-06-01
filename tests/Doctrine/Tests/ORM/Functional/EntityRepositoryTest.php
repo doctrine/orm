@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use BadMethodCallException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
@@ -928,7 +929,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $repository = $this->_em->getRepository(CmsUser::class);
         $rsm        = $repository->createResultSetMappingBuilder('u');
 
-        self::assertInstanceOf(Query\ResultSetMappingBuilder::class, $rsm);
+        self::assertInstanceOf(ResultSetMappingBuilder::class, $rsm);
         self::assertEquals(['u' => CmsUser::class], $rsm->aliasMap);
     }
 

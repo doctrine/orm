@@ -57,25 +57,20 @@ final class GH7735Test extends OrmFunctionalTestCase
  */
 class GH7735Car
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @var int
-     */
-    private $id;
-
-    /**
-     * @ManyToOne(targetEntity=GH7735Engine::class, cascade={"all"})
-     * @JoinColumn(nullable=false)
-     * @Cache("READ_ONLY")
-     * @var GH7735Engine
-     */
-    private $engine;
-
-    public function __construct(int $id, GH7735Engine $engine)
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="integer")
+         */
+        private int $id,
+        /**
+         * @ManyToOne(targetEntity=GH7735Engine::class, cascade={"all"})
+         * @JoinColumn(nullable=false)
+         * @Cache("READ_ONLY")
+         */
+        private GH7735Engine $engine
+    )
     {
-        $this->id     = $id;
-        $this->engine = $engine;
     }
 
     public function getId(): int
@@ -95,32 +90,19 @@ class GH7735Car
  */
 class GH7735Engine
 {
-    /**
+    public function __construct(/**
      * @Id
      * @Column(type="integer")
-     * @var int
      */
-    private $id;
-
-    /**
-     * @var GH7735Power
+    private int $id, /**
+     * @Column
+     */
+    private string $model, /**
      * @OneToOne(targetEntity=GH7735Power::class, mappedBy="engine", cascade={"all"})
      * @Cache("READ_ONLY")
      */
-    private $power;
-
-    /**
-     * @Column
-     * @var string
-     */
-    private $model;
-
-    public function __construct(int $id, string $model, GH7735Power $power)
+    private GH7735Power $power)
     {
-        $this->id    = $id;
-        $this->model = $model;
-        $this->power = $power;
-
         $power->setEngine($this);
     }
 
@@ -147,22 +129,19 @@ class GH7735Engine
 class GH7735Power
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
-    private $id;
-
-    /**
-     * @var GH7735Engine
      * @OneToOne(targetEntity=GH7735Engine::class, inversedBy="power")
      * @Cache("READ_ONLY")
      */
-    private $engine;
+    private ?\Doctrine\Tests\ORM\Functional\Ticket\GH7735Engine $engine = null;
 
-    public function __construct(int $id)
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="integer")
+         */
+        private int $id
+    )
     {
-        $this->id = $id;
     }
 
     public function getId(): int

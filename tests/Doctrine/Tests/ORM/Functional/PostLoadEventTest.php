@@ -16,8 +16,7 @@ use RuntimeException;
 
 class PostLoadEventTest extends OrmFunctionalTestCase
 {
-    /** @var int */
-    private $userId;
+    private ?int $userId = null;
 
     protected function setUp(): void
     {
@@ -301,7 +300,7 @@ class PostLoadListenerCheckAssociationsArePopulated
 class PostLoadListenerLoadEntityInEventHandler
 {
     /** @psalm-var array<class-string, int> */
-    private $firedByClasses = [];
+    private array $firedByClasses = [];
 
     public function postLoad(LifecycleEventArgs $event): void
     {

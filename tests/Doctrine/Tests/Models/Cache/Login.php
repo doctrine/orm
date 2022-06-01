@@ -27,21 +27,19 @@ class Login
     public $id;
 
     /**
-     * @var string
-     * @Column
-     */
-    public $name;
-
-    /**
      * @var Token
      * @ManyToOne(targetEntity="Token", cascade={"persist", "remove"}, inversedBy="logins")
      * @JoinColumn(name="token_id", referencedColumnName="token")
      */
     public $token;
 
-    public function __construct(string $name)
+    public function __construct(
+        /**
+         * @Column
+         */
+        public string $name
+    )
     {
-        $this->name = $name;
     }
 
     public function getToken(): Token

@@ -4,6 +4,21 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
+use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsEmail;
+use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\Models\Company\CompanyManager;
+use Doctrine\Tests\Models\Company\CompanyOrganization;
+use Doctrine\Tests\Models\Company\CompanyEvent;
+use Doctrine\Tests\Models\Company\CompanyAuction;
+use Doctrine\Tests\Models\Company\CompanyRaffle;
+use Doctrine\Tests\Models\Company\CompanyCar;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\Tools;
 use Doctrine\Tests\Models;
@@ -22,10 +37,9 @@ use const PHP_EOL;
 class DDC214Test extends OrmFunctionalTestCase
 {
     /** @psalm-var list<class-string> */
-    private $classes = [];
+    private array $classes = [];
 
-    /** @var Tools\SchemaTool */
-    private $schemaTool = null;
+    private ?SchemaTool $schemaTool = null;
 
     protected function setUp(): void
     {
@@ -37,7 +51,7 @@ class DDC214Test extends OrmFunctionalTestCase
             self::markTestSkipped('SQLite does not support ALTER TABLE statements.');
         }
 
-        $this->schemaTool = new Tools\SchemaTool($this->_em);
+        $this->schemaTool = new SchemaTool($this->_em);
     }
 
     /**
@@ -46,12 +60,12 @@ class DDC214Test extends OrmFunctionalTestCase
     public function testCmsAddressModel(): void
     {
         $this->classes = [
-            Models\CMS\CmsUser::class,
-            Models\CMS\CmsPhonenumber::class,
-            Models\CMS\CmsAddress::class,
-            Models\CMS\CmsGroup::class,
-            Models\CMS\CmsArticle::class,
-            Models\CMS\CmsEmail::class,
+            CmsUser::class,
+            CmsPhonenumber::class,
+            CmsAddress::class,
+            CmsGroup::class,
+            CmsArticle::class,
+            CmsEmail::class,
         ];
 
         $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
@@ -63,14 +77,14 @@ class DDC214Test extends OrmFunctionalTestCase
     public function testCompanyModel(): void
     {
         $this->classes = [
-            Models\Company\CompanyPerson::class,
-            Models\Company\CompanyEmployee::class,
-            Models\Company\CompanyManager::class,
-            Models\Company\CompanyOrganization::class,
-            Models\Company\CompanyEvent::class,
-            Models\Company\CompanyAuction::class,
-            Models\Company\CompanyRaffle::class,
-            Models\Company\CompanyCar::class,
+            CompanyPerson::class,
+            CompanyEmployee::class,
+            CompanyManager::class,
+            CompanyOrganization::class,
+            CompanyEvent::class,
+            CompanyAuction::class,
+            CompanyRaffle::class,
+            CompanyCar::class,
         ];
 
         $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
@@ -85,7 +99,7 @@ class DDC214Test extends OrmFunctionalTestCase
 
         try {
             $this->schemaTool->createSchema($classMetadata);
-        } catch (Exception $e) {
+        } catch (Exception) {
             // was already created
         }
 
@@ -97,9 +111,7 @@ class DDC214Test extends OrmFunctionalTestCase
         $schemaDiff = $comparator->compareSchemas($fromSchema, $toSchema);
 
         $sql = $schemaDiff->toSql($this->_em->getConnection()->getDatabasePlatform());
-        $sql = array_filter($sql, static function ($sql) {
-            return ! str_contains($sql, 'DROP');
-        });
+        $sql = array_filter($sql, static fn($sql) => ! str_contains($sql, 'DROP'));
 
         self::assertCount(0, $sql, 'SQL: ' . implode(PHP_EOL, $sql));
     }

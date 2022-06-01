@@ -20,10 +20,8 @@ use Doctrine\Tests\OrmTestCase;
  */
 class ClassMetadataBuilderTest extends OrmTestCase
 {
-    /** @var ClassMetadata */
-    private $cm;
-    /** @var ClassMetadataBuilder */
-    private $builder;
+    private ClassMetadata $cm;
+    private ClassMetadataBuilder $builder;
 
     protected function setUp(): void
     {

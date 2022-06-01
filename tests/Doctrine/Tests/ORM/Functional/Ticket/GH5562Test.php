@@ -54,7 +54,7 @@ final class GH5562Test extends OrmFunctionalTestCase
 
         $merchant = $this->_em->find(GH5562Merchant::class, $merchant->id);
 
-        $merchant->name              = mt_rand();
+        $merchant->name              = random_int(0, mt_getrandmax());
         $merchant->manager->username = 'usernameUPDATE';
 
         $this->_em->flush();

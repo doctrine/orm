@@ -16,14 +16,11 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
 {
-    /** @var ECommerceProduct */
-    private $product;
+    private ECommerceProduct $product;
 
-    /** @var ECommerceFeature */
-    private $firstFeature;
+    private ECommerceFeature $firstFeature;
 
-    /** @var ECommerceFeature */
-    private $secondFeature;
+    private ECommerceFeature $secondFeature;
 
     protected function setUp(): void
     {

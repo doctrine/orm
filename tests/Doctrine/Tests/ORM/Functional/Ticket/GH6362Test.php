@@ -104,10 +104,9 @@ class GH6362Start
     protected $id;
 
     /**
-     * @var GH6362Base
      * @ManyToOne(targetEntity="GH6362Base", inversedBy="starts")
      */
-    private $bases;
+    private \Doctrine\Tests\ORM\Functional\Ticket\GH6362Base $bases;
 }
 
 /**
@@ -151,16 +150,14 @@ class GH6362Child extends GH6362Base
 class GH6362Join
 {
     /**
-     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var GH6362Child
      * @ManyToOne(targetEntity="GH6362Child", inversedBy="joins")
      */
-    private $child;
+    private \Doctrine\Tests\ORM\Functional\Ticket\GH6362Child $child;
 }

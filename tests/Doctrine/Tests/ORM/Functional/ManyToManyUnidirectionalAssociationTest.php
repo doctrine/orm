@@ -23,17 +23,13 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
     /** @var string */
     protected $table = 'ecommerce_carts_products';
 
-    /** @var ECommerceProduct */
-    private $firstProduct;
+    private ECommerceProduct $firstProduct;
 
-    /** @var ECommerceProduct */
-    private $secondProduct;
+    private ECommerceProduct $secondProduct;
 
-    /** @var ECommerceCart */
-    private $firstCart;
+    private ECommerceCart $firstCart;
 
-    /** @var ECommerceCart */
-    private $secondCart;
+    private ECommerceCart $secondCart;
 
     protected function setUp(): void
     {

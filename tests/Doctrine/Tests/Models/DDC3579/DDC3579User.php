@@ -28,22 +28,17 @@ class DDC3579User
     protected $id;
 
     /**
-     * @var string
-     * @Column(name="user_name", nullable=true, unique=false, length=250)
-     */
-    #[Column(name: 'user_name', nullable: true, unique: false, length: 250)]
-    protected $name;
-
-    /**
      * @var ArrayCollection
      * @ManyToMany(targetEntity="DDC3579Group")
      */
     #[ManyToMany(targetEntity: DDC3579Group::class)]
     protected $groups;
 
-    public function __construct(?string $name = null)
+    public function __construct(/**
+     * @Column(name="user_name", nullable=true, unique=false, length=250)
+     */
+    #[Column(name: 'user_name', nullable: true, unique: false, length: 250)] protected ?string $name = null)
     {
-        $this->name   = $name;
         $this->groups = new ArrayCollection();
     }
 

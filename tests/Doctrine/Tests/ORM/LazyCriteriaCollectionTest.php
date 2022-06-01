@@ -20,11 +20,9 @@ class LazyCriteriaCollectionTest extends TestCase
     /** @var EntityPersister&MockObject */
     private $persister;
 
-    /** @var Criteria */
-    private $criteria;
+    private Criteria $criteria;
 
-    /** @var LazyCriteriaCollection */
-    private $lazyCriteriaCollection;
+    private LazyCriteriaCollection $lazyCriteriaCollection;
 
     protected function setUp(): void
     {

@@ -72,21 +72,19 @@ class GH5887Test extends OrmFunctionalTestCase
 class GH5887Cart
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="NONE")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * One Cart has One Customer.
      *
-     * @var GH5887Customer
      * @OneToOne(targetEntity="GH5887Customer", inversedBy="cart")
      * @JoinColumn(name="customer_id", referencedColumnName="id")
      */
-    private $customer;
+    private ?\Doctrine\Tests\ORM\Functional\Ticket\GH5887Customer $customer = null;
 
     public function getId(): int
     {
@@ -118,20 +116,18 @@ class GH5887Cart
 class GH5887Customer
 {
     /**
-     * @var GH5887CustomIdObject
      * @Id
      * @Column(type="GH5887CustomIdObject", length=255)
      * @GeneratedValue(strategy="NONE")
      */
-    private $id;
+    private ?\Doctrine\Tests\ORM\Functional\Ticket\GH5887CustomIdObject $id = null;
 
     /**
      * One Customer has One Cart.
      *
-     * @var GH5887Cart
      * @OneToOne(targetEntity="GH5887Cart", mappedBy="customer")
      */
-    private $cart;
+    private ?\Doctrine\Tests\ORM\Functional\Ticket\GH5887Cart $cart = null;
 
     public function getId(): GH5887CustomIdObject
     {
@@ -157,14 +153,10 @@ class GH5887Customer
     }
 }
 
-class GH5887CustomIdObject
+class GH5887CustomIdObject implements \Stringable
 {
-    /** @var int */
-    private $id;
-
-    public function __construct(int $id)
+    public function __construct(private int $id)
     {
-        $this->id = $id;
     }
 
     public function getId(): int

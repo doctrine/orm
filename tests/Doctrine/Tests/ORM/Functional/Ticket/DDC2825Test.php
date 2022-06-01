@@ -70,7 +70,7 @@ class DDC2825Test extends OrmFunctionalTestCase
     {
         try {
             $this->_schemaTool->createSchema([$this->_em->getClassMetadata($className)]);
-        } catch (ToolsException $e) {
+        } catch (ToolsException) {
             // table already exists
         }
 

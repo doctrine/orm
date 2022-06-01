@@ -21,12 +21,11 @@ use Doctrine\ORM\Mapping\Table;
 class CompanyOrganization
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
      * @psalm-var Collection<int, CompanyEvent>
@@ -54,11 +53,10 @@ class CompanyOrganization
     }
 
     /**
-     * @var CompanyEvent|null
      * @OneToOne(targetEntity="CompanyEvent", cascade={"persist"})
      * @JoinColumn(name="main_event_id", referencedColumnName="id", nullable=true)
      */
-    private $mainevent;
+    private ?CompanyEvent $mainevent = null;
 
     public function getMainEvent(): ?CompanyEvent
     {

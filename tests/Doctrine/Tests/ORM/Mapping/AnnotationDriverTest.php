@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\ORM\Mapping\InvalidColumn;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Mapping;
@@ -43,13 +44,13 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testLoadMetadataForNonEntityThrowsException(): void
     {
-        $cm = new ClassMetadata('stdClass');
+        $cm = new ClassMetadata(\stdClass::class);
         $cm->initializeReflection(new RuntimeReflectionService());
         $reader           = new AnnotationReader();
         $annotationDriver = new AnnotationDriver($reader);
 
         $this->expectException(MappingException::class);
-        $annotationDriver->loadMetadataForClass('stdClass', $cm);
+        $annotationDriver->loadMetadataForClass(\stdClass::class, $cm);
     }
 
     public function testFailingSecondLevelCacheAssociation(): void
@@ -71,7 +72,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $cm->initializeReflection(new RuntimeReflectionService());
         $annotationDriver = $this->loadDriver();
 
-        $annotationDriver->loadMetadataForClass(Mapping\InvalidColumn::class, $cm);
+        $annotationDriver->loadMetadataForClass(InvalidColumn::class, $cm);
         self::assertEquals('string', $cm->fieldMappings['id']['type']);
     }
 
@@ -336,12 +337,11 @@ class InvalidMappedSuperClass
 class UsingInvalidMappedSuperClass extends InvalidMappedSuperClass
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 }
 
 /**
@@ -362,12 +362,11 @@ class MappedSuperClassInheritence
 class AnnotationParent
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
      * @PostLoad
@@ -400,11 +399,10 @@ class AnnotationChild extends AnnotationParent
 class SuperEntity
 {
     /**
-     * @var string
      * @Id
      * @Column(type="string", length=255)
      */
-    private $id;
+    private string $id;
 }
 
 /**
@@ -413,10 +411,9 @@ class SuperEntity
 class MiddleMappedSuperclass extends SuperEntity
 {
     /**
-     * @var string
      * @Column(type="string", length=255)
      */
-    private $name;
+    private string $name;
 }
 
 /**
@@ -425,10 +422,9 @@ class MiddleMappedSuperclass extends SuperEntity
 class ChildEntity extends MiddleMappedSuperclass
 {
     /**
-     * @var string
      * @Column(type="string", length=255)
      */
-    private $text;
+    private string $text;
 }
 
 /**
@@ -437,10 +433,9 @@ class ChildEntity extends MiddleMappedSuperclass
 class InvalidFetchOption
 {
     /**
-     * @var CmsUser
      * @OneToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", fetch="eager")
      */
-    private $collection;
+    private CmsUser $collection;
 }
 
 /**

@@ -17,8 +17,7 @@ class ConstructorTest extends OrmTestCase
 
 class ConstructorTestEntity1
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
     /** @var string|null */
     public $username;

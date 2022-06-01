@@ -52,19 +52,17 @@ class DDC1787Test extends OrmFunctionalTestCase
 class DDC1787Foo
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var int
      * @Version
      * @Column(type="integer")
      */
-    private $version;
+    private int $version;
 
     public function getVersion(): int
     {

@@ -20,11 +20,9 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class ValidateSchemaCommandTest extends OrmFunctionalTestCase
 {
-    /** @var InfoCommand */
-    private $command;
+    private InfoCommand $command;
 
-    /** @var CommandTester */
-    private $tester;
+    private CommandTester $tester;
 
     protected function setUp(): void
     {
