@@ -761,11 +761,6 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/SchemaTool.php
 
 		-
-			message: "#^Binary operation \"&\" between string and 3 results in an error\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/UnitOfWork.php
-
-		-
 			message: "#^Call to an undefined method Doctrine\\\\Common\\\\Collections\\\\Collection\\<\\(int\\|string\\), object\\>\\:\\:getMapping\\(\\)\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/UnitOfWork.php
@@ -787,11 +782,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#3 \\$changeSet of class Doctrine\\\\ORM\\\\Event\\\\PreUpdateEventArgs constructor is passed by reference, so it expects variables only$#"
-			count: 1
-			path: lib/Doctrine/ORM/UnitOfWork.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between string and 4 will always evaluate to false\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/UnitOfWork.php
 

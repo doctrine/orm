@@ -1334,7 +1334,7 @@ public function __construct(<params>)
 
             $lines[] = $this->generateAssociationMappingPropertyDocBlock($associationMapping, $metadata);
             $lines[] = $this->spaces . $this->fieldVisibility . ' $' . $associationMapping['fieldName']
-                     . ($associationMapping['type'] === 'manyToMany' ? ' = array()' : null) . ";\n";
+                     . ($associationMapping['type'] === ClassMetadataInfo::MANY_TO_MANY ? ' = array()' : null) . ";\n";
         }
 
         return implode("\n", $lines);
