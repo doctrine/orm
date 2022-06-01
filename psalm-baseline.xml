@@ -1395,20 +1395,12 @@
     <PossiblyNullArgument occurrences="1">
       <code>$this-&gt;getDQL()</code>
     </PossiblyNullArgument>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$timeToLive</code>
-    </PossiblyNullPropertyAssignmentValue>
     <PossiblyNullReference occurrences="1">
       <code>evictEntityRegion</code>
     </PossiblyNullReference>
-    <PropertyNotSetInConstructor occurrences="2">
+    <PropertyNotSetInConstructor occurrences="1">
       <code>$parserResult</code>
-      <code>$queryCacheTTL</code>
     </PropertyNotSetInConstructor>
-    <RedundantConditionGivenDocblockType occurrences="2">
-      <code>$dqlQuery !== null</code>
-      <code>$timeToLive !== null</code>
-    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/ArithmeticFactor.php">
     <ParamNameMismatch occurrences="1">

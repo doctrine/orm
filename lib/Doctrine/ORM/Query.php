@@ -537,7 +537,7 @@ final class Query extends AbstractQuery
     /**
      * Defines how long the query cache will be active before expire.
      *
-     * @param int $timeToLive How long the cache entry is valid.
+     * @param int|null $timeToLive How long the cache entry is valid.
      *
      * @return $this
      */
