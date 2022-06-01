@@ -403,8 +403,7 @@ abstract class AbstractQuery
      *
      * @param mixed $value
      *
-     * @return mixed[]|string|int|float|bool|object|null
-     * @psalm-return array|scalar|object|null
+     * @return mixed
      *
      * @throws ORMInvalidArgumentException
      */
