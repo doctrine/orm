@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Mapping\AnsiQuoteStrategy;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -21,7 +20,7 @@ use Doctrine\Tests\OrmTestCase;
  */
 class AnsiQuoteStrategyTest extends OrmTestCase
 {
-    /** @var DefaultQuoteStrategy */
+    /** @var AnsiQuoteStrategy */
     private $strategy;
 
     /** @var AbstractPlatform */
