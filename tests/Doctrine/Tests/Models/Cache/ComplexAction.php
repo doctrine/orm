@@ -27,16 +27,18 @@ class ComplexAction
     public $tokens;
 
     public function __construct(/**
+     * @var Action
      * @Id
      * @OneToOne(targetEntity="Action", cascade={"persist", "remove"})
      * @JoinColumn(name="action1_name", referencedColumnName="name")
      */
-    public Action $action1, /**
+    public $action1, /**
+     * @var Action
      * @Id
      * @OneToOne(targetEntity="Action", cascade={"persist", "remove"})
      * @JoinColumn(name="action2_name", referencedColumnName="name")
      */
-    public Action $action2, /**
+    public $action2, /**
      * @Column
      */
     public string $name)

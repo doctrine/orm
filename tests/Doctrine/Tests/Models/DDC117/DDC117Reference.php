@@ -17,18 +17,20 @@ use Doctrine\ORM\Mapping\ManyToOne;
 class DDC117Reference
 {
     /**
+     * @var DDC117Article
      * @Id
      * @ManyToOne(targetEntity="DDC117Article", inversedBy="references")
      * @JoinColumn(name="source_id", referencedColumnName="article_id")
      */
-    private DDC117Article $source;
+    private $source;
 
     /**
+     * @var DDC117Article
      * @Id
      * @ManyToOne(targetEntity="DDC117Article")
      * @JoinColumn(name="target_id", referencedColumnName="article_id")
      */
-    private DDC117Article $target;
+    private $target;
 
     /**
      * @Column(type="datetime")

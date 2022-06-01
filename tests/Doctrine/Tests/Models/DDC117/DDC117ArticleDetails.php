@@ -21,11 +21,12 @@ class DDC117ArticleDetails
     private string $text;
 
     public function __construct(/**
+     * @var DDC117Article
      * @Id
      * @OneToOne(targetEntity="DDC117Article", inversedBy="details")
      * @JoinColumn(name="article_id", referencedColumnName="article_id")
      */
-    private DDC117Article $article, string $text)
+    private $article, string $text)
     {
         $article->setDetails($this);
 
