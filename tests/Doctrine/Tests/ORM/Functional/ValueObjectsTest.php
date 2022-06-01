@@ -381,9 +381,10 @@ class DDC93Person
     public $timestamps;
 
     public function __construct(/**
+     * @var string|null
      * @Column(type="string", length=255)
      */
-    public ?string $name = null, /**
+    public $name = null, /**
      * @Embedded(class="DDC93Address")
      */
     public ?\Doctrine\Tests\ORM\Functional\DDC93Address $address = null)
@@ -464,21 +465,25 @@ class DDC93Address
 {
     public function __construct(
         /**
+         * @var string|null
          * @Column(type="string", length=255)
          */
-        public ?string $street = null,
+        public $street = null,
         /**
+         * @var string|null
          * @Column(type="string", length=255)
          */
-        public ?string $zip = null,
+        public $zip = null,
         /**
+         * @var string|null
          * @Column(type="string", length=255)
          */
-        public ?string $city = null,
+        public $city = null,
         /**
+         * @var DDC93Country
          * @Embedded(class = "DDC93Country")
          */
-        public ?\Doctrine\Tests\ORM\Functional\DDC93Country $country = null
+        public $country = null
     )
     {
     }

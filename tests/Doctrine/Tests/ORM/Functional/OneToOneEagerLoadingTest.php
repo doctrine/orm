@@ -408,12 +408,13 @@ class TrainOrder
      */
     public $id;
 
+
     public function __construct(
         /**
+         * @var Train
          * @OneToOne(targetEntity="Train", fetch="EAGER")
          */
-        public Train $train
-    )
-    {
+        public $train
+    ) {
     }
 }
