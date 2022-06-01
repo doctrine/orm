@@ -314,7 +314,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         // Setup mock connection
         $conn = $this->getMockConnection();
         $conn->method('quote')
-             ->will(self::returnCallback(static fn($value) => "'" . $value . "'"));
+             ->will(self::returnCallback(static fn ($value) => "'" . $value . "'"));
 
         $em = $this->getMockEntityManager();
         $em->method('getConnection')

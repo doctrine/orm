@@ -27,16 +27,14 @@ class CmsEmployee
      */
     private int $id;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     private string $name;
 
     /**
      * @OneToOne(targetEntity="CmsEmployee")
      * @JoinColumn(name="spouse_id", referencedColumnName="id")
      */
-    private \Doctrine\Tests\Models\CMS\CmsEmployee $spouse;
+    private CmsEmployee $spouse;
 
     public function getId(): int
     {

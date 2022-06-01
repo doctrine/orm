@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
-use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**

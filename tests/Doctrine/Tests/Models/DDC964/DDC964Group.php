@@ -29,14 +29,12 @@ class DDC964Group
      */
     private $users;
 
-    /**
-     * @param string|null $name
-     */
-    public function __construct(/**
-     * @Column
-     */
-    private ?string $name = null)
-    {
+    public function __construct(
+        /**
+         * @Column
+         */
+        private ?string $name = null
+    ) {
         $this->users = new ArrayCollection();
     }
 

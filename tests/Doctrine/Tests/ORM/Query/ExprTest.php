@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\Query\Expr\Comparison;
 use Doctrine\ORM\Query\Expr\From;
@@ -15,11 +17,10 @@ use Doctrine\ORM\Query\Expr\Math;
 use Doctrine\ORM\Query\Expr\OrderBy;
 use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\Query\Expr\Select;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query\Expr;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
+use InvalidArgumentException;
 
 /**
  * Test case for the DQL Expr class used for generating DQL snippets through
@@ -383,7 +384,7 @@ class ExprTest extends OrmTestCase
 
     public function testAddThrowsException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $orExpr = $this->expr->orX();
         $orExpr->add($this->expr->quot(5, 2));
     }

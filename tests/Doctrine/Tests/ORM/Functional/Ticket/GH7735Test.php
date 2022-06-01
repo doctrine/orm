@@ -69,8 +69,7 @@ class GH7735Car
          * @Cache("READ_ONLY")
          */
         private GH7735Engine $engine
-    )
-    {
+    ) {
     }
 
     public function getId(): int
@@ -90,19 +89,22 @@ class GH7735Car
  */
 class GH7735Engine
 {
-    public function __construct(/**
-     * @Id
-     * @Column(type="integer")
-     */
-    private int $id, /**
-     * @Column
-     */
-    private string $model, /**
-     * @OneToOne(targetEntity=GH7735Power::class, mappedBy="engine", cascade={"all"})
-     * @Cache("READ_ONLY")
-     */
-    private GH7735Power $power)
-    {
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="integer")
+         */
+        private int $id,
+        /**
+         * @Column
+         */
+        private string $model,
+        /**
+         * @OneToOne(targetEntity=GH7735Power::class, mappedBy="engine", cascade={"all"})
+         * @Cache("READ_ONLY")
+         */
+        private GH7735Power $power
+    ) {
         $power->setEngine($this);
     }
 
@@ -132,7 +134,7 @@ class GH7735Power
      * @OneToOne(targetEntity=GH7735Engine::class, inversedBy="power")
      * @Cache("READ_ONLY")
      */
-    private ?\Doctrine\Tests\ORM\Functional\Ticket\GH7735Engine $engine = null;
+    private ?GH7735Engine $engine = null;
 
     public function __construct(
         /**
@@ -140,8 +142,7 @@ class GH7735Power
          * @Column(type="integer")
          */
         private int $id
-    )
-    {
+    ) {
     }
 
     public function getId(): int

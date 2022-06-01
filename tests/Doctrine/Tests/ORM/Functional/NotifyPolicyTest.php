@@ -130,9 +130,7 @@ class NotifyUser extends NotifyBaseEntity
      */
     private int $id;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     private ?string $name = null;
 
     /**
@@ -181,9 +179,7 @@ class NotifyGroup extends NotifyBaseEntity
      */
     private int $id;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     private ?string $name = null;
 
     /**

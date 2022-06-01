@@ -114,9 +114,7 @@ class DDC881User
      */
     private int $id;
 
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     private ?string $name = null;
 
     /**
@@ -151,11 +149,9 @@ class DDC881PhoneNumber
      * @Id
      * @ManyToOne(targetEntity="DDC881User",cascade={"all"})
      */
-    private ?\Doctrine\Tests\ORM\Functional\Ticket\DDC881User $user = null;
+    private ?DDC881User $user = null;
 
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     private ?string $phonenumber = null;
 
     /**
@@ -212,11 +208,9 @@ class DDC881PhoneCall
      *  @JoinColumn(name="user_id", referencedColumnName="user_id")
      * })
      */
-    private ?\Doctrine\Tests\ORM\Functional\Ticket\DDC881PhoneNumber $phonenumber = null;
+    private ?DDC881PhoneNumber $phonenumber = null;
 
-    /**
-     * @Column(type="string",nullable=true)
-     */
+    /** @Column(type="string",nullable=true) */
     private string $callDate;
 
     public function setPhoneNumber(DDC881PhoneNumber $phoneNumber): void

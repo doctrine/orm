@@ -69,13 +69,9 @@ class DoctrineGlobalUser
      */
     private int $id;
 
-    /**
-     * @Column(type="string", length=64)
-     */
+    /** @Column(type="string", length=64) */
     private string $username;
 
-    /**
-     * @Column(type="string", length=128)
-     */
+    /** @Column(type="string", length=128) */
     private string $email;
 }

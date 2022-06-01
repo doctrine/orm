@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
-use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Tools;
+use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_filter;
@@ -39,7 +38,7 @@ class DBAL483Test extends OrmFunctionalTestCase
 
         $updateSql = $this->schemaTool->getUpdateSchemaSql([$class]);
 
-        $updateSql = array_filter($updateSql, static fn($sql) => str_contains($sql, 'DBAL483'));
+        $updateSql = array_filter($updateSql, static fn ($sql) => str_contains($sql, 'DBAL483'));
 
         self::assertCount(0, $updateSql);
     }

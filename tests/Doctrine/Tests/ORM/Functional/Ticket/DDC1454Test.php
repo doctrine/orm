@@ -14,7 +14,7 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-use function getrandmax;
+use function mt_getrandmax;
 use function random_int;
 
 /**

@@ -18,6 +18,7 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Stringable;
 
 class DDC3785Test extends OrmFunctionalTestCase
 {
@@ -81,13 +82,15 @@ class DDC3785Asset
     /**
      * @psalm-param list<DDC3785Attribute> $attributes
      */
-    public function __construct(/**
-     * @Id
-     * @GeneratedValue(strategy="NONE")
-     * @Column(type="ddc3785_asset_id")
-     */
-    private DDC3785AssetId $id, $attributes = [])
-    {
+    public function __construct(
+        /**
+         * @Id
+         * @GeneratedValue(strategy="NONE")
+         * @Column(type="ddc3785_asset_id")
+         */
+        private DDC3785AssetId $id,
+        $attributes = []
+    ) {
         $this->attributes = new ArrayCollection();
 
         foreach ($attributes as $attribute) {
@@ -132,21 +135,19 @@ class DDC3785Attribute
          * @Column(type="string", length=255)
          */
         private string $value
-    )
-    {
+    ) {
     }
 }
 
 /** @Embeddable */
-class DDC3785AssetId implements \Stringable
+class DDC3785AssetId implements Stringable
 {
     public function __construct(
         /**
          * @Column(type = "guid")
          */
         private string $id
-    )
-    {
+    ) {
     }
 
     public function __toString(): string

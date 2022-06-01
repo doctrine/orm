@@ -41,7 +41,6 @@ class Admin1AlternateName
          * @Cache
          */
         public Admin1 $admin1
-    )
-    {
+    ) {
     }
 }

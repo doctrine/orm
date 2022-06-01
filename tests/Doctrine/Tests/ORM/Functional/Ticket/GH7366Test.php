@@ -67,8 +67,7 @@ class GH7366Entity
          * @Column(length=32)
          */
         protected string $name
-    )
-    {
+    ) {
     }
 
     public function getName(): string

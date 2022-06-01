@@ -44,11 +44,12 @@ class Traveler
      */
      protected $profile;
 
-    public function __construct(/**
-     * @Column
-     */
-    protected string $name)
-    {
+    public function __construct(
+        /**
+         * @Column
+         */
+        protected string $name
+    ) {
         $this->travels = new ArrayCollection();
     }
 

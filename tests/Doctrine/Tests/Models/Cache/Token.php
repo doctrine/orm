@@ -57,15 +57,17 @@ class Token
      */
     public $complexAction;
 
-    public function __construct(/**
-     * @Id
-     * @Column(type="string", length=255)
-     */
-    public string $token, /**
-     * @OneToOne(targetEntity="Client")
-     */
-    public ?Client $client = null)
-    {
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="string", length=255)
+         */
+        public string $token,
+        /**
+         * @OneToOne(targetEntity="Client")
+         */
+        public ?Client $client = null
+    ) {
         $this->logins    = new ArrayCollection();
         $this->expiresAt = new DateTime(date('Y-m-d H:i:s', strtotime('+7 day')));
     }

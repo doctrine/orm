@@ -39,8 +39,7 @@ class NavPhotos
          * @Column(type="string", length=255, name="file_name")
          */
         private string $file
-    )
-    {
+    ) {
     }
 
     public function getId(): int

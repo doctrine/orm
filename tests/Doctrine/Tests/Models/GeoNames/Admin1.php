@@ -46,7 +46,6 @@ class Admin1
          * @Cache
          */
         public Country $country
-    )
-    {
+    ) {
     }
 }

@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Stringable;
 
 class DDC1209Test extends OrmFunctionalTestCase
 {
@@ -112,13 +113,14 @@ class DDC1209Two
      */
     public $endingDatetime;
 
-    public function __construct(/**
-     * @Id
-     * @ManyToOne(targetEntity="DDC1209One")
-     * @JoinColumn(referencedColumnName="id", nullable=false)
-     */
-    private DDC1209One $future1)
-    {
+    public function __construct(
+        /**
+         * @Id
+         * @ManyToOne(targetEntity="DDC1209One")
+         * @JoinColumn(referencedColumnName="id", nullable=false)
+         */
+        private DDC1209One $future1
+    ) {
         $this->startingDatetime = new DateTime2();
         $this->duringDatetime   = new DateTime2();
         $this->endingDatetime   = new DateTime2();
@@ -143,7 +145,7 @@ class DDC1209Three
     }
 }
 
-class DateTime2 extends DateTime implements \Stringable
+class DateTime2 extends DateTime implements Stringable
 {
     public function __toString(): string
     {

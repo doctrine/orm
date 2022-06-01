@@ -27,7 +27,6 @@ class CustomIdObjectTypeChild
          * @ManyToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent", inversedBy="children")
          */
         public CustomIdObjectTypeParent $parent
-    )
-    {
+    ) {
     }
 }

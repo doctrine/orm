@@ -76,8 +76,7 @@ class GH7737Group
          * @Column
          */
         public string $name
-    )
-    {
+    ) {
     }
 }
 
@@ -93,12 +92,13 @@ class GH7737Person
      */
     public $groups;
 
-    public function __construct(/**
-     * @Id
-     * @Column(type="integer")
-     */
-    public int $id)
-    {
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="integer")
+         */
+        public int $id
+    ) {
         $this->groups = new ArrayCollection();
     }
 }

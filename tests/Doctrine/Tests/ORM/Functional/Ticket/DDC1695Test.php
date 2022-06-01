@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use DateTimeZone;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -46,88 +47,54 @@ class DDC1695News
      */
     private int $idNews;
 
-    /**
-     * @Column(name="`IdUser`", type="bigint", nullable=false)
-     */
+    /** @Column(name="`IdUser`", type="bigint", nullable=false) */
     private int $idUser;
 
-    /**
-     * @Column(name="`IdLanguage`", type="integer", nullable=false)
-     */
+    /** @Column(name="`IdLanguage`", type="integer", nullable=false) */
     private int $idLanguage;
 
-    /**
-     * @Column(name="`IdCondition`", type="integer", nullable=true)
-     */
+    /** @Column(name="`IdCondition`", type="integer", nullable=true) */
     private int $idCondition;
 
-    /**
-     * @Column(name="`IdHealthProvider`", type="integer", nullable=true)
-     */
+    /** @Column(name="`IdHealthProvider`", type="integer", nullable=true) */
     private int $idHealthProvider;
 
-    /**
-     * @Column(name="`IdSpeciality`", type="integer", nullable=true)
-     */
+    /** @Column(name="`IdSpeciality`", type="integer", nullable=true) */
     private int $idSpeciality;
 
-    /**
-     * @Column(name="`IdMedicineType`", type="integer", nullable=true)
-     */
+    /** @Column(name="`IdMedicineType`", type="integer", nullable=true) */
     private int $idMedicineType;
 
-    /**
-     * @Column(name="`IdTreatment`", type="integer", nullable=true)
-     */
+    /** @Column(name="`IdTreatment`", type="integer", nullable=true) */
     private int $idTreatment;
 
-    /**
-     * @Column(name="`Title`", type="string", nullable=true)
-     */
+    /** @Column(name="`Title`", type="string", nullable=true) */
     private string $title;
 
-    /**
-     * @Column(name="`SmallText`", type="string", nullable=true)
-     */
+    /** @Column(name="`SmallText`", type="string", nullable=true) */
     private string $smallText;
 
-    /**
-     * @Column(name="`LongText`", type="string", nullable=true)
-     */
+    /** @Column(name="`LongText`", type="string", nullable=true) */
     private string $longText;
 
-    /**
-     * @Column(name="`PublishDate`", type="datetimetz", nullable=true)
-     */
-    private \DateTimeZone $publishDate;
+    /** @Column(name="`PublishDate`", type="datetimetz", nullable=true) */
+    private DateTimeZone $publishDate;
 
-    /**
-     * @Column(name="`IdxNews`", type="json_array", nullable=true)
-     */
+    /** @Column(name="`IdxNews`", type="json_array", nullable=true) */
     private array $idxNews;
 
-    /**
-     * @Column(name="`Highlight`", type="boolean", nullable=false)
-     */
+    /** @Column(name="`Highlight`", type="boolean", nullable=false) */
     private bool $highlight;
 
-    /**
-     * @Column(name="`Order`", type="integer", nullable=false)
-     */
+    /** @Column(name="`Order`", type="integer", nullable=false) */
     private int $order;
 
-    /**
-     * @Column(name="`Deleted`", type="boolean", nullable=false)
-     */
+    /** @Column(name="`Deleted`", type="boolean", nullable=false) */
     private bool $deleted;
 
-    /**
-     * @Column(name="`Active`", type="boolean", nullable=false)
-     */
+    /** @Column(name="`Active`", type="boolean", nullable=false) */
     private bool $active;
 
-    /**
-     * @Column(name="`UpdateToHighlighted`", type="boolean", nullable=true)
-     */
+    /** @Column(name="`UpdateToHighlighted`", type="boolean", nullable=true) */
     private bool $updateToHighlighted;
 }

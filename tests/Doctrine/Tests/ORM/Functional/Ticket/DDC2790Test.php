@@ -10,7 +10,6 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_intersect_key;
-use function get_class;
 use function intval;
 
 /**

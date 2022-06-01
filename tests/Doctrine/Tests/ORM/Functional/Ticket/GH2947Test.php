@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Stringable;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
@@ -82,7 +83,7 @@ class GH2947Test extends OrmFunctionalTestCase
  * @Entity
  * @Table(name="GH2947_car")
  */
-class GH2947Car implements \Stringable
+class GH2947Car implements Stringable
 {
     public function __construct(
         /**
@@ -91,8 +92,7 @@ class GH2947Car implements \Stringable
          * @GeneratedValue(strategy="NONE")
          */
         public string $brand
-    )
-    {
+    ) {
     }
 
     public function __toString(): string

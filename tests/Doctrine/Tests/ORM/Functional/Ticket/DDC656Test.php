@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_keys;
-use function get_class;
 
 class DDC656Test extends OrmFunctionalTestCase
 {

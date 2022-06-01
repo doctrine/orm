@@ -4,24 +4,22 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
+use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsEmail;
-use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\Company\CompanyAuction;
+use Doctrine\Tests\Models\Company\CompanyCar;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\Models\Company\CompanyEvent;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\Models\Company\CompanyOrganization;
-use Doctrine\Tests\Models\Company\CompanyEvent;
-use Doctrine\Tests\Models\Company\CompanyAuction;
+use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\Company\CompanyRaffle;
-use Doctrine\Tests\Models\Company\CompanyCar;
-use Doctrine\DBAL\Platforms\SqlitePlatform;
-use Doctrine\ORM\Tools;
-use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -111,7 +109,7 @@ class DDC214Test extends OrmFunctionalTestCase
         $schemaDiff = $comparator->compareSchemas($fromSchema, $toSchema);
 
         $sql = $schemaDiff->toSql($this->_em->getConnection()->getDatabasePlatform());
-        $sql = array_filter($sql, static fn($sql) => ! str_contains($sql, 'DROP'));
+        $sql = array_filter($sql, static fn ($sql) => ! str_contains($sql, 'DROP'));
 
         self::assertCount(0, $sql, 'SQL: ' . implode(PHP_EOL, $sql));
     }

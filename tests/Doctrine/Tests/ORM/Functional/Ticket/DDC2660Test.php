@@ -123,9 +123,6 @@ class DDC2660Customer
  */
 class DDC2660CustomerOrder
 {
-    /**
-     * @param string $name
-     */
     public function __construct(
         /**
          * @Id
@@ -140,8 +137,7 @@ class DDC2660CustomerOrder
         /**
          * @Column(type="string", length=255)
          */
-        public $name
-    )
-    {
+        public string $name
+    ) {
     }
 }

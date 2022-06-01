@@ -77,16 +77,12 @@ class DDC960Root
  */
 class DDC960Child extends DDC960Root
 {
-    /**
-     * @param string $name
-     */
     public function __construct(
         /**
          * @Column(type="string", length=255)
          */
-        private $name
-    )
-    {
+        private string $name
+    ) {
     }
 
     public function setName($name): void

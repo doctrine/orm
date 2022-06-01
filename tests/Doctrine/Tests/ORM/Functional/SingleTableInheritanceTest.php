@@ -16,7 +16,6 @@ use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_map;
-use function get_class;
 use function sort;
 
 class SingleTableInheritanceTest extends OrmFunctionalTestCase
@@ -239,7 +238,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
 
         $contracts = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c ORDER BY c.id')->getScalarResult();
 
-        $discrValues = array_map(static fn($a) => $a['c_discr'], $contracts);
+        $discrValues = array_map(static fn ($a) => $a['c_discr'], $contracts);
 
         sort($discrValues);
 

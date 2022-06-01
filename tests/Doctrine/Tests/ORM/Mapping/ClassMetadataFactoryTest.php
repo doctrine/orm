@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\Tests\Models\Quote\User;
-use Doctrine\Tests\Models\Quote\Phone;
-use Doctrine\Tests\Models\Quote\Group;
-use Doctrine\Tests\Models\Quote\Address;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
@@ -40,7 +36,10 @@ use Doctrine\Tests\Models\DDC4006\DDC4006User;
 use Doctrine\Tests\Models\JoinedInheritanceType\AnotherChildClass;
 use Doctrine\Tests\Models\JoinedInheritanceType\ChildClass;
 use Doctrine\Tests\Models\JoinedInheritanceType\RootClass;
-use Doctrine\Tests\Models\Quote;
+use Doctrine\Tests\Models\Quote\Address;
+use Doctrine\Tests\Models\Quote\Group;
+use Doctrine\Tests\Models\Quote\Phone;
+use Doctrine\Tests\Models\Quote\User;
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobalArticle;
 use Exception;

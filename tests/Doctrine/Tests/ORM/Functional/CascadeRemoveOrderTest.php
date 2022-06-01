@@ -87,7 +87,7 @@ class CascadeRemoveOrderEntityO
      * @OneToOne(targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG")
      * @JoinColumn(nullable=true, onDelete="SET NULL")
      */
-    private ?\Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG $oneToOneG = null;
+    private ?CascadeRemoveOrderEntityG $oneToOneG = null;
 
     /**
      * @psalm-var Collection<int, CascadeRemoveOrderEntityG>
@@ -145,17 +145,16 @@ class CascadeRemoveOrderEntityG
      */
     private int $id;
 
-    /**
-     * @param int $position
-     */
-    public function __construct(/**
-     * @ManyToOne(
-     *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO",
-     *     inversedBy="oneToMany"
-     * )
-     */
-    private CascadeRemoveOrderEntityO $ownerO, private $position = 1)
-    {
+    public function __construct(
+        /**
+         * @ManyToOne(
+         *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO",
+         *     inversedBy="oneToMany"
+         * )
+         */
+        private CascadeRemoveOrderEntityO $ownerO,
+        private int $position = 1
+    ) {
         $this->ownerO->addOneToManyG($this);
     }
 

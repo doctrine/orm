@@ -4,15 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\One;
-use Doctrine\Tests\Models\CMS\Two;
-use Doctrine\Tests\Models\CMS\Three;
-use Doctrine\Tests\Models\CMS\UserRepository;
-use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\Tests\Models\TypedProperties\UserTyped;
-use Doctrine\Tests\Models\TypedProperties\Contact;
-use Doctrine\Tests\Models\Company\CompanyContractListener;
 use ArrayObject;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -23,9 +14,15 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\Mapping\StaticReflectionService;
-use Doctrine\Tests\Models\CMS;
+use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\CMS\One;
+use Doctrine\Tests\Models\CMS\Three;
+use Doctrine\Tests\Models\CMS\Two;
+use Doctrine\Tests\Models\CMS\UserRepository;
 use Doctrine\Tests\Models\Company\CompanyContract;
+use Doctrine\Tests\Models\Company\CompanyContractListener;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\DDC117\DDC117Article;
 use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
@@ -33,10 +30,12 @@ use Doctrine\Tests\Models\DDC6412\DDC6412File;
 use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
-use Doctrine\Tests\Models\TypedProperties;
+use Doctrine\Tests\Models\TypedProperties\Contact;
+use Doctrine\Tests\Models\TypedProperties\UserTyped;
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobalArticle;
 use ReflectionClass;
+use stdClass;
 
 use function assert;
 use function count;
@@ -60,7 +59,7 @@ class ClassMetadataTest extends OrmTestCase
 
         // Test initial state
         self::assertTrue(count($cm->getReflectionProperties()) === 0);
-        self::assertInstanceOf(\ReflectionClass::class, $cm->reflClass);
+        self::assertInstanceOf(ReflectionClass::class, $cm->reflClass);
         self::assertEquals(CmsUser::class, $cm->name);
         self::assertEquals(CmsUser::class, $cm->rootEntityName);
         self::assertEquals([], $cm->subClasses);
@@ -308,8 +307,8 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $a1 = ['fieldName' => 'foo', 'sourceEntity' => \stdClass::class, 'targetEntity' => \stdClass::class, 'mappedBy' => 'foo'];
-        $a2 = ['fieldName' => 'foo', 'sourceEntity' => \stdClass::class, 'targetEntity' => \stdClass::class, 'mappedBy' => 'foo'];
+        $a1 = ['fieldName' => 'foo', 'sourceEntity' => stdClass::class, 'targetEntity' => stdClass::class, 'mappedBy' => 'foo'];
+        $a2 = ['fieldName' => 'foo', 'sourceEntity' => stdClass::class, 'targetEntity' => stdClass::class, 'mappedBy' => 'foo'];
 
         $cm->addInheritedAssociationMapping($a1);
         $this->expectException(MappingException::class);

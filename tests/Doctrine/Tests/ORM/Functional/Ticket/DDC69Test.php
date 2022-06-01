@@ -120,9 +120,7 @@ class Lemma
      */
     private int $id;
 
-    /**
-     * @Column(type="string", name="lemma_name", unique=true, length=255)
-     */
+    /** @Column(type="string", name="lemma_name", unique=true, length=255) */
     private ?string $lemma = null;
 
     /**
@@ -194,19 +192,19 @@ class Relation
      * @ManyToOne(targetEntity="Lemma", inversedBy="relations")
      * @JoinColumn(name="relation_parent_id", referencedColumnName="lemma_id")
      */
-    private ?\Doctrine\Tests\ORM\Functional\Ticket\Lemma $parent = null;
+    private ?Lemma $parent = null;
 
     /**
      * @OneToOne(targetEntity="Lemma")
      * @JoinColumn(name="relation_child_id", referencedColumnName="lemma_id")
      */
-    private ?\Doctrine\Tests\ORM\Functional\Ticket\Lemma $child = null;
+    private ?Lemma $child = null;
 
     /**
      * @ManyToOne(targetEntity="RelationType", inversedBy="relations")
      * @JoinColumn(name="relation_type_id", referencedColumnName="relation_type_id")
      */
-    private ?\Doctrine\Tests\ORM\Functional\Ticket\RelationType $type = null;
+    private ?RelationType $type = null;
 
     public function setParent(Lemma $parent): void
     {
@@ -272,14 +270,10 @@ class RelationType
      */
     private int $id;
 
-    /**
-     * @Column(type="string", name="relation_type_name", unique=true, length=255)
-     */
+    /** @Column(type="string", name="relation_type_name", unique=true, length=255) */
     private ?string $type = null;
 
-    /**
-     * @Column(type="string", name="relation_type_abbreviation", unique=true, length=255)
-     */
+    /** @Column(type="string", name="relation_type_abbreviation", unique=true, length=255) */
     private ?string $abbreviation = null;
 
     /**

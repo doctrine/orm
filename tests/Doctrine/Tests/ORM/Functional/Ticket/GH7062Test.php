@@ -110,13 +110,15 @@ class GH7062Ranking
     /**
      * @param GH7062Team[] $teams
      */
-    public function __construct(/**
-     * @Id
-     * @OneToOne(targetEntity=GH7062Season::class, inversedBy="ranking")
-     * @JoinColumn(name="season", referencedColumnName="id")
-     */
-    public GH7062Season $season, array $teams)
-    {
+    public function __construct(
+        /**
+         * @Id
+         * @OneToOne(targetEntity=GH7062Season::class, inversedBy="ranking")
+         * @JoinColumn(name="season", referencedColumnName="id")
+         */
+        public GH7062Season $season,
+        array $teams
+    ) {
         $this->positions = new ArrayCollection();
 
         foreach ($teams as $team) {
@@ -145,8 +147,7 @@ class GH7062Season
          * @Column(type="string", length=255)
          */
         public string $id
-    )
-    {
+    ) {
     }
 }
 
@@ -164,8 +165,7 @@ class GH7062Team
          * @Column(type="string", length=255)
          */
         public string $id
-    )
-    {
+    ) {
     }
 }
 
@@ -183,18 +183,20 @@ class GH7062RankingPosition
      */
     public $points;
 
-    public function __construct(/**
-     * @Id
-     * @ManyToOne(targetEntity=GH7062Ranking::class, inversedBy="positions")
-     * @JoinColumn(name="season", referencedColumnName="season")
-     */
-    public GH7062Ranking $ranking, /**
-     * @Id
-     * @ManyToOne(targetEntity=GH7062Team::class)
-     * @JoinColumn(name="team_id", referencedColumnName="id")
-     */
-    public GH7062Team $team)
-    {
-        $this->points  = 0;
+    public function __construct(
+        /**
+         * @Id
+         * @ManyToOne(targetEntity=GH7062Ranking::class, inversedBy="positions")
+         * @JoinColumn(name="season", referencedColumnName="season")
+         */
+        public GH7062Ranking $ranking,
+        /**
+         * @Id
+         * @ManyToOne(targetEntity=GH7062Team::class)
+         * @JoinColumn(name="team_id", referencedColumnName="id")
+         */
+        public GH7062Team $team
+    ) {
+        $this->points = 0;
     }
 }

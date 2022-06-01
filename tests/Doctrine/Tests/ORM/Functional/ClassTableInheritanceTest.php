@@ -18,7 +18,6 @@ use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\Company\CompanyRaffle;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
 use function get_debug_type;
 use function sprintf;
 

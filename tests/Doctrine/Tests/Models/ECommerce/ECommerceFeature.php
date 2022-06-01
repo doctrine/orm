@@ -27,9 +27,7 @@ class ECommerceFeature
      */
     private int $id;
 
-    /**
-     * @Column(length=50)
-     */
+    /** @Column(length=50) */
     private ?string $description = null;
 
     /**

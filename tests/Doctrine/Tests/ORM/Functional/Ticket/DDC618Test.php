@@ -184,20 +184,15 @@ class DDC618Book
      */
     public $id;
 
-    /**
-     * @param string $title
-     * @param \Doctrine\Tests\ORM\Functional\Ticket\DDC618Author $author
-     */
     public function __construct(
         /**
          * @Column(type="string", length=255)
          */
-        public $title,
+        public string $title,
         /**
          * @ManyToOne(targetEntity="DDC618Author", inversedBy="books")
          */
-        public $author
-    )
-    {
+        public DDC618Author $author
+    ) {
     }
 }

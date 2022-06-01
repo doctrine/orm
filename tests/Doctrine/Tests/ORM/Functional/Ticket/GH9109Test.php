@@ -100,9 +100,7 @@ class GH9109Product
      */
     private int $id;
 
-    /**
-     * @Column(name="`title`", type="string", length=255)
-     */
+    /** @Column(name="`title`", type="string", length=255) */
     private ?string $title = null;
 
     /**
@@ -158,14 +156,10 @@ class GH9109User
      */
     private int $id;
 
-    /**
-     * @Column(name="`first_name`", type="string", length=255)
-     */
+    /** @Column(name="`first_name`", type="string", length=255) */
     private ?string $firstName = null;
 
-    /**
-     * @Column(name="last_name", type="string", length=255)
-     */
+    /** @Column(name="last_name", type="string", length=255) */
     private ?string $lastName = null;
 
     public function getId(): int

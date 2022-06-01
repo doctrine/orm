@@ -12,7 +12,6 @@ use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Restaurant;
 
 use function count;
-use function get_class;
 
 /**
  * @group DDC-2183

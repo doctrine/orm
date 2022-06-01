@@ -54,11 +54,12 @@ class DDC117Editor
      */
     public $lastTranslation;
 
-    public function __construct(/**
-     * @Column(type="string", length=255)
-     */
-    public ?string $name = '')
-    {
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        public ?string $name = ''
+    ) {
         $this->reviewingTranslations = new ArrayCollection();
     }
 

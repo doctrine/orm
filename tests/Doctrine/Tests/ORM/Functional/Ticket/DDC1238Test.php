@@ -77,9 +77,7 @@ class DDC1238User
      */
     private ?int $id = null;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     private ?string $name = null;
 
     public function getId(): ?int

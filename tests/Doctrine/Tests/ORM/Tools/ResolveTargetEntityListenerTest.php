@@ -141,10 +141,8 @@ class ResolveTargetEntity implements ResolveTarget
      */
     private $manyToMany;
 
-    /**
-     * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Tools\ResolveTarget", inversedBy="oneToMany")
-     */
-    private \Doctrine\Tests\ORM\Tools\ResolveTarget $manyToOne;
+    /** @ManyToOne(targetEntity="Doctrine\Tests\ORM\Tools\ResolveTarget", inversedBy="oneToMany") */
+    private ResolveTarget $manyToOne;
 
     /**
      * @psalm-var Collection<int, ResolveTarget>
@@ -156,7 +154,7 @@ class ResolveTargetEntity implements ResolveTarget
      * @OneToOne(targetEntity="Doctrine\Tests\ORM\Tools\Target")
      * @JoinColumn(name="target_entity_id", referencedColumnName="id")
      */
-    private \Doctrine\Tests\ORM\Tools\Target $oneToOne;
+    private Target $oneToOne;
 
     public function getId(): int
     {

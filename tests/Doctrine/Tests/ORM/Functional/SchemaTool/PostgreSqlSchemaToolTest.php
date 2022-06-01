@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
-use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsPhonenumber;
-use Doctrine\Tests\Models\Generic\DecimalModel;
-use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -18,7 +13,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\Tests\Models;
+use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_filter;
@@ -58,7 +53,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         $tool->createSchema($classes);
 
         $sql = $tool->getUpdateSchemaSql($classes);
-        $sql = array_filter($sql, static fn($sql) => str_starts_with($sql, 'DROP SEQUENCE stonewood.'));
+        $sql = array_filter($sql, static fn ($sql) => str_starts_with($sql, 'DROP SEQUENCE stonewood.'));
 
         self::assertCount(0, $sql, implode("\n", $sql));
     }

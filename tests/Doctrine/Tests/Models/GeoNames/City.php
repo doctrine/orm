@@ -51,7 +51,6 @@ class City
          * @Column(type="string", length=255);
          */
         public string $name
-    )
-    {
+    ) {
     }
 }

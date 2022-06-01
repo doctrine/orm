@@ -18,7 +18,7 @@ use function serialize;
  */
 class GearmanLockTest extends OrmFunctionalTestCase
 {
-    private ?\GearmanClient $gearman = null;
+    private ?GearmanClient $gearman = null;
 
     private int $maxRunTime = 0;
 

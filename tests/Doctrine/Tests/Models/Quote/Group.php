@@ -43,8 +43,7 @@ class Group
          * @ManyToOne(targetEntity="Group", cascade={"persist"})
          * @JoinColumn(name="`parent-id`", referencedColumnName="`group-id`")
          */
-        public ?\Doctrine\Tests\Models\Quote\Group $parent = null
-    )
-    {
+        public ?Group $parent = null
+    ) {
     }
 }

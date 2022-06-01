@@ -34,22 +34,26 @@ class NavPointOfInterest
      */
     private $visitors;
 
-    public function __construct(/**
-     * @Id
-     * @Column(type="integer", name="nav_lat")
-     */
-    private int $lat, /**
-     * @Id
-     * @Column(type="integer", name="nav_long")
-     */
-    private int $long, /**
-     * @Column(type="string", length=255)
-     */
-    private string $name, /**
-     * @ManyToOne(targetEntity="NavCountry", inversedBy="pois")
-     */
-    private NavCountry $country)
-    {
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="integer", name="nav_lat")
+         */
+        private int $lat,
+        /**
+         * @Id
+         * @Column(type="integer", name="nav_long")
+         */
+        private int $long,
+        /**
+         * @Column(type="string", length=255)
+         */
+        private string $name,
+        /**
+         * @ManyToOne(targetEntity="NavCountry", inversedBy="pois")
+         */
+        private NavCountry $country
+    ) {
         $this->visitors = new ArrayCollection();
     }
 

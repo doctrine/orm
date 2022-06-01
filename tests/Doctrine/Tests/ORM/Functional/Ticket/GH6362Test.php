@@ -103,10 +103,8 @@ class GH6362Start
      */
     protected $id;
 
-    /**
-     * @ManyToOne(targetEntity="GH6362Base", inversedBy="starts")
-     */
-    private \Doctrine\Tests\ORM\Functional\Ticket\GH6362Base $bases;
+    /** @ManyToOne(targetEntity="GH6362Base", inversedBy="starts") */
+    private GH6362Base $bases;
 }
 
 /**
@@ -156,8 +154,6 @@ class GH6362Join
      */
     private int $id;
 
-    /**
-     * @ManyToOne(targetEntity="GH6362Child", inversedBy="joins")
-     */
-    private \Doctrine\Tests\ORM\Functional\Ticket\GH6362Child $child;
+    /** @ManyToOne(targetEntity="GH6362Child", inversedBy="joins") */
+    private GH6362Child $child;
 }

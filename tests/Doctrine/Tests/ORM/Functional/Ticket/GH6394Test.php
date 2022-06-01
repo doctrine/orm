@@ -68,8 +68,7 @@ class A
          * @Column(type="integer")
          */
         public int $id
-    )
-    {
+    ) {
     }
 }
 
@@ -96,7 +95,6 @@ class B
          * @Column(type="string", length=255)
          */
         public string $something
-    )
-    {
+    ) {
     }
 }

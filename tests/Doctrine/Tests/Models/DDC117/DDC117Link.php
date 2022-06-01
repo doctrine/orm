@@ -16,25 +16,20 @@ use Doctrine\ORM\Mapping\ManyToOne;
  */
 class DDC117Link
 {
-    /**
-     * @param DDC117Article $source
-     * @param DDC117Article $target
-     */
     public function __construct(
         /**
          * @Id
          * @ManyToOne(targetEntity="DDC117Article", inversedBy="links")
          * @JoinColumn(name="source_id", referencedColumnName="article_id")
          */
-        public $source,
+        public DDC117Article $source,
         /**
          * @Id
          * @ManyToOne(targetEntity="DDC117Article")
          * @JoinColumn(name="target_id", referencedColumnName="article_id")
          */
-        public $target,
+        public DDC117Article $target,
         $description
-    )
-    {
+    ) {
     }
 }

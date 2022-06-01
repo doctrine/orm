@@ -18,20 +18,14 @@ use Doctrine\ORM\Mapping\Table;
  */
 class CompanyEmployee extends CompanyPerson
 {
-    /**
-     * @Column(type="integer")
-     */
+    /** @Column(type="integer") */
     private ?int $salary = null;
 
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     private ?string $department = null;
 
-    /**
-     * @Column(type="datetime", nullable=true)
-     */
-    private ?\DateTime $startDate = null;
+    /** @Column(type="datetime", nullable=true) */
+    private ?DateTime $startDate = null;
 
     /**
      * @psalm-var Collection<int, CompanyContract>

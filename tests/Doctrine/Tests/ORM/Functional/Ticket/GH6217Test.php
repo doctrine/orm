@@ -99,7 +99,6 @@ class GH6217FetchedEntity
          * @ManyToOne(targetEntity=GH6217AssociatedEntity::class, fetch="EAGER")
          */
         public GH6217AssociatedEntity $eager
-    )
-    {
+    ) {
     }
 }

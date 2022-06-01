@@ -82,14 +82,10 @@ abstract class CompanyContract
     #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @ManyToOne(targetEntity="CompanyEmployee", inversedBy="soldContracts")
-     */
+    /** @ManyToOne(targetEntity="CompanyEmployee", inversedBy="soldContracts") */
     private ?CompanyEmployee $salesPerson = null;
 
-    /**
-     * @Column(type="boolean")
-     */
+    /** @Column(type="boolean") */
     private bool $completed = false;
 
     /**

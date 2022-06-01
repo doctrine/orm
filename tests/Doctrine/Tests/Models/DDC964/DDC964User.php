@@ -55,11 +55,12 @@ class DDC964User
     #[JoinColumn(name: 'address_id', referencedColumnName: 'id')]
     protected $address;
 
-    public function __construct(/**
-     * @Column(name="user_name", nullable=true, unique=false, length=250)
-     */
-    #[Column(name: 'user_name', nullable: true, unique: false, length: 250)] protected ?string $name = null)
-    {
+    public function __construct(
+        /**
+         * @Column(name="user_name", nullable=true, unique=false, length=250)
+         */
+        #[Column(name: 'user_name', nullable: true, unique: false, length: 250)] protected ?string $name = null
+    ) {
         $this->groups = new ArrayCollection();
     }
 

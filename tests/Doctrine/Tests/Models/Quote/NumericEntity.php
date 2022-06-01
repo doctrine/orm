@@ -29,7 +29,6 @@ class NumericEntity
          * @Column(type="string", length=255, name="`2:2`")
          */
         public string $value
-    )
-    {
+    ) {
     }
 }

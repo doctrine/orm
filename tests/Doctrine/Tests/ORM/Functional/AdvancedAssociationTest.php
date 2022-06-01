@@ -163,14 +163,10 @@ class Lemma
      */
     private int $id;
 
-    /**
-     * @Column(type="string", name="lemma_name", unique=true, length=255)
-     */
+    /** @Column(type="string", name="lemma_name", unique=true, length=255) */
     private ?string $lemma = null;
 
-    /**
-     * @ManyToMany(targetEntity="Type", mappedBy="lemmas", cascade={"persist"})
-     */
+    /** @ManyToMany(targetEntity="Type", mappedBy="lemmas", cascade={"persist"}) */
     private Collection $types;
 
     public function __construct()
@@ -230,14 +226,10 @@ class Type
      */
     private int $id;
 
-    /**
-     * @Column(type="string", name="type_name", unique=true)
-     */
+    /** @Column(type="string", name="type_name", unique=true) */
     private ?string $type = null;
 
-    /**
-     * @Column(type="string", name="type_abbreviation", unique=true)
-     */
+    /** @Column(type="string", name="type_abbreviation", unique=true) */
     private ?string $abbreviation = null;
 
     /**
@@ -317,16 +309,14 @@ class Phrase
      */
     private int $id;
 
-    /**
-     * @Column(type="string", name="phrase_name", unique=true, length=255)
-     */
+    /** @Column(type="string", name="phrase_name", unique=true, length=255) */
     private ?string $phrase = null;
 
     /**
      * @ManyToOne(targetEntity="PhraseType")
      * @JoinColumn(name="phrase_type_id", referencedColumnName="phrase_type_id")
      */
-    private ?\Doctrine\Tests\ORM\Functional\PhraseType $type = null;
+    private ?PhraseType $type = null;
 
     /**
      * @psalm-var Collection<int, Definition>
@@ -391,14 +381,10 @@ class PhraseType
      */
     private int $id;
 
-    /**
-     * @Column(type="string", name="phrase_type_name", unique=true)
-     */
+    /** @Column(type="string", name="phrase_type_name", unique=true) */
     private ?string $type = null;
 
-    /**
-     * @Column(type="string", name="phrase_type_abbreviation", unique=true)
-     */
+    /** @Column(type="string", name="phrase_type_abbreviation", unique=true) */
     private ?string $abbreviation = null;
 
     /**
@@ -467,11 +453,9 @@ class Definition
      * @ManyToOne(targetEntity="Phrase")
      * @JoinColumn(name="definition_phrase_id", referencedColumnName="phrase_id")
      */
-    private ?\Doctrine\Tests\ORM\Functional\Phrase $phrase = null;
+    private ?Phrase $phrase = null;
 
-    /**
-     * @Column(type="text", name="definition_text")
-     */
+    /** @Column(type="text", name="definition_text") */
     private ?string $definition = null;
 
     public function getId(): int

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Cache;
+use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\DefaultQueryCache;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;

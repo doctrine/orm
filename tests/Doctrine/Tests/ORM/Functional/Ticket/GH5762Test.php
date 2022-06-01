@@ -122,16 +122,18 @@ class GH5762Driver
      */
     public $driverRides;
 
-    public function __construct(/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="NONE")
-     */
-    public int $id, /**
-     * @Column(type="string", length=255)
-     */
-    public string $name)
-    {
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="integer")
+         * @GeneratedValue(strategy="NONE")
+         */
+        public int $id,
+        /**
+         * @Column(type="string", length=255)
+         */
+        public string $name
+    ) {
         $this->driverRides = new ArrayCollection();
     }
 }
@@ -142,18 +144,20 @@ class GH5762Driver
  */
 class GH5762DriverRide
 {
-    public function __construct(/**
-     * @Id
-     * @ManyToOne(targetEntity="GH5762Driver", inversedBy="driverRides")
-     * @JoinColumn(name="driver_id", referencedColumnName="id")
-     */
-    public GH5762Driver $driver, /**
-     * @Id
-     * @ManyToOne(targetEntity="GH5762Car", inversedBy="carRides")
-     * @JoinColumn(name="car", referencedColumnName="brand")
-     */
-    public GH5762Car $car)
-    {
+    public function __construct(
+        /**
+         * @Id
+         * @ManyToOne(targetEntity="GH5762Driver", inversedBy="driverRides")
+         * @JoinColumn(name="driver_id", referencedColumnName="id")
+         */
+        public GH5762Driver $driver,
+        /**
+         * @Id
+         * @ManyToOne(targetEntity="GH5762Car", inversedBy="carRides")
+         * @JoinColumn(name="car", referencedColumnName="brand")
+         */
+        public GH5762Car $car
+    ) {
         $this->driver->driverRides->add($this);
         $this->car->carRides->add($this);
     }
@@ -171,20 +175,18 @@ class GH5762Car
      */
     public $carRides;
 
-    /**
-     * @param string $brand
-     * @param string $model
-     */
-    public function __construct(/**
-     * @Id
-     * @Column(type="string", length=25)
-     * @GeneratedValue(strategy="NONE")
-     */
-    public $brand, /**
-     * @Column(type="string", length=255)
-     */
-    public $model)
-    {
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="string", length=25)
+         * @GeneratedValue(strategy="NONE")
+         */
+        public string $brand,
+        /**
+         * @Column(type="string", length=255)
+         */
+        public string $model
+    ) {
         $this->carRides = new ArrayCollection();
     }
 }

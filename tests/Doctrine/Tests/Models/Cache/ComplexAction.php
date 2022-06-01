@@ -26,24 +26,27 @@ class ComplexAction
      */
     public $tokens;
 
-    public function __construct(/**
-     * @var Action
-     * @Id
-     * @OneToOne(targetEntity="Action", cascade={"persist", "remove"})
-     * @JoinColumn(name="action1_name", referencedColumnName="name")
-     */
-    public $action1, /**
-     * @var Action
-     * @Id
-     * @OneToOne(targetEntity="Action", cascade={"persist", "remove"})
-     * @JoinColumn(name="action2_name", referencedColumnName="name")
-     */
-    public $action2, /**
-     * @Column
-     */
-    public string $name)
-    {
-        $this->tokens  = new ArrayCollection();
+    public function __construct(
+        /**
+         * @var Action
+         * @Id
+         * @OneToOne(targetEntity="Action", cascade={"persist", "remove"})
+         * @JoinColumn(name="action1_name", referencedColumnName="name")
+         */
+        public $action1,
+        /**
+         * @var Action
+         * @Id
+         * @OneToOne(targetEntity="Action", cascade={"persist", "remove"})
+         * @JoinColumn(name="action2_name", referencedColumnName="name")
+         */
+        public $action2,
+        /**
+         * @Column
+         */
+        public string $name
+    ) {
+        $this->tokens = new ArrayCollection();
     }
 
     public function addToken(Token $token): void

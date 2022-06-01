@@ -13,7 +13,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
 use function file_exists;
-use function get_class;
 use function str_replace;
 use function strlen;
 use function substr;

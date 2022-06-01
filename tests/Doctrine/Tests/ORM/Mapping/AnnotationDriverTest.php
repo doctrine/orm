@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\InvalidColumn;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Cache\Exception\CacheException;
-use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -20,6 +18,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\InvalidColumn;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\MappedSuperclass;
@@ -36,6 +35,7 @@ use Doctrine\Tests\Models\DirectoryTree\Directory;
 use Doctrine\Tests\Models\DirectoryTree\File;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Generator;
+use stdClass;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
@@ -44,13 +44,13 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testLoadMetadataForNonEntityThrowsException(): void
     {
-        $cm = new ClassMetadata(\stdClass::class);
+        $cm = new ClassMetadata(stdClass::class);
         $cm->initializeReflection(new RuntimeReflectionService());
         $reader           = new AnnotationReader();
         $annotationDriver = new AnnotationDriver($reader);
 
         $this->expectException(MappingException::class);
-        $annotationDriver->loadMetadataForClass(\stdClass::class, $cm);
+        $annotationDriver->loadMetadataForClass(stdClass::class, $cm);
     }
 
     public function testFailingSecondLevelCacheAssociation(): void
@@ -410,9 +410,7 @@ class SuperEntity
  */
 class MiddleMappedSuperclass extends SuperEntity
 {
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     private string $name;
 }
 
@@ -421,9 +419,7 @@ class MiddleMappedSuperclass extends SuperEntity
  */
 class ChildEntity extends MiddleMappedSuperclass
 {
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     private string $text;
 }
 
@@ -432,9 +428,7 @@ class ChildEntity extends MiddleMappedSuperclass
  */
 class InvalidFetchOption
 {
-    /**
-     * @OneToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", fetch="eager")
-     */
+    /** @OneToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", fetch="eager") */
     private CmsUser $collection;
 }
 

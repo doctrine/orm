@@ -117,7 +117,6 @@ class GH7767ChildEntity
          * @Column(type="integer")
          */
         public int $position
-    )
-    {
+    ) {
     }
 }

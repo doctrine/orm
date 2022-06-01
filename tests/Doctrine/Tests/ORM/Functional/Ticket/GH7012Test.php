@@ -85,7 +85,6 @@ class GH7012UserData
          * @Column(type="string", name="`name`")
          */
         public string $name
-    )
-    {
+    ) {
     }
 }

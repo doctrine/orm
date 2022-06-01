@@ -151,19 +151,17 @@ class ReadOnlyEntity
     public $id;
 
     /**
-     * @param string $name
      * @param int $number
      */
     public function __construct(
         /**
          * @Column(type="string", length=255)
          */
-        public $name,
+        public string $name,
         /**
          * @Column(type="integer")
          */
         public $numericValue
-    )
-    {
+    ) {
     }
 }

@@ -118,6 +118,6 @@ class GH5988CustomIdObjectTypeChild extends GH5988CustomIdObjectTypeParent
 {
     public function __construct(CustomIdObject $id, public string $name)
     {
-        $this->id   = $id;
+        $this->id = $id;
     }
 }

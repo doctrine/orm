@@ -31,21 +31,24 @@ class DDC117Translation
      */
     public $lastTranslatedBy;
 
-    public function __construct(/**
-     * @var DDC117Article
-     * @Id
-     * @ManyToOne(targetEntity="DDC117Article", inversedBy="translations")
-     * @JoinColumn(name="article_id", referencedColumnName="article_id")
-     */
-    private $article, /**
-     * @Id
-     * @Column(type="string", length=255)
-     */
-    private string $language, /**
-     * @Column(type="string", length=255)
-     */
-    private string $title)
-    {
+    public function __construct(
+        /**
+         * @var DDC117Article
+         * @Id
+         * @ManyToOne(targetEntity="DDC117Article", inversedBy="translations")
+         * @JoinColumn(name="article_id", referencedColumnName="article_id")
+         */
+        private $article,
+        /**
+         * @Id
+         * @Column(type="string", length=255)
+         */
+        private string $language,
+        /**
+         * @Column(type="string", length=255)
+         */
+        private string $title
+    ) {
         $this->reviewedByEditors = new ArrayCollection();
         $this->lastTranslatedBy  = new ArrayCollection();
     }

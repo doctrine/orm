@@ -137,22 +137,17 @@ class DDC2862Driver
      */
     protected $id;
 
-    /**
-     * @param string $name
-     * @param \Doctrine\Tests\ORM\Functional\Ticket\DDC2862User $userProfile
-     */
     public function __construct(
         /**
          * @Column(type="string", length=255)
          */
-        protected $name,
+        protected string $name,
         /**
          * @Cache()
          * @OneToOne(targetEntity="DDC2862User")
          */
-        protected $userProfile = null
-    )
-    {
+        protected ?DDC2862User $userProfile = null
+    ) {
     }
 
     public function getId(): int
@@ -196,16 +191,12 @@ class DDC2862User
      */
     protected $id;
 
-    /**
-     * @param string $name
-     */
     public function __construct(
         /**
          * @Column(type="string", length=255)
          */
-        protected $name
-    )
-    {
+        protected string $name
+    ) {
     }
 
     public function getId(): int

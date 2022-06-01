@@ -108,7 +108,6 @@ class GH7661Participant
          * @ManyToOne(targetEntity=GH7661Event::class)
          */
         public GH7661Event $event
-    )
-    {
+    ) {
     }
 }

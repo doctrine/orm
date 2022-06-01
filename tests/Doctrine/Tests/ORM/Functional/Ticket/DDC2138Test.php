@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\ORM\Functional\Ticket\Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Table as DbalTable;
@@ -20,6 +19,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Tests\ORM\Functional\Ticket\Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
@@ -131,8 +131,7 @@ class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
          * @JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
          */
         private Structure $followedStructure
-    )
-    {
+    ) {
     }
 
     public function getUser(): User
@@ -168,8 +167,7 @@ class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
          * @JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
          */
         private User $followedUser
-    )
-    {
+    ) {
     }
 
     public function getUser(): User

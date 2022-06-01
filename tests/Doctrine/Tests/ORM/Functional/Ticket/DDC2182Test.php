@@ -62,5 +62,5 @@ class DDC2182OptionChild
      * @ManyToOne(targetEntity="DDC2182OptionParent")
      * @JoinColumn(referencedColumnName="id")
      */
-    private \Doctrine\Tests\ORM\Functional\Ticket\DDC2182OptionParent $parent;
+    private DDC2182OptionParent $parent;
 }

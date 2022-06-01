@@ -46,8 +46,7 @@ class DDC117ApproveChanges
          * })
          */
         private DDC117Translation $translation
-    )
-    {
+    ) {
     }
 
     public function getId(): int

@@ -14,14 +14,10 @@ use Doctrine\ORM\Mapping\Embeddable;
  */
 class DDC3597Dimension
 {
-    /**
-     * @Column(type="integer", name="width")
-     */
+    /** @Column(type="integer", name="width") */
     private int $width;
 
-    /**
-     * @Column(type="integer", name="height")
-     */
+    /** @Column(type="integer", name="height") */
     private int $height;
 
     public function __construct($width = 0, $height = 0)

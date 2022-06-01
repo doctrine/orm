@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Stringable;
 
 use function array_map;
 use function is_string;
@@ -75,7 +76,7 @@ class GH7820Test extends OrmFunctionalTestCase
 
         self::assertSame(
             self::SONG,
-            array_map(static fn(GH7820Line $line): string => $line->toString(), iterator_to_array(new Paginator($query)))
+            array_map(static fn (GH7820Line $line): string => $line->toString(), iterator_to_array(new Paginator($query)))
         );
     }
 
@@ -92,7 +93,7 @@ class GH7820Test extends OrmFunctionalTestCase
 
         self::assertSame(
             self::SONG,
-            array_map(static fn(GH7820Line $line): string => $line->toString(), iterator_to_array(new Paginator($query))),
+            array_map(static fn (GH7820Line $line): string => $line->toString(), iterator_to_array(new Paginator($query))),
             'Expected to return expected data before query cache is populated with DQL -> SQL translation. Were SQL parameters translated?'
         );
 
@@ -102,7 +103,7 @@ class GH7820Test extends OrmFunctionalTestCase
 
         self::assertSame(
             self::SONG,
-            array_map(static fn(GH7820Line $line): string => $line->toString(), iterator_to_array(new Paginator($query))),
+            array_map(static fn (GH7820Line $line): string => $line->toString(), iterator_to_array(new Paginator($query))),
             'Expected to return expected data even when DQL -> SQL translation is present in cache. Were SQL parameters translated again?'
         );
     }
@@ -121,8 +122,7 @@ class GH7820Line
          * @Column(type="integer")
          */
         private int $lineNumber
-    )
-    {
+    ) {
     }
 
     public function toString(): string
@@ -131,7 +131,7 @@ class GH7820Line
     }
 }
 
-final class GH7820LineText implements \Stringable
+final class GH7820LineText implements Stringable
 {
     private function __construct(private string $text)
     {

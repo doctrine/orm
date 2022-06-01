@@ -19,8 +19,6 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 class DDC422Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query\AST\AggregateExpression;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\Lexer;
@@ -34,8 +33,8 @@ class CustomFunctionsTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         // Instead of defining the function with the class name, we use a callback
-        $this->_em->getConfiguration()->addCustomStringFunction('FOO', static fn($funcName) => new NoOp($funcName));
-        $this->_em->getConfiguration()->addCustomNumericFunction('BAR', static fn($funcName) => new NoOp($funcName));
+        $this->_em->getConfiguration()->addCustomStringFunction('FOO', static fn ($funcName) => new NoOp($funcName));
+        $this->_em->getConfiguration()->addCustomNumericFunction('BAR', static fn ($funcName) => new NoOp($funcName));
 
         $query = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u'
             . ' WHERE FOO(u.name) = \'Bob\''

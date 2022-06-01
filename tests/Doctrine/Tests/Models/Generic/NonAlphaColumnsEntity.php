@@ -29,7 +29,6 @@ class NonAlphaColumnsEntity
          * @Column(type="string", length=255, name="`simple-entity-value`")
          */
         public string $value
-    )
-    {
+    ) {
     }
 }

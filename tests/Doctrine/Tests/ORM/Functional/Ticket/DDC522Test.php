@@ -13,8 +13,6 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 /**
  * Tests that join columns (foreign keys) can be named the same as the association
  * fields they're used on without causing issues.

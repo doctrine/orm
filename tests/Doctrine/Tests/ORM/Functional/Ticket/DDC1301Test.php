@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\Legacy\LegacyUser;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\Legacy\LegacyArticle;
 use Doctrine\Tests\Models\Legacy\LegacyCar;
+use Doctrine\Tests\Models\Legacy\LegacyUser;
 use Doctrine\Tests\Models\Legacy\LegacyUserReference;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**

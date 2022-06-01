@@ -38,17 +38,19 @@ class State
      */
     protected $cities;
 
-    public function __construct(/**
-     * @Column(unique=true)
-     */
-    protected string $name, /**
-     * @Cache
-     * @ManyToOne(targetEntity="Country")
-     * @JoinColumn(name="country_id", referencedColumnName="id")
-     */
-    protected ?Country $country = null)
-    {
-        $this->cities  = new ArrayCollection();
+    public function __construct(
+        /**
+         * @Column(unique=true)
+         */
+        protected string $name,
+        /**
+         * @Cache
+         * @ManyToOne(targetEntity="Country")
+         * @JoinColumn(name="country_id", referencedColumnName="id")
+         */
+        protected ?Country $country = null
+    ) {
+        $this->cities = new ArrayCollection();
     }
 
     public function getId(): int

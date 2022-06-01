@@ -380,15 +380,17 @@ class DDC93Person
      */
     public $timestamps;
 
-    public function __construct(/**
-     * @var string|null
-     * @Column(type="string", length=255)
-     */
-    public $name = null, /**
-     * @Embedded(class="DDC93Address")
-     */
-    public ?\Doctrine\Tests\ORM\Functional\DDC93Address $address = null)
-    {
+    public function __construct(
+        /**
+         * @var string|null
+         * @Column(type="string", length=255)
+         */
+        public $name = null,
+        /**
+         * @Embedded(class="DDC93Address")
+         */
+        public ?DDC93Address $address = null
+    ) {
         $this->timestamps = new DDC93Timestamps(new DateTime());
     }
 }
@@ -403,8 +405,7 @@ class DDC93Timestamps
          * @Column(type = "datetime")
          */
         public DateTime $createdAt
-    )
-    {
+    ) {
     }
 }
 
@@ -431,8 +432,7 @@ abstract class DDC93Vehicle
          * @Embedded(class = "DDC93Address")
          */
         public DDC93Address $address
-    )
-    {
+    ) {
     }
 }
 
@@ -453,8 +453,7 @@ class DDC93Country
          * @Column(type="string", nullable=true)
          */
         public ?string $name = null
-    )
-    {
+    ) {
     }
 }
 
@@ -484,8 +483,7 @@ class DDC93Address
          * @Embedded(class = "DDC93Country")
          */
         public $country = null
-    )
-    {
+    ) {
     }
 }
 
@@ -499,10 +497,8 @@ class DDC93Customer
      */
     private int $id;
 
-    /**
-     * @Embedded(class = "DDC93ContactInfo", columnPrefix = "contact_info_")
-     */
-    private \Doctrine\Tests\ORM\Functional\DDC93ContactInfo $contactInfo;
+    /** @Embedded(class = "DDC93ContactInfo", columnPrefix = "contact_info_") */
+    private DDC93ContactInfo $contactInfo;
 }
 
 /** @Embeddable */
@@ -530,13 +526,12 @@ class DDC3028PersonWithPrefix
         /**
          * @Embedded(class="DDC3028Id", columnPrefix = "foobar_")
          */
-        public ?\Doctrine\Tests\ORM\Functional\DDC3028Id $id = null,
+        public ?DDC3028Id $id = null,
         /**
          * @Embedded(class="DDC3028NestedEmbeddable", columnPrefix = "bloo_")
          */
-        public ?\Doctrine\Tests\ORM\Functional\DDC3028NestedEmbeddable $nested = null
-    )
-    {
+        public ?DDC3028NestedEmbeddable $nested = null
+    ) {
     }
 }
 
@@ -549,13 +544,12 @@ class DDC3028PersonEmptyPrefix
         /**
          * @Embedded(class="DDC3028Id", columnPrefix = "")
          */
-        public ?\Doctrine\Tests\ORM\Functional\DDC3028Id $id = null,
+        public ?DDC3028Id $id = null,
         /**
          * @Embedded(class="DDC3028NestedEmbeddable", columnPrefix = "")
          */
-        public ?\Doctrine\Tests\ORM\Functional\DDC3028NestedEmbeddable $nested = null
-    )
-    {
+        public ?DDC3028NestedEmbeddable $nested = null
+    ) {
     }
 }
 
@@ -568,9 +562,8 @@ class DDC3028PersonPrefixFalse
         /**
          * @Embedded(class="DDC3028Id", columnPrefix = false)
          */
-        public ?\Doctrine\Tests\ORM\Functional\DDC3028Id $id = null
-    )
-    {
+        public ?DDC3028Id $id = null
+    ) {
     }
 }
 
@@ -585,8 +578,7 @@ class DDC3028Id
          * @Column(type="string", length=255)
          */
         public ?string $id = null
-    )
-    {
+    ) {
     }
 }
 
@@ -599,17 +591,16 @@ class DDC3028NestedEmbeddable
         /**
          * @Embedded(class="DDC3028Id", columnPrefix = "foo_")
          */
-        public ?\Doctrine\Tests\ORM\Functional\DDC3028Id $nestedWithPrefix = null,
+        public ?DDC3028Id $nestedWithPrefix = null,
         /**
          * @Embedded(class="DDC3028Id", columnPrefix = "")
          */
-        public ?\Doctrine\Tests\ORM\Functional\DDC3028Id $nestedWithEmptyPrefix = null,
+        public ?DDC3028Id $nestedWithEmptyPrefix = null,
         /**
          * @Embedded(class="DDC3028Id", columnPrefix = false)
          */
-        public ?\Doctrine\Tests\ORM\Functional\DDC3028Id $nestedWithPrefixFalse = null
-    )
-    {
+        public ?DDC3028Id $nestedWithPrefixFalse = null
+    ) {
     }
 }
 

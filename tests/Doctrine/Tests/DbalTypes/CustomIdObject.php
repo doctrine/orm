@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\DbalTypes;
 
-class CustomIdObject implements \Stringable
+use Stringable;
+
+class CustomIdObject implements Stringable
 {
     public function __construct(public string $id)
     {

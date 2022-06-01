@@ -36,17 +36,19 @@ class ChildClass
      */
     public $parents;
 
-    public function __construct(/**
-     * @Id
-     * @Column(name="id1", type="integer")
-     */
-    public int $id1, /**
-     * @Id
-     * @ManyToOne(targetEntity=OtherParentClass::class, cascade={"persist"})
-     * @JoinColumn(name="other_parent_id", referencedColumnName="id")
-     */
-    public OtherParentClass $otherParent)
-    {
-        $this->parents     = new ArrayCollection();
+    public function __construct(
+        /**
+         * @Id
+         * @Column(name="id1", type="integer")
+         */
+        public int $id1,
+        /**
+         * @Id
+         * @ManyToOne(targetEntity=OtherParentClass::class, cascade={"persist"})
+         * @JoinColumn(name="other_parent_id", referencedColumnName="id")
+         */
+        public OtherParentClass $otherParent
+    ) {
+        $this->parents = new ArrayCollection();
     }
 }

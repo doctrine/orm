@@ -53,6 +53,6 @@ SQL
 
     public function assertCollectionEquals(Collection $first, Collection $second): bool
     {
-        return $first->forAll(static fn($k, $e): bool => $second->contains($e));
+        return $first->forAll(static fn ($k, $e): bool => $second->contains($e));
     }
 }

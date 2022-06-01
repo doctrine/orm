@@ -93,7 +93,6 @@ class GH8217CollectionItem
          * @Column(type="integer", options={"unsigned": true})
          */
         public int $collectionIndex
-    )
-    {
+    ) {
     }
 }

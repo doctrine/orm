@@ -25,12 +25,13 @@ class ParentClass
      */
     public $children;
 
-    public function __construct(/**
-     * @Id
-     * @Column(name="id", type="integer")
-     */
-    public int $id)
-    {
+    public function __construct(
+        /**
+         * @Id
+         * @Column(name="id", type="integer")
+         */
+        public int $id
+    ) {
         $this->children = new ArrayCollection();
     }
 }

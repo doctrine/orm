@@ -398,9 +398,7 @@ class TestEntityWithAnnotationOptionsAttribute
      */
     private int $id;
 
-    /**
-     * @Column(type="string", options={"foo": "bar", "baz": {"key": "val"}})
-     */
+    /** @Column(type="string", options={"foo": "bar", "baz": {"key": "val"}}) */
     private string $test;
 }
 
@@ -437,9 +435,7 @@ class UniqueConstraintAnnotationModel
      */
     private int $id;
 
-    /**
-     * @Column(name="hash", type="string", length=8, nullable=false, unique=true)
-     */
+    /** @Column(name="hash", type="string", length=8, nullable=false, unique=true) */
     private string $hash;
 }
 

@@ -45,8 +45,7 @@ abstract class AbstractContentItem
          * @ManyToOne(targetEntity="Directory")
          */
         protected ?Directory $parentDirectory = null
-    )
-    {
+    ) {
     }
 
     public function getId(): int

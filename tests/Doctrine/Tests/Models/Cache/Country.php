@@ -31,8 +31,7 @@ class Country
          * @Column(unique=true)
          */
         protected string $name
-    )
-    {
+    ) {
     }
 
     public function getId(): int

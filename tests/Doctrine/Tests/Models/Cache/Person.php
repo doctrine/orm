@@ -38,7 +38,6 @@ class Person
          * @Column(unique=true)
          */
         public string $name
-    )
-    {
+    ) {
     }
 }

@@ -14,26 +14,18 @@ use Doctrine\ORM\Mapping\Entity;
  */
 abstract class DDC3597Media extends DDC3597Root
 {
-    /**
-     * @Column
-     */
+    /** @Column */
     private int $size = 0;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     private ?string $format = null;
 
-    /**
-     * @param string $distributionHash
-     */
     public function __construct(
         /**
          * @Column
          */
-        private $distributionHash
-    )
-    {
+        private string $distributionHash
+    ) {
     }
 
     public function getDistributionHash(): string

@@ -30,7 +30,6 @@ use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmTestCase;
 use Exception;
 
-use function get_class;
 use function sprintf;
 
 class SelectSqlGenerationTest extends OrmTestCase
@@ -2368,8 +2367,7 @@ class DDC1474Entity
          * @Column(type="float")
          */
         private string $value
-    )
-    {
+    ) {
     }
 
     public function getId(): int

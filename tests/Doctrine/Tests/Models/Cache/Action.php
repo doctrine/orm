@@ -25,16 +25,14 @@ class Action
      */
     public $tokens;
 
-    /**
-     * @param string $name
-     */
-    public function __construct(/**
-     * @Id
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="NONE")
-     */
-    public $name)
-    {
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="string", length=255)
+         * @GeneratedValue(strategy="NONE")
+         */
+        public string $name
+    ) {
         $this->tokens = new ArrayCollection();
     }
 

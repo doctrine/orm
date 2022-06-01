@@ -10,8 +10,6 @@ use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 /**
  * Tests a unidirectional one-to-one association mapping (without inheritance).
  * Inverse side is not present.

@@ -8,8 +8,6 @@ use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 class DDC812Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

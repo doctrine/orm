@@ -162,8 +162,7 @@ class GH6531ArticleAttribute
          * @ManyToOne(targetEntity=GH6531Article::class, inversedBy="attributes")
          */
         public GH6531Article $article
-    )
-    {
+    ) {
     }
 }
 
@@ -231,7 +230,6 @@ class GH6531OrderItem
          * @Column(type="integer")
          */
         public int $amount = 1
-    )
-    {
+    ) {
     }
 }

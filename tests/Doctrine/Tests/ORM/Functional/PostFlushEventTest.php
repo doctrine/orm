@@ -15,7 +15,7 @@ use Exception;
  */
 class PostFlushEventTest extends OrmFunctionalTestCase
 {
-    private \Doctrine\Tests\ORM\Functional\PostFlushListener $listener;
+    private PostFlushListener $listener;
 
     protected function setUp(): void
     {

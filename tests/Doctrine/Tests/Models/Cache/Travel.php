@@ -54,13 +54,14 @@ class Travel
      */
     public $visitedCities;
 
-    public function __construct(/**
-     * @Cache
-     * @ManyToOne(targetEntity="Traveler", inversedBy="travels")
-     * @JoinColumn(name="traveler_id", referencedColumnName="id")
-     */
-    protected Traveler $traveler)
-    {
+    public function __construct(
+        /**
+         * @Cache
+         * @ManyToOne(targetEntity="Traveler", inversedBy="travels")
+         * @JoinColumn(name="traveler_id", referencedColumnName="id")
+         */
+        protected Traveler $traveler
+    ) {
         $this->createdAt     = new DateTime('now');
         $this->visitedCities = new ArrayCollection();
     }

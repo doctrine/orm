@@ -17,7 +17,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\PostLoad;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
 use function get_debug_type;
 
 /**

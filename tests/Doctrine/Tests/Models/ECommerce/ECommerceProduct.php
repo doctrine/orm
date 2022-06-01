@@ -34,9 +34,7 @@ class ECommerceProduct
      */
     private int $id;
 
-    /**
-     * @Column(type="string", length=50, nullable=true)
-     */
+    /** @Column(type="string", length=50, nullable=true) */
     private ?string $name = null;
 
     /**

@@ -99,7 +99,7 @@ class DDC353Picture
      *   @JoinColumn(name="file_id", referencedColumnName="file_id")
      * })
      */
-    private ?\Doctrine\Tests\ORM\Functional\Ticket\DDC353File $file = null;
+    private ?DDC353File $file = null;
 
     public function getPictureId(): int
     {

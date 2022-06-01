@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\Exception\CacheException;
+use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;

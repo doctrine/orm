@@ -211,8 +211,7 @@ class DDC837Aggregate
          * @Column(name="sysname", type="string", length=255)
          */
         protected string $sysname
-    )
-    {
+    ) {
     }
 
     public function getSysname(): string

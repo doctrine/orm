@@ -54,16 +54,18 @@ class City
     #[ORM\OneToMany(targetEntity: 'Attraction', mappedBy: 'city')]
     public $attractions;
 
-    public function __construct(/**
-     * @Column(unique=true)
-     */
-    #[ORM\Column(unique: true)] protected string $name, /**
-     * @Cache
-     * @ManyToOne(targetEntity="State", inversedBy="cities")
-     * @JoinColumn(name="state_id", referencedColumnName="id")
-     */
-    #[ORM\Cache] #[ORM\ManyToOne(targetEntity: 'State', inversedBy: 'citities')] #[ORM\JoinColumn(name: 'state_id', referencedColumnName: 'id')] protected ?State $state = null)
-    {
+    public function __construct(
+        /**
+         * @Column(unique=true)
+         */
+        #[ORM\Column(unique: true)] protected string $name,
+        /**
+         * @Cache
+         * @ManyToOne(targetEntity="State", inversedBy="cities")
+         * @JoinColumn(name="state_id", referencedColumnName="id")
+         */
+        #[ORM\Cache] #[ORM\ManyToOne(targetEntity: 'State', inversedBy: 'citities')] #[ORM\JoinColumn(name: 'state_id', referencedColumnName: 'id')] protected ?State $state = null
+    ) {
         $this->travels     = new ArrayCollection();
         $this->attractions = new ArrayCollection();
     }

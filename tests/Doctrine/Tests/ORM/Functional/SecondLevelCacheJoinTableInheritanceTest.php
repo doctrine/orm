@@ -11,7 +11,6 @@ use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
 
 use function count;
-use function get_class;
 
 /**
  * @group DDC-2183

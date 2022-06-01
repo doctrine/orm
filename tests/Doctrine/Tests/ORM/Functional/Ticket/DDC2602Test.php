@@ -20,6 +20,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use function in_array;
 use function json_decode;
 
+use const JSON_THROW_ON_ERROR;
+
 /**
  * @group DDC-2602
  */
@@ -148,7 +150,7 @@ class DDC2602PostLoadListener
             $fieldSelection = new DDC2602FieldSelection();
 
             $fieldSelection->field      = $field;
-            $fieldSelection->choiceList = $field->choiceList->filter(static fn($choice) => in_array($choice->id, $choiceList, true));
+            $fieldSelection->choiceList = $field->choiceList->filter(static fn ($choice) => in_array($choice->id, $choiceList, true));
 
             $fieldList->add($fieldSelection);
         }

@@ -102,7 +102,6 @@ class DDC1719SimpleEntity
          * @Column(type="string", name="`simple-entity-value`")
          */
         public string $value
-    )
-    {
+    ) {
     }
 }

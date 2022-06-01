@@ -14,7 +14,8 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function mt_rand;
+use function mt_getrandmax;
+use function random_int;
 
 final class GH5562Test extends OrmFunctionalTestCase
 {

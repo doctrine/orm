@@ -39,8 +39,7 @@ class TravelerProfileInfo
          * @Column(unique=true)
          */
         private string $description
-    )
-    {
+    ) {
     }
 
     public function getId(): int

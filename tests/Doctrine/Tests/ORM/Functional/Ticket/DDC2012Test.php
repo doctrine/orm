@@ -17,7 +17,6 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function explode;
-use function get_class;
 use function implode;
 use function is_array;
 use function method_exists;

@@ -14,8 +14,6 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 class DDC237Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

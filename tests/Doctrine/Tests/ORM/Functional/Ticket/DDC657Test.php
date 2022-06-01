@@ -29,9 +29,9 @@ class DDC657Test extends OrmFunctionalTestCase
 
         self::assertInstanceOf(DateTimeModel::class, $datetime);
 
-        self::assertInstanceOf(\DateTime::class, $datetime->datetime);
-        self::assertInstanceOf(\DateTime::class, $datetime->time);
-        self::assertInstanceOf(\DateTime::class, $datetime->date);
+        self::assertInstanceOf(DateTime::class, $datetime->datetime);
+        self::assertInstanceOf(DateTime::class, $datetime->time);
+        self::assertInstanceOf(DateTime::class, $datetime->date);
     }
 
     public function testScalarResult(): void
@@ -57,13 +57,13 @@ class DDC657Test extends OrmFunctionalTestCase
 
         self::assertCount(2, $result);
 
-        self::assertInstanceOf(\DateTime::class, $result[0]['datetime']);
-        self::assertInstanceOf(\DateTime::class, $result[0]['time']);
-        self::assertInstanceOf(\DateTime::class, $result[0]['date']);
+        self::assertInstanceOf(DateTime::class, $result[0]['datetime']);
+        self::assertInstanceOf(DateTime::class, $result[0]['time']);
+        self::assertInstanceOf(DateTime::class, $result[0]['date']);
 
-        self::assertInstanceOf(\DateTime::class, $result[1]['datetime']);
-        self::assertInstanceOf(\DateTime::class, $result[1]['time']);
-        self::assertInstanceOf(\DateTime::class, $result[1]['date']);
+        self::assertInstanceOf(DateTime::class, $result[1]['datetime']);
+        self::assertInstanceOf(DateTime::class, $result[1]['time']);
+        self::assertInstanceOf(DateTime::class, $result[1]['date']);
     }
 
     public function testTicketSingleResult(): void
@@ -73,9 +73,9 @@ class DDC657Test extends OrmFunctionalTestCase
 
         self::assertIsArray($datetime);
 
-        self::assertInstanceOf(\DateTime::class, $datetime['datetime']);
-        self::assertInstanceOf(\DateTime::class, $datetime['time']);
-        self::assertInstanceOf(\DateTime::class, $datetime['date']);
+        self::assertInstanceOf(DateTime::class, $datetime['datetime']);
+        self::assertInstanceOf(DateTime::class, $datetime['time']);
+        self::assertInstanceOf(DateTime::class, $datetime['date']);
     }
 
     public function testTicketResult(): void
@@ -85,15 +85,15 @@ class DDC657Test extends OrmFunctionalTestCase
 
         self::assertCount(2, $result);
 
-        self::assertInstanceOf(\DateTime::class, $result[0]['time']);
-        self::assertInstanceOf(\DateTime::class, $result[0]['date']);
-        self::assertInstanceOf(\DateTime::class, $result[0]['datetime']);
+        self::assertInstanceOf(DateTime::class, $result[0]['time']);
+        self::assertInstanceOf(DateTime::class, $result[0]['date']);
+        self::assertInstanceOf(DateTime::class, $result[0]['datetime']);
 
         self::assertEquals('2010-01-01 11:11:11', $result[0]['datetime']->format('Y-m-d G:i:s'));
 
-        self::assertInstanceOf(\DateTime::class, $result[1]['time']);
-        self::assertInstanceOf(\DateTime::class, $result[1]['date']);
-        self::assertInstanceOf(\DateTime::class, $result[1]['datetime']);
+        self::assertInstanceOf(DateTime::class, $result[1]['time']);
+        self::assertInstanceOf(DateTime::class, $result[1]['date']);
+        self::assertInstanceOf(DateTime::class, $result[1]['datetime']);
 
         self::assertEquals('2010-02-02 12:12:12', $result[1]['datetime']->format('Y-m-d G:i:s'));
     }

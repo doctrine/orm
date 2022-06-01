@@ -14,7 +14,6 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
-use function get_class;
 
 /**
  * Basic many-to-many association tests.
@@ -407,7 +406,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
             $user
                 ->getGroups()
                 ->matching($criteria)
-                ->map(static fn(CmsGroup $group) => $group->getName())
+                ->map(static fn (CmsGroup $group) => $group->getName())
                 ->toArray()
         );
     }
@@ -449,7 +448,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
             $user
                 ->getTags()
                 ->matching($criteria)
-                ->map(static fn(CmsTag $tag) => $tag->getName())
+                ->map(static fn (CmsTag $tag) => $tag->getName())
                 ->toArray()
         );
     }

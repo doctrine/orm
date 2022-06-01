@@ -21,9 +21,7 @@ use function max;
 #[ORM\EntityListeners(['CompanyContractListener', 'CompanyFlexUltraContractListener'])]
 class CompanyFlexUltraContract extends CompanyFlexContract
 {
-    /**
-     * @Column(type="integer")
-     */
+    /** @Column(type="integer") */
     private int $maxPrice = 0;
 
     public function calculatePrice(): int

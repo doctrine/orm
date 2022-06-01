@@ -51,9 +51,7 @@ class SequenceEmulatedIdentityEntity
      */
     private int $id;
 
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     private ?string $value = null;
 
     public function getId(): int

@@ -40,12 +40,13 @@ class DDC3582Entity
      */
     public $embeddable1;
 
-    public function __construct(/**
-     * @Column
-     * @Id
-     */
-    private string $id)
-    {
+    public function __construct(
+        /**
+         * @Column
+         * @Id
+         */
+        private string $id
+    ) {
         $this->embeddable1 = new DDC3582Embeddable1();
     }
 }

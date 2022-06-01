@@ -61,16 +61,14 @@ class CompanyPerson
      */
     private int $id;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     private ?string $name = null;
 
     /**
      * @OneToOne(targetEntity="CompanyPerson")
      * @JoinColumn(name="spouse_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    private ?\Doctrine\Tests\Models\Company\CompanyPerson $spouse = null;
+    private ?CompanyPerson $spouse = null;
 
     /**
      * @psalm-var Collection<int, CompanyPerson>

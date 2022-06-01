@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
+use Stringable;
 
 use function in_array;
 
@@ -108,7 +109,7 @@ class GH6141PeopleType extends StringType
     }
 }
 
-class GH6141People implements \Stringable
+class GH6141People implements Stringable
 {
     public const BOSS     = 'boss';
     public const EMPLOYEE = 'employee';
@@ -169,8 +170,7 @@ abstract class GH6141Person
          * @Column(type="string", length=255)
          */
         public string $name
-    )
-    {
+    ) {
     }
 }
 

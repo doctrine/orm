@@ -19,7 +19,6 @@ use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
-use function get_class;
 
 /**
  * @group DDC-1163
@@ -122,10 +121,8 @@ class DDC1163ProxyHolder
      */
     private int $id;
 
-    /**
-     * @OneToOne(targetEntity="DDC1163SpecialProduct")
-     */
-    private ?\Doctrine\Tests\ORM\Functional\Ticket\DDC1163SpecialProduct $specialProduct = null;
+    /** @OneToOne(targetEntity="DDC1163SpecialProduct") */
+    private ?DDC1163SpecialProduct $specialProduct = null;
 
     public function getId(): int
     {
@@ -170,9 +167,7 @@ abstract class DDC1163Product
  */
 class DDC1163SpecialProduct extends DDC1163Product
 {
-    /**
-     * @Column(name="subclass_property", type="string", nullable=true)
-     */
+    /** @Column(name="subclass_property", type="string", nullable=true) */
     private ?string $subclassProperty = null;
 
     public function setSubclassProperty(string $value): void
@@ -206,8 +201,7 @@ class DDC1163Tag
          * @Column(name="name", type="string", length=255)
          */
         private string $name
-    )
-    {
+    ) {
     }
 
     public function setProduct(DDC1163Product $product): void

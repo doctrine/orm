@@ -32,7 +32,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
 use function current;
-use function get_class;
 use function iterator_to_array;
 use function sprintf;
 
@@ -415,14 +414,10 @@ class LifecycleCallbackTestUser
      */
     private int $id;
 
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     private ?string $value = null;
 
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     private ?string $name = null;
 
     public function getId(): int

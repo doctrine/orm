@@ -26,9 +26,7 @@ class DDC2372User
      */
     private int $id;
 
-    /**
-     * @Column(type="string", length=50)
-     */
+    /** @Column(type="string", length=50) */
     private ?string $name = null;
 
     public function getId(): int

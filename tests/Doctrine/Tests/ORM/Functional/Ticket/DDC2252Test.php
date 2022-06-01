@@ -228,19 +228,21 @@ class DDC2252Membership
      */
     protected $privileges;
 
-    public function __construct(/**
-     * @Id
-     * @ManyToOne(targetEntity="DDC2252User", inversedBy="memberships")
-     * @JoinColumn(name="uid", referencedColumnName="uid")
-     */
-    protected DDC2252User $userAccount, /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC2252MerchantAccount")
-     * @JoinColumn(name="mch_accountid", referencedColumnName="accountid")
-     */
-    protected DDC2252MerchantAccount $merchantAccount)
-    {
-        $this->privileges      = new ArrayCollection();
+    public function __construct(
+        /**
+         * @Id
+         * @ManyToOne(targetEntity="DDC2252User", inversedBy="memberships")
+         * @JoinColumn(name="uid", referencedColumnName="uid")
+         */
+        protected DDC2252User $userAccount,
+        /**
+         * @Id
+         * @ManyToOne(targetEntity="DDC2252MerchantAccount")
+         * @JoinColumn(name="mch_accountid", referencedColumnName="accountid")
+         */
+        protected DDC2252MerchantAccount $merchantAccount
+    ) {
+        $this->privileges = new ArrayCollection();
     }
 
     public function addPrivilege(DDC2252Privilege $privilege): void

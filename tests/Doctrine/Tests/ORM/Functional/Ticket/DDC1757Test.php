@@ -64,10 +64,8 @@ class DDC1757B
      */
     private int $id;
 
-    /**
-     * @OneToOne(targetEntity="DDC1757C")
-     */
-    private \Doctrine\Tests\ORM\Functional\Ticket\DDC1757C $c;
+    /** @OneToOne(targetEntity="DDC1757C") */
+    private DDC1757C $c;
 }
 
 /**
@@ -83,10 +81,8 @@ class DDC1757C
      */
     public $id;
 
-    /**
-     * @OneToOne(targetEntity="DDC1757D")
-     */
-    private \Doctrine\Tests\ORM\Functional\Ticket\DDC1757D $d;
+    /** @OneToOne(targetEntity="DDC1757D") */
+    private DDC1757D $d;
 }
 
 /**

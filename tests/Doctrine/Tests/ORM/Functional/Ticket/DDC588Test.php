@@ -49,15 +49,11 @@ class DDC588Site
      */
     public $id;
 
-    /**
-     * @param string $name
-     */
     public function __construct(
         /**
          * @Column(type="string", length=45)
          */
-        protected $name = ''
-    )
-    {
+        protected string $name = ''
+    ) {
     }
 }

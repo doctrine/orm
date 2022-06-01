@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\Performance\Hydration;
 
-use Doctrine\Tests\Models\Company\CompanyPerson;
-use Doctrine\Tests\Models\Company\CompanyEmployee;
-use Doctrine\Tests\Models\Company\CompanyManager;
-use Doctrine\Tests\Models\Company\CompanyOrganization;
-use Doctrine\Tests\Models\Company\CompanyEvent;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Models\Company\CompanyAuction;
-use Doctrine\Tests\Models\Company\CompanyRaffle;
 use Doctrine\Tests\Models\Company\CompanyCar;
 use Doctrine\Tests\Models\Company\CompanyContract;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\Models\Company\CompanyEvent;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\Performance\EntityManagerFactory;
-use Doctrine\Tests\Models\Company;
+use Doctrine\Tests\Models\Company\CompanyManager;
+use Doctrine\Tests\Models\Company\CompanyOrganization;
+use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\Models\Company\CompanyRaffle;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
 /**

@@ -66,7 +66,7 @@ class HydrationCompleteHandlerTest extends TestCase
                 $metadata,
                 Events::postLoad,
                 $entity,
-                self::callback(static fn(LifecycleEventArgs $args) => $entity === $args->getEntity() && $entityManager === $args->getObjectManager()),
+                self::callback(static fn (LifecycleEventArgs $args) => $entity === $args->getEntity() && $entityManager === $args->getObjectManager()),
                 $listenersFlag
             );
 
@@ -126,7 +126,7 @@ class HydrationCompleteHandlerTest extends TestCase
                 self::logicalOr($metadata1, $metadata2),
                 Events::postLoad,
                 self::logicalOr($entity1, $entity2),
-                self::callback(static fn(LifecycleEventArgs $args) => in_array($args->getEntity(), [$entity1, $entity2], true)
+                self::callback(static fn (LifecycleEventArgs $args) => in_array($args->getEntity(), [$entity1, $entity2], true)
                     && $entityManager === $args->getObjectManager()),
                 $listenersFlag
             );

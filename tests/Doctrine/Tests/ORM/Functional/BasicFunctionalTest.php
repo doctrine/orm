@@ -20,8 +20,6 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
 
-use function get_class;
-
 class BasicFunctionalTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

@@ -97,8 +97,7 @@ class DDC3192Currency
          * @Column(type="ddc3192_currency_code")
          */
         public string $code
-    )
-    {
+    ) {
     }
 }
 
@@ -126,8 +125,7 @@ class DDC3192Transaction
          * @JoinColumn(name="currency_id", referencedColumnName="code", nullable=false)
          */
         public DDC3192Currency $currency
-    )
-    {
+    ) {
     }
 }
 

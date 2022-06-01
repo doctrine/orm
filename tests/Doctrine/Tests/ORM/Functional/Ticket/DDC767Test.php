@@ -10,7 +10,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
 use function assert;
-use function get_class;
 
 class DDC767Test extends OrmFunctionalTestCase
 {

@@ -38,8 +38,7 @@ class TravelerProfile
          * @Column(unique=true)
          */
         private string $name
-    )
-    {
+    ) {
     }
 
     public function getId(): int

@@ -15,8 +15,6 @@ use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 /**
  * Tests a self referential one-to-one association mapping (without inheritance).
  * Relation is defined as the mentor that a customer choose. The mentor could
@@ -163,13 +161,13 @@ class MultiSelfReference
      * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
      * @JoinColumn(name="other1", referencedColumnName="id")
      */
-    private ?\Doctrine\Tests\ORM\Functional\MultiSelfReference $other1 = null;
+    private ?MultiSelfReference $other1 = null;
 
     /**
      * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
      * @JoinColumn(name="other2", referencedColumnName="id")
      */
-    private ?\Doctrine\Tests\ORM\Functional\MultiSelfReference $other2 = null;
+    private ?MultiSelfReference $other2 = null;
 
     public function getId(): int
     {

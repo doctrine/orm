@@ -68,6 +68,7 @@ use Doctrine\Tests\Models\TypedProperties\UserTyped;
 use Doctrine\Tests\Models\Upsertable\Insertable;
 use Doctrine\Tests\Models\Upsertable\Updatable;
 use Doctrine\Tests\OrmTestCase;
+use stdClass;
 
 use function assert;
 use function count;
@@ -227,7 +228,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
             'Generator Type'
         );
         self::assertEquals(
-            ['class' => \stdClass::class],
+            ['class' => stdClass::class],
             $class->customGeneratorDefinition,
             'Custom Generator Definition'
         );
@@ -1479,13 +1480,13 @@ abstract class Animal
      * @CustomIdGenerator(class="stdClass")
      */
     #[ORM\Id, ORM\Column(type: 'string'), ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: \stdClass::class)]
+    #[ORM\CustomIdGenerator(class: stdClass::class)]
     public $id;
 
     public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
-        $metadata->setCustomGeneratorDefinition(['class' => \stdClass::class]);
+        $metadata->setCustomGeneratorDefinition(['class' => stdClass::class]);
     }
 }
 
@@ -1518,8 +1519,7 @@ class DDC1170Entity
          * @Column(columnDefinition = "VARCHAR(255) NOT NULL")
          */
         #[ORM\Column(columnDefinition: 'VARCHAR(255) NOT NULL')] private ?string $value = null
-    )
-    {
+    ) {
     }
 
     /**
@@ -1627,9 +1627,7 @@ class Group
 #[ORM\Index(columns: ['content'], flags: ['fulltext'], options: ['where' => 'content IS NOT NULL'])]
 class Comment
 {
-    /**
-     * @Column(type="text")
-     */
+    /** @Column(type="text") */
     #[ORM\Column(type: 'text')]
     private string $content;
 

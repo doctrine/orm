@@ -18,7 +18,6 @@ use Exception;
 
 use function assert;
 use function count;
-use function get_class;
 
 /**
  * @group DDC-117

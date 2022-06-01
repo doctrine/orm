@@ -21,7 +21,6 @@ class OtherParentClass
          * @Column(name="id", type="integer")
          */
         public int $id
-    )
-    {
+    ) {
     }
 }

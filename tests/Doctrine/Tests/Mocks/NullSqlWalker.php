@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Query\AST\DeleteStatement;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\UpdateStatement;
-use Doctrine\ORM\Query\AST\DeleteStatement;
-use Doctrine\DBAL\Connection;
-use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\SqlWalker;
 

@@ -33,11 +33,12 @@ class DDC3579Group
     #[ManyToMany(targetEntity: DDC3579Admin::class, mappedBy: 'groups')]
     private $admins;
 
-    public function __construct(/**
-     * @Column
-     */
-    #[Column] private ?string $name = null)
-    {
+    public function __construct(
+        /**
+         * @Column
+         */
+        #[Column] private ?string $name = null
+    ) {
         $this->admins = new ArrayCollection();
     }
 

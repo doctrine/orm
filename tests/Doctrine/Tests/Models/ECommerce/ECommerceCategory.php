@@ -32,9 +32,7 @@ class ECommerceCategory
      */
     private int $id;
 
-    /**
-     * @Column(type="string", length=50)
-     */
+    /** @Column(type="string", length=50) */
     private ?string $name = null;
 
     /**
@@ -53,7 +51,7 @@ class ECommerceCategory
      * @ManyToOne(targetEntity="ECommerceCategory", inversedBy="children")
      * @JoinColumn(name="parent_id", referencedColumnName="id")
      */
-    private ?\Doctrine\Tests\Models\ECommerce\ECommerceCategory $parent = null;
+    private ?ECommerceCategory $parent = null;
 
     public function __construct()
     {

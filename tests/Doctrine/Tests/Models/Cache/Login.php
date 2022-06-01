@@ -38,8 +38,7 @@ class Login
          * @Column
          */
         public string $name
-    )
-    {
+    ) {
     }
 
     public function getToken(): Token

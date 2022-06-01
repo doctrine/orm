@@ -38,7 +38,6 @@ class Address
          * @Column
          */
         public string $location
-    )
-    {
+    ) {
     }
 }

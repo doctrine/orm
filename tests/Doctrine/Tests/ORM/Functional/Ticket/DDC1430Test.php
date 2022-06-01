@@ -154,14 +154,10 @@ class DDC1430Order
      */
     protected $id;
 
-    /**
-     * @Column(name="created_at", type="datetime")
-     */
-    private \DateTime $date;
+    /** @Column(name="created_at", type="datetime") */
+    private DateTime $date;
 
-    /**
-     * @OneToMany(targetEntity="DDC1430OrderProduct", mappedBy="order", cascade={"persist", "remove"})
-     */
+    /** @OneToMany(targetEntity="DDC1430OrderProduct", mappedBy="order", cascade={"persist", "remove"}) */
     private Collection $products;
 
     public function getId(): int
@@ -169,11 +165,12 @@ class DDC1430Order
         return $this->id;
     }
 
-    public function __construct(/**
-     * @Column(name="order_status", type="string", length=255)
-     */
-    private string $status)
-    {
+    public function __construct(
+        /**
+         * @Column(name="order_status", type="string", length=255)
+         */
+        private string $status
+    ) {
         $this->date     = new DateTime();
         $this->products = new ArrayCollection();
     }
@@ -222,15 +219,14 @@ class DDC1430OrderProduct
      * @ManyToOne(targetEntity="DDC1430Order", inversedBy="products")
      * @JoinColumn(name="order_id", referencedColumnName="order_id", nullable = false)
      */
-    private ?\Doctrine\Tests\ORM\Functional\Ticket\DDC1430Order $order = null;
+    private ?DDC1430Order $order = null;
 
     public function __construct(
         /**
          * @Column(type="float")
          */
         private float $value
-    )
-    {
+    ) {
     }
 
     public function getId(): int

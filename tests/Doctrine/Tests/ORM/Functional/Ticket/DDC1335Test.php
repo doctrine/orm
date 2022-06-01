@@ -173,18 +173,17 @@ class DDC1335User
      */
     public $phones;
 
-    /**
-     * @param string $email
-     * @param string $name
-     */
-    public function __construct(/**
-     * @Column(type="string", length=255, unique=true)
-     */
-    public $email, /**
-     * @Column(type="string", length=255)
-     */
-    public $name, array $numbers = [])
-    {
+    public function __construct(
+        /**
+         * @Column(type="string", length=255, unique=true)
+         */
+        public string $email,
+        /**
+         * @Column(type="string", length=255)
+         */
+        public string $name,
+        array $numbers = []
+    ) {
         $this->phones = new ArrayCollection();
 
         foreach ($numbers as $number) {
@@ -208,19 +207,17 @@ class DDC1335Phone
 
     /**
      * @param string $number
-     * @param \Doctrine\Tests\ORM\Functional\Ticket\DDC1335User $user
      */
     public function __construct(
         /**
          * @ManyToOne(targetEntity="DDC1335User", inversedBy="phones")
          * @JoinColumn(name="user_id", referencedColumnName="id", nullable = false)
          */
-        public $user,
+        public DDC1335User $user,
         /**
          * @Column(name="numericalValue", type="string", nullable = false)
          */
         public $numericalValue
-    )
-    {
+    ) {
     }
 }

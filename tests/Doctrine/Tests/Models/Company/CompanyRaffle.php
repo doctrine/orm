@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\Table;
  */
 class CompanyRaffle extends CompanyEvent
 {
-    /**
-     * @Column
-     */
+    /** @Column */
     private ?string $data = null;
 
     public function setData(string $data): void

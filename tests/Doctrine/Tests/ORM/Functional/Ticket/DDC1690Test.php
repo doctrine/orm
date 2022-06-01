@@ -115,15 +115,11 @@ class DDC1690Parent extends NotifyBaseEntity
      */
     private int $id;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     private ?string $name = null;
 
-    /**
-     * @OneToOne(targetEntity="DDC1690Child")
-     */
-    private ?\Doctrine\Tests\ORM\Functional\Ticket\DDC1690Child $child = null;
+    /** @OneToOne(targetEntity="DDC1690Child") */
+    private ?DDC1690Child $child = null;
 
     public function getId(): int
     {
@@ -162,15 +158,11 @@ class DDC1690Child extends NotifyBaseEntity
      */
     private int $id;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     private ?string $name = null;
 
-    /**
-     * @OneToOne(targetEntity="DDC1690Parent", mappedBy="child")
-     */
-    private ?\Doctrine\Tests\ORM\Functional\Ticket\DDC1690Parent $parent = null;
+    /** @OneToOne(targetEntity="DDC1690Parent", mappedBy="child") */
+    private ?DDC1690Parent $parent = null;
 
     public function getId(): int
     {

@@ -44,7 +44,7 @@ final class GH7875Test extends OrmFunctionalTestCase
      */
     private function filterCreateTable(array $sqls, string $tableName): array
     {
-        return array_filter($sqls, static fn(string $sql): bool => str_starts_with($sql, sprintf('CREATE TABLE %s (', $tableName)));
+        return array_filter($sqls, static fn (string $sql): bool => str_starts_with($sql, sprintf('CREATE TABLE %s (', $tableName)));
     }
 
     public function testUpdateSchemaSql(): void
@@ -58,7 +58,7 @@ final class GH7875Test extends OrmFunctionalTestCase
 
         $this->_em->getConnection()->executeStatement(current($sqls));
 
-        $sqls = array_filter($tool->getUpdateSchemaSql($classes), static fn(string $sql): bool => str_contains($sql, ' gh7875_my_entity '));
+        $sqls = array_filter($tool->getUpdateSchemaSql($classes), static fn (string $sql): bool => str_contains($sql, ' gh7875_my_entity '));
 
         self::assertSame([], $sqls);
 
@@ -72,7 +72,7 @@ final class GH7875Test extends OrmFunctionalTestCase
 
     public function testUpdateSchemaSqlWithSchemaAssetFilter(): void
     {
-        $filterCallback = static fn($assetName): bool => $assetName !== 'gh7875_my_entity';
+        $filterCallback = static fn ($assetName): bool => $assetName !== 'gh7875_my_entity';
 
         $classes = [$this->_em->getClassMetadata(GH7875MyEntity::class)];
 
@@ -85,7 +85,7 @@ final class GH7875Test extends OrmFunctionalTestCase
         $previousFilter = $config->getSchemaAssetsFilter();
 
         $sqls = $tool->getUpdateSchemaSql($classes);
-        $sqls = array_filter($sqls, static fn(string $sql): bool => str_contains($sql, ' gh7875_my_entity '));
+        $sqls = array_filter($sqls, static fn (string $sql): bool => str_contains($sql, ' gh7875_my_entity '));
 
         self::assertCount(0, $sqls);
         self::assertSame($previousFilter, $config->getSchemaAssetsFilter());

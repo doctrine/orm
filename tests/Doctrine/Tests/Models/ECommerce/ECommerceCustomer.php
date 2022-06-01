@@ -28,14 +28,10 @@ class ECommerceCustomer
      */
     private int $id;
 
-    /**
-     * @Column(type="string", length=50)
-     */
+    /** @Column(type="string", length=50) */
     private ?string $name = null;
 
-    /**
-     * @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"persist"})
-     */
+    /** @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"persist"}) */
     private ?ECommerceCart $cart = null;
 
     /**
@@ -46,7 +42,7 @@ class ECommerceCustomer
      * @OneToOne(targetEntity="ECommerceCustomer", cascade={"persist"}, fetch="EAGER")
      * @JoinColumn(name="mentor_id", referencedColumnName="id")
      */
-    private ?\Doctrine\Tests\Models\ECommerce\ECommerceCustomer $mentor = null;
+    private ?ECommerceCustomer $mentor = null;
 
     public function getId(): int
     {

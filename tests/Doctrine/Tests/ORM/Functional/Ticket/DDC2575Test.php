@@ -120,8 +120,7 @@ class DDC2575Root
          * @Column(type="integer")
          */
         public int $sampleField = 0
-    )
-    {
+    ) {
     }
 }
 
@@ -142,8 +141,7 @@ class DDC2575A
          * @JoinColumn(name="b_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
          */
         public DDC2575B $bRelation
-    )
-    {
+    ) {
     }
 }
 
@@ -162,7 +160,6 @@ class DDC2575B
          * @Column(type="integer")
          */
         public int $sampleField = 0
-    )
-    {
+    ) {
     }
 }

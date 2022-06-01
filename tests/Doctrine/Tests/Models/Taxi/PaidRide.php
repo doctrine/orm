@@ -38,8 +38,7 @@ class PaidRide
          * @JoinColumn(name="car", referencedColumnName="brand")
          */
         private Car $car
-    )
-    {
+    ) {
     }
 
     public function setFare($fare): void

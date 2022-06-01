@@ -29,7 +29,6 @@ class City
          * @Column(name="`city-name`")
          */
         public string $name
-    )
-    {
+    ) {
     }
 }

@@ -72,9 +72,7 @@ class DDC1925Product
      */
     private int $id;
 
-    /**
-     * @Column(name="title", type="string", length=255)
-     */
+    /** @Column(name="title", type="string", length=255) */
     private ?string $title = null;
 
     /**
@@ -138,9 +136,7 @@ class DDC1925User
      */
     private int $id;
 
-    /**
-     * @Column(name="title", type="string", length=255)
-     */
+    /** @Column(name="title", type="string", length=255) */
     private ?string $title = null;
 
     /**

@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests;
 
-use Doctrine\Common\Annotations\PsrCachedReader;
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\DBAL\Driver\Result;
-use Doctrine\Common\Annotations;
+use Doctrine\Common\Annotations\PsrCachedReader;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\SchemaConfig;
@@ -152,7 +151,7 @@ abstract class OrmTestCase extends DoctrineTestCase
             ->setConstructorArgs([[], $this->createDriverMock($platform)])
             ->onlyMethods(['quote'])
             ->getMockForAbstractClass();
-        $connection->method('quote')->willReturnCallback(static fn(string $input) => sprintf("'%s'", $input));
+        $connection->method('quote')->willReturnCallback(static fn (string $input) => sprintf("'%s'", $input));
 
         return $connection;
     }

@@ -17,8 +17,6 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 /**
  * @group DDC-952
  */
@@ -316,16 +314,12 @@ class TrainDriver
      */
     public $train;
 
-    /**
-     * @param string $name
-     */
     public function __construct(
         /**
          * @Column(type="string", length=255)
          */
-        public $name
-    )
-    {
+        public string $name
+    ) {
     }
 
     public function setTrain(Train $t): void
@@ -360,8 +354,7 @@ class TrainOwner
          * @Column(type="string", length=255)
          */
         public string $name
-    )
-    {
+    ) {
     }
 
     public function setTrain(Train $t): void
@@ -407,7 +400,6 @@ class TrainOrder
      * @Column(type="integer")
      */
     public $id;
-
 
     public function __construct(
         /**

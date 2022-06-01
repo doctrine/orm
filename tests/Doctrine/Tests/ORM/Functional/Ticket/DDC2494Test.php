@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Proxy\Proxy;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\Column;
@@ -105,8 +105,7 @@ class DDC2494Currency
          * @Column(name="temp", type="ddc2494_tinyint", nullable=false)
          */
         protected int $temp
-    )
-    {
+    ) {
     }
 
     public function getId(): int
@@ -148,8 +147,7 @@ class DDC2494Campaign
          * @JoinColumn(name="currency_id", referencedColumnName="id", nullable=false)
          */
         protected DDC2494Currency $currency
-    )
-    {
+    ) {
     }
 
     public function getId(): int

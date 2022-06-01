@@ -65,7 +65,7 @@ class DDC448MainTable
      * @ManyToOne(targetEntity="DDC448ConnectedClass",  cascade={"all"}, fetch="EAGER")
      * @JoinColumn(name="connectedClassId", referencedColumnName="id", onDelete="CASCADE", nullable=true)
      */
-    private \Doctrine\Tests\ORM\Functional\Ticket\DDC448ConnectedClass $connectedClassId;
+    private DDC448ConnectedClass $connectedClassId;
 }
 
 /**

@@ -38,8 +38,7 @@ class DDC964Address
          * @Column
          */
         private ?string $street = null
-    )
-    {
+    ) {
     }
 
     public function getId(): int

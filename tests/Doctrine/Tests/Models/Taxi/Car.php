@@ -25,9 +25,7 @@ class Car
      */
     private ?string $brand = null;
 
-    /**
-     * @Column(type="string", length=255);
-     */
+    /** @Column(type="string", length=255); */
     private ?string $model = null;
 
     /**

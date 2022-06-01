@@ -32,9 +32,7 @@ class ECommerceCart
      */
     private int $id;
 
-    /**
-     * @Column(length=50, nullable=true)
-     */
+    /** @Column(length=50, nullable=true) */
     private ?string $payment = null;
 
     /**

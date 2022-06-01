@@ -26,9 +26,7 @@ class ECommerceShipping
      */
     private int $id;
 
-    /**
-     * @Column(type="integer")
-     */
+    /** @Column(type="integer") */
     private int|string|null $days = null;
 
     public function getId(): int

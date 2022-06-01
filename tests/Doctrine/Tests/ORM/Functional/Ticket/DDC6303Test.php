@@ -120,12 +120,14 @@ abstract class DDC6303BaseClass
  */
 class DDC6303ChildA extends DDC6303BaseClass
 {
-    public function __construct(string $id, /**
-     * @Column(type="string", length=255)
-     */
-    private mixed $originalData)
-    {
-        $this->id           = $id;
+    public function __construct(
+        string $id,
+        /**
+         * @Column(type="string", length=255)
+         */
+        private mixed $originalData
+    ) {
+        $this->id = $id;
     }
 }
 
@@ -138,11 +140,13 @@ class DDC6303ChildB extends DDC6303BaseClass
     /**
      * @param mixed[] $originalData
      */
-    public function __construct(string $id, /**
-     * @Column(type="simple_array", nullable=true)
-     */
-    private array $originalData)
-    {
-        $this->id           = $id;
+    public function __construct(
+        string $id,
+        /**
+         * @Column(type="simple_array", nullable=true)
+         */
+        private array $originalData
+    ) {
+        $this->id = $id;
     }
 }

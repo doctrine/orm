@@ -16,7 +16,6 @@ use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
-use function get_class;
 
 class DDC2895Test extends OrmFunctionalTestCase
 {

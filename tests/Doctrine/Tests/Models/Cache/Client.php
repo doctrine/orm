@@ -24,15 +24,11 @@ class Client
      */
     public $id;
 
-    /**
-     * @param string $name
-     */
     public function __construct(
         /**
          * @Column(unique=true)
          */
-        public $name
-    )
-    {
+        public string $name
+    ) {
     }
 }

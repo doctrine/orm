@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
-use Doctrine\DBAL\Driver\Statement;
-use Doctrine\DBAL\Exception;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
-use Doctrine\DBAL;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -37,7 +36,6 @@ use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
-use function get_class;
 use function method_exists;
 use function random_int;
 use function uniqid;
@@ -731,10 +729,8 @@ class NotifyChangedRelatedItem
      */
     private int $id;
 
-    /**
-     * @ManyToOne(targetEntity="NotifyChangedEntity", inversedBy="items")
-     */
-    private ?\Doctrine\Tests\ORM\NotifyChangedEntity $owner = null;
+    /** @ManyToOne(targetEntity="NotifyChangedEntity", inversedBy="items") */
+    private ?NotifyChangedEntity $owner = null;
 
     public function getId(): int
     {

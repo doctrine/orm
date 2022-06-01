@@ -32,22 +32,23 @@ class LegacyUserReference
      */
     private LegacyUser $_target;
 
-    /**
-     * @Column(type="datetime", name="created")
-     */
-    private \DateTime $created;
+    /** @Column(type="datetime", name="created") */
+    private DateTime $created;
 
-    public function __construct(LegacyUser $source, LegacyUser $target, /**
-     * @Column(type="string", length=255, name="description")
-     */
-    private string $_description)
-    {
+    public function __construct(
+        LegacyUser $source,
+        LegacyUser $target,
+        /**
+         * @Column(type="string", length=255, name="description")
+         */
+        private string $_description
+    ) {
         $source->addReference($this);
         $target->addReference($this);
 
-        $this->_source      = $source;
-        $this->_target      = $target;
-        $this->created      = new DateTime('now');
+        $this->_source = $source;
+        $this->_target = $target;
+        $this->created = new DateTime('now');
     }
 
     public function source(): LegacyUser

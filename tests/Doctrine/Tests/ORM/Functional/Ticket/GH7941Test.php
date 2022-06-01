@@ -106,14 +106,16 @@ class GH7941Product
      */
     public $createdAt;
 
-    public function __construct(/**
-     * @Column(type="string", length=255)
-     */
-    public string $name, /**
-     * @Column(type="decimal")
-     */
-    public string $price)
-    {
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        public string $name,
+        /**
+         * @Column(type="decimal")
+         */
+        public string $price
+    ) {
         $this->createdAt = new DateTimeImmutable();
     }
 }

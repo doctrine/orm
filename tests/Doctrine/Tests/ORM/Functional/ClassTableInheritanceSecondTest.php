@@ -20,7 +20,6 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
-use function get_class;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
@@ -100,10 +99,8 @@ class CTIParent
      */
     private int $id;
 
-    /**
-     * @OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent")
-     */
-    private ?\Doctrine\Tests\ORM\Functional\CTIRelated $related = null;
+    /** @OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent") */
+    private ?CTIRelated $related = null;
 
     public function getId(): int
     {
@@ -128,9 +125,7 @@ class CTIParent
  */
 class CTIChild extends CTIParent
 {
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     private ?string $data = null;
 
     public function getData(): string
@@ -158,7 +153,7 @@ class CTIRelated
      * @OneToOne(targetEntity="CTIParent")
      * @JoinColumn(name="ctiparent_id", referencedColumnName="id")
      */
-    private ?\Doctrine\Tests\ORM\Functional\CTIParent $ctiParent = null;
+    private ?CTIParent $ctiParent = null;
 
     public function getId(): int
     {

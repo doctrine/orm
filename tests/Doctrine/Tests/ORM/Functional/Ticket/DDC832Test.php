@@ -178,8 +178,7 @@ class DDC832Like
          * @Column(type="string", length=255)
          */
         public string $word
-    )
-    {
+    ) {
     }
 }
 
@@ -212,8 +211,7 @@ class DDC832JoinedIndex
          * @Column(type="string", length=255)
          */
         public string $name
-    )
-    {
+    ) {
     }
 }
 
@@ -223,14 +221,17 @@ class DDC832JoinedIndex
  */
 class DDC832JoinedTreeIndex extends DDC832JoinedIndex
 {
-    public function __construct(string $name, /**
-     * @Column(type="integer")
-     */
-    public int $lft, /**
-     * @Column(type="integer")
-     */
-    public int $rgt)
-    {
+    public function __construct(
+        string $name,
+        /**
+         * @Column(type="integer")
+         */
+        public int $lft,
+        /**
+         * @Column(type="integer")
+         */
+        public int $rgt
+    ) {
         $this->name = $name;
     }
 }

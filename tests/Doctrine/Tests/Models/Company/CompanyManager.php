@@ -18,9 +18,7 @@ use Doctrine\ORM\Mapping\Table;
  */
 class CompanyManager extends CompanyEmployee
 {
-    /**
-     * @Column(type="string", length=250)
-     */
+    /** @Column(type="string", length=250) */
     private ?string $title = null;
 
     /**

@@ -60,8 +60,7 @@ abstract class DDC3303Person
          * @Embedded(class="DDC3303Address")
          */
         private DDC3303Address $address
-    )
-    {
+    ) {
     }
 }
 
@@ -83,8 +82,7 @@ class DDC3303Address
          * @Column(type="string", length=255)
          */
         private string $city
-    )
-    {
+    ) {
     }
 }
 
@@ -94,14 +92,14 @@ class DDC3303Address
  */
 class DDC3303Employee extends DDC3303Person
 {
-    /**
-     * @param string $company
-     */
-    public function __construct(string $name, DDC3303Address $address, /**
-     * @Column(type="string", length=255)
-     */
-    private $company)
-    {
+    public function __construct(
+        string $name,
+        DDC3303Address $address,
+        /**
+         * @Column(type="string", length=255)
+         */
+        private string $company
+    ) {
         parent::__construct($name, $address);
     }
 }

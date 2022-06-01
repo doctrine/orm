@@ -143,8 +143,7 @@ class DDC2759QualificationMetadata
          * @OneToOne(targetEntity="DDC2759Qualification", inversedBy="metadata")
          */
         public DDC2759Qualification $content
-    )
-    {
+    ) {
     }
 }
 
@@ -171,7 +170,6 @@ class DDC2759MetadataCategory
          * @ManyToOne(targetEntity="DDC2759Category", inversedBy="metadataCategories")
          */
         public DDC2759Category $category
-    )
-    {
+    ) {
     }
 }

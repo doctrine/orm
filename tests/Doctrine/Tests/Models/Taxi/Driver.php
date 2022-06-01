@@ -25,9 +25,7 @@ class Driver
      */
     private int $id;
 
-    /**
-     * @Column(type="string", length=255);
-     */
+    /** @Column(type="string", length=255); */
     private ?string $name = null;
 
     /**

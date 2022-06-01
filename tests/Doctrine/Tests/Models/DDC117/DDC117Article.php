@@ -31,9 +31,7 @@ class DDC117Article
      */
     private $references;
 
-    /**
-     * @OneToOne(targetEntity="DDC117ArticleDetails", mappedBy="article", cascade={"persist", "remove"})
-     */
+    /** @OneToOne(targetEntity="DDC117ArticleDetails", mappedBy="article", cascade={"persist", "remove"}) */
     private ?DDC117ArticleDetails $details = null;
 
     /**
@@ -48,11 +46,12 @@ class DDC117Article
      */
     private Collection $links;
 
-    public function __construct(/**
-     * @Column
-     */
-    private string $title)
-    {
+    public function __construct(
+        /**
+         * @Column
+         */
+        private string $title
+    ) {
         $this->references   = new ArrayCollection();
         $this->translations = new ArrayCollection();
     }

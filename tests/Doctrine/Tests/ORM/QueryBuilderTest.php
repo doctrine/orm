@@ -21,7 +21,6 @@ use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
 
 use function array_filter;
-use function get_class;
 
 /**
  * Test case for the QueryBuilder class used to build DQL query string in a

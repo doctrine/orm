@@ -26,21 +26,23 @@ class Flight
      */
     protected $departure;
 
-    public function __construct(/**
-     * @Id
-     * @Cache
-     * @ManyToOne(targetEntity="City")
-     * @JoinColumn(name="leaving_from_city_id", referencedColumnName="id")
-     */
-    protected City $leavingFrom, /**
-     * @Id
-     * @Cache
-     * @ManyToOne(targetEntity="City")
-     * @JoinColumn(name="going_to_city_id", referencedColumnName="id")
-     */
-    protected City $goingTo)
-    {
-        $this->departure   = new DateTime();
+    public function __construct(
+        /**
+         * @Id
+         * @Cache
+         * @ManyToOne(targetEntity="City")
+         * @JoinColumn(name="leaving_from_city_id", referencedColumnName="id")
+         */
+        protected City $leavingFrom,
+        /**
+         * @Id
+         * @Cache
+         * @ManyToOne(targetEntity="City")
+         * @JoinColumn(name="going_to_city_id", referencedColumnName="id")
+         */
+        protected City $goingTo
+    ) {
+        $this->departure = new DateTime();
     }
 
     public function getLeavingFrom(): City

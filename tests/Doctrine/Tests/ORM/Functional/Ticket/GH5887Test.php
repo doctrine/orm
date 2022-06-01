@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Stringable;
 
 use function assert;
 
@@ -84,7 +85,7 @@ class GH5887Cart
      * @OneToOne(targetEntity="GH5887Customer", inversedBy="cart")
      * @JoinColumn(name="customer_id", referencedColumnName="id")
      */
-    private ?\Doctrine\Tests\ORM\Functional\Ticket\GH5887Customer $customer = null;
+    private ?GH5887Customer $customer = null;
 
     public function getId(): int
     {
@@ -120,14 +121,14 @@ class GH5887Customer
      * @Column(type="GH5887CustomIdObject", length=255)
      * @GeneratedValue(strategy="NONE")
      */
-    private ?\Doctrine\Tests\ORM\Functional\Ticket\GH5887CustomIdObject $id = null;
+    private ?GH5887CustomIdObject $id = null;
 
     /**
      * One Customer has One Cart.
      *
      * @OneToOne(targetEntity="GH5887Cart", mappedBy="customer")
      */
-    private ?\Doctrine\Tests\ORM\Functional\Ticket\GH5887Cart $cart = null;
+    private ?GH5887Cart $cart = null;
 
     public function getId(): GH5887CustomIdObject
     {
@@ -153,7 +154,7 @@ class GH5887Customer
     }
 }
 
-class GH5887CustomIdObject implements \Stringable
+class GH5887CustomIdObject implements Stringable
 {
     public function __construct(private int $id)
     {

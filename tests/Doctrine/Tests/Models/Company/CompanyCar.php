@@ -28,8 +28,7 @@ class CompanyCar
          * @Column(type="string", length=50)
          */
         private ?string $brand = null
-    )
-    {
+    ) {
     }
 
     public function getId(): int

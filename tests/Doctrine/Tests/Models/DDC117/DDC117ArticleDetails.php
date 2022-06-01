@@ -15,19 +15,19 @@ use Doctrine\ORM\Mapping\OneToOne;
  */
 class DDC117ArticleDetails
 {
-    /**
-     * @Column(type="text")
-     */
+    /** @Column(type="text") */
     private string $text;
 
-    public function __construct(/**
-     * @var DDC117Article
-     * @Id
-     * @OneToOne(targetEntity="DDC117Article", inversedBy="details")
-     * @JoinColumn(name="article_id", referencedColumnName="article_id")
-     */
-    private $article, string $text)
-    {
+    public function __construct(
+        /**
+         * @var DDC117Article
+         * @Id
+         * @OneToOne(targetEntity="DDC117Article", inversedBy="details")
+         * @JoinColumn(name="article_id", referencedColumnName="article_id")
+         */
+        private $article,
+        string $text
+    ) {
         $article->setDetails($this);
 
         $this->update($text);

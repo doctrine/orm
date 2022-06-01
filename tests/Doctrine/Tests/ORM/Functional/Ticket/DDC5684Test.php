@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Stringable;
 
 /**
  * This test verifies that custom post-insert identifiers respect type conversion semantics.
@@ -88,7 +89,7 @@ class DDC5684ObjectIdType extends DBALTypes\Type
     }
 }
 
-class DDC5684ObjectId implements \Stringable
+class DDC5684ObjectId implements Stringable
 {
     public function __construct(public mixed $value)
     {

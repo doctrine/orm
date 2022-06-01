@@ -34,11 +34,12 @@ class DDC3579User
     #[ManyToMany(targetEntity: DDC3579Group::class)]
     protected $groups;
 
-    public function __construct(/**
-     * @Column(name="user_name", nullable=true, unique=false, length=250)
-     */
-    #[Column(name: 'user_name', nullable: true, unique: false, length: 250)] protected ?string $name = null)
-    {
+    public function __construct(
+        /**
+         * @Column(name="user_name", nullable=true, unique=false, length=250)
+         */
+        #[Column(name: 'user_name', nullable: true, unique: false, length: 250)] protected ?string $name = null
+    ) {
         $this->groups = new ArrayCollection();
     }
 

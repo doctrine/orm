@@ -78,8 +78,7 @@ class GH7496EntityA
          * @Column(type="string", length=255)
          */
         public string $name
-    )
-    {
+    ) {
     }
 }
 
@@ -88,9 +87,6 @@ class GH7496EntityA
  */
 class GH7496EntityB
 {
-    /**
-     * @param string $name
-     */
     public function __construct(
         /**
          * @Id
@@ -100,9 +96,8 @@ class GH7496EntityB
         /**
          * @Column(type="string", length=255)
          */
-        public $name
-    )
-    {
+        public string $name
+    ) {
     }
 }
 
@@ -112,8 +107,8 @@ class GH7496EntityB
 class GH7496EntityAinB
 {
     /**
-     * @param \Doctrine\Tests\ORM\Functional\Ticket\GH7496EntityA $a
-     * @param \Doctrine\Tests\ORM\Functional\Ticket\GH7496EntityB $b
+     * @param GH7496EntityA $a
+     * @param GH7496EntityB $b
      */
     public function __construct(
         /**
@@ -131,7 +126,6 @@ class GH7496EntityAinB
          * @JoinColumn(name="b_id", referencedColumnName="b_id", nullable=false)
          */
         public $eB
-    )
-    {
+    ) {
     }
 }

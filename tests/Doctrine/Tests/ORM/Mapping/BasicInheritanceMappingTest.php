@@ -245,30 +245,24 @@ class EntitySubClass extends TransientBaseClass
      */
     private int $id;
 
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     private string $name;
 }
 
 /** @MappedSuperclass */
 class MappedSuperclassBase
 {
-    /**
-     * @Column(type="integer")
-     */
+    /** @Column(type="integer") */
     private int $mapped1;
 
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     private string $mapped2;
 
     /**
      * @OneToOne(targetEntity="MappedSuperclassRelated1")
      * @JoinColumn(name="related1_id", referencedColumnName="id")
      */
-    private \Doctrine\Tests\ORM\Mapping\MappedSuperclassRelated1 $mappedRelated1;
+    private MappedSuperclassRelated1 $mappedRelated1;
 
     /** @var mixed */
     private $transient;
@@ -287,9 +281,7 @@ class EntitySubClass2 extends MappedSuperclassBase
      */
     private int $id;
 
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     private string $name;
 }
 
@@ -302,13 +294,9 @@ class EntitySubClass2 extends MappedSuperclassBase
  */
 class MappedSuperclassBaseIndex
 {
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     private string $mapped1;
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     private string $mapped2;
 }
 
@@ -324,9 +312,7 @@ class EntityIndexSubClass extends MappedSuperclassBaseIndex
      */
     private int $id;
 
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     private string $name;
 }
 

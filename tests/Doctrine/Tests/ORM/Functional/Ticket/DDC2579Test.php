@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Stringable;
 
 /**
  * @group DDC-2579
@@ -90,11 +91,13 @@ class DDC2579Entity
      */
     public $assoc;
 
-    public function __construct(DDC2579EntityAssoc $assoc, /**
-     * @Column(type="integer")
-     */
-    public int $value = 0)
-    {
+    public function __construct(
+        DDC2579EntityAssoc $assoc,
+        /**
+         * @Column(type="integer")
+         */
+        public int $value = 0
+    ) {
         $this->id    = $assoc->assocAssoc->associationId;
         $this->assoc = $assoc;
     }
@@ -113,8 +116,7 @@ class DDC2579EntityAssoc
          * @JoinColumn(name="association_id", referencedColumnName="associationId")
          */
         public $assocAssoc
-    )
-    {
+    ) {
     }
 }
 
@@ -129,8 +131,7 @@ class DDC2579AssocAssoc
          * @Column(type="ddc2579", length=255)
          */
         public DDC2579Id $associationId
-    )
-    {
+    ) {
     }
 }
 
@@ -161,7 +162,7 @@ class DDC2579Type extends StringType
     }
 }
 
-class DDC2579Id implements \Stringable
+class DDC2579Id implements Stringable
 {
     public function __construct(private string $val)
     {

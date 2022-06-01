@@ -93,8 +93,7 @@ class MyEntity1
          * @JoinColumn(name="entity2_id", referencedColumnName="id", nullable=false)
          */
         private MyEntity2 $entity2
-    )
-    {
+    ) {
     }
 
     public function setMyEntity2(MyEntity2 $myEntity2): void
@@ -126,8 +125,7 @@ class MyEntity2
          * @Column
          */
         private string $value
-    )
-    {
+    ) {
     }
 
     public function getId(): int

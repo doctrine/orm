@@ -41,11 +41,12 @@ class NavTour
      */
     private Collection $pois;
 
-    public function __construct(/**
-     * @Column(type="string", length=255)
-     */
-    private string $name)
-    {
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        private string $name
+    ) {
         $this->pois = new ArrayCollection();
     }
 

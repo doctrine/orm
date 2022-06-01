@@ -98,8 +98,7 @@ class GH7286Entity
          * @Column(type="integer")
          */
         public int $version
-    )
-    {
+    ) {
     }
 }
 

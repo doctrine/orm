@@ -340,8 +340,8 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 class ListenerSecondLevelCacheTest
 {
     /**
-     * @psalm-param array<string, callable> $callbacks
      * @param array<string, callable> $callbacks
+     * @psalm-param array<string, callable> $callbacks
      */
     public function __construct(public array $callbacks = [])
     {

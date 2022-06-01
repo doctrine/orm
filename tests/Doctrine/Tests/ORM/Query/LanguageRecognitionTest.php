@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
-use Doctrine\ORM\Query\Parser;
-use Doctrine\ORM\Query\AST\Functions\ConcatFunction;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -13,6 +11,8 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\AST\Functions\ConcatFunction;
+use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Mocks\NullSqlWalker;
@@ -733,10 +733,8 @@ class DQLKeywordsModelUser
      */
     private int $id;
 
-    /**
-     * @OneToOne(targetEntity="DQLKeywordsModelGroup")
-     */
-    private \Doctrine\Tests\ORM\Query\DQLKeywordsModelGroup $group;
+    /** @OneToOne(targetEntity="DQLKeywordsModelGroup") */
+    private DQLKeywordsModelGroup $group;
 }
 
 /** @Entity */
@@ -749,9 +747,7 @@ class DQLKeywordsModelGroup
      */
     private int $id;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     private string $from;
 }
 

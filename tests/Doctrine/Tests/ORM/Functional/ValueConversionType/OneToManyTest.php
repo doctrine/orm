@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
+use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\Models\ValueConversionType\InversedOneToManyEntity;
 use Doctrine\Tests\Models\ValueConversionType\OwningManyToOneEntity;
-use Doctrine\Tests\Models;
-use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**

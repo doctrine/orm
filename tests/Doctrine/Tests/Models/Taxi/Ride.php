@@ -31,7 +31,6 @@ class Ride
          * @JoinColumn(name="car", referencedColumnName="brand")
          */
         private Car $car
-    )
-    {
+    ) {
     }
 }

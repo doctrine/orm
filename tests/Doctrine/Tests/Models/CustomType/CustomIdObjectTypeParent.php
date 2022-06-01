@@ -25,12 +25,13 @@ class CustomIdObjectTypeParent
      */
     public $children;
 
-    public function __construct(/**
-     * @Id
-     * @Column(type="CustomIdObject", length=255)
-     */
-    public CustomIdObject $id)
-    {
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="CustomIdObject", length=255)
+         */
+        public CustomIdObject $id
+    ) {
         $this->children = new ArrayCollection();
     }
 }

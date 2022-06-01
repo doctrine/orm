@@ -142,7 +142,6 @@ class GH7836ChildEntity
          * @Column(type="string", length=255)
          */
         public string $name
-    )
-    {
+    ) {
     }
 }

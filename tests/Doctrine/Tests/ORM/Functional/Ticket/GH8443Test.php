@@ -116,8 +116,7 @@ class GH8443Foo
          * @Column
          */
         private string $name
-    )
-    {
+    ) {
     }
 
     public function getName(): ?string

@@ -343,9 +343,7 @@ class DDC1587ValidEntity1
      */
     private int $pk;
 
-    /**
-     * @Column(name="name", type="string", length=32)
-     */
+    /** @Column(name="name", type="string", length=32) */
     private string $name;
 
     /**
@@ -367,11 +365,9 @@ class DDC1587ValidEntity2
      * @OneToOne(targetEntity="DDC1587ValidEntity1", inversedBy="identifier")
      * @JoinColumn(name="pk_agent", referencedColumnName="pk", nullable=false)
      */
-    private \Doctrine\Tests\ORM\Tools\DDC1587ValidEntity1 $agent;
+    private DDC1587ValidEntity1 $agent;
 
-    /**
-     * @Column(name="num", type="string", length=16, nullable=true)
-     */
+    /** @Column(name="num", type="string", length=16, nullable=true) */
     private string $num;
 }
 
@@ -411,7 +407,7 @@ class DDC1649Three
      * @ManyToOne(targetEntity="DDC1649Two")
      * @JoinColumn(name="id", referencedColumnName="id")
      */
-    private \Doctrine\Tests\ORM\Tools\DDC1649Two $two;
+    private DDC1649Two $two;
 }
 
 /**
@@ -427,9 +423,7 @@ class DDC3274One
      */
     private $id;
 
-    /**
-     * @OneToMany(targetEntity="DDC3274Two", mappedBy="one")
-     */
+    /** @OneToMany(targetEntity="DDC3274Two", mappedBy="one") */
     private ArrayCollection $two;
 }
 
@@ -442,7 +436,7 @@ class DDC3274Two
      * @Id
      * @ManyToOne(targetEntity="DDC3274One")
      */
-    private \Doctrine\Tests\ORM\Tools\DDC3274One $one;
+    private DDC3274One $one;
 }
 
 /**
@@ -458,10 +452,8 @@ class Issue9536Target
      */
     private $id;
 
-    /**
-     * @OneToOne(targetEntity="Issue9536Owner")
-     */
-    private \Doctrine\Tests\ORM\Tools\Issue9536Owner $two;
+    /** @OneToOne(targetEntity="Issue9536Owner") */
+    private Issue9536Owner $two;
 }
 
 /**
@@ -477,10 +469,8 @@ class Issue9536Owner
      */
     private $id;
 
-    /**
-     * @OneToOne(targetEntity="Issue9536Target", inversedBy="two")
-     */
-    private \Doctrine\Tests\ORM\Tools\Issue9536Target $one;
+    /** @OneToOne(targetEntity="Issue9536Target", inversedBy="two") */
+    private Issue9536Target $one;
 }
 
 /**
@@ -496,55 +486,35 @@ class DDC3322ValidEntity1
      */
     private $id;
 
-    /**
-     * @ManyToOne(targetEntity="DDC3322One", inversedBy="validAssoc")
-     */
-    private \Doctrine\Tests\ORM\Tools\DDC3322One $oneValid;
+    /** @ManyToOne(targetEntity="DDC3322One", inversedBy="validAssoc") */
+    private DDC3322One $oneValid;
 
-    /**
-     * @ManyToOne(targetEntity="DDC3322One", inversedBy="invalidAssoc")
-     */
-    private \Doctrine\Tests\ORM\Tools\DDC3322One $oneInvalid;
+    /** @ManyToOne(targetEntity="DDC3322One", inversedBy="invalidAssoc") */
+    private DDC3322One $oneInvalid;
 
-    /**
-     * @ManyToOne(targetEntity="DDC3322Two", inversedBy="validAssoc")
-     */
-    private \Doctrine\Tests\ORM\Tools\DDC3322Two $twoValid;
+    /** @ManyToOne(targetEntity="DDC3322Two", inversedBy="validAssoc") */
+    private DDC3322Two $twoValid;
 
-    /**
-     * @ManyToOne(targetEntity="DDC3322Two", inversedBy="invalidAssoc")
-     */
-    private \Doctrine\Tests\ORM\Tools\DDC3322Two $twoInvalid;
+    /** @ManyToOne(targetEntity="DDC3322Two", inversedBy="invalidAssoc") */
+    private DDC3322Two $twoInvalid;
 
-    /**
-     * @ManyToOne(targetEntity="DDC3322Three", inversedBy="validAssoc")
-     */
-    private \Doctrine\Tests\ORM\Tools\DDC3322Three $threeValid;
+    /** @ManyToOne(targetEntity="DDC3322Three", inversedBy="validAssoc") */
+    private DDC3322Three $threeValid;
 
-    /**
-     * @ManyToOne(targetEntity="DDC3322Three", inversedBy="invalidAssoc")
-     */
-    private \Doctrine\Tests\ORM\Tools\DDC3322Three $threeInvalid;
+    /** @ManyToOne(targetEntity="DDC3322Three", inversedBy="invalidAssoc") */
+    private DDC3322Three $threeInvalid;
 
-    /**
-     * @OneToMany(targetEntity="DDC3322ValidEntity2", mappedBy="manyToOne")
-     */
-    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity2 $oneToMany;
+    /** @OneToMany(targetEntity="DDC3322ValidEntity2", mappedBy="manyToOne") */
+    private DDC3322ValidEntity2 $oneToMany;
 
-    /**
-     * @ManyToOne(targetEntity="DDC3322ValidEntity2", inversedBy="oneToMany")
-     */
-    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity2 $manyToOne;
+    /** @ManyToOne(targetEntity="DDC3322ValidEntity2", inversedBy="oneToMany") */
+    private DDC3322ValidEntity2 $manyToOne;
 
-    /**
-     * @OneToOne(targetEntity="DDC3322ValidEntity2", mappedBy="oneToOneOwning")
-     */
-    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity2 $oneToOneInverse;
+    /** @OneToOne(targetEntity="DDC3322ValidEntity2", mappedBy="oneToOneOwning") */
+    private DDC3322ValidEntity2 $oneToOneInverse;
 
-    /**
-     * @OneToOne(targetEntity="DDC3322ValidEntity2", inversedBy="oneToOneInverse")
-     */
-    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity2 $oneToOneOwning;
+    /** @OneToOne(targetEntity="DDC3322ValidEntity2", inversedBy="oneToOneInverse") */
+    private DDC3322ValidEntity2 $oneToOneOwning;
 }
 
 /**
@@ -559,25 +529,17 @@ class DDC3322ValidEntity2
      */
     private int $id;
 
-    /**
-     * @ManyToOne(targetEntity="DDC3322ValidEntity1", inversedBy="oneToMany")
-     */
-    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 $manyToOne;
+    /** @ManyToOne(targetEntity="DDC3322ValidEntity1", inversedBy="oneToMany") */
+    private DDC3322ValidEntity1 $manyToOne;
 
-    /**
-     * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="manyToOne")
-     */
-    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 $oneToMany;
+    /** @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="manyToOne") */
+    private DDC3322ValidEntity1 $oneToMany;
 
-    /**
-     * @OneToOne(targetEntity="DDC3322ValidEntity1", inversedBy="oneToOneInverse")
-     */
-    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 $oneToOneOwning;
+    /** @OneToOne(targetEntity="DDC3322ValidEntity1", inversedBy="oneToOneInverse") */
+    private DDC3322ValidEntity1 $oneToOneOwning;
 
-    /**
-     * @OneToOne(targetEntity="DDC3322ValidEntity1", mappedBy="oneToOneOwning")
-     */
-    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 $oneToOneInverse;
+    /** @OneToOne(targetEntity="DDC3322ValidEntity1", mappedBy="oneToOneOwning") */
+    private DDC3322ValidEntity1 $oneToOneInverse;
 }
 
 /**
@@ -650,7 +612,7 @@ class DDC3322Three
      * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="threeValid")
      * @OrderBy({"oneToOneOwning" = "ASC"})
      */
-    private \Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 $validAssoc;
+    private DDC3322ValidEntity1 $validAssoc;
 
     /**
      * @psalm-var Collection<int, DDC3322ValidEntity1>
@@ -665,8 +627,6 @@ class DDC3322Three
  */
 class EmbeddableWithAssociation
 {
-    /**
-     * @OneToOne(targetEntity="Doctrine\Tests\Models\ECommerce\ECommerceCart")
-     */
+    /** @OneToOne(targetEntity="Doctrine\Tests\Models\ECommerce\ECommerceCart") */
     private ECommerceCart $cart;
 }

@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
+use Stringable;
 
 use function is_string;
 
@@ -76,9 +77,7 @@ class DDC2984Test extends OrmFunctionalTestCase
  */
 class DDC2984User
 {
-    /**
-     * @Column(type="string", length=50)
-     */
+    /** @Column(type="string", length=50) */
     private ?string $name = null;
 
     public function __construct(
@@ -88,8 +87,7 @@ class DDC2984User
          * @GeneratedValue(strategy="NONE")
          */
         private DDC2984DomainUserId $userId
-    )
-    {
+    ) {
     }
 
     public function userId(): DDC2984DomainUserId
@@ -116,7 +114,7 @@ class DDC2984User
 /**
  * DDC2984DomainUserId ValueObject
  */
-class DDC2984DomainUserId implements \Stringable
+class DDC2984DomainUserId implements Stringable
 {
     public function __construct(private string $userIdString)
     {
