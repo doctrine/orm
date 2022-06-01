@@ -14,7 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1885Test extends OrmFunctionalTestCase
 {
-    private \Doctrine\Tests\ORM\Functional\Ticket\User $user;
+    private User $user;
 
     protected function setUp(): void
     {
