@@ -973,7 +973,7 @@ class ClassMetadataTest extends OrmTestCase
     public function testInvalidEntityListenerMethodException(): void
     {
         $this->expectException(MappingException::class);
-        $this->expectExceptionMessage('Entity Listener "\Doctrine\Tests\Models\Company\CompanyContractListener" declared on "Doctrine\Tests\Models\CMS\CmsUser" has no method "invalidMethod".');
+        $this->expectExceptionMessage('Entity Listener "Doctrine\Tests\Models\Company\CompanyContractListener" declared on "Doctrine\Tests\Models\CMS\CmsUser" has no method "invalidMethod".');
         $cm = new ClassMetadata(CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
