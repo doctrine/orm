@@ -1399,9 +1399,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>$parserResult</code>
     </PropertyNotSetInConstructor>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>$timeToLive !== null</code>
-    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/ArithmeticFactor.php">
     <ParamNameMismatch occurrences="1">
