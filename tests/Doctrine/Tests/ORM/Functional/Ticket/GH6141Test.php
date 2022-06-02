@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
+use Stringable;
 
 use function in_array;
 
@@ -108,13 +109,10 @@ class GH6141PeopleType extends StringType
     }
 }
 
-class GH6141People
+class GH6141People implements Stringable
 {
     public const BOSS     = 'boss';
     public const EMPLOYEE = 'employee';
-
-    /** @var string */
-    private $value;
 
     /**
      * @throws InvalidArgumentException
@@ -133,9 +131,8 @@ class GH6141People
         return in_array($valid, [self::BOSS, self::EMPLOYEE], true);
     }
 
-    private function __construct(string $value)
+    private function __construct(private string $value)
     {
-        $this->value = $value;
     }
 
     public function getValue(): string
@@ -168,15 +165,12 @@ abstract class GH6141Person
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        public string $name
+    ) {
     }
 }
 

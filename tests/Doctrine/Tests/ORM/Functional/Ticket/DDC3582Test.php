@@ -35,21 +35,18 @@ class DDC3582Test extends OrmFunctionalTestCase
 class DDC3582Entity
 {
     /**
-     * @var string
-     * @Column
-     * @Id
-     */
-    private $id;
-
-    /**
      * @var DDC3582Embeddable1
      * @Embedded(class="DDC3582Embeddable1")
      */
     public $embeddable1;
 
-    public function __construct(string $id)
-    {
-        $this->id          = $id;
+    public function __construct(
+        /**
+         * @Column
+         * @Id
+         */
+        private string $id
+    ) {
         $this->embeddable1 = new DDC3582Embeddable1();
     }
 }

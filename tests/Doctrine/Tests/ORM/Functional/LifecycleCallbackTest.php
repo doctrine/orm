@@ -32,7 +32,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
 use function current;
-use function get_class;
 use function iterator_to_array;
 use function sprintf;
 
@@ -108,7 +107,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $user2 = $this->_em->find(get_class($user), $user->getId());
+        $user2 = $this->_em->find($user::class, $user->getId());
 
         self::assertEquals('Alice', $user2->getName());
         self::assertEquals('Hello World', $user2->getValue());
@@ -409,24 +408,17 @@ DQL;
 class LifecycleCallbackTestUser
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $value;
+    /** @Column(type="string", length=255) */
+    private ?string $value = null;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
+    /** @Column(type="string", length=255) */
+    private ?string $name = null;
 
     public function getId(): int
     {
@@ -485,12 +477,11 @@ class LifecycleCallbackTestEntity
     public $preFlushCallbackInvoked = false;
 
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
      * @var string
@@ -562,12 +553,11 @@ class LifecycleCallbackCascader
     public $postLoadEntitiesCount = 0;
 
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
      * @psalm-var Collection<int, LifecycleCallbackTestEntity>
@@ -612,12 +602,11 @@ class LifecycleCallbackParentEntity
 class LifecycleCallbackChildEntity extends LifecycleCallbackParentEntity
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 }
 
 class LifecycleListenerPreUpdate

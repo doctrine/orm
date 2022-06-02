@@ -116,12 +116,8 @@ abstract class GH5988CustomIdObjectTypeParent
  */
 class GH5988CustomIdObjectTypeChild extends GH5988CustomIdObjectTypeParent
 {
-    /** @var string */
-    public $name;
-
-    public function __construct(CustomIdObject $id, string $name)
+    public function __construct(CustomIdObject $id, public string $name)
     {
-        $this->id   = $id;
-        $this->name = $name;
+        $this->id = $id;
     }
 }

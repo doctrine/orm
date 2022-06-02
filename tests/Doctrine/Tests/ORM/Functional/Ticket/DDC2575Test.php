@@ -18,13 +18,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 class DDC2575Test extends OrmFunctionalTestCase
 {
     /** @psalm-var list<DDC2575Root> */
-    private $rootsEntities = [];
+    private array $rootsEntities = [];
 
     /** @psalm-var list<DDC2575A> */
-    private $aEntities = [];
+    private array $aEntities = [];
 
     /** @psalm-var list<DDC2575B> */
-    private $bEntities = [];
+    private array $bEntities = [];
 
     protected function setUp(): void
     {
@@ -105,28 +105,22 @@ class DDC2575Test extends OrmFunctionalTestCase
 class DDC2575Root
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
-    public $id;
-
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    public $sampleField;
-
-    /**
      * @var DDC2575A
      * @OneToOne(targetEntity="DDC2575A", mappedBy="rootRelation")
      */
     public $aRelation;
 
-    public function __construct(int $id, int $value = 0)
-    {
-        $this->id          = $id;
-        $this->sampleField = $value;
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="integer")
+         */
+        public int $id,
+        /**
+         * @Column(type="integer")
+         */
+        public int $sampleField = 0
+    ) {
     }
 }
 
@@ -135,25 +129,19 @@ class DDC2575Root
  */
 class DDC2575A
 {
-    /**
-     * @var DDC2575Root
-     * @Id
-     * @OneToOne(targetEntity="DDC2575Root", inversedBy="aRelation")
-     * @JoinColumn(name="root_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
-     */
-    public $rootRelation;
-
-    /**
-     * @var DDC2575B
-     * @ManyToOne(targetEntity="DDC2575B")
-     * @JoinColumn(name="b_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
-     */
-    public $bRelation;
-
-    public function __construct(DDC2575Root $rootRelation, DDC2575B $bRelation)
-    {
-        $this->rootRelation = $rootRelation;
-        $this->bRelation    = $bRelation;
+    public function __construct(
+        /**
+         * @Id
+         * @OneToOne(targetEntity="DDC2575Root", inversedBy="aRelation")
+         * @JoinColumn(name="root_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
+         */
+        public DDC2575Root $rootRelation,
+        /**
+         * @ManyToOne(targetEntity="DDC2575B")
+         * @JoinColumn(name="b_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
+         */
+        public DDC2575B $bRelation
+    ) {
     }
 }
 
@@ -162,22 +150,16 @@ class DDC2575A
  */
 class DDC2575B
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
-    public $id;
-
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    public $sampleField;
-
-    public function __construct(int $id, int $value = 0)
-    {
-        $this->id          = $id;
-        $this->sampleField = $value;
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="integer")
+         */
+        public int $id,
+        /**
+         * @Column(type="integer")
+         */
+        public int $sampleField = 0
+    ) {
     }
 }

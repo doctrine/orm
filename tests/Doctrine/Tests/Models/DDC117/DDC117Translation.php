@@ -20,27 +20,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 class DDC117Translation
 {
     /**
-     * @var DDC117Article
-     * @Id
-     * @ManyToOne(targetEntity="DDC117Article", inversedBy="translations")
-     * @JoinColumn(name="article_id", referencedColumnName="article_id")
-     */
-    private $article;
-
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     */
-    private $language;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $title;
-
-    /**
      * @var Collection<int, DDC117Editor>
      * @ManyToMany(targetEntity="DDC117Editor", mappedBy="reviewingTranslations")
      */
@@ -52,11 +31,24 @@ class DDC117Translation
      */
     public $lastTranslatedBy;
 
-    public function __construct(DDC117Article $article, string $language, string $title)
-    {
-        $this->article           = $article;
-        $this->language          = $language;
-        $this->title             = $title;
+    public function __construct(
+        /**
+         * @var DDC117Article
+         * @Id
+         * @ManyToOne(targetEntity="DDC117Article", inversedBy="translations")
+         * @JoinColumn(name="article_id", referencedColumnName="article_id")
+         */
+        private $article,
+        /**
+         * @Id
+         * @Column(type="string", length=255)
+         */
+        private string $language,
+        /**
+         * @Column(type="string", length=255)
+         */
+        private string $title
+    ) {
         $this->reviewedByEditors = new ArrayCollection();
         $this->lastTranslatedBy  = new ArrayCollection();
     }

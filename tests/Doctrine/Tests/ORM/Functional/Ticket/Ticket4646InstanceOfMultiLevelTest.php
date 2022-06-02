@@ -58,12 +58,11 @@ class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
 class PersonTicket4646MultiLevel
 {
     /**
-     * @var int
      * @Id()
      * @GeneratedValue()
      * @Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     public function getId(): ?int
     {

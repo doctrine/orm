@@ -30,8 +30,7 @@ class HydrationCompleteHandlerTest extends TestCase
     /** @var EntityManagerInterface&MockObject */
     private $entityManager;
 
-    /** @var HydrationCompleteHandler */
-    private $handler;
+    private HydrationCompleteHandler $handler;
 
     protected function setUp(): void
     {
@@ -67,9 +66,7 @@ class HydrationCompleteHandlerTest extends TestCase
                 $metadata,
                 Events::postLoad,
                 $entity,
-                self::callback(static function (LifecycleEventArgs $args) use ($entityManager, $entity) {
-                    return $entity === $args->getEntity() && $entityManager === $args->getObjectManager();
-                }),
+                self::callback(static fn (LifecycleEventArgs $args) => $entity === $args->getEntity() && $entityManager === $args->getObjectManager()),
                 $listenersFlag
             );
 
@@ -129,10 +126,8 @@ class HydrationCompleteHandlerTest extends TestCase
                 self::logicalOr($metadata1, $metadata2),
                 Events::postLoad,
                 self::logicalOr($entity1, $entity2),
-                self::callback(static function (LifecycleEventArgs $args) use ($entityManager, $entity1, $entity2) {
-                    return in_array($args->getEntity(), [$entity1, $entity2], true)
-                        && $entityManager === $args->getObjectManager();
-                }),
+                self::callback(static fn (LifecycleEventArgs $args) => in_array($args->getEntity(), [$entity1, $entity2], true)
+                    && $entityManager === $args->getObjectManager()),
                 $listenersFlag
             );
 

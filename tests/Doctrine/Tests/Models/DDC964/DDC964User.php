@@ -33,13 +33,6 @@ class DDC964User
     protected $id;
 
     /**
-     * @var string|null
-     * @Column(name="user_name", nullable=true, unique=false, length=250)
-     */
-    #[Column(name: 'user_name', nullable: true, unique: false, length: 250)]
-    protected $name;
-
-    /**
      * @psalm-var Collection<int, DDC964Group>
      * @ManyToMany(targetEntity="DDC964Group", inversedBy="users", cascade={"persist", "merge", "detach"})
      * @JoinTable(name="ddc964_users_groups",
@@ -62,9 +55,12 @@ class DDC964User
     #[JoinColumn(name: 'address_id', referencedColumnName: 'id')]
     protected $address;
 
-    public function __construct(?string $name = null)
-    {
-        $this->name   = $name;
+    public function __construct(
+        /**
+         * @Column(name="user_name", nullable=true, unique=false, length=250)
+         */
+        #[Column(name: 'user_name', nullable: true, unique: false, length: 250)] protected ?string $name = null
+    ) {
         $this->groups = new ArrayCollection();
     }
 

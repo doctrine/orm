@@ -18,18 +18,14 @@ use Doctrine\ORM\Mapping\Table;
  */
 class CompanyManager extends CompanyEmployee
 {
-    /**
-     * @var string
-     * @Column(type="string", length=250)
-     */
-    private $title;
+    /** @Column(type="string", length=250) */
+    private ?string $title = null;
 
     /**
-     * @var CompanyCar
      * @OneToOne(targetEntity="CompanyCar", cascade={"persist"})
      * @JoinColumn(name="car_id", referencedColumnName="id")
      */
-    private $car;
+    private ?CompanyCar $car = null;
 
     /**
      * @psalm-var Collection<int, CompanyFlexContract>

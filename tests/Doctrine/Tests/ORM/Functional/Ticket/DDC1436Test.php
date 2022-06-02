@@ -28,7 +28,7 @@ class DDC1436Test extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(DDC1436Page::class),
                 ]
             );
-        } catch (Exception $ignored) {
+        } catch (Exception) {
         }
     }
 

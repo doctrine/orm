@@ -16,11 +16,9 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
 {
-    /** @var Application */
-    private $application;
+    private Application $application;
 
-    /** @var EntityRegionCommand */
-    private $command;
+    private EntityRegionCommand $command;
 
     protected function setUp(): void
     {

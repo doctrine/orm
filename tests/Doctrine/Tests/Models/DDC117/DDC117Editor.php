@@ -30,12 +30,6 @@ class DDC117Editor
     public $id;
 
     /**
-     * @var string|null
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    /**
      * @psalm-var Collection<int, DDC117Translation>
      * @ManyToMany(targetEntity="DDC117Translation", inversedBy="reviewedByEditors")
      * @JoinTable(
@@ -60,9 +54,12 @@ class DDC117Editor
      */
     public $lastTranslation;
 
-    public function __construct(?string $name = '')
-    {
-        $this->name                  = $name;
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        public ?string $name = ''
+    ) {
         $this->reviewingTranslations = new ArrayCollection();
     }
 

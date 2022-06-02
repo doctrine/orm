@@ -19,14 +19,11 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
  */
 final class MixedQueryFetchJoinFullObjectHydrationPerformanceBench
 {
-    /** @var ObjectHydrator */
-    private $hydrator;
+    private ?ObjectHydrator $hydrator = null;
 
-    /** @var ResultSetMapping */
-    private $rsm;
+    private ?ResultSetMapping $rsm = null;
 
-    /** @var Result */
-    private $result;
+    private ?Result $result = null;
 
     public function init(): void
     {

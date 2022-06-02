@@ -28,7 +28,7 @@ class DDC2931Test extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(DDC2931User::class),
                 ]
             );
-        } catch (Exception $e) {
+        } catch (Exception) {
             // no action needed - schema seems to be already in place
         }
     }

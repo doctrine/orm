@@ -81,24 +81,18 @@ class GH8217Collection
  */
 class GH8217CollectionItem
 {
-    /**
-     * @var GH8217Collection
-     * @Id
-     * @ManyToOne(targetEntity="GH8217Collection", inversedBy="items")
-     * @JoinColumn(name="id", referencedColumnName="id")
-     */
-    public $collection;
-
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer", options={"unsigned": true})
-     */
-    public $collectionIndex;
-
-    public function __construct(GH8217Collection $collection, int $collectionIndex)
-    {
-        $this->collection      = $collection;
-        $this->collectionIndex = $collectionIndex;
+    public function __construct(
+        /**
+         * @Id
+         * @ManyToOne(targetEntity="GH8217Collection", inversedBy="items")
+         * @JoinColumn(name="id", referencedColumnName="id")
+         */
+        public GH8217Collection $collection,
+        /**
+         * @Id
+         * @Column(type="integer", options={"unsigned": true})
+         */
+        public int $collectionIndex
+    ) {
     }
 }

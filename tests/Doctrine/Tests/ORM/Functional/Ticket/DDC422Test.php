@@ -19,8 +19,6 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 class DDC422Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -46,7 +44,7 @@ class DDC422Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $customer = $this->_em->find(get_class($customer), $customer->id);
+        $customer = $this->_em->find($customer::class, $customer->id);
 
         self::assertInstanceOf(PersistentCollection::class, $customer->contacts);
         self::assertFalse($customer->contacts->isInitialized());

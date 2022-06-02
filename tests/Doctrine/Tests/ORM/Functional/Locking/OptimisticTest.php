@@ -24,8 +24,7 @@ use function strtotime;
 
 class OptimisticTest extends OrmFunctionalTestCase
 {
-    /** @var Connection */
-    private $_conn;
+    private Connection $_conn;
 
     protected function setUp(): void
     {
@@ -215,7 +214,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->_em->persist($test);
         $this->_em->flush();
 
-        self::assertInstanceOf('DateTime', $test->version);
+        self::assertInstanceOf(DateTime::class, $test->version);
 
         return $test;
     }
@@ -231,7 +230,7 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         $test = $q->getSingleResult();
 
-        self::assertInstanceOf('DateTime', $test->version);
+        self::assertInstanceOf(DateTime::class, $test->version);
 
         // Manually increment the version datetime column
         $format = $this->_em->getConnection()->getDatabasePlatform()->getDateTimeFormatString();
@@ -263,7 +262,7 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         $test = $q->getSingleResult();
 
-        self::assertInstanceOf('DateTime', $test->version);
+        self::assertInstanceOf(DateTime::class, $test->version);
 
         // Try to lock the record with an older timestamp and it should throw an exception
         $caughtException = null;
@@ -350,11 +349,10 @@ class OptimisticStandard
     public $name;
 
     /**
-     * @var int
      * @Version
      * @Column(type="integer")
      */
-    private $version;
+    private int $version;
 
     public function getVersion(): int
     {

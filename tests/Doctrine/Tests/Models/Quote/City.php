@@ -24,14 +24,11 @@ class City
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(name="`city-name`")
-     */
-    public $name;
-
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+    public function __construct(
+        /**
+         * @Column(name="`city-name`")
+         */
+        public string $name
+    ) {
     }
 }

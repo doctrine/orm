@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
+use Stringable;
 
 use function is_string;
 
@@ -40,7 +41,7 @@ class DDC2984Test extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(DDC2984User::class),
                 ]
             );
-        } catch (Exception $e) {
+        } catch (Exception) {
             // no action needed - schema seems to be already in place
         }
     }
@@ -76,23 +77,17 @@ class DDC2984Test extends OrmFunctionalTestCase
  */
 class DDC2984User
 {
-    /**
-     * @Id
-     * @Column(type="ddc2984_domain_user_id", length=255)
-     * @GeneratedValue(strategy="NONE")
-     * @var DDC2984DomainUserId
-     */
-    private $userId;
+    /** @Column(type="string", length=50) */
+    private ?string $name = null;
 
-    /**
-     * @var string
-     * @Column(type="string", length=50)
-     */
-    private $name;
-
-    public function __construct(DDC2984DomainUserId $aUserId)
-    {
-        $this->userId = $aUserId;
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="ddc2984_domain_user_id", length=255)
+         * @GeneratedValue(strategy="NONE")
+         */
+        private DDC2984DomainUserId $userId
+    ) {
     }
 
     public function userId(): DDC2984DomainUserId
@@ -119,14 +114,10 @@ class DDC2984User
 /**
  * DDC2984DomainUserId ValueObject
  */
-class DDC2984DomainUserId
+class DDC2984DomainUserId implements Stringable
 {
-    /** @var string */
-    private $userIdString;
-
-    public function __construct(string $aUserIdString)
+    public function __construct(private string $userIdString)
     {
-        $this->userIdString = $aUserIdString;
     }
 
     public function toString(): string

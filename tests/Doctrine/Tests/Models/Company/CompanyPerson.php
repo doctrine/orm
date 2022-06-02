@@ -55,25 +55,20 @@ use Doctrine\ORM\Mapping\Table;
 class CompanyPerson
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
+
+    /** @Column */
+    private ?string $name = null;
 
     /**
-     * @var string
-     * @Column
-     */
-    private $name;
-
-    /**
-     * @var CompanyPerson|null
      * @OneToOne(targetEntity="CompanyPerson")
      * @JoinColumn(name="spouse_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    private $spouse;
+    private ?CompanyPerson $spouse = null;
 
     /**
      * @psalm-var Collection<int, CompanyPerson>

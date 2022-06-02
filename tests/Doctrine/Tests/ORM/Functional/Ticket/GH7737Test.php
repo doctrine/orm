@@ -66,23 +66,17 @@ class GH7737Test extends OrmFunctionalTestCase
  */
 class GH7737Group
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
-    public $id;
-
-    /**
-     * @var string
-     * @Column
-     */
-    public $name;
-
-    public function __construct(int $id, string $name)
-    {
-        $this->id   = $id;
-        $this->name = $name;
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="integer")
+         */
+        public int $id,
+        /**
+         * @Column
+         */
+        public string $name
+    ) {
     }
 }
 
@@ -92,22 +86,19 @@ class GH7737Group
 class GH7737Person
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
-    public $id;
-
-    /**
      * @var Collection<int, GH7737Group>
      * @ManyToMany(targetEntity=GH7737Group::class)
      * @JoinTable(inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id", unique=true)})
      */
     public $groups;
 
-    public function __construct(int $id)
-    {
-        $this->id     = $id;
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="integer")
+         */
+        public int $id
+    ) {
         $this->groups = new ArrayCollection();
     }
 }

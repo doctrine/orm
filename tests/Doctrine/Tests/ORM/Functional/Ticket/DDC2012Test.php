@@ -17,7 +17,6 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function explode;
-use function get_class;
 use function implode;
 use function is_array;
 use function method_exists;
@@ -55,7 +54,7 @@ class DDC2012Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $item = $this->_em->find(get_class($item), $item->id);
+        $item = $this->_em->find($item::class, $item->id);
 
         self::assertArrayHasKey('convertToDatabaseValueSQL', DDC2012TsVectorType::$calls);
         self::assertArrayHasKey('convertToDatabaseValue', DDC2012TsVectorType::$calls);
@@ -74,7 +73,7 @@ class DDC2012Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $item = $this->_em->find(get_class($item), $item->id);
+        $item = $this->_em->find($item::class, $item->id);
 
         self::assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValueSQL']);
         self::assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValue']);

@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Cache;
+use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\DefaultQueryCache;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
@@ -671,7 +672,7 @@ class DefaultQueryCacheTest extends OrmTestCase
     }
 }
 
-class CacheFactoryDefaultQueryCacheTest extends Cache\DefaultCacheFactory
+class CacheFactoryDefaultQueryCacheTest extends DefaultCacheFactory
 {
     public function __construct(
         private DefaultQueryCache $queryCache,

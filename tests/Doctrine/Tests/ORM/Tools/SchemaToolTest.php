@@ -393,17 +393,13 @@ class SchemaToolTest extends OrmTestCase
 class TestEntityWithAnnotationOptionsAttribute
 {
     /**
-     * @var int
      * @Id
      * @Column
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", options={"foo": "bar", "baz": {"key": "val"}})
-     */
-    private $test;
+    /** @Column(type="string", options={"foo": "bar", "baz": {"key": "val"}}) */
+    private string $test;
 }
 
 class GenerateSchemaEventListener
@@ -434,17 +430,13 @@ class GenerateSchemaEventListener
 class UniqueConstraintAnnotationModel
 {
     /**
-     * @var int
      * @Id
      * @Column
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(name="hash", type="string", length=8, nullable=false, unique=true)
-     */
-    private $hash;
+    /** @Column(name="hash", type="string", length=8, nullable=false, unique=true) */
+    private string $hash;
 }
 
 /**

@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Stringable;
 
 use function array_map;
 use function is_string;
@@ -75,9 +76,7 @@ class GH7820Test extends OrmFunctionalTestCase
 
         self::assertSame(
             self::SONG,
-            array_map(static function (GH7820Line $line): string {
-                return $line->toString();
-            }, iterator_to_array(new Paginator($query)))
+            array_map(static fn (GH7820Line $line): string => $line->toString(), iterator_to_array(new Paginator($query)))
         );
     }
 
@@ -94,9 +93,7 @@ class GH7820Test extends OrmFunctionalTestCase
 
         self::assertSame(
             self::SONG,
-            array_map(static function (GH7820Line $line): string {
-                return $line->toString();
-            }, iterator_to_array(new Paginator($query))),
+            array_map(static fn (GH7820Line $line): string => $line->toString(), iterator_to_array(new Paginator($query))),
             'Expected to return expected data before query cache is populated with DQL -> SQL translation. Were SQL parameters translated?'
         );
 
@@ -106,9 +103,7 @@ class GH7820Test extends OrmFunctionalTestCase
 
         self::assertSame(
             self::SONG,
-            array_map(static function (GH7820Line $line): string {
-                return $line->toString();
-            }, iterator_to_array(new Paginator($query))),
+            array_map(static fn (GH7820Line $line): string => $line->toString(), iterator_to_array(new Paginator($query))),
             'Expected to return expected data even when DQL -> SQL translation is present in cache. Were SQL parameters translated again?'
         );
     }
@@ -117,23 +112,17 @@ class GH7820Test extends OrmFunctionalTestCase
 /** @Entity */
 class GH7820Line
 {
-    /**
-     * @var GH7820LineText
-     * @Id()
-     * @Column(type="Doctrine\Tests\ORM\Functional\Ticket\GH7820LineTextType", length=255)
-     */
-    private $text;
-
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    private $lineNumber;
-
-    public function __construct(GH7820LineText $text, int $index)
-    {
-        $this->text       = $text;
-        $this->lineNumber = $index;
+    public function __construct(
+        /**
+         * @Id()
+         * @Column(type="Doctrine\Tests\ORM\Functional\Ticket\GH7820LineTextType", length=255)
+         */
+        private GH7820LineText $text,
+        /**
+         * @Column(type="integer")
+         */
+        private int $lineNumber
+    ) {
     }
 
     public function toString(): string
@@ -142,14 +131,10 @@ class GH7820Line
     }
 }
 
-final class GH7820LineText
+final class GH7820LineText implements Stringable
 {
-    /** @var string */
-    private $text;
-
-    private function __construct(string $text)
+    private function __construct(private string $text)
     {
-        $this->text = $text;
     }
 
     public static function fromText(string $text): self

@@ -10,8 +10,6 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 /**
  * FlushEventTest
  */
@@ -93,7 +91,7 @@ class OnFlushListener
                 $em->persist($phone);
                 // Explicitly calculate the changeset since onFlush is raised
                 // after changeset calculation!
-                $uow->computeChangeSet($em->getClassMetadata(get_class($phone)), $phone);
+                $uow->computeChangeSet($em->getClassMetadata($phone::class), $phone);
 
                 // Take a snapshot because the UoW wont do this for us, because
                 // the UoW did not visit this collection.

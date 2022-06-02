@@ -10,6 +10,7 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
+use Doctrine\Tests\ORM\Functional\Locking\Doctrine\ORM\Query;
 use GearmanWorker;
 use InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -22,8 +23,7 @@ use function unserialize;
 
 class LockAgentWorker
 {
-    /** @var EntityManagerInterface */
-    private $em;
+    private ?EntityManagerInterface $em = null;
 
     public static function run(): void
     {
@@ -74,7 +74,7 @@ class LockAgentWorker
     {
         return $this->process($job, static function ($fixture, $em): void {
             $query = $em->createQuery($fixture['dql']);
-            assert($query instanceof Doctrine\ORM\Query);
+            assert($query instanceof Query);
             $query->setLockMode($fixture['lockMode']);
             $query->setParameters($fixture['dqlParams']);
             $result = $query->getResult();

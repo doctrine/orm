@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Tests\ORM\Functional\Ticket\Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
@@ -117,26 +118,20 @@ abstract class DDC2138UserFollowedObject
 class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
 {
     /**
-     * @ManyToOne(targetEntity="DDC2138User", inversedBy="followedStructures")
-     * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
-     * @var User $user
-     */
-    protected $user;
-
-    /**
-     * @ManyToOne(targetEntity="DDC2138Structure")
-     * @JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
-     * @var Structure $followedStructure
-     */
-    private $followedStructure;
-
-    /**
      * Construct a UserFollowedStructure entity
      */
-    public function __construct(User $user, Structure $followedStructure)
-    {
-        $this->user              = $user;
-        $this->followedStructure = $followedStructure;
+    public function __construct(
+        /**
+         * @ManyToOne(targetEntity="DDC2138User", inversedBy="followedStructures")
+         * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
+         */
+        protected User $user,
+        /**
+         * @ManyToOne(targetEntity="DDC2138Structure")
+         * @JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
+         */
+        private Structure $followedStructure
+    ) {
     }
 
     public function getUser(): User
@@ -159,26 +154,20 @@ class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
 class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
 {
     /**
-     * @ManyToOne(targetEntity="DDC2138User", inversedBy="followedUsers")
-     * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
-     * @var User $user
-     */
-    protected $user;
-
-    /**
-     * @ManyToOne(targetEntity="DDC2138User")
-     * @JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
-     * @var User $user
-     */
-    private $followedUser;
-
-    /**
      * Construct a UserFollowedUser entity
      */
-    public function __construct(User $user, User $followedUser)
-    {
-        $this->user         = $user;
-        $this->followedUser = $followedUser;
+    public function __construct(
+        /**
+         * @ManyToOne(targetEntity="DDC2138User", inversedBy="followedUsers")
+         * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
+         */
+        protected User $user,
+        /**
+         * @ManyToOne(targetEntity="DDC2138User")
+         * @JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
+         */
+        private User $followedUser
+    ) {
     }
 
     public function getUser(): User
@@ -247,7 +236,7 @@ class DDC2138User
         return $this;
     }
 
-    public function getFollowedUsers(): Doctrine\Common\Collections\Collection
+    public function getFollowedUsers(): Collection
     {
         return $this->followedUsers;
     }
@@ -266,7 +255,7 @@ class DDC2138User
         return $this;
     }
 
-    public function getFollowedStructures(): Doctrine\Common\Collections\Collection
+    public function getFollowedStructures(): Collection
     {
         return $this->followedStructures;
     }

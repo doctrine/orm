@@ -108,18 +108,14 @@ class DDC881Test extends OrmFunctionalTestCase
 class DDC881User
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
+    /** @Column(type="string", length=255) */
+    private ?string $name = null;
 
     /**
      * @psalm-var Collection<int, DDC881PhoneNumber>
@@ -144,24 +140,19 @@ class DDC881User
 class DDC881PhoneNumber
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
-     * @var DDC881User
      * @Id
      * @ManyToOne(targetEntity="DDC881User",cascade={"all"})
      */
-    private $user;
+    private ?DDC881User $user = null;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $phonenumber;
+    /** @Column(type="string", length=255) */
+    private ?string $phonenumber = null;
 
     /**
      * @psalm-var Collection<int, DDC881PhoneCall>
@@ -204,28 +195,23 @@ class DDC881PhoneNumber
 class DDC881PhoneCall
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var DDC881PhoneNumber
      * @ManyToOne(targetEntity="DDC881PhoneNumber", inversedBy="calls", cascade={"all"})
      * @JoinColumns({
      *  @JoinColumn(name="phonenumber_id", referencedColumnName="id"),
      *  @JoinColumn(name="user_id", referencedColumnName="user_id")
      * })
      */
-    private $phonenumber;
+    private ?DDC881PhoneNumber $phonenumber = null;
 
-    /**
-     * @var string
-     * @Column(type="string",nullable=true)
-     */
-    private $callDate;
+    /** @Column(type="string",nullable=true) */
+    private string $callDate;
 
     public function setPhoneNumber(DDC881PhoneNumber $phoneNumber): void
     {

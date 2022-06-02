@@ -98,20 +98,16 @@ class GH7661Participant
      * @GeneratedValue
      */
     public $id;
-    /**
-     * @var GH7661User
-     * @ManyToOne(targetEntity=GH7661User::class)
-     */
-    public $user;
-    /**
-     * @var GH7661Event
-     * @ManyToOne(targetEntity=GH7661Event::class)
-     */
-    public $event;
 
-    public function __construct(GH7661User $user, GH7661Event $event)
-    {
-        $this->user  = $user;
-        $this->event = $event;
+    public function __construct(
+        /**
+         * @ManyToOne(targetEntity=GH7661User::class)
+         */
+        public GH7661User $user,
+        /**
+         * @ManyToOne(targetEntity=GH7661Event::class)
+         */
+        public GH7661Event $event
+    ) {
     }
 }

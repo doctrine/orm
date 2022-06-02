@@ -26,15 +26,12 @@ class Country
      */
     protected $id;
 
-    /**
-     * @var string
-     * @Column(unique=true)
-     */
-    protected $name;
-
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+    public function __construct(
+        /**
+         * @Column(unique=true)
+         */
+        protected string $name
+    ) {
     }
 
     public function getId(): int

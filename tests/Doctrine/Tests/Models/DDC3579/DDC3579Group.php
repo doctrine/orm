@@ -19,20 +19,12 @@ use Doctrine\ORM\Mapping\ManyToMany;
 class DDC3579Group
 {
     /**
-     * @var int
      * @GeneratedValue
      * @Id
      * @Column(type="integer")
      */
     #[Id, GeneratedValue, Column(type: 'integer')]
-    private $id;
-
-    /**
-     * @var string|null
-     * @Column
-     */
-    #[Column]
-    private $name;
+    private int $id;
 
     /**
      * @psalm-var Collection<int, DDC3579Admin>
@@ -41,9 +33,12 @@ class DDC3579Group
     #[ManyToMany(targetEntity: DDC3579Admin::class, mappedBy: 'groups')]
     private $admins;
 
-    public function __construct(?string $name = null)
-    {
-        $this->name   = $name;
+    public function __construct(
+        /**
+         * @Column
+         */
+        #[Column] private ?string $name = null
+    ) {
         $this->admins = new ArrayCollection();
     }
 

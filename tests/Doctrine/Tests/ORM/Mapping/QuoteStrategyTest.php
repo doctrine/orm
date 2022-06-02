@@ -20,11 +20,9 @@ use Doctrine\Tests\OrmTestCase;
  */
 class QuoteStrategyTest extends OrmTestCase
 {
-    /** @var DefaultQuoteStrategy */
-    private $strategy;
+    private DefaultQuoteStrategy $strategy;
 
-    /** @var AbstractPlatform */
-    private $platform;
+    private AbstractPlatform $platform;
 
     protected function setUp(): void
     {

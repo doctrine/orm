@@ -13,8 +13,6 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 /**
  * @group DDC-1461
  */
@@ -45,7 +43,7 @@ class DDC1461Test extends OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
 
-        $user = $this->_em->find(get_class($user), $user->id);
+        $user = $this->_em->find($user::class, $user->id);
         self::assertNotNull($user->twitterAccount);
     }
 }

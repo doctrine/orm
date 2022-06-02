@@ -18,8 +18,7 @@ use PHPUnit\Framework\TestCase;
  */
 class QueryExpressionVisitorTest extends TestCase
 {
-    /** @var QueryExpressionVisitor */
-    private $visitor;
+    private QueryExpressionVisitor $visitor;
 
     protected function setUp(): void
     {

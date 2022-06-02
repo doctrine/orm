@@ -11,7 +11,6 @@ use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
 
 use function count;
-use function get_class;
 
 /**
  * @group DDC-2183
@@ -56,7 +55,7 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
 
         foreach ($this->attractionsInfo as $info) {
             self::assertTrue($this->cache->containsEntity(AttractionInfo::class, $info->getId()));
-            self::assertTrue($this->cache->containsEntity(get_class($info), $info->getId()));
+            self::assertTrue($this->cache->containsEntity($info::class, $info->getId()));
         }
     }
 

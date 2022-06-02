@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Stringable;
 
 /**
  * @group DDC-1998
@@ -96,14 +97,10 @@ class DDC1998Type extends StringType
     }
 }
 
-class DDC1998Id
+class DDC1998Id implements Stringable
 {
-    /** @var string */
-    private $val;
-
-    public function __construct(string $val)
+    public function __construct(private string $val)
     {
-        $this->val = $val;
     }
 
     public function __toString(): string

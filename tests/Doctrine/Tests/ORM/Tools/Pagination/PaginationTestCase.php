@@ -276,12 +276,11 @@ class Avatar
 abstract class Identified
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     public function getId(): int
     {

@@ -21,10 +21,8 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
 {
     /**
      * Identifier flattener
-     *
-     * @var IdentifierFlattener
      */
-    private $identifierFlattener;
+    private IdentifierFlattener $identifierFlattener;
 
     protected function setUp(): void
     {
@@ -44,7 +42,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(City::class),
                 ]
             );
-        } catch (ORMException $e) {
+        } catch (ORMException) {
         }
     }
 
@@ -78,7 +76,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         self::assertArrayHasKey('secondEntity', $id, 'It should be called secondEntity');
 
         self::assertInstanceOf(
-            '\Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity',
+            SecondRelatedEntity::class,
             $id['secondEntity'],
             'The entity should be an instance of SecondRelatedEntity'
         );

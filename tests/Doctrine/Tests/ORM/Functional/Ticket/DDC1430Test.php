@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -33,7 +34,7 @@ class DDC1430Test extends OrmFunctionalTestCase
                 ]
             );
             $this->loadFixtures();
-        } catch (Exception $exc) {
+        } catch (Exception) {
         }
     }
 
@@ -153,32 +154,23 @@ class DDC1430Order
      */
     protected $id;
 
-    /**
-     * @var DateTime
-     * @Column(name="created_at", type="datetime")
-     */
-    private $date;
+    /** @Column(name="created_at", type="datetime") */
+    private DateTime $date;
 
-    /**
-     * @var string
-     * @Column(name="order_status", type="string", length=255)
-     */
-    private $status;
-
-    /**
-     * @OneToMany(targetEntity="DDC1430OrderProduct", mappedBy="order", cascade={"persist", "remove"})
-     * @var ArrayCollection $products
-     */
-    private $products;
+    /** @OneToMany(targetEntity="DDC1430OrderProduct", mappedBy="order", cascade={"persist", "remove"}) */
+    private Collection $products;
 
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function __construct(string $status)
-    {
-        $this->status   = $status;
+    public function __construct(
+        /**
+         * @Column(name="order_status", type="string", length=255)
+         */
+        private string $status
+    ) {
         $this->date     = new DateTime();
         $this->products = new ArrayCollection();
     }
@@ -224,21 +216,17 @@ class DDC1430OrderProduct
     protected $id;
 
     /**
-     * @var DDC1430Order $order
      * @ManyToOne(targetEntity="DDC1430Order", inversedBy="products")
      * @JoinColumn(name="order_id", referencedColumnName="order_id", nullable = false)
      */
-    private $order;
+    private ?DDC1430Order $order = null;
 
-    /**
-     * @var float
-     * @Column(type="float")
-     */
-    private $value;
-
-    public function __construct(float $value)
-    {
-        $this->value = $value;
+    public function __construct(
+        /**
+         * @Column(type="float")
+         */
+        private float $value
+    ) {
     }
 
     public function getId(): int

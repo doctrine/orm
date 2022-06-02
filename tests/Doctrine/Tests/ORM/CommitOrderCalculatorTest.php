@@ -17,8 +17,7 @@ use Doctrine\Tests\OrmTestCase;
  */
 class CommitOrderCalculatorTest extends OrmTestCase
 {
-    /** @var CommitOrderCalculator */
-    private $_calc;
+    private CommitOrderCalculator $_calc;
 
     protected function setUp(): void
     {
@@ -101,7 +100,7 @@ class CommitOrderCalculatorTest extends OrmTestCase
         ];
 
         // We want to perform a strict comparison of the array
-        self::assertContains($sorted, $correctOrders, '', false, true);
+        self::assertContains($sorted, $correctOrders, '');
     }
 }
 

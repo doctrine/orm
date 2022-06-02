@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\DBAL\Platforms\SqlitePlatform;
-use Doctrine\ORM\Tools\Console\Command\InfoCommand;
 use Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -20,11 +19,9 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class ValidateSchemaCommandTest extends OrmFunctionalTestCase
 {
-    /** @var InfoCommand */
-    private $command;
+    private ValidateSchemaCommand $command;
 
-    /** @var CommandTester */
-    private $tester;
+    private CommandTester $tester;
 
     protected function setUp(): void
     {

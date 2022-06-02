@@ -34,7 +34,7 @@ class DDC2252Test extends OrmFunctionalTestCase
     private $membership;
 
     /** @psalm-var list<DDC2252Privilege> */
-    private $privileges = [];
+    private array $privileges = [];
 
     protected function setUp(): void
     {
@@ -214,22 +214,6 @@ class DDC2252User
 class DDC2252Membership
 {
     /**
-     * @var DDC2252User
-     * @Id
-     * @ManyToOne(targetEntity="DDC2252User", inversedBy="memberships")
-     * @JoinColumn(name="uid", referencedColumnName="uid")
-     */
-    protected $userAccount;
-
-    /**
-     * @var DDC2252MerchantAccount
-     * @Id
-     * @ManyToOne(targetEntity="DDC2252MerchantAccount")
-     * @JoinColumn(name="mch_accountid", referencedColumnName="accountid")
-     */
-    protected $merchantAccount;
-
-    /**
      * @psalm-var Collection<int, DDC2252Privilege>
      * @ManyToMany(targetEntity="DDC2252Privilege", indexBy="privilegeid")
      * @JoinTable(name="ddc2252_user_mch_account_privilege",
@@ -244,11 +228,21 @@ class DDC2252Membership
      */
     protected $privileges;
 
-    public function __construct(DDC2252User $user, DDC2252MerchantAccount $merchantAccount)
-    {
-        $this->userAccount     = $user;
-        $this->merchantAccount = $merchantAccount;
-        $this->privileges      = new ArrayCollection();
+    public function __construct(
+        /**
+         * @Id
+         * @ManyToOne(targetEntity="DDC2252User", inversedBy="memberships")
+         * @JoinColumn(name="uid", referencedColumnName="uid")
+         */
+        protected DDC2252User $userAccount,
+        /**
+         * @Id
+         * @ManyToOne(targetEntity="DDC2252MerchantAccount")
+         * @JoinColumn(name="mch_accountid", referencedColumnName="accountid")
+         */
+        protected DDC2252MerchantAccount $merchantAccount
+    ) {
+        $this->privileges = new ArrayCollection();
     }
 
     public function addPrivilege(DDC2252Privilege $privilege): void

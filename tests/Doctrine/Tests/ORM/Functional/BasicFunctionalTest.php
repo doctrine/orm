@@ -20,8 +20,6 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
 
-use function get_class;
-
 class BasicFunctionalTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -616,7 +614,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         // test find() with leading backslash at the same time
-        $articleNew = $this->_em->find('\Doctrine\Tests\Models\CMS\CmsArticle', $articleId);
+        $articleNew = $this->_em->find(CmsArticle::class, $articleId);
         self::assertTrue($this->_em->contains($articleNew));
         self::assertEquals('Lorem ipsum dolor sunt.', $articleNew->text);
 
@@ -896,7 +894,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        self::assertEquals('Benjamin E.', $this->_em->find(get_class($user), $userId)->name);
+        self::assertEquals('Benjamin E.', $this->_em->find($user::class, $userId)->name);
     }
 
     /**
@@ -947,7 +945,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->find(get_class($user), $user->id);
+        $user = $this->_em->find($user::class, $user->id);
         self::assertEquals('administrator', $user->status);
     }
 
@@ -1024,7 +1022,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        self::assertNull($this->_em->find(get_class($user), $userId));
+        self::assertNull($this->_em->find($user::class, $userId));
     }
 
     /**

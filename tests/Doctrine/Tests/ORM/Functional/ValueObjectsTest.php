@@ -375,27 +375,22 @@ class DDC93Person
     public $id;
 
     /**
-     * @var string|null
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    /**
-     * @var DDC93Address|null
-     * @Embedded(class="DDC93Address")
-     */
-    public $address;
-
-    /**
      * @var DDC93Timestamps
      * @Embedded(class = "DDC93Timestamps")
      */
     public $timestamps;
 
-    public function __construct(?string $name = null, ?DDC93Address $address = null)
-    {
-        $this->name       = $name;
-        $this->address    = $address;
+    public function __construct(
+        /**
+         * @var string|null
+         * @Column(type="string", length=255)
+         */
+        public $name = null,
+        /**
+         * @Embedded(class="DDC93Address")
+         */
+        public ?DDC93Address $address = null
+    ) {
         $this->timestamps = new DDC93Timestamps(new DateTime());
     }
 }
@@ -405,15 +400,12 @@ class DDC93Person
  */
 class DDC93Timestamps
 {
-    /**
-     * @var DateTime
-     * @Column(type = "datetime")
-     */
-    public $createdAt;
-
-    public function __construct(DateTime $createdAt)
-    {
-        $this->createdAt = $createdAt;
+    public function __construct(
+        /**
+         * @Column(type = "datetime")
+         */
+        public DateTime $createdAt
+    ) {
     }
 }
 
@@ -435,15 +427,12 @@ abstract class DDC93Vehicle
      */
     public $id;
 
-    /**
-     * @var DDC93Address
-     * @Embedded(class = "DDC93Address")
-     */
-    public $address;
-
-    public function __construct(DDC93Address $address)
-    {
-        $this->address = $address;
+    public function __construct(
+        /**
+         * @Embedded(class = "DDC93Address")
+         */
+        public DDC93Address $address
+    ) {
     }
 }
 
@@ -459,15 +448,12 @@ class DDC93Car extends DDC93Vehicle
  */
 class DDC93Country
 {
-    /**
-     * @var string|null
-     * @Column(type="string", nullable=true)
-     */
-    public $name;
-
-    public function __construct(?string $name = null)
-    {
-        $this->name = $name;
+    public function __construct(
+        /**
+         * @Column(type="string", nullable=true)
+         */
+        public ?string $name = null
+    ) {
     }
 }
 
@@ -476,40 +462,28 @@ class DDC93Country
  */
 class DDC93Address
 {
-    /**
-     * @var string|null
-     * @Column(type="string", length=255)
-     */
-    public $street;
-
-    /**
-     * @var string|null
-     * @Column(type="string", length=255)
-     */
-    public $zip;
-
-    /**
-     * @var string|null
-     * @Column(type="string", length=255)
-     */
-    public $city;
-
-    /**
-     * @var DDC93Country|null
-     * @Embedded(class = "DDC93Country")
-     */
-    public $country;
-
     public function __construct(
-        ?string $street = null,
-        ?string $zip = null,
-        ?string $city = null,
-        ?DDC93Country $country = null
+        /**
+         * @var string|null
+         * @Column(type="string", length=255)
+         */
+        public $street = null,
+        /**
+         * @var string|null
+         * @Column(type="string", length=255)
+         */
+        public $zip = null,
+        /**
+         * @var string|null
+         * @Column(type="string", length=255)
+         */
+        public $city = null,
+        /**
+         * @var DDC93Country
+         * @Embedded(class = "DDC93Country")
+         */
+        public $country = null
     ) {
-        $this->street  = $street;
-        $this->zip     = $zip;
-        $this->city    = $city;
-        $this->country = $country;
     }
 }
 
@@ -517,18 +491,14 @@ class DDC93Address
 class DDC93Customer
 {
     /**
-     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var DDC93ContactInfo
-     * @Embedded(class = "DDC93ContactInfo", columnPrefix = "contact_info_")
-     */
-    private $contactInfo;
+    /** @Embedded(class = "DDC93ContactInfo", columnPrefix = "contact_info_") */
+    private DDC93ContactInfo $contactInfo;
 }
 
 /** @Embeddable */
@@ -552,22 +522,16 @@ class DDC93ContactInfo
  */
 class DDC3028PersonWithPrefix
 {
-    /**
-     * @var DDC3028Id|null
-     * @Embedded(class="DDC3028Id", columnPrefix = "foobar_")
-     */
-    public $id;
-
-    /**
-     * @var DDC3028NestedEmbeddable|null
-     * @Embedded(class="DDC3028NestedEmbeddable", columnPrefix = "bloo_")
-     */
-    public $nested;
-
-    public function __construct(?DDC3028Id $id = null, ?DDC3028NestedEmbeddable $nested = null)
-    {
-        $this->id     = $id;
-        $this->nested = $nested;
+    public function __construct(
+        /**
+         * @Embedded(class="DDC3028Id", columnPrefix = "foobar_")
+         */
+        public ?DDC3028Id $id = null,
+        /**
+         * @Embedded(class="DDC3028NestedEmbeddable", columnPrefix = "bloo_")
+         */
+        public ?DDC3028NestedEmbeddable $nested = null
+    ) {
     }
 }
 
@@ -576,22 +540,16 @@ class DDC3028PersonWithPrefix
  */
 class DDC3028PersonEmptyPrefix
 {
-    /**
-     * @var DDC3028Id|null
-     * @Embedded(class="DDC3028Id", columnPrefix = "")
-     */
-    public $id;
-
-    /**
-     * @var DDC3028NestedEmbeddable|null
-     * @Embedded(class="DDC3028NestedEmbeddable", columnPrefix = "")
-     */
-    public $nested;
-
-    public function __construct(?DDC3028Id $id = null, ?DDC3028NestedEmbeddable $nested = null)
-    {
-        $this->id     = $id;
-        $this->nested = $nested;
+    public function __construct(
+        /**
+         * @Embedded(class="DDC3028Id", columnPrefix = "")
+         */
+        public ?DDC3028Id $id = null,
+        /**
+         * @Embedded(class="DDC3028NestedEmbeddable", columnPrefix = "")
+         */
+        public ?DDC3028NestedEmbeddable $nested = null
+    ) {
     }
 }
 
@@ -600,15 +558,12 @@ class DDC3028PersonEmptyPrefix
  */
 class DDC3028PersonPrefixFalse
 {
-    /**
-     * @var DDC3028Id|null
-     * @Embedded(class="DDC3028Id", columnPrefix = false)
-     */
-    public $id;
-
-    public function __construct(?DDC3028Id $id = null)
-    {
-        $this->id = $id;
+    public function __construct(
+        /**
+         * @Embedded(class="DDC3028Id", columnPrefix = false)
+         */
+        public ?DDC3028Id $id = null
+    ) {
     }
 }
 
@@ -617,16 +572,13 @@ class DDC3028PersonPrefixFalse
  */
 class DDC3028Id
 {
-    /**
-     * @var string|null
-     * @Id
-     * @Column(type="string", length=255)
-     */
-    public $id;
-
-    public function __construct(?string $id = null)
-    {
-        $this->id = $id;
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="string", length=255)
+         */
+        public ?string $id = null
+    ) {
     }
 }
 
@@ -635,32 +587,20 @@ class DDC3028Id
  */
 class DDC3028NestedEmbeddable
 {
-    /**
-     * @var DDC3028Id|null
-     * @Embedded(class="DDC3028Id", columnPrefix = "foo_")
-     */
-    public $nestedWithPrefix;
-
-    /**
-     * @var DDC3028Id|null
-     * @Embedded(class="DDC3028Id", columnPrefix = "")
-     */
-    public $nestedWithEmptyPrefix;
-
-    /**
-     * @var DDC3028Id|null
-     * @Embedded(class="DDC3028Id", columnPrefix = false)
-     */
-    public $nestedWithPrefixFalse;
-
     public function __construct(
-        ?DDC3028Id $nestedWithPrefix = null,
-        ?DDC3028Id $nestedWithEmptyPrefix = null,
-        ?DDC3028Id $nestedWithPrefixFalse = null
+        /**
+         * @Embedded(class="DDC3028Id", columnPrefix = "foo_")
+         */
+        public ?DDC3028Id $nestedWithPrefix = null,
+        /**
+         * @Embedded(class="DDC3028Id", columnPrefix = "")
+         */
+        public ?DDC3028Id $nestedWithEmptyPrefix = null,
+        /**
+         * @Embedded(class="DDC3028Id", columnPrefix = false)
+         */
+        public ?DDC3028Id $nestedWithPrefixFalse = null
     ) {
-        $this->nestedWithPrefix      = $nestedWithPrefix;
-        $this->nestedWithEmptyPrefix = $nestedWithEmptyPrefix;
-        $this->nestedWithPrefixFalse = $nestedWithPrefixFalse;
     }
 }
 

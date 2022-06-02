@@ -96,7 +96,7 @@ class TypeTest extends OrmFunctionalTestCase
         $dql       = 'SELECT s FROM ' . SerializationModel::class . ' s';
         $serialize = $this->_em->createQuery($dql)->getSingleResult();
 
-        self::assertInstanceOf('stdClass', $serialize->object);
+        self::assertInstanceOf(stdClass::class, $serialize->object);
     }
 
     public function testDate(): void

@@ -33,7 +33,7 @@ class DDC599Test extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(DDC599Child::class),
                 ]
             );
-        } catch (Exception $ignored) {
+        } catch (Exception) {
         }
     }
 

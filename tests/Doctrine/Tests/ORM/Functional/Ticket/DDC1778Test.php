@@ -13,11 +13,9 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1778Test extends OrmFunctionalTestCase
 {
-    /** @var CmsUser */
-    private $user;
+    private ?CmsUser $user;
 
-    /** @var CmsPhonenumber */
-    private $phone;
+    private ?CmsPhonenumber $phone;
 
     protected function setUp(): void
     {

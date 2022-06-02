@@ -149,20 +149,19 @@ class ReadOnlyEntity
      * @var int
      */
     public $id;
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    public $numericValue;
 
-    public function __construct($name, $number)
-    {
-        $this->name         = $name;
-        $this->numericValue = $number;
+    /**
+     * @param int $number
+     */
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        public string $name,
+        /**
+         * @Column(type="integer")
+         */
+        public $numericValue
+    ) {
     }
 }

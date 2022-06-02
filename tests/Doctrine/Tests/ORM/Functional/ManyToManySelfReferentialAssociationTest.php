@@ -23,17 +23,13 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     /** @var string */
     protected $table = 'ecommerce_products_related';
 
-    /** @var ECommerceProduct */
-    private $firstProduct;
+    private ECommerceProduct $firstProduct;
 
-    /** @var ECommerceProduct */
-    private $secondProduct;
+    private ECommerceProduct $secondProduct;
 
-    /** @var ECommerceProduct */
-    private $firstRelated;
+    private ECommerceProduct $firstRelated;
 
-    /** @var ECommerceProduct */
-    private $secondRelated;
+    private ECommerceProduct $secondRelated;
 
     protected function setUp(): void
     {

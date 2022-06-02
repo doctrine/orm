@@ -20,21 +20,18 @@ use Doctrine\Tests\DbalTypes\CustomIdObject;
 class CustomIdObjectTypeParent
 {
     /**
-     * @Id
-     * @Column(type="CustomIdObject", length=255)
-     * @var CustomIdObject
-     */
-    public $id;
-
-    /**
      * @psalm-var Collection<int, CustomIdObjectTypeChild>
      * @OneToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild", cascade={"persist", "remove"}, mappedBy="parent")
      */
     public $children;
 
-    public function __construct(CustomIdObject $id)
-    {
-        $this->id       = $id;
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="CustomIdObject", length=255)
+         */
+        public CustomIdObject $id
+    ) {
         $this->children = new ArrayCollection();
     }
 }

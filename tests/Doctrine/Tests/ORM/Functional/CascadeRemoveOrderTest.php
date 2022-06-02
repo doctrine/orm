@@ -77,19 +77,17 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 class CascadeRemoveOrderEntityO
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var CascadeRemoveOrderEntityG
      * @OneToOne(targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG")
      * @JoinColumn(nullable=true, onDelete="SET NULL")
      */
-    private $oneToOneG;
+    private ?CascadeRemoveOrderEntityG $oneToOneG = null;
 
     /**
      * @psalm-var Collection<int, CascadeRemoveOrderEntityG>
@@ -141,29 +139,22 @@ class CascadeRemoveOrderEntityO
 class CascadeRemoveOrderEntityG
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var CascadeRemoveOrderEntityO
-     * @ManyToOne(
-     *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO",
-     *     inversedBy="oneToMany"
-     * )
-     */
-    private $ownerO;
-
-    /** @var int */
-    private $position;
-
-    public function __construct(CascadeRemoveOrderEntityO $eO, $position = 1)
-    {
-        $this->position = $position;
-        $this->ownerO   = $eO;
+    public function __construct(
+        /**
+         * @ManyToOne(
+         *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO",
+         *     inversedBy="oneToMany"
+         * )
+         */
+        private CascadeRemoveOrderEntityO $ownerO,
+        private int $position = 1
+    ) {
         $this->ownerO->addOneToManyG($this);
     }
 

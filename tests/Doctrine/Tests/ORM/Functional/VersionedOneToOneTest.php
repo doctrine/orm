@@ -27,7 +27,7 @@ class VersionedOneToOneTest extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(SecondRelatedEntity::class),
                 ]
             );
-        } catch (ORMException $e) {
+        } catch (ORMException) {
         }
     }
 

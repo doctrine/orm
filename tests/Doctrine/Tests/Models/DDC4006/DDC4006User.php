@@ -12,9 +12,6 @@ use Doctrine\ORM\Mapping\Entity;
  */
 class DDC4006User
 {
-    /**
-     * @var DDC4006UserId
-     * @Embedded(class="DDC4006UserId")
-     */
-    private $id;
+    /** @Embedded(class="DDC4006UserId") */
+    private DDC4006UserId $id;
 }

@@ -40,14 +40,6 @@ class Travel
     protected $createdAt;
 
     /**
-     * @var Traveler
-     * @Cache
-     * @ManyToOne(targetEntity="Traveler", inversedBy="travels")
-     * @JoinColumn(name="traveler_id", referencedColumnName="id")
-     */
-    protected $traveler;
-
-    /**
      * @psalm-var Collection<int, City>
      * @Cache
      * @ManyToMany(targetEntity="City", inversedBy="travels", cascade={"persist", "remove"})
@@ -62,9 +54,14 @@ class Travel
      */
     public $visitedCities;
 
-    public function __construct(Traveler $traveler)
-    {
-        $this->traveler      = $traveler;
+    public function __construct(
+        /**
+         * @Cache
+         * @ManyToOne(targetEntity="Traveler", inversedBy="travels")
+         * @JoinColumn(name="traveler_id", referencedColumnName="id")
+         */
+        protected Traveler $traveler
+    ) {
         $this->createdAt     = new DateTime('now');
         $this->visitedCities = new ArrayCollection();
     }

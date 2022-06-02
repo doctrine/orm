@@ -171,24 +171,17 @@ class DDC2306UserAddress
      */
     public $id;
 
-    /**
-     * @var DDC2306User
-     * @ManyToOne(targetEntity="DDC2306User")
-     */
-    public $user;
-
-    /**
-     * @var DDC2306Address
-     * @ManyToOne(targetEntity="DDC2306Address", fetch="LAZY")
-     */
-    public $address;
-
     /** Constructor */
-    public function __construct(DDC2306User $user, DDC2306Address $address)
-    {
-        $this->user    = $user;
-        $this->address = $address;
-
+    public function __construct(
+        /**
+         * @ManyToOne(targetEntity="DDC2306User")
+         */
+        public DDC2306User $user,
+        /**
+         * @ManyToOne(targetEntity="DDC2306Address", fetch="LAZY")
+         */
+        public DDC2306Address $address
+    ) {
         $user->addresses->add($this);
         $address->users->add($this);
     }

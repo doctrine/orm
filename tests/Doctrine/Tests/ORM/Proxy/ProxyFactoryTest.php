@@ -31,14 +31,11 @@ use function sys_get_temp_dir;
  */
 class ProxyFactoryTest extends OrmTestCase
 {
-    /** @var UnitOfWorkMock */
-    private $uowMock;
+    private UnitOfWorkMock $uowMock;
 
-    /** @var EntityManagerMock */
-    private $emMock;
+    private EntityManagerMock $emMock;
 
-    /** @var ProxyFactory */
-    private $proxyFactory;
+    private ProxyFactory $proxyFactory;
 
     protected function setUp(): void
     {
@@ -139,7 +136,7 @@ class ProxyFactoryTest extends OrmTestCase
         try {
             $proxy->getDescription();
             self::fail('An exception was expected to be raised');
-        } catch (EntityNotFoundException $exception) {
+        } catch (EntityNotFoundException) {
         }
 
         self::assertFalse($proxy->__isInitialized());
@@ -170,7 +167,7 @@ class ProxyFactoryTest extends OrmTestCase
         try {
             $cloned = clone $proxy;
             self::fail('An exception was expected to be raised');
-        } catch (EntityNotFoundException $exception) {
+        } catch (EntityNotFoundException) {
         }
 
         self::assertFalse($proxy->__isInitialized());

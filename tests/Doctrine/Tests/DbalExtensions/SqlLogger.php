@@ -8,12 +8,8 @@ use Psr\Log\AbstractLogger;
 
 final class SqlLogger extends AbstractLogger
 {
-    /** @var QueryLog */
-    private $queryLog;
-
-    public function __construct(QueryLog $queryLog)
+    public function __construct(private QueryLog $queryLog)
     {
-        $this->queryLog = $queryLog;
     }
 
     public function log($level, $message, array $context = []): void

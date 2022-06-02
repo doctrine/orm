@@ -117,30 +117,24 @@ class GH5762Test extends OrmFunctionalTestCase
 class GH5762Driver
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="NONE")
-     */
-    public $id;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    /**
      * @psalm-var Collection<int, GH5762DriverRide>
      * @OneToMany(targetEntity="GH5762DriverRide", mappedBy="driver")
      */
     public $driverRides;
 
-    public function __construct(int $id, string $name)
-    {
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="integer")
+         * @GeneratedValue(strategy="NONE")
+         */
+        public int $id,
+        /**
+         * @Column(type="string", length=255)
+         */
+        public string $name
+    ) {
         $this->driverRides = new ArrayCollection();
-        $this->id          = $id;
-        $this->name        = $name;
     }
 }
 
@@ -150,27 +144,20 @@ class GH5762Driver
  */
 class GH5762DriverRide
 {
-    /**
-     * @var GH5762Driver
-     * @Id
-     * @ManyToOne(targetEntity="GH5762Driver", inversedBy="driverRides")
-     * @JoinColumn(name="driver_id", referencedColumnName="id")
-     */
-    public $driver;
-
-    /**
-     * @var GH5762Car
-     * @Id
-     * @ManyToOne(targetEntity="GH5762Car", inversedBy="carRides")
-     * @JoinColumn(name="car", referencedColumnName="brand")
-     */
-    public $car;
-
-    public function __construct(GH5762Driver $driver, GH5762Car $car)
-    {
-        $this->driver = $driver;
-        $this->car    = $car;
-
+    public function __construct(
+        /**
+         * @Id
+         * @ManyToOne(targetEntity="GH5762Driver", inversedBy="driverRides")
+         * @JoinColumn(name="driver_id", referencedColumnName="id")
+         */
+        public GH5762Driver $driver,
+        /**
+         * @Id
+         * @ManyToOne(targetEntity="GH5762Car", inversedBy="carRides")
+         * @JoinColumn(name="car", referencedColumnName="brand")
+         */
+        public GH5762Car $car
+    ) {
         $this->driver->driverRides->add($this);
         $this->car->carRides->add($this);
     }
@@ -183,29 +170,23 @@ class GH5762DriverRide
 class GH5762Car
 {
     /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=25)
-     * @GeneratedValue(strategy="NONE")
-     */
-    public $brand;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $model;
-
-    /**
      * @psalm-var Collection<int, GH5762DriverRide>
      * @OneToMany(targetEntity="GH5762DriverRide", mappedBy="car")
      */
     public $carRides;
 
-    public function __construct($brand, $model)
-    {
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="string", length=25)
+         * @GeneratedValue(strategy="NONE")
+         */
+        public string $brand,
+        /**
+         * @Column(type="string", length=255)
+         */
+        public string $model
+    ) {
         $this->carRides = new ArrayCollection();
-        $this->brand    = $brand;
-        $this->model    = $model;
     }
 }

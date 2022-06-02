@@ -28,7 +28,7 @@ use const STDERR;
 class TestUtil
 {
     /** @var bool Whether the database schema is initialized. */
-    private static $initialized = false;
+    private static bool $initialized = false;
 
     /**
      * Gets a <b>real</b> database connection using the following parameters
@@ -96,7 +96,7 @@ class TestUtil
 
             try {
                 $schemaManager->dropDatabase($dbname);
-            } catch (DatabaseObjectNotFoundException $e) {
+            } catch (DatabaseObjectNotFoundException) {
             }
 
             $schemaManager->createDatabase($dbname);

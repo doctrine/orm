@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
-use Doctrine\Tests\Models;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
+use Doctrine\Tests\Models\ValueConversionType\InversedOneToManyExtraLazyEntity;
+use Doctrine\Tests\Models\ValueConversionType\OwningManyToOneExtraLazyEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -64,7 +65,7 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
     public function testThatExtraLazyCollectionIsCounted(): void
     {
         $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
+            InversedOneToManyExtraLazyEntity::class,
             'abc'
         );
 
@@ -74,12 +75,12 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
     public function testThatExtraLazyCollectionContainsAnEntity(): void
     {
         $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
+            InversedOneToManyExtraLazyEntity::class,
             'abc'
         );
 
         $owning = $this->_em->find(
-            Models\ValueConversionType\OwningManyToOneExtraLazyEntity::class,
+            OwningManyToOneExtraLazyEntity::class,
             'def'
         );
 
@@ -89,7 +90,7 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
     public function testThatExtraLazyCollectionContainsAnIndexbyKey(): void
     {
         $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
+            InversedOneToManyExtraLazyEntity::class,
             'abc'
         );
 
@@ -99,7 +100,7 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
     public function testThatASliceOfTheExtraLazyCollectionIsLoaded(): void
     {
         $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
+            InversedOneToManyExtraLazyEntity::class,
             'abc'
         );
 

@@ -15,11 +15,9 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
 {
-    /** @var ECommerceCustomer */
-    private $customer;
+    private ECommerceCustomer $customer;
 
-    /** @var ECommerceCart */
-    private $cart;
+    private ECommerceCart $cart;
 
     protected function setUp(): void
     {

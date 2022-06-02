@@ -18,8 +18,7 @@ use Doctrine\Tests\OrmTestCase;
  */
 class DeleteSqlGenerationTest extends OrmTestCase
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     protected function setUp(): void
     {

@@ -6,6 +6,14 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\AST\ComparisonExpression;
+use Doctrine\ORM\Query\AST\ConditionalPrimary;
+use Doctrine\ORM\Query\AST\Literal;
+use Doctrine\ORM\Query\AST\PathExpression;
+use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\AST\WhereClause;
+use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TreeWalkerAdapter;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
 use Doctrine\Tests\DbalTypes\CustomIdObjectType;
@@ -614,7 +622,7 @@ class PaginationTest extends OrmFunctionalTestCase
 
         // If the Paginator detects the custom output walker it should fall back to using the
         // Tree walkers for pagination, which leads to an exception. If the query works, the output walkers were used
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, Query\SqlWalker::class);
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, SqlWalker::class);
         $paginator = new Paginator($query);
 
         $this->expectException(RuntimeException::class);
@@ -702,7 +710,7 @@ class PaginationTest extends OrmFunctionalTestCase
         self::assertCount(2, $getCountQuery->invoke($paginator)->getParameters());
         self::assertCount(9, $paginator);
 
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, Query\SqlWalker::class);
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, SqlWalker::class);
 
         $paginator = new Paginator($query);
 
@@ -835,21 +843,21 @@ SQL
     }
 }
 
-class CustomPaginationTestTreeWalker extends Query\TreeWalkerAdapter
+class CustomPaginationTestTreeWalker extends TreeWalkerAdapter
 {
-    public function walkSelectStatement(Query\AST\SelectStatement $selectStatement): void
+    public function walkSelectStatement(SelectStatement $selectStatement): void
     {
-        $condition = new Query\AST\ConditionalPrimary();
+        $condition = new ConditionalPrimary();
 
-        $path       = new Query\AST\PathExpression(Query\AST\PathExpression::TYPE_STATE_FIELD, 'u', 'name');
-        $path->type = Query\AST\PathExpression::TYPE_STATE_FIELD;
+        $path       = new PathExpression(PathExpression::TYPE_STATE_FIELD, 'u', 'name');
+        $path->type = PathExpression::TYPE_STATE_FIELD;
 
-        $condition->simpleConditionalExpression = new Query\AST\ComparisonExpression(
+        $condition->simpleConditionalExpression = new ComparisonExpression(
             $path,
             '=',
-            new Query\AST\Literal(Query\AST\Literal::STRING, 'Name1')
+            new Literal(Literal::STRING, 'Name1')
         );
 
-        $selectStatement->whereClause = new Query\AST\WhereClause($condition);
+        $selectStatement->whereClause = new WhereClause($condition);
     }
 }

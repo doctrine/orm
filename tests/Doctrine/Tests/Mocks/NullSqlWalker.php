@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\ORM\Query\AST;
+use Doctrine\ORM\Query\AST\DeleteStatement;
+use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\AST\UpdateStatement;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\SqlWalker;
 
@@ -14,17 +16,17 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class NullSqlWalker extends SqlWalker
 {
-    public function walkSelectStatement(AST\SelectStatement $AST): string
+    public function walkSelectStatement(SelectStatement $AST): string
     {
         return '';
     }
 
-    public function walkUpdateStatement(AST\UpdateStatement $AST): string
+    public function walkUpdateStatement(UpdateStatement $AST): string
     {
         return '';
     }
 
-    public function walkDeleteStatement(AST\DeleteStatement $AST): string
+    public function walkDeleteStatement(DeleteStatement $AST): string
     {
         return '';
     }

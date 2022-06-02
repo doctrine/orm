@@ -86,25 +86,19 @@ class GH6217AssociatedEntity
  */
 class GH6217FetchedEntity
 {
-    /**
-     * @var GH6217AssociatedEntity
-     * @Id
-     * @Cache("NONSTRICT_READ_WRITE")
-     * @ManyToOne(targetEntity=GH6217AssociatedEntity::class)
-     */
-    public $lazy;
-
-    /**
-     * @var GH6217AssociatedEntity
-     * @Id
-     * @Cache("NONSTRICT_READ_WRITE")
-     * @ManyToOne(targetEntity=GH6217AssociatedEntity::class, fetch="EAGER")
-     */
-    public $eager;
-
-    public function __construct(GH6217AssociatedEntity $lazy, GH6217AssociatedEntity $eager)
-    {
-        $this->lazy  = $lazy;
-        $this->eager = $eager;
+    public function __construct(
+        /**
+         * @Id
+         * @Cache("NONSTRICT_READ_WRITE")
+         * @ManyToOne(targetEntity=GH6217AssociatedEntity::class)
+         */
+        public GH6217AssociatedEntity $lazy,
+        /**
+         * @Id
+         * @Cache("NONSTRICT_READ_WRITE")
+         * @ManyToOne(targetEntity=GH6217AssociatedEntity::class, fetch="EAGER")
+         */
+        public GH6217AssociatedEntity $eager
+    ) {
     }
 }

@@ -22,17 +22,13 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     /** @var string */
     protected $table = 'ecommerce_products_categories';
 
-    /** @var ECommerceProduct */
-    private $firstProduct;
+    private ECommerceProduct $firstProduct;
 
-    /** @var ECommerceProduct */
-    private $secondProduct;
+    private ECommerceProduct $secondProduct;
 
-    /** @var ECommerceCategory */
-    private $firstCategory;
+    private ECommerceCategory $firstCategory;
 
-    /** @var ECommerceCategory */
-    private $secondCategory;
+    private ECommerceCategory $secondCategory;
 
     protected function setUp(): void
     {

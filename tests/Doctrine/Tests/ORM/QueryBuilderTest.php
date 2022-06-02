@@ -21,7 +21,6 @@ use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
 
 use function array_filter;
-use function get_class;
 
 /**
  * Test case for the QueryBuilder class used to build DQL query string in a
@@ -629,7 +628,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u');
         $q  = $qb->getQuery();
 
-        self::assertEquals(Query::class, get_class($q));
+        self::assertEquals(Query::class, $q::class);
     }
 
     public function testSetParameter(): void

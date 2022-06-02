@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Stringable;
 
 /**
  * @group DDC-2579
@@ -90,17 +91,15 @@ class DDC2579Entity
      */
     public $assoc;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    public $value;
-
-    public function __construct(DDC2579EntityAssoc $assoc, int $value = 0)
-    {
+    public function __construct(
+        DDC2579EntityAssoc $assoc,
+        /**
+         * @Column(type="integer")
+         */
+        public int $value = 0
+    ) {
         $this->id    = $assoc->assocAssoc->associationId;
         $this->assoc = $assoc;
-        $this->value = $value;
     }
 }
 
@@ -109,17 +108,15 @@ class DDC2579Entity
  */
 class DDC2579EntityAssoc
 {
-    /**
-     * @var DDC2579AssocAssoc
-     * @Id
-     * @ManyToOne(targetEntity="DDC2579AssocAssoc")
-     * @JoinColumn(name="association_id", referencedColumnName="associationId")
-     */
-    public $assocAssoc;
-
-    public function __construct(DDC2579AssocAssoc $assocAssoc)
-    {
-        $this->assocAssoc = $assocAssoc;
+    public function __construct(
+        /**
+         * @var DDC2579AssocAssoc
+         * @Id
+         * @ManyToOne(targetEntity="DDC2579AssocAssoc")
+         * @JoinColumn(name="association_id", referencedColumnName="associationId")
+         */
+        public $assocAssoc
+    ) {
     }
 }
 
@@ -128,16 +125,13 @@ class DDC2579EntityAssoc
  */
 class DDC2579AssocAssoc
 {
-    /**
-     * @var DDC2579Id
-     * @Id
-     * @Column(type="ddc2579", length=255)
-     */
-    public $associationId;
-
-    public function __construct(DDC2579Id $id)
-    {
-        $this->associationId = $id;
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="ddc2579", length=255)
+         */
+        public DDC2579Id $associationId
+    ) {
     }
 }
 
@@ -168,14 +162,10 @@ class DDC2579Type extends StringType
     }
 }
 
-class DDC2579Id
+class DDC2579Id implements Stringable
 {
-    /** @var string */
-    private $val;
-
-    public function __construct(string $val)
+    public function __construct(private string $val)
     {
-        $this->val = $val;
     }
 
     public function __toString(): string

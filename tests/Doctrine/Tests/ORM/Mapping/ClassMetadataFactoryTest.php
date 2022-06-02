@@ -36,7 +36,10 @@ use Doctrine\Tests\Models\DDC4006\DDC4006User;
 use Doctrine\Tests\Models\JoinedInheritanceType\AnotherChildClass;
 use Doctrine\Tests\Models\JoinedInheritanceType\ChildClass;
 use Doctrine\Tests\Models\JoinedInheritanceType\RootClass;
-use Doctrine\Tests\Models\Quote;
+use Doctrine\Tests\Models\Quote\Address;
+use Doctrine\Tests\Models\Quote\Group;
+use Doctrine\Tests\Models\Quote\Phone;
+use Doctrine\Tests\Models\Quote\User;
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobalArticle;
 use Exception;
@@ -323,10 +326,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $em     = $this->createEntityManager($driver);
         $cmf->setEntityManager($em);
 
-        $userMetadata    = $cmf->getMetadataFor(Quote\User::class);
-        $phoneMetadata   = $cmf->getMetadataFor(Quote\Phone::class);
-        $groupMetadata   = $cmf->getMetadataFor(Quote\Group::class);
-        $addressMetadata = $cmf->getMetadataFor(Quote\Address::class);
+        $userMetadata    = $cmf->getMetadataFor(User::class);
+        $phoneMetadata   = $cmf->getMetadataFor(Phone::class);
+        $groupMetadata   = $cmf->getMetadataFor(Group::class);
+        $addressMetadata = $cmf->getMetadataFor(Address::class);
 
         // Phone Class Metadata
         self::assertTrue($phoneMetadata->fieldMappings['number']['quoted']);
@@ -540,11 +543,9 @@ class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
 
 class TestEntity1
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
     /** @var mixed */
     private $other;

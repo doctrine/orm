@@ -68,12 +68,11 @@ class DDC371Test extends OrmFunctionalTestCase
 class DDC371Child
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
     /**
      * @var string
      * @Column(type="string", length=255)
@@ -91,12 +90,11 @@ class DDC371Child
 class DDC371Parent
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
     /**
      * @var string
      * @Column(type="string", length=255)

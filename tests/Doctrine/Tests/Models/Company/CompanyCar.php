@@ -17,22 +17,18 @@ use Doctrine\ORM\Mapping\Table;
 class CompanyCar
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string|null
-     * @Column(type="string", length=50)
-     */
-    private $brand;
-
-    public function __construct(?string $brand = null)
-    {
-        $this->brand = $brand;
+    public function __construct(
+        /**
+         * @Column(type="string", length=50)
+         */
+        private ?string $brand = null
+    ) {
     }
 
     public function getId(): int

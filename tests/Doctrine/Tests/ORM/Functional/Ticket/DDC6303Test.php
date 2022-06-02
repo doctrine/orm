@@ -37,7 +37,7 @@ class DDC6303Test extends OrmFunctionalTestCase
                 $this->_em->getClassMetadata(DDC6303ChildA::class),
                 $this->_em->getClassMetadata(DDC6303ChildB::class),
             ]);
-        } catch (ToolsException $ignored) {
+        } catch (ToolsException) {
         }
     }
 
@@ -120,16 +120,14 @@ abstract class DDC6303BaseClass
  */
 class DDC6303ChildA extends DDC6303BaseClass
 {
-    /**
-     * @var mixed
-     * @Column(type="string", length=255)
-     */
-    private $originalData;
-
-    public function __construct(string $id, mixed $originalData)
-    {
-        $this->id           = $id;
-        $this->originalData = $originalData;
+    public function __construct(
+        string $id,
+        /**
+         * @Column(type="string", length=255)
+         */
+        private mixed $originalData
+    ) {
+        $this->id = $id;
     }
 }
 
@@ -140,17 +138,15 @@ class DDC6303ChildA extends DDC6303BaseClass
 class DDC6303ChildB extends DDC6303BaseClass
 {
     /**
-     * @var mixed[]
-     * @Column(type="simple_array", nullable=true)
-     */
-    private $originalData;
-
-    /**
      * @param mixed[] $originalData
      */
-    public function __construct(string $id, array $originalData)
-    {
-        $this->id           = $id;
-        $this->originalData = $originalData;
+    public function __construct(
+        string $id,
+        /**
+         * @Column(type="simple_array", nullable=true)
+         */
+        private array $originalData
+    ) {
+        $this->id = $id;
     }
 }

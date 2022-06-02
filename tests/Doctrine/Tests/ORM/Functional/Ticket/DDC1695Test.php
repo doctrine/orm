@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use DateTimeZone;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -40,112 +41,60 @@ class DDC1695Test extends OrmFunctionalTestCase
 class DDC1695News
 {
     /**
-     * @var int
      * @Column(name="`IdNews`", type="integer", nullable=false)
      * @Id
      * @GeneratedValue
      */
-    private $idNews;
+    private int $idNews;
 
-    /**
-     * @var int
-     * @Column(name="`IdUser`", type="bigint", nullable=false)
-     */
-    private $idUser;
+    /** @Column(name="`IdUser`", type="bigint", nullable=false) */
+    private int $idUser;
 
-    /**
-     * @var int
-     * @Column(name="`IdLanguage`", type="integer", nullable=false)
-     */
-    private $idLanguage;
+    /** @Column(name="`IdLanguage`", type="integer", nullable=false) */
+    private int $idLanguage;
 
-    /**
-     * @var int
-     * @Column(name="`IdCondition`", type="integer", nullable=true)
-     */
-    private $idCondition;
+    /** @Column(name="`IdCondition`", type="integer", nullable=true) */
+    private int $idCondition;
 
-    /**
-     * @var int
-     * @Column(name="`IdHealthProvider`", type="integer", nullable=true)
-     */
-    private $idHealthProvider;
+    /** @Column(name="`IdHealthProvider`", type="integer", nullable=true) */
+    private int $idHealthProvider;
 
-    /**
-     * @var int
-     * @Column(name="`IdSpeciality`", type="integer", nullable=true)
-     */
-    private $idSpeciality;
+    /** @Column(name="`IdSpeciality`", type="integer", nullable=true) */
+    private int $idSpeciality;
 
-    /**
-     * @var int
-     * @Column(name="`IdMedicineType`", type="integer", nullable=true)
-     */
-    private $idMedicineType;
+    /** @Column(name="`IdMedicineType`", type="integer", nullable=true) */
+    private int $idMedicineType;
 
-    /**
-     * @var int
-     * @Column(name="`IdTreatment`", type="integer", nullable=true)
-     */
-    private $idTreatment;
+    /** @Column(name="`IdTreatment`", type="integer", nullable=true) */
+    private int $idTreatment;
 
-    /**
-     * @var string
-     * @Column(name="`Title`", type="string", nullable=true)
-     */
-    private $title;
+    /** @Column(name="`Title`", type="string", nullable=true) */
+    private string $title;
 
-    /**
-     * @var string
-     * @Column(name="`SmallText`", type="string", nullable=true)
-     */
-    private $smallText;
+    /** @Column(name="`SmallText`", type="string", nullable=true) */
+    private string $smallText;
 
-    /**
-     * @var string
-     * @Column(name="`LongText`", type="string", nullable=true)
-     */
-    private $longText;
+    /** @Column(name="`LongText`", type="string", nullable=true) */
+    private string $longText;
 
-    /**
-     * @var DateTimeZone
-     * @Column(name="`PublishDate`", type="datetimetz", nullable=true)
-     */
-    private $publishDate;
+    /** @Column(name="`PublishDate`", type="datetimetz", nullable=true) */
+    private DateTimeZone $publishDate;
 
-    /**
-     * @var array
-     * @Column(name="`IdxNews`", type="json_array", nullable=true)
-     */
-    private $idxNews;
+    /** @Column(name="`IdxNews`", type="json_array", nullable=true) */
+    private array $idxNews;
 
-    /**
-     * @var bool
-     * @Column(name="`Highlight`", type="boolean", nullable=false)
-     */
-    private $highlight;
+    /** @Column(name="`Highlight`", type="boolean", nullable=false) */
+    private bool $highlight;
 
-    /**
-     * @var int
-     * @Column(name="`Order`", type="integer", nullable=false)
-     */
-    private $order;
+    /** @Column(name="`Order`", type="integer", nullable=false) */
+    private int $order;
 
-    /**
-     * @var bool
-     * @Column(name="`Deleted`", type="boolean", nullable=false)
-     */
-    private $deleted;
+    /** @Column(name="`Deleted`", type="boolean", nullable=false) */
+    private bool $deleted;
 
-    /**
-     * @var bool
-     * @Column(name="`Active`", type="boolean", nullable=false)
-     */
-    private $active;
+    /** @Column(name="`Active`", type="boolean", nullable=false) */
+    private bool $active;
 
-    /**
-     * @var bool
-     * @Column(name="`UpdateToHighlighted`", type="boolean", nullable=true)
-     */
-    private $updateToHighlighted;
+    /** @Column(name="`UpdateToHighlighted`", type="boolean", nullable=true) */
+    private bool $updateToHighlighted;
 }

@@ -210,15 +210,12 @@ class DDC3644Address
      */
     public $user;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $address;
-
-    public function __construct($address)
-    {
-        $this->address = $address;
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        public string $address
+    ) {
     }
 }
 
@@ -238,15 +235,12 @@ abstract class DDC3644Animal
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    public function __construct($name)
-    {
-        $this->name = $name;
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        public string $name
+    ) {
     }
 }
 

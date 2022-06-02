@@ -89,32 +89,24 @@ class GH7286Entity
      */
     public $id;
 
-    /**
-     * @Column(nullable=true)
-     * @var string|null
-     */
-    public $type;
-
-    /**
-     * @Column(type="integer")
-     * @var int
-     */
-    public $version;
-
-    public function __construct(?string $type, int $version)
-    {
-        $this->type    = $type;
-        $this->version = $version;
+    public function __construct(
+        /**
+         * @Column(nullable=true)
+         */
+        public ?string $type,
+        /**
+         * @Column(type="integer")
+         */
+        public int $version
+    ) {
     }
 }
 
 class GH7286CustomConcat extends FunctionNode
 {
-    /** @var Node */
-    private $first;
+    private ?Node $first = null;
 
-    /** @var Node */
-    private $second;
+    private ?Node $second = null;
 
     public function parse(Parser $parser): void
     {

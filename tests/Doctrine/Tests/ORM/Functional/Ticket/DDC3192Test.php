@@ -86,21 +86,18 @@ class DDC3192Test extends OrmFunctionalTestCase
 class DDC3192Currency
 {
     /**
-     * @var string
-     * @Id
-     * @Column(type="ddc3192_currency_code")
-     */
-    public $code;
-
-    /**
      * @var Collection<int, DDC3192Transaction>
      * @OneToMany(targetEntity="DDC3192Transaction", mappedBy="currency")
      */
     public $transactions;
 
-    public function __construct(string $code)
-    {
-        $this->code = $code;
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="ddc3192_currency_code")
+         */
+        public string $code
+    ) {
     }
 }
 
@@ -118,30 +115,24 @@ class DDC3192Transaction
      */
     public $id;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    public $amount;
-
-    /**
-     * @var DDC3192Currency
-     * @ManyToOne(targetEntity="DDC3192Currency", inversedBy="transactions")
-     * @JoinColumn(name="currency_id", referencedColumnName="code", nullable=false)
-     */
-    public $currency;
-
-    public function __construct(int $amount, DDC3192Currency $currency)
-    {
-        $this->amount   = $amount;
-        $this->currency = $currency;
+    public function __construct(
+        /**
+         * @Column(type="integer")
+         */
+        public int $amount,
+        /**
+         * @ManyToOne(targetEntity="DDC3192Currency", inversedBy="transactions")
+         * @JoinColumn(name="currency_id", referencedColumnName="code", nullable=false)
+         */
+        public DDC3192Currency $currency
+    ) {
     }
 }
 
 class DDC3192CurrencyCode extends Type
 {
     /** @psalm-var array<string, int> */
-    private static $map = ['BYR' => 974];
+    private static array $map = ['BYR' => 974];
 
     /**
      * {@inheritdoc}

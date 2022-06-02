@@ -19,22 +19,19 @@ use Doctrine\ORM\Mapping\Table;
 class ParentClass
 {
     /**
-     * @Id
-     * @Column(name="id", type="integer")
-     * @var int
-     */
-    public $id;
-
-    /**
      * @ManyToMany(targetEntity=ChildClass::class, mappedBy="parents", orphanRemoval=true, cascade={"persist"})
      * @var Collection|ChildClass[]
      * @psalm-var Collection<ChildClass>
      */
     public $children;
 
-    public function __construct(int $id)
-    {
-        $this->id       = $id;
+    public function __construct(
+        /**
+         * @Id
+         * @Column(name="id", type="integer")
+         */
+        public int $id
+    ) {
         $this->children = new ArrayCollection();
     }
 }

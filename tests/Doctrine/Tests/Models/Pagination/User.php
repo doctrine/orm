@@ -23,12 +23,11 @@ use Doctrine\ORM\Mapping\Table;
 abstract class User
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
      * @var string

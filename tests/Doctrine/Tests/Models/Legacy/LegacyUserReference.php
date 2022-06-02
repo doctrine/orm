@@ -19,42 +19,36 @@ use Doctrine\ORM\Mapping\Table;
 class LegacyUserReference
 {
     /**
-     * @var LegacyUser
      * @Id
      * @ManyToOne(targetEntity="LegacyUser", inversedBy="references")
      * @JoinColumn(name="iUserIdSource", referencedColumnName="iUserId")
      */
-    private $_source;
+    private LegacyUser $_source;
 
     /**
-     * @var LegacyUser
      * @Id
      * @ManyToOne(targetEntity="LegacyUser")
      * @JoinColumn(name="iUserIdTarget", referencedColumnName="iUserId")
      */
-    private $_target;
+    private LegacyUser $_target;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255, name="description")
-     */
-    private $_description;
+    /** @Column(type="datetime", name="created") */
+    private DateTime $created;
 
-    /**
-     * @var DateTime
-     * @Column(type="datetime", name="created")
-     */
-    private $created;
-
-    public function __construct(LegacyUser $source, LegacyUser $target, string $description)
-    {
+    public function __construct(
+        LegacyUser $source,
+        LegacyUser $target,
+        /**
+         * @Column(type="string", length=255, name="description")
+         */
+        private string $_description
+    ) {
         $source->addReference($this);
         $target->addReference($this);
 
-        $this->_source      = $source;
-        $this->_target      = $target;
-        $this->_description = $description;
-        $this->created      = new DateTime('now');
+        $this->_source = $source;
+        $this->_target = $target;
+        $this->created = new DateTime('now');
     }
 
     public function source(): LegacyUser

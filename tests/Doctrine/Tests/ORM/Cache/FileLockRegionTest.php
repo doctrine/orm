@@ -255,9 +255,7 @@ class FileLockRegionTest extends AbstractRegionTest
         $reflectionDirectory->setAccessible(true);
         $reflectionDirectory->setValue($region, str_repeat('a', 10000));
 
-        set_error_handler(static function (): bool {
-            return true;
-        }, E_WARNING);
+        set_error_handler(static fn (): bool => true, E_WARNING);
         try {
             self::assertTrue($region->evictAll());
         } finally {

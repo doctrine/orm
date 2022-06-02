@@ -34,7 +34,7 @@ class DDC2759Test extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(DDC2759MetadataCategory::class),
                 ]
             );
-        } catch (Exception $e) {
+        } catch (Exception) {
             return;
         }
 
@@ -133,20 +133,17 @@ class DDC2759QualificationMetadata
     public $id;
 
     /**
-     * @var DDC2759Qualification
-     * @OneToOne(targetEntity="DDC2759Qualification", inversedBy="metadata")
-     */
-    public $content;
-
-    /**
      * @psalm-var Collection<int, DDC2759MetadataCategory>
      * @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="metadata")
      */
     protected $metadataCategories;
 
-    public function __construct(DDC2759Qualification $content)
-    {
-        $this->content = $content;
+    public function __construct(
+        /**
+         * @OneToOne(targetEntity="DDC2759Qualification", inversedBy="metadata")
+         */
+        public DDC2759Qualification $content
+    ) {
     }
 }
 
@@ -164,21 +161,15 @@ class DDC2759MetadataCategory
      */
     public $id;
 
-    /**
-     * @var DDC2759QualificationMetadata
-     * @ManyToOne(targetEntity="DDC2759QualificationMetadata", inversedBy="metadataCategories")
-     */
-    public $metadata;
-
-    /**
-     * @var DDC2759Category
-     * @ManyToOne(targetEntity="DDC2759Category", inversedBy="metadataCategories")
-     */
-    public $category;
-
-    public function __construct(DDC2759QualificationMetadata $metadata, DDC2759Category $category)
-    {
-        $this->metadata = $metadata;
-        $this->category = $category;
+    public function __construct(
+        /**
+         * @ManyToOne(targetEntity="DDC2759QualificationMetadata", inversedBy="metadataCategories")
+         */
+        public DDC2759QualificationMetadata $metadata,
+        /**
+         * @ManyToOne(targetEntity="DDC2759Category", inversedBy="metadataCategories")
+         */
+        public DDC2759Category $category
+    ) {
     }
 }

@@ -9,6 +9,7 @@ use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\Exception\CacheException;
+use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
@@ -832,7 +833,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getRegion()
             ->get($key);
 
-        self::assertInstanceOf(Cache\QueryCacheEntry::class, $entry);
+        self::assertInstanceOf(QueryCacheEntry::class, $entry);
         $entry->time /= 2;
 
         $this->cache->getQueryCache()

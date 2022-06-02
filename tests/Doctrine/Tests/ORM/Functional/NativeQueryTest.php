@@ -31,8 +31,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
     use SQLResultCasing;
     use VerifyDeprecations;
 
-    /** @var AbstractPlatform */
-    private $platform = null;
+    private ?AbstractPlatform $platform = null;
 
     protected function setUp(): void
     {
@@ -339,7 +338,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
     public function testRSMBuilderThrowsExceptionOnColumnConflict(): void
     {
-        $this->expectException('InvalidArgumentException');
+        $this->expectException(InvalidArgumentException::class);
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(CmsUser::class, 'u');
         $rsm->addJoinedEntityFromClassMetadata(CmsAddress::class, 'a', 'u', 'address');

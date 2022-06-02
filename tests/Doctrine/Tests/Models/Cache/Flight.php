@@ -21,34 +21,28 @@ use Doctrine\ORM\Mapping\Table;
 class Flight
 {
     /**
-     * @var City
-     * @Id
-     * @Cache
-     * @ManyToOne(targetEntity="City")
-     * @JoinColumn(name="leaving_from_city_id", referencedColumnName="id")
-     */
-    protected $leavingFrom;
-
-    /**
-     * @var City
-     * @Id
-     * @Cache
-     * @ManyToOne(targetEntity="City")
-     * @JoinColumn(name="going_to_city_id", referencedColumnName="id")
-     */
-    protected $goingTo;
-
-    /**
      * @var DateTime
      * @Column(type="date")
      */
     protected $departure;
 
-    public function __construct(City $leavingFrom, City $goingTo)
-    {
-        $this->goingTo     = $goingTo;
-        $this->leavingFrom = $leavingFrom;
-        $this->departure   = new DateTime();
+    public function __construct(
+        /**
+         * @Id
+         * @Cache
+         * @ManyToOne(targetEntity="City")
+         * @JoinColumn(name="leaving_from_city_id", referencedColumnName="id")
+         */
+        protected City $leavingFrom,
+        /**
+         * @Id
+         * @Cache
+         * @ManyToOne(targetEntity="City")
+         * @JoinColumn(name="going_to_city_id", referencedColumnName="id")
+         */
+        protected City $goingTo
+    ) {
+        $this->departure = new DateTime();
     }
 
     public function getLeavingFrom(): City

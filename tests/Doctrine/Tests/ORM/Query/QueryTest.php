@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Cache\ArrayResult;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Types;
@@ -587,7 +588,7 @@ class QueryTest extends OrmTestCase
             ->getSQL();
     }
 
-    private function createConnection(Driver\Result ...$results): Connection
+    private function createConnection(Result ...$results): Connection
     {
         $driverConnection = $this->createMock(Driver\Connection::class);
         $driverConnection->method('query')

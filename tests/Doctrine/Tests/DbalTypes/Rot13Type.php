@@ -18,8 +18,7 @@ class Rot13Type extends Type
     /**
      * {@inheritdoc}
      *
-     * @param string|null      $value
-     * @param AbstractPlatform $platform
+     * @param string|null $value
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
@@ -33,8 +32,7 @@ class Rot13Type extends Type
     /**
      * {@inheritdoc}
      *
-     * @param string|null      $value
-     * @param AbstractPlatform $platform
+     * @param string|null $value
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?string
     {
@@ -47,11 +45,6 @@ class Rot13Type extends Type
 
     /**
      * {@inheritdoc}
-     *
-     * @param array            $column
-     * @param AbstractPlatform $platform
-     *
-     * @return string
      */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
@@ -65,8 +58,6 @@ class Rot13Type extends Type
     /**
      * {@inheritdoc}
      *
-     * @param AbstractPlatform $platform
-     *
      * @return int|null
      */
     public function getDefaultLength(AbstractPlatform $platform)
@@ -74,11 +65,6 @@ class Rot13Type extends Type
         return $platform->getVarcharDefaultLength();
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return string
-     */
     public function getName(): string
     {
         return 'rot13';

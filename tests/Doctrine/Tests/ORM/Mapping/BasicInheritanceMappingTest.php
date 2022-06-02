@@ -36,8 +36,7 @@ use function unserialize;
 
 class BasicInheritanceMappingTest extends OrmTestCase
 {
-    /** @var ClassMetadataFactory */
-    private $cmf;
+    private ClassMetadataFactory $cmf;
 
     protected function setUp(): void
     {
@@ -241,40 +240,29 @@ class TransientBaseClass
 class EntitySubClass extends TransientBaseClass
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
+    /** @Column(type="string", length=255) */
+    private string $name;
 }
 
 /** @MappedSuperclass */
 class MappedSuperclassBase
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    private $mapped1;
+    /** @Column(type="integer") */
+    private int $mapped1;
+
+    /** @Column(type="string", length=255) */
+    private string $mapped2;
 
     /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $mapped2;
-
-    /**
-     * @var MappedSuperclassRelated1
      * @OneToOne(targetEntity="MappedSuperclassRelated1")
      * @JoinColumn(name="related1_id", referencedColumnName="id")
      */
-    private $mappedRelated1;
+    private MappedSuperclassRelated1 $mappedRelated1;
 
     /** @var mixed */
     private $transient;
@@ -288,17 +276,13 @@ class MappedSuperclassRelated1
 class EntitySubClass2 extends MappedSuperclassBase
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
+    /** @Column(type="string", length=255) */
+    private string $name;
 }
 
 /**
@@ -310,16 +294,10 @@ class EntitySubClass2 extends MappedSuperclassBase
  */
 class MappedSuperclassBaseIndex
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $mapped1;
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $mapped2;
+    /** @Column(type="string", length=255) */
+    private string $mapped1;
+    /** @Column(type="string", length=255) */
+    private string $mapped2;
 }
 
 /**
@@ -329,17 +307,13 @@ class MappedSuperclassBaseIndex
 class EntityIndexSubClass extends MappedSuperclassBaseIndex
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
+    /** @Column(type="string", length=255) */
+    private string $name;
 }
 
 /**

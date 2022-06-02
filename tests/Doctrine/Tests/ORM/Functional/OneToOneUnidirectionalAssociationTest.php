@@ -10,19 +10,15 @@ use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 /**
  * Tests a unidirectional one-to-one association mapping (without inheritance).
  * Inverse side is not present.
  */
 class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
 {
-    /** @var ECommerceProduct */
-    private $product;
+    private ECommerceProduct $product;
 
-    /** @var ECommerceShipping */
-    private $shipping;
+    private ECommerceShipping $shipping;
 
     protected function setUp(): void
     {
@@ -127,7 +123,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->_em->persist($product);
         $this->_em->flush();
 
-        $product = $this->_em->find(get_class($product), $product->getId());
+        $product = $this->_em->find($product::class, $product->getId());
 
         self::assertNull($product->getShipping());
     }

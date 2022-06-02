@@ -15,8 +15,6 @@ use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 /**
  * Tests a self referential one-to-one association mapping (without inheritance).
  * Relation is defined as the mentor that a customer choose. The mentor could
@@ -26,11 +24,9 @@ use function get_class;
  */
 class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 {
-    /** @var ECommerceCustomer */
-    private $customer;
+    private ECommerceCustomer $customer;
 
-    /** @var ECommerceCustomer */
-    private $mentor;
+    private ECommerceCustomer $mentor;
 
     protected function setUp(): void
     {
@@ -110,7 +106,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $entity2 = $this->_em->find(get_class($entity1), $entity1->getId());
+        $entity2 = $this->_em->find($entity1::class, $entity1->getId());
 
         self::assertInstanceOf(MultiSelfReference::class, $entity2->getOther1());
         self::assertInstanceOf(MultiSelfReference::class, $entity2->getOther2());
@@ -155,26 +151,23 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 class MultiSelfReference
 {
     /**
-     * @var int
      * @Id
      * @GeneratedValue(strategy="AUTO")
      * @Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var MultiSelfReference|null
      * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
      * @JoinColumn(name="other1", referencedColumnName="id")
      */
-    private $other1;
+    private ?MultiSelfReference $other1 = null;
 
     /**
-     * @var MultiSelfReference|null
      * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
      * @JoinColumn(name="other2", referencedColumnName="id")
      */
-    private $other2;
+    private ?MultiSelfReference $other2 = null;
 
     public function getId(): int
     {

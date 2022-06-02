@@ -19,18 +19,14 @@ use Doctrine\ORM\Mapping\Table;
 class Car
 {
     /**
-     * @var string
      * @Id
      * @Column(type="string", length=25)
      * @GeneratedValue(strategy="NONE")
      */
-    private $brand;
+    private ?string $brand = null;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255);
-     */
-    private $model;
+    /** @Column(type="string", length=255); */
+    private ?string $model = null;
 
     /**
      * @psalm-var Collection<int, Ride>

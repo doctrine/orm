@@ -61,17 +61,11 @@ class CompanyFlexContract extends CompanyContract
      */
     public $id;
 
-    /**
-     * @Column(type="integer")
-     * @var int
-     */
-    private $hoursWorked = 0;
+    /** @Column(type="integer") */
+    private int $hoursWorked = 0;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    private $pricePerHour = 0;
+    /** @Column(type="integer") */
+    private int $pricePerHour = 0;
 
     /**
      * @psalm-var Collection<int, CompanyManager>

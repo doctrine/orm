@@ -32,7 +32,7 @@ class DDC1514Test extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(DDC1514EntityC::class),
                 ]
             );
-        } catch (Exception $ignored) {
+        } catch (Exception) {
         }
     }
 

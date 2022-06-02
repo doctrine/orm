@@ -25,19 +25,17 @@ use Doctrine\ORM\Mapping\Table;
 abstract class CompanyEvent
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var CompanyOrganization
      * @ManyToOne(targetEntity="CompanyOrganization", inversedBy="events", cascade={"persist"})
      * @JoinColumn(name="org_id", referencedColumnName="id")
      */
-     private $organization;
+    private ?CompanyOrganization $organization = null;
 
     public function getId(): int
     {

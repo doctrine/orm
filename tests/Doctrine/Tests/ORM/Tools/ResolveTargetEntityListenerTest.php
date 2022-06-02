@@ -22,14 +22,11 @@ use Doctrine\Tests\OrmTestCase;
 
 class ResolveTargetEntityListenerTest extends OrmTestCase
 {
-    /** @var EntityManagerInterface */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /** @var ResolveTargetEntityListener */
-    private $listener;
+    private ResolveTargetEntityListener $listener;
 
-    /** @var ClassMetadataFactory */
-    private $factory;
+    private ClassMetadataFactory $factory;
 
     protected function setUp(): void
     {
@@ -132,12 +129,11 @@ interface Target extends ResolveTarget
 class ResolveTargetEntity implements ResolveTarget
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
      * @psalm-var Collection<int, Target>
@@ -145,11 +141,8 @@ class ResolveTargetEntity implements ResolveTarget
      */
     private $manyToMany;
 
-    /**
-     * @var ResolveTarget
-     * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Tools\ResolveTarget", inversedBy="oneToMany")
-     */
-    private $manyToOne;
+    /** @ManyToOne(targetEntity="Doctrine\Tests\ORM\Tools\ResolveTarget", inversedBy="oneToMany") */
+    private ResolveTarget $manyToOne;
 
     /**
      * @psalm-var Collection<int, ResolveTarget>
@@ -158,11 +151,10 @@ class ResolveTargetEntity implements ResolveTarget
     private $oneToMany;
 
     /**
-     * @var Target
      * @OneToOne(targetEntity="Doctrine\Tests\ORM\Tools\Target")
      * @JoinColumn(name="target_entity_id", referencedColumnName="id")
      */
-    private $oneToOne;
+    private Target $oneToOne;
 
     public function getId(): int
     {
@@ -176,12 +168,11 @@ class ResolveTargetEntity implements ResolveTarget
 class TargetEntity implements Target
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     public function getId(): int
     {

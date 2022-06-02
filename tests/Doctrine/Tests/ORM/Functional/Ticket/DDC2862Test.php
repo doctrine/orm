@@ -32,7 +32,7 @@ class DDC2862Test extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(DDC2862Driver::class),
                 ]
             );
-        } catch (ToolsException $exc) {
+        } catch (ToolsException) {
         }
     }
 
@@ -137,23 +137,17 @@ class DDC2862Driver
      */
     protected $id;
 
-    /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @Cache()
-     * @OneToOne(targetEntity="DDC2862User")
-     * @var DDC2862User
-     */
-    protected $userProfile;
-
-    public function __construct($name, $userProfile = null)
-    {
-        $this->name        = $name;
-        $this->userProfile = $userProfile;
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        protected string $name,
+        /**
+         * @Cache()
+         * @OneToOne(targetEntity="DDC2862User")
+         */
+        protected ?DDC2862User $userProfile = null
+    ) {
     }
 
     public function getId(): int
@@ -197,15 +191,12 @@ class DDC2862User
      */
     protected $id;
 
-    /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
-    protected $name;
-
-    public function __construct($name)
-    {
-        $this->name = $name;
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        protected string $name
+    ) {
     }
 
     public function getId(): int

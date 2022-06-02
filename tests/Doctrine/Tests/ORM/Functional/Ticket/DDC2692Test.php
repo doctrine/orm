@@ -30,7 +30,7 @@ class DDC2692Test extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(DDC2692Foo::class),
                 ]
             );
-        } catch (Exception $e) {
+        } catch (Exception) {
             return;
         }
 

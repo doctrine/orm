@@ -147,31 +147,22 @@ class GH6531Article
  */
 class GH6531ArticleAttribute
 {
-    /**
-     * @var GH6531Article
-     * @Id
-     * @ManyToOne(targetEntity=GH6531Article::class, inversedBy="attributes")
-     */
-    public $article;
-
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     */
-    public $attribute;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $value;
-
-    public function __construct(string $name, string $value, GH6531Article $article)
-    {
-        $this->attribute = $name;
-        $this->value     = $value;
-        $this->article   = $article;
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="string", length=255)
+         */
+        public string $attribute,
+        /**
+         * @Column(type="string", length=255)
+         */
+        public string $value,
+        /**
+         * @Id
+         * @ManyToOne(targetEntity=GH6531Article::class, inversedBy="attributes")
+         */
+        public GH6531Article $article
+    ) {
     }
 }
 
@@ -224,30 +215,21 @@ class GH6531Product
  */
 class GH6531OrderItem
 {
-    /**
-     * @var GH6531Order
-     * @Id
-     * @ManyToOne(targetEntity=GH6531Order::class)
-     */
-    public $order;
-
-    /**
-     * @var GH6531Product
-     * @Id
-     * @ManyToOne(targetEntity=GH6531Product::class)
-     */
-    public $product;
-
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    public $amount = 1;
-
-    public function __construct(GH6531Order $order, GH6531Product $product, int $amount = 1)
-    {
-        $this->order   = $order;
-        $this->product = $product;
-        $this->amount  = $amount;
+    public function __construct(
+        /**
+         * @Id
+         * @ManyToOne(targetEntity=GH6531Order::class)
+         */
+        public GH6531Order $order,
+        /**
+         * @Id
+         * @ManyToOne(targetEntity=GH6531Product::class)
+         */
+        public GH6531Product $product,
+        /**
+         * @Column(type="integer")
+         */
+        public int $amount = 1
+    ) {
     }
 }

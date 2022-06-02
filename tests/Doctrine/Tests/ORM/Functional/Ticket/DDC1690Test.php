@@ -109,24 +109,17 @@ class NotifyBaseEntity implements NotifyPropertyChanged
 class DDC1690Parent extends NotifyBaseEntity
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     * @Column
-     */
-    private $name;
+    /** @Column */
+    private ?string $name = null;
 
-    /**
-     * @var DDC1690Child
-     * @OneToOne(targetEntity="DDC1690Child")
-     */
-    private $child;
+    /** @OneToOne(targetEntity="DDC1690Child") */
+    private ?DDC1690Child $child = null;
 
     public function getId(): int
     {
@@ -159,24 +152,17 @@ class DDC1690Parent extends NotifyBaseEntity
 class DDC1690Child extends NotifyBaseEntity
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     * @Column
-     */
-    private $name;
+    /** @Column */
+    private ?string $name = null;
 
-    /**
-     * @var DDC1690Parent
-     * @OneToOne(targetEntity="DDC1690Parent", mappedBy="child")
-     */
-    private $parent;
+    /** @OneToOne(targetEntity="DDC1690Parent", mappedBy="child") */
+    private ?DDC1690Parent $parent = null;
 
     public function getId(): int
     {

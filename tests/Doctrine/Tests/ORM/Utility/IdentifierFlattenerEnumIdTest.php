@@ -30,7 +30,7 @@ class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(TypedCardEnumCompositeId::class),
                 ]
             );
-        } catch (ORMException $e) {
+        } catch (ORMException) {
         }
     }
 

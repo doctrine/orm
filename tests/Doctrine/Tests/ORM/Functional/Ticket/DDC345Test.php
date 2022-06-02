@@ -67,7 +67,7 @@ class DDC345Test extends OrmFunctionalTestCase
 
         self::assertEquals(1, $membership->prePersistCallCount);
         self::assertEquals(0, $membership->preUpdateCallCount);
-        self::assertInstanceOf('DateTime', $membership->updated);
+        self::assertInstanceOf(DateTime::class, $membership->updated);
     }
 }
 

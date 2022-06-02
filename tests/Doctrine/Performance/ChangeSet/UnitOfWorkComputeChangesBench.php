@@ -18,10 +18,9 @@ use function str_replace;
 final class UnitOfWorkComputeChangesBench
 {
     /** @var CmsUser[] */
-    private $users;
+    private ?array $users = null;
 
-    /** @var UnitOfWork */
-    private $unitOfWork;
+    private ?UnitOfWork $unitOfWork = null;
 
     public function init(): void
     {

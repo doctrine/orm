@@ -160,12 +160,10 @@ class NamingStrategyTest extends OrmTestCase
     }
 
     /**
-     * @param UnderscoreNamingStrategy|DefaultNamingStrategy $strategy
-     *
      * @dataProvider dataJoinColumnName
      */
     public function testJoinColumnName(
-        NamingStrategy $strategy,
+        UnderscoreNamingStrategy|DefaultNamingStrategy $strategy,
         string $expected,
         string $propertyName,
         ?string $className = null

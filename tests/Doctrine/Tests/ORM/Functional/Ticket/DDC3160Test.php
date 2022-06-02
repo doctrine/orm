@@ -9,8 +9,6 @@ use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 /**
  * FlushEventTest
  */
@@ -63,7 +61,7 @@ class DDC3160OnFlushListener
             $this->inserts++;
             if ($entity instanceof CmsUser) {
                 $entity->username = 'romanc';
-                $cm               = $em->getClassMetadata(get_class($entity));
+                $cm               = $em->getClassMetadata($entity::class);
                 $uow->recomputeSingleEntityChangeSet($cm, $entity);
             }
         }

@@ -28,21 +28,17 @@ class TravelerProfile
     protected $id;
 
     /**
-     * @var string
-     * @Column(unique=true)
-     */
-    private $name;
-
-    /**
-     * @var TravelerProfileInfo
      * @OneToOne(targetEntity="TravelerProfileInfo", mappedBy="profile")
      * @Cache()
      */
-    private $info;
+    private ?TravelerProfileInfo $info = null;
 
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+    public function __construct(
+        /**
+         * @Column(unique=true)
+         */
+        private string $name
+    ) {
     }
 
     public function getId(): int

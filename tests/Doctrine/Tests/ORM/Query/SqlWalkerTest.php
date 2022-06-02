@@ -16,8 +16,7 @@ use Doctrine\Tests\OrmTestCase;
  */
 class SqlWalkerTest extends OrmTestCase
 {
-    /** @var SqlWalker */
-    private $sqlWalker;
+    private SqlWalker $sqlWalker;
 
     protected function setUp(): void
     {

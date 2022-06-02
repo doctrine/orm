@@ -56,22 +56,19 @@ class GH6394Test extends OrmFunctionalTestCase
 class A
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @var int
-     */
-    public $id;
-
-    /**
      * @Version
      * @Column(type="integer")
      * @var int
      */
     public $version;
 
-    public function __construct(int $id)
-    {
-        $this->id = $id;
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="integer")
+         */
+        public int $id
+    ) {
     }
 }
 
@@ -81,29 +78,23 @@ class A
 class B
 {
     /**
-     * @Id
-     * @ManyToOne(targetEntity="A")
-     * @JoinColumn(name="aid", referencedColumnName="id")
-     * @var A
-     */
-    public $a;
-
-    /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
-    public $something;
-
-    /**
      * @Version
      * @Column(type="integer")
      * @var int
      */
     public $version;
 
-    public function __construct(A $a, string $something)
-    {
-        $this->a         = $a;
-        $this->something = $something;
+    public function __construct(
+        /**
+         * @Id
+         * @ManyToOne(targetEntity="A")
+         * @JoinColumn(name="aid", referencedColumnName="id")
+         */
+        public A $a,
+        /**
+         * @Column(type="string", length=255)
+         */
+        public string $something
+    ) {
     }
 }

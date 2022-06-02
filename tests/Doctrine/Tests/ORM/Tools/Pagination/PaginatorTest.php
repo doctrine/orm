@@ -11,6 +11,7 @@ use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -98,7 +99,7 @@ class PaginatorTest extends OrmTestCase
     public function testgetIteratorDoesCareAboutExtraParametersWithoutOutputWalkersWhenResultIsNotEmpty(): void
     {
         $this->connection->expects(self::exactly(1))->method('executeQuery');
-        $this->expectException(Query\QueryException::class);
+        $this->expectException(QueryException::class);
         $this->expectExceptionMessage('Too many parameters: the query defines 1 parameters and you bound 2');
 
         $this->createPaginatorWithExtraParametersWithoutOutputWalkers([[10]])->getIterator();

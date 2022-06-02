@@ -99,8 +99,6 @@ class DDC719Group extends MyEntity
 
     public function __construct()
     {
-        parent::__construct();
-
         $this->channels = new ArrayCollection();
         $this->children = new ArrayCollection();
         $this->parents  = new ArrayCollection();

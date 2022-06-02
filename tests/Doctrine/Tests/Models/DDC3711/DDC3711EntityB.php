@@ -8,11 +8,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class DDC3711EntityB
 {
-    /** @var int */
-    private $id1;
+    private ?int $id1 = null;
 
-    /** @var int */
-    private $id2;
+    private ?int $id2 = null;
 
     /** @var ArrayCollection */
     private $entityA;

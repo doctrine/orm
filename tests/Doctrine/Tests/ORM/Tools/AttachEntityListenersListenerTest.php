@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\EntityListeners;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Tools\AttachEntityListenersListener;
 use Doctrine\Tests\OrmTestCase;
 
@@ -19,14 +20,11 @@ use function func_get_args;
 
 class AttachEntityListenersListenerTest extends OrmTestCase
 {
-    /** @var EntityManagerInterface */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /** @var AttachEntityListenersListener */
-    private $listener;
+    private AttachEntityListenersListener $listener;
 
-    /** @var ClassMetadataFactory */
-    private $factory;
+    private ClassMetadataFactory $factory;
 
     protected function setUp(): void
     {
@@ -96,7 +94,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
 
     public function testDuplicateEntityListenerException(): void
     {
-        $this->expectException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Entity Listener "Doctrine\Tests\ORM\Tools\AttachEntityListenersListenerTestListener#postPersist()" in "Doctrine\Tests\ORM\Tools\AttachEntityListenersListenerTestFooEntity" was already declared, but it must be declared only once.');
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestFooEntity::class,

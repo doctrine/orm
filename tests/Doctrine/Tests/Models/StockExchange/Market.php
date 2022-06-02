@@ -22,15 +22,8 @@ class Market
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
-     * @var int
      */
-    private $id;
-
-    /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
-    private $name;
+    private int $id;
 
     /**
      * @OneToMany(targetEntity="Stock", mappedBy="market", indexBy="symbol")
@@ -38,9 +31,12 @@ class Market
      */
     public $stocks;
 
-    public function __construct(string $name)
-    {
-        $this->name   = $name;
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        private string $name
+    ) {
         $this->stocks = new ArrayCollection();
     }
 

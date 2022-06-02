@@ -14,9 +14,8 @@ use Doctrine\ORM\Mapping\Id;
 class DDC1872Bar
 {
     /**
-     * @var string
      * @Id
      * @Column(type="string", length=255)
      */
-    private $id;
+    private string $id;
 }

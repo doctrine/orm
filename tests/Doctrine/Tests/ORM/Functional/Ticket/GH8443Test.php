@@ -98,18 +98,11 @@ final class GH8443Test extends OrmFunctionalTestCase
 class GH8443Foo
 {
     /**
-     * @var int|null
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
-
-    /**
-     * @var string
-     * @Column
-     */
-    private $name;
+    private ?int $id = null;
 
     /**
      * @var GH8443Foo|null
@@ -118,9 +111,12 @@ class GH8443Foo
      */
     private $bar;
 
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+    public function __construct(
+        /**
+         * @Column
+         */
+        private string $name
+    ) {
     }
 
     public function getName(): ?string

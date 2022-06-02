@@ -10,7 +10,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
 use function assert;
-use function get_class;
 
 class DDC767Test extends OrmFunctionalTestCase
 {
@@ -50,7 +49,7 @@ class DDC767Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $pUser = $this->_em->find(get_class($user), $user->id);
+        $pUser = $this->_em->find($user::class, $user->id);
         assert($pUser instanceof CmsUser);
 
         self::assertNotNull($pUser, 'User not retrieved from database.');
@@ -66,12 +65,12 @@ class DDC767Test extends OrmFunctionalTestCase
 
             // Add new
             foreach ($groups as $groupId) {
-                $pUser->addGroup($this->_em->find(get_class($group1), $groupId));
+                $pUser->addGroup($this->_em->find($group1::class, $groupId));
             }
 
             $this->_em->flush();
             $this->_em->commit();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->_em->rollback();
         }
     }

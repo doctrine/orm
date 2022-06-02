@@ -17,8 +17,6 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 /**
  * @group DDC-952
  */
@@ -54,7 +52,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 
         $this->getQueryLog()->reset()->enable();
 
-        $train = $this->_em->find(get_class($train), $train->id);
+        $train = $this->_em->find($train::class, $train->id);
         self::assertNotInstanceOf(Proxy::class, $train->driver);
         self::assertEquals('Benjamin', $train->driver->name);
 
@@ -74,7 +72,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 
         $this->getQueryLog()->reset()->enable();
 
-        $train = $this->_em->find(get_class($train), $train->id);
+        $train = $this->_em->find($train::class, $train->id);
         self::assertNotInstanceOf(Proxy::class, $train->driver);
         self::assertNull($train->driver);
 
@@ -95,7 +93,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 
         $this->getQueryLog()->reset()->enable();
 
-        $driver = $this->_em->find(get_class($owner), $owner->id);
+        $driver = $this->_em->find($owner::class, $owner->id);
         self::assertNotInstanceOf(Proxy::class, $owner->train);
         self::assertNotNull($owner->train);
 
@@ -117,7 +115,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 
         $this->getQueryLog()->reset()->enable();
 
-        $driver = $this->_em->find(get_class($driver), $driver->id);
+        $driver = $this->_em->find($driver::class, $driver->id);
         self::assertNotInstanceOf(Proxy::class, $driver->train);
         self::assertNull($driver->train);
 
@@ -134,7 +132,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $waggon = $this->_em->find(get_class($waggon), $waggon->id);
+        $waggon = $this->_em->find($waggon::class, $waggon->id);
         self::assertNotInstanceOf(Proxy::class, $waggon->train);
         self::assertNotNull($waggon->train);
     }
@@ -152,14 +150,14 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $train = $this->_em->find(get_class($train), $train->id);
+        $train = $this->_em->find($train::class, $train->id);
         $this->assertSQLEquals(
             'SELECT t0.id AS id_1, t0.driver_id AS driver_id_2, t3.id AS id_4, t3.name AS name_5, t0.owner_id AS owner_id_6, t7.id AS id_8, t7.name AS name_9 FROM Train t0 LEFT JOIN TrainDriver t3 ON t0.driver_id = t3.id INNER JOIN TrainOwner t7 ON t0.owner_id = t7.id WHERE t0.id = ?',
             $this->getLastLoggedQuery()['sql']
         );
 
         $this->_em->clear();
-        $driver = $this->_em->find(get_class($driver), $driver->id);
+        $driver = $this->_em->find($driver::class, $driver->id);
         $this->assertSQLEquals(
             'SELECT t0.id AS id_1, t0.name AS name_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id IN (?)',
             $this->getLastLoggedQuery()['sql']
@@ -181,7 +179,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $waggon = $this->_em->find(get_class($waggon), $waggon->id);
+        $waggon = $this->_em->find($waggon::class, $waggon->id);
 
         // The last query is the eager loading of the owner of the train
         $this->assertSQLEquals(
@@ -207,7 +205,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $waggon = $this->_em->find(get_class($owner), $owner->id);
+        $waggon = $this->_em->find($owner::class, $owner->id);
         $this->assertSQLEquals(
             'SELECT t0.id AS id_1, t0.name AS name_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id = ?',
             $this->getLastLoggedQuery()['sql']
@@ -309,12 +307,6 @@ class TrainDriver
     public $id;
 
     /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    /**
      * Inverse side
      *
      * @var Train
@@ -322,9 +314,12 @@ class TrainDriver
      */
     public $train;
 
-    public function __construct($name)
-    {
-        $this->name = $name;
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        public string $name
+    ) {
     }
 
     public function setTrain(Train $t): void
@@ -347,12 +342,6 @@ class TrainOwner
     public $id;
 
     /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    /**
      * Inverse side
      *
      * @var Train
@@ -360,9 +349,12 @@ class TrainOwner
      */
     public $train;
 
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        public string $name
+    ) {
     }
 
     public function setTrain(Train $t): void
@@ -409,14 +401,12 @@ class TrainOrder
      */
     public $id;
 
-    /**
-     * @var Train
-     * @OneToOne(targetEntity="Train", fetch="EAGER")
-     */
-    public $train;
-
-    public function __construct(Train $train)
-    {
-        $this->train = $train;
+    public function __construct(
+        /**
+         * @var Train
+         * @OneToOne(targetEntity="Train", fetch="EAGER")
+         */
+        public $train
+    ) {
     }
 }

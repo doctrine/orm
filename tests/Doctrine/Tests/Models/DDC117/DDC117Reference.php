@@ -32,27 +32,23 @@ class DDC117Reference
      */
     private $target;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $description;
+    /** @Column(type="datetime") */
+    private DateTime $created;
 
-    /**
-     * @var DateTime
-     * @Column(type="datetime")
-     */
-    private $created;
-
-    public function __construct(DDC117Article $source, DDC117Article $target, string $description)
-    {
+    public function __construct(
+        DDC117Article $source,
+        DDC117Article $target,
+        /**
+         * @Column(type="string", length=255)
+         */
+        private string $description
+    ) {
         $source->addReference($this);
         $target->addReference($this);
 
-        $this->source      = $source;
-        $this->target      = $target;
-        $this->description = $description;
-        $this->created     = new DateTime('now');
+        $this->source  = $source;
+        $this->target  = $target;
+        $this->created = new DateTime('now');
     }
 
     public function source(): DDC117Article

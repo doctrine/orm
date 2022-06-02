@@ -31,7 +31,7 @@ class DDC1400Test extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(DDC1400UserState::class),
                 ]
             );
-        } catch (Exception $ignored) {
+        } catch (Exception) {
         }
     }
 

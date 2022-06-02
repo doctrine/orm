@@ -33,14 +33,11 @@ class Address
      */
     public $person;
 
-    /**
-     * @var string
-     * @Column
-     */
-    public $location;
-
-    public function __construct(string $location)
-    {
-        $this->location = $location;
+    public function __construct(
+        /**
+         * @Column
+         */
+        public string $location
+    ) {
     }
 }

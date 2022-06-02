@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\Column;
@@ -62,7 +63,7 @@ class DDC2494Test extends OrmFunctionalTestCase
 
         $this->getQueryLog()->reset()->enable();
 
-        self::assertInstanceOf('\Doctrine\Common\Proxy\Proxy', $item->getCurrency());
+        self::assertInstanceOf(Proxy::class, $item->getCurrency());
         self::assertFalse($item->getCurrency()->__isInitialized());
 
         self::assertArrayHasKey('convertToPHPValue', DDC2494TinyIntType::$calls);
@@ -89,28 +90,22 @@ class DDC2494Test extends OrmFunctionalTestCase
 class DDC2494Currency
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="ddc2494_tinyint")
-     */
-    protected $id;
-
-    /**
-     * @var int
-     * @Column(name="temp", type="ddc2494_tinyint", nullable=false)
-     */
-    protected $temp;
-
-    /**
      * @psalm-var Collection<int, DDC2494Campaign>
      * @OneToMany(targetEntity="DDC2494Campaign", mappedBy="currency")
      */
     protected $campaigns;
 
-    public function __construct(int $id, int $temp)
-    {
-        $this->id   = $id;
-        $this->temp = $temp;
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="ddc2494_tinyint")
+         */
+        protected int $id,
+        /**
+         * @Column(name="temp", type="ddc2494_tinyint", nullable=false)
+         */
+        protected int $temp
+    ) {
     }
 
     public function getId(): int
@@ -146,16 +141,13 @@ class DDC2494Campaign
      */
     protected $id;
 
-    /**
-     * @var DDC2494Currency
-     * @ManyToOne(targetEntity="DDC2494Currency", inversedBy="campaigns")
-     * @JoinColumn(name="currency_id", referencedColumnName="id", nullable=false)
-     */
-    protected $currency;
-
-    public function __construct(DDC2494Currency $currency)
-    {
-        $this->currency = $currency;
+    public function __construct(
+        /**
+         * @ManyToOne(targetEntity="DDC2494Currency", inversedBy="campaigns")
+         * @JoinColumn(name="currency_id", referencedColumnName="id", nullable=false)
+         */
+        protected DDC2494Currency $currency
+    ) {
     }
 
     public function getId(): int

@@ -32,7 +32,7 @@ class DDC1707Test extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(DDC1509Picture::class),
                 ]
             );
-        } catch (Exception $ignored) {
+        } catch (Exception) {
         }
     }
 

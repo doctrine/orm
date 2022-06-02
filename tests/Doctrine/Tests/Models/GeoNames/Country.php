@@ -18,23 +18,17 @@ use Doctrine\ORM\Mapping\Table;
  */
 class Country
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=2)
-     * @GeneratedValue(strategy="NONE")
-     */
-    public $id;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255);
-     */
-    public $name;
-
-    public function __construct($id, $name)
-    {
-        $this->id   = $id;
-        $this->name = $name;
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="string", length=2)
+         * @GeneratedValue(strategy="NONE")
+         */
+        public string $id,
+        /**
+         * @Column(type="string", length=255);
+         */
+        public string $name
+    ) {
     }
 }

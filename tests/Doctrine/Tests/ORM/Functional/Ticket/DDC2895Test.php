@@ -16,7 +16,6 @@ use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
-use function get_class;
 
 class DDC2895Test extends OrmFunctionalTestCase
 {
@@ -44,7 +43,7 @@ class DDC2895Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $ddc2895 = $this->_em->find(get_class($ddc2895), $ddc2895->id);
+        $ddc2895 = $this->_em->find($ddc2895::class, $ddc2895->id);
         assert($ddc2895 instanceof DDC2895);
 
         self::assertNotNull($ddc2895->getLastModified());

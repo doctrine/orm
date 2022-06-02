@@ -15,14 +15,11 @@ use function strstr;
  */
 class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
 {
-    /** @var ECommerceCategory */
-    private $parent;
+    private ECommerceCategory $parent;
 
-    /** @var ECommerceCategory */
-    private $firstChild;
+    private ECommerceCategory $firstChild;
 
-    /** @var ECommerceCategory */
-    private $secondChild;
+    private ECommerceCategory $secondChild;
 
     protected function setUp(): void
     {

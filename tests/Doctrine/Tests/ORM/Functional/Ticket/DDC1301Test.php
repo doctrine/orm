@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\Tests\Models;
+use Doctrine\Tests\Models\Legacy\LegacyArticle;
+use Doctrine\Tests\Models\Legacy\LegacyCar;
+use Doctrine\Tests\Models\Legacy\LegacyUser;
+use Doctrine\Tests\Models\Legacy\LegacyUserReference;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -14,15 +17,14 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1301Test extends OrmFunctionalTestCase
 {
-    /** @var int */
-    private $userId;
+    private ?int $userId = null;
 
     protected function setUp(): void
     {
         $this->useModelSet('legacy');
         parent::setUp();
 
-        $class                                             = $this->_em->getClassMetadata(Models\Legacy\LegacyUser::class);
+        $class                                             = $this->_em->getClassMetadata(LegacyUser::class);
         $class->associationMappings['articles']['fetch']   = ClassMetadata::FETCH_EXTRA_LAZY;
         $class->associationMappings['references']['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
         $class->associationMappings['cars']['fetch']       = ClassMetadata::FETCH_EXTRA_LAZY;
@@ -34,7 +36,7 @@ class DDC1301Test extends OrmFunctionalTestCase
     {
         parent::tearDown();
 
-        $class                                             = $this->_em->getClassMetadata(Models\Legacy\LegacyUser::class);
+        $class                                             = $this->_em->getClassMetadata(LegacyUser::class);
         $class->associationMappings['articles']['fetch']   = ClassMetadata::FETCH_LAZY;
         $class->associationMappings['references']['fetch'] = ClassMetadata::FETCH_LAZY;
         $class->associationMappings['cars']['fetch']       = ClassMetadata::FETCH_LAZY;
@@ -42,7 +44,7 @@ class DDC1301Test extends OrmFunctionalTestCase
 
     public function testCountNotInitializesLegacyCollection(): void
     {
-        $user = $this->_em->find(Models\Legacy\LegacyUser::class, $this->userId);
+        $user = $this->_em->find(LegacyUser::class, $this->userId);
         $this->getQueryLog()->reset()->enable();
 
         self::assertFalse($user->articles->isInitialized());
@@ -57,7 +59,7 @@ class DDC1301Test extends OrmFunctionalTestCase
 
     public function testCountNotInitializesLegacyCollectionWithForeignIdentifier(): void
     {
-        $user = $this->_em->find(Models\Legacy\LegacyUser::class, $this->userId);
+        $user = $this->_em->find(LegacyUser::class, $this->userId);
         $this->getQueryLog()->reset()->enable();
 
         self::assertFalse($user->references->isInitialized());
@@ -72,7 +74,7 @@ class DDC1301Test extends OrmFunctionalTestCase
 
     public function testCountNotInitializesLegacyManyToManyCollection(): void
     {
-        $user = $this->_em->find(Models\Legacy\LegacyUser::class, $this->userId);
+        $user = $this->_em->find(LegacyUser::class, $this->userId);
         $this->getQueryLog()->reset()->enable();
 
         self::assertFalse($user->cars->isInitialized());
@@ -87,15 +89,15 @@ class DDC1301Test extends OrmFunctionalTestCase
 
     public function loadFixture(): void
     {
-        $user1           = new Models\Legacy\LegacyUser();
+        $user1           = new LegacyUser();
         $user1->username = 'beberlei';
         $user1->name     = 'Benjamin';
 
-        $user2           = new Models\Legacy\LegacyUser();
+        $user2           = new LegacyUser();
         $user2->username = 'jwage';
         $user2->name     = 'Jonathan';
 
-        $user3           = new Models\Legacy\LegacyUser();
+        $user3           = new LegacyUser();
         $user3->username = 'romanb';
         $user3->name     = 'Roman';
 
@@ -103,12 +105,12 @@ class DDC1301Test extends OrmFunctionalTestCase
         $this->_em->persist($user2);
         $this->_em->persist($user3);
 
-        $article1        = new Models\Legacy\LegacyArticle();
+        $article1        = new LegacyArticle();
         $article1->topic = 'Test';
         $article1->text  = 'Test';
         $article1->setAuthor($user1);
 
-        $article2        = new Models\Legacy\LegacyArticle();
+        $article2        = new LegacyArticle();
         $article2->topic = 'Test';
         $article2->text  = 'Test';
         $article2->setAuthor($user1);
@@ -116,13 +118,13 @@ class DDC1301Test extends OrmFunctionalTestCase
         $this->_em->persist($article1);
         $this->_em->persist($article2);
 
-        $car1              = new Models\Legacy\LegacyCar();
+        $car1              = new LegacyCar();
         $car1->description = 'Test1';
 
-        $car2              = new Models\Legacy\LegacyCar();
+        $car2              = new LegacyCar();
         $car2->description = 'Test2';
 
-        $car3              = new Models\Legacy\LegacyCar();
+        $car3              = new LegacyCar();
         $car3->description = 'Test3';
 
         $user1->addCar($car1);
@@ -138,8 +140,8 @@ class DDC1301Test extends OrmFunctionalTestCase
 
         $this->_em->flush();
 
-        $detail1 = new Models\Legacy\LegacyUserReference($user1, $user2, 'foo');
-        $detail2 = new Models\Legacy\LegacyUserReference($user1, $user3, 'bar');
+        $detail1 = new LegacyUserReference($user1, $user2, 'foo');
+        $detail2 = new LegacyUserReference($user1, $user3, 'bar');
 
         $this->_em->persist($detail1);
         $this->_em->persist($detail2);

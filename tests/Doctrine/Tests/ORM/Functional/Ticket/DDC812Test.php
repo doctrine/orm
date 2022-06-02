@@ -8,8 +8,6 @@ use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 class DDC812Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -37,7 +35,7 @@ class DDC812Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $article2 = $this->_em->find(get_class($article), $article->id);
+        $article2 = $this->_em->find($article::class, $article->id);
 
         $article2Again = $this->_em->createQuery(
             'select a, c from Doctrine\Tests\Models\CMS\CmsArticle a join a.comments c where a.id = ?1'

@@ -16,25 +16,20 @@ use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_map;
-use function get_class;
 use function sort;
 
 class SingleTableInheritanceTest extends OrmFunctionalTestCase
 {
-    /** @var CompanyEmployee */
-    private $salesPerson;
+    private ?CompanyEmployee $salesPerson = null;
 
     /** @var list<CompanyEmployee> */
-    private $engineers = [];
+    private array $engineers = [];
 
-    /** @var CompanyFixContract */
-    private $fix;
+    private ?CompanyFixContract $fix = null;
 
-    /** @var CompanyFlexContract */
-    private $flex;
+    private ?CompanyFlexContract $flex = null;
 
-    /** @var CompanyFlexUltraContract */
-    private $ultra;
+    private ?CompanyFlexUltraContract $ultra = null;
 
     protected function setUp(): void
     {
@@ -243,9 +238,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
 
         $contracts = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c ORDER BY c.id')->getScalarResult();
 
-        $discrValues = array_map(static function ($a) {
-            return $a['c_discr'];
-        }, $contracts);
+        $discrValues = array_map(static fn ($a) => $a['c_discr'], $contracts);
 
         sort($discrValues);
 
@@ -330,10 +323,10 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->loadFullFixture();
 
         // remove managed copy of the fix contract
-        $this->_em->remove($this->_em->find(get_class($this->fix), $this->fix->getId()));
+        $this->_em->remove($this->_em->find($this->fix::class, $this->fix->getId()));
         $this->_em->flush();
 
-        self::assertNull($this->_em->find(get_class($this->fix), $this->fix->getId()), 'Contract should not be present in the database anymore.');
+        self::assertNull($this->_em->find($this->fix::class, $this->fix->getId()), 'Contract should not be present in the database anymore.');
     }
 
     /**

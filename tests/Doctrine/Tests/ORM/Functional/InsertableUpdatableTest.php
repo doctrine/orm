@@ -22,7 +22,7 @@ class InsertableUpdatableTest extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(Insertable::class),
                 ]
             );
-        } catch (ToolsException $e) {
+        } catch (ToolsException) {
         }
     }
 

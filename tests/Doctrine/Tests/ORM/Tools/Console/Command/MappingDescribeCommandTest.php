@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
-use Doctrine\ORM\Tools\Console\Command\InfoCommand;
 use Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use InvalidArgumentException;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -19,14 +19,11 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class MappingDescribeCommandTest extends OrmFunctionalTestCase
 {
-    /** @var Application */
-    private $application;
+    private Application $application;
 
-    /** @var InfoCommand */
-    private $command;
+    private MappingDescribeCommand $command;
 
-    /** @var CommandTester */
-    private $tester;
+    private CommandTester $tester;
 
     protected function setUp(): void
     {
@@ -56,7 +53,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
 
     public function testShowSpecificFuzzyAmbiguous(): void
     {
-        $this->expectException('InvalidArgumentException');
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('possible matches');
         $this->tester->execute(
             [
@@ -68,7 +65,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
 
     public function testShowSpecificNotFound(): void
     {
-        $this->expectException('InvalidArgumentException');
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Could not find any mapped Entity classes matching "AttractionFooBar"');
         $this->tester->execute(
             [

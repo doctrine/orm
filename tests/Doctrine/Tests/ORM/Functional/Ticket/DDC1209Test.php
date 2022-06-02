@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Stringable;
 
 class DDC1209Test extends OrmFunctionalTestCase
 {
@@ -74,12 +75,11 @@ class DDC1209Test extends OrmFunctionalTestCase
 class DDC1209One
 {
     /**
-     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     public function getId(): int
     {
@@ -92,14 +92,6 @@ class DDC1209One
  */
 class DDC1209Two
 {
-    /**
-     * @var DDC1209One
-     * @Id
-     * @ManyToOne(targetEntity="DDC1209One")
-     * @JoinColumn(referencedColumnName="id", nullable=false)
-     */
-    private $future1;
-
     /**
      * @var DateTime2
      * @Id
@@ -121,9 +113,14 @@ class DDC1209Two
      */
     public $endingDatetime;
 
-    public function __construct(DDC1209One $future1)
-    {
-        $this->future1          = $future1;
+    public function __construct(
+        /**
+         * @Id
+         * @ManyToOne(targetEntity="DDC1209One")
+         * @JoinColumn(referencedColumnName="id", nullable=false)
+         */
+        private DDC1209One $future1
+    ) {
         $this->startingDatetime = new DateTime2();
         $this->duringDatetime   = new DateTime2();
         $this->endingDatetime   = new DateTime2();
@@ -148,7 +145,7 @@ class DDC1209Three
     }
 }
 
-class DateTime2 extends DateTime
+class DateTime2 extends DateTime implements Stringable
 {
     public function __toString(): string
     {

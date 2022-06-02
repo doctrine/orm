@@ -22,14 +22,6 @@ use Doctrine\ORM\Mapping\Table;
 class City
 {
     /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=25)
-     * @GeneratedValue(strategy="NONE")
-     */
-    public $id;
-
-    /**
      * @var Country
      * @ManyToOne(targetEntity="Country")
      * @JoinColumn(name="country", referencedColumnName="id")
@@ -48,15 +40,17 @@ class City
      */
     public $admin1;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255);
-     */
-    public $name;
-
-    public function __construct(int $id, string $name)
-    {
-        $this->id   = $id;
-        $this->name = $name;
+    public function __construct(
+        /**
+         * @Id
+         * @Column(type="string", length=25)
+         * @GeneratedValue(strategy="NONE")
+         */
+        public int $id,
+        /**
+         * @Column(type="string", length=255);
+         */
+        public string $name
+    ) {
     }
 }

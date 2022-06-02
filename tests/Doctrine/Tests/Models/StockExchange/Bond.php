@@ -25,15 +25,8 @@ class Bond
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
-     * @var int
      */
-    private $id;
-
-    /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
-    private $name;
+    private int $id;
 
     /**
      * @ManyToMany(targetEntity="Stock", indexBy="symbol")
@@ -42,9 +35,12 @@ class Bond
      */
     public $stocks;
 
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        private string $name
+    ) {
     }
 
     public function getId(): int

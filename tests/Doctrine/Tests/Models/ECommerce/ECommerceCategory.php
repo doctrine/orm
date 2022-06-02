@@ -26,18 +26,14 @@ use Doctrine\ORM\Mapping\Table;
 class ECommerceCategory
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=50)
-     */
-    private $name;
+    /** @Column(type="string", length=50) */
+    private ?string $name = null;
 
     /**
      * @psalm-var Collection<int, ECommerceProduct>
@@ -52,11 +48,10 @@ class ECommerceCategory
     private $children;
 
     /**
-     * @var ECommerceCategory
      * @ManyToOne(targetEntity="ECommerceCategory", inversedBy="children")
      * @JoinColumn(name="parent_id", referencedColumnName="id")
      */
-    private $parent;
+    private ?ECommerceCategory $parent = null;
 
     public function __construct()
     {

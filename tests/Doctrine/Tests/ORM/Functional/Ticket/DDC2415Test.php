@@ -82,12 +82,8 @@ class DDC2415ParentEntity
 
 class DDC2415ChildEntity extends DDC2415ParentEntity
 {
-    /** @var string */
-    protected $name;
-
-    public function __construct(string $name)
+    public function __construct(protected string $name)
     {
-        $this->name = $name;
     }
 
     public function getName(): string

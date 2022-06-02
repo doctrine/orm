@@ -11,6 +11,8 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\AST\Functions\ConcatFunction;
+use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Mocks\NullSqlWalker;
@@ -20,8 +22,7 @@ use const PHP_EOL;
 
 class LanguageRecognitionTest extends OrmTestCase
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     protected function setUp(): void
     {
@@ -71,7 +72,7 @@ class LanguageRecognitionTest extends OrmTestCase
             $query->setHint($key, $value);
         }
 
-        $parser = new Query\Parser($query);
+        $parser = new Parser($query);
 
         // We do NOT test SQL output here. That only unnecessarily slows down the tests!
         $parser->setCustomOutputTreeWalker(NullSqlWalker::class);
@@ -580,7 +581,7 @@ class LanguageRecognitionTest extends OrmTestCase
      */
     public function testCustomFunctionsReturningStringInStringPrimary(): void
     {
-        $this->entityManager->getConfiguration()->addCustomStringFunction('CC', Query\AST\Functions\ConcatFunction::class);
+        $this->entityManager->getConfiguration()->addCustomStringFunction('CC', ConcatFunction::class);
 
         $this->assertValidDQL("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CC('%', u.name) LIKE '%foo%'", true);
     }
@@ -726,36 +727,28 @@ class LanguageRecognitionTest extends OrmTestCase
 class DQLKeywordsModelUser
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var DQLKeywordsModelGroup
-     * @OneToOne(targetEntity="DQLKeywordsModelGroup")
-     */
-    private $group;
+    /** @OneToOne(targetEntity="DQLKeywordsModelGroup") */
+    private DQLKeywordsModelGroup $group;
 }
 
 /** @Entity */
 class DQLKeywordsModelGroup
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     * @Column
-     */
-    private $from;
+    /** @Column */
+    private string $from;
 }
 
 class DummyStruct

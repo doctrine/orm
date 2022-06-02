@@ -11,8 +11,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 class DDC1193Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -46,7 +44,7 @@ class DDC1193Test extends OrmFunctionalTestCase
         $companyId = $company->id;
         $this->_em->clear();
 
-        $company = $this->_em->find(get_class($company), $companyId);
+        $company = $this->_em->find($company::class, $companyId);
 
         self::assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($company), 'Company is in identity map.');
         self::assertFalse($company->member->__isInitialized__, 'Pre-Condition');
@@ -55,7 +53,7 @@ class DDC1193Test extends OrmFunctionalTestCase
         $this->_em->remove($company);
         $this->_em->flush();
 
-        self::assertCount(0, $this->_em->getRepository(get_class($account))->findAll());
+        self::assertCount(0, $this->_em->getRepository($account::class)->findAll());
     }
 }
 

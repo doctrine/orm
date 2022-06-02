@@ -19,8 +19,6 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 /**
  * @group DDC-992
  */
@@ -51,7 +49,7 @@ class DDC992Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $child = $this->_em->getRepository(get_class($role))->find($child->roleID);
+        $child = $this->_em->getRepository($role::class)->find($child->roleID);
         self::assertCount(1, $child->extends);
         foreach ($child->extends as $parent) {
             self::assertEquals($role->getRoleID(), $parent->getRoleID());
@@ -70,8 +68,8 @@ class DDC992Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $parentRepository = $this->_em->getRepository(get_class($parent));
-        $childRepository  = $this->_em->getRepository(get_class($child));
+        $parentRepository = $this->_em->getRepository($parent::class);
+        $childRepository  = $this->_em->getRepository($child::class);
 
         $parent = $parentRepository->find($parent->id);
         self::assertCount(1, $parent->childs);

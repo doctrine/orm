@@ -20,33 +20,26 @@ use Doctrine\ORM\Mapping\Table;
 class NavPhotos
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var NavPointOfInterest
-     * @ManyToOne(targetEntity="NavPointOfInterest")
-     * @JoinColumns({
-     *   @JoinColumn(name="poi_long", referencedColumnName="nav_long"),
-     *   @JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
-     * })
-     */
-    private $poi;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255, name="file_name")
-     */
-    private $file;
-
-    public function __construct(NavPointOfInterest $poi, string $file)
-    {
-        $this->poi  = $poi;
-        $this->file = $file;
+    public function __construct(
+        /**
+         * @ManyToOne(targetEntity="NavPointOfInterest")
+         * @JoinColumns({
+         *   @JoinColumn(name="poi_long", referencedColumnName="nav_long"),
+         *   @JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
+         * })
+         */
+        private NavPointOfInterest $poi,
+        /**
+         * @Column(type="string", length=255, name="file_name")
+         */
+        private string $file
+    ) {
     }
 
     public function getId(): int

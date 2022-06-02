@@ -124,18 +124,14 @@ class NotifyBaseEntity implements NotifyPropertyChanged
 class NotifyUser extends NotifyBaseEntity
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     * @Column
-     */
-    private $name;
+    /** @Column */
+    private ?string $name = null;
 
     /**
      * @psalm-var Collection<int, NotifyGroup>
@@ -177,18 +173,14 @@ class NotifyUser extends NotifyBaseEntity
 class NotifyGroup extends NotifyBaseEntity
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     * @Column
-     */
-    private $name;
+    /** @Column */
+    private ?string $name = null;
 
     /**
      * @psalm-var Collection<int, NotifyUser>

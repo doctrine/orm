@@ -28,8 +28,7 @@ class PersistentCollectionTest extends OrmTestCase
     /** @var PersistentCollection */
     protected $collection;
 
-    /** @var EntityManagerMock */
-    private $_emMock;
+    private EntityManagerMock $_emMock;
 
     protected function setUp(): void
     {

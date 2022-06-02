@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmTestCase;
+use ReflectionProperty;
 
 class ClassMetadataLoadEventTest extends OrmTestCase
 {
@@ -27,7 +28,7 @@ class ClassMetadataLoadEventTest extends OrmTestCase
         $classMetadata = $metadataFactory->getMetadataFor(LoadEventTestEntity::class);
         self::assertTrue($classMetadata->hasField('about'));
         self::assertArrayHasKey('about', $classMetadata->reflFields);
-        self::assertInstanceOf('ReflectionProperty', $classMetadata->reflFields['about']);
+        self::assertInstanceOf(ReflectionProperty::class, $classMetadata->reflFields['about']);
     }
 
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs): void
@@ -49,18 +50,14 @@ class ClassMetadataLoadEventTest extends OrmTestCase
 class LoadEventTestEntity
 {
     /**
-     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
+    /** @Column(type="string", length=255) */
+    private string $name;
 
     /** @var mixed */
     private $about;

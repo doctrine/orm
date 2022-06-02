@@ -29,27 +29,21 @@ class Group
     public $id;
 
     /**
-     * @var string|null
-     * @Column(name="`group-name`")
-     */
-    public $name;
-
-    /**
-     * @var Group|null
-     * @ManyToOne(targetEntity="Group", cascade={"persist"})
-     * @JoinColumn(name="`parent-id`", referencedColumnName="`group-id`")
-     */
-    public $parent;
-
-    /**
      * @psalm-var Collection<int, User>
      * @ManyToMany(targetEntity="User", mappedBy="groups")
      */
     public $users;
 
-    public function __construct(?string $name = null, ?Group $parent = null)
-    {
-        $this->name   = $name;
-        $this->parent = $parent;
+    public function __construct(
+        /**
+         * @Column(name="`group-name`")
+         */
+        public ?string $name = null,
+        /**
+         * @ManyToOne(targetEntity="Group", cascade={"persist"})
+         * @JoinColumn(name="`parent-id`", referencedColumnName="`group-id`")
+         */
+        public ?Group $parent = null
+    ) {
     }
 }

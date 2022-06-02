@@ -28,7 +28,7 @@ class DDC6460Test extends OrmFunctionalTestCase
                     DDC6460ParentEntity::class,
                 ]
             );
-        } catch (SchemaException $e) {
+        } catch (SchemaException) {
         }
     }
 

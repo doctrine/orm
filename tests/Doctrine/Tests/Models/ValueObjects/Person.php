@@ -6,9 +6,7 @@ namespace Doctrine\Tests\Models\ValueObjects;
 
 class Person
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $name;
+    private string $name;
 }

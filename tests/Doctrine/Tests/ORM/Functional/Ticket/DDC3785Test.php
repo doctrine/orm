@@ -18,6 +18,7 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Stringable;
 
 class DDC3785Test extends OrmFunctionalTestCase
 {
@@ -69,14 +70,6 @@ class DDC3785Test extends OrmFunctionalTestCase
 class DDC3785Asset
 {
     /**
-     * @var DDC3785AssetId
-     * @Id
-     * @GeneratedValue(strategy="NONE")
-     * @Column(type="ddc3785_asset_id")
-     */
-    private $id;
-
-    /**
      * @psalm-var Collection<int, DDC3785Attribute>
      * @ManyToMany(targetEntity="DDC3785Attribute", cascade={"persist"}, orphanRemoval=true)
      * @JoinTable(name="asset_attributes",
@@ -89,9 +82,15 @@ class DDC3785Asset
     /**
      * @psalm-param list<DDC3785Attribute> $attributes
      */
-    public function __construct(DDC3785AssetId $id, $attributes = [])
-    {
-        $this->id         = $id;
+    public function __construct(
+        /**
+         * @Id
+         * @GeneratedValue(strategy="NONE")
+         * @Column(type="ddc3785_asset_id")
+         */
+        private DDC3785AssetId $id,
+        $attributes = []
+    ) {
         $this->attributes = new ArrayCollection();
 
         foreach ($attributes as $attribute) {
@@ -127,37 +126,28 @@ class DDC3785Attribute
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $value;
-
-    public function __construct(string $name, string $value)
-    {
-        $this->name  = $name;
-        $this->value = $value;
+    public function __construct(
+        /**
+         * @Column(type="string", length=255)
+         */
+        private string $name,
+        /**
+         * @Column(type="string", length=255)
+         */
+        private string $value
+    ) {
     }
 }
 
 /** @Embeddable */
-class DDC3785AssetId
+class DDC3785AssetId implements Stringable
 {
-    /**
-     * @var string
-     * @Column(type = "guid")
-     */
-    private $id;
-
-    public function __construct(string $id)
-    {
-        $this->id = $id;
+    public function __construct(
+        /**
+         * @Column(type = "guid")
+         */
+        private string $id
+    ) {
     }
 
     public function __toString(): string

@@ -15,7 +15,7 @@ use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Persisters\Exception\InvalidOrientation;
 use Doctrine\ORM\Persisters\Exception\UnrecognizedField;
-use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Repository\Exception\InvalidFindByCall;
 use Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall;
 use Doctrine\ORM\TransactionRequiredException;
@@ -928,7 +928,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $repository = $this->_em->getRepository(CmsUser::class);
         $rsm        = $repository->createResultSetMappingBuilder('u');
 
-        self::assertInstanceOf(Query\ResultSetMappingBuilder::class, $rsm);
+        self::assertInstanceOf(ResultSetMappingBuilder::class, $rsm);
         self::assertEquals(['u' => CmsUser::class], $rsm->aliasMap);
     }
 

@@ -55,12 +55,11 @@ class Ticket4646InstanceOfTest extends OrmFunctionalTestCase
 class PersonTicket4646
 {
     /**
-     * @var int
      * @Id()
      * @GeneratedValue()
      * @Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     public function getId(): ?int
     {

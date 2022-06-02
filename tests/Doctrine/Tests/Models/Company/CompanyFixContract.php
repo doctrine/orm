@@ -15,11 +15,8 @@ use Doctrine\ORM\Mapping\Entity;
 #[ORM\Entity]
 class CompanyFixContract extends CompanyContract
 {
-    /**
-     * @Column(type="integer")
-     * @var int
-     */
-    private $fixPrice = 0;
+    /** @Column(type="integer") */
+    private int $fixPrice = 0;
 
     public function calculatePrice(): int
     {
