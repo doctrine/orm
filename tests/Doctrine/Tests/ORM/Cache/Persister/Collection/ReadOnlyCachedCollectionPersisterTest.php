@@ -13,7 +13,7 @@ use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 /**
  * @group DDC-2183
  */
-class ReadOnlyCachedCollectionPersisterTest extends AbstractCollectionPersisterTest
+class ReadOnlyCachedCollectionPersisterTest extends CollectionPersisterTestCase
 {
     protected function createPersister(EntityManagerInterface $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister
     {

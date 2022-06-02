@@ -18,7 +18,7 @@ use function class_exists;
 
 use const DIRECTORY_SEPARATOR;
 
-class YamlMappingDriverTest extends AbstractMappingDriverTest
+class YamlMappingDriverTest extends MappingDriverTestCase
 {
     protected function loadDriver(): MappingDriver
     {

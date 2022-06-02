@@ -17,7 +17,7 @@ use function is_subclass_of;
 
 use const PHP_VERSION_ID;
 
-class AttributeDriverTest extends AbstractMappingDriverTest
+class AttributeDriverTest extends MappingDriverTestCase
 {
     /** @before */
     public function requiresPhp8Assertion(): void

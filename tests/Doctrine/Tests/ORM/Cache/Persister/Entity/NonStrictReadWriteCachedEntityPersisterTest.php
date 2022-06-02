@@ -18,7 +18,7 @@ use ReflectionProperty;
 /**
  * @group DDC-2183
  */
-class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
+class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
 {
     protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata): AbstractEntityPersister
     {

@@ -11,9 +11,9 @@ use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
 
 /**
- * @extends AbstractRegionTest<DefaultMultiGetRegion>
+ * @extends RegionTestCase<DefaultMultiGetRegion>
  */
-class MultiGetRegionTest extends AbstractRegionTest
+class MultiGetRegionTest extends RegionTestCase
 {
     protected function createRegion(): Region
     {

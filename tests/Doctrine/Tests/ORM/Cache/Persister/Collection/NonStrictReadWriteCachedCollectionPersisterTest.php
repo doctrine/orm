@@ -13,7 +13,7 @@ use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 /**
  * @group DDC-2183
  */
-class NonStrictReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersisterTest
+class NonStrictReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
 {
     /**
      * {@inheritdoc}

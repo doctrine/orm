@@ -19,7 +19,7 @@ use function unlink;
 /**
  * @group DDC-1418
  */
-abstract class AbstractDriverTest extends TestCase
+abstract class DriverTestCase extends TestCase
 {
     /** @var string */
     private $dir;

@@ -11,7 +11,7 @@ use Doctrine\Tests\Models\Cache\State;
 /**
  * @group DDC-2183
  */
-class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
+class SecondLevelCacheRepositoryTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testRepositoryCacheFind(): void
     {

@@ -28,7 +28,7 @@ use function substr_count;
 
 use const DIRECTORY_SEPARATOR;
 
-class XmlMappingDriverTest extends AbstractMappingDriverTest
+class XmlMappingDriverTest extends MappingDriverTestCase
 {
     protected function loadDriver(): MappingDriver
     {

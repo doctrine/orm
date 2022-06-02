@@ -9,7 +9,7 @@ namespace Doctrine\Tests\ORM\Tools\Export;
  *
  * @link        http://www.phpdoctrine.org
  */
-class AnnotationClassMetadataExporterTest extends AbstractClassMetadataExporterTest
+class AnnotationClassMetadataExporterTest extends ClassMetadataExporterTestCase
 {
     protected function getType(): string
     {

@@ -17,7 +17,7 @@ use function sprintf;
 /**
  * @group DDC-2183
  */
-class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
+class SecondLevelCacheOneToManyTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testShouldPutCollectionInverseSideOnPersist(): void
     {

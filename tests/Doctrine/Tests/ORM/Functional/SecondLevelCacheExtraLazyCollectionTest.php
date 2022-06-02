@@ -12,7 +12,7 @@ use Doctrine\Tests\Models\Cache\Travel;
 /**
  * @group DDC-2183
  */
-class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTest
+class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheFunctionalTestCase
 {
     protected function setUp(): void
     {

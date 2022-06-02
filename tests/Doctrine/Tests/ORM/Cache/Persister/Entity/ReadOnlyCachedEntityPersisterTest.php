@@ -16,7 +16,7 @@ use Doctrine\Tests\Models\Cache\Country;
 /**
  * @group DDC-2183
  */
-class ReadOnlyCachedEntityPersisterTest extends AbstractEntityPersisterTest
+class ReadOnlyCachedEntityPersisterTest extends EntityPersisterTestCase
 {
     protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata): AbstractEntityPersister
     {

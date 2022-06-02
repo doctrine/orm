@@ -6,11 +6,11 @@ namespace tests\Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Cache\Attraction;
 use Doctrine\Tests\Models\Cache\Bar;
-use Doctrine\Tests\ORM\Functional\SecondLevelCacheAbstractTest;
+use Doctrine\Tests\ORM\Functional\SecondLevelCacheFunctionalTestCase;
 
 use function assert;
 
-class DDC7969Test extends SecondLevelCacheAbstractTest
+class DDC7969Test extends SecondLevelCacheFunctionalTestCase
 {
     public function testChildEntityRetrievedFromCache(): void
     {
