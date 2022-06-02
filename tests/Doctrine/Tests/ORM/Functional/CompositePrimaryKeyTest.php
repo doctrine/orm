@@ -155,7 +155,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     public function testSpecifyUnknownIdentifierPrimaryKeyFails(): void
     {
         $this->expectException(MissingIdentifierField::class);
-        $this->expectExceptionMessage('The identifier lat is missing for a query of Doctrine\Tests\Models\Navigation\NavPointOfInterest');
+        $this->expectExceptionMessage('The identifier long is missing for a query of Doctrine\Tests\Models\Navigation\NavPointOfInterest');
 
         $poi = $this->_em->find(NavPointOfInterest::class, ['key1' => 100]);
     }
