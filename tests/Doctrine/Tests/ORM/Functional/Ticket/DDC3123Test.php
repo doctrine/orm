@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Events;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use ReflectionObject;
-use stdClass;
+use PHPUnit\Framework\Assert;
+use ReflectionProperty;
 
 /**
  * @group DDC-3123
@@ -32,25 +33,26 @@ class DDC3123Test extends OrmFunctionalTestCase
         $this->_em->persist($user);
         $uow->scheduleExtraUpdate($user, ['name' => 'changed name']);
 
-        $listener = $this->getMockBuilder(stdClass::class)
-                         ->setMethods([Events::postFlush])
-                         ->getMock();
+        $this->_em->getEventManager()->addEventListener(Events::postFlush, new class ($uow) {
+            /** @var UnitOfWork */
+            private $uow;
 
-        $listener
-            ->expects(self::once())
-            ->method(Events::postFlush)
-            ->will(self::returnCallback(function () use ($uow): void {
-                $reflection = new ReflectionObject($uow);
-                $property   = $reflection->getProperty('extraUpdates');
+            public function __construct(UnitOfWork $uow)
+            {
+                $this->uow = $uow;
+            }
 
+            public function postFlush(): void
+            {
+                $property = new ReflectionProperty(UnitOfWork::class, 'extraUpdates');
                 $property->setAccessible(true);
-                $this->assertEmpty(
-                    $property->getValue($uow),
+
+                Assert::assertEmpty(
+                    $property->getValue($this->uow),
                     'ExtraUpdates are reset before postFlush'
                 );
-            }));
-
-        $this->_em->getEventManager()->addEventListener(Events::postFlush, $listener);
+            }
+        });
 
         $this->_em->flush();
     }

@@ -9,9 +9,12 @@ use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Id\SequenceGenerator;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 
 class SequenceGeneratorTest extends OrmTestCase
 {
+    use MockBuilderCompatibilityTools;
+
     public function testGeneration(): void
     {
         $sequenceGenerator = new SequenceGenerator('seq', 10);
@@ -20,9 +23,8 @@ class SequenceGeneratorTest extends OrmTestCase
         $platform->method('getSequenceNextValSQL')
             ->willReturn('');
 
-        $connection = $this->getMockBuilder(Connection::class)
+        $connection = $this->getMockBuilderWithOnlyMethods(Connection::class, ['fetchOne', 'getDatabasePlatform'])
             ->setConstructorArgs([[], $this->createMock(Driver::class)])
-            ->setMethods(['fetchOne', 'getDatabasePlatform'])
             ->getMock();
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);

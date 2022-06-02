@@ -38,6 +38,7 @@ use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\GeoNames\City;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
@@ -54,6 +55,7 @@ use function uniqid;
  */
 class UnitOfWorkTest extends OrmTestCase
 {
+    use MockBuilderCompatibilityTools;
     use VerifyDeprecations;
 
     /**
@@ -848,9 +850,8 @@ class UnitOfWorkTest extends OrmTestCase
             ->willReturn($this->createMock(Driver\Connection::class));
 
         // Set another connection mock that fail on commit
-        $this->_connectionMock = $this->getMockBuilder(ConnectionMock::class)
+        $this->_connectionMock = $this->getMockBuilderWithOnlyMethods(ConnectionMock::class, ['commit'])
             ->setConstructorArgs([[], $driver])
-            ->setMethods(['commit'])
             ->getMock();
         $this->_emMock         = EntityManagerMock::create($this->_connectionMock, null, $this->eventManager);
         $this->_unitOfWork     = new UnitOfWorkMock($this->_emMock);

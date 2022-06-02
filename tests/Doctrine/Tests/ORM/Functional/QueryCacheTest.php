@@ -128,19 +128,14 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $sqlExecMock = $this->getMockBuilder(AbstractSqlExecutor::class)
-                            ->setMethods(['execute'])
-                            ->getMock();
+                            ->getMockForAbstractClass();
 
         $sqlExecMock->expects(self::once())
                     ->method('execute')
                     ->willReturn(10);
 
-        $parserResultMock = $this->getMockBuilder(ParserResult::class)
-                                 ->setMethods(['getSqlExecutor'])
-                                 ->getMock();
-        $parserResultMock->expects(self::once())
-                         ->method('getSqlExecutor')
-                         ->willReturn($sqlExecMock);
+        $parserResultMock = new ParserResult();
+        $parserResultMock->setSqlExecutor($sqlExecMock);
 
         $cache = $this->createMock(CacheItemPoolInterface::class);
 
