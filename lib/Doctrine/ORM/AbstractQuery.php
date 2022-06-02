@@ -28,12 +28,10 @@ use function array_shift;
 use function assert;
 use function count;
 use function is_array;
-use function is_countable;
 use function is_numeric;
 use function is_object;
 use function is_scalar;
 use function is_string;
-use function iterator_count;
 use function iterator_to_array;
 use function ksort;
 use function reset;
@@ -861,10 +859,7 @@ abstract class AbstractQuery
             $this->setHydrationMode($hydrationMode);
         }
 
-        if (
-            (is_countable($parameters) && count($parameters) !== 0)
-            || ($parameters instanceof Traversable && iterator_count($parameters) !== 0)
-        ) {
+        if (count($parameters) !== 0) {
             $this->setParameters($parameters);
         }
 
