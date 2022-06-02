@@ -10,7 +10,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Result;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
@@ -28,7 +27,6 @@ use function array_map;
 use function array_shift;
 use function assert;
 use function count;
-use function in_array;
 use function is_array;
 use function is_countable;
 use function is_numeric;
@@ -655,16 +653,6 @@ abstract class AbstractQuery
      */
     public function setFetchMode(string $class, string $assocName, int $fetchMode): static
     {
-        if (! in_array($fetchMode, [ClassMetadata::FETCH_EAGER, ClassMetadata::FETCH_LAZY], true)) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/9777',
-                'Calling %s() with something else than ClassMetadata::FETCH_EAGER or ClassMetadata::FETCH_LAZY is deprecated.',
-                __METHOD__
-            );
-            $fetchMode = ClassMetadata::FETCH_LAZY;
-        }
-
         $this->_hints['fetchMode'][$class][$assocName] = $fetchMode;
 
         return $this;
