@@ -20,6 +20,7 @@ use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use ReflectionProperty;
 use stdClass;
 
@@ -31,6 +32,8 @@ use function sys_get_temp_dir;
  */
 class ProxyFactoryTest extends OrmTestCase
 {
+    use MockBuilderCompatibilityTools;
+
     /** @var UnitOfWorkMock */
     private $uowMock;
 
@@ -60,7 +63,9 @@ class ProxyFactoryTest extends OrmTestCase
     {
         $identifier = ['id' => 42];
         $proxyClass = 'Proxies\__CG__\Doctrine\Tests\Models\ECommerce\ECommerceFeature';
-        $persister  = $this->getMockBuilder(BasicEntityPersister::class)->setMethods(['load'])->disableOriginalConstructor()->getMock();
+        $persister  = $this->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['load'])
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
@@ -122,8 +127,7 @@ class ProxyFactoryTest extends OrmTestCase
     public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized(): void
     {
         $persister = $this
-            ->getMockBuilder(BasicEntityPersister::class)
-            ->setMethods(['load', 'getClassMetadata'])
+            ->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['load', 'getClassMetadata'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
@@ -153,8 +157,7 @@ class ProxyFactoryTest extends OrmTestCase
     public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized(): void
     {
         $persister = $this
-            ->getMockBuilder(BasicEntityPersister::class)
-            ->setMethods(['load', 'getClassMetadata'])
+            ->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['load', 'getClassMetadata'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
@@ -193,8 +196,7 @@ class ProxyFactoryTest extends OrmTestCase
         $classMetaData = $this->emMock->getClassMetadata(CompanyEmployee::class);
 
         $persister = $this
-            ->getMockBuilder(BasicEntityPersister::class)
-            ->setMethods(['load', 'getClassMetadata'])
+            ->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['load', 'getClassMetadata'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->uowMock->setEntityPersister(CompanyEmployee::class, $persister);
