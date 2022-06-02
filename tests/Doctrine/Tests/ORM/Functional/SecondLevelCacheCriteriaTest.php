@@ -12,7 +12,7 @@ use Doctrine\Tests\Models\Cache\State;
 /**
  * @group DDC-2183
  */
-class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
+class SecondLevelCacheCriteriaTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testMatchingPut(): void
     {

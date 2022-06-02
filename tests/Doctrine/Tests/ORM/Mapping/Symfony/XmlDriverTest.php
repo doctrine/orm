@@ -12,7 +12,7 @@ use function array_flip;
 /**
  * @group DDC-1418
  */
-class XmlDriverTest extends AbstractDriverTest
+class XmlDriverTest extends DriverTestCase
 {
     protected function getFileExtension(): string
     {

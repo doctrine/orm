@@ -23,7 +23,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 /**
  * @group DDC-2183
  */
-abstract class AbstractEntityPersisterTest extends OrmTestCase
+abstract class EntityPersisterTestCase extends OrmTestCase
 {
     /** @var Region&MockObject */
     protected $region;

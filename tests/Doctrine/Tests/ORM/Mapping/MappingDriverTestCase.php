@@ -81,7 +81,7 @@ use function strtolower;
 use const CASE_UPPER;
 use const PHP_VERSION_ID;
 
-abstract class AbstractMappingDriverTest extends OrmTestCase
+abstract class MappingDriverTestCase extends OrmTestCase
 {
     abstract protected function loadDriver(): MappingDriver;
 

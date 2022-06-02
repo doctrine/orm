@@ -42,7 +42,7 @@ use function unlink;
  *
  * @link        http://www.phpdoctrine.org
  */
-abstract class AbstractClassMetadataExporterTest extends OrmTestCase
+abstract class ClassMetadataExporterTestCase extends OrmTestCase
 {
     /** @var string|null */
     protected $extension;

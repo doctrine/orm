@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Cache\Country;
-use Doctrine\Tests\ORM\Functional\SecondLevelCacheAbstractTest;
+use Doctrine\Tests\ORM\Functional\SecondLevelCacheFunctionalTestCase;
 
 use function array_pop;
 use function assert;
 
-class DDC3967Test extends SecondLevelCacheAbstractTest
+class DDC3967Test extends SecondLevelCacheFunctionalTestCase
 {
     protected function setUp(): void
     {

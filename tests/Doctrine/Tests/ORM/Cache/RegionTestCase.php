@@ -17,7 +17,7 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
  * @template TRegion of Region
  * @group DDC-2183
  */
-abstract class AbstractRegionTest extends OrmFunctionalTestCase
+abstract class RegionTestCase extends OrmFunctionalTestCase
 {
     /**
      * @var Region

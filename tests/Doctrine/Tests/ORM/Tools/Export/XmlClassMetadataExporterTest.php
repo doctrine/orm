@@ -12,7 +12,7 @@ use Doctrine\ORM\Tools\Export\Driver\XmlExporter;
  *
  * @link        http://www.phpdoctrine.org
  */
-class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
+class XmlClassMetadataExporterTest extends ClassMetadataExporterTestCase
 {
     protected function getType(): string
     {

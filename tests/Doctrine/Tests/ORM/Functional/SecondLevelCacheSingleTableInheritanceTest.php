@@ -17,7 +17,7 @@ use function get_class;
 /**
  * @group DDC-2183
  */
-class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstractTest
+class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testUseSameRegion(): void
     {

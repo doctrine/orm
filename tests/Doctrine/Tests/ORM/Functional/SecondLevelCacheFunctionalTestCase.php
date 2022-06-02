@@ -26,7 +26,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 /**
  * @group DDC-2183
  */
-abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
+abstract class SecondLevelCacheFunctionalTestCase extends OrmFunctionalTestCase
 {
     /** @psalm-var list<Person> */
     protected $people = [];

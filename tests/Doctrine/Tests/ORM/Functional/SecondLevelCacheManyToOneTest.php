@@ -15,7 +15,7 @@ use Doctrine\Tests\Models\Cache\Token;
 /**
  * @group DDC-2183
  */
-class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
+class SecondLevelCacheManyToOneTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testPutOnPersist(): void
     {

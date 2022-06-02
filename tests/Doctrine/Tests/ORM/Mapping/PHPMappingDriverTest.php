@@ -13,7 +13,7 @@ use Doctrine\Tests\ORM\Mapping;
 
 use const DIRECTORY_SEPARATOR;
 
-class PHPMappingDriverTest extends AbstractMappingDriverTest
+class PHPMappingDriverTest extends MappingDriverTestCase
 {
     protected function loadDriver(): MappingDriver
     {

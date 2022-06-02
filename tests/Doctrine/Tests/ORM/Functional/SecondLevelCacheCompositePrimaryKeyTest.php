@@ -11,7 +11,7 @@ use Doctrine\Tests\Models\Cache\Flight;
 /**
  * @group DDC-2183
  */
-class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTest
+class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testPutAndLoadCompositPrimaryKeyEntities(): void
     {
