@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\DBAL\Result;
+use Doctrine\ORM\Query\ParameterTypeInferer;
 
 use function array_values;
 use function is_int;
@@ -43,7 +44,7 @@ final class NativeQuery extends AbstractQuery
             $value = $this->processParameterValue($parameter->getValue());
             $type  = $parameter->getValue() === $value
                 ? $parameter->getType()
-                : Query\ParameterTypeInferer::inferType($value);
+                : ParameterTypeInferer::inferType($value);
 
             $parameters[$name] = $value;
             $types[$name]      = $type;
@@ -57,7 +58,7 @@ final class NativeQuery extends AbstractQuery
             $types      = array_values($types);
         }
 
-        return $this->_em->getConnection()->executeQuery(
+        return $this->em->getConnection()->executeQuery(
             $this->sql,
             $parameters,
             $types,

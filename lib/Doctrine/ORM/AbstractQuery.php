@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use BackedEnum;
-use Countable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
@@ -15,6 +14,7 @@ use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
@@ -30,6 +30,7 @@ use function assert;
 use function count;
 use function in_array;
 use function is_array;
+use function is_countable;
 use function is_numeric;
 use function is_object;
 use function is_scalar;
@@ -94,11 +95,6 @@ abstract class AbstractQuery
     protected ?ResultSetMapping $_resultSetMapping = null;
 
     /**
-     * The entity manager used by this query object.
-     */
-    protected EntityManagerInterface $_em;
-
-    /**
      * The map of query hints.
      *
      * @psalm-var array<string, mixed>
@@ -147,12 +143,15 @@ abstract class AbstractQuery
     /**
      * Initializes a new instance of a class derived from <tt>AbstractQuery</tt>.
      */
-    public function __construct(EntityManagerInterface $em)
-    {
-        $this->_em        = $em;
+    public function __construct(
+        /**
+         * The entity manager used by this query object.
+         */
+        protected EntityManagerInterface $em
+    ) {
         $this->parameters = new ArrayCollection();
         $this->_hints     = $em->getConfiguration()->getDefaultQueryHints();
-        $this->hasCache   = $this->_em->getConfiguration()->isSecondLevelCacheEnabled();
+        $this->hasCache   = $this->em->getConfiguration()->isSecondLevelCacheEnabled();
 
         if ($this->hasCache) {
             $this->cacheLogger = $em->getConfiguration()
@@ -260,7 +259,7 @@ abstract class AbstractQuery
      */
     public function getEntityManager(): EntityManagerInterface
     {
-        return $this->_em;
+        return $this->em;
     }
 
     /**
@@ -272,7 +271,7 @@ abstract class AbstractQuery
     {
         $this->parameters = new ArrayCollection();
 
-        $this->_hints = $this->_em->getConfiguration()->getDefaultQueryHints();
+        $this->_hints = $this->em->getConfiguration()->getDefaultQueryHints();
     }
 
     /**
@@ -292,16 +291,12 @@ abstract class AbstractQuery
      *
      * @return Parameter|null The value of the bound parameter, or NULL if not available.
      */
-    public function getParameter($key): ?Parameter
+    public function getParameter(int|string $key): ?Parameter
     {
-        $key = Query\Parameter::normalizeName($key);
+        $key = Parameter::normalizeName($key);
 
         $filteredParameters = $this->parameters->filter(
-            static function (Query\Parameter $parameter) use ($key): bool {
-                $parameterName = $parameter->getName();
-
-                return $key === $parameterName;
-            }
+            static fn (Parameter $parameter): bool => $parameter->getName() === $key
         );
 
         return ! $filteredParameters->isEmpty() ? $filteredParameters->first() : null;
@@ -380,7 +375,7 @@ abstract class AbstractQuery
             return $value;
         }
 
-        if ($value instanceof Mapping\ClassMetadata) {
+        if ($value instanceof ClassMetadata) {
             return $value->name;
         }
 
@@ -394,12 +389,12 @@ abstract class AbstractQuery
 
         try {
             $class = ClassUtils::getClass($value);
-            $value = $this->_em->getUnitOfWork()->getSingleIdentifierValue($value);
+            $value = $this->em->getUnitOfWork()->getSingleIdentifierValue($value);
 
             if ($value === null) {
                 throw ORMInvalidArgumentException::invalidIdentifierBindingEntity($class);
             }
-        } catch (MappingException | ORMMappingException $e) {
+        } catch (MappingException | ORMMappingException) {
             /* Silence any mapping exceptions. These can occur if the object in
                question is not a mapped entity, in which case we just don't do
                any preparation on the value.
@@ -447,7 +442,7 @@ abstract class AbstractQuery
      *
      * @return $this
      */
-    public function setResultSetMapping(Query\ResultSetMapping $rsm): static
+    public function setResultSetMapping(ResultSetMapping $rsm): static
     {
         $this->translateNamespaces($rsm);
         $this->_resultSetMapping = $rsm;
@@ -466,11 +461,9 @@ abstract class AbstractQuery
     /**
      * Allows to translate entity namespaces to full qualified names.
      */
-    private function translateNamespaces(Query\ResultSetMapping $rsm): void
+    private function translateNamespaces(ResultSetMapping $rsm): void
     {
-        $translate = function ($alias): string {
-            return $this->_em->getClassMetadata($alias)->getName();
-        };
+        $translate = fn ($alias): string => $this->em->getClassMetadata($alias)->getName();
 
         $rsm->aliasMap         = array_map($translate, $rsm->aliasMap);
         $rsm->declaringClasses = array_map($translate, $rsm->declaringClasses);
@@ -505,7 +498,7 @@ abstract class AbstractQuery
         }
 
         if (! $profile->getResultCache()) {
-            $defaultHydrationCacheImpl = $this->_em->getConfiguration()->getHydrationCache();
+            $defaultHydrationCacheImpl = $this->em->getConfiguration()->getHydrationCache();
             if ($defaultHydrationCacheImpl) {
                 $profile = $profile->setResultCache($defaultHydrationCacheImpl);
             }
@@ -538,7 +531,7 @@ abstract class AbstractQuery
         }
 
         if (! $profile->getResultCache()) {
-            $defaultResultCache = $this->_em->getConfiguration()->getResultCache();
+            $defaultResultCache = $this->em->getConfiguration()->getResultCache();
             if ($defaultResultCache) {
                 $profile = $profile->setResultCache($defaultResultCache);
             }
@@ -617,7 +610,7 @@ abstract class AbstractQuery
 
         $this->_queryCacheProfile = new QueryCacheProfile($lifetime);
 
-        $cache = $this->_em->getConfiguration()->getResultCache();
+        $cache = $this->em->getConfiguration()->getResultCache();
         if (! $cache) {
             return $this;
         }
@@ -662,14 +655,14 @@ abstract class AbstractQuery
      */
     public function setFetchMode(string $class, string $assocName, int $fetchMode): static
     {
-        if (! in_array($fetchMode, [Mapping\ClassMetadata::FETCH_EAGER, Mapping\ClassMetadata::FETCH_LAZY], true)) {
+        if (! in_array($fetchMode, [ClassMetadata::FETCH_EAGER, ClassMetadata::FETCH_LAZY], true)) {
             Deprecation::trigger(
                 'doctrine/orm',
                 'https://github.com/doctrine/orm/pull/9777',
                 'Calling %s() with something else than ClassMetadata::FETCH_EAGER or ClassMetadata::FETCH_LAZY is deprecated.',
                 __METHOD__
             );
-            $fetchMode = Mapping\ClassMetadata::FETCH_LAZY;
+            $fetchMode = ClassMetadata::FETCH_LAZY;
         }
 
         $this->_hints['fetchMode'][$class][$assocName] = $fetchMode;
@@ -762,7 +755,7 @@ abstract class AbstractQuery
     {
         try {
             $result = $this->execute(null, $hydrationMode);
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             return null;
         }
 
@@ -881,7 +874,7 @@ abstract class AbstractQuery
         }
 
         if (
-            ($this->isCountable($parameters) && count($parameters) !== 0)
+            (is_countable($parameters) && count($parameters) !== 0)
             || ($parameters instanceof Traversable && iterator_count($parameters) !== 0)
         ) {
             $this->setParameters($parameters);
@@ -898,7 +891,7 @@ abstract class AbstractQuery
 
         $stmt = $this->_doExecute();
 
-        return $this->_em->newHydrator($this->_hydrationMode)->toIterable($stmt, $rsm, $this->_hints);
+        return $this->em->newHydrator($this->_hydrationMode)->toIterable($stmt, $rsm, $this->_hints);
     }
 
     /**
@@ -972,7 +965,7 @@ abstract class AbstractQuery
             throw new LogicException('Uninitialized result set mapping.');
         }
 
-        $data = $this->_em->newHydrator($this->_hydrationMode)->hydrateAll($stmt, $rsm, $this->_hints);
+        $data = $this->em->newHydrator($this->_hydrationMode)->hydrateAll($stmt, $rsm, $this->_hints);
 
         $setCacheEntry($data);
 
@@ -1004,7 +997,7 @@ abstract class AbstractQuery
             throw new LogicException('Uninitialized result set mapping.');
         }
 
-        $queryCache = $this->_em->getCache()->getQueryCache($this->cacheRegion);
+        $queryCache = $this->em->getCache()->getQueryCache($this->cacheRegion);
         $queryKey   = new QueryCacheKey(
             $this->getHash(),
             $this->lifetime,
@@ -1045,9 +1038,9 @@ abstract class AbstractQuery
             return null;
         }
 
-        $metadata = $this->_em->getClassMetadata($entityName);
+        $metadata = $this->em->getClassMetadata($entityName);
 
-        return new Cache\TimestampCacheKey($metadata->rootEntityName);
+        return new TimestampCacheKey($metadata->rootEntityName);
     }
 
     /**
@@ -1111,7 +1104,7 @@ abstract class AbstractQuery
         $this->parameters = new ArrayCollection();
 
         $this->_hints = [];
-        $this->_hints = $this->_em->getConfiguration()->getDefaultQueryHints();
+        $this->_hints = $this->em->getConfiguration()->getDefaultQueryHints();
     }
 
     /**
@@ -1137,11 +1130,5 @@ abstract class AbstractQuery
         ksort($hints);
 
         return sha1($query . '-' . serialize($params) . '-' . serialize($hints));
-    }
-
-    /** @param iterable<mixed> $subject */
-    private function isCountable(iterable $subject): bool
-    {
-        return $subject instanceof Countable || is_array($subject);
     }
 }

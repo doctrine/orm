@@ -209,14 +209,14 @@ final class Query extends AbstractQuery
         }
 
         // Return previous parser result if the query and the filter collection are both clean
-        if ($this->_state === self::STATE_CLEAN && $this->parsedTypes === $types && $this->_em->isFiltersStateClean()) {
+        if ($this->_state === self::STATE_CLEAN && $this->parsedTypes === $types && $this->em->isFiltersStateClean()) {
             return $this->parserResult;
         }
 
         $this->_state      = self::STATE_CLEAN;
         $this->parsedTypes = $types;
 
-        $queryCache = $this->queryCache ?? $this->_em->getConfiguration()->getQueryCache();
+        $queryCache = $this->queryCache ?? $this->em->getConfiguration()->getQueryCache();
         // Check query cache.
         if (! ($this->useQueryCache && $queryCache)) {
             $parser = new Parser($this);
@@ -286,10 +286,10 @@ final class Query extends AbstractQuery
             $executor,
             $sqlParams,
             $types,
-            $this->_em->getConnection()->getParams()
+            $this->em->getConnection()->getParams()
         );
 
-        return $executor->execute($this->_em->getConnection(), $sqlParams, $types);
+        return $executor->execute($this->em->getConnection(), $sqlParams, $types);
     }
 
     /**
@@ -334,7 +334,7 @@ final class Query extends AbstractQuery
             ? $AST->deleteClause->abstractSchemaName
             : $AST->updateClause->abstractSchemaName;
 
-        $this->_em->getCache()->evictEntityRegion($className);
+        $this->em->getCache()->evictEntityRegion($className);
     }
 
     /**
@@ -412,7 +412,7 @@ final class Query extends AbstractQuery
         }
 
         if ($value instanceof ClassMetadata && isset($rsm->discriminatorParameters[$key])) {
-            $value = array_keys(HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($value, $this->_em));
+            $value = array_keys(HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($value, $this->em));
         }
 
         $processedValue = $this->processParameterValue($value);
@@ -651,7 +651,7 @@ final class Query extends AbstractQuery
     public function setLockMode(int $lockMode): self
     {
         if (in_array($lockMode, [LockMode::NONE, LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE], true)) {
-            if (! $this->_em->getConnection()->isTransactionActive()) {
+            if (! $this->em->getConnection()->isTransactionActive()) {
                 throw TransactionRequiredException::transactionRequired();
             }
         }
@@ -687,7 +687,7 @@ final class Query extends AbstractQuery
         return md5(
             $this->getDQL() . serialize($this->_hints) .
             '&platform=' . get_debug_type($this->getEntityManager()->getConnection()->getDatabasePlatform()) .
-            ($this->_em->hasFilters() ? $this->_em->getFilters()->getHash() : '') .
+            ($this->em->hasFilters() ? $this->em->getFilters()->getHash() : '') .
             '&firstResult=' . $this->firstResult . '&maxResult=' . $this->maxResults .
             '&hydrationMode=' . $this->_hydrationMode . '&types=' . serialize($this->parsedTypes) . 'DOCTRINE_QUERY_CACHE_SALT'
         );
