@@ -41,7 +41,6 @@ use Doctrine\Tests\Models\Quote\Group;
 use Doctrine\Tests\Models\Quote\Phone;
 use Doctrine\Tests\Models\Quote\User;
 use Doctrine\Tests\OrmTestCase;
-use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use DoctrineGlobalArticle;
 use Exception;
 use InvalidArgumentException;
@@ -55,7 +54,6 @@ use function sprintf;
 
 class ClassMetadataFactoryTest extends OrmTestCase
 {
-    use MockBuilderCompatibilityTools;
     use VerifyDeprecations;
 
     public function testGetMetadataForSingleClass(): void
