@@ -23,7 +23,7 @@ use ReflectionMethod;
 /**
  * @group DDC-2183
  */
-class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
+class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testBasicQueryCache(): void
     {

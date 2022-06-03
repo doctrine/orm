@@ -28,11 +28,11 @@ use function unlink;
 use const E_WARNING;
 
 /**
- * @extends AbstractRegionTest<FileLockRegion>
+ * @extends RegionTestCase<FileLockRegion>
  * @group DDC-2183
  * @extends AbstractRegionTest<FileLockRegion>
  */
-class FileLockRegionTest extends AbstractRegionTest
+class FileLockRegionTest extends RegionTestCase
 {
     protected string $directory;
 

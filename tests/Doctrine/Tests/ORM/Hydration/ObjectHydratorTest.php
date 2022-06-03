@@ -29,11 +29,14 @@ use Doctrine\Tests\Models\Forum\ForumBoard;
 use Doctrine\Tests\Models\Forum\ForumCategory;
 use Doctrine\Tests\Models\Hydration\EntityWithArrayDefaultArrayValueM2M;
 use Doctrine\Tests\Models\Hydration\SimpleEntity;
+use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 
 use function count;
 
 class ObjectHydratorTest extends HydrationTestCase
 {
+    use MockBuilderCompatibilityTools;
+
     /**
      * @psalm-return list<array{mixed}>
      */
@@ -1035,8 +1038,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $proxyInstance = new ECommerceShipping();
 
         // mocking the proxy factory
-        $proxyFactory = $this->getMockBuilder(ProxyFactory::class)
-                             ->setMethods(['getProxy'])
+        $proxyFactory = $this->getMockBuilderWithOnlyMethods(ProxyFactory::class, ['getProxy'])
                              ->disableOriginalConstructor()
                              ->getMock();
 
@@ -1084,8 +1086,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $proxyInstance = new ECommerceShipping();
 
         // mocking the proxy factory
-        $proxyFactory = $this->getMockBuilder(ProxyFactory::class)
-                             ->setMethods(['getProxy'])
+        $proxyFactory = $this->getMockBuilderWithOnlyMethods(ProxyFactory::class, ['getProxy'])
                              ->disableOriginalConstructor()
                              ->getMock();
 

@@ -41,11 +41,12 @@ use Doctrine\Tests\Models\Quote\Group;
 use Doctrine\Tests\Models\Quote\Phone;
 use Doctrine\Tests\Models\Quote\User;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use DoctrineGlobalArticle;
 use Exception;
 use InvalidArgumentException;
+use PHPUnit\Framework\Assert;
 use ReflectionClass;
-use stdClass;
 
 use function array_search;
 use function assert;
@@ -54,6 +55,7 @@ use function sprintf;
 
 class ClassMetadataFactoryTest extends OrmTestCase
 {
+    use MockBuilderCompatibilityTools;
     use VerifyDeprecations;
 
     public function testGetMetadataForSingleClass(): void
@@ -227,15 +229,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         self::assertEquals($childDiscriminatorMap, $rootDiscriminatorMap);
         self::assertEquals($anotherChildDiscriminatorMap, $rootDiscriminatorMap);
-
-        // ClassMetadataFactory::addDefaultDiscriminatorMap shouldn't be called again, because the
-        // discriminator map is already cached
-        $cmf = $this->getMockBuilder(ClassMetadataFactory::class)->setMethods(['addDefaultDiscriminatorMap'])->getMock();
-        $cmf->setEntityManager($em);
-        $cmf->expects(self::never())
-            ->method('addDefaultDiscriminatorMap');
-
-        $rootMetadata = $cmf->getMetadataFor(RootClass::class);
     }
 
     public function testGetAllMetadataWorksWithBadConnection(): void
@@ -400,23 +393,31 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $cmf          = new ClassMetadataFactory();
         $mockDriver   = new MetadataDriverMock();
         $em           = $this->createEntityManager($mockDriver);
-        $listener     = $this->getMockBuilder(stdClass::class)->setMethods(['onClassMetadataNotFound'])->getMock();
         $eventManager = $em->getEventManager();
 
         $cmf->setEntityManager($em);
 
-        $listener
-            ->expects(self::any())
-            ->method('onClassMetadataNotFound')
-            ->will(self::returnCallback(static function (OnClassMetadataNotFoundEventArgs $args) use ($metadata, $em): void {
-                self::assertNull($args->getFoundMetadata());
-                self::assertSame('Foo', $args->getClassName());
-                self::assertSame($em, $args->getObjectManager());
+        $eventManager->addEventListener([Events::onClassMetadataNotFound], new class ($metadata, $em) {
+            /** @var ClassMetadata */
+            private $metadata;
+            /** @var EntityManagerInterface */
+            private $em;
 
-                $args->setFoundMetadata($metadata);
-            }));
+            public function __construct(ClassMetadata $metadata, EntityManagerInterface $em)
+            {
+                $this->metadata = $metadata;
+                $this->em       = $em;
+            }
 
-        $eventManager->addEventListener([Events::onClassMetadataNotFound], $listener);
+            public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args): void
+            {
+                Assert::assertNull($args->getFoundMetadata());
+                Assert::assertSame('Foo', $args->getClassName());
+                Assert::assertSame($this->em, $args->getObjectManager());
+
+                $args->setFoundMetadata($this->metadata);
+            }
+        });
 
         self::assertSame($metadata, $cmf->getMetadataFor('Foo'));
     }

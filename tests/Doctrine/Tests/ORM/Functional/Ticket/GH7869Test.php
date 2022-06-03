@@ -32,16 +32,17 @@ class GH7869Test extends OrmTestCase
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);
 
-        $decoratedEm = EntityManagerMock::create($connection);
+        $em = new class (EntityManagerMock::create($connection)) extends EntityManagerDecorator {
+            /** @var int */
+            public $getClassMetadataCalls = 0;
 
-        $em = $this->getMockBuilder(EntityManagerDecorator::class)
-            ->setConstructorArgs([$decoratedEm])
-            ->setMethods(['getClassMetadata'])
-            ->getMock();
+            public function getClassMetadata($className): ClassMetadata
+            {
+                ++$this->getClassMetadataCalls;
 
-        $em->expects(self::exactly(2))
-            ->method('getClassMetadata')
-            ->willReturnCallback([$decoratedEm, 'getClassMetadata']);
+                return parent::getClassMetadata($className);
+            }
+        };
 
         $hints = [
             UnitOfWork::HINT_DEFEREAGERLOAD => true,
@@ -52,6 +53,8 @@ class GH7869Test extends OrmTestCase
         $uow->createEntity(GH7869Appointment::class, ['id' => 1, 'patient_id' => 1], $hints);
         $uow->clear();
         $uow->triggerEagerLoads();
+
+        self::assertSame(2, $em->getClassMetadataCalls);
     }
 }
 

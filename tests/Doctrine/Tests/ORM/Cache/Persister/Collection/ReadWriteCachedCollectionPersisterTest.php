@@ -19,7 +19,7 @@ use ReflectionProperty;
 /**
  * @group DDC-2183
  */
-class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersisterTest
+class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
 {
     protected function createPersister(EntityManagerInterface $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister
     {

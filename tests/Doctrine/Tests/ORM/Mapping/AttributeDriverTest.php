@@ -13,7 +13,7 @@ use stdClass;
 
 use const PHP_VERSION_ID;
 
-class AttributeDriverTest extends AbstractMappingDriverTest
+class AttributeDriverTest extends MappingDriverTestCase
 {
     protected function loadDriver(): MappingDriver
     {

@@ -77,7 +77,7 @@ use function strtolower;
 
 use const CASE_UPPER;
 
-abstract class AbstractMappingDriverTest extends OrmTestCase
+abstract class MappingDriverTestCase extends OrmTestCase
 {
     abstract protected function loadDriver(): MappingDriver;
 

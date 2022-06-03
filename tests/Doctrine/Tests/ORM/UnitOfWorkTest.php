@@ -33,6 +33,7 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
@@ -45,6 +46,8 @@ use function uniqid;
  */
 class UnitOfWorkTest extends OrmTestCase
 {
+    use MockBuilderCompatibilityTools;
+
     /**
      * SUT
      */
@@ -607,9 +610,8 @@ class UnitOfWorkTest extends OrmTestCase
             ->willReturn($platform);
 
         // Set another connection mock that fail on commit
-        $this->connection  = $this->getMockBuilder(Connection::class)
+        $this->connection  = $this->getMockBuilderWithOnlyMethods(Connection::class, ['commit'])
             ->setConstructorArgs([[], $driver])
-            ->setMethods(['commit'])
             ->getMock();
         $this->_emMock     = EntityManagerMock::create($this->connection, null, $this->eventManager);
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);

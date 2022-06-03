@@ -11,7 +11,7 @@ use Doctrine\Tests\Models\DDC889\DDC889Class;
 
 use const DIRECTORY_SEPARATOR;
 
-class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
+class StaticPHPMappingDriverTest extends MappingDriverTestCase
 {
     protected function loadDriver(): MappingDriver
     {

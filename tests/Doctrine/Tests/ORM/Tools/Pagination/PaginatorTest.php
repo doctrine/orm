@@ -14,10 +14,13 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class PaginatorTest extends OrmTestCase
 {
+    use MockBuilderCompatibilityTools;
+
     /** @var Connection&MockObject */
     private $connection;
     /** @var EntityManagerInterface&MockObject */
@@ -37,14 +40,12 @@ class PaginatorTest extends OrmTestCase
         $driver->method('getDatabasePlatform')
             ->willReturn($platform);
 
-        $this->connection = $this->getMockBuilder(Connection::class)
+        $this->connection = $this->getMockBuilderWithOnlyMethods(Connection::class, ['executeQuery'])
             ->setConstructorArgs([[], $driver])
-            ->setMethods(['executeQuery'])
             ->getMock();
 
-        $this->em = $this->getMockBuilder(EntityManagerDecorator::class)
+        $this->em = $this->getMockBuilderWithOnlyMethods(EntityManagerDecorator::class, ['newHydrator'])
             ->setConstructorArgs([$this->createTestEntityManagerWithConnection($this->connection)])
-            ->setMethods(['newHydrator'])
             ->getMock();
 
         $this->hydrator = $this->createMock(AbstractHydrator::class);

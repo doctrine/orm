@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Cache\Bar;
-use Doctrine\Tests\ORM\Functional\SecondLevelCacheAbstractTest;
+use Doctrine\Tests\ORM\Functional\SecondLevelCacheFunctionalTestCase;
 
 use function assert;
 use function uniqid;
 
-class DDC4003Test extends SecondLevelCacheAbstractTest
+class DDC4003Test extends SecondLevelCacheFunctionalTestCase
 {
     public function testReadsThroughRepositorySameDataThatItWroteInCache(): void
     {

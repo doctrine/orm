@@ -134,6 +134,13 @@ class QueryTest extends OrmTestCase
         $q->setDQL(null);
     }
 
+    public function testSettingNullFirstResultIsDeprecated(): void
+    {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9809');
+        $q = $this->entityManager->createQuery();
+        $q->setFirstResult(null);
+    }
+
     /**
      * @group DDC-968
      */

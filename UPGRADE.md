@@ -395,6 +395,10 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.13
 
+## Deprecated passing `null` to `Doctrine\ORM\Query::setFirstResult()`
+
+`$query->setFirstResult(null);` is equivalent to `$query->setFirstResult(0)`.
+
 ## Deprecated calling setters without arguments
 
 The following methods will require an argument in 3.0. Pass `null` instead of

@@ -37,7 +37,7 @@ use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Generator;
 use stdClass;
 
-class AnnotationDriverTest extends AbstractMappingDriverTest
+class AnnotationDriverTest extends MappingDriverTestCase
 {
     /**
      * @group DDC-268

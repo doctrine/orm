@@ -18,7 +18,7 @@ use function uniqid;
 /**
  * @group DDC-2183
  */
-class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
+class SecondLevelCacheTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testPutOnPersist(): void
     {

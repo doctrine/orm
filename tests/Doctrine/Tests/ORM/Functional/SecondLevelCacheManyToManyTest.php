@@ -13,7 +13,7 @@ use Doctrine\Tests\Models\Cache\Traveler;
 /**
  * @group DDC-2183
  */
-class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
+class SecondLevelCacheManyToManyTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testShouldPutManyToManyCollectionOwningSideOnPersist(): void
     {

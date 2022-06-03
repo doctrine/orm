@@ -39,11 +39,24 @@ class DDC2692Test extends OrmFunctionalTestCase
 
     public function testIsListenerCalledOnlyOnceOnPreFlush(): void
     {
-        $listener = $this->getMockBuilder(DDC2692Listener::class)
-                         ->setMethods(['preFlush'])
-                         ->getMock();
+        $listener = new class implements EventSubscriber
+        {
+            /** @var int */
+            public $registeredCalls = 0;
 
-        $listener->expects(self::once())->method('preFlush');
+            /**
+             * {@inheritDoc}
+             */
+            public function getSubscribedEvents(): array
+            {
+                return [Events::preFlush];
+            }
+
+            public function preFlush(PreFlushEventArgs $args): void
+            {
+                ++$this->registeredCalls;
+            }
+        };
 
         $this->_em->getEventManager()->addEventSubscriber($listener);
 
@@ -52,6 +65,8 @@ class DDC2692Test extends OrmFunctionalTestCase
 
         $this->_em->flush();
         $this->_em->clear();
+
+        self::assertSame(1, $listener->registeredCalls);
     }
 }
 /**
@@ -67,19 +82,4 @@ class DDC2692Foo
      * @GeneratedValue
      */
     public $id;
-}
-
-class DDC2692Listener implements EventSubscriber
-{
-    /**
-     * {@inheritDoc}
-     */
-    public function getSubscribedEvents(): array
-    {
-        return [Events::preFlush];
-    }
-
-    public function preFlush(PreFlushEventArgs $args): void
-    {
-    }
 }

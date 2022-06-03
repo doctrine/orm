@@ -21,7 +21,7 @@ use function assert;
 /**
  * @group DDC-2183
  */
-class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
+class SecondLevelCacheConcurrentTest extends SecondLevelCacheFunctionalTestCase
 {
     private CacheFactorySecondLevelCacheConcurrentTest $cacheFactory;
     private ClassMetadata $countryMetadata;
