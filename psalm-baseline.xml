@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="4.23.0@f1fe6ff483bf325c803df9f510d09a03fd796f88">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
-    <DocblockTypeContradiction occurrences="1">
-      <code>in_array($fetchMode, [Mapping\ClassMetadata::FETCH_EAGER, Mapping\ClassMetadata::FETCH_LAZY], true)</code>
-    </DocblockTypeContradiction>
     <FalsableReturnStatement occurrences="1">
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
     </FalsableReturnStatement>
@@ -22,12 +19,6 @@
       <code>getCacheLogger</code>
       <code>getQueryCache</code>
     </PossiblyNullReference>
-    <RedundantCastGivenDocblockType occurrences="4">
-      <code>(bool) $cacheable</code>
-      <code>(int) $cacheMode</code>
-      <code>(int) $lifetime</code>
-      <code>(string) $cacheRegion</code>
-    </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Cache/CacheConfiguration.php">
     <PossiblyNullReference occurrences="1">
@@ -1168,14 +1159,6 @@
     <InvalidScalarArgument occurrences="1">
       <code>$sqlParams</code>
     </InvalidScalarArgument>
-    <LessSpecificReturnStatement occurrences="2">
-      <code>parent::setHint($name, $value)</code>
-      <code>parent::setHydrationMode($hydrationMode)</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="2">
-      <code>self</code>
-      <code>self</code>
-    </MoreSpecificReturnType>
     <PossiblyNullArgument occurrences="1">
       <code>$this-&gt;getDQL()</code>
     </PossiblyNullArgument>

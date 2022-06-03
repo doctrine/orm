@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use Doctrine\DBAL\Result;
+use Doctrine\ORM\Query\ParameterTypeInferer;
+
 use function array_values;
 use function is_int;
 use function key;
@@ -14,35 +17,24 @@ use function ksort;
  */
 final class NativeQuery extends AbstractQuery
 {
-    /** @var string */
-    private $sql;
+    private string $sql;
 
     /**
-     * Sets the SQL of the query.
-     *
-     * @param string $sql
-     *
      * @return $this
      */
-    public function setSQL($sql): self
+    public function setSQL(string $sql): self
     {
         $this->sql = $sql;
 
         return $this;
     }
 
-    /**
-     * Gets the SQL query.
-     */
     public function getSQL(): string
     {
         return $this->sql;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function _doExecute()
+    protected function _doExecute(): Result|int
     {
         $parameters = [];
         $types      = [];
@@ -52,7 +44,7 @@ final class NativeQuery extends AbstractQuery
             $value = $this->processParameterValue($parameter->getValue());
             $type  = $parameter->getValue() === $value
                 ? $parameter->getType()
-                : Query\ParameterTypeInferer::inferType($value);
+                : ParameterTypeInferer::inferType($value);
 
             $parameters[$name] = $value;
             $types[$name]      = $type;
@@ -66,7 +58,7 @@ final class NativeQuery extends AbstractQuery
             $types      = array_values($types);
         }
 
-        return $this->_em->getConnection()->executeQuery(
+        return $this->em->getConnection()->executeQuery(
             $this->sql,
             $parameters,
             $types,
