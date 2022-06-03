@@ -33,6 +33,7 @@ use function assert;
 use function count;
 use function get_debug_type;
 use function in_array;
+use function is_int;
 use function ksort;
 use function md5;
 use function method_exists;
@@ -656,7 +657,19 @@ final class Query extends AbstractQuery
      */
     public function setFirstResult($firstResult): self
     {
-        $this->firstResult = (int) $firstResult;
+        if (! is_int($firstResult)) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/9809',
+                'Calling %s with %s is deprecated and will result in a TypeError in Doctrine 3.0. Pass an integer.',
+                __METHOD__,
+                get_debug_type($firstResult)
+            );
+
+            $firstResult = (int) $firstResult;
+        }
+
+        $this->firstResult = $firstResult;
         $this->_state      = self::STATE_DIRTY;
 
         return $this;
