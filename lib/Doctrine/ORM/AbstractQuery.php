@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use BackedEnum;
-use Countable;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -39,7 +38,6 @@ use function is_numeric;
 use function is_object;
 use function is_scalar;
 use function is_string;
-use function iterator_count;
 use function iterator_to_array;
 use function ksort;
 use function method_exists;
@@ -350,18 +348,24 @@ abstract class AbstractQuery
      */
     public function setParameters($parameters)
     {
-        if (is_array($parameters)) {
-            /** @psalm-var ArrayCollection<int, Parameter> $parameterCollection */
-            $parameterCollection = new ArrayCollection();
+        if (! is_array($parameters)) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/9816',
+                'Passing an ArrayCollection to %s is deprecated.',
+                __METHOD__
+            );
+            $this->parameters = $parameters;
 
-            foreach ($parameters as $key => $value) {
-                $parameterCollection->add(new Parameter($key, $value));
-            }
-
-            $parameters = $parameterCollection;
+            return $this;
         }
 
-        $this->parameters = $parameters;
+        $this->parameters = new ArrayCollection();
+
+        foreach ($parameters as $key => $value) {
+            $parameter = $value instanceof Parameter ? $value : new Parameter($key, $value);
+            $this->parameters->add($parameter);
+        }
 
         return $this;
     }
@@ -1112,23 +1116,30 @@ abstract class AbstractQuery
      * Executes the query and returns an iterable that can be used to incrementally
      * iterate over the result.
      *
-     * @param ArrayCollection|array|mixed[] $parameters    The query parameters.
-     * @param string|int|null               $hydrationMode The hydration mode to use.
-     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
+     * @param iterable        $parameters    The query parameters.
+     * @param string|int|null $hydrationMode The hydration mode to use.
+     * @psalm-param iterable<int, Parameter>|mixed[] $parameters
      * @psalm-param string|AbstractQuery::HYDRATE_*|null    $hydrationMode
      *
      * @return iterable<mixed>
      */
     public function toIterable(iterable $parameters = [], $hydrationMode = null): iterable
     {
+        if ($parameters instanceof Traversable) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/9816',
+                'Passing a Traversable to %s is deprecated.',
+                __METHOD__
+            );
+            $parameters = iterator_to_array($parameters);
+        }
+
         if ($hydrationMode !== null) {
             $this->setHydrationMode($hydrationMode);
         }
 
-        if (
-            ($this->isCountable($parameters) && count($parameters) !== 0)
-            || ($parameters instanceof Traversable && iterator_count($parameters) !== 0)
-        ) {
+        if (count($parameters) !== 0) {
             $this->setParameters($parameters);
         }
 
@@ -1158,6 +1169,16 @@ abstract class AbstractQuery
      */
     public function execute($parameters = null, $hydrationMode = null)
     {
+        if ($parameters instanceof ArrayCollection) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/9816',
+                'Passing an ArrayCollection to %s is deprecated.',
+                __METHOD__
+            );
+            $parameters = $parameters->toArray();
+        }
+
         if ($this->cacheable && $this->isCacheEnabled()) {
             return $this->executeUsingQueryCache($parameters, $hydrationMode);
         }
@@ -1416,11 +1437,5 @@ abstract class AbstractQuery
         ksort($hints);
 
         return sha1($query . '-' . serialize($params) . '-' . serialize($hints));
-    }
-
-    /** @param iterable<mixed> $subject */
-    private function isCountable(iterable $subject): bool
-    {
-        return $subject instanceof Countable || is_array($subject);
     }
 }

@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Query\Parameter;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -49,11 +47,11 @@ class DDC2090Test extends OrmFunctionalTestCase
             ->set('e.startDate', ':date')
             ->set('e.salary', ':salary')
             ->where('e = :e')
-            ->setParameters(new ArrayCollection([
-                new Parameter('e', $employee1),
-                new Parameter('date', $date1),
-                new Parameter('salary', 101),
-            ]))
+            ->setParameters([
+                'e' => $employee1,
+                'date' => $date1,
+                'salary' => 101,
+            ])
             ->getQuery()
             ->useQueryCache(true)
             ->execute();
@@ -63,11 +61,11 @@ class DDC2090Test extends OrmFunctionalTestCase
             ->set('e.startDate', ':date')
             ->set('e.salary', ':salary')
             ->where('e = :e')
-            ->setParameters(new ArrayCollection([
-                new Parameter('e', $employee2),
-                new Parameter('date', $date2),
-                new Parameter('salary', 102),
-            ]))
+            ->setParameters([
+                'e' => $employee2,
+                'date' => $date2,
+                'salary' => 102,
+            ])
             ->getQuery()
             ->useQueryCache(true)
             ->execute();
@@ -87,11 +85,11 @@ class DDC2090Test extends OrmFunctionalTestCase
             ->set('e.startDate', '?1')
             ->set('e.salary', '?2')
             ->where('e = ?0')
-            ->setParameters(new ArrayCollection([
-                new Parameter('0', $employee1),
-                new Parameter('1', $date1),
-                new Parameter('2', 101),
-            ]))
+            ->setParameters([
+                '0' => $employee1,
+                '1' => $date1,
+                '2' => 101,
+            ])
             ->getQuery()
             ->useQueryCache(true)
             ->execute();
@@ -101,11 +99,11 @@ class DDC2090Test extends OrmFunctionalTestCase
             ->set('e.startDate', '?1')
             ->set('e.salary', '?2')
             ->where('e = ?0')
-            ->setParameters(new ArrayCollection([
-                new Parameter('0', $employee2),
-                new Parameter('1', $date2),
-                new Parameter('2', 102),
-            ]))
+            ->setParameters([
+                '0' => $employee2,
+                '1' => $date2,
+                '2' => 102,
+            ])
             ->getQuery()
             ->useQueryCache(true)
             ->execute();
