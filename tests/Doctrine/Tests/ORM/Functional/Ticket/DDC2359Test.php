@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -23,8 +22,6 @@ use PHPUnit\Framework\TestCase;
  */
 class DDC2359Test extends TestCase
 {
-    use MockBuilderCompatibilityTools;
-
     /**
      * Verifies that {@see \Doctrine\ORM\Mapping\ClassMetadataFactory::wakeupReflection} is
      * not called twice when loading metadata from a driver
@@ -35,12 +32,12 @@ class DDC2359Test extends TestCase
         $mockMetadata  = $this->createMock(ClassMetadata::class);
         $entityManager = $this->createMock(EntityManager::class);
 
-        $metadataFactory = $this
-            ->getMockBuilderWithOnlyMethods(ClassMetadataFactory::class, ['newClassMetadataInstance', 'wakeupReflection'])
+        $metadataFactory = $this->getMockBuilder(ClassMetadataFactory::class)
+            ->onlyMethods(['newClassMetadataInstance', 'wakeupReflection'])
             ->getMock();
 
-        $configuration = $this
-            ->getMockBuilderWithOnlyMethods(Configuration::class, ['getMetadataDriverImpl'])
+        $configuration = $this->getMockBuilder(Configuration::class)
+            ->onlyMethods(['getMetadataDriverImpl'])
             ->getMock();
 
         $connection = $this->createMock(Connection::class);
