@@ -517,6 +517,9 @@
     <InvalidArrayOffset occurrences="1">
       <code>$subClass-&gt;table[$indexType][$indexName]</code>
     </InvalidArrayOffset>
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>$subClass-&gt;table</code>
+    </InvalidPropertyAssignmentValue>
     <MissingConstructor occurrences="2">
       <code>$driver</code>
       <code>$evm</code>
@@ -524,9 +527,6 @@
     <PossiblyInvalidArrayAssignment occurrences="1">
       <code>$subClass-&gt;table[$indexType][$indexName]</code>
     </PossiblyInvalidArrayAssignment>
-    <InvalidPropertyAssignmentValue occurrences="1">
-      <code>$subClass-&gt;table</code>
-    </InvalidPropertyAssignmentValue>
     <PossiblyInvalidIterator occurrences="1">
       <code>$parentClass-&gt;table[$indexType]</code>
     </PossiblyInvalidIterator>
@@ -2050,10 +2050,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$stringPattern</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="2">
-      <code>call_user_func($functionClass, $functionName)</code>
-      <code>call_user_func($functionClass, $functionName)</code>
-    </DocblockTypeContradiction>
     <InvalidArgument occurrences="1">
       <code>$lookaheadType</code>
     </InvalidArgument>
@@ -2105,7 +2101,9 @@
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
     </InvalidScalarArgument>
-    <InvalidStringClass occurrences="1">
+    <InvalidStringClass occurrences="3">
+      <code>new $functionClass($functionName)</code>
+      <code>new $functionClass($functionName)</code>
       <code>new $functionClass($functionName)</code>
     </InvalidStringClass>
     <LessSpecificReturnStatement occurrences="4">
@@ -2241,10 +2239,8 @@
     <PossiblyUndefinedVariable occurrences="1">
       <code>$args</code>
     </PossiblyUndefinedVariable>
-    <RedundantConditionGivenDocblockType occurrences="3">
+    <RedundantConditionGivenDocblockType occurrences="1">
       <code>$AST instanceof AST\SelectStatement</code>
-      <code>is_string($functionClass)</code>
-      <code>is_string($functionClass)</code>
     </RedundantConditionGivenDocblockType>
     <UnsafeInstantiation occurrences="3">
       <code>new $funcClass($funcNameLower)</code>
