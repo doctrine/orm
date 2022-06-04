@@ -180,9 +180,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$className</code>
     </ArgumentTypeCoercion>
-    <RedundantCastGivenDocblockType occurrences="1">
-      <code>(bool) $flag</code>
-    </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/EntityManager.php">
     <ArgumentTypeCoercion occurrences="5">
@@ -1834,7 +1831,7 @@
       <code>string</code>
       <code>string</code>
     </InvalidReturnType>
-    <InvalidScalarArgument occurrences="13">
+    <InvalidScalarArgument occurrences="11">
       <code>$field</code>
       <code>$field</code>
       <code>$functionName</code>
