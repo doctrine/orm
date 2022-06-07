@@ -665,7 +665,7 @@ class XmlDriver extends FileDriver
 
                     $joinTable = [
                         'name'      => (string) $joinTableElement['name'],
-                        'schema'    => (string) $joinTableElement['schema'],
+                        'schema'    => $joinTableElement['schema'] ? (string) $joinTableElement['schema'] : null,
                     ];
 
                     if (isset($joinTableElement->{'join-columns'})) {
