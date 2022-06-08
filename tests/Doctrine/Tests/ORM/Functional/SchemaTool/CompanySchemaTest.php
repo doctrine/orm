@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
+use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -55,8 +56,8 @@ class CompanySchemaTest extends OrmFunctionalTestCase
      */
     public function testDropPartSchemaWithForeignKeys(): void
     {
-        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
-            self::markTestSkipped('Foreign Key test');
+        if ($this->_em->getConnection()->getDatabasePlatform() instanceof SqlitePlatform) {
+            self::markTestSkipped('SQLite does not support dropping foreign keys.');
         }
 
         $sql = $this->_schemaTool->getDropSchemaSQL(
