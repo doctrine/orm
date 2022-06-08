@@ -56,6 +56,11 @@ class ValidateSchemaCommandTest extends OrmFunctionalTestCase
 
     public function testNotInSyncVerbose(): void
     {
+        $schemaManager = $this->createSchemaManager();
+        if ($schemaManager->tablesExist('cache_login')) {
+            $schemaManager->dropTable('cache_login');
+        }
+
         $this->tester->execute(
             [
                 'command' => $this->command->getName(),
