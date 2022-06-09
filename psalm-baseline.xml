@@ -1092,11 +1092,6 @@
       <code>$entity</code>
     </PossiblyInvalidArgument>
   </file>
-  <file src="lib/Doctrine/ORM/ORMSetup.php">
-    <UndefinedClass occurrences="1">
-      <code>MemcachedAdapter::createConnection('memcached://127.0.0.1')</code>
-    </UndefinedClass>
-  </file>
   <file src="lib/Doctrine/ORM/PersistentCollection.php">
     <DocblockTypeContradiction occurrences="1">
       <code>isset($offset)</code>
