@@ -16,10 +16,6 @@ class GH7684Test extends DatabaseDriverTestCase
 {
     public function testIssue(): void
     {
-        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
-            self::markTestSkipped('Platform does not support foreign keys.');
-        }
-
         $table1 = new Table('GH7684_identity_test_table');
         $table1->addColumn('id', 'integer');
         $table1->setPrimaryKey(['id']);

@@ -35,10 +35,6 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
      */
     public function testIssue2059(): void
     {
-        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
-            self::markTestSkipped('Platform does not support foreign keys.');
-        }
-
         $user = new Table('ddc2059_user');
         $user->addColumn('id', 'integer');
         $user->setPrimaryKey(['id']);
@@ -57,10 +53,6 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
     public function testLoadMetadataFromDatabase(): void
     {
-        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
-            self::markTestSkipped('Platform does not support foreign keys.');
-        }
-
         $table = new Table('dbdriver_foo');
         $table->addColumn('id', 'integer');
         $table->setPrimaryKey(['id']);
@@ -88,10 +80,6 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
     public function testLoadMetadataWithForeignKeyFromDatabase(): void
     {
-        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
-            self::markTestSkipped('Platform does not support foreign keys.');
-        }
-
         $tableB = new Table('dbdriver_bar');
         $tableB->addColumn('id', 'integer');
         $tableB->setPrimaryKey(['id']);
@@ -122,10 +110,6 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
     public function testDetectManyToManyTables(): void
     {
-        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
-            self::markTestSkipped('Platform does not support foreign keys.');
-        }
-
         $metadatas = $this->extractClassMetadata(['CmsUsers', 'CmsGroups', 'CmsTags']);
 
         self::assertArrayHasKey('CmsUsers', $metadatas, 'CmsUsers entity was not detected.');
@@ -162,10 +146,6 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
     public function testLoadMetadataFromDatabaseDetail(): void
     {
-        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
-            self::markTestSkipped('Platform does not support foreign keys.');
-        }
-
         $table = new Table('dbdriver_foo');
 
         $table->addColumn('id', 'integer', ['unsigned' => true]);
