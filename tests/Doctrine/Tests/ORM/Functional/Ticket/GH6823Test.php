@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function method_exists;
+use function class_exists;
 
 class GH6823Test extends OrmFunctionalTestCase
 {
@@ -27,7 +27,7 @@ class GH6823Test extends OrmFunctionalTestCase
             self::markTestSkipped('This test is useful for all databases, but designed only for mysql.');
         }
 
-        if (method_exists(AbstractPlatform::class, 'getGuidExpression')) {
+        if (! class_exists(RemoveNamespacedAssets::class)) {
             self::markTestSkipped('Test valid for doctrine/dbal:3.x only.');
         }
 
