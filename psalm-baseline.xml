@@ -791,11 +791,6 @@
       <code>$entity</code>
     </PossiblyInvalidArgument>
   </file>
-  <file src="lib/Doctrine/ORM/ORMSetup.php">
-    <UndefinedClass occurrences="1">
-      <code>MemcachedAdapter::createConnection('memcached://127.0.0.1')</code>
-    </UndefinedClass>
-  </file>
   <file src="lib/Doctrine/ORM/PersistentCollection.php">
     <DocblockTypeContradiction occurrences="1">
       <code>isset($offset)</code>
@@ -1803,10 +1798,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$stringPattern</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="2">
-      <code>$functionClass($functionName)</code>
-      <code>$functionClass($functionName)</code>
-    </DocblockTypeContradiction>
     <InvalidArgument occurrences="1">
       <code>$lookaheadType</code>
     </InvalidArgument>
@@ -1858,7 +1849,9 @@
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
     </InvalidScalarArgument>
-    <InvalidStringClass occurrences="1">
+    <InvalidStringClass occurrences="3">
+      <code>new $functionClass($functionName)</code>
+      <code>new $functionClass($functionName)</code>
       <code>new $functionClass($functionName)</code>
     </InvalidStringClass>
     <LessSpecificReturnStatement occurrences="4">
@@ -1996,10 +1989,8 @@
     <PossiblyUndefinedVariable occurrences="1">
       <code>$args</code>
     </PossiblyUndefinedVariable>
-    <RedundantConditionGivenDocblockType occurrences="3">
+    <RedundantConditionGivenDocblockType occurrences="1">
       <code>$AST instanceof AST\SelectStatement</code>
-      <code>is_string($functionClass)</code>
-      <code>is_string($functionClass)</code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/ParserResult.php">

@@ -77,6 +77,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Sets the strategy for automatically generating proxy classes.
      *
      * @param bool|int $autoGenerate Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     * @psalm-param bool|AutogenerateMode $autoGenerate
      * True is converted to AUTOGENERATE_ALWAYS, false to AUTOGENERATE_NEVER.
      *
      * @return void
@@ -212,7 +213,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name
      *
-     * @return string|null
+     * @return string|callable|null
      * @psalm-return class-string<FunctionNode>|callable(string):FunctionNode|null
      */
     public function getCustomStringFunction($name)
@@ -249,8 +250,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * DQL function names are case-insensitive.
      *
-     * @param string          $name      Function name.
-     * @param string|callable $className Class name or a callable that returns the function.
+     * @param string                $name      Function name.
+     * @param class-string|callable $className Class name or a callable that returns the function.
+     * @psalm-param class-string<FunctionNode>|callable(string):FunctionNode $className
      *
      * @return void
      */
@@ -264,8 +266,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name
      *
-     * @return string|null
-     * @psalm-return ?class-string
+     * @return string|callable|null
+     * @psalm-return class-string|callable|null
      */
     public function getCustomNumericFunction($name)
     {
@@ -303,7 +305,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string          $name      Function name.
      * @param string|callable $className Class name or a callable that returns the function.
-     * @psalm-param class-string|callable $className
+     * @psalm-param class-string<FunctionNode>|callable(string):FunctionNode $className
      *
      * @return void
      */
@@ -317,8 +319,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name
      *
-     * @return string|null
-     * @psalm-return ?class-string $name
+     * @return string|callable|null
+     * @psalm-return class-string|callable|null $name
      */
     public function getCustomDatetimeFunction($name)
     {
@@ -336,7 +338,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Any previously added date/time functions are discarded.
      *
      * @param array $functions The map of custom DQL date/time functions.
-     * @psalm-param array<string, string> $functions
+     * @psalm-param array<string, class-string<FunctionNode>|callable(string):FunctionNode> $functions
      *
      * @return void
      */
