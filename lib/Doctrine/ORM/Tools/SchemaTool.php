@@ -46,29 +46,16 @@ class SchemaTool
 {
     private const KNOWN_COLUMN_OPTIONS = ['comment', 'unsigned', 'fixed', 'default'];
 
-    /** @var EntityManagerInterface */
-    private $em;
-
-    /** @var AbstractPlatform */
-    private $platform;
-
-    /**
-     * The quote strategy.
-     *
-     * @var QuoteStrategy
-     */
-    private $quoteStrategy;
-
-    /** @var AbstractSchemaManager */
-    private $schemaManager;
+    private AbstractPlatform $platform;
+    private QuoteStrategy $quoteStrategy;
+    private AbstractSchemaManager $schemaManager;
 
     /**
      * Initializes a new SchemaTool instance that uses the connection of the
      * provided EntityManager.
      */
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(private EntityManagerInterface $em)
     {
-        $this->em            = $em;
         $this->platform      = $em->getConnection()->getDatabasePlatform();
         $this->quoteStrategy = $em->getConfiguration()->getQuoteStrategy();
         $this->schemaManager = $em->getConnection()->createSchemaManager();
@@ -79,11 +66,9 @@ class SchemaTool
      *
      * @psalm-param list<ClassMetadata> $classes
      *
-     * @return void
-     *
      * @throws ToolsException
      */
-    public function createSchema(array $classes)
+    public function createSchema(array $classes): void
     {
         $createSchemaSql = $this->getCreateSchemaSql($classes);
         $conn            = $this->em->getConnection();
@@ -105,7 +90,7 @@ class SchemaTool
      *
      * @return string[] The SQL statements needed to create the schema for the classes.
      */
-    public function getCreateSchemaSql(array $classes)
+    public function getCreateSchemaSql(array $classes): array
     {
         $schema = $this->getSchemaFromMetadata($classes);
 
@@ -176,11 +161,9 @@ class SchemaTool
      *
      * @psalm-param list<ClassMetadata> $classes
      *
-     * @return Schema
-     *
      * @throws NotSupported
      */
-    public function getSchemaFromMetadata(array $classes)
+    public function getSchemaFromMetadata(array $classes): Schema
     {
         // Reminder for processed classes, used for hierarchies
         $processedClasses     = [];
@@ -260,9 +243,7 @@ class SchemaTool
                             $targetEntity = current(
                                 array_filter(
                                     $classes,
-                                    static function (ClassMetadata $class) use ($idMapping): bool {
-                                        return $class->name === $idMapping['targetEntity'];
-                                    }
+                                    static fn (ClassMetadata $class): bool => $class->name === $idMapping['targetEntity']
                                 )
                             );
 
@@ -812,10 +793,8 @@ class SchemaTool
      * issued for all classes of the schema and some probably just don't exist.
      *
      * @psalm-param list<ClassMetadata> $classes
-     *
-     * @return void
      */
-    public function dropSchema(array $classes)
+    public function dropSchema(array $classes): void
     {
         $dropSchemaSql = $this->getDropSchemaSQL($classes);
         $conn          = $this->em->getConnection();
@@ -823,7 +802,7 @@ class SchemaTool
         foreach ($dropSchemaSql as $sql) {
             try {
                 $conn->executeQuery($sql);
-            } catch (Throwable $e) {
+            } catch (Throwable) {
                 // ignored
             }
         }
@@ -831,10 +810,8 @@ class SchemaTool
 
     /**
      * Drops all elements in the database of the current connection.
-     *
-     * @return void
      */
-    public function dropDatabase()
+    public function dropDatabase(): void
     {
         $dropSchemaSql = $this->getDropDatabaseSQL();
         $conn          = $this->em->getConnection();
@@ -849,7 +826,7 @@ class SchemaTool
      *
      * @return string[]
      */
-    public function getDropDatabaseSQL()
+    public function getDropDatabaseSQL(): array
     {
         return $this->schemaManager
             ->createSchema()
@@ -863,7 +840,7 @@ class SchemaTool
      *
      * @return string[]
      */
-    public function getDropSchemaSQL(array $classes)
+    public function getDropSchemaSQL(array $classes): array
     {
         $schema = $this->getSchemaFromMetadata($classes);
 
@@ -905,10 +882,8 @@ class SchemaTool
      * @param mixed[] $classes
      * @param bool    $saveMode If TRUE, only performs a partial update
      *                           without dropping assets which are scheduled for deletion.
-     *
-     * @return void
      */
-    public function updateSchema(array $classes, $saveMode = false)
+    public function updateSchema(array $classes, $saveMode = false): void
     {
         $updateSchemaSql = $this->getUpdateSchemaSql($classes, $saveMode);
         $conn            = $this->em->getConnection();
@@ -928,7 +903,7 @@ class SchemaTool
      *
      * @return string[] The sequence of SQL statements.
      */
-    public function getUpdateSchemaSql(array $classes, $saveMode = false)
+    public function getUpdateSchemaSql(array $classes, $saveMode = false): array
     {
         $toSchema   = $this->getSchemaFromMetadata($classes);
         $fromSchema = $this->createSchemaForComparison($toSchema);
