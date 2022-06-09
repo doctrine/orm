@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools\Console;
 
 use Composer\InstalledVersions;
+use DBALConsole\Command\ReservedWordsCommand;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 use Doctrine\Tests\DoctrineTestCase;
 use Symfony\Component\Console\Command\Command;
+
+use function class_exists;
 
 /**
  * @group DDC-3186
@@ -21,7 +24,10 @@ final class ConsoleRunnerTest extends DoctrineTestCase
         $app = ConsoleRunner::createApplication($this->createStub(EntityManagerProvider::class));
 
         self::assertSame(InstalledVersions::getVersion('doctrine/orm'), $app->getVersion());
-        self::assertTrue($app->has('dbal:reserved-words'));
+        if (class_exists(ReservedWordsCommand::class)) {
+            self::assertTrue($app->has('dbal:reserved-words'));
+        }
+
         self::assertTrue($app->has('dbal:run-sql'));
         self::assertTrue($app->has('orm:clear-cache:region:collection'));
         self::assertTrue($app->has('orm:clear-cache:region:entity'));

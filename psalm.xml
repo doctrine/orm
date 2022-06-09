@@ -22,6 +22,8 @@
                 <!-- Remove on 3.0.x -->
                 <referencedClass name="Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\EntityManagerProvider\HelperSetManagerProvider"/>
+                <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand"/>
+                <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
             </errorLevel>
         </DeprecatedClass>
         <DeprecatedMethod>
@@ -30,6 +32,7 @@
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
                 <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\ORM\Query\TreeWalkerAdapter::_getQueryComponents"/>
+                <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
                 <file name="lib/Doctrine/ORM/Query/TreeWalkerChain.php"/>
             </errorLevel>
         </DeprecatedMethod>
@@ -128,6 +131,9 @@
 
                 <!-- Persistence 2 compatibility -->
                 <referencedClass name="Doctrine\Persistence\ObjectManagerAware"/>
+
+                <!-- See https://github.com/doctrine/dbal/pull/5432 -->
+                <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
             </errorLevel>
         </UndefinedClass>
         <ArgumentTypeCoercion>
