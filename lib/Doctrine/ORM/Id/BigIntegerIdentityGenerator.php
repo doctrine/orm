@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Id;
 
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -27,6 +28,15 @@ class BigIntegerIdentityGenerator extends AbstractIdGenerator
      */
     public function __construct($sequenceName = null)
     {
+        if ($sequenceName !== null) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8850',
+                'Passing a sequence name to the IdentityGenerator is deprecated in favor of using %s. $sequenceName will be removed in ORM 3.0',
+                SequenceGenerator::class
+            );
+        }
+
         $this->sequenceName = $sequenceName;
     }
 
