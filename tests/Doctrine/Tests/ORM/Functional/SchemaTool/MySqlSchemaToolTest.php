@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Doctrine\DBAL\Schema\Visitor\Visitor;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -20,6 +21,8 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\Models\Generic\DecimalModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function class_exists;
 
 class MySqlSchemaToolTest extends OrmFunctionalTestCase
 {
@@ -101,6 +104,10 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
      */
     public function testGetCreateSchemaSql4(): void
     {
+        if (! class_exists(Visitor::class)) {
+            self::markTestSkipped('Test valid for doctrine/dbal:3.x only.');
+        }
+
         $classes = [$this->_em->getClassMetadata(MysqlSchemaNamespacedEntity::class)];
 
         $tool = new SchemaTool($this->_em);
