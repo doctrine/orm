@@ -21,3 +21,7 @@ parameters:
             paths:
                 - lib/Doctrine/ORM/Id/BigIntegerIdentityGenerator.php
                 - lib/Doctrine/ORM/Id/IdentityGenerator.php
+
+        -
+            message: '~^Parameter #1 \$command of method Symfony\\Component\\Console\\Application::add\(\) expects Symfony\\Component\\Console\\Command\\Command, Doctrine\\DBAL\\Tools\\Console\\Command\\ReservedWordsCommand given\.$~'
+            path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php

@@ -28,12 +28,14 @@ use function array_filter;
 use function array_flip;
 use function array_intersect_key;
 use function assert;
+use function class_exists;
 use function count;
 use function current;
 use function implode;
 use function in_array;
 use function is_array;
 use function is_numeric;
+use function method_exists;
 use function strtolower;
 
 /**
@@ -393,7 +395,11 @@ class SchemaTool
             }
         }
 
-        if (! $this->platform->supportsSchemas()) {
+        if (
+            ! $this->platform->supportsSchemas()
+            && class_exists(RemoveNamespacedAssets::class)
+            && method_exists($schema, 'visit')
+        ) {
             $schema->visit(new RemoveNamespacedAssets());
         }
 
