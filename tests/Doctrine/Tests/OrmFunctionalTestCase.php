@@ -1074,7 +1074,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     protected function dropAndCreateTable(Table $table): void
     {
         $schemaManager = $this->createSchemaManager();
-        $platform      = $schemaManager->getDatabasePlatform();
+        $platform      = $this->_em->getConnection()->getDatabasePlatform();
         $tableName     = $table->getQuotedName($platform);
 
         $this->dropTableIfExists($tableName);

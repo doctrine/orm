@@ -395,6 +395,11 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.13
 
+## Deprecated using the `IDENTITY` identifier strategy on platform that do not support identity columns
+
+If identity columns are emulated with sequences on the platform you are using,
+you should switch to the `SEQUENCE` strategy.
+
 ## Deprecated passing `null` to `Doctrine\ORM\Query::setFirstResult()`
 
 `$query->setFirstResult(null);` is equivalent to `$query->setFirstResult(0)`.
