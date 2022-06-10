@@ -97,6 +97,27 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertTrue($cmMap1->hasField('name'));
     }
 
+    public function testUsingIdentityWithAPlatformThatDoesNotSupportIdentityColumnsIsDeprecated(): void
+    {
+        $cm = $this->createValidClassMetadata();
+        $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
+        $cmf      = new ClassMetadataFactoryTestSubject();
+        $driver   = $this->createMock(Driver::class);
+        $platform = $this->createStub(AbstractPlatform::class);
+        $platform->method('usesSequenceEmulatedIdentityColumns')->willReturn(true);
+        $platform->method('getIdentitySequenceName')->willReturn('whatever');
+        $driver->method('getDatabasePlatform')->willReturn($platform);
+        $entityManager = $this->createEntityManager(
+            new MetadataDriverMock(),
+            new Connection([], $driver)
+        );
+        $cmf->setEntityManager($entityManager);
+        $cmf->setMetadataForClass($cm->name, $cm);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8850');
+        $cmf->getMetadataFor($cm->name);
+    }
+
     public function testItThrowsWhenUsingAutoWithIncompatiblePlatform(): void
     {
         $cm1 = $this->createValidClassMetadata();
