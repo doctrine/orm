@@ -1,5 +1,10 @@
 # Upgrade to 3.0
 
+## BC BREAK: Removed identity columns emulation through sequences
+
+If the platform you are using does not support identity columns, you should
+switch to the `SEQUENCE` strategy.
+
 ## BC BREAK: Made setters parameters mandatory
 
 The following methods require an argument when being called. Pass `null`

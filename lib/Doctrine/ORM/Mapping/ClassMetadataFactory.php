@@ -32,7 +32,6 @@ use function class_exists;
 use function count;
 use function end;
 use function explode;
-use function get_class;
 use function in_array;
 use function is_subclass_of;
 use function str_contains;
@@ -491,42 +490,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $sequenceName = null;
                 $fieldName    = $class->identifier ? $class->getSingleIdentifierFieldName() : null;
 
-                // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
-                if ($this->getTargetPlatform()->usesSequenceEmulatedIdentityColumns()) {
-                    Deprecation::trigger(
-                        'doctrine/orm',
-                        'https://github.com/doctrine/orm/issues/8850',
-                        <<<'DEPRECATION'
-Context: Loading metadata for class %s
-Problem: Using the IDENTITY generator strategy with platform "%s" is deprecated and will not be possible in Doctrine ORM 3.0.
-Solution: Use the SEQUENCE generator strategy instead.
-DEPRECATION
-                            ,
-                        $class->name,
-                        get_class($this->getTargetPlatform())
-                    );
-                    $columnName     = $class->getSingleIdentifierColumnName();
-                    $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
-                    $sequencePrefix = $class->getSequencePrefix($this->getTargetPlatform());
-                    $sequenceName   = $this->getTargetPlatform()->getIdentitySequenceName($sequencePrefix, $columnName);
-                    $definition     = [
-                        'sequenceName' => $this->truncateSequenceName($sequenceName),
-                    ];
-
-                    if ($quoted) {
-                        $definition['quoted'] = true;
-                    }
-
-                    $sequenceName = $this
-                        ->em
-                        ->getConfiguration()
-                        ->getQuoteStrategy()
-                        ->getSequenceName($definition, $class, $this->getTargetPlatform());
-                }
-
                 $generator = $fieldName && $class->fieldMappings[$fieldName]['type'] === 'bigint'
-                    ? new BigIntegerIdentityGenerator($sequenceName)
-                    : new IdentityGenerator($sequenceName);
+                    ? new BigIntegerIdentityGenerator()
+                    : new IdentityGenerator();
 
                 $class->setIdGenerator($generator);
 
