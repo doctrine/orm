@@ -25,12 +25,8 @@ use function in_array;
  */
 class SchemaValidator
 {
-    /** @var EntityManagerInterface */
-    private $em;
-
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(private EntityManagerInterface $em)
     {
-        $this->em = $em;
     }
 
     /**
@@ -45,7 +41,7 @@ class SchemaValidator
      *
      * @psalm-return array<string, list<string>>
      */
-    public function validateMapping()
+    public function validateMapping(): array
     {
         $errors  = [];
         $cmf     = $this->em->getMetadataFactory();
@@ -67,7 +63,7 @@ class SchemaValidator
      * @return string[]
      * @psalm-return list<string>
      */
-    public function validateClass(ClassMetadata $class)
+    public function validateClass(ClassMetadata $class): array
     {
         $ce  = [];
         $cmf = $this->em->getMetadataFactory();
@@ -257,10 +253,8 @@ class SchemaValidator
 
     /**
      * Checks if the Database Schema is in sync with the current metadata state.
-     *
-     * @return bool
      */
-    public function schemaInSyncWithMetadata()
+    public function schemaInSyncWithMetadata(): bool
     {
         return count($this->getUpdateSchemaList()) === 0;
     }
