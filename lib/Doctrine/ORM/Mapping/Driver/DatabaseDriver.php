@@ -280,15 +280,10 @@ class DatabaseDriver implements MappingDriver
             return;
         }
 
-        $tables = [];
-
-        foreach ($this->_sm->listTableNames() as $tableName) {
-            $tables[$tableName] = $this->_sm->listTableDetails($tableName);
-        }
-
         $this->tables = $this->manyToManyTables = $this->classToTableNames = [];
 
-        foreach ($tables as $tableName => $table) {
+        foreach ($this->_sm->listTables() as $table) {
+            $tableName   = $table->getName();
             $foreignKeys = $table->getForeignKeys();
 
             $allForeignKeyColumns = [];
@@ -299,7 +294,7 @@ class DatabaseDriver implements MappingDriver
 
             if (! $table->hasPrimaryKey()) {
                 throw new MappingException(
-                    'Table ' . $table->getName() . ' has no primary key. Doctrine does not ' .
+                    'Table ' . $tableName . ' has no primary key. Doctrine does not ' .
                     "support reverse engineering from tables that don't have a primary key."
                 );
             }
