@@ -386,7 +386,7 @@
       <code>$this-&gt;em</code>
       <code>$this-&gt;em</code>
     </PossiblyNullArgument>
-    <PossiblyNullReference occurrences="9">
+    <PossiblyNullReference occurrences="8">
       <code>getAllClassNames</code>
       <code>getConfiguration</code>
       <code>getConfiguration</code>
