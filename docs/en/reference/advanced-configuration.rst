@@ -385,6 +385,13 @@ The other options are interesting in development environment:
 
 - ``AUTOGENERATE_EVAL`` will regenerate each proxy on each request,
   but without writing them to disk.
+  
+.. note::
+
+In some cases, for example when building a container, you would like 
+to generate proxies while not having a database available.
+Then you should set ``platform`` in the connection ``params``. Otherwise 
+doctrine will try to make a connection to the database to determine it.
 
 Autoloading Proxies
 -------------------
