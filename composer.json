@@ -45,7 +45,7 @@
         "phpstan/phpstan": "~1.4.10 || 1.7.9",
         "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
         "psr/log": "^1 || ^2 || ^3",
-        "squizlabs/php_codesniffer": "3.6.2",
+        "squizlabs/php_codesniffer": "3.7.0",
         "symfony/cache": "^4.4 || ^5.4 || ^6.0",
         "symfony/yaml": "^3.4 || ^4.0 || ^5.0 || ^6.0",
         "vimeo/psalm": "4.23.0"
