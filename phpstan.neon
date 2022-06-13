@@ -15,7 +15,8 @@ parameters:
             message: '/Application::add\(\) expects Symfony\\Component\\Console\\Command\\Command/'
             path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
 
-        - '/^Class Doctrine\\DBAL\\Platforms\\(PostgreSQL|SQLServer|SQLAnywhere)Platform not found\.$/'
+        - '/^Class Doctrine\\DBAL\\Platforms\\SQLAnywherePlatform not found\.$/'
+        - '/^Call to method \w+\(\) on an unknown class Doctrine\\DBAL\\Platforms\\SQLAnywherePlatform\.$/'
 
         -
         	message: '/^Call to an undefined method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getSQLResultCasing\(\)\.$/'
