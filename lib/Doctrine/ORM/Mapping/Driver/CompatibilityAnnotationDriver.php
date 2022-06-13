@@ -9,18 +9,18 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 
 use function class_exists;
 
-if (class_exists(PersistenceAnnotationDriver::class)) {
+if (! class_exists(PersistenceAnnotationDriver::class)) {
     /**
      * @internal This class will be removed in ORM 3.0.
      */
-    abstract class CompatibilityAnnotationDriver extends PersistenceAnnotationDriver
+    abstract class CompatibilityAnnotationDriver implements MappingDriver
     {
     }
 } else {
     /**
      * @internal This class will be removed in ORM 3.0.
      */
-    abstract class CompatibilityAnnotationDriver implements MappingDriver
+    abstract class CompatibilityAnnotationDriver extends PersistenceAnnotationDriver
     {
     }
 }
