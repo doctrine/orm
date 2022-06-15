@@ -14,7 +14,7 @@ use function ltrim;
 class AttachEntityListenersListener
 {
     /** @var mixed[][] */
-    private $entityListeners = [];
+    private array $entityListeners = [];
 
     /**
      * Adds a entity listener for a specific entity.
@@ -23,11 +23,13 @@ class AttachEntityListenersListener
      * @param string      $listenerClass    The listener class.
      * @param string      $eventName        The entity lifecycle event.
      * @param string|null $listenerCallback The listener callback method or NULL to use $eventName.
-     *
-     * @return void
      */
-    public function addEntityListener($entityClass, $listenerClass, $eventName, $listenerCallback = null)
-    {
+    public function addEntityListener(
+        string $entityClass,
+        string $listenerClass,
+        string $eventName,
+        $listenerCallback = null
+    ): void {
         $this->entityListeners[ltrim($entityClass, '\\')][] = [
             'event'  => $eventName,
             'class'  => $listenerClass,
@@ -37,10 +39,8 @@ class AttachEntityListenersListener
 
     /**
      * Processes event and attach the entity listener.
-     *
-     * @return void
      */
-    public function loadClassMetadata(LoadClassMetadataEventArgs $event)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $event): void
     {
         $metadata = $event->getClassMetadata();
 

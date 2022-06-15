@@ -26,40 +26,26 @@ use function spl_object_id;
  */
 class DebugUnitOfWorkListener
 {
-    /** @var string */
-    private $file;
-
-    /** @var string */
-    private $context;
-
     /**
      * Pass a stream and context information for the debugging session.
      *
      * The stream can be php://output to print to the screen.
-     *
-     * @param string $file
-     * @param string $context
      */
-    public function __construct($file = 'php://output', $context = '')
-    {
-        $this->file    = $file;
-        $this->context = $context;
+    public function __construct(
+        private string $file = 'php://output',
+        private string $context = ''
+    ) {
     }
 
-    /**
-     * @return void
-     */
-    public function onFlush(OnFlushEventArgs $args)
+    public function onFlush(OnFlushEventArgs $args): void
     {
         $this->dumpIdentityMap($args->getEntityManager());
     }
 
     /**
      * Dumps the contents of the identity map into a stream.
-     *
-     * @return void
      */
-    public function dumpIdentityMap(EntityManagerInterface $em)
+    public function dumpIdentityMap(EntityManagerInterface $em): void
     {
         $uow         = $em->getUnitOfWork();
         $identityMap = $uow->getIdentityMap();
@@ -119,10 +105,7 @@ class DebugUnitOfWorkListener
         fclose($fh);
     }
 
-    /**
-     * @param mixed $var
-     */
-    private function getType($var): string
+    private function getType(mixed $var): string
     {
         if (is_object($var)) {
             $refl = new ReflectionObject($var);
@@ -133,10 +116,7 @@ class DebugUnitOfWorkListener
         return gettype($var);
     }
 
-    /**
-     * @param object $entity
-     */
-    private function getIdString($entity, UnitOfWork $uow): string
+    private function getIdString(object $entity, UnitOfWork $uow): string
     {
         if ($uow->isInIdentityMap($entity)) {
             $ids      = $uow->getEntityIdentifier($entity);
