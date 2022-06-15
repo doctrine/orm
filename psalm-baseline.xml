@@ -180,9 +180,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$className</code>
     </ArgumentTypeCoercion>
-    <RedundantCastGivenDocblockType occurrences="1">
-      <code>(bool) $flag</code>
-    </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/EntityManager.php">
     <ArgumentTypeCoercion occurrences="5">
@@ -222,9 +219,9 @@
     <PropertyTypeCoercion occurrences="1">
       <code>new $metadataFactoryClassName()</code>
     </PropertyTypeCoercion>
-    <RedundantCastGivenDocblockType occurrences="1">
+    <RedundantCast occurrences="1">
       <code>(string) $hydrationMode</code>
-    </RedundantCastGivenDocblockType>
+    </RedundantCast>
     <UnsafeInstantiation occurrences="1">
       <code>new $class($this)</code>
     </UnsafeInstantiation>
@@ -391,7 +388,6 @@
       <code>getConfiguration</code>
       <code>getConfiguration</code>
       <code>getConfiguration</code>
-      <code>getConfiguration</code>
       <code>getConnection</code>
       <code>hasListeners</code>
       <code>hasListeners</code>
@@ -428,6 +424,7 @@
       <code>ReflectionProperty</code>
       <code>ReflectionProperty</code>
       <code>getReflectionClass</code>
+      <code>string</code>
     </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue occurrences="2">
       <code>$definition</code>
@@ -452,6 +449,7 @@
       <code>class-string|null</code>
     </MoreSpecificReturnType>
     <NullableReturnStatement occurrences="4">
+      <code>$this-&gt;associationMappings[$assocName]['mappedBy']</code>
       <code>$this-&gt;reflClass</code>
       <code>$this-&gt;reflFields[$name]</code>
       <code>$this-&gt;reflFields[$this-&gt;identifier[0]]</code>
@@ -483,10 +481,11 @@
       <code>$mapping['originalClass']</code>
       <code>$mapping['originalField']</code>
       <code>$mapping['targetEntity']</code>
+      <code>$this-&gt;associationMappings[$assocName]['isOwningSide']</code>
       <code>$this-&gt;associationMappings[$assocName]['joinColumns']</code>
+      <code>$this-&gt;associationMappings[$assocName]['mappedBy']</code>
       <code>$this-&gt;associationMappings[$fieldName]['joinColumns']</code>
       <code>$this-&gt;associationMappings[$fieldName]['joinColumns']</code>
-      <code>$this-&gt;associationMappings[$idProperty]['joinColumns']</code>
       <code>$this-&gt;associationMappings[$idProperty]['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
     <PropertyNotSetInConstructor occurrences="4">
@@ -1834,11 +1833,9 @@
       <code>string</code>
       <code>string</code>
     </InvalidReturnType>
-    <InvalidScalarArgument occurrences="13">
+    <InvalidScalarArgument occurrences="11">
       <code>$field</code>
       <code>$field</code>
-      <code>$functionName</code>
-      <code>$functionName</code>
       <code>$functionName</code>
       <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
       <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
@@ -2007,8 +2004,6 @@
     <PossiblyUndefinedArrayOffset occurrences="4">
       <code>$associationMapping['isOwningSide']</code>
       <code>$associationMapping['isOwningSide']</code>
-      <code>$associationMapping['isOwningSide']</code>
-      <code>$associationMapping['joinColumns']</code>
       <code>$associationMapping['joinColumns']</code>
       <code>$associationMapping['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
@@ -2393,8 +2388,6 @@
       <code>$this-&gt;identityMap[$rootClassName]</code>
     </PossiblyInvalidArrayOffset>
     <PossiblyNullArgument occurrences="9">
-      <code>$assoc</code>
-      <code>$assoc</code>
       <code>$assoc</code>
       <code>$assoc</code>
       <code>$assoc['targetEntity']</code>
