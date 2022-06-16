@@ -6,8 +6,8 @@ namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 
+use function array_key_last;
 use function count;
-use function end;
 use function is_array;
 use function key;
 use function reset;
@@ -124,9 +124,7 @@ class ArrayHydrator extends AbstractHydrator
                                 $baseElement[$relationAlias][] = $element;
                             }
 
-                            end($baseElement[$relationAlias]);
-
-                            $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = key($baseElement[$relationAlias]);
+                            $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = array_key_last($baseElement[$relationAlias]);
                         }
                     }
                 } else {
@@ -269,7 +267,6 @@ class ArrayHydrator extends AbstractHydrator
             return;
         }
 
-        end($coll);
-        $this->_resultPointers[$dqlAlias] =& $coll[key($coll)];
+        $this->_resultPointers[$dqlAlias] =& $coll[array_key_last($coll)];
     }
 }

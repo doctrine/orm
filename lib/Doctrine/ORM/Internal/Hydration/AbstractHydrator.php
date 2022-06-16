@@ -37,11 +37,6 @@ abstract class AbstractHydrator
     protected ?ResultSetMapping $_rsm = null;
 
     /**
-     * The EntityManager instance.
-     */
-    protected EntityManagerInterface $_em;
-
-    /**
      * The dbms Platform instance.
      */
     protected AbstractPlatform $_platform;
@@ -77,10 +72,12 @@ abstract class AbstractHydrator
      */
     protected array $_hints = [];
 
+    protected EntityManagerInterface $_em;
+
     /**
      * Initializes a new instance of a class derived from <tt>AbstractHydrator</tt>.
      */
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(protected EntityManagerInterface $em)
     {
         $this->_em       = $em;
         $this->_platform = $em->getConnection()->getDatabasePlatform();
@@ -291,9 +288,7 @@ abstract class AbstractHydrator
                     if ($value !== null && isset($cacheKeyInfo['enumType'])) {
                         $enumType = $cacheKeyInfo['enumType'];
                         if (is_array($value)) {
-                            $value = array_map(static function ($value) use ($enumType): BackedEnum {
-                                return $enumType::from($value);
-                            }, $value);
+                            $value = array_map(static fn ($value): BackedEnum => $enumType::from($value), $value);
                         } else {
                             $value = $enumType::from($value);
                         }
@@ -486,9 +481,7 @@ abstract class AbstractHydrator
     private function getDiscriminatorValues(ClassMetadata $classMetadata): array
     {
         $values = array_map(
-            function (string $subClass): string {
-                return (string) $this->getClassMetadata($subClass)->discriminatorValue;
-            },
+            fn (string $subClass): string => (string) $this->getClassMetadata($subClass)->discriminatorValue,
             $classMetadata->subClasses
         );
 
