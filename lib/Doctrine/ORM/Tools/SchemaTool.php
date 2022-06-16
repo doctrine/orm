@@ -13,6 +13,7 @@ use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\Visitor\DropSchemaSqlCollector;
 use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -847,9 +848,12 @@ class SchemaTool
      */
     public function getDropDatabaseSQL()
     {
-        return $this->schemaManager
-            ->createSchema()
-            ->toDropSql($this->platform);
+        $schema = $this->schemaManager->createSchema();
+
+        $visitor = new DropSchemaSqlCollector($this->platform);
+        $schema->visit($visitor);
+
+        return $visitor->getQueries();
     }
 
     /**
@@ -861,21 +865,29 @@ class SchemaTool
      */
     public function getDropSchemaSQL(array $classes)
     {
-        $schema = $this->getSchemaFromMetadata($classes);
+        $visitor = new DropSchemaSqlCollector($this->platform);
+        $schema  = $this->getSchemaFromMetadata($classes);
 
-        $deployedSchema = $this->schemaManager->createSchema();
+        $fullSchema = $this->schemaManager->createSchema();
 
-        foreach ($schema->getTables() as $table) {
-            if (! $deployedSchema->hasTable($table->getName())) {
-                $schema->dropTable($table->getName());
+        foreach ($fullSchema->getTables() as $table) {
+            if (! $schema->hasTable($table->getName())) {
+                foreach ($table->getForeignKeys() as $foreignKey) {
+                    if ($schema->hasTable($foreignKey->getForeignTableName())) {
+                        $visitor->acceptForeignKey($table, $foreignKey);
+                    }
+                }
+            } else {
+                $visitor->acceptTable($table);
+                foreach ($table->getForeignKeys() as $foreignKey) {
+                    $visitor->acceptForeignKey($table, $foreignKey);
+                }
             }
         }
 
         if ($this->platform->supportsSequences()) {
             foreach ($schema->getSequences() as $sequence) {
-                if (! $deployedSchema->hasSequence($sequence->getName())) {
-                    $schema->dropSequence($sequence->getName());
-                }
+                $visitor->acceptSequence($sequence);
             }
 
             foreach ($schema->getTables() as $table) {
@@ -883,15 +895,15 @@ class SchemaTool
                     $columns = $table->getPrimaryKey()->getColumns();
                     if (count($columns) === 1) {
                         $checkSequence = $table->getName() . '_' . $columns[0] . '_seq';
-                        if ($deployedSchema->hasSequence($checkSequence) && ! $schema->hasSequence($checkSequence)) {
-                            $schema->createSequence($checkSequence);
+                        if ($fullSchema->hasSequence($checkSequence)) {
+                            $visitor->acceptSequence($fullSchema->getSequence($checkSequence));
                         }
                     }
                 }
             }
         }
 
-        return $schema->toDropSql($this->platform);
+        return $visitor->getQueries();
     }
 
     /**
