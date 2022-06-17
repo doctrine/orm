@@ -337,6 +337,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Issue5989\Issue5989Employee::class,
             Models\Issue5989\Issue5989Manager::class,
         ],
+        'products_roman' => [
+            Models\ProductsRomanCollation\ProductFeature::class,
+            Models\ProductsRomanCollation\ProductColor::class,
+        ],
     ];
 
     /**
@@ -640,6 +644,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeStatement('DELETE FROM issue5989_persons');
             $conn->executeStatement('DELETE FROM issue5989_employees');
             $conn->executeStatement('DELETE FROM issue5989_managers');
+        }
+
+        if (isset($this->_usedModelSets['products_roman'])) {
+            $conn->executeStatement('DELETE FROM productroman_colors');
+            $conn->executeStatement('DELETE FROM productroman_features');
         }
 
         $this->_em->clear();
