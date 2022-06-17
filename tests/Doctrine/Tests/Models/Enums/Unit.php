@@ -6,6 +6,6 @@ namespace Doctrine\Tests\Models\Enums;
 
 enum Unit: string
 {
-    case Gram = 'g';
+    case Gram  = 'g';
     case Meter = 'm';
 }
