@@ -400,6 +400,28 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.13
 
+## Deprecated omitting only the alias argument for `QueryBuilder::update` and `QueryBuilder::delete`
+
+When building an UPDATE or DELETE query and when passing a class/type to the function, the alias argument must not be omitted.
+
+### Before
+
+```php
+$qb = $em->createQueryBuilder()
+    ->delete('User u')
+    ->where('u.id = :user_id')
+    ->setParameter('user_id', 1);
+```
+
+### After
+
+```php
+$qb = $em->createQueryBuilder()
+    ->delete('User', 'u')
+    ->where('u.id = :user_id')
+    ->setParameter('user_id', 1);
+```
+
 ## Deprecated using the `IDENTITY` identifier strategy on platform that do not support identity columns
 
 If identity columns are emulated with sequences on the platform you are using,

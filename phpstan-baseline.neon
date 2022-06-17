@@ -171,6 +171,11 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
 
 		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
+
+		-
 			message: "#^Empty array passed to foreach\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php

@@ -6,7 +6,7 @@ namespace Doctrine\Tests\Models\Enums;
 
 enum City: string
 {
-    case Paris = 'Paris';
-    case Cannes = 'Cannes';
+    case Paris    = 'Paris';
+    case Cannes   = 'Cannes';
     case StJulien = 'St Julien';
 }

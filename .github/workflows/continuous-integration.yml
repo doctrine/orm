@@ -26,6 +26,8 @@ jobs:
         include:
           - php-version: "8.1"
             dbal-version: "3@dev"
+          - php-version: "8.2"
+            dbal-version: "3@dev"
           - php-version: "8.1"
             dbal-version: "4@dev"
 
@@ -49,6 +51,8 @@ jobs:
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
+        with:
+          composer-options: "--ignore-platform-req=php+"
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit -c ci/github/phpunit/sqlite.xml --coverage-clover=coverage-no-cache.xml"
@@ -85,6 +89,9 @@ jobs:
         - php-version: "8.1"
           dbal-version: "4@dev"
           postgres-version: "14"
+        - php-version: "8.2"
+          dbal-version: "3@dev"
+          postgres-version: "14"
 
     services:
       postgres:
@@ -117,6 +124,8 @@ jobs:
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
+        with:
+          composer-options: "--ignore-platform-req=php+"
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit -c ci/github/phpunit/pdo_pgsql.xml --coverage-clover=coverage.xml"
@@ -145,6 +154,15 @@ jobs:
         extension:
           - "mysqli"
           - "pdo_mysql"
+        include:
+          - php-version: "8.2"
+            dbal-version: "3@dev"
+            mariadb-version: "10.6"
+            extension: "pdo_mysql"
+          - php-version: "8.2"
+            dbal-version: "3@dev"
+            mariadb-version: "10.6"
+            extension: "mysqli"
 
     services:
       mariadb:
@@ -179,6 +197,8 @@ jobs:
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
+        with:
+          composer-options: "--ignore-platform-req=php+"
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --coverage-clover=coverage.xml"
@@ -216,6 +236,14 @@ jobs:
             dbal-version: "4@dev"
             mysql-version: "8.0"
             extension: "pdo_mysql"
+          - php-version: "8.2"
+            dbal-version: "3@dev"
+            mysql-version: "8.0"
+            extension: "mysqli"
+          - php-version: "8.2"
+            dbal-version: "3@dev"
+            mysql-version: "8.0"
+            extension: "pdo_mysql"
 
     services:
       mysql:
@@ -249,6 +277,8 @@ jobs:
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
+        with:
+          composer-options: "--ignore-platform-req=php+"
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --coverage-clover=coverage-no-cache.xml"

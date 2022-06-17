@@ -39,10 +39,10 @@
         "doctrine/annotations": "^1.13",
         "doctrine/coding-standard": "^9.0",
         "phpbench/phpbench": "^1.0",
-        "phpstan/phpstan": "1.7.9",
+        "phpstan/phpstan": "1.7.13",
         "phpunit/phpunit": "^9.5",
         "psr/log": "^1 || ^2 || ^3",
-        "squizlabs/php_codesniffer": "3.6.2",
+        "squizlabs/php_codesniffer": "3.7.0",
         "symfony/cache": "^4.4 || ^5.4 || ^6.0",
         "vimeo/psalm": "4.23.0"
     },

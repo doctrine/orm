@@ -42,6 +42,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /** @var CmsPhonenumber */
     private $phonenumber;
 
+    /** @var array<string, mixed> */
+    private $previousCacheConfig = [];
+
     protected function setUp(): void
     {
         $this->useModelSet('tweet');
