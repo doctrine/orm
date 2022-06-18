@@ -27,25 +27,24 @@ use function spl_object_id;
 class ObjectHydrator extends AbstractHydrator
 {
     /** @var mixed[] */
-    private $identifierMap = [];
+    private array $identifierMap = [];
 
     /** @var mixed[] */
-    private $resultPointers = [];
+    private array $resultPointers = [];
 
     /** @var mixed[] */
-    private $idTemplate = [];
+    private array $idTemplate = [];
 
-    /** @var int */
-    private $resultCounter = 0;
-
-    /** @var mixed[] */
-    private $rootAliases = [];
+    private int $resultCounter = 0;
 
     /** @var mixed[] */
-    private $initializedCollections = [];
+    private array $rootAliases = [];
 
     /** @var mixed[] */
-    private $existingCollections = [];
+    private array $initializedCollections = [];
+
+    /** @var mixed[] */
+    private array $existingCollections = [];
 
     protected function prepare(): void
     {
@@ -148,12 +147,11 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * Initializes a related collection.
      *
-     * @param object $entity         The entity to which the collection belongs.
      * @param string $fieldName      The name of the field on the entity that holds the collection.
      * @param string $parentDqlAlias Alias of the parent fetch joining this collection.
      */
     private function initRelatedCollection(
-        $entity,
+        object $entity,
         ClassMetadata $class,
         string $fieldName,
         string $parentDqlAlias
@@ -203,11 +201,9 @@ class ObjectHydrator extends AbstractHydrator
      * @param string $dqlAlias The DQL alias of the entity's class.
      * @psalm-param array<string, mixed> $data     The instance data.
      *
-     * @return object
-     *
      * @throws HydrationException
      */
-    private function getEntity(array $data, string $dqlAlias)
+    private function getEntity(array $data, string $dqlAlias): object
     {
         $className = $this->resultSetMapping()->aliasMap[$dqlAlias];
 
@@ -252,10 +248,8 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * @psalm-param class-string $className
      * @psalm-param array<string, mixed> $data
-     *
-     * @return mixed
      */
-    private function getEntityFromIdentityMap(string $className, array $data)
+    private function getEntityFromIdentityMap(string $className, array $data): object|bool
     {
         // TODO: Abstract this code and UnitOfWork::createEntity() equivalent?
         $class = $this->_metadataCache[$className];

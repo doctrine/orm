@@ -265,6 +265,9 @@
     <PossiblyInvalidArgument occurrences="1">
       <code>$index</code>
     </PossiblyInvalidArgument>
+    <PossiblyNullArgument occurrences="1">
+      <code>$index</code>
+    </PossiblyNullArgument>
     <PossiblyNullArrayAssignment occurrences="2">
       <code>$result[$resultKey]</code>
       <code>$result[$resultKey]</code>

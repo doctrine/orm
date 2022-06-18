@@ -38,36 +38,27 @@ class CommitOrderCalculator
      *
      * @var array<stdClass>
      */
-    private $nodeList = [];
+    private array $nodeList = [];
 
     /**
      * Volatile variable holding calculated nodes during sorting process.
      *
      * @psalm-var list<object>
      */
-    private $sortedNodeList = [];
+    private array $sortedNodeList = [];
 
     /**
      * Checks for node (vertex) existence in graph.
-     *
-     * @param string $hash
-     *
-     * @return bool
      */
-    public function hasNode($hash)
+    public function hasNode(string $hash): bool
     {
         return isset($this->nodeList[$hash]);
     }
 
     /**
      * Adds a new node (vertex) to the graph, assigning its hash and value.
-     *
-     * @param string $hash
-     * @param object $node
-     *
-     * @return void
      */
-    public function addNode($hash, $node)
+    public function addNode(string $hash, object $node): void
     {
         $vertex = new stdClass();
 
@@ -81,14 +72,8 @@ class CommitOrderCalculator
 
     /**
      * Adds a new dependency (edge) to the graph using their hashes.
-     *
-     * @param string $fromHash
-     * @param string $toHash
-     * @param int    $weight
-     *
-     * @return void
      */
-    public function addDependency($fromHash, $toHash, $weight)
+    public function addDependency(string $fromHash, string $toHash, int $weight): void
     {
         $vertex = $this->nodeList[$fromHash];
         $edge   = new stdClass();
@@ -108,7 +93,7 @@ class CommitOrderCalculator
      *
      * @psalm-return list<object>
      */
-    public function sort()
+    public function sort(): array
     {
         foreach ($this->nodeList as $vertex) {
             if ($vertex->state !== self::NOT_VISITED) {

@@ -16,30 +16,17 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 final class HydrationCompleteHandler
 {
-    /** @var ListenersInvoker */
-    private $listenersInvoker;
-
-    /** @var EntityManagerInterface */
-    private $em;
-
     /** @var mixed[][] */
-    private $deferredPostLoadInvocations = [];
+    private array $deferredPostLoadInvocations = [];
 
-    /**
-     * Constructor for this object
-     */
-    public function __construct(ListenersInvoker $listenersInvoker, EntityManagerInterface $em)
+    public function __construct(private ListenersInvoker $listenersInvoker, private EntityManagerInterface $em)
     {
-        $this->listenersInvoker = $listenersInvoker;
-        $this->em               = $em;
     }
 
     /**
      * Method schedules invoking of postLoad entity to the very end of current hydration cycle.
-     *
-     * @param object $entity
      */
-    public function deferPostLoadInvoking(ClassMetadata $class, $entity): void
+    public function deferPostLoadInvoking(ClassMetadata $class, object $entity): void
     {
         $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postLoad);
 
