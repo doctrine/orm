@@ -836,8 +836,10 @@ use function strpos;
     public function contains($entity)
     {
         return $this->unitOfWork->isScheduledForInsert($entity)
-            || $this->unitOfWork->isInIdentityMap($entity)
-            && ! $this->unitOfWork->isScheduledForDelete($entity);
+            || (
+                $this->unitOfWork->isInIdentityMap($entity)
+                && ! $this->unitOfWork->isScheduledForDelete($entity)
+            );
     }
 
     /**
