@@ -7,6 +7,7 @@ namespace Doctrine\Tests;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use UnexpectedValueException;
 
@@ -88,7 +89,8 @@ class TestUtil
 
         $platform = $privConn->getDatabasePlatform();
 
-        if ($platform->supportsCreateDropDatabase()) {
+        // skip re-create Database in Oracle DB XE
+        if ($platform->supportsCreateDropDatabase() && false === $platform instanceof OraclePlatform) {
             $dbname = $testConnParams['dbname'] ?? $testConn->getDatabase();
             $testConn->close();
 
