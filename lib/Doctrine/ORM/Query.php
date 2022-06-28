@@ -582,9 +582,7 @@ final class Query extends AbstractQuery
         return $this->expireQueryCache;
     }
 
-    /**
-     * @override
-     */
+    /** @override */
     public function free(): void
     {
         parent::free();

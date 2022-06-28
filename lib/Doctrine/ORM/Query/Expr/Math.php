@@ -34,33 +34,25 @@ class Math
         $this->rightExpr = $rightExpr;
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function getLeftExpr()
     {
         return $this->leftExpr;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function getOperator()
     {
         return $this->operator;
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function getRightExpr()
     {
         return $this->rightExpr;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function __toString()
     {
         // Adjusting Left Expression

@@ -17,9 +17,7 @@ use Doctrine\Persistence\Mapping\StaticReflectionService;
  */
 class DisconnectedClassMetadataFactory extends ClassMetadataFactory
 {
-    /**
-     * @return StaticReflectionService
-     */
+    /** @return StaticReflectionService */
     public function getReflectionService()
     {
         return new StaticReflectionService();

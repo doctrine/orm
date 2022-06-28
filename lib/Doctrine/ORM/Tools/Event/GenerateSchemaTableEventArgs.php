@@ -32,25 +32,19 @@ class GenerateSchemaTableEventArgs extends EventArgs
         $this->classTable    = $classTable;
     }
 
-    /**
-     * @return ClassMetadata
-     */
+    /** @return ClassMetadata */
     public function getClassMetadata()
     {
         return $this->classMetadata;
     }
 
-    /**
-     * @return Schema
-     */
+    /** @return Schema */
     public function getSchema()
     {
         return $this->schema;
     }
 
-    /**
-     * @return Table
-     */
+    /** @return Table */
     public function getClassTable()
     {
         return $this->classTable;

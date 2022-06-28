@@ -3550,9 +3550,7 @@ class Parser
         return $function;
     }
 
-    /**
-     * @return FunctionNode
-     */
+    /** @return FunctionNode */
     public function CustomFunctionsReturningNumerics()
     {
         // getCustomNumericFunction is case-insensitive
@@ -3591,9 +3589,7 @@ class Parser
         return $function;
     }
 
-    /**
-     * @return FunctionNode
-     */
+    /** @return FunctionNode */
     public function CustomFunctionsReturningDatetime()
     {
         // getCustomDatetimeFunction is case-insensitive
@@ -3633,9 +3629,7 @@ class Parser
         return $function;
     }
 
-    /**
-     * @return FunctionNode
-     */
+    /** @return FunctionNode */
     public function CustomFunctionsReturningStrings()
     {
         // getCustomStringFunction is case-insensitive

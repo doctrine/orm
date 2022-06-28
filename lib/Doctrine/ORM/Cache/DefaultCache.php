@@ -262,9 +262,7 @@ class DefaultCache implements Cache
         return $this->queryCaches[$regionName];
     }
 
-    /**
-     * @param mixed $identifier The entity identifier.
-     */
+    /** @param mixed $identifier The entity identifier. */
     private function buildEntityCacheKey(ClassMetadata $metadata, $identifier): EntityCacheKey
     {
         if (! is_array($identifier)) {
@@ -274,9 +272,7 @@ class DefaultCache implements Cache
         return new EntityCacheKey($metadata->rootEntityName, $identifier);
     }
 
-    /**
-     * @param mixed $ownerIdentifier The identifier of the owning entity.
-     */
+    /** @param mixed $ownerIdentifier The identifier of the owning entity. */
     private function buildCollectionCacheKey(
         ClassMetadata $metadata,
         string $association,

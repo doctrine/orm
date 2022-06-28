@@ -20,9 +20,7 @@ class OnClearEventArgs extends EventArgs
     /** @var string|null */
     private $entityClass;
 
-    /**
-     * @param string|null $entityClass Optional entity class.
-     */
+    /** @param string|null $entityClass Optional entity class. */
     public function __construct(EntityManagerInterface $em, $entityClass = null)
     {
         $this->em          = $em;

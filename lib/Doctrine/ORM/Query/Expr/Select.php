@@ -23,9 +23,7 @@ class Select extends Base
     /** @psalm-var list<string|Func> */
     protected $parts = [];
 
-    /**
-     * @psalm-return list<string|Func>
-     */
+    /** @psalm-return list<string|Func> */
     public function getParts()
     {
         return $this->parts;

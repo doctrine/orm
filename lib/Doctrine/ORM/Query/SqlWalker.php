@@ -1569,9 +1569,7 @@ class SqlWalker implements TreeWalker
             . $this->walkSimpleSelectExpression($simpleSelectClause->simpleSelectExpression);
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function walkParenthesisExpression(AST\ParenthesisExpression $parenthesisExpression)
     {
         return sprintf('(%s)', $parenthesisExpression->expression->dispatch($this));

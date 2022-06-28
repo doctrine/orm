@@ -13,9 +13,7 @@ use Doctrine\ORM\Exception\ORMException;
  */
 class TransactionRequiredException extends ORMException
 {
-    /**
-     * @return TransactionRequiredException
-     */
+    /** @return TransactionRequiredException */
     public static function transactionRequired()
     {
         return new self('An open transaction is required for this operation.');

@@ -203,6 +203,11 @@
         <exclude-pattern>tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests*</exclude-pattern>
     </rule>
 
+    <rule ref="SlevomatCodingStandard.Commenting.RequireOneLineDocComment.MultiLineDocComment">
+        <!-- This sniff produces annotations that PHPUnit 7 does not understand. -->
+        <exclude-pattern>tests/Doctrine/Tests</exclude-pattern>
+    </rule>
+
     <rule ref="PSR2.Methods.MethodDeclaration.Underscore">
         <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php</exclude-pattern>

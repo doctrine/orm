@@ -34,9 +34,7 @@ class QueryCacheKey extends CacheKey
      */
     public $timestampKey;
 
-    /**
-     * @psalm-param Cache::MODE_* $cacheMode
-     */
+    /** @psalm-param Cache::MODE_* $cacheMode */
     public function __construct(
         string $cacheId,
         int $lifetime = 0,

@@ -653,9 +653,7 @@ class TreeWalkerChain implements TreeWalker
     {
     }
 
-    /**
-     * @psalm-return Generator<int, TreeWalker>
-     */
+    /** @psalm-return Generator<int, TreeWalker> */
     private function getWalkers(): Generator
     {
         foreach ($this->walkers as $walkerClass) {

@@ -41,33 +41,25 @@ class Comparison
         $this->rightExpr = $rightExpr;
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function getLeftExpr()
     {
         return $this->leftExpr;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function getOperator()
     {
         return $this->operator;
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function getRightExpr()
     {
         return $this->rightExpr;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function __toString()
     {
         return $this->leftExpr . ' ' . $this->operator . ' ' . $this->rightExpr;

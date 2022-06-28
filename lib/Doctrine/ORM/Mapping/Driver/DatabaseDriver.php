@@ -257,9 +257,7 @@ class DatabaseDriver implements MappingDriver
         }
     }
 
-    /**
-     * @throws MappingException
-     */
+    /** @throws MappingException */
     private function reverseEngineerMappingFromDatabase(): void
     {
         if ($this->tables !== null) {

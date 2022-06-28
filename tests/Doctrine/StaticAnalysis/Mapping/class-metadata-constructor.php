@@ -6,9 +6,7 @@ namespace Doctrine\StaticAnalysis\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-/**
- * @template T of object
- */
+/** @template T of object */
 class MetadataGenerator
 {
     /**

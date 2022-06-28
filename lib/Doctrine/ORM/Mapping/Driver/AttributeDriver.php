@@ -46,9 +46,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
      */
     protected $reader;
 
-    /**
-     * @param array<string> $paths
-     */
+    /** @param array<string> $paths */
     public function __construct(array $paths)
     {
         if (PHP_VERSION_ID < 80000) {

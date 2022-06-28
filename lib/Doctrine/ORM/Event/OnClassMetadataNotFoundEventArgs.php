@@ -36,17 +36,13 @@ class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
         parent::__construct($objectManager);
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function setFoundMetadata(?ClassMetadata $classMetadata = null)
     {
         $this->foundMetadata = $classMetadata;
     }
 
-    /**
-     * @return ClassMetadata|null
-     */
+    /** @return ClassMetadata|null */
     public function getFoundMetadata()
     {
         return $this->foundMetadata;

@@ -53,9 +53,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
         $this->pattern = $numberAware ? self::NUMBER_AWARE_PATTERN : self::DEFAULT_PATTERN;
     }
 
-    /**
-     * @return int CASE_LOWER | CASE_UPPER
-     */
+    /** @return int CASE_LOWER | CASE_UPPER */
     public function getCase()
     {
         return $this->case;

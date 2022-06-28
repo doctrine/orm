@@ -22,9 +22,7 @@ class PreFlushEventArgs extends EventArgs
         $this->em = $em;
     }
 
-    /**
-     * @return EntityManagerInterface
-     */
+    /** @return EntityManagerInterface */
     public function getEntityManager()
     {
         return $this->em;

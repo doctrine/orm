@@ -2278,9 +2278,7 @@ class ClassMetadataInfo implements ClassMetadata
         return $this->generatorType !== self::GENERATOR_TYPE_NONE;
     }
 
-    /**
-     * @return bool
-     */
+    /** @return bool */
     public function isInheritanceTypeNone()
     {
         return $this->inheritanceType === self::INHERITANCE_TYPE_NONE;
@@ -3203,9 +3201,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     final public function getDiscriminatorColumn(): array
     {
         if ($this->discriminatorColumn === null) {
@@ -3800,9 +3796,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
     }
 
-    /**
-     * @throws MappingException
-     */
+    /** @throws MappingException */
     private function assertFieldNotMapped(string $fieldName): void
     {
         if (
@@ -3854,9 +3848,7 @@ class ClassMetadataInfo implements ClassMetadata
         return $sequencePrefix;
     }
 
-    /**
-     * @psalm-param array<string, mixed> $mapping
-     */
+    /** @psalm-param array<string, mixed> $mapping */
     private function assertMappingOrderBy(array $mapping): void
     {
         if (isset($mapping['orderBy']) && ! is_array($mapping['orderBy'])) {
@@ -3864,9 +3856,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
     }
 
-    /**
-     * @psalm-param class-string $class
-     */
+    /** @psalm-param class-string $class */
     private function getAccessibleProperty(ReflectionService $reflService, string $class, string $field): ?ReflectionProperty
     {
         $reflectionProperty = $reflService->getAccessibleProperty($class, $field);

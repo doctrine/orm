@@ -22,9 +22,7 @@ use function sprintf;
  */
 class MappingException extends ORMException
 {
-    /**
-     * @return MappingException
-     */
+    /** @return MappingException */
     public static function pathRequired()
     {
         return new self('Specifying the paths to your entities is required ' .
@@ -64,9 +62,7 @@ class MappingException extends ORMException
         return new self(sprintf("The inheritance type '%s' specified for '%s' does not exist.", $type, $entityName));
     }
 
-    /**
-     * @return MappingException
-     */
+    /** @return MappingException */
     public static function generatorNotAllowedWithCompositeId()
     {
         return new self("Id generators can't be used with a composite id.");
@@ -921,9 +917,7 @@ class MappingException extends ORMException
         );
     }
 
-    /**
-     * @return self
-     */
+    /** @return self */
     public static function invalidIndexConfiguration($className, $indexName)
     {
         return new self(
@@ -935,9 +929,7 @@ class MappingException extends ORMException
         );
     }
 
-    /**
-     * @return self
-     */
+    /** @return self */
     public static function invalidUniqueConstraintConfiguration($className, $indexName)
     {
         return new self(
@@ -949,9 +941,7 @@ class MappingException extends ORMException
         );
     }
 
-    /**
-     * @param mixed $givenValue
-     */
+    /** @param mixed $givenValue */
     public static function invalidOverrideType(string $expectdType, $givenValue): self
     {
         return new self(sprintf(
