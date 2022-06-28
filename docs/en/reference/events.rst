@@ -644,6 +644,9 @@ A simple example for this event looks like:
             if ($eventArgs->getEntity() instanceof User) {
                 if ($eventArgs->hasChangedField('name') && $eventArgs->getNewValue('name') == 'Alice') {
                     $eventArgs->setNewValue('name', 'Bob');
+                    // The following will only work if `status` is already present in the computed changeset.
+                    // Otherwise it will throw an InvalidArgumentException:
+                    $eventArgs->setNewValue('status', 'active');
                 }
             }
         }
