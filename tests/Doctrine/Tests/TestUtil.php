@@ -90,7 +90,7 @@ class TestUtil
         $platform = $privConn->getDatabasePlatform();
 
         // skip re-create Database in Oracle DB XE
-        if ($platform->supportsCreateDropDatabase() && false === $platform instanceof OraclePlatform) {
+        if ($platform->supportsCreateDropDatabase() && ! $platform instanceof OraclePlatform) {
             $dbname = $testConnParams['dbname'] ?? $testConn->getDatabase();
             $testConn->close();
 
