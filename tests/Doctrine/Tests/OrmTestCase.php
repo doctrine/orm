@@ -23,6 +23,7 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
+use function method_exists;
 use function realpath;
 use function sprintf;
 
@@ -158,11 +159,17 @@ abstract class OrmTestCase extends DoctrineTestCase
 
     private function createPlatformMock(): AbstractPlatform
     {
+        $schemaManager = $this->createMock(AbstractSchemaManager::class);
+        $schemaManager->method('createSchemaConfig')
+            ->willReturn(new SchemaConfig());
+
         $platform = $this->getMockBuilder(AbstractPlatform::class)
-            ->onlyMethods(['supportsIdentityColumns'])
+            ->onlyMethods(['supportsIdentityColumns', 'createSchemaManager'])
             ->getMockForAbstractClass();
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
+        $platform->method('createSchemaManager')
+            ->willReturn($schemaManager);
 
         return $platform;
     }
@@ -177,17 +184,16 @@ abstract class OrmTestCase extends DoctrineTestCase
         $connection->method('query')
             ->willReturn($result);
 
-        $schemaManager = $this->createMock(AbstractSchemaManager::class);
-        $schemaManager->method('createSchemaConfig')
-            ->willReturn(new SchemaConfig());
-
         $driver = $this->createMock(Driver::class);
         $driver->method('connect')
             ->willReturn($connection);
-        $driver->method('getSchemaManager')
-            ->willReturn($schemaManager);
         $driver->method('getDatabasePlatform')
             ->willReturn($platform);
+
+        if (method_exists(Driver::class, 'getSchemaManager')) {
+            $driver->method('getSchemaManager')
+                ->willReturnCallback([$platform, 'createSchemaManager']);
+        }
 
         return $driver;
     }
