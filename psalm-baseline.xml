@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.23.0@f1fe6ff483bf325c803df9f510d09a03fd796f88">
+<files psalm-version="4.24.0@06dd975cb55d36af80f242561738f16c5f58264f">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass occurrences="1">
       <code>IterableResult</code>
@@ -609,16 +609,21 @@
       <code>protected function _validateAndCompleteManyToManyMapping(array $mapping)</code>
       <code>protected function _validateAndCompleteOneToOneMapping(array $mapping)</code>
     </InvalidDocblock>
-    <InvalidNullableReturnType occurrences="4">
+    <InvalidNullableReturnType occurrences="3">
       <code>ReflectionProperty</code>
       <code>ReflectionProperty</code>
       <code>getAssociationMappedByTargetField</code>
-      <code>getReflectionClass</code>
     </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue occurrences="2">
       <code>$definition</code>
       <code>$this-&gt;subClasses</code>
     </InvalidPropertyAssignmentValue>
+    <InvalidReturnStatement occurrences="1">
+      <code>$this-&gt;reflClass</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>getReflectionClass</code>
+    </InvalidReturnType>
     <LessSpecificReturnStatement occurrences="4">
       <code>$cache</code>
       <code>$className</code>
@@ -816,8 +821,8 @@
       <code>assert($property instanceof ReflectionProperty)</code>
     </RedundantCondition>
     <RedundantConditionGivenDocblockType occurrences="2">
-      <code>assert($cacheAttribute instanceof Mapping\Cache)</code>
       <code>$metadata-&gt;getReflectionClass()</code>
+      <code>assert($cacheAttribute instanceof Mapping\Cache)</code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php">
@@ -2574,7 +2579,8 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Repository/DefaultRepositoryFactory.php">
-    <InvalidReturnStatement occurrences="1">
+    <InvalidReturnStatement occurrences="2">
+      <code>$this-&gt;repositoryList[$repositoryHash]</code>
       <code>$this-&gt;repositoryList[$repositoryHash] = $this-&gt;createRepository($entityManager, $entityName)</code>
     </InvalidReturnStatement>
     <InvalidReturnType occurrences="1">
@@ -2791,12 +2797,6 @@
     <InvalidDocblock occurrences="1">
       <code>public function setFieldVisibility($visibility)</code>
     </InvalidDocblock>
-    <MissingParamType occurrences="1">
-      <code>$visibility</code>
-    </MissingParamType>
-    <MissingReturnType occurrences="1">
-      <code>setFieldVisibility</code>
-    </MissingReturnType>
     <PossiblyFalseArgument occurrences="2">
       <code>$last</code>
       <code>strrpos($metadata-&gt;name, '\\')</code>
@@ -3217,8 +3217,7 @@
       <code>$assoc['orphanRemoval']</code>
       <code>$association['mappedBy']</code>
     </PossiblyUndefinedArrayOffset>
-    <PossiblyUndefinedMethod occurrences="4">
-      <code>addPropertyChangedListener</code>
+    <PossiblyUndefinedMethod occurrences="3">
       <code>unwrap</code>
       <code>unwrap</code>
       <code>unwrap</code>
