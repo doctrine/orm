@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC117Translation
 {
     /**
@@ -33,21 +31,18 @@ class DDC117Translation
 
     public function __construct(
         /**
-         * @var DDC117Article
          * @Id
          * @ManyToOne(targetEntity="DDC117Article", inversedBy="translations")
          * @JoinColumn(name="article_id", referencedColumnName="article_id")
          */
-        private $article,
+        private DDC117Article $article,
         /**
          * @Id
          * @Column(type="string", length=255)
          */
         private string $language,
-        /**
-         * @Column(type="string", length=255)
-         */
-        private string $title
+        /** @Column(type="string", length=255) */
+        private string $title,
     ) {
         $this->reviewedByEditors = new ArrayCollection();
         $this->lastTranslatedBy  = new ArrayCollection();

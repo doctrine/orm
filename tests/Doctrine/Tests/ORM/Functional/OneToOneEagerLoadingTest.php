@@ -17,9 +17,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-952
- */
+/** @group DDC-952 */
 class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -30,13 +28,11 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
             TrainDriver::class,
             TrainOwner::class,
             Waggon::class,
-            TrainOrder::class
+            TrainOrder::class,
         );
     }
 
-    /**
-     * @group non-cacheable
-     */
+    /** @group non-cacheable */
     public function testEagerLoadOneToOneOwningSide(): void
     {
         $train  = new Train(new TrainOwner('Alexander'));
@@ -59,9 +55,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->assertQueryCount(1);
     }
 
-    /**
-     * @group non-cacheable
-     */
+    /** @group non-cacheable */
     public function testEagerLoadOneToOneNullOwningSide(): void
     {
         $train = new Train(new TrainOwner('Alexander'));
@@ -79,9 +73,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->assertQueryCount(1);
     }
 
-    /**
-     * @group non-cacheable
-     */
+    /** @group non-cacheable */
     public function testEagerLoadOneToOneInverseSide(): void
     {
         $owner = new TrainOwner('Alexander');
@@ -100,9 +92,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->assertQueryCount(1);
     }
 
-    /**
-     * @group non-cacheable
-     */
+    /** @group non-cacheable */
     public function testEagerLoadOneToOneNullInverseSide(): void
     {
         $driver = new TrainDriver('Dagny Taggert');
@@ -137,9 +127,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         self::assertNotNull($waggon->train);
     }
 
-    /**
-     * @group non-cacheable
-     */
+    /** @group non-cacheable */
     public function testEagerLoadWithNullableColumnsGeneratesLeftJoinOnBothSides(): void
     {
         $train  = new Train(new TrainOwner('Alexander'));
@@ -162,9 +150,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         self::assertSame($driverId, $driver->id);
     }
 
-    /**
-     * @group non-cacheable
-     */
+    /** @group non-cacheable */
     public function testEagerLoadWithNonNullableColumnsGeneratesInnerJoinOnOwningSide(): void
     {
         $waggon = new Waggon();
@@ -182,19 +168,17 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         // The last query is the eager loading of the owner of the train
         $this->assertSQLEquals(
             'SELECT t0.id AS id_1, t0.name AS name_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id IN (?)',
-            $this->getLastLoggedQuery()['sql']
+            $this->getLastLoggedQuery()['sql'],
         );
 
         // The one before is the fetching of the waggon and train
         $this->assertSQLEquals(
             'SELECT t0.id AS id_1, t0.train_id AS train_id_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM Waggon t0 INNER JOIN Train t3 ON t0.train_id = t3.id WHERE t0.id = ?',
-            $this->getLastLoggedQuery(1)['sql']
+            $this->getLastLoggedQuery(1)['sql'],
         );
     }
 
-    /**
-     * @group non-cacheable
-     */
+    /** @group non-cacheable */
     public function testEagerLoadWithNonNullableColumnsGeneratesLeftJoinOnNonOwningSide(): void
     {
         $owner = new TrainOwner('Alexander');
@@ -206,9 +190,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         self::assertNotNull($owner, 'An owner without a train should be able to exist.');
     }
 
-    /**
-     * @group DDC-1946
-     */
+    /** @group DDC-1946 */
     public function testEagerLoadingDoesNotBreakRefresh(): void
     {
         $train = new Train(new TrainOwner('Johannes'));
@@ -225,9 +207,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class Train
 {
     /**
@@ -287,9 +267,7 @@ class Train
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class TrainDriver
 {
     /**
@@ -309,10 +287,8 @@ class TrainDriver
     public $train;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
-        public string $name
+        /** @Column(type="string", length=255) */
+        public string $name,
     ) {
     }
 
@@ -322,9 +298,7 @@ class TrainDriver
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class TrainOwner
 {
     /**
@@ -344,10 +318,8 @@ class TrainOwner
     public $train;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
-        public string $name
+        /** @Column(type="string", length=255) */
+        public string $name,
     ) {
     }
 
@@ -357,9 +329,7 @@ class TrainOwner
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class Waggon
 {
     /**
@@ -382,9 +352,7 @@ class Waggon
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class TrainOrder
 {
     /**
@@ -396,11 +364,8 @@ class TrainOrder
     public $id;
 
     public function __construct(
-        /**
-         * @var Train
-         * @OneToOne(targetEntity="Train", fetch="EAGER")
-         */
-        public $train
+        /** @OneToOne(targetEntity="Train", fetch="EAGER") */
+        public Train $train,
     ) {
     }
 }

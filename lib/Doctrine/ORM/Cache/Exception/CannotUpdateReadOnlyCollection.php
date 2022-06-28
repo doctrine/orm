@@ -13,7 +13,7 @@ class CannotUpdateReadOnlyCollection extends CacheException
         return new self(sprintf(
             'Cannot update a readonly collection "%s#%s"',
             $sourceEntity,
-            $fieldName
+            $fieldName,
         ));
     }
 }

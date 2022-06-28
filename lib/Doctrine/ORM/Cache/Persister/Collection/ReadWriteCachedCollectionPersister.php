@@ -14,9 +14,7 @@ use function spl_object_id;
 
 class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 {
-    /**
-     * @param mixed[] $association The association mapping.
-     */
+    /** @param mixed[] $association The association mapping. */
     public function __construct(CollectionPersister $persister, ConcurrentRegion $region, EntityManagerInterface $em, array $association)
     {
         parent::__construct($persister, $region, $em, $association);

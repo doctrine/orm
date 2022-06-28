@@ -236,7 +236,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         return (bool) $this->conn->delete($rootTable, $id, $rootTypes);
     }
 
-    public function getSelectSQL(array|Criteria $criteria, ?array $assoc = null, ?int $lockMode = null, ?int $limit = null, ?int $offset = null, ?array $orderBy = null): string
+    public function getSelectSQL(array|Criteria $criteria, array|null $assoc = null, int|null $lockMode = null, int|null $limit = null, int|null $offset = null, array|null $orderBy = null): string
     {
         $this->switchPersisterContext($offset, $limit);
 
@@ -253,7 +253,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         $filterSql = $this->generateFilterConditionSQL(
             $this->em->getClassMetadata($this->class->rootEntityName),
-            $this->getSQLTableAlias($this->class->rootEntityName)
+            $this->getSQLTableAlias($this->class->rootEntityName),
         );
         // If the current class in the root entity, add the filters
         if ($filterSql) {
@@ -394,7 +394,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     $tableAlias,
                     $joinColumn['name'],
                     $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform),
-                    PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em)
+                    PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em),
                 );
             }
         }
@@ -437,7 +437,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                         $tableAlias,
                         $joinColumn['name'],
                         $this->quoteStrategy->getJoinColumnName($joinColumn, $subClass, $this->platform),
-                        PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em)
+                        PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em),
                     );
                 }
             }

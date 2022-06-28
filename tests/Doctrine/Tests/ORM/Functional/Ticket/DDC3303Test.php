@@ -35,7 +35,7 @@ class DDC3303Test extends OrmFunctionalTestCase
         $employee = new DDC3303Employee(
             'John Doe',
             new DDC3303Address('Somewhere', 123, 'Over the rainbow'),
-            'Doctrine Inc'
+            'Doctrine Inc',
         );
 
         $this->_em->persist($employee);
@@ -56,32 +56,22 @@ abstract class DDC3303Person
          * @Column(type="string", length=255)
          */
         private string $name,
-        /**
-         * @Embedded(class="DDC3303Address")
-         */
-        private DDC3303Address $address
+        /** @Embedded(class="DDC3303Address") */
+        private DDC3303Address $address,
     ) {
     }
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDC3303Address
 {
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
+        /** @Column(type="string", length=255) */
         private string $street,
-        /**
-         * @Column(type="integer")
-         */
+        /** @Column(type="integer") */
         private int $number,
-        /**
-         * @Column(type="string", length=255)
-         */
-        private string $city
+        /** @Column(type="string", length=255) */
+        private string $city,
     ) {
     }
 }
@@ -95,10 +85,8 @@ class DDC3303Employee extends DDC3303Person
     public function __construct(
         string $name,
         DDC3303Address $address,
-        /**
-         * @Column(type="string", length=255)
-         */
-        private string $company
+        /** @Column(type="string", length=255) */
+        private string $company,
     ) {
         parent::__construct($name, $address);
     }

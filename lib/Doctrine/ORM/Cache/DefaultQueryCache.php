@@ -34,14 +34,14 @@ class DefaultQueryCache implements QueryCache
 {
     private UnitOfWork $uow;
     private QueryCacheValidator $validator;
-    protected ?CacheLogger $cacheLogger = null;
+    protected CacheLogger|null $cacheLogger = null;
 
     /** @var array<string,mixed> */
     private static array $hints = [Query::HINT_CACHE_ENABLED => true];
 
     public function __construct(
         private EntityManagerInterface $em,
-        private Region $region
+        private Region $region,
     ) {
         $cacheConfig = $em->getConfiguration()->getSecondLevelCacheConfiguration();
 
@@ -53,7 +53,7 @@ class DefaultQueryCache implements QueryCache
     /**
      * {@inheritdoc}
      */
-    public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = []): ?array
+    public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = []): array|null
     {
         if (! ($key->cacheMode & Cache::MODE_GET)) {
             return null;
@@ -184,7 +184,7 @@ class DefaultQueryCache implements QueryCache
                 if ($unCachedAssociationData instanceof AssociationCacheEntry) {
                     $data[$fieldName] = $this->em->getReference(
                         $unCachedAssociationData->class,
-                        $unCachedAssociationData->identifier
+                        $unCachedAssociationData->identifier,
                     );
                 }
             }
@@ -304,7 +304,7 @@ class DefaultQueryCache implements QueryCache
      * @return mixed[]|null
      * @psalm-return array{targetEntity: class-string, type: mixed, list?: array[], identifier?: array}|null
      */
-    private function storeAssociationCache(QueryCacheKey $key, array $assoc, mixed $assocValue): ?array
+    private function storeAssociationCache(QueryCacheKey $key, array $assoc, mixed $assocValue): array|null
     {
         $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
         $assocMetadata  = $assocPersister->getClassMetadata();
@@ -353,13 +353,11 @@ class DefaultQueryCache implements QueryCache
         ];
     }
 
-    /**
-     * @psalm-return list<mixed>|object|null
-     */
+    /** @psalm-return list<mixed>|object|null */
     private function getAssociationValue(
         ResultSetMapping $rsm,
         string $assocAlias,
-        object $entity
+        object $entity,
     ): array|object|null {
         $path  = [];
         $alias = $assocAlias;

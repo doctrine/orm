@@ -39,9 +39,7 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class SequenceEntity
 {
     /**

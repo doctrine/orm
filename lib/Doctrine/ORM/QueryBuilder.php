@@ -81,7 +81,7 @@ class QueryBuilder
     /**
      * The complete DQL string for this query.
      */
-    private ?string $dql = null;
+    private string|null $dql = null;
 
     /**
      * The query parameters.
@@ -98,7 +98,7 @@ class QueryBuilder
     /**
      * The maximum number of results to retrieve.
      */
-    private ?int $maxResults = null;
+    private int|null $maxResults = null;
 
     /**
      * Keeps root entity alias names for join entities.
@@ -115,14 +115,14 @@ class QueryBuilder
     /**
      * Second level cache region name.
      */
-    protected ?string $cacheRegion = null;
+    protected string|null $cacheRegion = null;
 
     /**
      * Second level query cache mode.
      *
      * @psalm-var Cache::MODE_*|null
      */
-    protected ?int $cacheMode = null;
+    protected int|null $cacheMode = null;
 
     protected int $lifetime = 0;
 
@@ -132,7 +132,7 @@ class QueryBuilder
      * @param EntityManagerInterface $em The EntityManager to use.
      */
     public function __construct(
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
     ) {
         $this->parameters = new ArrayCollection();
     }
@@ -177,9 +177,7 @@ class QueryBuilder
         return $this->cacheable;
     }
 
-    /**
-     * @return $this
-     */
+    /** @return $this */
     public function setCacheRegion(string $cacheRegion): static
     {
         $this->cacheRegion = $cacheRegion;
@@ -192,7 +190,7 @@ class QueryBuilder
      *
      * @return string|null The cache region name; NULL indicates the default region.
      */
-    public function getCacheRegion(): ?string
+    public function getCacheRegion(): string|null
     {
         return $this->cacheRegion;
     }
@@ -214,10 +212,8 @@ class QueryBuilder
         return $this;
     }
 
-    /**
-     * @psalm-return Cache::MODE_*|null
-     */
-    public function getCacheMode(): ?int
+    /** @psalm-return Cache::MODE_*|null */
+    public function getCacheMode(): int|null
     {
         return $this->cacheMode;
     }
@@ -541,7 +537,7 @@ class QueryBuilder
     /**
      * Gets a (previously set) query parameter of the query being constructed.
      */
-    public function getParameter(string|int $key): ?Parameter
+    public function getParameter(string|int $key): Parameter|null
     {
         $key = Parameter::normalizeName($key);
 
@@ -557,7 +553,7 @@ class QueryBuilder
      *
      * @return $this
      */
-    public function setFirstResult(?int $firstResult): static
+    public function setFirstResult(int|null $firstResult): static
     {
         $this->firstResult = (int) $firstResult;
 
@@ -568,7 +564,7 @@ class QueryBuilder
      * Gets the position of the first result the query object was set to retrieve (the "offset").
      * Returns NULL if {@link setFirstResult} was not applied to this QueryBuilder.
      */
-    public function getFirstResult(): ?int
+    public function getFirstResult(): int|null
     {
         return $this->firstResult;
     }
@@ -578,7 +574,7 @@ class QueryBuilder
      *
      * @return $this
      */
-    public function setMaxResults(?int $maxResults): static
+    public function setMaxResults(int|null $maxResults): static
     {
         $this->maxResults = $maxResults;
 
@@ -589,7 +585,7 @@ class QueryBuilder
      * Gets the maximum number of results the query object was set to retrieve (the "limit").
      * Returns NULL if {@link setMaxResults} was not applied to this query builder.
      */
-    public function getMaxResults(): ?int
+    public function getMaxResults(): int|null
     {
         return $this->maxResults;
     }
@@ -609,7 +605,7 @@ class QueryBuilder
         if ($append && ($dqlPartName === 'where' || $dqlPartName === 'having')) {
             throw new InvalidArgumentException(
                 "Using \$append = true does not have an effect with 'where' or 'having' " .
-                'parts. See QueryBuilder#andWhere() for an example for correct usage.'
+                'parts. See QueryBuilder#andWhere() for an example for correct usage.',
             );
         }
 
@@ -735,7 +731,7 @@ class QueryBuilder
      *
      * @return $this
      */
-    public function delete(?string $delete = null, ?string $alias = null): static
+    public function delete(string|null $delete = null, string|null $alias = null): static
     {
         $this->type = self::DELETE;
 
@@ -747,7 +743,7 @@ class QueryBuilder
             Deprecation::trigger(
                 'doctrine/orm',
                 'https://github.com/doctrine/orm/issues/9733',
-                'Omitting the alias is deprecated and will throw an exception in Doctrine 3.0.'
+                'Omitting the alias is deprecated and will throw an exception in Doctrine 3.0.',
             );
         }
 
@@ -770,7 +766,7 @@ class QueryBuilder
      *
      * @return $this
      */
-    public function update(?string $update = null, ?string $alias = null): static
+    public function update(string|null $update = null, string|null $alias = null): static
     {
         $this->type = self::UPDATE;
 
@@ -782,7 +778,7 @@ class QueryBuilder
             Deprecation::trigger(
                 'doctrine/orm',
                 'https://github.com/doctrine/orm/issues/9733',
-                'Omitting the alias is deprecated and will throw an exception in Doctrine 3.0.'
+                'Omitting the alias is deprecated and will throw an exception in Doctrine 3.0.',
             );
         }
 
@@ -805,7 +801,7 @@ class QueryBuilder
      *
      * @return $this
      */
-    public function from(string $from, string $alias, ?string $indexBy = null): static
+    public function from(string $from, string $alias, string|null $indexBy = null): static
     {
         return $this->add('from', new Expr\From($from, $alias, $indexBy), true);
     }
@@ -836,7 +832,7 @@ class QueryBuilder
 
         if (! in_array($alias, $rootAliases, true)) {
             throw new Query\QueryException(
-                sprintf('Specified root alias %s must be set before invoking indexBy().', $alias)
+                sprintf('Specified root alias %s must be set before invoking indexBy().', $alias),
             );
         }
 
@@ -873,9 +869,9 @@ class QueryBuilder
     public function join(
         string $join,
         string $alias,
-        ?string $conditionType = null,
+        string|null $conditionType = null,
         string|Expr\Composite|Expr\Comparison|null $condition = null,
-        ?string $indexBy = null
+        string|null $indexBy = null,
     ): static {
         return $this->innerJoin($join, $alias, $conditionType, $condition, $indexBy);
     }
@@ -900,9 +896,9 @@ class QueryBuilder
     public function innerJoin(
         string $join,
         string $alias,
-        ?string $conditionType = null,
+        string|null $conditionType = null,
         string|Expr\Composite|Expr\Comparison|null $condition = null,
-        ?string $indexBy = null
+        string|null $indexBy = null,
     ): static {
         $parentAlias = substr($join, 0, (int) strpos($join, '.'));
 
@@ -914,7 +910,7 @@ class QueryBuilder
             $alias,
             $conditionType,
             $condition,
-            $indexBy
+            $indexBy,
         );
 
         return $this->add('join', [$rootAlias => $join], true);
@@ -941,9 +937,9 @@ class QueryBuilder
     public function leftJoin(
         string $join,
         string $alias,
-        ?string $conditionType = null,
+        string|null $conditionType = null,
         string|Expr\Composite|Expr\Comparison|null $condition = null,
-        ?string $indexBy = null
+        string|null $indexBy = null,
     ): static {
         $parentAlias = substr($join, 0, (int) strpos($join, '.'));
 
@@ -955,7 +951,7 @@ class QueryBuilder
             $alias,
             $conditionType,
             $condition,
-            $indexBy
+            $indexBy,
         );
 
         return $this->add('join', [$rootAlias => $join], true);
@@ -1168,7 +1164,7 @@ class QueryBuilder
      *
      * @return $this
      */
-    public function orderBy(string|Expr\OrderBy $sort, ?string $order = null): static
+    public function orderBy(string|Expr\OrderBy $sort, string|null $order = null): static
     {
         $orderBy = $sort instanceof Expr\OrderBy ? $sort : new Expr\OrderBy($sort, $order);
 
@@ -1180,7 +1176,7 @@ class QueryBuilder
      *
      * @return $this
      */
-    public function addOrderBy(string|Expr\OrderBy $sort, ?string $order = null): static
+    public function addOrderBy(string|Expr\OrderBy $sort, string|null $order = null): static
     {
         $orderBy = $sort instanceof Expr\OrderBy ? $sort : new Expr\OrderBy($sort, $order);
 
@@ -1318,9 +1314,7 @@ class QueryBuilder
         return $dql;
     }
 
-    /**
-     * @psalm-param array<string, mixed> $options
-     */
+    /** @psalm-param array<string, mixed> $options */
     private function getReducedDQLQueryPart(string $queryPartName, array $options = []): string
     {
         $queryPart = $this->getDQLPart($queryPartName);
@@ -1342,7 +1336,7 @@ class QueryBuilder
      *
      * @return $this
      */
-    public function resetDQLParts(?array $parts = null): static
+    public function resetDQLParts(array|null $parts = null): static
     {
         if ($parts === null) {
             $parts = array_keys($this->dqlParts);

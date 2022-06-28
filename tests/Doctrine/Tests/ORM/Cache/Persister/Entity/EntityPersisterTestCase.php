@@ -20,9 +20,7 @@ use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 abstract class EntityPersisterTestCase extends OrmTestCase
 {
     /** @var Region&MockObject */
@@ -46,9 +44,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
         $this->entityPersister = $this->createMock(EntityPersister::class);
     }
 
-    /**
-     * @return Region&MockObject
-     */
+    /** @return Region&MockObject */
     protected function createRegion(): Region
     {
         return $this->createMock(Region::class);
@@ -104,7 +100,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
                 self::identicalTo(1),
                 self::identicalTo(2),
                 self::identicalTo(3),
-                self::identicalTo([4])
+                self::identicalTo([4]),
             )
             ->willReturn('SELECT * FROM foo WERE name = ?');
 
@@ -114,7 +110,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
             1,
             2,
             3,
-            [4]
+            [4],
         ));
     }
 
@@ -232,7 +228,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
                 self::identicalTo([1]),
                 self::identicalTo(2),
                 self::identicalTo(3),
-                self::identicalTo([4])
+                self::identicalTo([4]),
             )
             ->willReturn($entity);
 

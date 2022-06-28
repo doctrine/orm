@@ -15,9 +15,7 @@ use function str_contains;
 
 class DBAL483Test extends OrmFunctionalTestCase
 {
-    /**
-     * @group DBAL-483
-     */
+    /** @group DBAL-483 */
     public function testDefaultValueIsComparedCorrectly(): void
     {
         $class = DBAL483Default::class;
@@ -32,9 +30,7 @@ class DBAL483Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DBAL483Default
 {
     /**

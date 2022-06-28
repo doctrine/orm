@@ -29,7 +29,7 @@ class HierarchyDiscriminatorResolverTest extends TestCase
                 [
                     [$classMetadata->name, $classMetadata],
                     [$childClassMetadata->name, $childClassMetadata],
-                ]
+                ],
             );
 
         $discriminators = HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($classMetadata, $em);

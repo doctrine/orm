@@ -27,7 +27,7 @@ class DDC881Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC881User::class,
             DDC881PhoneNumber::class,
-            DDC881PhoneCall::class
+            DDC881PhoneCall::class,
         );
     }
 
@@ -102,9 +102,7 @@ class DDC881Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC881User
 {
     /**
@@ -115,7 +113,7 @@ class DDC881User
     private int $id;
 
     /** @Column(type="string", length=255) */
-    private ?string $name = null;
+    private string|null $name = null;
 
     /**
      * @psalm-var Collection<int, DDC881PhoneNumber>
@@ -134,25 +132,23 @@ class DDC881User
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC881PhoneNumber
 {
     /**
      * @Id
      * @Column(type="integer")
      */
-    private ?int $id = null;
+    private int|null $id = null;
 
     /**
      * @Id
      * @ManyToOne(targetEntity="DDC881User",cascade={"all"})
      */
-    private ?DDC881User $user = null;
+    private DDC881User|null $user = null;
 
     /** @Column(type="string", length=255) */
-    private ?string $phonenumber = null;
+    private string|null $phonenumber = null;
 
     /**
      * @psalm-var Collection<int, DDC881PhoneCall>
@@ -180,18 +176,14 @@ class DDC881PhoneNumber
         $this->phonenumber = $phoneNumber;
     }
 
-    /**
-     * @psalm-var Collection<int, DDC881PhoneCall>
-     */
+    /** @psalm-var Collection<int, DDC881PhoneCall> */
     public function getCalls(): Collection
     {
         return $this->calls;
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC881PhoneCall
 {
     /**
@@ -208,7 +200,7 @@ class DDC881PhoneCall
      *  @JoinColumn(name="user_id", referencedColumnName="user_id")
      * })
      */
-    private ?DDC881PhoneNumber $phonenumber = null;
+    private DDC881PhoneNumber|null $phonenumber = null;
 
     /** @Column(type="string",nullable=true) */
     private string $callDate;

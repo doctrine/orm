@@ -29,7 +29,7 @@ class DefaultRegion implements Region
     public function __construct(
         private string $name,
         private CacheItemPoolInterface $cacheItemPool,
-        private int $lifetime = 0
+        private int $lifetime = 0,
     ) {
     }
 
@@ -43,7 +43,7 @@ class DefaultRegion implements Region
         return $this->cacheItemPool->hasItem($this->getCacheEntryKey($key));
     }
 
-    public function get(CacheKey $key): ?CacheEntry
+    public function get(CacheKey $key): CacheEntry|null
     {
         $item  = $this->cacheItemPool->getItem($this->getCacheEntryKey($key));
         $entry = $item->isHit() ? $item->get() : null;
@@ -55,14 +55,11 @@ class DefaultRegion implements Region
         return $entry;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getMultiple(CollectionCacheEntry $collection): ?array
+    public function getMultiple(CollectionCacheEntry $collection): array|null
     {
         $keys = array_map(
             Closure::fromCallable([$this, 'getCacheEntryKey']),
-            $collection->identifiers
+            $collection->identifiers,
         );
         /** @var iterable<string, CacheItemInterface> $items */
         $items = $this->cacheItemPool->getItems($keys);
@@ -87,7 +84,7 @@ class DefaultRegion implements Region
         return $result;
     }
 
-    public function put(CacheKey $key, CacheEntry $entry, ?Lock $lock = null): bool
+    public function put(CacheKey $key, CacheEntry $entry, Lock|null $lock = null): bool
     {
         $item = $this->cacheItemPool
             ->getItem($this->getCacheEntryKey($key))

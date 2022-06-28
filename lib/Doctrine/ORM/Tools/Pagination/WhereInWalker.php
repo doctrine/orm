@@ -76,7 +76,7 @@ class WhereInWalker extends TreeWalkerAdapter
         if ($count > 0) {
             $arithmeticExpression                             = new ArithmeticExpression();
             $arithmeticExpression->simpleArithmeticExpression = new SimpleArithmeticExpression(
-                [$pathExpression]
+                [$pathExpression],
             );
             $expression                                       = new InExpression($arithmeticExpression);
             $expression->literals[]                           = new InputParameter(':' . self::PAGINATOR_ID_ALIAS);
@@ -86,8 +86,8 @@ class WhereInWalker extends TreeWalkerAdapter
                     $identifierFieldName,
                     $rootClass,
                     $this->_getQuery()
-                        ->getEntityManager()
-                )[0]
+                        ->getEntityManager(),
+                )[0],
             );
         } else {
             $expression      = new NullComparisonExpression($pathExpression);
@@ -106,9 +106,9 @@ class WhereInWalker extends TreeWalkerAdapter
                             [
                                 $AST->whereClause->conditionalExpression,
                                 $conditionalPrimary,
-                            ]
+                            ],
                         ),
-                    ]
+                    ],
                 );
             } elseif (
                 $AST->whereClause->conditionalExpression instanceof ConditionalExpression
@@ -120,14 +120,14 @@ class WhereInWalker extends TreeWalkerAdapter
                     [
                         $tmpPrimary,
                         $conditionalPrimary,
-                    ]
+                    ],
                 );
             }
         } else {
             $AST->whereClause = new WhereClause(
                 new ConditionalExpression(
-                    [new ConditionalTerm([$conditionalPrimary])]
-                )
+                    [new ConditionalTerm([$conditionalPrimary])],
+                ),
             );
         }
     }

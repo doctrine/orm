@@ -49,7 +49,7 @@ class FilterCollection
     private int $filtersState = self::FILTERS_STATE_CLEAN;
 
     public function __construct(
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
     ) {
         $this->config = $em->getConfiguration();
     }

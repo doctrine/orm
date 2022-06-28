@@ -17,7 +17,7 @@ class EntityPersisterMock extends BasicEntityPersister
     private array $updates                  = [];
     private array $deletes                  = [];
     private int $identityColumnValueCounter = 0;
-    private ?int $mockIdGeneratorType       = null;
+    private int|null $mockIdGeneratorType   = null;
 
     /** @psalm-var list<array{generatedId: int, entity: object}> */
     private array $postInsertIds = [];
@@ -38,9 +38,7 @@ class EntityPersisterMock extends BasicEntityPersister
         ];
     }
 
-    /**
-     * @psalm-return list<array{generatedId: int, entity: object}>
-     */
+    /** @psalm-return list<array{generatedId: int, entity: object}> */
     public function executeInserts(): array
     {
         return $this->postInsertIds;
@@ -56,7 +54,7 @@ class EntityPersisterMock extends BasicEntityPersister
         $this->updates[] = $entity;
     }
 
-    public function exists(object $entity, ?Criteria $extraConditions = null): bool
+    public function exists(object $entity, Criteria|null $extraConditions = null): bool
     {
         $this->existsCalled = true;
 

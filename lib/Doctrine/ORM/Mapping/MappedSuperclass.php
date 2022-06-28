@@ -22,10 +22,8 @@ final class MappedSuperclass implements Annotation
      */
     public $repositoryClass;
 
-    /**
-     * @psalm-param class-string<EntityRepository>|null $repositoryClass
-     */
-    public function __construct(?string $repositoryClass = null)
+    /** @psalm-param class-string<EntityRepository>|null $repositoryClass */
+    public function __construct(string|null $repositoryClass = null)
     {
         $this->repositoryClass = $repositoryClass;
     }

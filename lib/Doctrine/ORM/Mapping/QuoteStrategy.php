@@ -50,7 +50,7 @@ interface QuoteStrategy
     public function getReferencedJoinColumnName(
         array $joinColumn,
         ClassMetadata $class,
-        AbstractPlatform $platform
+        AbstractPlatform $platform,
     ): string;
 
     /**
@@ -67,6 +67,6 @@ interface QuoteStrategy
         string $columnName,
         int $counter,
         AbstractPlatform $platform,
-        ?ClassMetadata $class = null
+        ClassMetadata|null $class = null,
     ): string;
 }

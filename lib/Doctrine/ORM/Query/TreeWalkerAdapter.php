@@ -80,7 +80,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
                 'doctrine/orm',
                 'https://github.com/doctrine/orm/pull/9551',
                 'Method %s will be protected in 3.0. Calling it publicly is deprecated.',
-                __METHOD__
+                __METHOD__,
             );
         }
 
@@ -107,7 +107,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method %s is deprecated, call getQueryComponents() instead.',
-            __METHOD__
+            __METHOD__,
         );
 
         return $this->queryComponents;
@@ -148,7 +148,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -163,7 +163,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -178,7 +178,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -193,7 +193,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -208,7 +208,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -223,7 +223,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -238,7 +238,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -253,7 +253,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -268,7 +268,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -283,7 +283,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -298,7 +298,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -313,7 +313,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -328,7 +328,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -352,7 +352,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -367,7 +367,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -390,7 +390,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -405,7 +405,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -420,7 +420,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -435,7 +435,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -450,7 +450,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -465,7 +465,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -480,7 +480,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -495,7 +495,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -510,7 +510,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -525,7 +525,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -540,7 +540,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -555,7 +555,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -570,7 +570,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -585,7 +585,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -600,7 +600,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -615,7 +615,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -630,7 +630,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -645,7 +645,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -660,7 +660,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -675,7 +675,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -690,7 +690,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -705,7 +705,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -720,7 +720,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -735,7 +735,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -750,7 +750,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -765,7 +765,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -780,7 +780,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
     }
 
@@ -795,7 +795,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         return null;

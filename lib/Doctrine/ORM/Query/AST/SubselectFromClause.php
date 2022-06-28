@@ -14,9 +14,7 @@ class SubselectFromClause extends Node
     /** @var mixed[] */
     public $identificationVariableDeclarations = [];
 
-    /**
-     * @param mixed[] $identificationVariableDeclarations
-     */
+    /** @param mixed[] $identificationVariableDeclarations */
     public function __construct(array $identificationVariableDeclarations)
     {
         $this->identificationVariableDeclarations = $identificationVariableDeclarations;

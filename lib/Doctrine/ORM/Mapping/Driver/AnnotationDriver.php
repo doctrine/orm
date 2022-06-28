@@ -143,7 +143,7 @@ class AnnotationDriver implements MappingDriver
                 ) {
                     throw MappingException::invalidIndexConfiguration(
                         $className,
-                        (string) ($indexAnnot->name ?? count($primaryTable['indexes']))
+                        (string) ($indexAnnot->name ?? count($primaryTable['indexes'])),
                     );
                 }
 
@@ -182,7 +182,7 @@ class AnnotationDriver implements MappingDriver
                 ) {
                     throw MappingException::invalidUniqueConstraintConfiguration(
                         $className,
-                        (string) ($uniqueConstraintAnnot->name ?? count($primaryTable['uniqueConstraints']))
+                        (string) ($uniqueConstraintAnnot->name ?? count($primaryTable['uniqueConstraints'])),
                     );
                 }
 
@@ -250,7 +250,7 @@ class AnnotationDriver implements MappingDriver
                         'name'          => $resultSetMapping->name,
                         'entities'      => $entities,
                         'columns'       => $columns,
-                    ]
+                    ],
                 );
             }
         }
@@ -261,7 +261,7 @@ class AnnotationDriver implements MappingDriver
             assert($inheritanceTypeAnnot instanceof Mapping\InheritanceType);
 
             $metadata->setInheritanceType(
-                constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value)
+                constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value),
             );
 
             if ($metadata->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
@@ -276,7 +276,7 @@ class AnnotationDriver implements MappingDriver
                             'type'             => $discrColumnAnnot->type ?: 'string',
                             'length'           => $discrColumnAnnot->length ?? 255,
                             'columnDefinition' => $discrColumnAnnot->columnDefinition,
-                        ]
+                        ],
                     );
                 } else {
                     $metadata->setDiscriminatorColumn(['name' => 'dtype', 'type' => 'string', 'length' => 255]);
@@ -323,7 +323,7 @@ class AnnotationDriver implements MappingDriver
                     [
                         'usage'  => (int) constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $cacheAnnot->usage),
                         'region' => $cacheAnnot->region,
-                    ]
+                    ],
                 );
             }
 
@@ -372,7 +372,7 @@ class AnnotationDriver implements MappingDriver
                             'sequenceName' => $seqGeneratorAnnot->sequenceName,
                             'allocationSize' => $seqGeneratorAnnot->allocationSize,
                             'initialValue' => $seqGeneratorAnnot->initialValue,
-                        ]
+                        ],
                     );
                 } else {
                     $customGeneratorAnnot = $this->reader->getPropertyAnnotation($property, Mapping\CustomIdGenerator::class);
@@ -380,7 +380,7 @@ class AnnotationDriver implements MappingDriver
                         $metadata->setCustomGeneratorDefinition(
                             [
                                 'class' => $customGeneratorAnnot->class,
-                            ]
+                            ],
                         );
                     }
                 }
@@ -390,7 +390,7 @@ class AnnotationDriver implements MappingDriver
                     $mapping,
                     $metadata,
                     $joinColumns,
-                    $className
+                    $className,
                 );
             }
         }
@@ -511,7 +511,7 @@ class AnnotationDriver implements MappingDriver
         array &$mapping,
         PersistenceClassMetadata $metadata,
         array $joinColumns,
-        string $className
+        string $className,
     ): void {
         $oneToOneAnnot = $this->reader->getPropertyAnnotation($property, Mapping\OneToOne::class);
         if ($oneToOneAnnot) {
@@ -801,7 +801,7 @@ class AnnotationDriver implements MappingDriver
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9587',
             '%s is deprecated with no replacement',
-            __METHOD__
+            __METHOD__,
         );
 
         return $this->reader;
@@ -830,7 +830,7 @@ class AnnotationDriver implements MappingDriver
      *
      * @return AnnotationDriver
      */
-    public static function create($paths = [], ?AnnotationReader $reader = null)
+    public static function create($paths = [], AnnotationReader|null $reader = null)
     {
         if ($reader === null) {
             $reader = new AnnotationReader();

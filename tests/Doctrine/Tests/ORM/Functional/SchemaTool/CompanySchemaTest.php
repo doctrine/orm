@@ -18,9 +18,7 @@ class CompanySchemaTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @group DDC-966
-     */
+    /** @group DDC-966 */
     public function testGeneratedSchema(): Schema
     {
         $schema = $this->createSchemaManager()->createSchema();

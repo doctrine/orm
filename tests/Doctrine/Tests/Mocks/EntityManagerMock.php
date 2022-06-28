@@ -16,8 +16,8 @@ use Doctrine\ORM\UnitOfWork;
  */
 class EntityManagerMock extends EntityManager
 {
-    private ?UnitOfWork $_uowMock            = null;
-    private ?ProxyFactory $_proxyFactoryMock = null;
+    private UnitOfWork|null $_uowMock            = null;
+    private ProxyFactory|null $_proxyFactoryMock = null;
 
     public function getUnitOfWork(): UnitOfWork
     {
@@ -49,7 +49,7 @@ class EntityManagerMock extends EntityManager
      *
      * {@inheritdoc}
      */
-    public static function create($conn, ?Configuration $config = null, ?EventManager $eventManager = null): self
+    public static function create($conn, Configuration|null $config = null, EventManager|null $eventManager = null): self
     {
         if ($config === null) {
             $config = new Configuration();

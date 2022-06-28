@@ -25,9 +25,7 @@ final class GH7067Test extends OrmFunctionalTestCase
         $this->setUpEntitySchema([GH7067Entity::class]);
     }
 
-    /**
-     * @group GH-7067
-     */
+    /** @group GH-7067 */
     public function testSLCWithVersion(): void
     {
         $entity             = new GH7067Entity();

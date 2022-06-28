@@ -85,7 +85,7 @@ class NoOp extends FunctionNode
 
 class CustomCount extends FunctionNode
 {
-    private ?AggregateExpression $aggregateExpression = null;
+    private AggregateExpression|null $aggregateExpression = null;
 
     public function parse(Parser $parser): void
     {

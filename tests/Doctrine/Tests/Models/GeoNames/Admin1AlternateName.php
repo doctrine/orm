@@ -28,9 +28,7 @@ class Admin1AlternateName
          * @GeneratedValue(strategy="NONE")
          */
         public int $id,
-        /**
-         * @Column(type="string", length=255);
-         */
+        /** @Column(type="string", length=255); */
         public string $name,
         /**
          * @ManyToOne(targetEntity="Admin1", inversedBy="names")
@@ -40,7 +38,7 @@ class Admin1AlternateName
          * })
          * @Cache
          */
-        public Admin1 $admin1
+        public Admin1 $admin1,
     ) {
     }
 }

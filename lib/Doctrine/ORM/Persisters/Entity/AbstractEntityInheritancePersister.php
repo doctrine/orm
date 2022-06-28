@@ -44,7 +44,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
         $sql          = sprintf(
             '%s.%s',
             $this->getSQLTableAlias($class->name, $tableAlias),
-            $this->quoteStrategy->getColumnName($field, $class, $this->platform)
+            $this->quoteStrategy->getColumnName($field, $class, $this->platform),
         );
 
         $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field, $class->name);

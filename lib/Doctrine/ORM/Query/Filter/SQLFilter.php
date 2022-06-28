@@ -33,7 +33,7 @@ abstract class SQLFilter
     private array $parameters = [];
 
     final public function __construct(
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
     ) {
     }
 
@@ -68,7 +68,7 @@ abstract class SQLFilter
      *
      * @return $this
      */
-    final public function setParameter(string $name, mixed $value, ?string $type = null): static
+    final public function setParameter(string $name, mixed $value, string|null $type = null): static
     {
         if ($type === null) {
             $type = ParameterTypeInferer::inferType($value);
@@ -132,7 +132,7 @@ abstract class SQLFilter
 
         $quoted = array_map(
             static fn (mixed $value): string => $connection->quote((string) $value),
-            $param['value']
+            $param['value'],
         );
 
         return implode(',', $quoted);

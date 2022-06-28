@@ -21,9 +21,7 @@ final class GH7259Test extends OrmFunctionalTestCase
         $this->setUpEntitySchema([GH7259Space::class, GH7259File::class, GH7259FileVersion::class, GH7259Feed::class]);
     }
 
-    /**
-     * @group GH-7259
-     */
+    /** @group GH-7259 */
     public function testPersistFileBeforeVersion(): void
     {
         $space = new GH7259Space();
@@ -48,9 +46,7 @@ final class GH7259Test extends OrmFunctionalTestCase
         self::assertNotNull($fileVersion->id);
     }
 
-    /**
-     * @group GH-7259
-     */
+    /** @group GH-7259 */
     public function testPersistFileAfterVersion(): void
     {
         $space = new GH7259Space();
@@ -79,9 +75,7 @@ final class GH7259Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity()
- */
+/** @Entity() */
 class GH7259File
 {
     /**
@@ -100,9 +94,7 @@ class GH7259File
     public $space;
 }
 
-/**
- * @Entity()
- */
+/** @Entity() */
 class GH7259FileVersion
 {
     /**
@@ -121,9 +113,7 @@ class GH7259FileVersion
     public $file;
 }
 
-/**
- * @Entity()
- */
+/** @Entity() */
 class GH7259Space
 {
     /**
@@ -142,9 +132,7 @@ class GH7259Space
     public $ruleFile;
 }
 
-/**
- * @Entity()
- */
+/** @Entity() */
 class GH7259Feed
 {
     /**

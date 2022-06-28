@@ -13,9 +13,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 abstract class AbstractCommandTest extends OrmFunctionalTestCase
 {
-    /**
-     * @param class-string<AbstractCommand> $commandClass
-     */
+    /** @param class-string<AbstractCommand> $commandClass */
     protected function getCommandTester(string $commandClass): CommandTester
     {
         $entityManager = $this->getEntityManager(null, ORMSetup::createDefaultAnnotationDriver([
@@ -27,7 +25,7 @@ abstract class AbstractCommandTest extends OrmFunctionalTestCase
         }
 
         return new CommandTester(new $commandClass(
-            new SingleManagerProvider($entityManager)
+            new SingleManagerProvider($entityManager),
         ));
     }
 }

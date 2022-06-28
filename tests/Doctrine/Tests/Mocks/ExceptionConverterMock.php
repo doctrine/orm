@@ -11,7 +11,7 @@ use Doctrine\DBAL\Query;
 
 class ExceptionConverterMock implements ExceptionConverter
 {
-    public function convert(Exception $exception, ?Query $query): DriverException
+    public function convert(Exception $exception, Query|null $query): DriverException
     {
         return new DriverException($exception, $query);
     }

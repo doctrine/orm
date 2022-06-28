@@ -34,10 +34,8 @@ class Person
     public $address;
 
     public function __construct(
-        /**
-         * @Column(unique=true)
-         */
-        public string $name
+        /** @Column(unique=true) */
+        public string $name,
     ) {
     }
 }

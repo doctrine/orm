@@ -39,7 +39,7 @@ final class EntityManagerFactory
                 'driverClass' => Driver::class,
                 'memory'      => true,
             ],
-            $config
+            $config,
         );
 
         (new SchemaTool($entityManager))
@@ -65,7 +65,7 @@ final class EntityManagerFactory
         $connection = new class ([], new Driver(), null, new EventManager()) extends Connection
         {
             /** {@inheritdoc} */
-            public function executeQuery(string $sql, array $params = [], $types = [], ?QueryCacheProfile $qcp = null): Result
+            public function executeQuery(string $sql, array $params = [], $types = [], QueryCacheProfile|null $qcp = null): Result
             {
                 return new Result(new ArrayResult([]), $this);
             }

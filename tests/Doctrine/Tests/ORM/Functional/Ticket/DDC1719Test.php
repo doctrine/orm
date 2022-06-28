@@ -11,9 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1719
- */
+/** @group DDC-1719 */
 class DDC1719Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -98,10 +96,8 @@ class DDC1719SimpleEntity
     public $id;
 
     public function __construct(
-        /**
-         * @Column(type="string", name="`simple-entity-value`")
-         */
-        public string $value
+        /** @Column(type="string", name="`simple-entity-value`") */
+        public string $value,
     ) {
     }
 }

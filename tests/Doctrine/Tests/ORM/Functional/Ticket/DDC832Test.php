@@ -30,7 +30,7 @@ class DDC832Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC832JoinedIndex::class,
             DDC832JoinedTreeIndex::class,
-            DDC832Like::class
+            DDC832Like::class,
         );
     }
 
@@ -49,9 +49,7 @@ class DDC832Test extends OrmFunctionalTestCase
         }
     }
 
-    /**
-     * @group DDC-832
-     */
+    /** @group DDC-832 */
     public function testQuotedTableBasicUpdate(): void
     {
         $like = new DDC832Like('test');
@@ -65,9 +63,7 @@ class DDC832Test extends OrmFunctionalTestCase
         self::assertEquals($like, $this->_em->find(DDC832Like::class, $like->id));
     }
 
-    /**
-     * @group DDC-832
-     */
+    /** @group DDC-832 */
     public function testQuotedTableBasicRemove(): void
     {
         $like = new DDC832Like('test');
@@ -83,9 +79,7 @@ class DDC832Test extends OrmFunctionalTestCase
         self::assertNull($this->_em->find(DDC832Like::class, $idToBeRemoved));
     }
 
-    /**
-     * @group DDC-832
-     */
+    /** @group DDC-832 */
     public function testQuotedTableJoinedUpdate(): void
     {
         $index = new DDC832JoinedIndex('test');
@@ -99,9 +93,7 @@ class DDC832Test extends OrmFunctionalTestCase
         self::assertEquals($index, $this->_em->find(DDC832JoinedIndex::class, $index->id));
     }
 
-    /**
-     * @group DDC-832
-     */
+    /** @group DDC-832 */
     public function testQuotedTableJoinedRemove(): void
     {
         $index = new DDC832JoinedIndex('test');
@@ -117,9 +109,7 @@ class DDC832Test extends OrmFunctionalTestCase
         self::assertNull($this->_em->find(DDC832JoinedIndex::class, $idToBeRemoved));
     }
 
-    /**
-     * @group DDC-832
-     */
+    /** @group DDC-832 */
     public function testQuotedTableJoinedChildUpdate(): void
     {
         $index = new DDC832JoinedTreeIndex('test', 1, 2);
@@ -133,9 +123,7 @@ class DDC832Test extends OrmFunctionalTestCase
         self::assertEquals($index, $this->_em->find(DDC832JoinedTreeIndex::class, $index->id));
     }
 
-    /**
-     * @group DDC-832
-     */
+    /** @group DDC-832 */
     public function testQuotedTableJoinedChildRemove(): void
     {
         $index = new DDC832JoinedTreeIndex('test', 1, 2);
@@ -174,10 +162,8 @@ class DDC832Like
     public $version;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
-        public string $word
+        /** @Column(type="string", length=255) */
+        public string $word,
     ) {
     }
 }
@@ -207,10 +193,8 @@ class DDC832JoinedIndex
     public $version;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
-        public string $name
+        /** @Column(type="string", length=255) */
+        public string $name,
     ) {
     }
 }
@@ -223,14 +207,10 @@ class DDC832JoinedTreeIndex extends DDC832JoinedIndex
 {
     public function __construct(
         string $name,
-        /**
-         * @Column(type="integer")
-         */
+        /** @Column(type="integer") */
         public int $lft,
-        /**
-         * @Column(type="integer")
-         */
-        public int $rgt
+        /** @Column(type="integer") */
+        public int $rgt,
     ) {
         $this->name = $name;
     }

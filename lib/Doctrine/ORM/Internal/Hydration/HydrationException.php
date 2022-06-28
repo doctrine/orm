@@ -23,7 +23,7 @@ class HydrationException extends Exception implements ORMException
             "The parent object of entity result with alias '%s' was not found."
             . " The parent alias is '%s'.",
             $alias,
-            $parentAlias
+            $parentAlias,
         ));
     }
 
@@ -41,7 +41,7 @@ class HydrationException extends Exception implements ORMException
             'The discriminator column "%s" is missing for "%s" using the DQL alias "%s".',
             $discrColumnName,
             $entityName,
-            $dqlAlias
+            $dqlAlias,
         ));
     }
 
@@ -51,7 +51,7 @@ class HydrationException extends Exception implements ORMException
             'The meta mapping for the discriminator column "%s" is missing for "%s" using the DQL alias "%s".',
             $discrColumnName,
             $entityName,
-            $dqlAlias
+            $dqlAlias,
         ));
     }
 
@@ -64,7 +64,7 @@ class HydrationException extends Exception implements ORMException
         return new self(sprintf(
             'The discriminator value "%s" is invalid. It must be one of "%s".',
             $discrValue,
-            implode('", "', $discrValues)
+            implode('", "', $discrValues),
         ));
     }
 }

@@ -22,7 +22,7 @@ class DDC237Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC237EntityX::class,
             DDC237EntityY::class,
-            DDC237EntityZ::class
+            DDC237EntityZ::class,
         );
     }
 

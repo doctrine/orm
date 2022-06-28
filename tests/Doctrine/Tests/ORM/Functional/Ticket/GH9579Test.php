@@ -16,9 +16,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH-9579
- */
+/** @group GH-9579 */
 class GH9579Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -28,7 +26,7 @@ class GH9579Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             GH9579Container::class,
             GH9579Item::class,
-            GH9579Part::class
+            GH9579Part::class,
         );
 
         $container = new GH9579Container();
@@ -49,9 +47,7 @@ class GH9579Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    /**
-     * @group GH-9579
-     */
+    /** @group GH-9579 */
     public function testIssue(): void
     {
         $dql        = <<<'DQL'

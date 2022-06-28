@@ -65,38 +65,34 @@ class ManyToManyCompositeIdTest extends OrmFunctionalTestCase
         self::assertEquals('tuv', $conn->fetchOne('SELECT owning_id FROM vct_xref_manytomany_compositeid LIMIT 1'));
     }
 
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
-     */
+    /** @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase */
     public function testThatEntitiesAreFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
             InversedManyToManyCompositeIdEntity::class,
-            ['id1' => 'abc', 'id2' => 'def']
+            ['id1' => 'abc', 'id2' => 'def'],
         );
 
         $owning = $this->_em->find(
             OwningManyToManyCompositeIdEntity::class,
-            'ghi'
+            'ghi',
         );
 
         self::assertInstanceOf(InversedManyToManyCompositeIdEntity::class, $inversed);
         self::assertInstanceOf(OwningManyToManyCompositeIdEntity::class, $owning);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
             InversedManyToManyCompositeIdEntity::class,
-            ['id1' => 'abc', 'id2' => 'def']
+            ['id1' => 'abc', 'id2' => 'def'],
         );
 
         $owning = $this->_em->find(
             OwningManyToManyCompositeIdEntity::class,
-            'ghi'
+            'ghi',
         );
 
         self::assertEquals('abc', $inversed->id1);
@@ -104,27 +100,23 @@ class ManyToManyCompositeIdTest extends OrmFunctionalTestCase
         self::assertEquals('ghi', $owning->id3);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheCollectionFromOwningToInversedIsLoaded(): void
     {
         $owning = $this->_em->find(
             OwningManyToManyCompositeIdEntity::class,
-            'ghi'
+            'ghi',
         );
 
         self::assertCount(1, $owning->associatedEntities);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheCollectionFromInversedToOwningIsLoaded(): void
     {
         $inversed = $this->_em->find(
             InversedManyToManyCompositeIdEntity::class,
-            ['id1' => 'abc', 'id2' => 'def']
+            ['id1' => 'abc', 'id2' => 'def'],
         );
 
         self::assertCount(1, $inversed->associatedEntities);
@@ -142,7 +134,7 @@ class ManyToManyCompositeIdTest extends OrmFunctionalTestCase
 
         $inversed = $this->_em->find(
             InversedManyToManyCompositeIdEntity::class,
-            ['id1' => 'abc', 'id2' => 'def']
+            ['id1' => 'abc', 'id2' => 'def'],
         );
 
         foreach ($inversed->associatedEntities as $owning) {

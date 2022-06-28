@@ -38,9 +38,7 @@ class CompanyOrganization
         return $this->id;
     }
 
-    /**
-     * @psalm-return Collection<int, CompanyEvent>
-     */
+    /** @psalm-return Collection<int, CompanyEvent> */
     public function getEvents(): Collection
     {
         return $this->events;
@@ -56,9 +54,9 @@ class CompanyOrganization
      * @OneToOne(targetEntity="CompanyEvent", cascade={"persist"})
      * @JoinColumn(name="main_event_id", referencedColumnName="id", nullable=true)
      */
-    private ?CompanyEvent $mainevent = null;
+    private CompanyEvent|null $mainevent = null;
 
-    public function getMainEvent(): ?CompanyEvent
+    public function getMainEvent(): CompanyEvent|null
     {
         return $this->mainevent;
     }

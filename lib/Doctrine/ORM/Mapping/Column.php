@@ -72,19 +72,19 @@ final class Column implements Annotation
      * @psalm-param 'NEVER'|'INSERT'|'ALWAYS'|null $generated
      */
     public function __construct(
-        ?string $name = null,
-        ?string $type = null,
-        ?int $length = null,
-        ?int $precision = null,
-        ?int $scale = null,
+        string|null $name = null,
+        string|null $type = null,
+        int|null $length = null,
+        int|null $precision = null,
+        int|null $scale = null,
         bool $unique = false,
         bool $nullable = false,
         bool $insertable = true,
         bool $updatable = true,
-        ?string $enumType = null,
+        string|null $enumType = null,
         array $options = [],
-        ?string $columnDefinition = null,
-        ?string $generated = null
+        string|null $columnDefinition = null,
+        string|null $generated = null,
     ) {
         $this->name             = $name;
         $this->type             = $type;

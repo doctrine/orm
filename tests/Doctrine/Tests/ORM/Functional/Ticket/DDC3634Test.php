@@ -22,9 +22,7 @@ use Doctrine\Tests\TestUtil;
 
 use const PHP_INT_MAX;
 
-/**
- * @group DDC-3634
- */
+/** @group DDC-3634 */
 class DDC3634Test extends OrmFunctionalTestCase
 {
     private LastInsertIdMocker $idMocker;
@@ -49,7 +47,7 @@ class DDC3634Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC3634Entity::class,
             DDC3634JTIBaseEntity::class,
-            DDC3634JTIChildEntity::class
+            DDC3634JTIChildEntity::class,
         );
     }
 
@@ -125,7 +123,7 @@ class DDC3634JTIChildEntity extends DDC3634JTIBaseEntity
 
 class LastInsertIdMocker
 {
-    public ?string $mockedId = null;
+    public string|null $mockedId = null;
 }
 
 final class LastInsertIdMockConnection extends AbstractConnectionMiddleware
@@ -155,7 +153,7 @@ final class LastInsertIdMockDriver extends AbstractDriverMiddleware
     {
         return new LastInsertIdMockConnection(
             parent::connect($params),
-            $this->idMocker
+            $this->idMocker,
         );
     }
 }

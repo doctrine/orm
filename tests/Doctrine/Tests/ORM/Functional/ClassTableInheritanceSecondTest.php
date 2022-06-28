@@ -33,7 +33,7 @@ class ClassTableInheritanceSecondTest extends OrmFunctionalTestCase
             CTIParent::class,
             CTIChild::class,
             CTIRelated::class,
-            CTIRelated2::class
+            CTIRelated2::class,
         );
     }
 
@@ -100,7 +100,7 @@ class CTIParent
     private int $id;
 
     /** @OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent") */
-    private ?CTIRelated $related = null;
+    private CTIRelated|null $related = null;
 
     public function getId(): int
     {
@@ -126,7 +126,7 @@ class CTIParent
 class CTIChild extends CTIParent
 {
     /** @Column(type="string", length=255) */
-    private ?string $data = null;
+    private string|null $data = null;
 
     public function getData(): string
     {
@@ -153,7 +153,7 @@ class CTIRelated
      * @OneToOne(targetEntity="CTIParent")
      * @JoinColumn(name="ctiparent_id", referencedColumnName="id")
      */
-    private ?CTIParent $ctiParent = null;
+    private CTIParent|null $ctiParent = null;
 
     public function getId(): int
     {
@@ -202,9 +202,7 @@ class CTIRelated2
         $this->ctiChildren->add($child);
     }
 
-    /**
-     * @psalm-return Collection<int, CTIChild>
-     */
+    /** @psalm-return Collection<int, CTIChild> */
     public function getCTIChildren(): Collection
     {
         return $this->ctiChildren;

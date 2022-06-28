@@ -44,9 +44,7 @@ class DDC656Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC656Entity
 {
     /**

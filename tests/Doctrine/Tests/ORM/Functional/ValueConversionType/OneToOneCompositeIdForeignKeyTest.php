@@ -71,24 +71,22 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertEquals('nop', $conn->fetchOne('SELECT associated_foreign_id FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
     }
 
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
-     */
+    /** @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase */
     public function testThatEntitiesAreFetchedFromTheDatabase(): void
     {
         $auxiliary = $this->_em->find(
             AuxiliaryEntity::class,
-            'abc'
+            'abc',
         );
 
         $inversed = $this->_em->find(
             InversedOneToOneCompositeIdForeignKeyEntity::class,
-            ['id1' => 'def', 'foreignEntity' => 'abc']
+            ['id1' => 'def', 'foreignEntity' => 'abc'],
         );
 
         $owning = $this->_em->find(
             OwningOneToOneCompositeIdForeignKeyEntity::class,
-            'ghi'
+            'ghi',
         );
 
         self::assertInstanceOf(AuxiliaryEntity::class, $auxiliary);
@@ -96,24 +94,22 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertInstanceOf(OwningOneToOneCompositeIdForeignKeyEntity::class, $owning);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase(): void
     {
         $auxiliary = $this->_em->find(
             AuxiliaryEntity::class,
-            'abc'
+            'abc',
         );
 
         $inversed = $this->_em->find(
             InversedOneToOneCompositeIdForeignKeyEntity::class,
-            ['id1' => 'def', 'foreignEntity' => 'abc']
+            ['id1' => 'def', 'foreignEntity' => 'abc'],
         );
 
         $owning = $this->_em->find(
             OwningOneToOneCompositeIdForeignKeyEntity::class,
-            'ghi'
+            'ghi',
         );
 
         self::assertEquals('abc', $auxiliary->id4);
@@ -122,32 +118,28 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertEquals('ghi', $owning->id2);
     }
 
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase
-     */
+    /** @depends testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase */
     public function testThatInversedEntityIsFetchedFromTheDatabaseUsingAuxiliaryEntityAsId(): void
     {
         $auxiliary = $this->_em->find(
             AuxiliaryEntity::class,
-            'abc'
+            'abc',
         );
 
         $inversed = $this->_em->find(
             InversedOneToOneCompositeIdForeignKeyEntity::class,
-            ['id1' => 'def', 'foreignEntity' => $auxiliary]
+            ['id1' => 'def', 'foreignEntity' => $auxiliary],
         );
 
         self::assertInstanceOf(InversedOneToOneCompositeIdForeignKeyEntity::class, $inversed);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheProxyFromOwningToInversedIsLoaded(): void
     {
         $owning = $this->_em->find(
             OwningOneToOneCompositeIdForeignKeyEntity::class,
-            'ghi'
+            'ghi',
         );
 
         $inversedProxy = $owning->associatedEntity;
@@ -155,14 +147,12 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheEntityFromInversedToOwningIsEagerLoaded(): void
     {
         $inversed = $this->_em->find(
             InversedOneToOneCompositeIdForeignKeyEntity::class,
-            ['id1' => 'def', 'foreignEntity' => 'abc']
+            ['id1' => 'def', 'foreignEntity' => 'abc'],
         );
 
         self::assertInstanceOf(OwningOneToOneCompositeIdForeignKeyEntity::class, $inversed->associatedEntity);

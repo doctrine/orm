@@ -17,9 +17,7 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 #[MappedSuperclass]
 class DDC964User
 {
@@ -56,10 +54,8 @@ class DDC964User
     protected $address;
 
     public function __construct(
-        /**
-         * @Column(name="user_name", nullable=true, unique=false, length=250)
-         */
-        #[Column(name: 'user_name', nullable: true, unique: false, length: 250)] protected ?string $name = null
+        /** @Column(name="user_name", nullable=true, unique=false, length=250) */
+        #[Column(name: 'user_name', nullable: true, unique: false, length: 250)] protected string|null $name = null,
     ) {
         $this->groups = new ArrayCollection();
     }
@@ -69,7 +65,7 @@ class DDC964User
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string|null
     {
         return $this->name;
     }
@@ -85,9 +81,7 @@ class DDC964User
         $group->addUser($this);
     }
 
-    /**
-     * @psalm-return Collection<int, DDC964Group>
-     */
+    /** @psalm-return Collection<int, DDC964Group> */
     public function getGroups(): ArrayCollection
     {
         return $this->groups;
@@ -114,7 +108,7 @@ class DDC964User
                 'type'       => 'integer',
                 'columnName' => 'user_id',
                 'length'     => 150,
-            ]
+            ],
         );
         $metadata->mapField(
             [
@@ -124,7 +118,7 @@ class DDC964User
                 'nullable'  => true,
                 'unique'    => false,
                 'length'    => 250,
-            ]
+            ],
         );
 
         $metadata->mapManyToOne(
@@ -133,7 +127,7 @@ class DDC964User
                 'targetEntity'   => 'DDC964Address',
                 'cascade'        => ['persist','merge'],
                 'joinColumn'     => ['name' => 'address_id', 'referencedColumnMame' => 'id'],
-            ]
+            ],
         );
 
         $metadata->mapManyToMany(
@@ -157,7 +151,7 @@ class DDC964User
                         ],
                     ],
                 ],
-            ]
+            ],
         );
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);

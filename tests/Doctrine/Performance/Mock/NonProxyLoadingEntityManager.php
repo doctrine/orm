@@ -39,7 +39,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
             $this,
             $config->getProxyDir(),
             $config->getProxyNamespace(),
-            $config->getAutoGenerateProxyClasses()
+            $config->getAutoGenerateProxyClasses(),
         );
     }
 
@@ -58,7 +58,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
         return new NonProxyLoadingUnitOfWork();
     }
 
-    public function getCache(): ?Cache
+    public function getCache(): Cache|null
     {
         return $this->realEntityManager->getCache();
     }
@@ -111,7 +111,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getReference(string $entityName, $id): ?object
+    public function getReference(string $entityName, $id): object|null
     {
         return $this->realEntityManager->getReference($entityName, $id);
     }
@@ -119,7 +119,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getPartialReference(string $entityName, $identifier): ?object
+    public function getPartialReference(string $entityName, $identifier): object|null
     {
         return $this->realEntityManager->getPartialReference($entityName, $identifier);
     }
@@ -175,7 +175,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
         return $this->realEntityManager->hasFilters();
     }
 
-    public function find(string $className, mixed $id, ?int $lockMode = null, ?int $lockVersion = null): ?object
+    public function find(string $className, mixed $id, int|null $lockMode = null, int|null $lockVersion = null): object|null
     {
         return $this->realEntityManager->find($className, $id, $lockMode, $lockVersion);
     }

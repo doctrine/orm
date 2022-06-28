@@ -25,9 +25,7 @@ class DDC933Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @group DDC-933
-     */
+    /** @group DDC-933 */
     public function testLockCTIClass(): void
     {
         if ($this->_em->getConnection()->getDatabasePlatform() instanceof SQLitePlatform) {

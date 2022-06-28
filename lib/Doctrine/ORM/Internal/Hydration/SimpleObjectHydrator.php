@@ -23,7 +23,7 @@ class SimpleObjectHydrator extends AbstractHydrator
 {
     use SQLResultCasing;
 
-    private ?ClassMetadata $class = null;
+    private ClassMetadata|null $class = null;
 
     protected function prepare(): void
     {
@@ -87,13 +87,13 @@ class SimpleObjectHydrator extends AbstractHydrator
                 throw HydrationException::missingDiscriminatorColumn(
                     $entityName,
                     $discrColumnName,
-                    key($this->resultSetMapping()->aliasMap)
+                    key($this->resultSetMapping()->aliasMap),
                 );
             }
 
             if ($row[$discrColumnName] === '') {
                 throw HydrationException::emptyDiscriminatorValue(key(
-                    $this->resultSetMapping()->aliasMap
+                    $this->resultSetMapping()->aliasMap,
                 ));
             }
 

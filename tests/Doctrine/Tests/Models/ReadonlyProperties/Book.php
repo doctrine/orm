@@ -41,9 +41,7 @@ class Book
         return $this->title;
     }
 
-    /**
-     * @return list<Author>
-     */
+    /** @return list<Author> */
     public function getAuthors(): array
     {
         return $this->authors->getValues();

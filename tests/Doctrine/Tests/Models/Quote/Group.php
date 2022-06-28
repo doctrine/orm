@@ -35,15 +35,13 @@ class Group
     public $users;
 
     public function __construct(
-        /**
-         * @Column(name="`group-name`")
-         */
-        public ?string $name = null,
+        /** @Column(name="`group-name`") */
+        public string|null $name = null,
         /**
          * @ManyToOne(targetEntity="Group", cascade={"persist"})
          * @JoinColumn(name="`parent-id`", referencedColumnName="`group-id`")
          */
-        public ?Group $parent = null
+        public Group|null $parent = null,
     ) {
     }
 }

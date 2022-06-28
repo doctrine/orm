@@ -28,13 +28,11 @@ final class GH5562Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             GH5562User::class,
             GH5562Manager::class,
-            GH5562Merchant::class
+            GH5562Merchant::class,
         );
     }
 
-    /**
-     * @group GH-5562
-     */
+    /** @group GH-5562 */
     public function testCacheShouldBeUpdatedWhenAssociationChanges(): void
     {
         $manager  = new GH5562Manager();

@@ -19,13 +19,13 @@ use Doctrine\ORM\Mapping\Table;
 class CompanyEmployee extends CompanyPerson
 {
     /** @Column(type="integer") */
-    private ?int $salary = null;
+    private int|null $salary = null;
 
     /** @Column(type="string", length=255) */
-    private ?string $department = null;
+    private string|null $department = null;
 
     /** @Column(type="datetime", nullable=true) */
-    private ?DateTime $startDate = null;
+    private DateTime|null $startDate = null;
 
     /**
      * @psalm-var Collection<int, CompanyContract>
@@ -59,7 +59,7 @@ class CompanyEmployee extends CompanyPerson
         $this->department = $dep;
     }
 
-    public function getStartDate(): ?DateTime
+    public function getStartDate(): DateTime|null
     {
         return $this->startDate;
     }

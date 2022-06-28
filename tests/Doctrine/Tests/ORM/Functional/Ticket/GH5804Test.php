@@ -18,9 +18,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function method_exists;
 
-/**
- * @group GH-5804
- */
+/** @group GH-5804 */
 final class GH5804Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -51,7 +49,7 @@ final class GH5804Test extends OrmFunctionalTestCase
 
 final class GH5804Generator extends AbstractIdGenerator
 {
-    public function generateId(EntityManagerInterface $em, ?object $entity): string
+    public function generateId(EntityManagerInterface $em, object|null $entity): string
     {
         return 'test5804';
     }
@@ -81,7 +79,7 @@ final class GH5804Type extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): string|null
     {
         if (empty($value)) {
             return null;
@@ -91,9 +89,7 @@ final class GH5804Type extends Type
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH5804Article
 {
     /**

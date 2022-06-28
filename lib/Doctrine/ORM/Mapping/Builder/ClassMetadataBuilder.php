@@ -68,7 +68,7 @@ class ClassMetadataBuilder
                 'fieldName'    => $fieldName,
                 'class'        => $class,
                 'columnPrefix' => $columnPrefix,
-            ]
+            ],
         );
 
         return $this;
@@ -192,7 +192,7 @@ class ClassMetadataBuilder
                 'name' => $name,
                 'type' => $type,
                 'length' => $length,
-            ]
+            ],
         );
 
         return $this;
@@ -286,7 +286,7 @@ class ClassMetadataBuilder
             [
                 'fieldName' => $name,
                 'type'      => $type,
-            ]
+            ],
         );
     }
 
@@ -306,7 +306,7 @@ class ClassMetadataBuilder
                 'fieldName'    => $fieldName,
                 'class'        => $class,
                 'columnPrefix' => null,
-            ]
+            ],
         );
     }
 
@@ -348,7 +348,7 @@ class ClassMetadataBuilder
                 'fieldName'    => $name,
                 'targetEntity' => $targetEntity,
             ],
-            ClassMetadata::MANY_TO_ONE
+            ClassMetadata::MANY_TO_ONE,
         );
     }
 
@@ -368,7 +368,7 @@ class ClassMetadataBuilder
                 'fieldName'    => $name,
                 'targetEntity' => $targetEntity,
             ],
-            ClassMetadata::ONE_TO_ONE
+            ClassMetadata::ONE_TO_ONE,
         );
     }
 
@@ -425,7 +425,7 @@ class ClassMetadataBuilder
                 'fieldName'    => $name,
                 'targetEntity' => $targetEntity,
             ],
-            ClassMetadata::MANY_TO_MANY
+            ClassMetadata::MANY_TO_MANY,
         );
     }
 
@@ -482,7 +482,7 @@ class ClassMetadataBuilder
                 'fieldName'    => $name,
                 'targetEntity' => $targetEntity,
             ],
-            ClassMetadata::ONE_TO_MANY
+            ClassMetadata::ONE_TO_MANY,
         );
     }
 

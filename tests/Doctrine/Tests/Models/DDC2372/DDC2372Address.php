@@ -25,7 +25,7 @@ class DDC2372Address
     private int $id;
 
     /** @Column(type="string", length=255) */
-    private ?string $street = null;
+    private string|null $street = null;
 
     /**
      * @var User

@@ -108,9 +108,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         self::assertEquals('t0.customInteger = ABS(?) AND t0.child_id = ?', $sql);
     }
 
-    /**
-     * @group DDC-1719
-     */
+    /** @group DDC-1719 */
     public function testStripNonAlphanumericCharactersFromSelectColumnListSQL(): void
     {
         $persister = new BasicEntityPersister($this->entityManager, $this->entityManager->getClassMetadata(NonAlphaColumnsEntity::class));
@@ -120,9 +118,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         self::assertEquals('t0."simple-entity-id" AS simpleentityid_1, t0."simple-entity-value" AS simpleentityvalue_2', $method->invoke($persister));
     }
 
-    /**
-     * @group DDC-2073
-     */
+    /** @group DDC-2073 */
     public function testSelectConditionStatementIsNull(): void
     {
         $statement = $this->persister->getSelectConditionStatementSQL('test', null, [], Comparison::IS);
@@ -141,24 +137,22 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         self::assertEquals('test IS NOT NULL', $statement);
     }
 
-    /**
-     * @group DDC-3056
-     */
+    /** @group DDC-3056 */
     public function testSelectConditionStatementWithMultipleValuesContainingNull(): void
     {
         self::assertEquals(
             '(t0.id IN (?) OR t0.id IS NULL)',
-            $this->persister->getSelectConditionStatementSQL('id', [null])
+            $this->persister->getSelectConditionStatementSQL('id', [null]),
         );
 
         self::assertEquals(
             '(t0.id IN (?) OR t0.id IS NULL)',
-            $this->persister->getSelectConditionStatementSQL('id', [null, 123])
+            $this->persister->getSelectConditionStatementSQL('id', [null, 123]),
         );
 
         self::assertEquals(
             '(t0.id IN (?) OR t0.id IS NULL)',
-            $this->persister->getSelectConditionStatementSQL('id', [123, null])
+            $this->persister->getSelectConditionStatementSQL('id', [123, null]),
         );
     }
 
@@ -213,7 +207,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
                     'customtype_parent_friends',
                     ['customtypeparent_id' => 1],
                     ['integer'],
-                ]
+                ],
             );
 
         $persister->delete($parent);

@@ -16,9 +16,7 @@ use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
 {
     private DefaultCollectionHydrator $structure;
@@ -43,7 +41,7 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
             [
                 new EntityCacheKey(City::class, ['id' => 31]),
                 new EntityCacheKey(City::class, ['id' => 32]),
-            ]
+            ],
         );
 
         $targetRegion->put(new EntityCacheKey(City::class, ['id' => 31]), new EntityCacheEntry(City::class, ['id' => 31, 'name' => 'Foo']));

@@ -51,7 +51,7 @@ class DefaultRepositoryFactoryTest extends TestCase
 
         self::assertInstanceOf(
             DDC869PaymentRepository::class,
-            $this->repositoryFactory->getRepository($this->entityManager, self::class)
+            $this->repositoryFactory->getRepository($this->entityManager, self::class),
         );
     }
 
@@ -64,7 +64,7 @@ class DefaultRepositoryFactoryTest extends TestCase
 
         self::assertSame(
             $this->repositoryFactory->getRepository($this->entityManager, self::class),
-            $this->repositoryFactory->getRepository($this->entityManager, self::class)
+            $this->repositoryFactory->getRepository($this->entityManager, self::class),
         );
     }
 
@@ -80,7 +80,7 @@ class DefaultRepositoryFactoryTest extends TestCase
 
         self::assertInstanceOf(
             DDC753DefaultRepository::class,
-            $this->repositoryFactory->getRepository($this->entityManager, self::class)
+            $this->repositoryFactory->getRepository($this->entityManager, self::class),
         );
     }
 
@@ -125,9 +125,7 @@ class DefaultRepositoryFactoryTest extends TestCase
         return $metadata;
     }
 
-    /**
-     * @return EntityManagerInterface&MockObject
-     */
+    /** @return EntityManagerInterface&MockObject */
     private function createEntityManager(): EntityManagerInterface
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);

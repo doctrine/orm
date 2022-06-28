@@ -24,13 +24,11 @@ class DDC279Test extends OrmFunctionalTestCase
             DDC279EntityXAbstract::class,
             DDC279EntityX::class,
             DDC279EntityY::class,
-            DDC279EntityZ::class
+            DDC279EntityZ::class,
         );
     }
 
-    /**
-     * @group DDC-279
-     */
+    /** @group DDC-279 */
     public function testDDC279(): void
     {
         $x = new DDC279EntityX();
@@ -53,7 +51,7 @@ class DDC279Test extends OrmFunctionalTestCase
 
         $query = $this->_em->createQuery(
             'SELECT x, y, z FROM Doctrine\Tests\ORM\Functional\Ticket\DDC279EntityX x ' .
-            'INNER JOIN x.y y INNER JOIN y.z z WHERE x.id = ?1'
+            'INNER JOIN x.y y INNER JOIN y.z z WHERE x.id = ?1',
         )->setParameter(1, $x->id);
 
         $result = $query->getResult();
@@ -92,9 +90,7 @@ abstract class DDC279EntityXAbstract
     public $data;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC279EntityX extends DDC279EntityXAbstract
 {
     /**
@@ -105,9 +101,7 @@ class DDC279EntityX extends DDC279EntityXAbstract
     public $y;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC279EntityY
 {
     /**
@@ -132,9 +126,7 @@ class DDC279EntityY
     public $z;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC279EntityZ
 {
     /**

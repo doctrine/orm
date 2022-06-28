@@ -21,7 +21,7 @@ final class SqlLogger extends AbstractLogger
         $this->queryLog->logQuery(
             $context['sql'],
             $context['params'] ?? null,
-            $context['types'] ?? null
+            $context['types'] ?? null,
         );
     }
 }

@@ -43,12 +43,12 @@ final class OneToMany implements Annotation
      * @param string[]|null     $cascade
      */
     public function __construct(
-        ?string $mappedBy = null,
-        ?string $targetEntity = null,
-        ?array $cascade = null,
+        string|null $mappedBy = null,
+        string|null $targetEntity = null,
+        array|null $cascade = null,
         string $fetch = 'LAZY',
         bool $orphanRemoval = false,
-        ?string $indexBy = null
+        string|null $indexBy = null,
     ) {
         $this->mappedBy      = $mappedBy;
         $this->targetEntity  = $targetEntity;

@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC117Article
 {
     /**
@@ -32,7 +30,7 @@ class DDC117Article
     private $references;
 
     /** @OneToOne(targetEntity="DDC117ArticleDetails", mappedBy="article", cascade={"persist", "remove"}) */
-    private ?DDC117ArticleDetails $details = null;
+    private DDC117ArticleDetails|null $details = null;
 
     /**
      * @psalm-var Collection<int, DDC117Translation>
@@ -47,10 +45,8 @@ class DDC117Article
     private Collection $links;
 
     public function __construct(
-        /**
-         * @Column
-         */
-        private string $title
+        /** @Column */
+        private string $title,
     ) {
         $this->references   = new ArrayCollection();
         $this->translations = new ArrayCollection();

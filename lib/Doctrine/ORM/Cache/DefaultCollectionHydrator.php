@@ -25,7 +25,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
     private static array $hints = [Query::HINT_CACHE_ENABLED => true];
 
     public function __construct(
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
     ) {
         $this->uow = $em->getUnitOfWork();
     }
@@ -41,10 +41,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
         return new CollectionCacheEntry($data);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function loadCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, CollectionCacheEntry $entry, PersistentCollection $collection): ?array
+    public function loadCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, CollectionCacheEntry $entry, PersistentCollection $collection): array|null
     {
         $assoc           = $metadata->associationMappings[$key->association];
         $targetPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
@@ -63,7 +60,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
             $entity = $this->uow->createEntity(
                 $entityEntry->class,
                 $entityEntry->resolveAssociationEntries($this->em),
-                self::$hints
+                self::$hints,
             );
 
             $collection->hydrateSet($index, $entity);

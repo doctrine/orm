@@ -10,9 +10,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 abstract class AbstractContentItem
 {
     /**
@@ -41,10 +39,8 @@ abstract class AbstractContentItem
     public static $fileSystem;
 
     public function __construct(
-        /**
-         * @ManyToOne(targetEntity="Directory")
-         */
-        protected ?Directory $parentDirectory = null
+        /** @ManyToOne(targetEntity="Directory") */
+        protected Directory|null $parentDirectory = null,
     ) {
     }
 

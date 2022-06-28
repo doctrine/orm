@@ -76,9 +76,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->assertLoadingOfAssociation($customer);
     }
 
-    /**
-     * @group mine
-     */
+    /** @group mine */
     public function testLazyLoadsAssociation(): void
     {
         $this->createFixture();
@@ -143,9 +141,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class MultiSelfReference
 {
     /**
@@ -159,13 +155,13 @@ class MultiSelfReference
      * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
      * @JoinColumn(name="other1", referencedColumnName="id")
      */
-    private ?MultiSelfReference $other1 = null;
+    private MultiSelfReference|null $other1 = null;
 
     /**
      * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
      * @JoinColumn(name="other2", referencedColumnName="id")
      */
-    private ?MultiSelfReference $other2 = null;
+    private MultiSelfReference|null $other2 = null;
 
     public function getId(): int
     {
@@ -177,7 +173,7 @@ class MultiSelfReference
         $this->other1 = $other1;
     }
 
-    public function getOther1(): ?MultiSelfReference
+    public function getOther1(): MultiSelfReference|null
     {
         return $this->other1;
     }
@@ -187,7 +183,7 @@ class MultiSelfReference
         $this->other2 = $other2;
     }
 
-    public function getOther2(): ?MultiSelfReference
+    public function getOther2(): MultiSelfReference|null
     {
         return $this->other2;
     }

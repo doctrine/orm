@@ -15,9 +15,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2759
- */
+/** @group DDC-2759 */
 class DDC2759Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -28,7 +26,7 @@ class DDC2759Test extends OrmFunctionalTestCase
             DDC2759Qualification::class,
             DDC2759Category::class,
             DDC2759QualificationMetadata::class,
-            DDC2759MetadataCategory::class
+            DDC2759MetadataCategory::class,
         );
 
         $qualification         = new DDC2759Qualification();
@@ -132,10 +130,8 @@ class DDC2759QualificationMetadata
     protected $metadataCategories;
 
     public function __construct(
-        /**
-         * @OneToOne(targetEntity="DDC2759Qualification", inversedBy="metadata")
-         */
-        public DDC2759Qualification $content
+        /** @OneToOne(targetEntity="DDC2759Qualification", inversedBy="metadata") */
+        public DDC2759Qualification $content,
     ) {
     }
 }
@@ -155,14 +151,10 @@ class DDC2759MetadataCategory
     public $id;
 
     public function __construct(
-        /**
-         * @ManyToOne(targetEntity="DDC2759QualificationMetadata", inversedBy="metadataCategories")
-         */
+        /** @ManyToOne(targetEntity="DDC2759QualificationMetadata", inversedBy="metadataCategories") */
         public DDC2759QualificationMetadata $metadata,
-        /**
-         * @ManyToOne(targetEntity="DDC2759Category", inversedBy="metadataCategories")
-         */
-        public DDC2759Category $category
+        /** @ManyToOne(targetEntity="DDC2759Category", inversedBy="metadataCategories") */
+        public DDC2759Category $category,
     ) {
     }
 }

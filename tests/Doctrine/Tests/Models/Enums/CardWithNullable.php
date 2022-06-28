@@ -35,7 +35,7 @@ class CardWithNullable
                 'id' => true,
                 'fieldName' => 'id',
                 'type' => 'integer',
-            ]
+            ],
         );
         $metadata->mapField(
             [
@@ -43,7 +43,7 @@ class CardWithNullable
                 'type' => 'string',
                 'enumType' => Suit::class,
                 'nullable' => true,
-            ]
+            ],
         );
     }
 }

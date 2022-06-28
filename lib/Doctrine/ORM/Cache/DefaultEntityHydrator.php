@@ -28,7 +28,7 @@ class DefaultEntityHydrator implements EntityHydrator
     private static array $hints = [Query::HINT_CACHE_ENABLED => true];
 
     public function __construct(
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
     ) {
         $this->uow                 = $em->getUnitOfWork();
         $this->identifierFlattener = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
@@ -69,7 +69,7 @@ class DefaultEntityHydrator implements EntityHydrator
                     : $assoc;
                 $associationIds      = $this->identifierFlattener->flattenIdentifier(
                     $targetClassMetadata,
-                    $targetClassMetadata->getIdentifierValues($data[$name])
+                    $targetClassMetadata->getIdentifierValues($data[$name]),
                 );
 
                 unset($data[$name]);
@@ -123,7 +123,7 @@ class DefaultEntityHydrator implements EntityHydrator
         return new EntityCacheEntry($metadata->name, $data);
     }
 
-    public function loadCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, EntityCacheEntry $entry, ?object $entity = null): ?object
+    public function loadCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, EntityCacheEntry $entry, object|null $entity = null): object|null
     {
         $data  = $entry->data;
         $hints = self::$hints;

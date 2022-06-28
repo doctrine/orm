@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 
-/**
- * @Entity
- */
+/** @Entity */
 class PersistentCollectionHolder extends PersistentObject
 {
     /**

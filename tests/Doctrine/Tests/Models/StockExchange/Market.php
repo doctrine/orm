@@ -32,10 +32,8 @@ class Market
     public $stocks;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
-        private string $name
+        /** @Column(type="string", length=255) */
+        private string $name,
     ) {
         $this->stocks = new ArrayCollection();
     }

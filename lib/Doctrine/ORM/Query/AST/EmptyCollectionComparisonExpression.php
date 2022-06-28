@@ -17,9 +17,7 @@ class EmptyCollectionComparisonExpression extends Node
     /** @var bool */
     public $not;
 
-    /**
-     * @param PathExpression $expression
-     */
+    /** @param PathExpression $expression */
     public function __construct($expression)
     {
         $this->expression = $expression;

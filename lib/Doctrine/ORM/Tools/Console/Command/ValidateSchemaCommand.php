@@ -49,8 +49,8 @@ class ValidateSchemaCommand extends AbstractEntityManagerCommand
                     $ui->text(
                         sprintf(
                             '<error>[FAIL]</error> The entity-class <comment>%s</comment> mapping is invalid:',
-                            $className
-                        )
+                            $className,
+                        ),
                     );
 
                     $ui->listing($errorMessages);

@@ -24,9 +24,7 @@ final class GH7012Test extends OrmFunctionalTestCase
         $this->setUpEntitySchema([GH7012UserData::class]);
     }
 
-    /**
-     * @group GH-7012
-     */
+    /** @group GH-7012 */
     public function testUpdateEntityWithIdentifierAssociationWithQuotedJoinColumn(): void
     {
         $user       = new QuotedUser();
@@ -45,7 +43,7 @@ final class GH7012Test extends OrmFunctionalTestCase
 
         self::assertSame(
             '4321',
-            $this->_em->getRepository(GH7012UserData::class)->findOneBy(['user' => $user])->name
+            $this->_em->getRepository(GH7012UserData::class)->findOneBy(['user' => $user])->name,
         );
     }
 }
@@ -64,10 +62,8 @@ class GH7012UserData
          * @JoinColumn(name="`user-id`", referencedColumnName="`user-id`", onDelete="CASCADE")
          */
         public QuotedUser $user,
-        /**
-         * @Column(type="string", name="`name`")
-         */
-        public string $name
+        /** @Column(type="string", name="`name`") */
+        public string $name,
     ) {
     }
 }

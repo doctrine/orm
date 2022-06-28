@@ -36,11 +36,11 @@ final class Table implements Annotation
      * @param array<string,mixed>                           $options
      */
     public function __construct(
-        ?string $name = null,
-        ?string $schema = null,
-        ?array $indexes = null,
-        ?array $uniqueConstraints = null,
-        array $options = []
+        string|null $name = null,
+        string|null $schema = null,
+        array|null $indexes = null,
+        array|null $uniqueConstraints = null,
+        array $options = [],
     ) {
         $this->name              = $name;
         $this->schema            = $schema;

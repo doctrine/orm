@@ -19,15 +19,13 @@ class DDC331Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @group DDC-331
-     */
+    /** @group DDC-331 */
     public function testSelectFieldOnRootEntity(): void
     {
         $q = $this->_em->createQuery('SELECT e.name FROM Doctrine\Tests\Models\Company\CompanyEmployee e');
         self::assertEquals(
             strtolower('SELECT c0_.name AS name_0 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id LEFT JOIN company_managers c2_ ON c1_.id = c2_.id'),
-            strtolower($q->getSQL())
+            strtolower($q->getSQL()),
         );
     }
 }

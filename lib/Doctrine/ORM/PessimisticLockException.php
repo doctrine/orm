@@ -9,9 +9,7 @@ use RuntimeException;
 
 class PessimisticLockException extends RuntimeException implements ORMException
 {
-    /**
-     * @return PessimisticLockException
-     */
+    /** @return PessimisticLockException */
     public static function lockFailed()
     {
         return new self('The pessimistic lock failed.');

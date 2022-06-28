@@ -72,24 +72,22 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertEquals('nop', $conn->fetchOne('SELECT associated_foreign_id FROM vct_owning_manytoone_compositeid_foreignkey LIMIT 1'));
     }
 
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
-     */
+    /** @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase */
     public function testThatEntitiesAreFetchedFromTheDatabase(): void
     {
         $auxiliary = $this->_em->find(
             AuxiliaryEntity::class,
-            'abc'
+            'abc',
         );
 
         $inversed = $this->_em->find(
             InversedOneToManyCompositeIdForeignKeyEntity::class,
-            ['id1' => 'def', 'foreignEntity' => 'abc']
+            ['id1' => 'def', 'foreignEntity' => 'abc'],
         );
 
         $owning = $this->_em->find(
             OwningManyToOneCompositeIdForeignKeyEntity::class,
-            'ghi'
+            'ghi',
         );
 
         self::assertInstanceOf(AuxiliaryEntity::class, $auxiliary);
@@ -97,24 +95,22 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertInstanceOf(OwningManyToOneCompositeIdForeignKeyEntity::class, $owning);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase(): void
     {
         $auxiliary = $this->_em->find(
             AuxiliaryEntity::class,
-            'abc'
+            'abc',
         );
 
         $inversed = $this->_em->find(
             InversedOneToManyCompositeIdForeignKeyEntity::class,
-            ['id1' => 'def', 'foreignEntity' => 'abc']
+            ['id1' => 'def', 'foreignEntity' => 'abc'],
         );
 
         $owning = $this->_em->find(
             OwningManyToOneCompositeIdForeignKeyEntity::class,
-            'ghi'
+            'ghi',
         );
 
         self::assertEquals('abc', $auxiliary->id4);
@@ -123,32 +119,28 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertEquals('ghi', $owning->id2);
     }
 
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase
-     */
+    /** @depends testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase */
     public function testThatInversedEntityIsFetchedFromTheDatabaseUsingAuxiliaryEntityAsId(): void
     {
         $auxiliary = $this->_em->find(
             AuxiliaryEntity::class,
-            'abc'
+            'abc',
         );
 
         $inversed = $this->_em->find(
             InversedOneToManyCompositeIdForeignKeyEntity::class,
-            ['id1' => 'def', 'foreignEntity' => $auxiliary]
+            ['id1' => 'def', 'foreignEntity' => $auxiliary],
         );
 
         self::assertInstanceOf(InversedOneToManyCompositeIdForeignKeyEntity::class, $inversed);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheProxyFromOwningToInversedIsLoaded(): void
     {
         $owning = $this->_em->find(
             OwningManyToOneCompositeIdForeignKeyEntity::class,
-            'ghi'
+            'ghi',
         );
 
         $inversedProxy = $owning->associatedEntity;
@@ -158,14 +150,12 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheCollectionFromInversedToOwningIsLoaded(): void
     {
         $inversed = $this->_em->find(
             InversedOneToManyCompositeIdForeignKeyEntity::class,
-            ['id1' => 'def', 'foreignEntity' => 'abc']
+            ['id1' => 'def', 'foreignEntity' => 'abc'],
         );
 
         self::assertCount(1, $inversed->associatedEntities);

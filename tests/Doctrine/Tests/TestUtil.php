@@ -50,7 +50,7 @@ class TestUtil
      * 1) Each invocation of this method returns a NEW database connection.
      * 2) The database is dropped and recreated to ensure it's clean.
      */
-    public static function getConnection(?Configuration $config = null): DbalExtensions\Connection
+    public static function getConnection(Configuration|null $config = null): DbalExtensions\Connection
     {
         if (! self::$initialized) {
             self::initializeDatabase();
@@ -127,9 +127,7 @@ class TestUtil
         }
     }
 
-    /**
-     * @psalm-return array<string, mixed>
-     */
+    /** @psalm-return array<string, mixed> */
     private static function getPrivilegedConnectionParameters(): array
     {
         if (isset($GLOBALS['privileged_db_driver'])) {
@@ -142,14 +140,12 @@ class TestUtil
         return $parameters;
     }
 
-    /**
-     * @psalm-return array<string, mixed>
-     */
+    /** @psalm-return array<string, mixed> */
     private static function getTestConnectionParameters(): array
     {
         if (! isset($GLOBALS['db_driver'])) {
             throw new UnexpectedValueException(
-                'You must provide database connection params including a db_driver value. See phpunit.xml.dist for details'
+                'You must provide database connection params including a db_driver value. See phpunit.xml.dist for details',
             );
         }
 

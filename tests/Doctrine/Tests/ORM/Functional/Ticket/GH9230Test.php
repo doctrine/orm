@@ -10,9 +10,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH-9230
- */
+/** @group GH-9230 */
 class GH9230Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -128,9 +126,7 @@ class GH9230Test extends OrmFunctionalTestCase
 }
 
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH9230Entity
 {
     /**

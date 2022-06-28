@@ -8,9 +8,7 @@ use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1040
- */
+/** @group DDC-1040 */
 class DDC1040Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

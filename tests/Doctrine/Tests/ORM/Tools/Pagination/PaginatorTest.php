@@ -68,7 +68,7 @@ class PaginatorTest extends OrmTestCase
                     WHERE a.user = u AND 1 = :paramInSubSelect
                 ) AS HIDDEN max_version
             FROM Doctrine\\Tests\\Models\\CMS\\CmsUser u
-            WHERE u.id = :paramInWhere'
+            WHERE u.id = :paramInWhere',
         );
         $query->setParameters(['paramInWhere' => $paramInWhere, 'paramInSubSelect' => $paramInSubSelect]);
         $query->setMaxResults(1);
@@ -80,7 +80,7 @@ class PaginatorTest extends OrmTestCase
             ->withConsecutive(
                 [self::anything(), [$paramInWhere]],
                 [self::anything(), [$paramInWhere]],
-                [self::anything(), [$paramInSubSelect, $paramInWhere, $returnedIds]]
+                [self::anything(), [$paramInSubSelect, $paramInWhere, $returnedIds]],
             );
 
         $paginator->count();
@@ -105,9 +105,7 @@ class PaginatorTest extends OrmTestCase
         $this->createPaginatorWithExtraParametersWithoutOutputWalkers([[10]])->getIterator();
     }
 
-    /**
-     * @param int[][] $willReturnRows
-     */
+    /** @param int[][] $willReturnRows */
     private function createPaginatorWithExtraParametersWithoutOutputWalkers(array $willReturnRows): Paginator
     {
         $this->hydrator->method('hydrateAll')->willReturn($willReturnRows);

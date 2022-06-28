@@ -33,13 +33,11 @@ class DDC3644Test extends OrmFunctionalTestCase
                 DDC3644Address::class,
                 DDC3644Animal::class,
                 DDC3644Pet::class,
-            ]
+            ],
         );
     }
 
-    /**
-     * @group DDC-3644
-     */
+    /** @group DDC-3644 */
     public function testIssueWithRegularEntity(): void
     {
         // Define initial dataset
@@ -89,9 +87,7 @@ class DDC3644Test extends OrmFunctionalTestCase
         self::assertCount(1, $addresses);
     }
 
-    /**
-     * @group DDC-3644
-     */
+    /** @group DDC-3644 */
     public function testIssueWithJoinedEntity(): void
     {
         // Define initial dataset
@@ -140,9 +136,7 @@ class DDC3644Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3644User
 {
     /**
@@ -190,9 +184,7 @@ class DDC3644User
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3644Address
 {
     /**
@@ -211,10 +203,8 @@ class DDC3644Address
     public $user;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
-        public string $address
+        /** @Column(type="string", length=255) */
+        public string $address,
     ) {
     }
 }
@@ -236,17 +226,13 @@ abstract class DDC3644Animal
     public $id;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
-        public string $name
+        /** @Column(type="string", length=255) */
+        public string $name,
     ) {
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3644Pet extends DDC3644Animal
 {
     /**

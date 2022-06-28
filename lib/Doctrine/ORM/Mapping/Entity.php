@@ -26,10 +26,8 @@ final class Entity implements Annotation
     /** @var bool */
     public $readOnly = false;
 
-    /**
-     * @psalm-param class-string<EntityRepository<T>>|null $repositoryClass
-     */
-    public function __construct(?string $repositoryClass = null, bool $readOnly = false)
+    /** @psalm-param class-string<EntityRepository<T>>|null $repositoryClass */
+    public function __construct(string|null $repositoryClass = null, bool $readOnly = false)
     {
         $this->repositoryClass = $repositoryClass;
         $this->readOnly        = $readOnly;

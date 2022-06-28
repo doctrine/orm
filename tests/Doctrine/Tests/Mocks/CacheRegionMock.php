@@ -73,24 +73,21 @@ class CacheRegionMock implements Region
         return $this->getReturn(__FUNCTION__, true);
     }
 
-    public function get(CacheKey $key): ?CacheEntry
+    public function get(CacheKey $key): CacheEntry|null
     {
         $this->calls[__FUNCTION__][] = ['key' => $key];
 
         return $this->getReturn(__FUNCTION__, null);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getMultiple(CollectionCacheEntry $collection): ?array
+    public function getMultiple(CollectionCacheEntry $collection): array|null
     {
         $this->calls[__FUNCTION__][] = ['collection' => $collection];
 
         return $this->getReturn(__FUNCTION__, null);
     }
 
-    public function put(CacheKey $key, CacheEntry $entry, ?Lock $lock = null): bool
+    public function put(CacheKey $key, CacheEntry $entry, Lock|null $lock = null): bool
     {
         $this->calls[__FUNCTION__][] = ['key' => $key, 'entry' => $entry];
 

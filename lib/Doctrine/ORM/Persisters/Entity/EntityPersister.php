@@ -47,7 +47,7 @@ interface EntityPersister
      * @param mixed[]|null     $orderBy
      * @psalm-param LockMode::*|null $lockMode
      */
-    public function getSelectSQL(array|Criteria $criteria, ?array $assoc = null, ?int $lockMode = null, ?int $limit = null, ?int $offset = null, ?array $orderBy = null): string;
+    public function getSelectSQL(array|Criteria $criteria, array|null $assoc = null, int|null $lockMode = null, int|null $limit = null, int|null $offset = null, array|null $orderBy = null): string;
 
     /**
      * Get the COUNT SQL to count entities (optionally based on a criteria)
@@ -77,7 +77,7 @@ interface EntityPersister
      *
      * @psalm-param array<string, mixed>|null  $assoc
      */
-    public function getSelectConditionStatementSQL(string $field, mixed $value, ?array $assoc = null, ?string $comparison = null): string;
+    public function getSelectConditionStatementSQL(string $field, mixed $value, array|null $assoc = null, string|null $comparison = null): string;
 
     /**
      * Adds an entity to the queued insertions.
@@ -160,13 +160,13 @@ interface EntityPersister
      */
     public function load(
         array $criteria,
-        ?object $entity = null,
-        ?array $assoc = null,
+        object|null $entity = null,
+        array|null $assoc = null,
         array $hints = [],
-        ?int $lockMode = null,
-        ?int $limit = null,
-        ?array $orderBy = null
-    ): ?object;
+        int|null $lockMode = null,
+        int|null $limit = null,
+        array|null $orderBy = null,
+    ): object|null;
 
     /**
      * Loads an entity by identifier.
@@ -178,7 +178,7 @@ interface EntityPersister
      *
      * @todo Check parameters
      */
-    public function loadById(array $identifier, ?object $entity = null): ?object;
+    public function loadById(array $identifier, object|null $entity = null): object|null;
 
     /**
      * Loads an entity of this persister's mapped class as part of a single-valued
@@ -194,7 +194,7 @@ interface EntityPersister
      *
      * @throws MappingException
      */
-    public function loadOneToOneEntity(array $assoc, object $sourceEntity, array $identifier = []): ?object;
+    public function loadOneToOneEntity(array $assoc, object $sourceEntity, array $identifier = []): object|null;
 
     /**
      * Refreshes a managed entity.
@@ -207,7 +207,7 @@ interface EntityPersister
      *                                       field names to values.
      * @psalm-param LockMode::*|null $lockMode
      */
-    public function refresh(array $id, object $entity, ?int $lockMode = null): void;
+    public function refresh(array $id, object $entity, int|null $lockMode = null): void;
 
     /**
      * Loads Entities matching the given Criteria object.
@@ -224,7 +224,7 @@ interface EntityPersister
      *
      * @return mixed[]
      */
-    public function loadAll(array $criteria = [], ?array $orderBy = null, ?int $limit = null, ?int $offset = null): array;
+    public function loadAll(array $criteria = [], array|null $orderBy = null, int|null $limit = null, int|null $offset = null): array;
 
     /**
      * Gets (sliced or full) elements of the given collection.
@@ -233,7 +233,7 @@ interface EntityPersister
      *
      * @return mixed[]
      */
-    public function getManyToManyCollection(array $assoc, object $sourceEntity, ?int $offset = null, ?int $limit = null): array;
+    public function getManyToManyCollection(array $assoc, object $sourceEntity, int|null $offset = null, int|null $limit = null): array;
 
     /**
      * Loads a collection of entities of a many-to-many association.
@@ -269,10 +269,10 @@ interface EntityPersister
      *
      * @return mixed[]
      */
-    public function getOneToManyCollection(array $assoc, object $sourceEntity, ?int $offset = null, ?int $limit = null): array;
+    public function getOneToManyCollection(array $assoc, object $sourceEntity, int|null $offset = null, int|null $limit = null): array;
 
     /**
      * Checks whether the given managed entity exists in the database.
      */
-    public function exists(object $entity, ?Criteria $extraConditions = null): bool;
+    public function exists(object $entity, Criteria|null $extraConditions = null): bool;
 }

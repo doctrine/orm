@@ -16,9 +16,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_values;
 
-/**
- * @group gh7864
- */
+/** @group gh7864 */
 class GH7864Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -29,7 +27,7 @@ class GH7864Test extends OrmFunctionalTestCase
             [
                 GH7864User::class,
                 GH7864Tweet::class,
-            ]
+            ],
         );
     }
 
@@ -63,9 +61,7 @@ class GH7864Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7864User
 {
     /**
@@ -100,9 +96,7 @@ class GH7864User
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7864Tweet
 {
     /**

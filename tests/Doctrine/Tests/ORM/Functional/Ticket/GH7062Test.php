@@ -33,13 +33,11 @@ class GH7062Test extends OrmFunctionalTestCase
                 GH7062Season::class,
                 GH7062Ranking::class,
                 GH7062RankingPosition::class,
-            ]
+            ],
         );
     }
 
-    /**
-     * @group GH-7062
-     */
+    /** @group GH-7062 */
     public function testEntityWithAssociationKeyIdentityCanBeUpdated(): void
     {
         $this->createInitialRankingWithRelatedEntities();
@@ -107,9 +105,7 @@ class GH7062Ranking
      */
     public $positions;
 
-    /**
-     * @param GH7062Team[] $teams
-     */
+    /** @param GH7062Team[] $teams */
     public function __construct(
         /**
          * @Id
@@ -117,7 +113,7 @@ class GH7062Ranking
          * @JoinColumn(name="season", referencedColumnName="id")
          */
         public GH7062Season $season,
-        array $teams
+        array $teams,
     ) {
         $this->positions = new ArrayCollection();
 
@@ -146,7 +142,7 @@ class GH7062Season
          * @Id
          * @Column(type="string", length=255)
          */
-        public string $id
+        public string $id,
     ) {
     }
 }
@@ -164,7 +160,7 @@ class GH7062Team
          * @Id
          * @Column(type="string", length=255)
          */
-        public string $id
+        public string $id,
     ) {
     }
 }
@@ -195,7 +191,7 @@ class GH7062RankingPosition
          * @ManyToOne(targetEntity=GH7062Team::class)
          * @JoinColumn(name="team_id", referencedColumnName="id")
          */
-        public GH7062Team $team
+        public GH7062Team $team,
     ) {
         $this->points = 0;
     }

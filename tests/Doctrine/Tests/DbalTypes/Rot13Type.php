@@ -20,7 +20,7 @@ class Rot13Type extends Type
      *
      * @param string|null $value
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): string|null
     {
         if ($value === null) {
             return null;
@@ -34,7 +34,7 @@ class Rot13Type extends Type
      *
      * @param string|null $value
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform): ?string
+    public function convertToPHPValue($value, AbstractPlatform $platform): string|null
     {
         if ($value === null) {
             return null;

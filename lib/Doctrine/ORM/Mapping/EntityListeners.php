@@ -25,9 +25,7 @@ final class EntityListeners implements Annotation
      */
     public $value = [];
 
-    /**
-     * @param array<string> $value
-     */
+    /** @param array<string> $value */
     public function __construct(array $value = [])
     {
         $this->value = $value;

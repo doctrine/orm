@@ -26,9 +26,7 @@ use function reset;
 
 class DDC2138Test extends OrmFunctionalTestCase
 {
-    /**
-     * @group DDC-2138
-     */
+    /** @group DDC-2138 */
     public function testForeignKeyOnSTIWithMultipleMapping(): void
     {
         $em     = $this->_em;
@@ -37,7 +35,7 @@ class DDC2138Test extends OrmFunctionalTestCase
             DDC2138Structure::class,
             DDC2138UserFollowedObject::class,
             DDC2138UserFollowedStructure::class,
-            DDC2138UserFollowedUser::class
+            DDC2138UserFollowedUser::class,
         );
         self::assertTrue($schema->hasTable('users_followed_objects'), 'Table users_followed_objects should exist.');
 
@@ -107,9 +105,7 @@ abstract class DDC2138UserFollowedObject
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
 {
     /**
@@ -125,7 +121,7 @@ class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
          * @ManyToOne(targetEntity="DDC2138Structure")
          * @JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
          */
-        private Structure $followedStructure
+        private Structure $followedStructure,
     ) {
     }
 
@@ -143,9 +139,7 @@ class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
 {
     /**
@@ -161,7 +155,7 @@ class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
          * @ManyToOne(targetEntity="DDC2138User")
          * @JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
          */
-        private User $followedUser
+        private User $followedUser,
     ) {
     }
 

@@ -14,9 +14,7 @@ use Doctrine\Tests\TestUtil;
 
 use function dirname;
 
-/**
- * @requires PHP 8.1
- */
+/** @requires PHP 8.1 */
 class ReadonlyPropertiesTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -26,7 +24,7 @@ class ReadonlyPropertiesTest extends OrmFunctionalTestCase
         }
 
         $this->_em         = $this->getEntityManager(null, new AttributeDriver(
-            [dirname(__DIR__, 2) . '/Models/ReadonlyProperties']
+            [dirname(__DIR__, 2) . '/Models/ReadonlyProperties'],
         ));
         $this->_schemaTool = new SchemaTool($this->_em);
 

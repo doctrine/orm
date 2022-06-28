@@ -60,7 +60,7 @@ class DefaultNamingStrategy implements NamingStrategy
 
     public function joinKeyColumnName(
         string $entityName,
-        ?string $referencedColumnName,
+        string|null $referencedColumnName,
     ): string {
         return strtolower($this->classToTableName($entityName) . '_' .
             ($referencedColumnName ?: $this->referenceColumnName()));

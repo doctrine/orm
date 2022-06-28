@@ -26,16 +26,14 @@ class Join
     public function __construct(
         protected string $joinType,
         protected string $join,
-        protected ?string $alias = null,
-        protected ?string $conditionType = null,
+        protected string|null $alias = null,
+        protected string|null $conditionType = null,
         protected string|Comparison|Composite|null $condition = null,
-        protected ?string $indexBy = null
+        protected string|null $indexBy = null,
     ) {
     }
 
-    /**
-     * @psalm-return self::INNER_JOIN|self::LEFT_JOIN
-     */
+    /** @psalm-return self::INNER_JOIN|self::LEFT_JOIN */
     public function getJoinType(): string
     {
         return $this->joinType;
@@ -46,15 +44,13 @@ class Join
         return $this->join;
     }
 
-    public function getAlias(): ?string
+    public function getAlias(): string|null
     {
         return $this->alias;
     }
 
-    /**
-     * @psalm-return self::ON|self::WITH|null
-     */
-    public function getConditionType(): ?string
+    /** @psalm-return self::ON|self::WITH|null */
+    public function getConditionType(): string|null
     {
         return $this->conditionType;
     }
@@ -64,7 +60,7 @@ class Join
         return $this->condition;
     }
 
-    public function getIndexBy(): ?string
+    public function getIndexBy(): string|null
     {
         return $this->indexBy;
     }

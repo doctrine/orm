@@ -61,8 +61,7 @@ by the ORM, you can use a DBAL functionality to filter the tables and sequences 
 on a global level:
 
     $config->setFilterSchemaAssetsExpression($regexp);
-EOT
-             );
+EOT,);
     }
 
     /**
@@ -118,7 +117,7 @@ EOT
                 '',
                 'Use the incremental update to detect changes during development and use',
                 'the SQL DDL provided to manually update your database in production.',
-            ]
+            ],
         );
 
         $ui->text(
@@ -129,7 +128,7 @@ EOT
                 '',
                 sprintf('    <info>%s --force</info> to execute the command', $this->getName()),
                 sprintf('    <info>%s --dump-sql</info> to dump the SQL statements to the screen', $this->getName()),
-            ]
+            ],
         );
 
         return 1;

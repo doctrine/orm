@@ -29,10 +29,10 @@ class ECommerceCustomer
     private int $id;
 
     /** @Column(type="string", length=50) */
-    private ?string $name = null;
+    private string|null $name = null;
 
     /** @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"persist"}) */
-    private ?ECommerceCart $cart = null;
+    private ECommerceCart|null $cart = null;
 
     /**
      * Example of a one-one self referential association. A mentor can follow
@@ -42,7 +42,7 @@ class ECommerceCustomer
      * @OneToOne(targetEntity="ECommerceCustomer", cascade={"persist"}, fetch="EAGER")
      * @JoinColumn(name="mentor_id", referencedColumnName="id")
      */
-    private ?ECommerceCustomer $mentor = null;
+    private ECommerceCustomer|null $mentor = null;
 
     public function getId(): int
     {
@@ -73,7 +73,7 @@ class ECommerceCustomer
         $this->cart = $cart;
     }
 
-    public function getCart(): ?ECommerceCart
+    public function getCart(): ECommerceCart|null
     {
         return $this->cart;
     }
@@ -97,7 +97,7 @@ class ECommerceCustomer
         $this->mentor = null;
     }
 
-    public function getMentor(): ?ECommerceCustomer
+    public function getMentor(): ECommerceCustomer|null
     {
         return $this->mentor;
     }

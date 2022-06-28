@@ -17,9 +17,7 @@ use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1080
- */
+/** @group DDC-1080 */
 class DDC1080Test extends OrmFunctionalTestCase
 {
     public function testHydration(): void
@@ -27,7 +25,7 @@ class DDC1080Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC1080Foo::class,
             DDC1080Bar::class,
-            DDC1080FooBar::class
+            DDC1080FooBar::class,
         );
 
         $foo1 = new DDC1080Foo();
@@ -121,9 +119,7 @@ class DDC1080Foo
         return $this->fooTitle;
     }
 
-    /**
-     * @psalm-return Collection<DDC1080FooBar>
-     */
+    /** @psalm-return Collection<DDC1080FooBar> */
     public function getFooBars(): Collection
     {
         return $this->fooBars;
@@ -187,9 +183,7 @@ class DDC1080Bar
         return $this->barTitle;
     }
 
-    /**
-     * @psalm-return Collection<DDC1080FooBar>
-     */
+    /** @psalm-return Collection<DDC1080FooBar> */
     public function getFooBars(): Collection
     {
         return $this->fooBars;
@@ -263,12 +257,12 @@ class DDC1080FooBar
         return $this;
     }
 
-    public function getOrderNr(): ?int
+    public function getOrderNr(): int|null
     {
         return $this->orderNr;
     }
 
-    public function setOrderNr(?int $orderNr): DDC1080FooBar
+    public function setOrderNr(int|null $orderNr): DDC1080FooBar
     {
         $this->orderNr = $orderNr;
 

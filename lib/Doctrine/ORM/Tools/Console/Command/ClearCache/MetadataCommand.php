@@ -26,8 +26,7 @@ class MetadataCommand extends AbstractEntityManagerCommand
              ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, cache entries will be flushed instead of deleted/invalidated.')
              ->setHelp(<<<'EOT'
 The <info>%command.name%</info> command is meant to clear the metadata cache of associated Entity Manager.
-EOT
-             );
+EOT,);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

@@ -22,22 +22,18 @@ class BitOrFunction extends FunctionNode
     /** @var Node */
     public $secondArithmetic;
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function getSql(SqlWalker $sqlWalker)
     {
         $platform = $sqlWalker->getConnection()->getDatabasePlatform();
 
         return $platform->getBitOrComparisonExpression(
             $this->firstArithmetic->dispatch($sqlWalker),
-            $this->secondArithmetic->dispatch($sqlWalker)
+            $this->secondArithmetic->dispatch($sqlWalker),
         );
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function parse(Parser $parser)
     {
         $parser->match(Lexer::T_IDENTIFIER);

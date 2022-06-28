@@ -11,9 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Assert;
 use ReflectionProperty;
 
-/**
- * @group DDC-3123
- */
+/** @group DDC-3123 */
 class DDC3123Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -49,7 +47,7 @@ class DDC3123Test extends OrmFunctionalTestCase
 
                 Assert::assertEmpty(
                     $property->getValue($this->uow),
-                    'ExtraUpdates are reset before postFlush'
+                    'ExtraUpdates are reset before postFlush',
                 );
             }
         });

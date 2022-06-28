@@ -40,7 +40,7 @@ final class ConsoleRunner
      */
     public static function createApplication(
         EntityManagerProvider $entityManagerProvider,
-        array $commands = []
+        array $commands = [],
     ): Application {
         $version = InstalledVersions::getVersion('doctrine/orm');
         assert($version !== null);
@@ -82,7 +82,7 @@ final class ConsoleRunner
                 new Command\ValidateSchemaCommand($entityManagerProvider),
                 new Command\InfoCommand($entityManagerProvider),
                 new Command\MappingDescribeCommand($entityManagerProvider),
-            ]
+            ],
         );
     }
 }

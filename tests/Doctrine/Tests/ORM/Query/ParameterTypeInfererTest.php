@@ -43,9 +43,7 @@ class ParameterTypeInfererTest extends OrmTestCase
         }
     }
 
-    /**
-     * @dataProvider providerParameterTypeInferer
-     */
+    /** @dataProvider providerParameterTypeInferer */
     public function testParameterTypeInferer(mixed $value, int|string $expected): void
     {
         self::assertEquals($expected, ParameterTypeInferer::inferType($value));

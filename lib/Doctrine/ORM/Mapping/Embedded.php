@@ -21,7 +21,7 @@ final class Embedded implements Annotation
     /** @var string|bool|null */
     public $columnPrefix;
 
-    public function __construct(?string $class = null, $columnPrefix = null)
+    public function __construct(string|null $class = null, $columnPrefix = null)
     {
         $this->class        = $class;
         $this->columnPrefix = $columnPrefix;

@@ -35,16 +35,14 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
 
     protected string $regionName;
     protected CollectionHydrator $hydrator;
-    protected ?CacheLogger $cacheLogger;
+    protected CacheLogger|null $cacheLogger;
 
-    /**
-     * @param mixed[] $association The association mapping.
-     */
+    /** @param mixed[] $association The association mapping. */
     public function __construct(
         protected CollectionPersister $persister,
         protected Region $region,
         EntityManagerInterface $em,
-        protected array $association
+        protected array $association,
     ) {
         $configuration = $em->getConfiguration();
         $cacheConfig   = $configuration->getSecondLevelCacheConfiguration();
@@ -74,10 +72,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         return $this->targetEntity;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key): ?array
+    public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key): array|null
     {
         $cache = $this->region->get($key);
 
@@ -158,7 +153,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function slice(PersistentCollection $collection, int $offset, ?int $length = null): array
+    public function slice(PersistentCollection $collection, int $offset, int|null $length = null): array
     {
         return $this->persister->slice($collection, $offset, $length);
     }

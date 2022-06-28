@@ -6,7 +6,7 @@ namespace Doctrine\Tests\Models\CMS;
 
 class CmsAddressDTO
 {
-    public function __construct(public ?string $country = null, public ?string $city = null, public ?string $zip = null)
+    public function __construct(public string|null $country = null, public string|null $city = null, public string|null $zip = null)
     {
     }
 }

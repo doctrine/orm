@@ -37,14 +37,12 @@ class EntityRepository implements ObjectRepository, Selectable
 {
     /** @psalm-var class-string<T> */
     private string $entityName;
-    private static ?Inflector $inflector = null;
+    private static Inflector|null $inflector = null;
 
-    /**
-     * @psalm-param ClassMetadata<T> $class
-     */
+    /** @psalm-param ClassMetadata<T> $class */
     public function __construct(
         private EntityManagerInterface $em,
-        private ClassMetadata $class
+        private ClassMetadata $class,
     ) {
         $this->entityName = $class->name;
     }
@@ -52,7 +50,7 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Creates a new QueryBuilder instance that is prepopulated for this entity name.
      */
-    public function createQueryBuilder(string $alias, ?string $indexBy = null): QueryBuilder
+    public function createQueryBuilder(string $alias, string|null $indexBy = null): QueryBuilder
     {
         return $this->em->createQueryBuilder()
             ->select($alias)
@@ -83,7 +81,7 @@ class EntityRepository implements ObjectRepository, Selectable
      * @return object|null The entity instance or NULL if the entity can not be found.
      * @psalm-return ?T
      */
-    public function find(mixed $id, ?int $lockMode = null, ?int $lockVersion = null): ?object
+    public function find(mixed $id, int|null $lockMode = null, int|null $lockVersion = null): object|null
     {
         return $this->em->find($this->entityName, $id, $lockMode, $lockVersion);
     }
@@ -105,7 +103,7 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @psalm-return list<T>
      */
-    public function findBy(array $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null): array
+    public function findBy(array $criteria, array|null $orderBy = null, int|null $limit = null, int|null $offset = null): array
     {
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
 
@@ -120,7 +118,7 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @psalm-return T|null
      */
-    public function findOneBy(array $criteria, ?array $orderBy = null): ?object
+    public function findOneBy(array $criteria, array|null $orderBy = null): object|null
     {
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
 
@@ -166,13 +164,11 @@ class EntityRepository implements ObjectRepository, Selectable
         throw new BadMethodCallException(sprintf(
             'Undefined method "%s". The method name must start with ' .
             'either findBy, findOneBy or countBy!',
-            $method
+            $method,
         ));
     }
 
-    /**
-     * @psalm-return class-string<T>
-     */
+    /** @psalm-return class-string<T> */
     protected function getEntityName(): string
     {
         return $this->entityName;
@@ -188,9 +184,7 @@ class EntityRepository implements ObjectRepository, Selectable
         return $this->em;
     }
 
-    /**
-     * @psalm-return ClassMetadata<T>
-     */
+    /** @psalm-return ClassMetadata<T> */
     protected function getClassMetadata(): ClassMetadata
     {
         return $this->class;
@@ -233,7 +227,7 @@ class EntityRepository implements ObjectRepository, Selectable
             throw InvalidMagicMethodCall::becauseFieldNotFoundIn(
                 $this->entityName,
                 $fieldName,
-                $method . $by
+                $method . $by,
             );
         }
 

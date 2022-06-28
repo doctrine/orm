@@ -20,18 +20,16 @@ use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\Company\CompanyRaffle;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
-/**
- * @BeforeMethods({"init"})
- */
+/** @BeforeMethods({"init"}) */
 final class SingleTableInheritanceHydrationPerformanceBench
 {
-    private ?EntityRepository $contractsRepository = null;
+    private EntityRepository|null $contractsRepository = null;
 
-    private ?EntityRepository $fixContractsRepository = null;
+    private EntityRepository|null $fixContractsRepository = null;
 
-    private ?EntityRepository $flexContractRepository = null;
+    private EntityRepository|null $flexContractRepository = null;
 
-    private ?EntityRepository $ultraContractRepository = null;
+    private EntityRepository|null $ultraContractRepository = null;
 
     public function init(): void
     {

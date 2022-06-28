@@ -67,5 +67,5 @@ interface NamingStrategy
      *                                           entity with join columns
      *                                           defined in the mapping
      */
-    public function joinKeyColumnName(string $entityName, ?string $referencedColumnName): string;
+    public function joinKeyColumnName(string $entityName, string|null $referencedColumnName): string;
 }

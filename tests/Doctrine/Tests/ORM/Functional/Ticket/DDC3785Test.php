@@ -31,13 +31,11 @@ class DDC3785Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC3785Asset::class,
             DDC3785AssetId::class,
-            DDC3785Attribute::class
+            DDC3785Attribute::class,
         );
     }
 
-    /**
-     * @group DDC-3785
-     */
+    /** @group DDC-3785 */
     public function testOwningValueObjectIdIsCorrectlyTransformedWhenRemovingOrphanedChildEntities(): void
     {
         $id = new DDC3785AssetId('919609ba-57d9-4a13-be1d-d202521e858a');
@@ -79,9 +77,7 @@ class DDC3785Asset
      */
     private $attributes;
 
-    /**
-     * @psalm-param list<DDC3785Attribute> $attributes
-     */
+    /** @psalm-param list<DDC3785Attribute> $attributes */
     public function __construct(
         /**
          * @Id
@@ -89,7 +85,7 @@ class DDC3785Asset
          * @Column(type="ddc3785_asset_id")
          */
         private DDC3785AssetId $id,
-        $attributes = []
+        $attributes = [],
     ) {
         $this->attributes = new ArrayCollection();
 
@@ -103,9 +99,7 @@ class DDC3785Asset
         return $this->id;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC3785Attribute>
-     */
+    /** @psalm-return Collection<int, DDC3785Attribute> */
     public function getAttributes()
     {
         return $this->attributes;
@@ -127,14 +121,10 @@ class DDC3785Attribute
     public $id;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
+        /** @Column(type="string", length=255) */
         private string $name,
-        /**
-         * @Column(type="string", length=255)
-         */
-        private string $value
+        /** @Column(type="string", length=255) */
+        private string $value,
     ) {
     }
 }
@@ -143,10 +133,8 @@ class DDC3785Attribute
 class DDC3785AssetId implements Stringable
 {
     public function __construct(
-        /**
-         * @Column(type = "guid")
-         */
-        private string $id
+        /** @Column(type = "guid") */
+        private string $id,
     ) {
     }
 

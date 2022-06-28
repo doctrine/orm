@@ -39,9 +39,7 @@ class HydrationCompleteHandlerTest extends TestCase
         $this->handler          = new HydrationCompleteHandler($this->listenersInvoker, $this->entityManager);
     }
 
-    /**
-     * @dataProvider invocationFlagProvider
-     */
+    /** @dataProvider invocationFlagProvider */
     public function testDefersPostLoadOfEntity(int $listenersFlag): void
     {
         $metadata = $this->createMock(ClassMetadata::class);
@@ -67,15 +65,13 @@ class HydrationCompleteHandlerTest extends TestCase
                 Events::postLoad,
                 $entity,
                 self::callback(static fn (LifecycleEventArgs $args) => $entity === $args->getObject() && $entityManager === $args->getObjectManager()),
-                $listenersFlag
+                $listenersFlag,
             );
 
         $this->handler->hydrationComplete();
     }
 
-    /**
-     * @dataProvider invocationFlagProvider
-     */
+    /** @dataProvider invocationFlagProvider */
     public function testDefersPostLoadOfEntityOnlyOnce(int $listenersFlag): void
     {
         $metadata = $this->createMock(ClassMetadata::class);
@@ -97,9 +93,7 @@ class HydrationCompleteHandlerTest extends TestCase
         $this->handler->hydrationComplete();
     }
 
-    /**
-     * @dataProvider invocationFlagProvider
-     */
+    /** @dataProvider invocationFlagProvider */
     public function testDefersMultiplePostLoadOfEntity(int $listenersFlag): void
     {
         $metadata1     = $this->createMock(ClassMetadata::class);
@@ -128,7 +122,7 @@ class HydrationCompleteHandlerTest extends TestCase
                 self::logicalOr($entity1, $entity2),
                 self::callback(static fn (LifecycleEventArgs $args) => in_array($args->getObject(), [$entity1, $entity2], true)
                     && $entityManager === $args->getObjectManager()),
-                $listenersFlag
+                $listenersFlag,
             );
 
         $this->handler->hydrationComplete();
@@ -154,9 +148,7 @@ class HydrationCompleteHandlerTest extends TestCase
         $this->handler->hydrationComplete();
     }
 
-    /**
-     * @psalm-return list<array{int}>
-     */
+    /** @psalm-return list<array{int}> */
     public function invocationFlagProvider(): array
     {
         return [

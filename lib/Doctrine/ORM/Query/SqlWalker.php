@@ -360,7 +360,7 @@ class SqlWalker implements TreeWalker
      */
     private function generateClassTableInheritanceJoins(
         ClassMetadata $class,
-        string $dqlAlias
+        string $dqlAlias,
     ): string {
         $sql = '';
 
@@ -496,7 +496,7 @@ class SqlWalker implements TreeWalker
      */
     private function generateFilterConditionSQL(
         ClassMetadata $targetEntity,
-        string $targetTableAlias
+        string $targetTableAlias,
     ): string {
         if (! $this->em->hasFilters()) {
             return '';
@@ -759,7 +759,7 @@ class SqlWalker implements TreeWalker
                     $class->name,
                     $dqlAlias,
                     $this->queryComponents[$dqlAlias]['parent'],
-                    $this->queryComponents[$dqlAlias]['relation']['fieldName']
+                    $this->queryComponents[$dqlAlias]['relation']['fieldName'],
                 );
             }
 
@@ -955,7 +955,7 @@ class SqlWalker implements TreeWalker
      */
     private function generateRangeVariableDeclarationSQL(
         AST\RangeVariableDeclaration $rangeVariableDeclaration,
-        bool $buildNestedJoins
+        bool $buildNestedJoins,
     ): string {
         $class    = $this->em->getClassMetadata($rangeVariableDeclaration->abstractSchemaName);
         $dqlAlias = $rangeVariableDeclaration->aliasIdentificationVariable;
@@ -967,7 +967,7 @@ class SqlWalker implements TreeWalker
         $sql = $this->platform->appendLockHint(
             $this->quoteStrategy->getTableName($class, $this->platform) . ' ' .
             $this->getSQLTableAlias($class->getTableName(), $dqlAlias),
-            $this->query->getHint(Query::HINT_LOCK_MODE) ?: LockMode::NONE
+            $this->query->getHint(Query::HINT_LOCK_MODE) ?: LockMode::NONE,
         );
 
         if (! $class->isInheritanceTypeJoined()) {
@@ -1628,9 +1628,7 @@ class SqlWalker implements TreeWalker
             . $this->walkSimpleSelectExpression($simpleSelectClause->simpleSelectExpression);
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function walkParenthesisExpression(AST\ParenthesisExpression $parenthesisExpression)
     {
         return sprintf('(%s)', $parenthesisExpression->expression->dispatch($this));
@@ -2539,7 +2537,7 @@ class SqlWalker implements TreeWalker
      */
     private function getChildDiscriminatorsFromClassMetadata(
         ClassMetadata $rootClass,
-        AST\InstanceOfExpression $instanceOfExpr
+        AST\InstanceOfExpression $instanceOfExpr,
     ): string {
         $sqlParameterList = [];
         $discriminators   = [];

@@ -199,11 +199,11 @@
       <code>$this-&gt;metadataFactory-&gt;getMetadataFor($className)</code>
     </InvalidReturnStatement>
     <InvalidReturnType occurrences="5">
-      <code>?object</code>
-      <code>?object</code>
-      <code>?object</code>
       <code>ClassMetadataFactory</code>
       <code>Mapping\ClassMetadata</code>
+      <code>object|null</code>
+      <code>object|null</code>
+      <code>object|null</code>
     </InvalidReturnType>
     <PossiblyNullArgument occurrences="2">
       <code>$config-&gt;getProxyDir()</code>
@@ -2165,7 +2165,7 @@
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
     </FalsableReturnStatement>
     <InvalidFalsableReturnType occurrences="1">
-      <code>?Parameter</code>
+      <code>Parameter|null</code>
     </InvalidFalsableReturnType>
     <PossiblyFalseArgument occurrences="2">
       <code>$spacePos</code>

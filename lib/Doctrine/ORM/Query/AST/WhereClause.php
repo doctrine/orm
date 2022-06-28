@@ -14,9 +14,7 @@ class WhereClause extends Node
     /** @var ConditionalExpression|ConditionalTerm */
     public $conditionalExpression;
 
-    /**
-     * @param ConditionalExpression $conditionalExpression
-     */
+    /** @param ConditionalExpression $conditionalExpression */
     public function __construct($conditionalExpression)
     {
         $this->conditionalExpression = $conditionalExpression;

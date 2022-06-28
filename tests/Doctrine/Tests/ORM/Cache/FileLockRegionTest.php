@@ -263,7 +263,7 @@ class FileLockRegionTest extends RegionTestCase
         }
     }
 
-    private function cleanTestDirectory(?string $path): void
+    private function cleanTestDirectory(string|null $path): void
     {
         $path = $path ?: $this->directory;
 
@@ -273,7 +273,7 @@ class FileLockRegionTest extends RegionTestCase
 
         $directoryIterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($path),
-            RecursiveIteratorIterator::CHILD_FIRST
+            RecursiveIteratorIterator::CHILD_FIRST,
         );
 
         foreach ($directoryIterator as $file) {

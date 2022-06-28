@@ -20,7 +20,7 @@ class OtherParentClass
          * @Id
          * @Column(name="id", type="integer")
          */
-        public int $id
+        public int $id,
     ) {
     }
 }

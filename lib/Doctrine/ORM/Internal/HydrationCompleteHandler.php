@@ -55,7 +55,7 @@ final class HydrationCompleteHandler
                 Events::postLoad,
                 $entity,
                 new LifecycleEventArgs($entity, $this->em),
-                $invoke
+                $invoke,
             );
         }
     }

@@ -33,7 +33,7 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Returns the cache API for managing the second level cache regions or NULL if the cache is not enabled.
      */
-    public function getCache(): ?Cache;
+    public function getCache(): Cache|null;
 
     /**
      * Gets the database connection object used by the EntityManager.
@@ -130,7 +130,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @template T of object
      */
-    public function find(string $className, mixed $id, ?int $lockMode = null, ?int $lockVersion = null): ?object;
+    public function find(string $className, mixed $id, int|null $lockMode = null, int|null $lockVersion = null): object|null;
 
     /**
      * Gets a reference to the entity identified by the given type and identifier
@@ -146,7 +146,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @template T of object
      */
-    public function getReference(string $entityName, $id): ?object;
+    public function getReference(string $entityName, $id): object|null;
 
     /**
      * Gets a partial reference to the entity identified by the given type and identifier
@@ -171,7 +171,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @template T of object
      */
-    public function getPartialReference(string $entityName, $identifier): ?object;
+    public function getPartialReference(string $entityName, $identifier): object|null;
 
     /**
      * Closes the EntityManager. All entities that are currently managed

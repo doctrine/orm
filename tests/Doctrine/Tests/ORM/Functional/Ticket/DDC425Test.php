@@ -20,9 +20,7 @@ class DDC425Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(DDC425Entity::class);
     }
 
-    /**
-     * @group DDC-425
-     */
+    /** @group DDC-425 */
     public function testIssue(): void
     {
         $num = $this->_em->createQuery('DELETE ' . __NAMESPACE__ . '\DDC425Entity e WHERE e.someDatetimeField > ?1')

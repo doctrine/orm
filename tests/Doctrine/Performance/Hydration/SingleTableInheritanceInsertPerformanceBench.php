@@ -23,12 +23,10 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
 use function array_map;
 
-/**
- * @BeforeMethods({"init"})
- */
+/** @BeforeMethods({"init"}) */
 final class SingleTableInheritanceInsertPerformanceBench
 {
-    private ?EntityManagerInterface $entityManager = null;
+    private EntityManagerInterface|null $entityManager = null;
 
     /** @var Company\CompanyFixContract[] */
     private array $fixContracts = [];

@@ -49,7 +49,7 @@ class DDC964Guest extends DDC964User
                 'nullable'      => false,
                 'unique'        => true,
                 'length'        => 240,
-            ]
+            ],
         );
     }
 }

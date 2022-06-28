@@ -155,9 +155,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertCount(0, $features);
     }
 
-    /**
-     * @group DDC-1637
-     */
+    /** @group DDC-1637 */
     public function testMatching(): void
     {
         $this->createFixture();
@@ -166,7 +164,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $features = $product->getFeatures();
 
         $results = $features->matching(new Criteria(
-            Criteria::expr()->eq('description', 'Model writing tutorial')
+            Criteria::expr()->eq('description', 'Model writing tutorial'),
         ));
 
         self::assertInstanceOf(Collection::class, $results);
@@ -178,9 +176,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertCount(2, $results);
     }
 
-    /**
-     * @group DDC-2340
-     */
+    /** @group DDC-2340 */
     public function testMatchingOnDirtyCollection(): void
     {
         $this->createFixture();
@@ -194,7 +190,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $features->add($thirdFeature);
 
         $results = $features->matching(new Criteria(
-            Criteria::expr()->eq('description', 'Model writing tutorial')
+            Criteria::expr()->eq('description', 'Model writing tutorial'),
         ));
 
         self::assertCount(2, $results);
@@ -212,7 +208,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $product->addFeature($thirdFeature);
 
         $results = $features->matching(new Criteria(
-            Criteria::expr()->eq('description', 'Third feature')
+            Criteria::expr()->eq('description', 'Third feature'),
         ));
 
         self::assertInstanceOf(Collection::class, $results);
@@ -238,7 +234,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
     {
         $foreignKey = $this->_em->getConnection()->executeQuery(
             'SELECT product_id FROM ecommerce_features WHERE id=?',
-            [$feature->getId()]
+            [$feature->getId()],
         )->fetchOne();
         self::assertEquals($value, $foreignKey);
     }

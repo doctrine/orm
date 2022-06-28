@@ -111,7 +111,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -130,7 +130,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -149,7 +149,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -168,7 +168,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -187,7 +187,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -206,7 +206,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -225,7 +225,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -244,7 +244,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -263,7 +263,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -282,7 +282,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -301,7 +301,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -320,7 +320,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -339,7 +339,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -358,7 +358,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -377,7 +377,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -396,7 +396,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -429,7 +429,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -448,7 +448,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -467,7 +467,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -486,7 +486,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -505,7 +505,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -524,7 +524,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -543,7 +543,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -562,7 +562,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -581,7 +581,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -600,7 +600,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -619,7 +619,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -638,7 +638,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -657,7 +657,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -676,7 +676,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -695,7 +695,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -714,7 +714,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -733,7 +733,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -752,7 +752,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -771,7 +771,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -790,7 +790,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -809,7 +809,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -828,7 +828,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -847,7 +847,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -866,7 +866,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -885,7 +885,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -904,7 +904,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -923,7 +923,7 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         foreach ($this->getWalkers() as $walker) {
@@ -942,15 +942,13 @@ class TreeWalkerChain implements TreeWalker
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9551',
             'Method "%s" is deprecated and will be removed in ORM 3.0 without replacement.',
-            __METHOD__
+            __METHOD__,
         );
 
         return null;
     }
 
-    /**
-     * @psalm-return Generator<int, TreeWalker>
-     */
+    /** @psalm-return Generator<int, TreeWalker> */
     private function getWalkers(): Generator
     {
         foreach ($this->walkers as $walkerClass) {

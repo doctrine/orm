@@ -47,16 +47,14 @@ abstract class Attraction
     protected $infos;
 
     public function __construct(
-        /**
-         * @Column(unique=true)
-         */
+        /** @Column(unique=true) */
         protected string $name,
         /**
          * @Cache
          * @ManyToOne(targetEntity="City", inversedBy="attractions")
          * @JoinColumn(name="city_id", referencedColumnName="id")
          */
-        protected City $city
+        protected City $city,
     ) {
         $this->infos = new ArrayCollection();
     }
@@ -91,9 +89,7 @@ abstract class Attraction
         $this->city = $city;
     }
 
-    /**
-     * @psalm-return Collection<int, AttractionInfo>
-     */
+    /** @psalm-return Collection<int, AttractionInfo> */
     public function getInfos(): Collection
     {
         return $this->infos;

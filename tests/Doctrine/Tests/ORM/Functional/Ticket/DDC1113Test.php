@@ -28,7 +28,7 @@ class DDC1113Test extends OrmFunctionalTestCase
             DDC1113Engine::class,
             DDC1113Vehicle::class,
             DDC1113Car::class,
-            DDC1113Bus::class
+            DDC1113Bus::class,
         );
     }
 
@@ -84,23 +84,17 @@ class DDC1113Vehicle
     public $engine;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1113Car extends DDC1113Vehicle
 {
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1113Bus extends DDC1113Vehicle
 {
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1113Engine
 {
     /**

@@ -18,7 +18,7 @@ class ToolsException extends RuntimeException implements ORMException
         return new self(
             "Schema-Tool failed with Error '" . $e->getMessage() . "' while executing DDL: " . $sql,
             0,
-            $e
+            $e,
         );
     }
 }

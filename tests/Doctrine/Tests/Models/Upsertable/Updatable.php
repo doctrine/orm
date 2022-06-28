@@ -44,14 +44,14 @@ class Updatable
     public static function loadMetadata(ClassMetadata $metadata): ClassMetadata
     {
         $metadata->setPrimaryTable(
-            ['name' => 'updatable_column']
+            ['name' => 'updatable_column'],
         );
 
         $metadata->mapField(
             [
                 'id' => true,
                 'fieldName' => 'id',
-            ]
+            ],
         );
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
@@ -60,10 +60,10 @@ class Updatable
                 'fieldName' => 'nonUpdatableContent',
                 'notUpdatable' => true,
                 'generated' => ClassMetadata::GENERATED_ALWAYS,
-            ]
+            ],
         );
         $metadata->mapField(
-            ['fieldName' => 'updatableContent']
+            ['fieldName' => 'updatableContent'],
         );
 
         return $metadata;

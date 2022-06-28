@@ -15,9 +15,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 abstract class GetMetadata
 {
-    /**
-     * @psalm-param class-string|object $class
-     */
+    /** @psalm-param class-string|object $class */
     abstract public function getEntityManager(string|object $class): EntityManagerInterface;
 
     /**

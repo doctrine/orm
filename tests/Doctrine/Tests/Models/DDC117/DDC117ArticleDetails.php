@@ -10,9 +10,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC117ArticleDetails
 {
     /** @Column(type="text") */
@@ -20,13 +18,12 @@ class DDC117ArticleDetails
 
     public function __construct(
         /**
-         * @var DDC117Article
          * @Id
          * @OneToOne(targetEntity="DDC117Article", inversedBy="details")
          * @JoinColumn(name="article_id", referencedColumnName="article_id")
          */
-        private $article,
-        string $text
+        private DDC117Article $article,
+        string $text,
     ) {
         $article->setDetails($this);
 

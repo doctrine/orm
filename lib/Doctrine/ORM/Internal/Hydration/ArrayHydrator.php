@@ -240,10 +240,10 @@ class ArrayHydrator extends AbstractHydrator
      * @param bool             $oneToOne Whether it is a single-valued association or not.
      */
     private function updateResultPointer(
-        ?array &$coll,
+        array|null &$coll,
         string|int|false $index,
         string $dqlAlias,
-        bool $oneToOne
+        bool $oneToOne,
     ): void {
         if ($coll === null) {
             unset($this->_resultPointers[$dqlAlias]); // Ticket #1228

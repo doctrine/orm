@@ -19,7 +19,7 @@ class GenerateSchemaTableEventArgs extends EventArgs
     public function __construct(
         private ClassMetadata $classMetadata,
         private Schema $schema,
-        private Table $classTable
+        private Table $classTable,
     ) {
     }
 

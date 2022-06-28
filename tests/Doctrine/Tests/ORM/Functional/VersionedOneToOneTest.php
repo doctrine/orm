@@ -21,7 +21,7 @@ class VersionedOneToOneTest extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             FirstRelatedEntity::class,
-            SecondRelatedEntity::class
+            SecondRelatedEntity::class,
         );
     }
 

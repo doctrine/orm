@@ -32,7 +32,7 @@ interface CacheFactory
     /**
      * Build a query cache based on the given region name
      */
-    public function buildQueryCache(EntityManagerInterface $em, ?string $regionName = null): QueryCache;
+    public function buildQueryCache(EntityManagerInterface $em, string|null $regionName = null): QueryCache;
 
     /**
      * Build an entity hydrator

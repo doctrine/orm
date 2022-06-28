@@ -19,20 +19,18 @@ use Exception;
 use function assert;
 use function count;
 
-/**
- * @group DDC-117
- */
+/** @group DDC-117 */
 class DDC117Test extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
-    private ?DDC117Article $article1;
+    private DDC117Article|null $article1;
 
-    private ?DDC117Article $article2;
+    private DDC117Article|null $article2;
 
     private DDC117Reference $reference;
 
-    private ?DDC117Translation $translation;
+    private DDC117Translation|null $translation;
 
     private DDC117ArticleDetails $articleDetails;
 
@@ -64,9 +62,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testAssociationOnlyCompositeKey(): void
     {
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
@@ -103,9 +99,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->_em->contains($dqlRef);
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testUpdateAssociationEntity(): void
     {
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
@@ -121,9 +115,7 @@ class DDC117Test extends OrmFunctionalTestCase
         self::assertEquals('New Description!!', $mapRef->getDescription());
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testFetchDql(): void
     {
         $dql  = 'SELECT r, s FROM Doctrine\Tests\Models\DDC117\DDC117Reference r JOIN r.source s WHERE s.title = ?1';
@@ -137,9 +129,7 @@ class DDC117Test extends OrmFunctionalTestCase
         }
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testRemoveCompositeElement(): void
     {
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
@@ -170,9 +160,7 @@ class DDC117Test extends OrmFunctionalTestCase
         self::assertNull($this->_em->find(DDC117Reference::class, $idCriteria));
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testInverseSideAccess(): void
     {
         $this->article1 = $this->_em->find(DDC117Article::class, $this->article1->id());
@@ -199,9 +187,7 @@ class DDC117Test extends OrmFunctionalTestCase
         }
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testMixedCompositeKey(): void
     {
         $idCriteria = ['article' => $this->article1->id(), 'language' => 'en'];
@@ -222,9 +208,7 @@ class DDC117Test extends OrmFunctionalTestCase
         self::assertInstanceOf(DDC117Translation::class, $this->translation);
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testMixedCompositeKeyViolateUniqueness(): void
     {
         $this->article1 = $this->_em->find(DDC117Article::class, $this->article1->id());
@@ -236,9 +220,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testOneToOneForeignObjectId(): void
     {
         $this->article1 = new DDC117Article('Foo');
@@ -258,9 +240,7 @@ class DDC117Test extends OrmFunctionalTestCase
         self::assertEquals('not so very long text!', $article->getText());
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testOneToOneCascadeRemove(): void
     {
         $article = $this->_em->find($this->article1::class, $this->article1->id());
@@ -270,9 +250,7 @@ class DDC117Test extends OrmFunctionalTestCase
         self::assertFalse($this->_em->contains($article->getDetails()));
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testOneToOneCascadePersist(): void
     {
         $this->article1       = new DDC117Article('Foo');
@@ -284,9 +262,7 @@ class DDC117Test extends OrmFunctionalTestCase
         self::assertSame($this->articleDetails, $this->_em->find(DDC117ArticleDetails::class, $this->article1));
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testReferencesToForeignKeyEntities(): void
     {
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
@@ -307,9 +283,7 @@ class DDC117Test extends OrmFunctionalTestCase
         self::assertInstanceOf(DDC117Translation::class, $approveChanges->getTranslation());
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testLoadOneToManyCollectionOfForeignKeyEntities(): void
     {
         $article = $this->_em->find($this->article1::class, $this->article1->id());
@@ -321,9 +295,7 @@ class DDC117Test extends OrmFunctionalTestCase
         self::assertTrue($translations->isInitialized());
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testLoadManyToManyCollectionOfForeignKeyEntities(): void
     {
         $editor = $this->loadEditorFixture();
@@ -340,9 +312,7 @@ class DDC117Test extends OrmFunctionalTestCase
         self::assertContainsOnly(DDC117Translation::class, $editor->reviewingTranslations);
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testClearManyToManyCollectionOfForeignKeyEntities(): void
     {
         $editor = $this->loadEditorFixture();
@@ -356,9 +326,7 @@ class DDC117Test extends OrmFunctionalTestCase
         self::assertCount(0, $editor->reviewingTranslations);
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testLoadInverseManyToManyCollection(): void
     {
         $editor = $this->loadEditorFixture();
@@ -383,9 +351,7 @@ class DDC117Test extends OrmFunctionalTestCase
         self::assertCount(1, $trans->reviewedByEditors);
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testLoadOneToManyOfSourceEntityWithAssociationIdentifier(): void
     {
         $editor = $this->loadEditorFixture();
@@ -428,9 +394,7 @@ class DDC117Test extends OrmFunctionalTestCase
         return $this->_em->find($editor::class, $editor->id);
     }
 
-    /**
-     * @group DDC-1652
-     */
+    /** @group DDC-1652 */
     public function testArrayHydrationWithCompositeKey(): void
     {
         $dql    = 'SELECT r,s,t FROM Doctrine\Tests\Models\DDC117\DDC117Reference r INNER JOIN r.source s INNER JOIN r.target t';
@@ -456,9 +420,7 @@ class DDC117Test extends OrmFunctionalTestCase
         self::assertCount($before + 3, $data);
     }
 
-    /**
-     * @group DDC-2246
-     */
+    /** @group DDC-2246 */
     public function testGetEntityState(): void
     {
         if ($this->isSecondLevelCacheEnabled) {
@@ -478,9 +440,7 @@ class DDC117Test extends OrmFunctionalTestCase
         self::assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($reference));
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testIndexByOnCompositeKeyField(): void
     {
         $article = $this->_em->find(DDC117Article::class, $this->article1->id());

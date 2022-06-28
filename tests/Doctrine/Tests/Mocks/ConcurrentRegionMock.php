@@ -32,7 +32,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
     public array $locks = [];
 
     public function __construct(
-        private Region $region
+        private Region $region,
     ) {
     }
 
@@ -97,7 +97,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->region->evictAll();
     }
 
-    public function get(CacheKey $key): ?CacheEntry
+    public function get(CacheKey $key): CacheEntry|null
     {
         $this->calls[__FUNCTION__][] = ['key' => $key];
 
@@ -110,10 +110,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->region->get($key);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getMultiple(CollectionCacheEntry $collection): ?array
+    public function getMultiple(CollectionCacheEntry $collection): array|null
     {
         $this->calls[__FUNCTION__][] = ['collection' => $collection];
 
@@ -131,7 +128,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->region->getName();
     }
 
-    public function put(CacheKey $key, CacheEntry $entry, ?Lock $lock = null): bool
+    public function put(CacheKey $key, CacheEntry $entry, Lock|null $lock = null): bool
     {
         $this->calls[__FUNCTION__][] = ['key' => $key, 'entry' => $entry];
 
@@ -148,7 +145,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->region->put($key, $entry);
     }
 
-    public function lock(CacheKey $key): ?Lock
+    public function lock(CacheKey $key): Lock|null
     {
         $this->calls[__FUNCTION__][] = ['key' => $key];
 

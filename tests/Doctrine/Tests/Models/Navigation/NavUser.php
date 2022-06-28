@@ -24,10 +24,8 @@ class NavUser
     private int $id;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
-        private string $name
+        /** @Column(type="string", length=255) */
+        private string $name,
     ) {
     }
 }

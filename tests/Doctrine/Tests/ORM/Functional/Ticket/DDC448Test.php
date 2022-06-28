@@ -27,7 +27,7 @@ class DDC448Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC448MainTable::class,
             DDC448ConnectedClass::class,
-            DDC448SubTable::class
+            DDC448SubTable::class,
         );
     }
 
@@ -36,7 +36,7 @@ class DDC448Test extends OrmFunctionalTestCase
         $q = $this->_em->createQuery('select b from ' . __NAMESPACE__ . '\\DDC448SubTable b where b.connectedClassId = ?1');
         self::assertEquals(
             strtolower('SELECT d0_.id AS id_0, d0_.discr AS discr_1, d0_.connectedClassId AS connectedClassId_2 FROM SubTable s1_ INNER JOIN DDC448MainTable d0_ ON s1_.id = d0_.id WHERE d0_.connectedClassId = ?'),
-            strtolower($q->getSQL())
+            strtolower($q->getSQL()),
         );
     }
 }

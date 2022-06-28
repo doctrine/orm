@@ -51,8 +51,7 @@ Alternatively, if you want to flush the configured cache provider use this comma
 
 Finally, be aware that if <info>--flush</info> option is passed,
 not all cache providers are able to flush entries, because of a limitation of its execution nature.
-EOT
-             );
+EOT,);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -79,8 +78,8 @@ EOT
             $ui->comment(
                 sprintf(
                     'Flushing cache provider configured for second-level cache query region named <info>"%s"</info>',
-                    $name
-                )
+                    $name,
+                ),
             );
 
             return 0;

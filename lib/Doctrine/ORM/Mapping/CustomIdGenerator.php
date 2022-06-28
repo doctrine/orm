@@ -18,7 +18,7 @@ final class CustomIdGenerator implements Annotation
     /** @var string|null */
     public $class;
 
-    public function __construct(?string $class = null)
+    public function __construct(string|null $class = null)
     {
         $this->class = $class;
     }

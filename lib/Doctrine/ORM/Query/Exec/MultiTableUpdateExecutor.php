@@ -160,7 +160,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             $numUpdated = $conn->executeStatement(
                 $this->_insertSql,
                 array_slice($params, $this->_numParametersInUpdateClause),
-                array_slice($types, $this->_numParametersInUpdateClause)
+                array_slice($types, $this->_numParametersInUpdateClause),
             );
 
             // Execute UPDATE statements

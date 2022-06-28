@@ -18,7 +18,7 @@ class EntityNotFoundExceptionTest extends TestCase
     {
         $exception = EntityNotFoundException::fromClassNameAndIdentifier(
             'foo',
-            ['foo' => 'bar']
+            ['foo' => 'bar'],
         );
 
         self::assertInstanceOf(EntityNotFoundException::class, $exception);
@@ -26,7 +26,7 @@ class EntityNotFoundExceptionTest extends TestCase
 
         $exception = EntityNotFoundException::fromClassNameAndIdentifier(
             'foo',
-            []
+            [],
         );
 
         self::assertInstanceOf(EntityNotFoundException::class, $exception);

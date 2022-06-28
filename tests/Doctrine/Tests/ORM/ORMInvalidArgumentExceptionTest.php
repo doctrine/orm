@@ -12,14 +12,10 @@ use Stringable;
 use function spl_object_id;
 use function uniqid;
 
-/**
- * @covers \Doctrine\ORM\ORMInvalidArgumentException
- */
+/** @covers \Doctrine\ORM\ORMInvalidArgumentException */
 class ORMInvalidArgumentExceptionTest extends TestCase
 {
-    /**
-     * @psalm-return list<array{mixed, string}>
-     */
+    /** @psalm-return list<array{mixed, string}> */
     public function invalidEntityNames(): array
     {
         return [
@@ -31,9 +27,7 @@ class ORMInvalidArgumentExceptionTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider newEntitiesFoundThroughRelationshipsErrorMessages
-     */
+    /** @dataProvider newEntitiesFoundThroughRelationshipsErrorMessages */
     public function testNewEntitiesFoundThroughRelationships(array $newEntities, string $expectedMessage): void
     {
         $exception = ORMInvalidArgumentException::newEntitiesFoundThroughRelationships($newEntities);

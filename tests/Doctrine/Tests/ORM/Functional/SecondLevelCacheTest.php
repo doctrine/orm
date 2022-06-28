@@ -15,9 +15,7 @@ use RuntimeException;
 
 use function uniqid;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class SecondLevelCacheTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testPutOnPersist(): void
@@ -209,7 +207,7 @@ class SecondLevelCacheTest extends SecondLevelCacheFunctionalTestCase
                 Events::postFlush => static function (): void {
                     throw new RuntimeException('post flush failure');
                 },
-            ]
+            ],
         );
 
         $this->_em->getEventManager()
@@ -241,7 +239,7 @@ class SecondLevelCacheTest extends SecondLevelCacheFunctionalTestCase
                 Events::postUpdate => static function (): void {
                     throw new RuntimeException('post update failure');
                 },
-            ]
+            ],
         );
 
         $this->_em->getEventManager()
@@ -288,7 +286,7 @@ class SecondLevelCacheTest extends SecondLevelCacheFunctionalTestCase
                 Events::postRemove => static function (): void {
                     throw new RuntimeException('post remove failure');
                 },
-            ]
+            ],
         );
 
         $this->_em->getEventManager()
@@ -315,7 +313,7 @@ class SecondLevelCacheTest extends SecondLevelCacheFunctionalTestCase
 
         self::assertFalse(
             $this->cache->containsEntity(Country::class, $countryId),
-            'Removal attempts should clear the cache entry corresponding to the entity'
+            'Removal attempts should clear the cache entry corresponding to the entity',
         );
 
         self::assertInstanceOf(Country::class, $this->_em->find(Country::class, $countryId));

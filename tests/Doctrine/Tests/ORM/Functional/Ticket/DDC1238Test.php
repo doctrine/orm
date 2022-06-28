@@ -10,9 +10,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1238
- */
+/** @group DDC-1238 */
 class DDC1238Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -65,9 +63,7 @@ class DDC1238Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1238User
 {
     /**
@@ -75,17 +71,17 @@ class DDC1238User
      * @GeneratedValue
      * @Column(type="integer")
      */
-    private ?int $id = null;
+    private int|null $id = null;
 
     /** @Column */
-    private ?string $name = null;
+    private string|null $name = null;
 
-    public function getId(): ?int
+    public function getId(): int|null
     {
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string|null
     {
         return $this->name;
     }

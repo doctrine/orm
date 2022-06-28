@@ -37,8 +37,7 @@ by the ORM, you can use a DBAL functionality to filter the tables and sequences 
 on a global level:
 
     $config->setFilterSchemaAssetsExpression($regexp);
-EOT
-             );
+EOT,);
     }
 
     /**
@@ -104,7 +103,7 @@ EOT
                 '',
                 sprintf('    <info>%s --force</info> to execute the command', $this->getName()),
                 sprintf('    <info>%s --dump-sql</info> to dump the SQL statements to the screen', $this->getName()),
-            ]
+            ],
         );
 
         return 1;

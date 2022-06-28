@@ -38,14 +38,12 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         self::assertEquals(1, $address->sequenceGeneratorDefinition['allocationSize']);
     }
 
-    /**
-     * @group DDC-1657
-     */
+    /** @group DDC-1657 */
     public function testUpdateSchemaWithPostgreSQLSchema(): void
     {
         $sql = $this->getUpdateSchemaSqlForModels(
             DDC1657Screen::class,
-            DDC1657Avatar::class
+            DDC1657Avatar::class,
         );
         $sql = array_filter($sql, static fn ($sql) => str_starts_with($sql, 'DROP SEQUENCE stonewood.'));
 

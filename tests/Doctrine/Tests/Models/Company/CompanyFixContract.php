@@ -9,9 +9,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 
-/**
- * @Entity
- */
+/** @Entity */
 #[ORM\Entity]
 class CompanyFixContract extends CompanyContract
 {
@@ -40,7 +38,7 @@ class CompanyFixContract extends CompanyContract
                 'type'      => 'integer',
                 'name'      => 'fixPrice',
                 'fieldName' => 'fixPrice',
-            ]
+            ],
         );
     }
 }

@@ -181,7 +181,7 @@ class ResultSetMapping
      *
      * @todo Rename: addRootEntity
      */
-    public function addEntityResult(string $class, string $alias, ?string $resultAlias = null): static
+    public function addEntityResult(string $class, string $alias, string|null $resultAlias = null): static
     {
         $this->aliasMap[$alias]       = $class;
         $this->entityMappings[$alias] = $resultAlias;
@@ -317,7 +317,7 @@ class ResultSetMapping
      *
      * @todo Rename: addField
      */
-    public function addFieldResult(string $alias, string $columnName, string $fieldName, ?string $declaringClass = null): static
+    public function addFieldResult(string $alias, string $columnName, string $fieldName, string|null $declaringClass = null): static
     {
         // column name (in result set) => field name
         $this->fieldMappings[$columnName] = $fieldName;
@@ -485,9 +485,7 @@ class ResultSetMapping
         return $this->fieldMappings[$columnName];
     }
 
-    /**
-     * @psalm-return array<string, class-string>
-     */
+    /** @psalm-return array<string, class-string> */
     public function getAliasMap(): array
     {
         return $this->aliasMap;
@@ -532,7 +530,7 @@ class ResultSetMapping
         string $columnName,
         string $fieldName,
         bool $isIdentifierColumn = false,
-        ?string $type = null
+        string|null $type = null,
     ): static {
         $this->metaMappings[$columnName]   = $fieldName;
         $this->columnOwnerMap[$columnName] = $alias;

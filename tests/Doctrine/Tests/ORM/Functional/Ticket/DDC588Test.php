@@ -32,9 +32,7 @@ class DDC588Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC588Site
 {
     /**
@@ -46,10 +44,8 @@ class DDC588Site
     public $id;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=45)
-         */
-        protected string $name = ''
+        /** @Column(type="string", length=45) */
+        protected string $name = '',
     ) {
     }
 }

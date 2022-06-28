@@ -40,7 +40,7 @@ class ORMSetupTest extends TestCase
         $reader           = $annotationDriver->getReader();
         $annotation       = $reader->getMethodAnnotation(
             $reflectionClass->getMethod('namespacedAnnotationMethod'),
-            AnnotationNamespace\PrePersist::class
+            AnnotationNamespace\PrePersist::class,
         );
         self::assertInstanceOf(AnnotationNamespace\PrePersist::class, $annotation);
     }
@@ -63,9 +63,7 @@ class ORMSetupTest extends TestCase
         self::assertInstanceOf(XmlDriver::class, $config->getMetadataDriverImpl());
     }
 
-    /**
-     * @requires extension apcu
-     */
+    /** @requires extension apcu */
     public function testCacheNamespaceShouldBeGeneratedForApcu(): void
     {
         $config = ORMSetup::createConfiguration(false, '/foo');
@@ -78,18 +76,14 @@ class ORMSetupTest extends TestCase
         self::assertSame('dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf:', $namespaceProperty->getValue($cache));
     }
 
-    /**
-     * @group DDC-1350
-     */
+    /** @group DDC-1350 */
     public function testConfigureProxyDir(): void
     {
         $config = ORMSetup::createAnnotationMetadataConfiguration([], true, '/foo');
         self::assertEquals('/foo', $config->getProxyDir());
     }
 
-    /**
-     * @group DDC-1350
-     */
+    /** @group DDC-1350 */
     public function testConfigureCache(): void
     {
         $cache  = new ArrayAdapter();
@@ -100,9 +94,7 @@ class ORMSetupTest extends TestCase
         self::assertSame($cache, $config->getMetadataCache());
     }
 
-    /**
-     * @group DDC-3190
-     */
+    /** @group DDC-3190 */
     public function testConfigureCacheCustomInstance(): void
     {
         $cache  = new ArrayAdapter();

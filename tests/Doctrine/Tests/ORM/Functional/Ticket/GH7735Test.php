@@ -25,7 +25,7 @@ final class GH7735Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             GH7735Car::class,
             GH7735Power::class,
-            GH7735Engine::class
+            GH7735Engine::class,
         );
 
         $this->_em->persist(new GH7735Car(1, new GH7735Engine(1, 'turbo', new GH7735Power(1))));
@@ -66,7 +66,7 @@ class GH7735Car
          * @JoinColumn(nullable=false)
          * @Cache("READ_ONLY")
          */
-        private GH7735Engine $engine
+        private GH7735Engine $engine,
     ) {
     }
 
@@ -93,15 +93,13 @@ class GH7735Engine
          * @Column(type="integer")
          */
         private int $id,
-        /**
-         * @Column
-         */
+        /** @Column */
         private string $model,
         /**
          * @OneToOne(targetEntity=GH7735Power::class, mappedBy="engine", cascade={"all"})
          * @Cache("READ_ONLY")
          */
-        private GH7735Power $power
+        private GH7735Power $power,
     ) {
         $power->setEngine($this);
     }
@@ -132,14 +130,14 @@ class GH7735Power
      * @OneToOne(targetEntity=GH7735Engine::class, inversedBy="power")
      * @Cache("READ_ONLY")
      */
-    private ?GH7735Engine $engine = null;
+    private GH7735Engine|null $engine = null;
 
     public function __construct(
         /**
          * @Id
          * @Column(type="integer")
          */
-        private int $id
+        private int $id,
     ) {
     }
 

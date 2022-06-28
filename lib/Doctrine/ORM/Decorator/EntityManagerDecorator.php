@@ -98,7 +98,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritdoc}
      */
-    public function getReference(string $entityName, $id): ?object
+    public function getReference(string $entityName, $id): object|null
     {
         return $this->wrapped->getReference($entityName, $id);
     }
@@ -106,7 +106,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritdoc}
      */
-    public function getPartialReference(string $entityName, $identifier): ?object
+    public function getPartialReference(string $entityName, $identifier): object|null
     {
         return $this->wrapped->getPartialReference($entityName, $identifier);
     }
@@ -124,7 +124,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         $this->wrapped->lock($entity, $lockMode, $lockVersion);
     }
 
-    public function find(string $className, mixed $id, ?int $lockMode = null, ?int $lockVersion = null): ?object
+    public function find(string $className, mixed $id, int|null $lockMode = null, int|null $lockVersion = null): object|null
     {
         return $this->wrapped->find($className, $id, $lockMode, $lockVersion);
     }
@@ -174,7 +174,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         return $this->wrapped->hasFilters();
     }
 
-    public function getCache(): ?Cache
+    public function getCache(): Cache|null
     {
         return $this->wrapped->getCache();
     }

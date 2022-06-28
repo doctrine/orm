@@ -137,7 +137,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame(self::class, $this->configuration->getCustomHydrationMode('HydrationModeName'));
 
         $this->configuration->setCustomHydrationModes(
-            ['AnotherHydrationModeName' => self::class]
+            ['AnotherHydrationModeName' => self::class],
         );
 
         self::assertNull($this->configuration->getCustomHydrationMode('HydrationModeName'));
@@ -184,9 +184,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame($quoteStrategy, $this->configuration->getQuoteStrategy());
     }
 
-    /**
-     * @group DDC-1955
-     */
+    /** @group DDC-1955 */
     public function testSetGetEntityListenerResolver(): void
     {
         self::assertInstanceOf(EntityListenerResolver::class, $this->configuration->getEntityListenerResolver());
@@ -196,9 +194,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame($resolver, $this->configuration->getEntityListenerResolver());
     }
 
-    /**
-     * @group DDC-2183
-     */
+    /** @group DDC-2183 */
     public function testSetGetSecondLevelCacheConfig(): void
     {
         $mockClass = $this->createMock(CacheConfiguration::class);

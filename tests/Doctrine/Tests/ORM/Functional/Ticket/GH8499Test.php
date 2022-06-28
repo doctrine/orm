@@ -36,9 +36,7 @@ class GH8499Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(GH8499VersionableEntity::class);
     }
 
-    /**
-     * @group GH-8499
-     */
+    /** @group GH-8499 */
     public function testOptimisticTimestampSetsDefaultValue(): GH8499VersionableEntity
     {
         $this->createSchema();
@@ -68,12 +66,12 @@ class GH8499Test extends OrmFunctionalTestCase
         $format       = $this->_em->getConnection()->getDatabasePlatform()->getDateTimeFormatString();
         $modifiedDate = new DateTime(date(
             $format,
-            strtotime($test->getRevision()->format($format)) - 3600
+            strtotime($test->getRevision()->format($format)) - 3600,
         ));
 
         $this->conn->executeQuery(
             'UPDATE GH8499VersionableEntity SET revision = ? WHERE id = ?',
-            [$modifiedDate->format($format), $test->id]
+            [$modifiedDate->format($format), $test->id],
         );
 
         $this->_em->refresh($test);
@@ -86,18 +84,16 @@ class GH8499Test extends OrmFunctionalTestCase
         self::assertEquals(
             'Test Entity Locked',
             $test->getName(),
-            'Entity not modified after persist/flush,'
+            'Entity not modified after persist/flush,',
         );
         self::assertGreaterThan(
             $modifiedDate->getTimestamp(),
             $test->getRevision()->getTimestamp(),
-            'Current version timestamp is not greater than previous one.'
+            'Current version timestamp is not greater than previous one.',
         );
     }
 
-    /**
-     * @group GH-8499
-     */
+    /** @group GH-8499 */
     public function testOptimisticLockWithDateTimeForVersionThrowsException(): void
     {
         $this->createSchema();
@@ -170,7 +166,7 @@ class GH8499VersionableEntity
         $this->description = $description;
     }
 
-    public function getRevision(): ?DateTimeInterface
+    public function getRevision(): DateTimeInterface|null
     {
         return $this->revision;
     }

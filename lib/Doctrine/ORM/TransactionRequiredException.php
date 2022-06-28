@@ -14,9 +14,7 @@ use LogicException;
  */
 class TransactionRequiredException extends LogicException implements ORMException
 {
-    /**
-     * @return TransactionRequiredException
-     */
+    /** @return TransactionRequiredException */
     public static function transactionRequired()
     {
         return new self('An open transaction is required for this operation.');

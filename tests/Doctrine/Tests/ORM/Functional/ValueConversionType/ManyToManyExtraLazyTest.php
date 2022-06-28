@@ -69,7 +69,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     {
         $owning = $this->_em->find(
             OwningManyToManyExtraLazyEntity::class,
-            'ghi'
+            'ghi',
         );
 
         self::assertEquals(2, $owning->associatedEntities->count());
@@ -79,7 +79,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     {
         $inversed = $this->_em->find(
             InversedManyToManyExtraLazyEntity::class,
-            'abc'
+            'abc',
         );
 
         self::assertEquals(2, $inversed->associatedEntities->count());
@@ -89,12 +89,12 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     {
         $owning = $this->_em->find(
             OwningManyToManyExtraLazyEntity::class,
-            'ghi'
+            'ghi',
         );
 
         $inversed = $this->_em->find(
             InversedManyToManyExtraLazyEntity::class,
-            'abc'
+            'abc',
         );
 
         self::assertTrue($owning->associatedEntities->contains($inversed));
@@ -104,12 +104,12 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     {
         $inversed = $this->_em->find(
             InversedManyToManyExtraLazyEntity::class,
-            'abc'
+            'abc',
         );
 
         $owning = $this->_em->find(
             OwningManyToManyExtraLazyEntity::class,
-            'ghi'
+            'ghi',
         );
 
         self::assertTrue($inversed->associatedEntities->contains($owning));
@@ -119,7 +119,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     {
         $owning = $this->_em->find(
             OwningManyToManyExtraLazyEntity::class,
-            'ghi'
+            'ghi',
         );
 
         self::assertTrue($owning->associatedEntities->containsKey('abc'));
@@ -129,7 +129,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     {
         $inversed = $this->_em->find(
             InversedManyToManyExtraLazyEntity::class,
-            'abc'
+            'abc',
         );
 
         self::assertTrue($inversed->associatedEntities->containsKey('ghi'));
@@ -139,7 +139,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     {
         $owning = $this->_em->find(
             OwningManyToManyExtraLazyEntity::class,
-            'ghi'
+            'ghi',
         );
 
         self::assertCount(1, $owning->associatedEntities->slice(0, 1));
@@ -149,7 +149,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     {
         $inversed = $this->_em->find(
             InversedManyToManyExtraLazyEntity::class,
-            'abc'
+            'abc',
         );
 
         self::assertCount(1, $inversed->associatedEntities->slice(1, 1));

@@ -17,9 +17,7 @@ class EmbeddedBuilder
     /** @var mixed[] */
     private $mapping;
 
-    /**
-     * @param mixed[] $mapping
-     */
+    /** @param mixed[] $mapping */
     public function __construct(ClassMetadataBuilder $builder, array $mapping)
     {
         $this->builder = $builder;

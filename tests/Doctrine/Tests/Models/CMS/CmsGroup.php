@@ -62,17 +62,13 @@ class CmsGroup implements IteratorAggregate
         $this->users[] = $user;
     }
 
-    /**
-     * @psalm-return Collection<int, CmsUser>
-     */
+    /** @psalm-return Collection<int, CmsUser> */
     public function getUsers(): Collection
     {
         return $this->users;
     }
 
-    /**
-     * @return Collection<int, CmsUser>
-     */
+    /** @return Collection<int, CmsUser> */
     public function getIterator(): Collection
     {
         return $this->getUsers();

@@ -45,10 +45,8 @@ class Traveler
      protected $profile;
 
     public function __construct(
-        /**
-         * @Column
-         */
-        protected string $name
+        /** @Column */
+        protected string $name,
     ) {
         $this->travels = new ArrayCollection();
     }
@@ -83,9 +81,7 @@ class Traveler
         $this->profile = $profile;
     }
 
-    /**
-     * @psalm-return Collection<int, Travel>
-     */
+    /** @psalm-return Collection<int, Travel> */
     public function getTravels(): Collection
     {
         return $this->travels;

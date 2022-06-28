@@ -32,7 +32,7 @@ class EntityNotFoundException extends RuntimeException implements ORMException
         }
 
         return new self(
-            'Entity of type \'' . $className . '\'' . ($ids ? ' for IDs ' . implode(', ', $ids) : '') . ' was not found'
+            'Entity of type \'' . $className . '\'' . ($ids ? ' for IDs ' . implode(', ', $ids) : '') . ' was not found',
         );
     }
 
@@ -43,7 +43,7 @@ class EntityNotFoundException extends RuntimeException implements ORMException
     {
         return new self(sprintf(
             'Unable to find "%s" entity identifier associated with the UnitOfWork',
-            $className
+            $className,
         ));
     }
 }

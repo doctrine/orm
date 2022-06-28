@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Stringable;
 
-/**
- * @group DDC-1998
- */
+/** @group DDC-1998 */
 class DDC1998Test extends OrmFunctionalTestCase
 {
     public function testSqlConversionAsIdentifier(): void
@@ -48,9 +46,7 @@ class DDC1998Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1998Entity
 {
     /**

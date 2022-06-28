@@ -9,9 +9,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 
-/**
- * @Entity
- */
+/** @Entity */
 #[ORM\Entity]
 class DDC869CreditCardPayment extends DDC869Payment
 {
@@ -28,7 +26,7 @@ class DDC869CreditCardPayment extends DDC869Payment
             [
                 'fieldName'  => 'creditCardNumber',
                 'type'       => 'string',
-            ]
+            ],
         );
     }
 }

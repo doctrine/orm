@@ -34,10 +34,8 @@ class Login
     public $token;
 
     public function __construct(
-        /**
-         * @Column
-         */
-        public string $name
+        /** @Column */
+        public string $name,
     ) {
     }
 

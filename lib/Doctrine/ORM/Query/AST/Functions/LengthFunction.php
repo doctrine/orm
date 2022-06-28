@@ -22,19 +22,15 @@ class LengthFunction extends FunctionNode implements TypedExpression
     /** @var Node */
     public $stringPrimary;
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function getSql(SqlWalker $sqlWalker)
     {
         return $sqlWalker->getConnection()->getDatabasePlatform()->getLengthExpression(
-            $sqlWalker->walkSimpleArithmeticExpression($this->stringPrimary)
+            $sqlWalker->walkSimpleArithmeticExpression($this->stringPrimary),
         );
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function parse(Parser $parser)
     {
         $parser->match(Lexer::T_IDENTIFIER);

@@ -11,7 +11,7 @@ abstract class AbstractIdGenerator
     /**
      * Generates an identifier for an entity.
      */
-    abstract public function generateId(EntityManagerInterface $em, ?object $entity): mixed;
+    abstract public function generateId(EntityManagerInterface $em, object|null $entity): mixed;
 
     /**
      * Gets whether this generator is a post-insert generator which means that

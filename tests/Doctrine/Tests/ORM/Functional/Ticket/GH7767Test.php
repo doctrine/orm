@@ -17,9 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
 
-/**
- * @group GH7767
- */
+/** @group GH7767 */
 class GH7767Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -63,9 +61,7 @@ class GH7767Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7767ParentEntity
 {
     /**
@@ -87,18 +83,14 @@ class GH7767ParentEntity
         $this->children[] = new GH7767ChildEntity($this, $position);
     }
 
-    /**
-     * @psalm-return Collection<int, GH7767ChildEntity>
-     */
+    /** @psalm-return Collection<int, GH7767ChildEntity> */
     public function getChildren(): Collection
     {
         return $this->children;
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7767ChildEntity
 {
     /**
@@ -109,14 +101,10 @@ class GH7767ChildEntity
     private int $id;
 
     public function __construct(
-        /**
-         * @ManyToOne(targetEntity=GH7767ParentEntity::class, inversedBy="children")
-         */
+        /** @ManyToOne(targetEntity=GH7767ParentEntity::class, inversedBy="children") */
         private GH7767ParentEntity $parent,
-        /**
-         * @Column(type="integer")
-         */
-        public int $position
+        /** @Column(type="integer") */
+        public int $position,
     ) {
     }
 }

@@ -202,7 +202,7 @@ class CmsUser
         return $this->username;
     }
 
-    public function getName(): ?string
+    public function getName(): string|null
     {
         return $this->name;
     }
@@ -216,9 +216,7 @@ class CmsUser
         $phone->setUser($this);
     }
 
-    /**
-     * @psalm-return Collection<int, CmsPhonenumber>
-     */
+    /** @psalm-return Collection<int, CmsPhonenumber> */
     public function getPhonenumbers(): Collection
     {
         return $this->phonenumbers;
@@ -236,9 +234,7 @@ class CmsUser
         $group->addUser($this);
     }
 
-    /**
-     * @psalm-return Collection<int, CmsGroup>
-     */
+    /** @psalm-return Collection<int, CmsGroup> */
     public function getGroups(): Collection
     {
         return $this->groups;
@@ -281,12 +277,12 @@ class CmsUser
         }
     }
 
-    public function getEmail(): ?CmsEmail
+    public function getEmail(): CmsEmail|null
     {
         return $this->email;
     }
 
-    public function setEmail(?CmsEmail $email = null): void
+    public function setEmail(CmsEmail|null $email = null): void
     {
         if ($this->email !== $email) {
             $this->email = $email;
@@ -300,7 +296,7 @@ class CmsUser
     public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->setPrimaryTable(
-            ['name' => 'cms_users']
+            ['name' => 'cms_users'],
         );
 
         $metadata->addSqlResultSetMapping(
@@ -343,7 +339,7 @@ class CmsUser
                         'discriminatorColumn'   => null,
                     ],
                 ],
-            ]
+            ],
         );
 
         $metadata->addSqlResultSetMapping(
@@ -374,7 +370,7 @@ class CmsUser
                         'discriminatorColumn'   => null,
                     ],
                 ],
-            ]
+            ],
         );
 
         $metadata->addSqlResultSetMapping(
@@ -404,7 +400,7 @@ class CmsUser
                 'columns' => [
                     ['name' => 'numphones'],
                 ],
-            ]
+            ],
         );
 
         $metadata->addSqlResultSetMapping(
@@ -451,7 +447,7 @@ class CmsUser
                 'columns' => [
                     ['name' => 'numphones'],
                 ],
-            ]
+            ],
         );
     }
 }

@@ -32,12 +32,10 @@ class Paginator implements Countable, IteratorAggregate
     use SQLResultCasing;
 
     private Query $query;
-    private ?bool $useOutputWalkers = null;
-    private ?int $count             = null;
+    private bool|null $useOutputWalkers = null;
+    private int|null $count             = null;
 
-    /**
-     * @param bool $fetchJoinCollection Whether the query joins a collection (true by default).
-     */
+    /** @param bool $fetchJoinCollection Whether the query joins a collection (true by default). */
     public function __construct(Query|QueryBuilder $query, private bool $fetchJoinCollection = true)
     {
         if ($query instanceof QueryBuilder) {
@@ -68,7 +66,7 @@ class Paginator implements Countable, IteratorAggregate
     /**
      * Returns whether the paginator will use an output walker.
      */
-    public function getUseOutputWalkers(): ?bool
+    public function getUseOutputWalkers(): bool|null
     {
         return $this->useOutputWalkers;
     }
@@ -78,7 +76,7 @@ class Paginator implements Countable, IteratorAggregate
      *
      * @return $this
      */
-    public function setUseOutputWalkers(?bool $useOutputWalkers): static
+    public function setUseOutputWalkers(bool|null $useOutputWalkers): static
     {
         $this->useOutputWalkers = $useOutputWalkers;
 

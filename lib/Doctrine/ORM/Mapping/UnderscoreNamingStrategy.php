@@ -34,9 +34,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
         $this->case = $case;
     }
 
-    /**
-     * @return int CASE_LOWER | CASE_UPPER
-     */
+    /** @return int CASE_LOWER | CASE_UPPER */
     public function getCase(): int
     {
         return $this->case;
@@ -94,7 +92,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
 
     public function joinKeyColumnName(
         string $entityName,
-        ?string $referencedColumnName
+        string|null $referencedColumnName,
     ): string {
         return $this->classToTableName($entityName) . '_' .
                 ($referencedColumnName ?: $this->referenceColumnName());

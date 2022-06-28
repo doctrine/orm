@@ -83,7 +83,7 @@ abstract class CompanyContract
     private int $id;
 
     /** @ManyToOne(targetEntity="CompanyEmployee", inversedBy="soldContracts") */
-    private ?CompanyEmployee $salesPerson = null;
+    private CompanyEmployee|null $salesPerson = null;
 
     /** @Column(type="boolean") */
     private bool $completed = false;
@@ -128,9 +128,7 @@ abstract class CompanyContract
         $this->salesPerson = $salesPerson;
     }
 
-    /**
-     * @psalm-return Collection<int, CompanyEmployee>
-     */
+    /** @psalm-return Collection<int, CompanyEmployee> */
     public function getEngineers(): Collection
     {
         return $this->engineers;
@@ -156,7 +154,7 @@ abstract class CompanyContract
             [
                 'name' => 'discr',
                 'type' => 'string',
-            ]
+            ],
         );
 
         $metadata->mapField(
@@ -164,7 +162,7 @@ abstract class CompanyContract
                 'id'        => true,
                 'name'      => 'id',
                 'fieldName' => 'id',
-            ]
+            ],
         );
 
         $metadata->mapField(
@@ -172,7 +170,7 @@ abstract class CompanyContract
                 'type'      => 'boolean',
                 'name'      => 'completed',
                 'fieldName' => 'completed',
-            ]
+            ],
         );
 
         $metadata->setDiscriminatorMap(
@@ -180,7 +178,7 @@ abstract class CompanyContract
                 'fix'       => 'CompanyFixContract',
                 'flexible'  => 'CompanyFlexContract',
                 'flexultra' => 'CompanyFlexUltraContract',
-            ]
+            ],
         );
 
         $metadata->addEntityListener(Events::postPersist, 'CompanyContractListener', 'postPersistHandler');

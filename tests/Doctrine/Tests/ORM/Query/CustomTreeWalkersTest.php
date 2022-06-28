@@ -43,7 +43,7 @@ class CustomTreeWalkersTest extends OrmTestCase
      * @param list<class-string<TreeWalker>> $treeWalkers
      * @param class-string<SqlWalker>|null   $outputWalker
      */
-    public function generateSql(string $dqlToBeTested, array $treeWalkers, ?string $outputWalker): string
+    public function generateSql(string $dqlToBeTested, array $treeWalkers, string|null $outputWalker): string
     {
         $query = $this->entityManager->createQuery($dqlToBeTested);
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, $treeWalkers)
@@ -64,7 +64,7 @@ class CustomTreeWalkersTest extends OrmTestCase
         string $dqlToBeTested,
         string $sqlToBeConfirmed,
         array $treeWalkers = [],
-        ?string $outputWalker = null
+        string|null $outputWalker = null,
     ): void {
         self::assertEquals($sqlToBeConfirmed, $this->generateSql($dqlToBeTested, $treeWalkers, $outputWalker));
     }
@@ -74,7 +74,7 @@ class CustomTreeWalkersTest extends OrmTestCase
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
             'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ WHERE c0_.id = 1',
-            [CustomTreeWalker::class]
+            [CustomTreeWalker::class],
         );
     }
 
@@ -83,7 +83,7 @@ class CustomTreeWalkersTest extends OrmTestCase
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name or u.name = :otherName',
             'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ WHERE (c0_.name = ? OR c0_.name = ?) AND c0_.id = 1',
-            [CustomTreeWalker::class]
+            [CustomTreeWalker::class],
         );
     }
 
@@ -92,7 +92,7 @@ class CustomTreeWalkersTest extends OrmTestCase
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name',
             'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ WHERE c0_.name = ? AND c0_.id = 1',
-            [CustomTreeWalker::class]
+            [CustomTreeWalker::class],
         );
     }
 
@@ -104,7 +104,7 @@ class CustomTreeWalkersTest extends OrmTestCase
         $this->generateSql(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
             [],
-            AddUnknownQueryComponentWalker::class
+            AddUnknownQueryComponentWalker::class,
         );
     }
 
@@ -113,7 +113,7 @@ class CustomTreeWalkersTest extends OrmTestCase
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
             'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c1_.id AS id_4, c1_.country AS country_5, c1_.zip AS zip_6, c1_.city AS city_7, c0_.email_id AS email_id_8, c1_.user_id AS user_id_9 FROM cms_users c0_ LEFT JOIN cms_addresses c1_ ON c0_.id = c1_.user_id WHERE c0_.id = 1',
-            [CustomTreeWalkerJoin::class, CustomTreeWalker::class]
+            [CustomTreeWalkerJoin::class, CustomTreeWalker::class],
         );
     }
 }

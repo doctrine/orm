@@ -16,7 +16,7 @@ use function spl_object_id;
 class UnitOfWorkMock extends UnitOfWork
 {
     private array $mockDataChangeSets = [];
-    private ?array $persisterMock     = null;
+    private array|null $persisterMock = null;
 
     public function getEntityPersister(string $entityName): EntityPersister
     {

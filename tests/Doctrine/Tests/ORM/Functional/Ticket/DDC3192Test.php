@@ -32,7 +32,7 @@ class DDC3192Test extends OrmFunctionalTestCase
         if (Type::hasType('ddc3192_currency_code')) {
             self::fail(
                 'Type ddc3192_currency_code exists for testing DDC-3192 only, ' .
-                'but it has already been registered for some reason'
+                'but it has already been registered for some reason',
             );
         }
 
@@ -40,7 +40,7 @@ class DDC3192Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC3192Currency::class,
-            DDC3192Transaction::class
+            DDC3192Transaction::class,
         );
     }
 
@@ -94,7 +94,7 @@ class DDC3192Currency
          * @Id
          * @Column(type="ddc3192_currency_code")
          */
-        public string $code
+        public string $code,
     ) {
     }
 }
@@ -114,15 +114,13 @@ class DDC3192Transaction
     public $id;
 
     public function __construct(
-        /**
-         * @Column(type="integer")
-         */
+        /** @Column(type="integer") */
         public int $amount,
         /**
          * @ManyToOne(targetEntity="DDC3192Currency", inversedBy="transactions")
          * @JoinColumn(name="currency_id", referencedColumnName="code", nullable=false)
          */
-        public DDC3192Currency $currency
+        public DDC3192Currency $currency,
     ) {
     }
 }

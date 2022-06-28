@@ -41,9 +41,7 @@ class MetadataFilter extends FilterIterator implements Countable
         return iterator_to_array($metadatas);
     }
 
-    /**
-     * @param mixed[]|string $filter
-     */
+    /** @param mixed[]|string $filter */
     public function __construct(ArrayIterator $metadata, array|string $filter)
     {
         $this->filter = (array) $filter;
@@ -65,7 +63,7 @@ class MetadataFilter extends FilterIterator implements Countable
 
             if ($pregResult === false) {
                 throw new RuntimeException(
-                    sprintf("Error while evaluating regex '/%s/'.", $filter)
+                    sprintf("Error while evaluating regex '/%s/'.", $filter),
                 );
             }
 
@@ -77,9 +75,7 @@ class MetadataFilter extends FilterIterator implements Countable
         return false;
     }
 
-    /**
-     * @return ArrayIterator<int, ClassMetadata>
-     */
+    /** @return ArrayIterator<int, ClassMetadata> */
     public function getInnerIterator(): ArrayIterator
     {
         $innerIterator = parent::getInnerIterator();

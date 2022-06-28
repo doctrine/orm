@@ -38,9 +38,9 @@ interface Cache
      */
     public const MODE_REFRESH = 4;
 
-    public function getEntityCacheRegion(string $className): ?Region;
+    public function getEntityCacheRegion(string $className): Region|null;
 
-    public function getCollectionCacheRegion(string $className, string $association): ?Region;
+    public function getCollectionCacheRegion(string $className, string $association): Region|null;
 
     /**
      * Determine whether the cache contains data for the given entity "instance".
@@ -90,7 +90,7 @@ interface Cache
     /**
      * Evicts all cached query results under the given name, or default query cache if the region name is NULL.
      */
-    public function evictQueryRegion(?string $regionName = null): void;
+    public function evictQueryRegion(string|null $regionName = null): void;
 
     /**
      * Evict data from all query regions.
@@ -102,5 +102,5 @@ interface Cache
      *
      * @param string|null $regionName Query cache region name, or default query cache if the region name is NULL.
      */
-    public function getQueryCache(?string $regionName = null): QueryCache;
+    public function getQueryCache(string|null $regionName = null): QueryCache;
 }

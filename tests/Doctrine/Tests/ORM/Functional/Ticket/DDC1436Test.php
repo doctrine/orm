@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1436
- */
+/** @group DDC-1436 */
 class DDC1436Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -56,9 +54,7 @@ class DDC1436Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1436Page
 {
     /**

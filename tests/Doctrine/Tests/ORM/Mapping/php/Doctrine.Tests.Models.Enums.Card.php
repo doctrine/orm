@@ -9,12 +9,12 @@ $metadata->mapField(
         'id' => true,
         'fieldName' => 'id',
         'type' => 'integer',
-    ]
+    ],
 );
 $metadata->mapField(
     [
         'fieldName' => 'suit',
         'type' => 'string',
         'enumType' => Suit::class,
-    ]
+    ],
 );

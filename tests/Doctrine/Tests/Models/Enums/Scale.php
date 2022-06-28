@@ -35,14 +35,14 @@ class Scale
                 'id' => true,
                 'fieldName' => 'id',
                 'type' => 'integer',
-            ]
+            ],
         );
         $metadata->mapField(
             [
                 'fieldName' => 'supportedUnits',
                 'type' => 'simple_array',
                 'enumType' => Unit::class,
-            ]
+            ],
         );
     }
 }

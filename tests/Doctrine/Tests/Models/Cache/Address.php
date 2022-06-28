@@ -34,10 +34,8 @@ class Address
     public $person;
 
     public function __construct(
-        /**
-         * @Column
-         */
-        public string $location
+        /** @Column */
+        public string $location,
     ) {
     }
 }

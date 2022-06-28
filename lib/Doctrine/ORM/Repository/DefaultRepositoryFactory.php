@@ -38,7 +38,7 @@ final class DefaultRepositoryFactory implements RepositoryFactory
      */
     private function createRepository(
         EntityManagerInterface $entityManager,
-        string $entityName
+        string $entityName,
     ): EntityRepository {
         $metadata            = $entityManager->getClassMetadata($entityName);
         $repositoryClassName = $metadata->customRepositoryClassName

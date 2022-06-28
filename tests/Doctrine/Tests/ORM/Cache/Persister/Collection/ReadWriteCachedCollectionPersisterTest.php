@@ -16,9 +16,7 @@ use Doctrine\Tests\Models\Cache\State;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionProperty;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
 {
     protected function createPersister(EntityManagerInterface $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister
@@ -26,9 +24,7 @@ class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
         return new ReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
     }
 
-    /**
-     * @return ConcurrentRegion&MockObject
-     */
+    /** @return ConcurrentRegion&MockObject */
     protected function createRegion(): ConcurrentRegion
     {
         return $this->createMock(ConcurrentRegion::class);
