@@ -723,6 +723,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     {
         $repo = $this->_em->getRepository(CmsAddress::class);
         $repo->findBy(['user' => [1, 2, 3]]);
+        $loggedQuery = $this->getLastLoggedQuery();
+        $loggedQuery['sql'] = strtolower($loggedQuery['sql']);
 
         if (! class_exists(LoggingMiddleware::class)) {
             // DBAL 2 logs queries before resolving parameter positions
@@ -732,7 +734,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
                     'params' => [[1, 2, 3]],
                     'types' => [Connection::PARAM_INT_ARRAY],
                 ],
-                $this->getLastLoggedQuery()
+                $loggedQuery
             );
         } else {
             self::assertSame(
@@ -741,7 +743,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
                     'params' => [1 => 1, 2 => 2, 3 => 3],
                     'types' => array_fill(1, 3, ParameterType::INTEGER),
                 ],
-                $this->getLastLoggedQuery()
+                $loggedQuery
             );
         }
     }

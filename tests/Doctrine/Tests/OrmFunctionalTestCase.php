@@ -915,8 +915,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             throw new RuntimeException('The query log was empty.');
         }
 
-        // lower-case for Oracle DB
-        $lastQuery['sql'] = strtolower($lastQuery['sql']);
         return $lastQuery;
     }
 }
