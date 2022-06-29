@@ -266,7 +266,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         $sql .= $this->getOrderingSql($criteria, $targetClass);
 
-        $sql .= $this->getLimitSql($criteria);
+        $sql = $this->getLimitSql($sql, $criteria);
 
         $stmt = $this->conn->executeQuery($sql, $params, $paramTypes);
 
@@ -760,14 +760,14 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * @throws DBALException
      */
-    private function getLimitSql(Criteria $criteria): string
+    private function getLimitSql(string $sql, Criteria $criteria): string
     {
         $limit  = $criteria->getMaxResults();
         $offset = $criteria->getFirstResult();
         if ($limit !== null || $offset !== null) {
-            return $this->platform->modifyLimitQuery('', $limit, $offset ?? 0);
+            return $this->platform->modifyLimitQuery($sql, $limit, $offset ?? 0);
         }
 
-        return '';
+        return $sql;
     }
 }
