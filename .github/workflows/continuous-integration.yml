@@ -81,7 +81,7 @@ jobs:
         oracle-version:
           - "11"
         dbal-version:
-          - "2.12"
+          - "default"
 
     services:
       oracle:
