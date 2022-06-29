@@ -31,8 +31,7 @@
 
     <testsuites>
         <testsuite name="Doctrine DBAL Test Suite">
-<!--            <directory>../../../tests</directory>-->
-            <file>../../../tests/Doctrine/Tests/ORM/Functional/AdvancedDqlQueryTest.php</file>
+            <directory>../../../tests</directory>
         </testsuite>
     </testsuites>
 
