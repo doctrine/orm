@@ -79,7 +79,7 @@ jobs:
         php-version:
           - "7.4"
         oracle-version:
-          - "11"
+          - "18"
         dbal-version:
           - "default"
 
