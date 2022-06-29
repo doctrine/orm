@@ -173,6 +173,8 @@ class TestUtil
                 'password',
                 'host',
                 'dbname',
+                'servicename',
+                'service',
                 'port',
                 'server',
                 'memory',

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
@@ -214,13 +215,13 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         self::assertNotEmpty($metadata->table['indexes']['index1']['columns']);
         self::assertEquals(
             ['column_index1', 'column_index2'],
-            $metadata->table['indexes']['index1']['columns']
+            array_map('strtolower', $metadata->table['indexes']['index1']['columns'])
         );
 
         self::assertNotEmpty($metadata->table['uniqueConstraints']['unique_index1']['columns']);
         self::assertEquals(
             ['column_unique_index1', 'column_unique_index2'],
-            $metadata->table['uniqueConstraints']['unique_index1']['columns']
+            array_map('strtolower', $metadata->table['uniqueConstraints']['unique_index1']['columns'])
         );
     }
 
@@ -230,6 +231,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         // NOTE: PostgreSQL and SQL SERVER do not support UNSIGNED integer
 
         return ! $platform instanceof SQLServerPlatform
-            && ! $platform instanceof PostgreSQLPlatform;
+            && ! $platform instanceof PostgreSQLPlatform
+            && ! $platform instanceof OraclePlatform;
     }
 }

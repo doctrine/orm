@@ -728,7 +728,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
             // DBAL 2 logs queries before resolving parameter positions
             self::assertSame(
                 [
-                    'sql' => 'SELECT t0.id AS id_1, t0.country AS country_2, t0.zip AS zip_3, t0.city AS city_4, t0.user_id AS user_id_5 FROM cms_addresses t0 WHERE t0.user_id IN (?)',
+                    'sql' => strtolower('SELECT t0.id AS id_1, t0.country AS country_2, t0.zip AS zip_3, t0.city AS city_4, t0.user_id AS user_id_5 FROM cms_addresses t0 WHERE t0.user_id IN (?)'),
                     'params' => [[1, 2, 3]],
                     'types' => [Connection::PARAM_INT_ARRAY],
                 ],
@@ -737,7 +737,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         } else {
             self::assertSame(
                 [
-                    'sql' => 'SELECT t0.id AS id_1, t0.country AS country_2, t0.zip AS zip_3, t0.city AS city_4, t0.user_id AS user_id_5 FROM cms_addresses t0 WHERE t0.user_id IN (?, ?, ?)',
+                    'sql' => strtolower('SELECT t0.id AS id_1, t0.country AS country_2, t0.zip AS zip_3, t0.city AS city_4, t0.user_id AS user_id_5 FROM cms_addresses t0 WHERE t0.user_id IN (?, ?, ?)'),
                     'params' => [1 => 1, 2 => 2, 3 => 3],
                     'types' => array_fill(1, 3, ParameterType::INTEGER),
                 ],
