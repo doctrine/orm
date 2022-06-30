@@ -194,6 +194,12 @@ class TestUtil
             $parameters[$parameter] = $configuration[$prefix . $parameter];
         }
 
+        if(isset($parameters['nologging'])) {
+            $parameters['defaultTableOptions'] = [
+                'nologging' => true === $parameters['nologging']
+            ];
+        }
+
         foreach ($configuration as $param => $value) {
             if (! str_starts_with($param, $prefix . 'driver_option_')) {
                 continue;

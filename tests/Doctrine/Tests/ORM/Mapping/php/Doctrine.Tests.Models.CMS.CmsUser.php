@@ -36,7 +36,7 @@ $metadata->addNamedNativeQuery(
 $metadata->addNamedNativeQuery(
     [
         'name'              => 'fetchJoinedPhonenumber',
-        'query'             => 'SELECT id, name, status, phonenumber AS number FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?',
+        'query'             => 'SELECT id, name, status, phonenumber AS "number" FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?',
         'resultSetMapping'  => 'mappingJoinedPhonenumber',
     ]
 );

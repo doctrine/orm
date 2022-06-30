@@ -25,7 +25,7 @@
             </named-native-query>
 
             <named-native-query name="fetchJoinedPhonenumber" result-set-mapping="mappingJoinedPhonenumber">
-                <query>SELECT id, name, status, phonenumber AS number FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?</query>
+                <query>SELECT id, name, status, phonenumber AS "number" FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?</query>
             </named-native-query>
 
             <named-native-query name="fetchUserPhonenumberCount" result-set-mapping="mappingUserPhonenumberCount">
