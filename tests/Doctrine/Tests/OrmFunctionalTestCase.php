@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
@@ -916,5 +917,15 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         return $lastQuery;
+    }
+
+    public function getLimitSQLByPlatform($limit, AbstractPlatform $platform): string
+    {
+        $result = ' LIMIT ' . $limit;
+        if($platform instanceof OraclePlatform) {
+            $result = ' WHERE ROWNUM <= ' . $limit;
+        }
+
+        return $result;
     }
 }

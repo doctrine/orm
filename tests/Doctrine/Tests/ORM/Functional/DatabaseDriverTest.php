@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use function array_change_key_case;
 use function count;
 use function strtolower;
+use function array_map;
 
 use const CASE_LOWER;
 

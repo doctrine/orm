@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
+use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -52,11 +53,12 @@ class OneToOneTest extends OrmFunctionalTestCase
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase(): void
     {
         $conn = $this->_em->getConnection();
+        $limit = $this->getLimitSQLByPlatform(1, $conn->getDatabasePlatform());
 
-        self::assertEquals('nop', $conn->fetchOne('SELECT id1 FROM vct_inversed_onetoone LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchOne('SELECT id1 FROM vct_inversed_onetoone' . $limit));
 
-        self::assertEquals('qrs', $conn->fetchOne('SELECT id2 FROM vct_owning_onetoone LIMIT 1'));
-        self::assertEquals('nop', $conn->fetchOne('SELECT associated_id FROM vct_owning_onetoone LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchOne('SELECT id2 FROM vct_owning_onetoone' . $limit));
+        self::assertEquals('nop', $conn->fetchOne('SELECT associated_id FROM vct_owning_onetoone' . $limit));
     }
 
     /**

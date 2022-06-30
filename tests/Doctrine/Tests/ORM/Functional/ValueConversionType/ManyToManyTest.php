@@ -52,13 +52,14 @@ class ManyToManyTest extends OrmFunctionalTestCase
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase(): void
     {
         $conn = $this->_em->getConnection();
+        $limit = $this->getLimitSQLByPlatform(1, $conn->getDatabasePlatform());
 
-        self::assertEquals('nop', $conn->fetchOne('SELECT id1 FROM vct_inversed_manytomany LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchOne('SELECT id1 FROM vct_inversed_manytomany' . $limit));
 
-        self::assertEquals('qrs', $conn->fetchOne('SELECT id2 FROM vct_owning_manytomany LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchOne('SELECT id2 FROM vct_owning_manytomany' . $limit));
 
-        self::assertEquals('nop', $conn->fetchOne('SELECT inversed_id FROM vct_xref_manytomany LIMIT 1'));
-        self::assertEquals('qrs', $conn->fetchOne('SELECT owning_id FROM vct_xref_manytomany LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchOne('SELECT inversed_id FROM vct_xref_manytomany' . $limit));
+        self::assertEquals('qrs', $conn->fetchOne('SELECT owning_id FROM vct_xref_manytomany' . $limit));
     }
 
     /**

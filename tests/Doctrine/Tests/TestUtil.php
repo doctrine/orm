@@ -184,7 +184,7 @@ class TestUtil
                 'ssl_capath',
                 'ssl_cipher',
                 'unix_socket',
-                'charset'
+                'charset',
             ] as $parameter
         ) {
             if (! isset($configuration[$prefix . $parameter])) {
@@ -192,12 +192,6 @@ class TestUtil
             }
 
             $parameters[$parameter] = $configuration[$prefix . $parameter];
-        }
-
-        if(isset($parameters['nologging'])) {
-            $parameters['defaultTableOptions'] = [
-                'nologging' => true === $parameters['nologging']
-            ];
         }
 
         foreach ($configuration as $param => $value) {

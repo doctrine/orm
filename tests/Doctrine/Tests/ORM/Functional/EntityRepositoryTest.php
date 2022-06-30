@@ -38,6 +38,7 @@ use function array_fill;
 use function array_values;
 use function class_exists;
 use function reset;
+use function strtolower;
 
 class EntityRepositoryTest extends OrmFunctionalTestCase
 {
@@ -723,7 +724,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     {
         $repo = $this->_em->getRepository(CmsAddress::class);
         $repo->findBy(['user' => [1, 2, 3]]);
-        $loggedQuery = $this->getLastLoggedQuery();
+
+        $loggedQuery        = $this->getLastLoggedQuery();
         $loggedQuery['sql'] = strtolower($loggedQuery['sql']);
 
         if (! class_exists(LoggingMiddleware::class)) {
