@@ -18,7 +18,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
@@ -31,18 +30,14 @@ class DDC2138Test extends OrmFunctionalTestCase
      */
     public function testForeignKeyOnSTIWithMultipleMapping(): void
     {
-        $em         = $this->_em;
-        $schemaTool = new SchemaTool($em);
-
-        $classes = [
-            $em->getClassMetadata(DDC2138User::class),
-            $em->getClassMetadata(DDC2138Structure::class),
-            $em->getClassMetadata(DDC2138UserFollowedObject::class),
-            $em->getClassMetadata(DDC2138UserFollowedStructure::class),
-            $em->getClassMetadata(DDC2138UserFollowedUser::class),
-        ];
-
-        $schema = $schemaTool->getSchemaFromMetadata($classes);
+        $em     = $this->_em;
+        $schema = $this->getSchemaForModels(
+            DDC2138User::class,
+            DDC2138Structure::class,
+            DDC2138UserFollowedObject::class,
+            DDC2138UserFollowedStructure::class,
+            DDC2138UserFollowedUser::class
+        );
         self::assertTrue($schema->hasTable('users_followed_objects'), 'Table users_followed_objects should exist.');
 
         $table = $schema->getTable('users_followed_objects');

@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function getrandmax;
 use function random_int;
@@ -26,15 +25,7 @@ class DDC1454Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1454File::class),
-                    $this->_em->getClassMetadata(DDC1454Picture::class),
-                ]
-            );
-        } catch (Exception $ignored) {
-        }
+        $this->createSchemaForModels(DDC1454File::class, DDC1454Picture::class);
     }
 
     public function testFailingCase(): void

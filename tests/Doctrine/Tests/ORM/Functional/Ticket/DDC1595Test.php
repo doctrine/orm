@@ -29,12 +29,10 @@ class DDC1595Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC1595BaseInheritance::class),
-                $this->_em->getClassMetadata(DDC1595InheritedEntity1::class),
-                $this->_em->getClassMetadata(DDC1595InheritedEntity2::class),
-            ]
+        $this->createSchemaForModels(
+            DDC1595BaseInheritance::class,
+            DDC1595InheritedEntity1::class,
+            DDC1595InheritedEntity2::class
         );
     }
 

@@ -9,6 +9,7 @@ use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -344,14 +345,42 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     final protected function createSchemaForModels(string ...$models): void
     {
         try {
-            $this->_schemaTool->createSchema(array_map(
-                function (string $className): ClassMetadata {
-                    return $this->_em->getClassMetadata($className);
-                },
-                $models
-            ));
+            $this->_schemaTool->createSchema($this->getMetadataForModels($models));
         } catch (ToolsException $e) {
         }
+    }
+
+    /**
+     * @param class-string ...$models
+     *
+     * @return string[]
+     */
+    final protected function getUpdateSchemaSqlForModels(string ...$models): array
+    {
+        return $this->_schemaTool->getUpdateSchemaSql($this->getMetadataForModels($models));
+    }
+
+    /**
+     * @param class-string ...$models
+     */
+    final protected function getSchemaForModels(string ...$models): Schema
+    {
+        return $this->_schemaTool->getSchemaFromMetadata($this->getMetadataForModels($models));
+    }
+
+    /**
+     * @param class-string[] $models
+     *
+     * @return ClassMetadata[]
+     */
+    private function getMetadataForModels(array $models): array
+    {
+        return array_map(
+            function (string $className): ClassMetadata {
+                return $this->_em->getClassMetadata($className);
+            },
+            $models
+        );
     }
 
     protected function useModelSet(string $setName): void

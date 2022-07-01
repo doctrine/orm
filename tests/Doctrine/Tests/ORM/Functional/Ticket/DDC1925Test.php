@@ -26,12 +26,7 @@ class DDC1925Test extends OrmFunctionalTestCase
 {
     public function testIssue(): void
     {
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC1925User::class),
-                $this->_em->getClassMetadata(DDC1925Product::class),
-            ]
-        );
+        $this->createSchemaForModels(DDC1925User::class, DDC1925Product::class);
 
         $user = new DDC1925User();
         $user->setTitle('Test User');

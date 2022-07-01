@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function assert;
 
@@ -27,16 +26,11 @@ class DDC1509Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1509AbstractFile::class),
-                    $this->_em->getClassMetadata(DDC1509File::class),
-                    $this->_em->getClassMetadata(DDC1509Picture::class),
-                ]
-            );
-        } catch (Exception $ignored) {
-        }
+        $this->createSchemaForModels(
+            DDC1509AbstractFile::class,
+            DDC1509File::class,
+            DDC1509Picture::class
+        );
     }
 
     public function testFailingCase(): void

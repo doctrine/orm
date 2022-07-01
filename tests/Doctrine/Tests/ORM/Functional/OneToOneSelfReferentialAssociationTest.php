@@ -98,9 +98,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 
     public function testMultiSelfReference(): void
     {
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(MultiSelfReference::class),
-        ]);
+        $this->createSchemaForModels(MultiSelfReference::class);
 
         $entity1 = new MultiSelfReference();
         $this->_em->persist($entity1);

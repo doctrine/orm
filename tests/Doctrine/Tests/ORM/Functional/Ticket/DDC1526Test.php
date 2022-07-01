@@ -21,11 +21,7 @@ class DDC1526Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC1526Menu::class),
-            ]
-        );
+        $this->createSchemaForModels(DDC1526Menu::class);
     }
 
     public function testIssue(): void

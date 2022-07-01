@@ -17,7 +17,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 class DDC599Test extends OrmFunctionalTestCase
 {
@@ -25,16 +24,11 @@ class DDC599Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC599Item::class),
-                    $this->_em->getClassMetadata(DDC599Subitem::class),
-                    $this->_em->getClassMetadata(DDC599Child::class),
-                ]
+            $this->createSchemaForModels(
+                DDC599Item::class,
+                DDC599Subitem::class,
+                DDC599Child::class
             );
-        } catch (Exception $ignored) {
-        }
     }
 
     public function testCascadeRemoveOnInheritanceHierarchy(): void

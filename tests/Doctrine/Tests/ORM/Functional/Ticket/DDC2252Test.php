@@ -40,13 +40,11 @@ class DDC2252Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC2252User::class),
-                $this->_em->getClassMetadata(DDC2252Privilege::class),
-                $this->_em->getClassMetadata(DDC2252Membership::class),
-                $this->_em->getClassMetadata(DDC2252MerchantAccount::class),
-            ]
+        $this->createSchemaForModels(
+            DDC2252User::class,
+            DDC2252Privilege::class,
+            DDC2252Membership::class,
+            DDC2252MerchantAccount::class
         );
 
         $this->loadFixtures();
