@@ -22,12 +22,10 @@ final class GH7735Test extends OrmFunctionalTestCase
         $this->enableSecondLevelCache();
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(GH7735Car::class),
-                $this->_em->getClassMetadata(GH7735Power::class),
-                $this->_em->getClassMetadata(GH7735Engine::class),
-            ]
+        $this->createSchemaForModels(
+            GH7735Car::class,
+            GH7735Power::class,
+            GH7735Engine::class
         );
 
         $this->_em->persist(new GH7735Car(1, new GH7735Engine(1, 'turbo', new GH7735Power(1))));

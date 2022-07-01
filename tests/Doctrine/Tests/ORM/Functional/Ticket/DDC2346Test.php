@@ -26,12 +26,10 @@ class DDC2346Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC2346Foo::class),
-                $this->_em->getClassMetadata(DDC2346Bar::class),
-                $this->_em->getClassMetadata(DDC2346Baz::class),
-            ]
+        $this->createSchemaForModels(
+            DDC2346Foo::class,
+            DDC2346Bar::class,
+            DDC2346Baz::class
         );
     }
 

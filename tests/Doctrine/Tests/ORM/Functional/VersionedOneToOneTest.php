@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Exception\ORMException;
 use Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity;
 use Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -20,15 +19,10 @@ class VersionedOneToOneTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(FirstRelatedEntity::class),
-                    $this->_em->getClassMetadata(SecondRelatedEntity::class),
-                ]
-            );
-        } catch (ORMException $e) {
-        }
+        $this->createSchemaForModels(
+            FirstRelatedEntity::class,
+            SecondRelatedEntity::class
+        );
     }
 
     /**

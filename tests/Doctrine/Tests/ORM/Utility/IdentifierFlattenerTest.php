@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Utility;
 
-use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Flight;
@@ -35,17 +34,12 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
             $this->_em->getMetadataFactory()
         );
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(FirstRelatedEntity::class),
-                    $this->_em->getClassMetadata(SecondRelatedEntity::class),
-                    $this->_em->getClassMetadata(Flight::class),
-                    $this->_em->getClassMetadata(City::class),
-                ]
-            );
-        } catch (ORMException $e) {
-        }
+        $this->createSchemaForModels(
+            FirstRelatedEntity::class,
+            SecondRelatedEntity::class,
+            Flight::class,
+            City::class
+        );
     }
 
     /**

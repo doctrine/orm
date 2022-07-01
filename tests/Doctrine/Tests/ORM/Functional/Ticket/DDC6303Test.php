@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -31,14 +30,11 @@ class DDC6303Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema([
-                $this->_em->getClassMetadata(DDC6303BaseClass::class),
-                $this->_em->getClassMetadata(DDC6303ChildA::class),
-                $this->_em->getClassMetadata(DDC6303ChildB::class),
-            ]);
-        } catch (ToolsException $ignored) {
-        }
+        $this->createSchemaForModels(
+            DDC6303BaseClass::class,
+            DDC6303ChildA::class,
+            DDC6303ChildB::class
+        );
     }
 
     public function testMixedTypeHydratedCorrectlyInJoinedInheritance(): void

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 /**
  * @group DDC-2084
@@ -16,15 +15,10 @@ class DDC2084Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity1'),
-                    $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity2'),
-                ]
-            );
-        } catch (Exception $exc) {
-        }
+        $this->createSchemaForModels(
+            __NAMESPACE__ . '\DDC2084\MyEntity1',
+            __NAMESPACE__ . '\DDC2084\MyEntity2'
+        );
     }
 
     public function loadFixture(): DDC2084\MyEntity1

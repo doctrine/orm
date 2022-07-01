@@ -19,10 +19,10 @@ class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(PersonTicket4646Parametric::class),
-            $this->_em->getClassMetadata(EmployeeTicket4646Parametric::class),
-        ]);
+        $this->createSchemaForModels(
+            PersonTicket4646Parametric::class,
+            EmployeeTicket4646Parametric::class
+        );
     }
 
     public function testInstanceOf(): void

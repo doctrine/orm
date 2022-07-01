@@ -24,12 +24,10 @@ final class GH5562Test extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(GH5562User::class),
-                $this->_em->getClassMetadata(GH5562Manager::class),
-                $this->_em->getClassMetadata(GH5562Merchant::class),
-            ]
+        $this->createSchemaForModels(
+            GH5562User::class,
+            GH5562Manager::class,
+            GH5562Merchant::class
         );
     }
 

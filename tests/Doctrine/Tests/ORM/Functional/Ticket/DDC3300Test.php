@@ -37,11 +37,7 @@ class DDC3300Test extends OrmFunctionalTestCase
 
         $this->_em->getEventManager()->addEventSubscriber($resolveTargetEntity);
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC3300Person::class),
-            ]
-        );
+        $this->createSchemaForModels(DDC3300Person::class);
 
         $boss     = new DDC3300HumanBoss('boss');
         $employee = new DDC3300HumanEmployee('employee');

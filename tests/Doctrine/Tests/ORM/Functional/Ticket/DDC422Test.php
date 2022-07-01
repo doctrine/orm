@@ -27,12 +27,10 @@ class DDC422Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC422Guest::class),
-                $this->_em->getClassMetadata(DDC422Customer::class),
-                $this->_em->getClassMetadata(DDC422Contact::class),
-            ]
+        $this->createSchemaForModels(
+            DDC422Guest::class,
+            DDC422Customer::class,
+            DDC422Contact::class
         );
     }
 

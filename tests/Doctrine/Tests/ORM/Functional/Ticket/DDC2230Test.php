@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -27,15 +26,10 @@ class DDC2230Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC2230User::class),
-                    $this->_em->getClassMetadata(DDC2230Address::class),
-                ]
-            );
-        } catch (ToolsException $e) {
-        }
+        $this->createSchemaForModels(
+            DDC2230User::class,
+            DDC2230Address::class
+        );
     }
 
     public function testNotifyTrackingNotCalledOnUninitializedProxies(): void

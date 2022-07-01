@@ -27,9 +27,7 @@ final class GH5804Test extends OrmFunctionalTestCase
 
         Type::addType(GH5804Type::NAME, GH5804Type::class);
 
-        $this->_schemaTool->createSchema(
-            [$this->_em->getClassMetadata(GH5804Article::class)]
-        );
+        $this->createSchemaForModels(GH5804Article::class);
     }
 
     public function testTextColumnSaveAndRetrieve2(): void

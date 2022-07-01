@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\Models\Upsertable\Insertable;
 use Doctrine\Tests\Models\Upsertable\Updatable;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -15,15 +14,7 @@ class InsertableUpdatableTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(Updatable::class),
-                    $this->_em->getClassMetadata(Insertable::class),
-                ]
-            );
-        } catch (ToolsException $e) {
-        }
+        $this->createSchemaForModels(Updatable::class, Insertable::class);
     }
 
     public function testNotInsertableIsFetchedFromDatabase(): void

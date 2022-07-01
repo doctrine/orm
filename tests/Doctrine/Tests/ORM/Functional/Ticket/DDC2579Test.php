@@ -25,12 +25,10 @@ class DDC2579Test extends OrmFunctionalTestCase
 
         Type::addType(DDC2579Type::NAME, DDC2579Type::class);
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC2579Entity::class),
-                $this->_em->getClassMetadata(DDC2579EntityAssoc::class),
-                $this->_em->getClassMetadata(DDC2579AssocAssoc::class),
-            ]
+        $this->createSchemaForModels(
+            DDC2579Entity::class,
+            DDC2579EntityAssoc::class,
+            DDC2579AssocAssoc::class
         );
     }
 

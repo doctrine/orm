@@ -8,7 +8,6 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Tools;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_filter;
@@ -16,28 +15,16 @@ use function str_contains;
 
 class DBAL483Test extends OrmFunctionalTestCase
 {
-    /** @var Tools\SchemaTool */
-    private $schemaTool;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->_em->getConnection();
-
-        $this->schemaTool = new Tools\SchemaTool($this->_em);
-    }
-
     /**
      * @group DBAL-483
      */
     public function testDefaultValueIsComparedCorrectly(): void
     {
-        $class = $this->_em->getClassMetadata(DBAL483Default::class);
+        $class = DBAL483Default::class;
 
-        $this->schemaTool->createSchema([$class]);
+        $this->createSchemaForModels($class);
 
-        $updateSql = $this->schemaTool->getUpdateSchemaSql([$class]);
+        $updateSql = $this->getUpdateSchemaSqlForModels($class);
 
         $updateSql = array_filter($updateSql, static function ($sql) {
             return str_contains($sql, 'DBAL483');

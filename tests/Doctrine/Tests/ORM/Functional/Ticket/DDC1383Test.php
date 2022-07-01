@@ -13,7 +13,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function get_debug_type;
 
@@ -26,15 +25,10 @@ class DDC1383Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1383AbstractEntity::class),
-                    $this->_em->getClassMetadata(DDC1383Entity::class),
-                ]
-            );
-        } catch (Exception $ignored) {
-        }
+        $this->createSchemaForModels(
+            DDC1383AbstractEntity::class,
+            DDC1383Entity::class
+        );
     }
 
     public function testFailingCase(): void
