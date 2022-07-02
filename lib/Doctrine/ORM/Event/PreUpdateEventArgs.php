@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Event;
 
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\PersistentCollection;
 use InvalidArgumentException;
@@ -98,6 +99,40 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     }
 
     /**
+     * @deprecated 2.13. Use {@see getObject} instead.
+     *
+     * @return object
+     */
+    public function getEntity()
+    {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/9875',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use getObjectManager() instead.',
+            __METHOD__
+        );
+
+        return parent::getEntity();
+    }
+
+    /**
+     * @deprecated 2.13. Use {@see getObjectManager} instead.
+     *
+     * @return EntityManagerInterface
+     */
+    public function getEntityManager()
+    {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/9875',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use getObjectManager() instead.',
+            __METHOD__
+        );
+
+        return parent::getEntityManager();
+    }
+
+    /**
      * Asserts the field exists in changeset.
      *
      * @throws InvalidArgumentException
@@ -108,7 +143,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
             throw new InvalidArgumentException(sprintf(
                 'Field "%s" is not a valid field of the entity "%s" in PreUpdateEventArgs.',
                 $field,
-                get_debug_type($this->getEntity())
+                get_debug_type($this->getObject())
             ));
         }
     }

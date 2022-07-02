@@ -48,6 +48,11 @@ Calling `AbstractQuery::setFetchMode()` with anything else than
 `Doctrine\ORM\Mapping::FETCH_LAZY` being used. Relying on that behavior is
 deprecated and will result in an exception in 3.0.
 
+## Deprecated `Doctrine\ORM\Event\PreUpdateEventArgs::getEntityManager()` and `Doctrine\ORM\Event\PreUpdateEventArgs::getEntity()`
+
+In 3.0, `Doctrine\ORM\Event\PreUpdateEventArgs` will extend `Doctrine\Persistence\Event\PreUpdateEventArgs` instead of
+`Doctrine\ORM\Event\LifecycleEventArgs` and those methods won't be available. Use `getObjectManager()` and `getObject()` instead.
+
 ## Prepare split of output walkers and tree walkers
 
 In 3.0, `SqlWalker` and its child classes won't implement the `TreeWalker`
