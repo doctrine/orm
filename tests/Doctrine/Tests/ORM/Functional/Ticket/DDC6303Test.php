@@ -122,7 +122,7 @@ class DDC6303ChildA extends DDC6303BaseClass
 {
     /**
      * @var mixed
-     * @Column(type="string")
+     * @Column(type="string", nullable=true) // Oracle DB empty string = NULL
      */
     private $originalData;
 
