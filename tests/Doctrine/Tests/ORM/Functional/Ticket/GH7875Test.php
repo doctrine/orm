@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Configuration;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -28,11 +30,12 @@ final class GH7875Test extends OrmFunctionalTestCase
     public function cleanUpSchema(): void
     {
         $connection = $this->_em->getConnection();
+        $platform   = $connection->getDatabasePlatform();
 
-        $connection->executeStatement('DROP TABLE IF EXISTS gh7875_my_entity');
-        $connection->executeStatement('DROP TABLE IF EXISTS gh7875_my_other_entity');
+        $connection->executeStatement($this->getSqlForDrop('gh7875_my_entity', $platform)); // Oracle DB not support 'IF EXISTS'
+        $connection->executeStatement($this->getSqlForDrop('gh7875_my_other_entity', $platform));
 
-        $platform = $connection->getDatabasePlatform();
+
         if ($platform instanceof PostgreSQLPlatform) {
             $connection->executeStatement('DROP SEQUENCE IF EXISTS gh7875_my_entity_id_seq');
             $connection->executeStatement('DROP SEQUENCE IF EXISTS gh7875_my_other_entity_id_seq');
@@ -120,6 +123,27 @@ final class GH7875Test extends OrmFunctionalTestCase
 
         self::assertCount(0, $sqls);
         self::assertSame($previousFilter, $config->getSchemaAssetsFilter());
+    }
+
+    /**
+     * @param string $tableName
+     * @param AbstractPlatform $platform
+     * @return string
+     */
+    private function getSqlForDrop(string $tableName, AbstractPlatform $platform): string
+    {
+        if (! $platform instanceof OraclePlatform) {
+            return 'DROP TABLE IF EXISTS ' . $tableName;
+        }
+
+        return 'BEGIN
+           EXECUTE IMMEDIATE \'DROP TABLE ' . $tableName . '\';
+        EXCEPTION
+           WHEN OTHERS THEN
+              IF SQLCODE != -942 THEN
+                 RAISE;
+              END IF;
+        END;';
     }
 }
 

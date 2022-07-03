@@ -632,8 +632,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($this->_usedModelSets['versioned_many_to_one'])) {
-            $conn->executeStatement('DELETE FROM versioned_many_to_one_article');
-            $conn->executeStatement('DELETE FROM versioned_many_to_one_category');
+            $conn->executeStatement('DELETE FROM ver_m2o_article');
+            $conn->executeStatement('DELETE FROM ver_m2o_category');
         }
 
         if (isset($this->_usedModelSets['issue5989'])) {
@@ -922,7 +922,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     public function getLimitSQLByPlatform($limit, AbstractPlatform $platform): string
     {
         $result = ' LIMIT ' . $limit;
-        if($platform instanceof OraclePlatform) {
+        if ($platform instanceof OraclePlatform) {
             $result = ' WHERE ROWNUM <= ' . $limit;
         }
 

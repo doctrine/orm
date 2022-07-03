@@ -58,8 +58,8 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase(): void
     {
-        $conn = $this->_em->getConnection();
-        $limit = $this->getLimitSQLByPlatform(1, $conn->getDatabasePlatform());
+        $conn   = $this->_em->getConnection();
+        $limit  = $this->getLimitSQLByPlatform(1, $conn->getDatabasePlatform());
 
         self::assertEquals('nop', $conn->fetchOne('SELECT id4 FROM vct_auxiliary' . $limit));
 
