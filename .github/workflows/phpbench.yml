@@ -12,6 +12,9 @@ on:
 env:
   fail-fast: true
 
+permissions:
+  contents: read
+
 jobs:
   phpbench:
     name: "PHPBench"

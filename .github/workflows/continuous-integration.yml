@@ -11,6 +11,9 @@ on:
 env:
   fail-fast: true
 
+permissions:
+  contents: read
+
 jobs:
   phpunit-smoke-check:
     name: "PHPUnit with SQLite"

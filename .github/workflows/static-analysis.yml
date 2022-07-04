@@ -9,6 +9,9 @@ on:
     branches:
       - "*.x"
 
+permissions:
+  contents: read
+
 jobs:
   static-analysis-phpstan:
     name: "Static Analysis with PHPStan"

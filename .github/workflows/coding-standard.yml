@@ -8,8 +8,13 @@ on:
     branches:
       - "*.x"
 
+permissions:
+  contents: read
+
 jobs:
   coding-standards:
+    permissions:
+      contents: none
     uses: "doctrine/.github/.github/workflows/coding-standards.yml@1.4.1"
     with:
       php-version: "8.1"
