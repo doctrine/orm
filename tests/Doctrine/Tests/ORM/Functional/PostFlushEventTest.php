@@ -55,7 +55,7 @@ class PostFlushEventTest extends OrmFunctionalTestCase
     {
         $this->_em->persist($this->createNewValidUser());
         $this->_em->flush();
-        $receivedEm = $this->listener->receivedArgs->getEntityManager();
+        $receivedEm = $this->listener->receivedArgs->getObjectManager();
         self::assertSame($this->_em, $receivedEm);
     }
 
