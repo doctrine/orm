@@ -52,7 +52,7 @@ class OneToManyCompositeIdTest extends OrmFunctionalTestCase
 
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase(): void
     {
-        $conn = $this->_em->getConnection();
+        $conn  = $this->_em->getConnection();
         $limit = $this->getLimitSQLByPlatform(1, $conn->getDatabasePlatform());
 
         self::assertEquals('nop', $conn->fetchOne('SELECT id1 FROM vct_inversed_onetomany_compositeid' . $limit));

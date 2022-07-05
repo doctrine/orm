@@ -44,6 +44,8 @@ class DDC2090Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
+        $this->disableAutoCommit();
+
         $this->_em->createQueryBuilder()
             ->update(CompanyEmployee::class, 'e')
             ->set('e.startDate', ':date')

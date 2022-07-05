@@ -14,7 +14,10 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function array_map;
 use function assert;
+use function strtolower;
+use function trim;
 
 /**
  * @group DDC-192
@@ -30,11 +33,13 @@ class DDC192Test extends OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema($classes);
 
-        $tables = $this->createSchemaManager()->listTableNames();
+        $tables = array_map(static function($table){
+            return strtolower(trim($table, '`"\''));
+        }, $this->createSchemaManager()->listTableNames());
 
         foreach ($classes as $class) {
             assert($class instanceof ClassMetadata);
-            self::assertContains($class->getTableName(), $tables);
+            self::assertContains(strtolower($class->getTableName()), $tables);
         }
     }
 }

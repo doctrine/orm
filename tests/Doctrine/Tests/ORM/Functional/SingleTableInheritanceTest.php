@@ -243,8 +243,10 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
 
         $contracts = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c ORDER BY c.id')->getScalarResult();
 
-        $discrValues = array_map(static function ($a) {
-            return $a['c_discr'];
+        $keyDiscr = $this->getDiscriminatorByPlatform('discr', $this->_em->getConnection()->getDatabasePlatform());
+
+        $discrValues = array_map(static function ($a) use ($keyDiscr) {
+            return $a['c_' . $keyDiscr];
         }, $contracts);
 
         sort($discrValues);

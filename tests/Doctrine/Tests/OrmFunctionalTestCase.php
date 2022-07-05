@@ -6,6 +6,7 @@ namespace Doctrine\Tests;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\DB2Platform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
@@ -51,6 +52,7 @@ use function realpath;
 use function sprintf;
 use function str_contains;
 use function strtolower;
+use function strtoupper;
 use function var_export;
 
 use const PHP_EOL;
@@ -921,11 +923,35 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
     public function getLimitSQLByPlatform($limit, AbstractPlatform $platform): string
     {
-        $result = ' LIMIT ' . $limit;
+        $sql = ' LIMIT';
         if ($platform instanceof OraclePlatform) {
-            $result = ' WHERE ROWNUM <= ' . $limit;
+            $sql = ' WHERE ROWNUM <=';
         }
 
-        return $result;
+        return $sql . ' ' . $limit;
+    }
+
+    public function getDiscriminatorByPlatform($key, AbstractPlatform $platform): string
+    {
+        if ($platform instanceof OraclePlatform || $platform instanceof DB2Platform) {
+            return strtoupper($key);
+        }
+
+        return $key;
+    }
+
+    /**
+     * Due to autocommit in oracle database, all data in temporary tables for the current session is dropped
+     * and the tests do not pass. And autocommit is disabled only in this way
+     *
+     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function disableAutoCommit(): void
+    {
+        $conn = $this->_em->getConnection();
+        if ($conn->getDatabasePlatform() instanceof OraclePlatform) {
+            $conn->getWrappedConnection()->beginTransaction();
+        }
     }
 }
