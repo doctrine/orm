@@ -954,4 +954,26 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->getWrappedConnection()->beginTransaction();
         }
     }
+
+
+    /**
+     * @param string $tableName
+     * @param AbstractPlatform $platform
+     * @return string
+     */
+    public function getSqlForDrop(string $tableName, AbstractPlatform $platform): string
+    {
+        if (! $platform instanceof OraclePlatform) {
+            return 'DROP TABLE IF EXISTS ' . $tableName;
+        }
+
+        return 'BEGIN
+           EXECUTE IMMEDIATE \'DROP TABLE ' . $tableName . '\' CASCADE CONSTRAINTS;
+        EXCEPTION
+           WHEN OTHERS THEN
+              IF SQLCODE != -942 THEN
+                 RAISE;
+              END IF;
+        END;';
+    }
 }

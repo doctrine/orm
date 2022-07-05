@@ -124,27 +124,6 @@ final class GH7875Test extends OrmFunctionalTestCase
         self::assertCount(0, $sqls);
         self::assertSame($previousFilter, $config->getSchemaAssetsFilter());
     }
-
-    /**
-     * @param string $tableName
-     * @param AbstractPlatform $platform
-     * @return string
-     */
-    private function getSqlForDrop(string $tableName, AbstractPlatform $platform): string
-    {
-        if (! $platform instanceof OraclePlatform) {
-            return 'DROP TABLE IF EXISTS ' . $tableName;
-        }
-
-        return 'BEGIN
-           EXECUTE IMMEDIATE \'DROP TABLE ' . $tableName . '\';
-        EXCEPTION
-           WHEN OTHERS THEN
-              IF SQLCODE != -942 THEN
-                 RAISE;
-              END IF;
-        END;';
-    }
 }
 
 /**
