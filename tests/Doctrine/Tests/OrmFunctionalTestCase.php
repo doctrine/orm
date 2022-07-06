@@ -691,6 +691,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             ) {
                 static::$sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/');
             } elseif ($platform instanceof OraclePlatform) {
+                $test = 'SELECT 1 /*' . static::class . '*/ FROM dual';
                 static::$sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/ FROM dual');
             }
         }
@@ -968,7 +969,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         return 'BEGIN
-           EXECUTE IMMEDIATE \'DROP TABLE ' . $tableName . '\' CASCADE CONSTRAINTS;
+           EXECUTE IMMEDIATE \'DROP TABLE ' . $tableName . '\';
         EXCEPTION
            WHEN OTHERS THEN
               IF SQLCODE != -942 THEN
