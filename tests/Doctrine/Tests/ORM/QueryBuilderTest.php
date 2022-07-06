@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
@@ -1302,5 +1303,50 @@ class QueryBuilderTest extends OrmTestCase
             ->delete(CmsUser::class . ' u');
 
         $this->assertValidQueryBuilder($qb, 'DELETE Doctrine\Tests\Models\CMS\CmsUser u ');
+    }
+
+    public function testCreateNamedParameter(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+
+        $qb->select('u')
+            ->from(CmsUser::class, 'u')
+            ->where(
+                $qb->expr()->eq('u.name', $qb->createNamedParameter(10, ParameterType::INTEGER))
+            );
+
+        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :dcValue1', $qb->getDQL());
+        self::assertEquals(10, $qb->getParameter('dcValue1')->getValue());
+        self::assertEquals(ParameterType::INTEGER, $qb->getParameter('dcValue1')->getType());
+    }
+
+    public function testCreateNamedParameterCustomPlaceholder(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+
+        $qb->select('u')
+            ->from(CmsUser::class, 'u')
+            ->where(
+                $qb->expr()->eq('u.name', $qb->createNamedParameter(10, ParameterType::INTEGER, ':test'))
+            );
+
+        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :test', $qb->getDQL());
+        self::assertEquals(10, $qb->getParameter('test')->getValue());
+        self::assertEquals(ParameterType::INTEGER, $qb->getParameter('test')->getType());
+    }
+
+    public function testCreatePositionalParameter(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+
+        $qb->select('u')
+            ->from(CmsUser::class, 'u')
+            ->where(
+                $qb->expr()->eq('u.name', $qb->createPositionalParameter(10, ParameterType::INTEGER))
+            );
+
+        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?', $qb->getDQL());
+        self::assertEquals(10, $qb->getParameter(0)->getValue());
+        self::assertEquals(ParameterType::INTEGER, $qb->getParameter(0)->getType());
     }
 }

@@ -6,6 +6,8 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Parameter;
@@ -148,6 +150,13 @@ class QueryBuilder
 
     /** @var int */
     protected $lifetime = 0;
+
+    /**
+     * The counter of bound parameters used with {@see createNamedParameter) and {@see createPositionalParameter).
+     *
+     * @var int
+     */
+    private $boundCounter = 0;
 
     /**
      * Initializes a new <tt>QueryBuilder</tt> that uses the given <tt>EntityManager</tt>.
@@ -1517,6 +1526,74 @@ class QueryBuilder
     public function __toString()
     {
         return $this->getDQL();
+    }
+
+    /**
+     * Creates a new named parameter and bind the value $value to it.
+     *
+     * This method provides a shortcut for {@see Statement::bindValue()}
+     * when using prepared statements.
+     *
+     * The parameter $value specifies the value that you want to bind. If
+     * $placeholder is not provided createNamedParameter() will automatically
+     * create a placeholder for you. An automatic placeholder will be of the
+     * name ':dcValue1', ':dcValue2' etc.
+     *
+     * Example:
+     * <code>
+     * $value = 2;
+     * $q->eq( 'id', $q->createNamedParameter( $value ) );
+     * $stmt = $q->executeQuery(); // executed with 'id = 2'
+     * </code>
+     *
+     * @link http://www.zetacomponents.org
+     *
+     * @param mixed                $value
+     * @param int|string|Type|null $type
+     * @param string               $placeHolder The name to bind with. The string must start with a colon ':'.
+     *
+     * @return string the placeholder name used.
+     */
+    public function createNamedParameter($value, $type = ParameterType::STRING, $placeHolder = null)
+    {
+        if ($placeHolder === null) {
+            $this->boundCounter++;
+            $placeHolder = ':dcValue' . $this->boundCounter;
+        }
+
+        $this->setParameter(substr($placeHolder, 1), $value, $type);
+
+        return $placeHolder;
+    }
+
+    /**
+     * Creates a new positional parameter and bind the given value to it.
+     *
+     * Attention: If you are using positional parameters with the query builder you have
+     * to be very careful to bind all parameters in the order they appear in the SQL
+     * statement , otherwise they get bound in the wrong order which can lead to serious
+     * bugs in your code.
+     *
+     * Example:
+     * <code>
+     *  $qb = $conn->createQueryBuilder();
+     *  $qb->select('u.*')
+     *     ->from('users', 'u')
+     *     ->where('u.username = ' . $qb->createPositionalParameter('Foo', ParameterType::STRING))
+     *     ->orWhere('u.username = ' . $qb->createPositionalParameter('Bar', ParameterType::STRING))
+     * </code>
+     *
+     * @param mixed                $value
+     * @param int|string|Type|null $type
+     *
+     * @return string
+     */
+    public function createPositionalParameter($value, $type = ParameterType::STRING)
+    {
+        $this->setParameter($this->boundCounter, $value, $type);
+        $this->boundCounter++;
+
+        return '?';
     }
 
     /**
