@@ -153,16 +153,14 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $train = $this->_em->find(get_class($train), $train->id);
-        $this->assertSQLEquals(
-            'SELECT t0.id AS id_1, t0.driver_id AS driver_id_2, t3.id AS id_4, t3.name AS name_5, t0.owner_id AS owner_id_6, t7.id AS id_8, t7.name AS name_9 FROM Train t0 LEFT JOIN TrainDriver t3 ON t0.driver_id = t3.id INNER JOIN TrainOwner t7 ON t0.owner_id = t7.id WHERE t0.id = ?',
-            $this->getLastLoggedQuery()['sql']
+        $this->assertQueryLogTail(
+            'SELECT t0.id AS id_1, t0.driver_id AS driver_id_2, t3.id AS id_4, t3.name AS name_5, t0.owner_id AS owner_id_6, t7.id AS id_8, t7.name AS name_9 FROM Train t0 LEFT JOIN TrainDriver t3 ON t0.driver_id = t3.id INNER JOIN TrainOwner t7 ON t0.owner_id = t7.id WHERE t0.id = ?'
         );
 
         $this->_em->clear();
         $driver = $this->_em->find(get_class($driver), $driver->id);
-        $this->assertSQLEquals(
-            'SELECT t0.id AS id_1, t0.name AS name_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id IN (?)',
-            $this->getLastLoggedQuery()['sql']
+        $this->assertQueryLogTail(
+            'SELECT t0.id AS id_1, t0.name AS name_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id IN (?)'
         );
     }
 
@@ -183,16 +181,11 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 
         $waggon = $this->_em->find(get_class($waggon), $waggon->id);
 
-        // The last query is the eager loading of the owner of the train
-        $this->assertSQLEquals(
-            'SELECT t0.id AS id_1, t0.name AS name_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id IN (?)',
-            $this->getLastLoggedQuery()['sql']
-        );
-
-        // The one before is the fetching of the waggon and train
-        $this->assertSQLEquals(
+        $this->assertQueryLogTail(
+            // The one before is the fetching of the waggon and train
             'SELECT t0.id AS id_1, t0.train_id AS train_id_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM Waggon t0 INNER JOIN Train t3 ON t0.train_id = t3.id WHERE t0.id = ?',
-            $this->getLastLoggedQuery(1)['sql']
+            // The last query is the eager loading of the owner of the train
+            'SELECT t0.id AS id_1, t0.name AS name_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id IN (?)'
         );
     }
 
@@ -208,9 +201,8 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $waggon = $this->_em->find(get_class($owner), $owner->id);
-        $this->assertSQLEquals(
-            'SELECT t0.id AS id_1, t0.name AS name_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id = ?',
-            $this->getLastLoggedQuery()['sql']
+        $this->assertQueryLogTail(
+            'SELECT t0.id AS id_1, t0.name AS name_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id = ?'
         );
     }
 

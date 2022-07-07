@@ -38,11 +38,13 @@ use RuntimeException;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Throwable;
 
+use function array_column;
 use function array_map;
 use function array_pop;
 use function array_reverse;
 use function array_slice;
 use function assert;
+use function count;
 use function explode;
 use function get_debug_type;
 use function getenv;
@@ -947,6 +949,20 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         return $lastQuery;
+    }
+
+    /**
+     * Asserts that the query log finishes with the given SQL queries, modulo case.
+     */
+    final protected function assertQueryLogTail(string ...$expectedQueries): void
+    {
+        self::assertSame(
+            array_map('mb_strtolower', $expectedQueries),
+            array_map('mb_strtolower', array_column(array_slice(
+                $this->getQueryLog()->queries,
+                -1 * count($expectedQueries)
+            ), 'sql'))
+        );
     }
 
     /**

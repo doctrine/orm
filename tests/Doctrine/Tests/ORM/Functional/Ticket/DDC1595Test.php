@@ -49,16 +49,14 @@ class DDC1595Test extends OrmFunctionalTestCase
         $entity1 = $repository->find($e1->id);
 
         // DDC-1596
-        $this->assertSQLEquals(
-            "SELECT t0.id AS id_1, t0.type FROM base t0 WHERE t0.id = ? AND t0.type IN ('Entity1')",
-            $this->getLastLoggedQuery()['sql']
+        $this->assertQueryLogTail(
+            "SELECT t0.id AS id_1, t0.type FROM base t0 WHERE t0.id = ? AND t0.type IN ('Entity1')"
         );
 
         $entities = $entity1->getEntities()->getValues();
 
-        self::assertEquals(
-            "SELECT t0.id AS id_1, t0.type FROM base t0 INNER JOIN entity1_entity2 ON t0.id = entity1_entity2.item WHERE entity1_entity2.parent = ? AND t0.type IN ('Entity2')",
-            $this->getLastLoggedQuery()['sql']
+        self::assertQueryLogTail(
+            "SELECT t0.id AS id_1, t0.type FROM base t0 INNER JOIN entity1_entity2 ON t0.id = entity1_entity2.item WHERE entity1_entity2.parent = ? AND t0.type IN ('Entity2')"
         );
 
         $this->_em->clear();
@@ -66,9 +64,8 @@ class DDC1595Test extends OrmFunctionalTestCase
         $entity1  = $repository->find($e1->id);
         $entities = $entity1->getEntities()->count();
 
-        $this->assertSQLEquals(
-            'SELECT COUNT(*) FROM entity1_entity2 t WHERE t.parent = ?',
-            $this->getLastLoggedQuery()['sql']
+        $this->assertQueryLogTail(
+            'SELECT COUNT(*) FROM entity1_entity2 t WHERE t.parent = ?'
         );
     }
 }
