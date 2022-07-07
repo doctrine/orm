@@ -776,9 +776,11 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         // assert groups association mappings
         self::assertArrayHasKey('groups', $guestMetadata->associationMappings);
         self::assertArrayHasKey('groups', $adminMetadata->associationMappings);
+        self::assertArrayHasKey('organizations', $adminMetadata->associationMappings);
 
-        $guestGroups = $guestMetadata->associationMappings['groups'];
-        $adminGroups = $adminMetadata->associationMappings['groups'];
+        $guestGroups        = $guestMetadata->associationMappings['groups'];
+        $adminGroups        = $adminMetadata->associationMappings['groups'];
+        $adminOrganizations = $adminMetadata->associationMappings['organizations'];
 
         // assert not override attributes
         self::assertEquals($guestGroups['fieldName'], $adminGroups['fieldName']);
@@ -809,6 +811,14 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals(['adminuser_id' => 'id'], $adminGroups['relationToSourceKeyColumns']);
         self::assertEquals(['admingroup_id' => 'id'], $adminGroups['relationToTargetKeyColumns']);
         self::assertEquals(['adminuser_id', 'admingroup_id'], $adminGroups['joinTableColumns']);
+
+        self::assertEquals('ddc964_users_adminorganizations', $adminOrganizations['joinTable']['name']);
+        self::assertEquals('ddc964admin_id', $adminOrganizations['joinTable']['joinColumns'][0]['name']);
+        self::assertEquals('ddc964organization_id', $adminOrganizations['joinTable']['inverseJoinColumns'][0]['name']);
+
+        self::assertEquals(['ddc964admin_id' => 'id'], $adminOrganizations['relationToSourceKeyColumns']);
+        self::assertEquals(['ddc964organization_id' => 'id'], $adminOrganizations['relationToTargetKeyColumns']);
+        self::assertEquals(['ddc964admin_id', 'ddc964organization_id'], $adminOrganizations['joinTableColumns']);
 
         // assert address association mappings
         self::assertArrayHasKey('address', $guestMetadata->associationMappings);

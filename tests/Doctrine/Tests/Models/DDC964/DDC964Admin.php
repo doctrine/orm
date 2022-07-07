@@ -21,6 +21,11 @@ use Doctrine\ORM\Mapping\JoinTable;
  *              inverseJoinColumns=@JoinColumn(name="admingroup_id")
  *          )
  *      ),
+ *      @AssociationOverride(name="organizations",
+ *          joinTable=@JoinTable(
+ *              name="ddc964_users_adminorganizations"
+ *          )
+ *      ),
  *      @AssociationOverride(name="address",
  *          joinColumns=@JoinColumn(
  *              name="adminaddress_id", referencedColumnName="id"
@@ -29,7 +34,7 @@ use Doctrine\ORM\Mapping\JoinTable;
  * })
  */
 #[Entity]
-#[AssociationOverrides([new AssociationOverride(name: 'groups', joinTable: new JoinTable(name: 'ddc964_users_admingroups'), joinColumns: [new JoinColumn(name: 'adminuser_id')], inverseJoinColumns: [new JoinColumn(name: 'admingroup_id')]), new AssociationOverride(name: 'address', joinColumns: [new JoinColumn(name: 'adminaddress_id', referencedColumnName: 'id')])])]
+#[AssociationOverrides([new AssociationOverride(name: 'groups', joinTable: new JoinTable(name: 'ddc964_users_admingroups'), joinColumns: [new JoinColumn(name: 'adminuser_id')], inverseJoinColumns: [new JoinColumn(name: 'admingroup_id')]), new AssociationOverride(name: 'organizations', joinTable: new JoinTable(name: 'ddc964_users_adminorganizations')), new AssociationOverride(name: 'address', joinColumns: [new JoinColumn(name: 'adminaddress_id', referencedColumnName: 'id')])])]
 class DDC964Admin extends DDC964User
 {
     public static function loadMetadata(ClassMetadata $metadata): void
@@ -58,6 +63,13 @@ class DDC964Admin extends DDC964User
                         ['name' => 'admingroup_id'],
                     ],
                 ],
+            ]
+        );
+
+        $metadata->setAssociationOverride(
+            'organizations',
+            [
+                'joinTable' => ['name' => 'ddc964_users_adminorganizations'],
             ]
         );
     }

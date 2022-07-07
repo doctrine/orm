@@ -1,7 +1,7 @@
 Doctrine\Tests\Models\DDC964\DDC964User:
   type: mappedSuperclass
   id:
-    id: 
+    id:
       type: integer
       column: user_id
       length: 150
@@ -33,3 +33,13 @@ Doctrine\Tests\Models\DDC964\DDC964User:
           group_id:
             referencedColumnName: id
       cascade: [ persist, merge, detach ]
+    organizations:
+      targetEntity: DDC964Organization
+      joinTable:
+        name: ddc964_users_organizations
+        joinColumns:
+          user_id:
+            referencedColumnName: id
+        inverseJoinColumns:
+          organization_id:
+            referencedColumnName: id
