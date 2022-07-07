@@ -77,7 +77,7 @@ class SchemaToolTest extends OrmTestCase
         );
         $table  = $schema->getTable('TestEntityWithAnnotationOptionsAttribute');
 
-        foreach ([$table->getOptions(), $table->getColumn('test')->getCustomSchemaOptions()] as $options) {
+        foreach ([$table->getOptions(), $table->getColumn('test')->getPlatformOptions()] as $options) {
             self::assertArrayHasKey('foo', $options);
             self::assertSame('bar', $options['foo']);
             self::assertArrayHasKey('baz', $options);
@@ -136,14 +136,14 @@ class SchemaToolTest extends OrmTestCase
         );
 
         self::assertEquals(
-            $tableCategory->getColumn('id')->getCustomSchemaOptions(),
-            $tableBoard->getColumn('category_id')->getCustomSchemaOptions(),
+            $tableCategory->getColumn('id')->getPlatformOptions(),
+            $tableBoard->getColumn('category_id')->getPlatformOptions(),
             'Foreign key/join column should have the same custom options as the referenced column'
         );
 
         self::assertEquals(
             ['collation' => 'latin1_bin', 'foo' => 'bar'],
-            $tableBoard->getColumn('category_id')->getCustomSchemaOptions()
+            $tableBoard->getColumn('category_id')->getPlatformOptions()
         );
     }
 
@@ -177,17 +177,15 @@ class SchemaToolTest extends OrmTestCase
         self::assertTrue($listener->schemaCalled);
     }
 
-    public function testNullDefaultNotAddedToCustomSchemaOptions(): void
+    public function testNullDefaultNotAddedToPlatformOptions(): void
     {
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $customSchemaOptions = $schemaTool->getSchemaFromMetadata([$em->getClassMetadata(NullDefaultColumn::class)])
+        self::assertSame([], $schemaTool->getSchemaFromMetadata([$em->getClassMetadata(NullDefaultColumn::class)])
             ->getTable('NullDefaultColumn')
             ->getColumn('nullDefault')
-            ->getCustomSchemaOptions();
-
-        self::assertSame([], $customSchemaOptions);
+            ->getPlatformOptions());
     }
 
     /**
@@ -198,13 +196,13 @@ class SchemaToolTest extends OrmTestCase
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $customSchemaOptions = $schemaTool->getSchemaFromMetadata([$em->getClassMetadata(Card::class)])
+        $platformOptions = $schemaTool->getSchemaFromMetadata([$em->getClassMetadata(Card::class)])
             ->getTable('Card')
             ->getColumn('suit')
-            ->getCustomSchemaOptions();
+            ->getPlatformOptions();
 
-        self::assertArrayHasKey('enumType', $customSchemaOptions);
-        self::assertSame(Suit::class, $customSchemaOptions['enumType']);
+        self::assertArrayHasKey('enumType', $platformOptions);
+        self::assertSame(Suit::class, $platformOptions['enumType']);
     }
 
     /**
