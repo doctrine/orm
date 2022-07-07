@@ -1549,7 +1549,7 @@ class QueryBuilder
      * @link http://www.zetacomponents.org
      *
      * @param mixed           $value
-     * @param int|string|null $type ParameterType::* or \Doctrine\DBAL\Types\Type::* constant
+     * @param int|string|null $type        ParameterType::* or \Doctrine\DBAL\Types\Type::* constant
      * @param string          $placeHolder The name to bind with. The string must start with a colon ':'.
      *
      * @return string the placeholder name used.
@@ -1584,7 +1584,7 @@ class QueryBuilder
      * </code>
      *
      * @param mixed           $value
-     * @param int|string|null $type ParameterType::* or \Doctrine\DBAL\Types\Type::* constant
+     * @param int|string|null $type  ParameterType::* or \Doctrine\DBAL\Types\Type::* constant
      *
      * @return string
      */
