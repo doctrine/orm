@@ -484,8 +484,8 @@ class AttributeDriver extends CompatibilityAnnotationDriver
                     $joinTable      = [
                         'name'      => $joinTableAnnot->name,
                         'schema'    => $joinTableAnnot->schema,
-                        'joinColumns' => $override['joinColumns'] ?? [],
-                        'inverseJoinColumns' => $override['inverseJoinColumns'] ?? [],
+                        'joinColumns' => $override['joinColumns'] ?? null,
+                        'inverseJoinColumns' => $override['inverseJoinColumns'] ?? null,
                     ];
 
                     unset($override['joinColumns'], $override['inverseJoinColumns']);
