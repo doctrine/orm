@@ -341,11 +341,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             )
         );
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\' . $embeddableClassName),
-            ]
-        );
+        $this->createSchemaForModels(__NAMESPACE__ . '\\' . $embeddableClassName);
     }
 
     /**

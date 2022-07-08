@@ -31,11 +31,9 @@ class DDC2494Test extends OrmFunctionalTestCase
 
         Type::addType('ddc2494_tinyint', DDC2494TinyIntType::class);
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC2494Currency::class),
-                $this->_em->getClassMetadata(DDC2494Campaign::class),
-            ]
+        $this->createSchemaForModels(
+            DDC2494Currency::class,
+            DDC2494Campaign::class
         );
     }
 

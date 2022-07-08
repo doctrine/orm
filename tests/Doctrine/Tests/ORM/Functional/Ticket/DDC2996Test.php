@@ -22,11 +22,9 @@ class DDC2996Test extends OrmFunctionalTestCase
 {
     public function testIssue(): void
     {
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC2996User::class),
-                $this->_em->getClassMetadata(DDC2996UserPreference::class),
-            ]
+        $this->createSchemaForModels(
+            DDC2996User::class,
+            DDC2996UserPreference::class
         );
 
         $pref        = new DDC2996UserPreference();

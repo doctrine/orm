@@ -17,11 +17,7 @@ class DDC425Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC425Entity::class),
-            ]
-        );
+        $this->createSchemaForModels(DDC425Entity::class);
     }
 
     /**

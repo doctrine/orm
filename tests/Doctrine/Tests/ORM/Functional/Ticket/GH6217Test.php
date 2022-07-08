@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\Functional\Ticket;
+namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
@@ -25,10 +25,10 @@ final class GH6217Test extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(GH6217AssociatedEntity::class),
-            $this->_em->getClassMetadata(GH6217FetchedEntity::class),
-        ]);
+        $this->createSchemaForModels(
+            GH6217AssociatedEntity::class,
+            GH6217FetchedEntity::class
+        );
     }
 
     public function testLoadingOfSecondLevelCacheOnEagerAssociations(): void

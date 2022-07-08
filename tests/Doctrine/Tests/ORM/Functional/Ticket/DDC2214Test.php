@@ -30,12 +30,7 @@ class DDC2214Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC2214Foo::class),
-                $this->_em->getClassMetadata(DDC2214Bar::class),
-            ]
-        );
+        $this->createSchemaForModels(DDC2214Foo::class, DDC2214Bar::class);
     }
 
     public function testIssue(): void

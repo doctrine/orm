@@ -28,12 +28,7 @@ class GH5887Test extends OrmFunctionalTestCase
 
         Type::addType(GH5887CustomIdObjectType::NAME, GH5887CustomIdObjectType::class);
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(GH5887Cart::class),
-                $this->_em->getClassMetadata(GH5887Customer::class),
-            ]
-        );
+        $this->createSchemaForModels(GH5887Cart::class, GH5887Customer::class);
     }
 
     public function testLazyLoadsForeignEntitiesInOneToOneRelationWhileHavingCustomIdObject(): void

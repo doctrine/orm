@@ -20,11 +20,9 @@ class DDC144Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC144FlowElement::class),
-                $this->_em->getClassMetadata(DDC144Operand::class),
-            ]
+        $this->createSchemaForModels(
+            DDC144FlowElement::class,
+            DDC144Operand::class
         );
     }
 

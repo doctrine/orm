@@ -199,7 +199,7 @@ abstract class AbstractQuery
     }
 
     /**
-     * @return bool TRUE if the query results are enable for second level cache, FALSE otherwise.
+     * @return bool TRUE if the query results are enabled for second level cache, FALSE otherwise.
      */
     public function isCacheable()
     {

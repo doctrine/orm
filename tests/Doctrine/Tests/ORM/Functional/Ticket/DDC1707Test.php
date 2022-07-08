@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\PostLoad;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 /**
  * @group DDC-1707
@@ -25,15 +24,10 @@ class DDC1707Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1509File::class),
-                    $this->_em->getClassMetadata(DDC1509Picture::class),
-                ]
-            );
-        } catch (Exception $ignored) {
-        }
+        $this->createSchemaForModels(
+            DDC1707Base::class,
+            DDC1707Child::class
+        );
     }
 
     public function testPostLoadOnChild(): void

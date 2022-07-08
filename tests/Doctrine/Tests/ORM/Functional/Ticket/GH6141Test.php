@@ -28,12 +28,10 @@ class GH6141Test extends OrmFunctionalTestCase
 
         Type::addType(GH6141PeopleType::NAME, GH6141PeopleType::class);
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(GH6141Person::class),
-                $this->_em->getClassMetadata(GH6141Boss::class),
-                $this->_em->getClassMetadata(GH6141Employee::class),
-            ]
+        $this->createSchemaForModels(
+            GH6141Person::class,
+            GH6141Boss::class,
+            GH6141Employee::class
         );
     }
 

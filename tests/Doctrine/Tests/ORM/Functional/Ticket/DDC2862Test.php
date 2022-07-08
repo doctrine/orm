@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -25,15 +24,7 @@ class DDC2862Test extends OrmFunctionalTestCase
         $this->enableSecondLevelCache();
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC2862User::class),
-                    $this->_em->getClassMetadata(DDC2862Driver::class),
-                ]
-            );
-        } catch (ToolsException $exc) {
-        }
+        $this->createSchemaForModels(DDC2862User::class, DDC2862Driver::class);
     }
 
     public function testIssue(): void

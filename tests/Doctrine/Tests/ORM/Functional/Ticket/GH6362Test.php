@@ -26,13 +26,11 @@ final class GH6362Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(GH6362Start::class),
-                $this->_em->getClassMetadata(GH6362Base::class),
-                $this->_em->getClassMetadata(GH6362Child::class),
-                $this->_em->getClassMetadata(GH6362Join::class),
-            ]
+        $this->createSchemaForModels(
+            GH6362Start::class,
+            GH6362Base::class,
+            GH6362Child::class,
+            GH6362Join::class
         );
     }
 

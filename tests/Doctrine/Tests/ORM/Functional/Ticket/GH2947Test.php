@@ -24,7 +24,7 @@ class GH2947Test extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(GH2947Car::class)]);
+        $this->createSchemaForModels(GH2947Car::class);
     }
 
     public function testIssue(): void

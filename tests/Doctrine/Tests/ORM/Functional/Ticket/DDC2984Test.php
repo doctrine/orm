@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function is_string;
 
@@ -34,15 +33,7 @@ class DDC2984Test extends OrmFunctionalTestCase
             );
         }
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC2984User::class),
-                ]
-            );
-        } catch (Exception $e) {
-            // no action needed - schema seems to be already in place
-        }
+        $this->createSchemaForModels(DDC2984User::class);
     }
 
     public function testIssue(): void

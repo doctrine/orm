@@ -25,17 +25,12 @@ class DDC1404Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1404ParentEntity::class),
-                    $this->_em->getClassMetadata(DDC1404ChildEntity::class),
-                ]
-            );
+        $this->createSchemaForModels(
+            DDC1404ParentEntity::class,
+            DDC1404ChildEntity::class
+        );
 
-            $this->loadFixtures();
-        } catch (Exception $exc) {
-        }
+        $this->loadFixtures();
     }
 
     public function testTicket(): void

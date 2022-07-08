@@ -44,9 +44,7 @@ class UUIDGeneratorTest extends OrmFunctionalTestCase
             self::markTestSkipped('Currently restricted to MySQL platform.');
         }
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(UUIDEntity::class),
-        ]);
+        $this->createSchemaForModels(UUIDEntity::class);
         $entity = new UUIDEntity();
 
         $this->_em->persist($entity);

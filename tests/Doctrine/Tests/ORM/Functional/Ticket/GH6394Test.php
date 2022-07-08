@@ -18,12 +18,7 @@ class GH6394Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(A::class),
-                $this->_em->getClassMetadata(B::class),
-            ]
-        );
+        $this->createSchemaForModels(A::class, B::class);
     }
 
     /**

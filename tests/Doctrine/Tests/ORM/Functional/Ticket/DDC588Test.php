@@ -16,11 +16,7 @@ class DDC588Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC588Site::class),
-            ]
-        );
+        $this->createSchemaForModels(DDC588Site::class);
     }
 
     public function testIssue(): void
