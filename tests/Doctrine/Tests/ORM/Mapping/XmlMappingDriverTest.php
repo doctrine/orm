@@ -153,7 +153,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-1468
      */
-    public function testInvalidMappingFileException(): void
+    public function testItMentionsFilenameAndEntityNameOnInvalidMapping(): void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.BooleanModel.dcm.xml\' for class \'Doctrine\Tests\Models\Generic\BooleanModel\'.');

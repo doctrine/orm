@@ -57,7 +57,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-1468
      */
-    public function testInvalidMappingFileException(): void
+    public function testItMentionsFilenameAndEntityNameOnInvalidMapping(): void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.BooleanModel.dcm.yml\' for class \'Doctrine\Tests\Models\Generic\BooleanModel\'.');
