@@ -410,7 +410,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
                     [$relation, $fieldName] = explode('.', $fieldName);
                 }
 
-                $columnNameCasing = $this->getSQLResultCasing($platform, $field['column']);
+                $columnNameCasing = $field['column'];
+                $test = isset($field['quoted']) && !$field['quoted'];
+                if (!isset($field['quoted']) || !$field['quoted']) {
+                    $columnNameCasing = $this->getSQLResultCasing($platform, $field['column']);
+                }
+
                 if (isset($classMetadata->associationMappings[$relation])) {
                     if ($relation) {
                         $associationMapping = $classMetadata->associationMappings[$relation];

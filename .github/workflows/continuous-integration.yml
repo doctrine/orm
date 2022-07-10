@@ -72,22 +72,32 @@ jobs:
   phpunit-oci8:
     name: "PHPUnit on OCI8"
     runs-on: "ubuntu-20.04"
-    #needs: "phpunit-smoke-check"
+    needs: "phpunit-smoke-check"
 
     strategy:
       matrix:
         php-version:
           - "7.4"
         oracle-version:
-          - "18"
+          - "18-slim"
         dbal-version:
-          - "default"
+          - "3@dev"
+        include:
+          - php-version: "8.0"
+            dbal-version: "3@dev"
+            postgres-version: "18-slim"
+          - php-version: "8.1"
+            dbal-version: "3@dev"
+            postgres-version: "18-slim"
+          - php-version: "8.2"
+            dbal-version: "3@dev"
+            postgres-version: "18-slim"
 
     services:
       oracle:
         image: gvenzl/oracle-xe:${{ matrix.oracle-version }}
         env:
-          ORACLE_RANDOM_PASSWORD: 'yes'
+          ORACLE_PASSWORD: oracle
           APP_USER: doctrine
           APP_USER_PASSWORD: oracle
         ports:
