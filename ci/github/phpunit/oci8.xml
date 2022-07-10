@@ -14,7 +14,9 @@
         <var name="db_host" value="localhost"/>
         <var name="db_user" value="doctrine"/>
         <var name="db_password" value="oracle"/>
-        <var name="db_dname" value="XE"/>
+        <var name="db_dbname" value="XE"/>
+        <var name="db_servicename" value="XEPDB1"/>
+        <var name="db_service" value="yes"/>
         <var name="db_charset" value="UTF8"/>
         <var name="db_event_subscribers" value="Doctrine\DBAL\Event\Listeners\OracleSessionInit"/>
 
