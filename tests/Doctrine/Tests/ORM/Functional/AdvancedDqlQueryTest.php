@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\Models\Company\CompanyCar;
 use Doctrine\Tests\Models\Company\CompanyEmployee;

@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping\Version;
 
 /**
  * @Entity
- * @Table(name="ver_m2o_category") // fix Max identifier length for OracleDB
+ * @Table(name="ver_m2o_category")
  */
 class Category
 {

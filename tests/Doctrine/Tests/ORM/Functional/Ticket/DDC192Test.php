@@ -13,7 +13,9 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function array_map;
 use function strtolower;
+use function trim;
 
 /**
  * @group DDC-192
@@ -29,7 +31,7 @@ class DDC192Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(...$classes);
 
-        $tables = array_map(static function($table){
+        $tables = array_map(static function ($table) {
             return strtolower(trim($table, '`"\''));
         }, $this->createSchemaManager()->listTableNames());
 

@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping\Version;
 
 /**
  * @Entity
- * @Table(name="ver_m2o_article") // fix Max identifier length for OracleDB
+ * @Table(name="ver_m2o_article")
  */
 class Article
 {

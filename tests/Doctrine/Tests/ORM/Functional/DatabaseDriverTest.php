@@ -6,8 +6,6 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
-use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
-use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -229,10 +227,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
     private static function supportsUnsignedInteger(AbstractPlatform $platform): bool
     {
         // FIXME: Condition here is fugly.
-        // NOTE: PostgreSQL and SQL SERVER do not support UNSIGNED integer
 
-        return ! $platform instanceof SQLServerPlatform
-            && ! $platform instanceof PostgreSQLPlatform
-            && ! $platform instanceof OraclePlatform;
+        return ! $platform instanceof OraclePlatform;
     }
 }

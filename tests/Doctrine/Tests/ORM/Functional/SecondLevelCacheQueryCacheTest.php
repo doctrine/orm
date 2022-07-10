@@ -703,7 +703,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         $platform = $this->_em->getConnection()->getDatabasePlatform();
-        $rsm = new ResultSetMapping();
+        $rsm      = new ResultSetMapping();
         $rsm->addEntityResult(Country::class, 'c');
         $rsm->addFieldResult('c', $this->getSQLResultCasing($platform, 'name'), 'name');
         $rsm->addFieldResult('c', $this->getSQLResultCasing($platform, 'id'), 'id');

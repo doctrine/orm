@@ -2939,8 +2939,10 @@ class ClassMetadataInfo implements ClassMetadata
                             if (str_contains($fieldName, '.')) {
                                 [, $fieldName] = explode('.', $fieldName);
                             }
+
                             $resultMapping['entities'][$key]['fields'][$k]['column'] = $fieldName;
                         }
+
                         $column = $resultMapping['entities'][$key]['fields'][$k]['column'];
                         if ($column[0] === '`') {
                             $resultMapping['entities'][$key]['fields'][$k]['quoted'] = true;

@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Configuration;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -33,7 +31,6 @@ final class GH7875Test extends OrmFunctionalTestCase
 
         $connection->executeStatement($this->getSqlForDrop('gh7875_my_entity', $platform)); // Oracle DB not support 'IF EXISTS'
         $connection->executeStatement($this->getSqlForDrop('gh7875_my_other_entity', $platform));
-
 
         if ($platform instanceof PostgreSQLPlatform) {
             $connection->executeStatement('DROP SEQUENCE IF EXISTS gh7875_my_entity_id_seq');

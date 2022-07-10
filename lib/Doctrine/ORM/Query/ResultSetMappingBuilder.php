@@ -411,8 +411,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 }
 
                 $columnNameCasing = $field['column'];
-                $test = isset($field['quoted']) && !$field['quoted'];
-                if (!isset($field['quoted']) || !$field['quoted']) {
+
+                if (empty($field['quoted'])) {
                     $columnNameCasing = $this->getSQLResultCasing($platform, $field['column']);
                 }
 

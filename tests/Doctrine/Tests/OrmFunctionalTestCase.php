@@ -985,12 +985,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
     }
 
-
-    /**
-     * @param string $tableName
-     * @param AbstractPlatform $platform
-     * @return string
-     */
     public function getSqlForDrop(string $tableName, AbstractPlatform $platform): string
     {
         if (! $platform instanceof OraclePlatform) {
