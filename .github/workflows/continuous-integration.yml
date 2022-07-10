@@ -85,13 +85,13 @@ jobs:
         include:
           - php-version: "8.0"
             dbal-version: "3@dev"
-            postgres-version: "18-slim"
+            oracle-version: "18-slim"
           - php-version: "8.1"
             dbal-version: "3@dev"
-            postgres-version: "18-slim"
+            oracle-version: "18-slim"
           - php-version: "8.2"
             dbal-version: "3@dev"
-            postgres-version: "18-slim"
+            oracle-version: "18-slim"
 
     services:
       oracle:
