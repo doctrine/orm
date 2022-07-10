@@ -89,9 +89,6 @@ jobs:
           - php-version: "8.1"
             dbal-version: "3@dev"
             oracle-version: "18-slim"
-          - php-version: "8.2"
-            dbal-version: "3@dev"
-            oracle-version: "18-slim"
 
     services:
       oracle:
