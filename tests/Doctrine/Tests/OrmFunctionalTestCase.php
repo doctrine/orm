@@ -154,7 +154,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Generic\BooleanModel::class,
             Models\Generic\DateTimeModel::class,
             Models\Generic\DecimalModel::class,
-            Models\Generic\SerializationModel::class,
         ],
         'routing' => [
             Models\Routing\RoutingLeg::class,
@@ -452,7 +451,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeStatement('DELETE FROM boolean_model');
             $conn->executeStatement('DELETE FROM date_time_model');
             $conn->executeStatement('DELETE FROM decimal_model');
-            $conn->executeStatement('DELETE FROM serialize_model');
         }
 
         if (isset($this->_usedModelSets['routing'])) {
