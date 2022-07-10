@@ -20,12 +20,12 @@ class Ticket4646InstanceOfWithMultipleParametersTest extends OrmFunctionalTestCa
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(PersonTicket4646Multiple::class),
-            $this->_em->getClassMetadata(EmployeeTicket4646Multiple::class),
-            $this->_em->getClassMetadata(ManagerTicket4646Multiple::class),
-            $this->_em->getClassMetadata(InternTicket4646Multiple::class),
-        ]);
+        $this->createSchemaForModels(
+            PersonTicket4646Multiple::class,
+            EmployeeTicket4646Multiple::class,
+            ManagerTicket4646Multiple::class,
+            InternTicket4646Multiple::class
+        );
     }
 
     public function testInstanceOf(): void

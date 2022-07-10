@@ -30,11 +30,7 @@ class DDC2231Test extends OrmFunctionalTestCase
         }
 
         parent::setUp();
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC2231EntityY::class),
-            ]
-        );
+        $this->createSchemaForModels(DDC2231EntityY::class);
     }
 
     public function testInjectObjectManagerInProxyIfInitializedInUow(): void

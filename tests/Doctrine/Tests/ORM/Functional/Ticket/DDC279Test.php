@@ -20,13 +20,11 @@ class DDC279Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC279EntityXAbstract::class),
-                $this->_em->getClassMetadata(DDC279EntityX::class),
-                $this->_em->getClassMetadata(DDC279EntityY::class),
-                $this->_em->getClassMetadata(DDC279EntityZ::class),
-            ]
+        $this->createSchemaForModels(
+            DDC279EntityXAbstract::class,
+            DDC279EntityX::class,
+            DDC279EntityY::class,
+            DDC279EntityZ::class
         );
     }
 

@@ -22,12 +22,10 @@ class DDC513Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC513OfferItem::class),
-                $this->_em->getClassMetadata(DDC513Item::class),
-                $this->_em->getClassMetadata(DDC513Price::class),
-            ]
+        $this->createSchemaForModels(
+            DDC513OfferItem::class,
+            DDC513Item::class,
+            DDC513Price::class
         );
     }
 

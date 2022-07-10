@@ -19,12 +19,7 @@ class DDC3042Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC3042Foo::class),
-                $this->_em->getClassMetadata(DDC3042Bar::class),
-            ]
-        );
+        $this->createSchemaForModels(DDC3042Foo::class, DDC3042Bar::class);
     }
 
     public function testSQLGenerationDoesNotProvokeAliasCollisions(): void

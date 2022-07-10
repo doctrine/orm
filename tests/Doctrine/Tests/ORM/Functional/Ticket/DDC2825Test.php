@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
 use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -68,11 +67,7 @@ class DDC2825Test extends OrmFunctionalTestCase
      */
     public function testPersistenceOfEntityWithSchemaMapping(string $className): void
     {
-        try {
-            $this->_schemaTool->createSchema([$this->_em->getClassMetadata($className)]);
-        } catch (ToolsException $e) {
-            // table already exists
-        }
+        $this->createSchemaForModels($className);
 
         $this->_em->persist(new $className());
         $this->_em->flush();

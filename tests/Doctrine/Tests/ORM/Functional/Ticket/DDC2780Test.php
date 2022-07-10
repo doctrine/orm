@@ -22,12 +22,7 @@ class DDC2780Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC2780User::class),
-                $this->_em->getClassMetadata(DDC2780Project::class),
-            ]
-        );
+        $this->createSchemaForModels(DDC2780User::class, DDC2780Project::class);
     }
 
     /**

@@ -23,9 +23,7 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
                 'This test is special to platforms emulating IDENTITY key generation strategy through sequences.'
             );
         } else {
-            $this->_schemaTool->createSchema(
-                [$this->_em->getClassMetadata(SequenceEmulatedIdentityEntity::class)]
-            );
+            $this->createSchemaForModels(SequenceEmulatedIdentityEntity::class);
         }
     }
 

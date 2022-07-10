@@ -24,11 +24,7 @@ class DDC2106Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC2106Entity::class),
-            ]
-        );
+        $this->createSchemaForModels(DDC2106Entity::class);
     }
 
     public function testDetachedEntityAsId(): void

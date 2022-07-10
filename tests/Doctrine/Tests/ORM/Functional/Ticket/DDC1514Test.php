@@ -13,7 +13,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 /**
  * @group DDC-1514
@@ -24,16 +23,11 @@ class DDC1514Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1514EntityA::class),
-                    $this->_em->getClassMetadata(DDC1514EntityB::class),
-                    $this->_em->getClassMetadata(DDC1514EntityC::class),
-                ]
-            );
-        } catch (Exception $ignored) {
-        }
+        $this->createSchemaForModels(
+            DDC1514EntityA::class,
+            DDC1514EntityB::class,
+            DDC1514EntityC::class
+        );
     }
 
     public function testIssue(): void

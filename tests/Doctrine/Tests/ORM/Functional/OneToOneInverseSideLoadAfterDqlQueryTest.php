@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\Models\OneToOneInverseSideLoad\InverseSide;
 use Doctrine\Tests\Models\OneToOneInverseSideLoad\OwningSide;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -17,14 +16,7 @@ class OneToOneInverseSideLoadAfterDqlQueryTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema([
-                $this->_em->getClassMetadata(OwningSide::class),
-                $this->_em->getClassMetadata(InverseSide::class),
-            ]);
-        } catch (ToolsException $e) {
-            // ignored
-        }
+        $this->createSchemaForModels(OwningSide::class, InverseSide::class);
     }
 
     /**
