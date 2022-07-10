@@ -7,7 +7,5 @@
       generator:
         strategy: AUTO
   fields:
-    array:
-      type: array
-    object:
-      type: object
+    booleanField:
+      type: boolean

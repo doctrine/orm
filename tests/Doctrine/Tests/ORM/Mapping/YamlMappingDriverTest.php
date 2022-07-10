@@ -11,7 +11,7 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Models\DDC3711\DDC3711EntityA;
 use Doctrine\Tests\Models\DirectoryTree\Directory;
 use Doctrine\Tests\Models\DirectoryTree\File;
-use Doctrine\Tests\Models\Generic\SerializationModel;
+use Doctrine\Tests\Models\Generic\BooleanModel;
 use Symfony\Component\Yaml\Yaml;
 
 use function class_exists;
@@ -59,8 +59,8 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
     public function testInvalidMappingFileException(): void
     {
         $this->expectException('Doctrine\Persistence\Mapping\MappingException');
-        $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.SerializationModel.dcm.yml\' for class \'Doctrine\Tests\Models\Generic\SerializationModel\'.');
-        $this->createClassMetadata(SerializationModel::class);
+        $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.BooleanModel.dcm.yml\' for class \'Doctrine\Tests\Models\Generic\BooleanModel\'.');
+        $this->createClassMetadata(BooleanModel::class);
     }
 
     /**
