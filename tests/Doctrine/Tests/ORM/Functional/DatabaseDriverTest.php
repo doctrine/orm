@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Table;
@@ -228,6 +230,8 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
     {
         // FIXME: Condition here is fugly.
 
-        return ! $platform instanceof OraclePlatform;
+        return ! $platform instanceof SQLServerPlatform
+            && ! $platform instanceof PostgreSQLPlatform
+            && ! $platform instanceof OraclePlatform;
     }
 }
