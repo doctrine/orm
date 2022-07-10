@@ -13,7 +13,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 /**
  * @group DDC-2692
@@ -24,15 +23,7 @@ class DDC2692Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC2692Foo::class),
-                ]
-            );
-        } catch (Exception $e) {
-            return;
-        }
+        $this->createSchemaForModels(DDC2692Foo::class);
 
         $this->_em->clear();
     }

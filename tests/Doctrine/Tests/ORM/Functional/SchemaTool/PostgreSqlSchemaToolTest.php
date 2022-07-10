@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -44,15 +43,10 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
      */
     public function testUpdateSchemaWithPostgreSQLSchema(): void
     {
-        $classes = [
-            $this->_em->getClassMetadata(DDC1657Screen::class),
-            $this->_em->getClassMetadata(DDC1657Avatar::class),
-        ];
-
-        $tool = new SchemaTool($this->_em);
-        $tool->createSchema($classes);
-
-        $sql = $tool->getUpdateSchemaSql($classes);
+        $sql = $this->getUpdateSchemaSqlForModels(
+            DDC1657Screen::class,
+            DDC1657Avatar::class
+        );
         $sql = array_filter($sql, static function ($sql) {
             return str_starts_with($sql, 'DROP SEQUENCE stonewood.');
         });

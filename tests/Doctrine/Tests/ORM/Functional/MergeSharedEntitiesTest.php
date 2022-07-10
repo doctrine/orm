@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\MappedSuperclass;
-use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function serialize;
@@ -22,15 +21,7 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(MSEFile::class),
-                    $this->_em->getClassMetadata(MSEPicture::class),
-                ]
-            );
-        } catch (ToolsException $ignored) {
-        }
+        $this->createSchemaForModels(MSEFile::class, MSEPicture::class);
     }
 
     public function testMergeSharedNewEntities(): void

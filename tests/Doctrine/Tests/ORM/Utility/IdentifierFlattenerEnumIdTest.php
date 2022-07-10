@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Utility;
 
-use Doctrine\ORM\Exception\ORMException;
 use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Enums\TypedCardEnumCompositeId;
 use Doctrine\Tests\Models\Enums\TypedCardEnumId;
@@ -23,15 +22,10 @@ class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(TypedCardEnumId::class),
-                    $this->_em->getClassMetadata(TypedCardEnumCompositeId::class),
-                ]
-            );
-        } catch (ORMException $e) {
-        }
+        $this->createSchemaForModels(
+            TypedCardEnumId::class,
+            TypedCardEnumCompositeId::class
+        );
     }
 
     /**

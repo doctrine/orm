@@ -19,12 +19,10 @@ class DDC1193Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC1193Company::class),
-                $this->_em->getClassMetadata(DDC1193Person::class),
-                $this->_em->getClassMetadata(DDC1193Account::class),
-            ]
+        $this->createSchemaForModels(
+            DDC1193Company::class,
+            DDC1193Person::class,
+            DDC1193Account::class
         );
     }
 

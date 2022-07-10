@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 /**
  * @group DDC-2759
@@ -25,18 +24,12 @@ class DDC2759Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC2759Qualification::class),
-                    $this->_em->getClassMetadata(DDC2759Category::class),
-                    $this->_em->getClassMetadata(DDC2759QualificationMetadata::class),
-                    $this->_em->getClassMetadata(DDC2759MetadataCategory::class),
-                ]
-            );
-        } catch (Exception $e) {
-            return;
-        }
+        $this->createSchemaForModels(
+            DDC2759Qualification::class,
+            DDC2759Category::class,
+            DDC2759QualificationMetadata::class,
+            DDC2759MetadataCategory::class
+        );
 
         $qualification         = new DDC2759Qualification();
         $qualificationMetadata = new DDC2759QualificationMetadata($qualification);

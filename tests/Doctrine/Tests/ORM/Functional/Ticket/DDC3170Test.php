@@ -23,13 +23,11 @@ class DDC3170Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC3170AbstractEntityJoined::class),
-                $this->_em->getClassMetadata(DDC3170ProductJoined::class),
-                $this->_em->getClassMetadata(DDC3170AbstractEntitySingleTable::class),
-                $this->_em->getClassMetadata(DDC3170ProductSingleTable::class),
-            ]
+        $this->createSchemaForModels(
+            DDC3170AbstractEntityJoined::class,
+            DDC3170ProductJoined::class,
+            DDC3170AbstractEntitySingleTable::class,
+            DDC3170ProductSingleTable::class
         );
     }
 

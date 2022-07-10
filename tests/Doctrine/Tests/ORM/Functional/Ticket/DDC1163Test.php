@@ -36,13 +36,11 @@ class DDC1163Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC1163Product::class),
-                $this->_em->getClassMetadata(DDC1163SpecialProduct::class),
-                $this->_em->getClassMetadata(DDC1163ProxyHolder::class),
-                $this->_em->getClassMetadata(DDC1163Tag::class),
-            ]
+        $this->createSchemaForModels(
+            DDC1163Product::class,
+            DDC1163SpecialProduct::class,
+            DDC1163ProxyHolder::class,
+            DDC1163Tag::class
         );
     }
 

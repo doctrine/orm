@@ -24,11 +24,9 @@ class DDC531Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC531Item::class),
-                $this->_em->getClassMetadata(DDC531SubItem::class),
-            ]
+        $this->createSchemaForModels(
+            DDC531Item::class,
+            DDC531SubItem::class
         );
     }
 

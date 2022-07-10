@@ -16,11 +16,9 @@ class MergeCompositeToOneKeyTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(Country::class),
-                $this->_em->getClassMetadata(CompositeToOneKeyState::class),
-            ]
+        $this->createSchemaForModels(
+            Country::class,
+            CompositeToOneKeyState::class
         );
     }
 

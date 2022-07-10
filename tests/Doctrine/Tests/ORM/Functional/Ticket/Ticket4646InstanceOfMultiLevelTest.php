@@ -20,11 +20,11 @@ class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(PersonTicket4646MultiLevel::class),
-            $this->_em->getClassMetadata(EmployeeTicket4646MultiLevel::class),
-            $this->_em->getClassMetadata(EngineerTicket4646MultiLevel::class),
-        ]);
+        $this->createSchemaForModels(
+            PersonTicket4646MultiLevel::class,
+            EmployeeTicket4646MultiLevel::class,
+            EngineerTicket4646MultiLevel::class
+        );
     }
 
     public function testInstanceOf(): void

@@ -38,11 +38,9 @@ class DDC3192Test extends OrmFunctionalTestCase
 
         Type::addType('ddc3192_currency_code', DDC3192CurrencyCode::class);
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC3192Currency::class),
-                $this->_em->getClassMetadata(DDC3192Transaction::class),
-            ]
+        $this->createSchemaForModels(
+            DDC3192Currency::class,
+            DDC3192Transaction::class
         );
     }
 

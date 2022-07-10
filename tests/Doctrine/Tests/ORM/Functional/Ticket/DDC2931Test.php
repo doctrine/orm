@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 /**
  * @group DDC-2931
@@ -22,15 +21,7 @@ class DDC2931Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC2931User::class),
-                ]
-            );
-        } catch (Exception $e) {
-            // no action needed - schema seems to be already in place
-        }
+        $this->createSchemaForModels(DDC2931User::class);
     }
 
     public function testIssue(): void

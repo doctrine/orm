@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -14,10 +13,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function array_map;
-use function assert;
 use function strtolower;
-use function trim;
 
 /**
  * @group DDC-192
@@ -27,19 +23,21 @@ class DDC192Test extends OrmFunctionalTestCase
     public function testSchemaCreation(): void
     {
         $classes = [
-            $this->_em->getClassMetadata(DDC192User::class),
-            $this->_em->getClassMetadata(DDC192Phonenumber::class),
+            DDC192User::class,
+            DDC192Phonenumber::class,
         ];
 
-        $this->_schemaTool->createSchema($classes);
+        $this->createSchemaForModels(...$classes);
 
         $tables = array_map(static function($table){
             return strtolower(trim($table, '`"\''));
         }, $this->createSchemaManager()->listTableNames());
 
         foreach ($classes as $class) {
-            assert($class instanceof ClassMetadata);
-            self::assertContains(strtolower($class->getTableName()), $tables);
+            self::assertContains(
+                strtolower($this->_em->getClassMetadata($class)->getTableName()),
+                $tables
+            );
         }
     }
 }
