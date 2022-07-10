@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\Mapping\MappingException as PersistenceMappingException;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\DDC117\DDC117Translation;
 use Doctrine\Tests\Models\DDC3293\DDC3293User;
@@ -18,7 +19,7 @@ use Doctrine\Tests\Models\DDC3293\DDC3293UserPrefixed;
 use Doctrine\Tests\Models\DDC889\DDC889Class;
 use Doctrine\Tests\Models\DDC889\DDC889Entity;
 use Doctrine\Tests\Models\DDC889\DDC889SuperClass;
-use Doctrine\Tests\Models\Generic\SerializationModel;
+use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\Models\GH7141\GH7141Article;
 use Doctrine\Tests\Models\GH7316\GH7316Article;
 use Doctrine\Tests\Models\ValueObjects\Name;
@@ -151,11 +152,11 @@ class XmlMappingDriverTest extends MappingDriverTestCase
     /**
      * @group DDC-1468
      */
-    public function testInvalidMappingFileException(): void
+    public function testItMentionsFilenameAndEntityNameOnInvalidMapping(): void
     {
-        $this->expectException('Doctrine\Persistence\Mapping\MappingException');
-        $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.SerializationModel.dcm.xml\' for class \'Doctrine\Tests\Models\Generic\SerializationModel\'.');
-        $this->createClassMetadata(SerializationModel::class);
+        $this->expectException(PersistenceMappingException::class);
+        $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.BooleanModel.dcm.xml\' for class \'Doctrine\Tests\Models\Generic\BooleanModel\'.');
+        $this->createClassMetadata(BooleanModel::class);
     }
 
     /**
