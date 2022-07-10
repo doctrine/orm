@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\Models\DDC3711\DDC3711EntityA;
 use Doctrine\Tests\Models\DirectoryTree\Directory;
 use Doctrine\Tests\Models\DirectoryTree\File;
@@ -58,7 +59,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testInvalidMappingFileException(): void
     {
-        $this->expectException('Doctrine\Persistence\Mapping\MappingException');
+        $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.BooleanModel.dcm.yml\' for class \'Doctrine\Tests\Models\Generic\BooleanModel\'.');
         $this->createClassMetadata(BooleanModel::class);
     }
