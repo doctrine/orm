@@ -7,6 +7,7 @@ namespace Doctrine\Tests;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Exception\DatabaseObjectNotFoundException;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use UnexpectedValueException;
@@ -90,14 +91,20 @@ class TestUtil
         $platform = $privConn->getDatabasePlatform();
 
         if ($platform->supportsCreateDropDatabase()) {
+            $sm = self::createSchemaManager($privConn);
             if ($platform instanceof OraclePlatform) {
                 $dbname = $testConnParams['user'];
+                try {
+                    $sm->dropDatabase($dbname);
+                } catch (DatabaseObjectNotFoundException $e) {
+                }
+
+                $sm->createDatabase($dbname);
             } else {
                 $dbname = $testConnParams['dbname'] ?? $testConn->getDatabase();
                 $testConn->close();
+                $sm->dropAndCreateDatabase($dbname);
             }
-
-            self::createSchemaManager($privConn)->dropAndCreateDatabase($dbname);
 
             $privConn->close();
         } else {
