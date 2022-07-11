@@ -23,6 +23,7 @@
         <var name="privileged_db_user" value="system"/>
         <var name="privileged_db_password" value="oracle"/>
         <var name="privileged_db_dname" value="XE"/>
+
         <!-- necessary change for some CLI/console output test assertions -->
         <env name="COLUMNS" value="120"/>
     </php>
