@@ -104,8 +104,6 @@ jobs:
         image: gvenzl/oracle-xe:${{ matrix.oracle-version }}
         env:
           ORACLE_PASSWORD: oracle
-          APP_USER: doctrine
-          APP_USER_PASSWORD: oracle
         ports:
           - "1521:1521"
         options: >-
