@@ -45,8 +45,8 @@ class OneToOneTest extends OrmFunctionalTestCase
     {
         $conn = static::$sharedConn;
 
-        $conn->executeStatement('DROP TABLE vct_owning_onetoone');
-        $conn->executeStatement('DROP TABLE vct_inversed_onetoone');
+        $conn->executeStatement('DROP TABLE vct_owning_o2o');
+        $conn->executeStatement('DROP TABLE vct_invers_o2o');
     }
 
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase(): void
@@ -54,10 +54,10 @@ class OneToOneTest extends OrmFunctionalTestCase
         $conn  = $this->_em->getConnection();
         $limit = $this->getLimitSQLByPlatform(1, $conn->getDatabasePlatform());
 
-        self::assertEquals('nop', $conn->fetchOne('SELECT id1 FROM vct_inversed_onetoone' . $limit));
+        self::assertEquals('nop', $conn->fetchOne('SELECT id1 FROM vct_invers_o2o' . $limit));
 
-        self::assertEquals('qrs', $conn->fetchOne('SELECT id2 FROM vct_owning_onetoone' . $limit));
-        self::assertEquals('nop', $conn->fetchOne('SELECT associated_id FROM vct_owning_onetoone' . $limit));
+        self::assertEquals('qrs', $conn->fetchOne('SELECT id2 FROM vct_owning_o2o' . $limit));
+        self::assertEquals('nop', $conn->fetchOne('SELECT associated_id FROM vct_owning_o2o' . $limit));
     }
 
     /**

@@ -45,8 +45,8 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
     {
         $conn = static::$sharedConn;
 
-        $conn->executeStatement('DROP TABLE vct_owning_onetoone_compositeid');
-        $conn->executeStatement('DROP TABLE vct_inversed_onetoone_compositeid');
+        $conn->executeStatement('DROP TABLE vct_owning_o2o_compos');
+        $conn->executeStatement('DROP TABLE vct_invers_o2o_compos');
     }
 
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase(): void
@@ -54,12 +54,12 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
         $conn  = $this->_em->getConnection();
         $limit = $this->getLimitSQLByPlatform(1, $conn->getDatabasePlatform());
 
-        self::assertEquals('nop', $conn->fetchOne('SELECT id1 FROM vct_inversed_onetoone_compositeid' . $limit));
-        self::assertEquals('qrs', $conn->fetchOne('SELECT id2 FROM vct_inversed_onetoone_compositeid' . $limit));
+        self::assertEquals('nop', $conn->fetchOne('SELECT id1 FROM vct_invers_o2o_compos' . $limit));
+        self::assertEquals('qrs', $conn->fetchOne('SELECT id2 FROM vct_invers_o2o_compos' . $limit));
 
-        self::assertEquals('tuv', $conn->fetchOne('SELECT id3 FROM vct_owning_onetoone_compositeid' . $limit));
-        self::assertEquals('nop', $conn->fetchOne('SELECT associated_id1 FROM vct_owning_onetoone_compositeid' . $limit));
-        self::assertEquals('qrs', $conn->fetchOne('SELECT associated_id2 FROM vct_owning_onetoone_compositeid' . $limit));
+        self::assertEquals('tuv', $conn->fetchOne('SELECT id3 FROM vct_owning_o2o_compos' . $limit));
+        self::assertEquals('nop', $conn->fetchOne('SELECT associated_id1 FROM vct_owning_o2o_compos' . $limit));
+        self::assertEquals('qrs', $conn->fetchOne('SELECT associated_id2 FROM vct_owning_o2o_compos' . $limit));
     }
 
     /**

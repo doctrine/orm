@@ -26,6 +26,7 @@ use const PHP_INT_MAX;
 
 /**
  * @group DDC-3634
+ * @group performance
  */
 class DDC3634Test extends OrmFunctionalTestCase
 {

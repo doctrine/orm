@@ -560,8 +560,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($this->_usedModelSets['ornemental_orphan_removal'])) {
-            $conn->executeStatement('DELETE FROM ornemental_orphan_removal_person');
-            $conn->executeStatement('DELETE FROM ornemental_orphan_removal_phone_number');
+            $conn->executeStatement('DELETE FROM orn_orp_rem_person');
+            $conn->executeStatement('DELETE FROM orn_orp_rem_phone_number');
         }
 
         if (isset($this->_usedModelSets['quote'])) {
@@ -582,65 +582,65 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($this->_usedModelSets['vct_onetoone'])) {
-            $conn->executeStatement('DELETE FROM vct_owning_onetoone');
-            $conn->executeStatement('DELETE FROM vct_inversed_onetoone');
+            $conn->executeStatement('DELETE FROM vct_owning_o2o');
+            $conn->executeStatement('DELETE FROM vct_invers_o2o');
         }
 
         if (isset($this->_usedModelSets['vct_onetoone_compositeid'])) {
-            $conn->executeStatement('DELETE FROM vct_owning_onetoone_compositeid');
-            $conn->executeStatement('DELETE FROM vct_inversed_onetoone_compositeid');
+            $conn->executeStatement('DELETE FROM vct_owning_o2o_compos');
+            $conn->executeStatement('DELETE FROM vct_invers_o2o_compos');
         }
 
         if (isset($this->_usedModelSets['vct_onetoone_compositeid_foreignkey'])) {
-            $conn->executeStatement('DELETE FROM vct_owning_onetoone_compositeid_foreignkey');
-            $conn->executeStatement('DELETE FROM vct_inversed_onetoone_compositeid_foreignkey');
+            $conn->executeStatement('DELETE FROM vct_owning_o2o_compos_fk');
+            $conn->executeStatement('DELETE FROM vct_invers_o2o_compos_fk');
             $conn->executeStatement('DELETE FROM vct_auxiliary');
         }
 
         if (isset($this->_usedModelSets['vct_onetomany'])) {
-            $conn->executeStatement('DELETE FROM vct_owning_manytoone');
-            $conn->executeStatement('DELETE FROM vct_inversed_onetomany');
+            $conn->executeStatement('DELETE FROM vct_owning_m2o');
+            $conn->executeStatement('DELETE FROM vct_invers_o2m');
         }
 
         if (isset($this->_usedModelSets['vct_onetomany_compositeid'])) {
-            $conn->executeStatement('DELETE FROM vct_owning_manytoone_compositeid');
-            $conn->executeStatement('DELETE FROM vct_inversed_onetomany_compositeid');
+            $conn->executeStatement('DELETE FROM vct_owning_m2o_compos');
+            $conn->executeStatement('DELETE FROM vct_invers_o2m_compos');
         }
 
         if (isset($this->_usedModelSets['vct_onetomany_compositeid_foreignkey'])) {
-            $conn->executeStatement('DELETE FROM vct_owning_manytoone_compositeid_foreignkey');
-            $conn->executeStatement('DELETE FROM vct_inversed_onetomany_compositeid_foreignkey');
+            $conn->executeStatement('DELETE FROM vct_owning_m2o_compos_fk');
+            $conn->executeStatement('DELETE FROM vct_invers_o2m_compos_fk');
             $conn->executeStatement('DELETE FROM vct_auxiliary');
         }
 
         if (isset($this->_usedModelSets['vct_onetomany_extralazy'])) {
-            $conn->executeStatement('DELETE FROM vct_owning_manytoone_extralazy');
-            $conn->executeStatement('DELETE FROM vct_inversed_onetomany_extralazy');
+            $conn->executeStatement('DELETE FROM vct_owning_m2o_exlazy');
+            $conn->executeStatement('DELETE FROM vct_invers_o2m_exlazy');
         }
 
         if (isset($this->_usedModelSets['vct_manytomany'])) {
-            $conn->executeStatement('DELETE FROM vct_xref_manytomany');
-            $conn->executeStatement('DELETE FROM vct_owning_manytomany');
-            $conn->executeStatement('DELETE FROM vct_inversed_manytomany');
+            $conn->executeStatement('DELETE FROM vct_xref_m2m');
+            $conn->executeStatement('DELETE FROM vct_owning_m2m');
+            $conn->executeStatement('DELETE FROM vct_invers_m2m');
         }
 
         if (isset($this->_usedModelSets['vct_manytomany_compositeid'])) {
-            $conn->executeStatement('DELETE FROM vct_xref_manytomany_compositeid');
-            $conn->executeStatement('DELETE FROM vct_owning_manytomany_compositeid');
-            $conn->executeStatement('DELETE FROM vct_inversed_manytomany_compositeid');
+            $conn->executeStatement('DELETE FROM vct_xref_m2m_compos');
+            $conn->executeStatement('DELETE FROM vct_owning_m2m_compos');
+            $conn->executeStatement('DELETE FROM vct_invers_m2m_compos');
         }
 
         if (isset($this->_usedModelSets['vct_manytomany_compositeid_foreignkey'])) {
-            $conn->executeStatement('DELETE FROM vct_xref_manytomany_compositeid_foreignkey');
-            $conn->executeStatement('DELETE FROM vct_owning_manytomany_compositeid_foreignkey');
-            $conn->executeStatement('DELETE FROM vct_inversed_manytomany_compositeid_foreignkey');
+            $conn->executeStatement('DELETE FROM vct_xref_m2m_compos_fk');
+            $conn->executeStatement('DELETE FROM vct_owning_m2m_compos_fk');
+            $conn->executeStatement('DELETE FROM vct_invers_m2m_compos_fk');
             $conn->executeStatement('DELETE FROM vct_auxiliary');
         }
 
         if (isset($this->_usedModelSets['vct_manytomany_extralazy'])) {
-            $conn->executeStatement('DELETE FROM vct_xref_manytomany_extralazy');
-            $conn->executeStatement('DELETE FROM vct_owning_manytomany_extralazy');
-            $conn->executeStatement('DELETE FROM vct_inversed_manytomany_extralazy');
+            $conn->executeStatement('DELETE FROM vct_xref_m2m_exlazy');
+            $conn->executeStatement('DELETE FROM vct_owning_m2m_exlazy');
+            $conn->executeStatement('DELETE FROM vct_invers_m2m_exlazy');
         }
 
         if (isset($this->_usedModelSets['geonames'])) {

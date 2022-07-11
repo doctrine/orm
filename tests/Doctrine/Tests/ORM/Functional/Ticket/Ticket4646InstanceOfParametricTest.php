@@ -45,7 +45,7 @@ class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
 
 /**
  * @Entity()
- * @Table(name="instance_of_parametric_person")
+ * @Table(name="inst_param_person")
  * @InheritanceType(value="JOINED")
  * @DiscriminatorColumn(name="kind", type="string")
  * @DiscriminatorMap(value={
@@ -71,7 +71,7 @@ class PersonTicket4646Parametric
 
 /**
  * @Entity()
- * @Table(name="instance_of_parametric_employee")
+ * @Table(name="inst_param_employee")
  */
 class EmployeeTicket4646Parametric extends PersonTicket4646Parametric
 {

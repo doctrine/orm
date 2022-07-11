@@ -46,7 +46,7 @@ class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
 
 /**
  * @Entity()
- * @Table(name="instance_of_multi_level_test_person")
+ * @Table(name="inst_multi_level_person")
  * @InheritanceType(value="JOINED")
  * @DiscriminatorColumn(name="kind", type="string")
  * @DiscriminatorMap(value={
@@ -73,7 +73,7 @@ class PersonTicket4646MultiLevel
 
 /**
  * @Entity()
- * @Table(name="instance_of_multi_level_employee")
+ * @Table(name="inst_multi_level_employee")
  */
 class EmployeeTicket4646MultiLevel extends PersonTicket4646MultiLevel
 {
@@ -81,7 +81,7 @@ class EmployeeTicket4646MultiLevel extends PersonTicket4646MultiLevel
 
 /**
  * @Entity()
- * @Table(name="instance_of_multi_level_engineer")
+ * @Table(name="inst_multi_level_engineer")
  */
 class EngineerTicket4646MultiLevel extends EmployeeTicket4646MultiLevel
 {

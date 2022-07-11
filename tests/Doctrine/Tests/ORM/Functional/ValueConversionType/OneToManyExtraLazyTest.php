@@ -57,8 +57,8 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
     {
         $conn = static::$sharedConn;
 
-        $conn->executeStatement('DROP TABLE vct_owning_manytoone_extralazy');
-        $conn->executeStatement('DROP TABLE vct_inversed_onetomany_extralazy');
+        $conn->executeStatement('DROP TABLE vct_owning_m2o_exlazy');
+        $conn->executeStatement('DROP TABLE vct_invers_o2m_exlazy');
     }
 
     public function testThatExtraLazyCollectionIsCounted(): void

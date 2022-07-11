@@ -59,9 +59,9 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     {
         $conn = static::$sharedConn;
 
-        $conn->executeStatement('DROP TABLE vct_xref_manytomany_extralazy');
-        $conn->executeStatement('DROP TABLE vct_owning_manytomany_extralazy');
-        $conn->executeStatement('DROP TABLE vct_inversed_manytomany_extralazy');
+        $conn->executeStatement('DROP TABLE vct_xref_m2m_exlazy');
+        $conn->executeStatement('DROP TABLE vct_owning_m2m_exlazy');
+        $conn->executeStatement('DROP TABLE vct_invers_m2m_exlazy');
     }
 
     public function testThatTheExtraLazyCollectionFromOwningToInversedIsCounted(): void

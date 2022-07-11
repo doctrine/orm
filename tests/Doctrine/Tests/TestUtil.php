@@ -7,12 +7,14 @@ namespace Doctrine\Tests;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Exception\DatabaseObjectNotFoundException;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use UnexpectedValueException;
 
 use function assert;
 use function explode;
+use function file_exists;
 use function fwrite;
 use function get_debug_type;
 use function method_exists;
@@ -20,6 +22,7 @@ use function sprintf;
 use function str_starts_with;
 use function strlen;
 use function substr;
+use function unlink;
 
 use const STDERR;
 
@@ -89,14 +92,26 @@ class TestUtil
 
         $platform = $privConn->getDatabasePlatform();
 
-        // skip re-create Database in Oracle DB XE
-        if ($platform->supportsCreateDropDatabase() && ! $platform instanceof OraclePlatform) {
-            $dbname = $testConnParams['dbname'] ?? $testConn->getDatabase();
-            $testConn->close();
+        if ($platform->supportsCreateDropDatabase()) {
+            if (! $platform instanceof OraclePlatform) {
+                $dbname = $testConnParams['dbname'];
+            } else {
+                $dbname = $testConnParams['user'];
+            }
 
-            self::createSchemaManager($privConn)->dropAndCreateDatabase($dbname);
+            $sm = self::createSchemaManager($privConn);
 
+            try {
+                $sm->dropDatabase($dbname);
+            } catch (DatabaseObjectNotFoundException $e) {
+            }
+
+            $sm->createDatabase($dbname);
             $privConn->close();
+        } elseif (isset($testConnParams['path'])) {
+            if (file_exists($testConnParams['path'])) {
+                unlink($testConnParams['path']);
+            }
         } else {
             $schema = self::createSchemaManager($testConn)->createSchema();
             $stmts  = $schema->toDropSql($testConn->getDatabasePlatform());
@@ -104,6 +119,8 @@ class TestUtil
             foreach ($stmts as $stmt) {
                 $testConn->executeStatement($stmt);
             }
+
+            $testConn->close();
         }
     }
 

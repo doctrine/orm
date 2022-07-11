@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
- * @Table(name="vct_owning_manytoone_foreignkey")
+ * @Table(name="vct_owning_m2o_fk")
  */
 class OwningManyToOneIdForeignKeyEntity
 {

@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
- * @Table(name="vct_owning_manytomany_extralazy")
+ * @Table(name="vct_owning_m2m_exlazy")
  */
 class OwningManyToManyExtraLazyEntity
 {
@@ -36,7 +36,7 @@ class OwningManyToManyExtraLazyEntity
      *     indexBy="id1"
      * )
      * @JoinTable(
-     *     name="vct_xref_manytomany_extralazy",
+     *     name="vct_xref_m2m_exlazy",
      *     joinColumns={@JoinColumn(name="owning_id", referencedColumnName="id2")},
      *     inverseJoinColumns={@JoinColumn(name="inversed_id", referencedColumnName="id1")}
      * )
