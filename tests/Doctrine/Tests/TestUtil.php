@@ -93,21 +93,17 @@ class TestUtil
         $platform = $privConn->getDatabasePlatform();
 
         if ($platform->supportsCreateDropDatabase()) {
-            if (! $platform instanceof OraclePlatform) {
-                $dbname = $testConnParams['dbname'];
-            } else {
+            if ($platform instanceof OraclePlatform) {
                 $dbname = $testConnParams['user'];
+            } else {
+                $dbname = $testConnParams['dbname'] ?? $testConn->getDatabase();
+                $testConn->close();
             }
 
-            $sm = self::createSchemaManager($privConn);
+            self::createSchemaManager($privConn)->dropAndCreateDatabase($dbname);
 
-            try {
-                $sm->dropDatabase($dbname);
-            } catch (DatabaseObjectNotFoundException $e) {
-            }
-
-            $sm->createDatabase($dbname);
             $privConn->close();
+
         } elseif (isset($testConnParams['path'])) {
             if (file_exists($testConnParams['path'])) {
                 unlink($testConnParams['path']);
