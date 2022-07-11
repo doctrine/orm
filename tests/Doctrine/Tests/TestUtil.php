@@ -7,14 +7,12 @@ namespace Doctrine\Tests;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Exception\DatabaseObjectNotFoundException;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use UnexpectedValueException;
 
 use function assert;
 use function explode;
-use function file_exists;
 use function fwrite;
 use function get_debug_type;
 use function method_exists;
@@ -22,7 +20,6 @@ use function sprintf;
 use function str_starts_with;
 use function strlen;
 use function substr;
-use function unlink;
 
 use const STDERR;
 
@@ -103,11 +100,6 @@ class TestUtil
             self::createSchemaManager($privConn)->dropAndCreateDatabase($dbname);
 
             $privConn->close();
-
-        } elseif (isset($testConnParams['path'])) {
-            if (file_exists($testConnParams['path'])) {
-                unlink($testConnParams['path']);
-            }
         } else {
             $schema = self::createSchemaManager($testConn)->createSchema();
             $stmts  = $schema->toDropSql($testConn->getDatabasePlatform());
