@@ -6,8 +6,6 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\DBAL\ParameterType;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Parameter;
@@ -1549,12 +1547,12 @@ class QueryBuilder
      * @link http://www.zetacomponents.org
      *
      * @param mixed           $value
-     * @param int|string|null $type        ParameterType::* or \Doctrine\DBAL\Types\Type::* constant
+     * @param int|string|null $type        \Doctrine\DBAL\ParameterType::* or \Doctrine\DBAL\Types\Type::* constant
      * @param string          $placeHolder The name to bind with. The string must start with a colon ':'.
      *
-     * @return string the placeholder name used.
+     * @return string The placeholder name used.
      */
-    public function createNamedParameter($value, $type = ParameterType::STRING, $placeHolder = null)
+    public function createNamedParameter($value, $type = 'string', $placeHolder = null)
     {
         if ($placeHolder === null) {
             $this->boundCounter++;
@@ -1579,16 +1577,16 @@ class QueryBuilder
      *  $qb = $conn->createQueryBuilder();
      *  $qb->select('u.*')
      *     ->from('users', 'u')
-     *     ->where('u.username = ' . $qb->createPositionalParameter('Foo', ParameterType::STRING))
-     *     ->orWhere('u.username = ' . $qb->createPositionalParameter('Bar', ParameterType::STRING))
+     *     ->where('u.username = ' . $qb->createPositionalParameter('Foo', \Doctrine\DBAL\ParameterType::STRING))
+     *     ->orWhere('u.username = ' . $qb->createPositionalParameter('Bar', \Doctrine\DBAL\ParameterType::STRING))
      * </code>
      *
      * @param mixed           $value
-     * @param int|string|null $type  ParameterType::* or \Doctrine\DBAL\Types\Type::* constant
+     * @param int|string|null $type  \Doctrine\DBAL\ParameterType::* or \Doctrine\DBAL\Types\Type::* constant
      *
      * @return string
      */
-    public function createPositionalParameter($value, $type = ParameterType::STRING)
+    public function createPositionalParameter($value, $type = 'string')
     {
         $this->setParameter($this->boundCounter, $value, $type);
         $this->boundCounter++;
