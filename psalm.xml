@@ -116,6 +116,12 @@
                 <referencedFunction name="Doctrine\DBAL\Connection::lastInsertId"/>
             </errorLevel>
         </TooManyArguments>
+        <TypeDoesNotContainNull>
+            <errorLevel type="suppress">
+                <!-- DBAL 3 compatibility -->
+                <file name="lib/Doctrine/ORM/Tools/SchemaTool.php"/>
+            </errorLevel>
+        </TypeDoesNotContainNull>
         <TypeDoesNotContainType>
             <errorLevel type="suppress">
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
