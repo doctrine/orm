@@ -6,6 +6,8 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use DateTime;
 use DateTimeZone;
+use Doctrine\DBAL\Types\ArrayType;
+use Doctrine\DBAL\Types\ObjectType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
@@ -13,6 +15,8 @@ use Doctrine\Tests\Models\Generic\DecimalModel;
 use Doctrine\Tests\Models\Generic\SerializationModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use stdClass;
+
+use function class_exists;
 
 class TypeTest extends OrmFunctionalTestCase
 {
@@ -70,6 +74,10 @@ class TypeTest extends OrmFunctionalTestCase
 
     public function testArray(): void
     {
+        if (! class_exists(ArrayType::class)) {
+            self::markTestSkipped('Test valid for doctrine/dbal:3.x only.');
+        }
+
         $serialize               = new SerializationModel();
         $serialize->array['foo'] = 'bar';
         $serialize->array['bar'] = 'baz';
@@ -88,6 +96,10 @@ class TypeTest extends OrmFunctionalTestCase
 
     public function testObject(): void
     {
+        if (! class_exists(ObjectType::class)) {
+            self::markTestSkipped('Test valid for doctrine/dbal:3.x only.');
+        }
+
         $serialize         = new SerializationModel();
         $serialize->object = new stdClass();
 

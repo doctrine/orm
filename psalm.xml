@@ -17,6 +17,11 @@
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
+        <DeprecatedConstant>
+            <errorLevel type="suppress">
+                <file name="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php" />
+            </errorLevel>
+        </DeprecatedConstant>
         <DeprecatedClass>
             <errorLevel type="suppress">
                 <!-- Remove on 3.0.x -->
