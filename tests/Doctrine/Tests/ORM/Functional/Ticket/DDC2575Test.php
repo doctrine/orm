@@ -30,12 +30,10 @@ class DDC2575Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC2575Root::class),
-                $this->_em->getClassMetadata(DDC2575A::class),
-                $this->_em->getClassMetadata(DDC2575B::class),
-            ]
+        $this->createSchemaForModels(
+            DDC2575Root::class,
+            DDC2575A::class,
+            DDC2575B::class
         );
 
         $entityRoot1 = new DDC2575Root(1);

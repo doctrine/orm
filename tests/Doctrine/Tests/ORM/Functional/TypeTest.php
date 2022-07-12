@@ -74,6 +74,8 @@ class TypeTest extends OrmFunctionalTestCase
         $serialize->array['foo'] = 'bar';
         $serialize->array['bar'] = 'baz';
 
+        $this->createSchemaForModels(SerializationModel::class);
+        static::$sharedConn->executeStatement('DELETE FROM serialize_model');
         $this->_em->persist($serialize);
         $this->_em->flush();
         $this->_em->clear();
@@ -89,6 +91,8 @@ class TypeTest extends OrmFunctionalTestCase
         $serialize         = new SerializationModel();
         $serialize->object = new stdClass();
 
+        $this->createSchemaForModels(SerializationModel::class);
+        static::$sharedConn->executeStatement('DELETE FROM serialize_model');
         $this->_em->persist($serialize);
         $this->_em->flush();
         $this->_em->clear();

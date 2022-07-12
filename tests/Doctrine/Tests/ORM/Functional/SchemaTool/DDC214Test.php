@@ -5,23 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\DBAL\Platforms\SqlitePlatform;
-use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\Tests\Models\CMS\CmsArticle;
-use Doctrine\Tests\Models\CMS\CmsEmail;
-use Doctrine\Tests\Models\CMS\CmsGroup;
-use Doctrine\Tests\Models\CMS\CmsPhonenumber;
-use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\Company\CompanyAuction;
-use Doctrine\Tests\Models\Company\CompanyCar;
-use Doctrine\Tests\Models\Company\CompanyEmployee;
-use Doctrine\Tests\Models\Company\CompanyEvent;
-use Doctrine\Tests\Models\Company\CompanyManager;
-use Doctrine\Tests\Models\Company\CompanyOrganization;
-use Doctrine\Tests\Models\Company\CompanyPerson;
-use Doctrine\Tests\Models\Company\CompanyRaffle;
+use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function array_filter;
 use function implode;
@@ -34,11 +19,6 @@ use const PHP_EOL;
  */
 class DDC214Test extends OrmFunctionalTestCase
 {
-    /** @psalm-var list<class-string> */
-    private array $classes = [];
-
-    private ?SchemaTool $schemaTool = null;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -48,8 +28,6 @@ class DDC214Test extends OrmFunctionalTestCase
         if ($conn->getDatabasePlatform() instanceof SqlitePlatform) {
             self::markTestSkipped('SQLite does not support ALTER TABLE statements.');
         }
-
-        $this->schemaTool = new SchemaTool($this->_em);
     }
 
     /**
@@ -57,16 +35,14 @@ class DDC214Test extends OrmFunctionalTestCase
      */
     public function testCmsAddressModel(): void
     {
-        $this->classes = [
-            CmsUser::class,
-            CmsPhonenumber::class,
-            CmsAddress::class,
-            CmsGroup::class,
-            CmsArticle::class,
-            CmsEmail::class,
-        ];
-
-        $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
+        $this->assertCreatedSchemaNeedsNoUpdates(
+            Models\CMS\CmsUser::class,
+            Models\CMS\CmsPhonenumber::class,
+            Models\CMS\CmsAddress::class,
+            Models\CMS\CmsGroup::class,
+            Models\CMS\CmsArticle::class,
+            Models\CMS\CmsEmail::class
+        );
     }
 
     /**
@@ -74,37 +50,29 @@ class DDC214Test extends OrmFunctionalTestCase
      */
     public function testCompanyModel(): void
     {
-        $this->classes = [
-            CompanyPerson::class,
-            CompanyEmployee::class,
-            CompanyManager::class,
-            CompanyOrganization::class,
-            CompanyEvent::class,
-            CompanyAuction::class,
-            CompanyRaffle::class,
-            CompanyCar::class,
-        ];
-
-        $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
+        $this->assertCreatedSchemaNeedsNoUpdates(
+            Models\Company\CompanyPerson::class,
+            Models\Company\CompanyEmployee::class,
+            Models\Company\CompanyManager::class,
+            Models\Company\CompanyOrganization::class,
+            Models\Company\CompanyEvent::class,
+            Models\Company\CompanyAuction::class,
+            Models\Company\CompanyRaffle::class,
+            Models\Company\CompanyCar::class
+        );
     }
 
-    public function assertCreatedSchemaNeedsNoUpdates($classes): void
+    /**
+     * @param class-string ...$classes
+     */
+    public function assertCreatedSchemaNeedsNoUpdates(string ...$classes): void
     {
-        $classMetadata = [];
-        foreach ($classes as $class) {
-            $classMetadata[] = $this->_em->getClassMetadata($class);
-        }
-
-        try {
-            $this->schemaTool->createSchema($classMetadata);
-        } catch (Exception) {
-            // was already created
-        }
+        $this->createSchemaForModels(...$classes);
 
         $sm = $this->createSchemaManager();
 
         $fromSchema = $sm->createSchema();
-        $toSchema   = $this->schemaTool->getSchemaFromMetadata($classMetadata);
+        $toSchema   = $this->getSchemaForModels(...$classes);
         $comparator = $sm->createComparator();
         $schemaDiff = $comparator->compareSchemas($fromSchema, $toSchema);
 

@@ -1,0 +1,11 @@
+\stdClass:
+  type: entity
+  id:
+    id:
+      type: integer
+      unsigned: true
+      generator:
+        strategy: AUTO
+  fields:
+    booleanField:
+      type: boolean

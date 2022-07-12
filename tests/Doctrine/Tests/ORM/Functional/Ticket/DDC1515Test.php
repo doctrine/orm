@@ -19,11 +19,9 @@ class DDC1515Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC1515Foo::class),
-                $this->_em->getClassMetadata(DDC1515Bar::class),
-            ]
+        $this->createSchemaForModels(
+            DDC1515Foo::class,
+            DDC1515Bar::class
         );
     }
 

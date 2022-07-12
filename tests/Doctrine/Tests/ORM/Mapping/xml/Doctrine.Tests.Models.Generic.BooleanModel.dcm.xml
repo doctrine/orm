@@ -9,9 +9,7 @@
             <generator strategy="AUTO"/>
         </id>
 
-        <field name="array" column="array" type="array"/>
-        
-        <field name="object" column="object" type="object"/>
+        <field name="booleanField" column="boolean_field" type="boolean"/>
     </entity>
 
 </doctrine-mapping>

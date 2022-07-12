@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_filter;
@@ -49,22 +48,21 @@ final class GH7875Test extends OrmFunctionalTestCase
 
     public function testUpdateSchemaSql(): void
     {
-        $classes = [$this->_em->getClassMetadata(GH7875MyEntity::class)];
+        $classes = [GH7875MyEntity::class];
 
-        $tool = new SchemaTool($this->_em);
-        $sqls = $this->filterCreateTable($tool->getUpdateSchemaSql($classes), 'gh7875_my_entity');
+        $sqls = $this->filterCreateTable($this->getUpdateSchemaSqlForModels(...$classes), 'gh7875_my_entity');
 
         self::assertCount(1, $sqls);
 
         $this->_em->getConnection()->executeStatement(current($sqls));
 
-        $sqls = array_filter($tool->getUpdateSchemaSql($classes), static fn (string $sql): bool => str_contains($sql, ' gh7875_my_entity '));
+        $sqls = array_filter($this->getUpdateSchemaSqlForModels(...$classes), static fn (string $sql): bool => str_contains($sql, ' gh7875_my_entity '));
 
         self::assertSame([], $sqls);
 
-        $classes[] = $this->_em->getClassMetadata(GH7875MyOtherEntity::class);
+        $classes[] = GH7875MyOtherEntity::class;
 
-        $sqls = $tool->getUpdateSchemaSql($classes);
+        $sqls = $this->getUpdateSchemaSqlForModels(...$classes);
 
         self::assertCount(0, $this->filterCreateTable($sqls, 'gh7875_my_entity'));
         self::assertCount(1, $this->filterCreateTable($sqls, 'gh7875_my_other_entity'));
@@ -74,17 +72,16 @@ final class GH7875Test extends OrmFunctionalTestCase
     {
         $filterCallback = static fn ($assetName): bool => $assetName !== 'gh7875_my_entity';
 
-        $classes = [$this->_em->getClassMetadata(GH7875MyEntity::class)];
+        $class = GH7875MyEntity::class;
 
-        $tool = new SchemaTool($this->_em);
-        $tool->createSchema($classes);
+        $this->createSchemaForModels($class);
 
         $config = $this->_em->getConnection()->getConfiguration();
         $config->setSchemaAssetsFilter($filterCallback);
 
         $previousFilter = $config->getSchemaAssetsFilter();
 
-        $sqls = $tool->getUpdateSchemaSql($classes);
+        $sqls = $this->getUpdateSchemaSqlForModels($class);
         $sqls = array_filter($sqls, static fn (string $sql): bool => str_contains($sql, ' gh7875_my_entity '));
 
         self::assertCount(0, $sqls);
