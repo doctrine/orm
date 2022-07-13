@@ -17,6 +17,11 @@
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
+        <DeprecatedConstant>
+            <errorLevel type="suppress">
+                <file name="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php" />
+            </errorLevel>
+        </DeprecatedConstant>
         <DeprecatedClass>
             <errorLevel type="suppress">
                 <!-- Remove on 3.0.x -->
@@ -111,6 +116,12 @@
                 <referencedFunction name="Doctrine\DBAL\Connection::lastInsertId"/>
             </errorLevel>
         </TooManyArguments>
+        <TypeDoesNotContainNull>
+            <errorLevel type="suppress">
+                <!-- DBAL 3 compatibility -->
+                <file name="lib/Doctrine/ORM/Tools/SchemaTool.php"/>
+            </errorLevel>
+        </TypeDoesNotContainNull>
         <TypeDoesNotContainType>
             <errorLevel type="suppress">
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>

@@ -66,7 +66,7 @@ class OnFlushListener
      */
     public function onFlush(OnFlushEventArgs $args): void
     {
-        $em        = $args->getEntityManager();
+        $em        = $args->getObjectManager();
         $uow       = $em->getUnitOfWork();
         $deletions = $uow->getScheduledEntityDeletions();
         $updates   = $uow->getScheduledEntityUpdates();

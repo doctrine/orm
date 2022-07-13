@@ -24,12 +24,10 @@ class DDC1080Test extends OrmFunctionalTestCase
 {
     public function testHydration(): void
     {
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC1080Foo::class),
-                $this->_em->getClassMetadata(DDC1080Bar::class),
-                $this->_em->getClassMetadata(DDC1080FooBar::class),
-            ]
+        $this->createSchemaForModels(
+            DDC1080Foo::class,
+            DDC1080Bar::class,
+            DDC1080FooBar::class
         );
 
         $foo1 = new DDC1080Foo();

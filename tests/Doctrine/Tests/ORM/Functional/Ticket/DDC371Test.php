@@ -26,12 +26,7 @@ class DDC371Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC371Parent::class),
-                $this->_em->getClassMetadata(DDC371Child::class),
-            ]
-        );
+        $this->createSchemaForModels(DDC371Parent::class, DDC371Child::class);
     }
 
     public function testIssue(): void

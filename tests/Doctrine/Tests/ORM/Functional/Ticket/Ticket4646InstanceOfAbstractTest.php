@@ -20,10 +20,10 @@ class Ticket4646InstanceOfAbstractTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(PersonTicket4646Abstract::class),
-            $this->_em->getClassMetadata(EmployeeTicket4646Abstract::class),
-        ]);
+        $this->createSchemaForModels(
+            PersonTicket4646Abstract::class,
+            EmployeeTicket4646Abstract::class
+        );
     }
 
     public function testInstanceOf(): void

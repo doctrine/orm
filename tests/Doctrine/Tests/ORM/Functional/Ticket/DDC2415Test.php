@@ -23,11 +23,9 @@ class DDC2415Test extends OrmFunctionalTestCase
 
         $this->_em->getConfiguration()->setMetadataDriverImpl(new StaticPHPDriver([]));
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC2415ParentEntity::class),
-                $this->_em->getClassMetadata(DDC2415ChildEntity::class),
-            ]
+        $this->createSchemaForModels(
+            DDC2415ParentEntity::class,
+            DDC2415ChildEntity::class
         );
     }
 

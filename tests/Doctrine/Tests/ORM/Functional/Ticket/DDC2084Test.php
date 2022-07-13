@@ -8,7 +8,6 @@ use Doctrine\Tests\ORM\Functional\Ticket\DDC2084\MyEntity1;
 use Doctrine\Tests\ORM\Functional\Ticket\DDC2084\MyEntity2;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 /**
  * @group DDC-2084
@@ -19,15 +18,10 @@ class DDC2084Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity1'),
-                    $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity2'),
-                ]
-            );
-        } catch (Exception) {
-        }
+        $this->createSchemaForModels(
+            __NAMESPACE__ . '\DDC2084\MyEntity1',
+            __NAMESPACE__ . '\DDC2084\MyEntity2'
+        );
     }
 
     public function loadFixture(): MyEntity1

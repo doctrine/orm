@@ -17,7 +17,7 @@ class DDC3582Test extends OrmFunctionalTestCase
 {
     public function testNestedEmbeddablesAreHydratedWithProperClass(): void
     {
-        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC3582Entity::class)]);
+        $this->createSchemaForModels(DDC3582Entity::class);
         $this->_em->persist(new DDC3582Entity('foo'));
         $this->_em->flush();
         $this->_em->clear();

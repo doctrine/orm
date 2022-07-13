@@ -37,11 +37,9 @@ class DDC2012Test extends OrmFunctionalTestCase
 
         DDC2012TsVectorType::$calls = [];
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC2012Item::class),
-                $this->_em->getClassMetadata(DDC2012ItemPerson::class),
-            ]
+        $this->createSchemaForModels(
+            DDC2012Item::class,
+            DDC2012ItemPerson::class
         );
     }
 

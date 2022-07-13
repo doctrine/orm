@@ -20,14 +20,12 @@ class DDC837Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC837Super::class),
-                $this->_em->getClassMetadata(DDC837Class1::class),
-                $this->_em->getClassMetadata(DDC837Class2::class),
-                $this->_em->getClassMetadata(DDC837Class3::class),
-                $this->_em->getClassMetadata(DDC837Aggregate::class),
-            ]
+        $this->createSchemaForModels(
+            DDC837Super::class,
+            DDC837Class1::class,
+            DDC837Class2::class,
+            DDC837Class3::class,
+            DDC837Aggregate::class
         );
     }
 

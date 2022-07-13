@@ -23,12 +23,10 @@ class DDC199Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC199ParentClass::class),
-                $this->_em->getClassMetadata(DDC199ChildClass::class),
-                $this->_em->getClassMetadata(DDC199RelatedClass::class),
-            ]
+        $this->createSchemaForModels(
+            DDC199ParentClass::class,
+            DDC199ChildClass::class,
+            DDC199RelatedClass::class
         );
     }
 

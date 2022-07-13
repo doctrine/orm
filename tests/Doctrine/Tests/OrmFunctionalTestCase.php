@@ -9,6 +9,7 @@ use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Cache\CacheConfiguration;
@@ -104,7 +105,6 @@ use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\Models\Generic\DecimalModel;
-use Doctrine\Tests\Models\Generic\SerializationModel;
 use Doctrine\Tests\Models\GeoNames\Admin1;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
 use Doctrine\Tests\Models\Issue5989\Issue5989Employee;
@@ -292,7 +292,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             BooleanModel::class,
             DateTimeModel::class,
             DecimalModel::class,
-            SerializationModel::class,
         ],
         'routing' => [
             RoutingLeg::class,
@@ -483,12 +482,42 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     final protected function createSchemaForModels(string ...$models): void
     {
         try {
-            $this->_schemaTool->createSchema(array_map(
-                fn (string $className): ClassMetadata => $this->_em->getClassMetadata($className),
-                $models
-            ));
+            $this->_schemaTool->createSchema($this->getMetadataForModels($models));
         } catch (ToolsException) {
         }
+    }
+
+    /**
+     * @param class-string ...$models
+     *
+     * @return string[]
+     */
+    final protected function getUpdateSchemaSqlForModels(string ...$models): array
+    {
+        return $this->_schemaTool->getUpdateSchemaSql($this->getMetadataForModels($models));
+    }
+
+    /**
+     * @param class-string ...$models
+     */
+    final protected function getSchemaForModels(string ...$models): Schema
+    {
+        return $this->_schemaTool->getSchemaFromMetadata($this->getMetadataForModels($models));
+    }
+
+    /**
+     * @param class-string[] $models
+     *
+     * @return ClassMetadata[]
+     */
+    private function getMetadataForModels(array $models): array
+    {
+        return array_map(
+            function (string $className): ClassMetadata {
+                return $this->_em->getClassMetadata($className);
+            },
+            $models
+        );
     }
 
     protected function useModelSet(string $setName): void
@@ -560,7 +589,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeStatement('DELETE FROM boolean_model');
             $conn->executeStatement('DELETE FROM date_time_model');
             $conn->executeStatement('DELETE FROM decimal_model');
-            $conn->executeStatement('DELETE FROM serialize_model');
         }
 
         if (isset($this->_usedModelSets['routing'])) {

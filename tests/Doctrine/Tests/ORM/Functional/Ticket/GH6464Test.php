@@ -22,11 +22,11 @@ class GH6464Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(GH6464Post::class),
-            $this->_em->getClassMetadata(GH6464User::class),
-            $this->_em->getClassMetadata(GH6464Author::class),
-        ]);
+        $this->createSchemaForModels(
+            GH6464Post::class,
+            GH6464User::class,
+            GH6464Author::class
+        );
     }
 
     /**
