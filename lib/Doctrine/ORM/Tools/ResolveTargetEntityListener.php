@@ -23,12 +23,12 @@ use function ltrim;
 class ResolveTargetEntityListener implements EventSubscriber
 {
     /** @var mixed[][] indexed by original entity name */
-    private $resolveTargetEntities = [];
+    private array $resolveTargetEntities = [];
 
     /**
      * {@inheritDoc}
      */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             Events::loadClassMetadata,
@@ -39,13 +39,9 @@ class ResolveTargetEntityListener implements EventSubscriber
     /**
      * Adds a target-entity class name to resolve to a new class name.
      *
-     * @param string $originalEntity
-     * @param string $newEntity
      * @psalm-param array<string, mixed> $mapping
-     *
-     * @return void
      */
-    public function addResolveTargetEntity($originalEntity, $newEntity, array $mapping)
+    public function addResolveTargetEntity(string $originalEntity, string $newEntity, array $mapping): void
     {
         $mapping['targetEntity']                                   = ltrim($newEntity, '\\');
         $this->resolveTargetEntities[ltrim($originalEntity, '\\')] = $mapping;
@@ -53,10 +49,8 @@ class ResolveTargetEntityListener implements EventSubscriber
 
     /**
      * @internal this is an event callback, and should not be called directly
-     *
-     * @return void
      */
-    public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args)
+    public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args): void
     {
         if (array_key_exists($args->getClassName(), $this->resolveTargetEntities)) {
             $args->setFoundMetadata(
@@ -71,10 +65,8 @@ class ResolveTargetEntityListener implements EventSubscriber
      * Processes event and resolves new target entity names.
      *
      * @internal this is an event callback, and should not be called directly
-     *
-     * @return void
      */
-    public function loadClassMetadata(LoadClassMetadataEventArgs $args)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $args): void
     {
         $cm = $args->getClassMetadata();
 

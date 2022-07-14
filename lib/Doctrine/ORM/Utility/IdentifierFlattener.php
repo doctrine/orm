@@ -20,26 +20,18 @@ use function is_object;
 final class IdentifierFlattener
 {
     /**
-     * The UnitOfWork used to coordinate object-level transactions.
-     *
-     * @var UnitOfWork
-     */
-    private $unitOfWork;
-
-    /**
-     * The metadata factory, used to retrieve the ORM metadata of entity classes.
-     *
-     * @var ClassMetadataFactory
-     */
-    private $metadataFactory;
-
-    /**
      * Initializes a new IdentifierFlattener instance, bound to the given EntityManager.
      */
-    public function __construct(UnitOfWork $unitOfWork, ClassMetadataFactory $metadataFactory)
-    {
-        $this->unitOfWork      = $unitOfWork;
-        $this->metadataFactory = $metadataFactory;
+    public function __construct(
+        /**
+         * The UnitOfWork used to coordinate object-level transactions.
+         */
+        private UnitOfWork $unitOfWork,
+        /**
+         * The metadata factory, used to retrieve the ORM metadata of entity classes.
+         */
+        private ClassMetadataFactory $metadataFactory
+    ) {
     }
 
     /**
