@@ -158,14 +158,12 @@ EOT
     ): ClassMetadata {
         try {
             return $entityManager->getClassMetadata($entityName);
-        } catch (MappingException $e) {
+        } catch (MappingException) {
         }
 
         $matches = array_filter(
             $this->getMappedEntities($entityManager),
-            static function ($mappedEntity) use ($entityName) {
-                return preg_match('{' . preg_quote($entityName) . '}', $mappedEntity);
-            }
+            static fn ($mappedEntity) => preg_match('{' . preg_quote($entityName) . '}', $mappedEntity)
         );
 
         if (! $matches) {
