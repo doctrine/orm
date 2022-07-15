@@ -32,6 +32,7 @@ use function print_r;
 use function sprintf;
 
 use const JSON_PRETTY_PRINT;
+use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
 
@@ -207,7 +208,10 @@ EOT
         }
 
         if (is_array($value)) {
-            return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+            return json_encode(
+                $value,
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR
+            );
         }
 
         if (is_object($value)) {
