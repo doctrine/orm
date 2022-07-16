@@ -49,11 +49,9 @@ EOT
 
         if ($dumpSql) {
             $sqls = $schemaTool->getCreateSchemaSql($metadatas);
-            $ui->text('The following SQL statements will be executed:');
-            $ui->newLine();
 
             foreach ($sqls as $sql) {
-                $ui->text(sprintf('    %s;', $sql));
+                $ui->writeln(sprintf('%s;', $sql));
             }
 
             return 0;

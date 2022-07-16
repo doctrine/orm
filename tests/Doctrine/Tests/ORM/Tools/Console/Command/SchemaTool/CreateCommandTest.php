@@ -8,10 +8,14 @@ use Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand;
 
 class CreateCommandTest extends AbstractCommandTest
 {
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testItPrintsTheSql(): void
     {
         $tester = $this->getCommandTester(CreateCommand::class);
         $tester->execute(['--dump-sql' => true]);
-        self::assertStringContainsString('CREATE TABLE keyboard', $tester->getDisplay());
+
+        self::$sharedConn->executeStatement($tester->getDisplay());
     }
 }
