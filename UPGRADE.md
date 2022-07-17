@@ -59,6 +59,10 @@ This method has been deprecated in:
 
 It will be removed in 3.0. Use `getObjectManager()` instead.
 
+## Deprecated `Doctrine\ORM\Event\LifecycleEventArgs` class
+
+It will be removed in 3.0. Use `Doctrine\Persistence\Event\LifecycleEventArgs` instead.
+
 ## Prepare split of output walkers and tree walkers
 
 In 3.0, `SqlWalker` and its child classes won't implement the `TreeWalker`
