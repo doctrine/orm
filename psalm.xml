@@ -26,6 +26,7 @@
                 <referencedClass name="Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver"/>
                 <!-- Remove on 3.0.x -->
                 <referencedClass name="Doctrine\Common\Persistence\PersistentObject"/>
+                <referencedClass name="Doctrine\ORM\Event\LifecycleEventArgs"/>
                 <referencedClass name="Doctrine\ORM\Exception\UnknownEntityNamespace"/>
                 <referencedClass name="Doctrine\ORM\Mapping\Driver\YamlDriver"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\Command\ConvertDoctrine1SchemaCommand"/>
@@ -161,7 +162,7 @@
                 <!-- DBAL 3.2 forward compatibility -->
                 <referencedClass name="Doctrine\DBAL\Platforms\PostgreSQLPlatform"/>
                 <referencedClass name="Doctrine\DBAL\Platforms\SQLServerPlatform"/>
-                
+
                 <!-- Persistence 2 compatibility -->
                 <referencedClass name="Doctrine\Persistence\ObjectManagerAware"/>
             </errorLevel>

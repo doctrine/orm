@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -15,6 +14,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function in_array;
@@ -125,13 +125,13 @@ class DDC2602PostLoadListener
 {
     public function postLoad(LifecycleEventArgs $event): void
     {
-        $entity = $event->getEntity();
+        $entity = $event->getObject();
 
         if (! ($entity instanceof DDC2602Biography)) {
             return;
         }
 
-        $entityManager = $event->getEntityManager();
+        $entityManager = $event->getObjectManager();
         $query         = $entityManager->createQuery('
             SELECT f, fc
               FROM Doctrine\Tests\ORM\Functional\Ticket\DDC2602BiographyField f INDEX BY f.id
