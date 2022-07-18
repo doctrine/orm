@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Query;
 
 use Traversable;
 
-use function func_get_args;
 use function implode;
 use function is_bool;
 use function is_iterable;
@@ -250,13 +249,13 @@ class Expr
     /**
      * Creates an instance of COUNT(DISTINCT) function, with the given argument.
      *
-     * @param mixed $x Argument to be used in COUNT(DISTINCT) function.
+     * @param mixed ...$x Argument to be used in COUNT(DISTINCT) function.
      *
      * @return string
      */
-    public function countDistinct($x)
+    public function countDistinct(mixed ...$x)
     {
-        return 'COUNT(DISTINCT ' . implode(', ', func_get_args()) . ')';
+        return 'COUNT(DISTINCT ' . implode(', ', $x) . ')';
     }
 
     /**
@@ -534,14 +533,13 @@ class Expr
     /**
      * Creates a CONCAT() function expression with the given arguments.
      *
-     * @param mixed $x     First argument to be used in CONCAT() function.
-     * @param mixed $y,... Other arguments to be used in CONCAT() function.
+     * @param mixed ...$x Arguments to be used in CONCAT() function.
      *
      * @return Expr\Func
      */
-    public function concat($x, $y)
+    public function concat(mixed ...$x)
     {
-        return new Expr\Func('CONCAT', func_get_args());
+        return new Expr\Func('CONCAT', $x);
     }
 
     /**
