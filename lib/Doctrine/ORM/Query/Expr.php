@@ -260,7 +260,7 @@ class Expr
      *
      * @return string
      */
-    public function countDistinct(...$x)
+    public function countDistinct(mixed ...$x)
     {
         return 'COUNT(DISTINCT ' . implode(', ', $x) . ')';
     }
