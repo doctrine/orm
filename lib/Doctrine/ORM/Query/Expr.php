@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Query;
 
 use Traversable;
 
-use function func_get_args;
 use function implode;
 use function is_bool;
 use function is_iterable;
