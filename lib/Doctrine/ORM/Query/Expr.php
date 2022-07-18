@@ -262,7 +262,7 @@ class Expr
      */
     public function countDistinct(...$x)
     {
-        return 'COUNT(DISTINCT ' . implode(', ', func_get_args()) . ')';
+        return 'COUNT(DISTINCT ' . implode(', ', $x) . ')';
     }
 
     /**
