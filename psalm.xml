@@ -25,6 +25,7 @@
         <DeprecatedClass>
             <errorLevel type="suppress">
                 <!-- Remove on 3.0.x -->
+                <referencedClass name="Doctrine\ORM\Event\LifecycleEventArgs"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\EntityManagerProvider\HelperSetManagerProvider"/>
                 <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand"/>

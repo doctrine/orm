@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
-use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
@@ -16,8 +15,6 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
-use function class_exists;
 
 class GH6823Test extends OrmFunctionalTestCase
 {
@@ -33,26 +30,30 @@ class GH6823Test extends OrmFunctionalTestCase
             GH6823Status::class
         );
 
-        if (class_exists(RemoveNamespacedAssets::class)) {
-            self::assertEquals('CREATE TABLE gh6823_user (id VARCHAR(255) NOT NULL, group_id VARCHAR(255) CHARACTER SET ascii DEFAULT NULL COLLATE `ascii_general_ci`, status_id VARCHAR(255) CHARACTER SET latin1 DEFAULT NULL COLLATE `latin1_bin`, INDEX IDX_70DD1774FE54D947 (group_id), INDEX IDX_70DD17746BF700BD (status_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_bin` ENGINE = InnoDB', $this->getLastLoggedQuery(6)['sql']);
-            self::assertEquals('CREATE TABLE gh6823_user_tags (user_id VARCHAR(255) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_bin`, tag_id VARCHAR(255) CHARACTER SET latin1 NOT NULL COLLATE `latin1_bin`, INDEX IDX_596B1281A76ED395 (user_id), INDEX IDX_596B1281BAD26311 (tag_id), PRIMARY KEY(user_id, tag_id)) DEFAULT CHARACTER SET ascii COLLATE `ascii_general_ci` ENGINE = InnoDB', $this->getLastLoggedQuery(5)['sql']);
-            self::assertEquals('CREATE TABLE gh6823_group (id VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET ascii COLLATE `ascii_general_ci` ENGINE = InnoDB', $this->getLastLoggedQuery(4)['sql']);
-            self::assertEquals('CREATE TABLE gh6823_status (id VARCHAR(255) CHARACTER SET latin1 NOT NULL COLLATE `latin1_bin`, PRIMARY KEY(id)) DEFAULT CHARACTER SET koi8r COLLATE `koi8r_bin` ENGINE = InnoDB', $this->getLastLoggedQuery(3)['sql']);
-            self::assertEquals('ALTER TABLE gh6823_user ADD CONSTRAINT FK_70DD1774FE54D947 FOREIGN KEY (group_id) REFERENCES gh6823_group (id)', $this->getLastLoggedQuery(2)['sql']);
-            self::assertEquals('ALTER TABLE gh6823_user ADD CONSTRAINT FK_70DD17746BF700BD FOREIGN KEY (status_id) REFERENCES gh6823_status (id)', $this->getLastLoggedQuery(1)['sql']);
-            self::assertEquals('ALTER TABLE gh6823_user_tags ADD CONSTRAINT FK_596B1281A76ED395 FOREIGN KEY (user_id) REFERENCES gh6823_user (id)', $this->getLastLoggedQuery(0)['sql']);
+        $schemaManager = $this->createSchemaManager();
+        /* gh6823_user.group_id should use charset ascii and collation
+         * ascii_general_ci, because that is what gh6823_group.id falls back to */
+        $userGroupIdOptions = $schemaManager->listTableDetails('gh6823_user')->getColumn('group_id')->toArray();
+        self::assertSame('ascii', $userGroupIdOptions['charset']);
+        self::assertSame('ascii_general_ci', $userGroupIdOptions['collation']);
 
-            return;
-        }
+        /* gh6823_user.status_id should use charset latin1 and collation
+         * latin1_bin, because that is what gh6823_status.id uses */
+        $userStatusIdOptions = $schemaManager->listTableDetails('gh6823_user')->getColumn('status_id')->toArray();
+        self::assertSame('latin1', $userStatusIdOptions['charset']);
+        self::assertSame('latin1_bin', $userStatusIdOptions['collation']);
 
-        self::assertEquals('CREATE TABLE gh6823_user (id VARCHAR(255) NOT NULL, group_id VARCHAR(255) CHARACTER SET ascii DEFAULT NULL COLLATE `ascii_general_ci`, status_id VARCHAR(255) CHARACTER SET latin1 DEFAULT NULL COLLATE `latin1_bin`, INDEX IDX_70DD1774FE54D947 (group_id), INDEX IDX_70DD17746BF700BD (status_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_bin` ENGINE = InnoDB', $this->getLastLoggedQuery(7)['sql']);
-        self::assertEquals('CREATE TABLE gh6823_user_tags (user_id VARCHAR(255) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_bin`, tag_id VARCHAR(255) CHARACTER SET latin1 NOT NULL COLLATE `latin1_bin`, INDEX IDX_596B1281A76ED395 (user_id), INDEX IDX_596B1281BAD26311 (tag_id), PRIMARY KEY(user_id, tag_id)) DEFAULT CHARACTER SET ascii COLLATE `ascii_general_ci` ENGINE = InnoDB', $this->getLastLoggedQuery(6)['sql']);
-        self::assertEquals('CREATE TABLE gh6823_group (id VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET ascii COLLATE `ascii_general_ci` ENGINE = InnoDB', $this->getLastLoggedQuery(5)['sql']);
-        self::assertEquals('CREATE TABLE gh6823_status (id VARCHAR(255) CHARACTER SET latin1 NOT NULL COLLATE `latin1_bin`, PRIMARY KEY(id)) DEFAULT CHARACTER SET koi8r COLLATE `koi8r_bin` ENGINE = InnoDB', $this->getLastLoggedQuery(4)['sql']);
-        self::assertEquals('ALTER TABLE gh6823_user ADD CONSTRAINT FK_70DD1774FE54D947 FOREIGN KEY (group_id) REFERENCES gh6823_group (id)', $this->getLastLoggedQuery(3)['sql']);
-        self::assertEquals('ALTER TABLE gh6823_user ADD CONSTRAINT FK_70DD17746BF700BD FOREIGN KEY (status_id) REFERENCES gh6823_status (id)', $this->getLastLoggedQuery(2)['sql']);
-        self::assertEquals('ALTER TABLE gh6823_user_tags ADD CONSTRAINT FK_596B1281A76ED395 FOREIGN KEY (user_id) REFERENCES gh6823_user (id)', $this->getLastLoggedQuery(1)['sql']);
-        self::assertEquals('ALTER TABLE gh6823_user_tags ADD CONSTRAINT FK_596B1281BAD26311 FOREIGN KEY (tag_id) REFERENCES gh6823_tag (id)', $this->getLastLoggedQuery()['sql']);
+        /* gh6823_user_tags.user_id should use charset utf8mb4 and collation
+         * utf8mb4_bin, because that is what gh6823_user.id falls back to */
+        $userTagsUserIdOptions = $schemaManager->listTableDetails('gh6823_user_tags')->getColumn('user_id')->toArray();
+        self::assertSame('utf8mb4', $userTagsUserIdOptions['charset']);
+        self::assertSame('utf8mb4_bin', $userTagsUserIdOptions['collation']);
+
+        /* gh6823_user_tags.tag_id should use charset latin1 and collation
+         * latin1_bin, because that is what gh6823_tag.id falls back to */
+        $userTagsTagIdOption = $schemaManager->listTableDetails('gh6823_user_tags')->getColumn('tag_id')->toArray();
+        self::assertSame('latin1', $userTagsTagIdOption['charset']);
+        self::assertSame('latin1_bin', $userTagsTagIdOption['collation']);
     }
 }
 

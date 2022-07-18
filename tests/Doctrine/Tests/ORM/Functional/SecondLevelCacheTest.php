@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\EventArgs;
-use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Exception;

@@ -9,6 +9,7 @@ use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception\DatabaseObjectNotFoundException;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
 use UnexpectedValueException;
 
 use function assert;
@@ -88,7 +89,14 @@ class TestUtil
 
         $platform = $privConn->getDatabasePlatform();
 
-        if ($platform->supportsCreateDropDatabase()) {
+        if ($platform instanceof SqlitePlatform) {
+            $schema = $testConn->createSchemaManager()->createSchema();
+            $stmts  = $schema->toDropSql($testConn->getDatabasePlatform());
+
+            foreach ($stmts as $stmt) {
+                $testConn->executeStatement($stmt);
+            }
+        } else {
             $dbname = $testConnParams['dbname'] ?? $testConn->getDatabase();
             $testConn->close();
 
@@ -102,13 +110,6 @@ class TestUtil
             $schemaManager->createDatabase($dbname);
 
             $privConn->close();
-        } else {
-            $schema = $testConn->createSchemaManager()->createSchema();
-            $stmts  = $schema->toDropSql($testConn->getDatabasePlatform());
-
-            foreach ($stmts as $stmt) {
-                $testConn->executeStatement($stmt);
-            }
         }
     }
 

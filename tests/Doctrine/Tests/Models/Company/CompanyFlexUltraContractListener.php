@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
-use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\PrePersist;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 
 use function func_get_args;
 

@@ -745,7 +745,7 @@ An entity listener is a lifecycle listener class used for an entity.
 .. configuration-block::
 
     .. code-block:: attribute
-    
+
         <?php
         namespace MyProject\Entity;
         use App\EventListener\UserListener;
@@ -812,9 +812,9 @@ you need to map the listener method using the event type mapping:
     .. code-block:: php
 
         <?php
-        use Doctrine\ORM\Event\LifecycleEventArgs;
         use Doctrine\ORM\Event\PreUpdateEventArgs;
         use Doctrine\ORM\Event\PreFlushEventArgs;
+        use Doctrine\Persistence\Event\LifecycleEventArgs;
 
         class UserListener
         {

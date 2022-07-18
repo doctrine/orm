@@ -144,24 +144,22 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     {
         $train  = new Train(new TrainOwner('Alexander'));
         $driver = new TrainDriver('Benjamin');
-        $train->setDriver($driver);
 
         $this->_em->persist($train);
+        $this->_em->persist($driver);
         $this->_em->flush();
+        $trainId  = $train->id;
+        $driverId = $driver->id;
         $this->_em->clear();
 
         $train = $this->_em->find($train::class, $train->id);
-        $this->assertSQLEquals(
-            'SELECT t0.id AS id_1, t0.driver_id AS driver_id_2, t3.id AS id_4, t3.name AS name_5, t0.owner_id AS owner_id_6, t7.id AS id_8, t7.name AS name_9 FROM Train t0 LEFT JOIN TrainDriver t3 ON t0.driver_id = t3.id INNER JOIN TrainOwner t7 ON t0.owner_id = t7.id WHERE t0.id = ?',
-            $this->getLastLoggedQuery()['sql']
-        );
+        self::assertNotNull($train, 'It should be possible to find the train even though it has no driver');
+        self::assertSame($trainId, $train->id);
 
         $this->_em->clear();
         $driver = $this->_em->find($driver::class, $driver->id);
-        $this->assertSQLEquals(
-            'SELECT t0.id AS id_1, t0.name AS name_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id IN (?)',
-            $this->getLastLoggedQuery()['sql']
-        );
+        self::assertNotNull($driver, 'It should be possible to find the driver even though they drive no train');
+        self::assertSame($driverId, $driver->id);
     }
 
     /**
@@ -200,16 +198,12 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     public function testEagerLoadWithNonNullableColumnsGeneratesLeftJoinOnNonOwningSide(): void
     {
         $owner = new TrainOwner('Alexander');
-        $train = new Train($owner);
-        $this->_em->persist($train);
+        $this->_em->persist($owner);
         $this->_em->flush();
         $this->_em->clear();
 
-        $waggon = $this->_em->find($owner::class, $owner->id);
-        $this->assertSQLEquals(
-            'SELECT t0.id AS id_1, t0.name AS name_2, t3.id AS id_4, t3.driver_id AS driver_id_5, t3.owner_id AS owner_id_6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id = ?',
-            $this->getLastLoggedQuery()['sql']
-        );
+        $owner = $this->_em->find($owner::class, $owner->id);
+        self::assertNotNull($owner, 'An owner without a train should be able to exist.');
     }
 
     /**
