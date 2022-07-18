@@ -8,6 +8,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception\DriverException;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use UnexpectedValueException;
 
@@ -89,7 +90,14 @@ class TestUtil
 
         $platform = $privConn->getDatabasePlatform();
 
-        if ($platform->supportsCreateDropDatabase()) {
+        if ($platform instanceof SqlitePlatform) {
+            $schema = self::createSchemaManager($testConn)->createSchema();
+            $stmts  = $schema->toDropSql($testConn->getDatabasePlatform());
+
+            foreach ($stmts as $stmt) {
+                $testConn->executeStatement($stmt);
+            }
+        } else {
             $dbname = $testConnParams['dbname'] ?? $testConn->getDatabase();
             $testConn->close();
 
@@ -104,13 +112,6 @@ class TestUtil
                 $schemaManager->createDatabase($dbname);
 
                 $privConn->close();
-            }
-        } else {
-            $schema = self::createSchemaManager($testConn)->createSchema();
-            $stmts  = $schema->toDropSql($testConn->getDatabasePlatform());
-
-            foreach ($stmts as $stmt) {
-                $testConn->executeStatement($stmt);
             }
         }
     }
