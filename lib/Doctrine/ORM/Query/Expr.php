@@ -546,7 +546,7 @@ class Expr
      */
     public function concat(...$x)
     {
-        return new Expr\Func('CONCAT', func_get_args());
+        return new Expr\Func('CONCAT', $x);
     }
 
     /**
