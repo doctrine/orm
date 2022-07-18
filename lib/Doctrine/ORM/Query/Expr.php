@@ -544,7 +544,7 @@ class Expr
      *
      * @return Expr\Func
      */
-    public function concat(...$x)
+    public function concat(mixed ...$x)
     {
         return new Expr\Func('CONCAT', $x);
     }
