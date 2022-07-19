@@ -15,30 +15,18 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class GenerateSchemaEventArgs extends EventArgs
 {
-    /** @var EntityManagerInterface */
-    private $em;
-
-    /** @var Schema */
-    private $schema;
-
-    public function __construct(EntityManagerInterface $em, Schema $schema)
-    {
-        $this->em     = $em;
-        $this->schema = $schema;
+    public function __construct(
+        private EntityManagerInterface $em,
+        private Schema $schema
+    ) {
     }
 
-    /**
-     * @return EntityManagerInterface
-     */
-    public function getEntityManager()
+    public function getEntityManager(): EntityManagerInterface
     {
         return $this->em;
     }
 
-    /**
-     * @return Schema
-     */
-    public function getSchema()
+    public function getSchema(): Schema
     {
         return $this->schema;
     }

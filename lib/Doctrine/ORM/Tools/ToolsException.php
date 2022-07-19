@@ -8,8 +8,6 @@ use Doctrine\ORM\Exception\ORMException;
 use RuntimeException;
 use Throwable;
 
-use function sprintf;
-
 /**
  * Tools related Exceptions.
  */
@@ -22,15 +20,5 @@ class ToolsException extends RuntimeException implements ORMException
             0,
             $e
         );
-    }
-
-    /**
-     * @param string $type
-     *
-     * @return ToolsException
-     */
-    public static function couldNotMapDoctrine1Type($type)
-    {
-        return new self(sprintf("Could not map doctrine 1 type '%s'!", $type));
     }
 }

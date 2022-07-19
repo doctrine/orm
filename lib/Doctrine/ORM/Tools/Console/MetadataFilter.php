@@ -34,7 +34,7 @@ class MetadataFilter extends FilterIterator implements Countable
      *
      * @return ClassMetadata[]
      */
-    public static function filter(array $metadatas, array|string $filter)
+    public static function filter(array $metadatas, array|string $filter): array
     {
         $metadatas = new MetadataFilter(new ArrayIterator($metadatas), $filter);
 

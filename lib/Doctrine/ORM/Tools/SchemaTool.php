@@ -889,7 +889,7 @@ class SchemaTool
      * @param bool    $saveMode If TRUE, only performs a partial update
      *                           without dropping assets which are scheduled for deletion.
      */
-    public function updateSchema(array $classes, $saveMode = false): void
+    public function updateSchema(array $classes, bool $saveMode = false): void
     {
         $updateSchemaSql = $this->getUpdateSchemaSql($classes, $saveMode);
         $conn            = $this->em->getConnection();
@@ -909,7 +909,7 @@ class SchemaTool
      *
      * @return string[] The sequence of SQL statements.
      */
-    public function getUpdateSchemaSql(array $classes, $saveMode = false): array
+    public function getUpdateSchemaSql(array $classes, bool $saveMode = false): array
     {
         $toSchema   = $this->getSchemaFromMetadata($classes);
         $fromSchema = $this->createSchemaForComparison($toSchema);
