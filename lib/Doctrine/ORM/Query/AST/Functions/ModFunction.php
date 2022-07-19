@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\AST\Literal;
+use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
@@ -16,10 +18,10 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class ModFunction extends FunctionNode
 {
-    /** @var SimpleArithmeticExpression */
+    /** @var SimpleArithmeticExpression|PathExpression */
     public $firstSimpleArithmeticExpression;
 
-    /** @var SimpleArithmeticExpression */
+    /** @var SimpleArithmeticExpression|Literal */
     public $secondSimpleArithmeticExpression;
 
     /**
