@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Configuration;
@@ -233,7 +234,11 @@ class SQLFilterTest extends OrmFunctionalTestCase
      */
     private function getMockConnection(): Connection
     {
-        return $this->createMock(Connection::class);
+        $connection = $this->createMock(Connection::class);
+        $connection->method('getEventManager')
+            ->willReturn(new EventManager());
+
+        return $connection;
     }
 
     /**

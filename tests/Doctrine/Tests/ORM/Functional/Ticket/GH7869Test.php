@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
@@ -31,6 +32,8 @@ class GH7869Test extends OrmTestCase
         $connection = $this->createMock(Connection::class);
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);
+        $connection->method('getEventManager')
+            ->willReturn(new EventManager());
 
         $em = new class (EntityManagerMock::create($connection)) extends EntityManagerDecorator {
             /** @var int */

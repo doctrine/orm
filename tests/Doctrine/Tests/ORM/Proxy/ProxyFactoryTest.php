@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Proxy;
 
 use Closure;
+use Doctrine\Common\EventManager;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Common\Proxy\Proxy;
 use Doctrine\DBAL\Connection;
@@ -52,6 +53,8 @@ class ProxyFactoryTest extends OrmTestCase
         $connection = $this->createMock(Connection::class);
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);
+        $connection->method('getEventManager')
+            ->willReturn(new EventManager());
 
         $this->emMock  = EntityManagerMock::create($connection);
         $this->uowMock = new UnitOfWorkMock($this->emMock);

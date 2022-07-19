@@ -65,7 +65,7 @@ class EntityManagerMock extends EntityManager
         }
 
         if ($eventManager === null) {
-            $eventManager = new EventManager();
+            $eventManager = $conn->getEventManager();
         }
 
         return new EntityManagerMock($conn, $config, $eventManager);
