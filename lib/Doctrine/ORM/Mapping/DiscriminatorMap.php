@@ -11,19 +11,20 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Annotation
  * @NamedArgumentConstructor()
  * @Target("CLASS")
+ * @template TKey of int|string
  */
 #[Attribute(Attribute::TARGET_CLASS)]
 final class DiscriminatorMap implements Annotation
 {
     /**
-     * @var array<string, string>
-     * @psalm-var array<string, class-string>
+     * @var array<int|string, string>
+     * @psalm-var array<TKey, class-string>
      */
     public $value;
 
     /**
-     * @param array<string, string> $value
-     * @psalm-param array<string, class-string> $value
+     * @param array<int|string, string> $value
+     * @psalm-param array<TKey, class-string> $value
      */
     public function __construct(array $value)
     {

@@ -519,9 +519,9 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @see discriminatorColumn
      *
-     * @var array<string, string>
+     * @var array<int|string, string>
      *
-     * @psalm-var array<string, class-string>
+     * @psalm-var array<int|string, class-string>
      */
     public $discriminatorMap = [];
 
@@ -3219,7 +3219,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Sets the discriminator values used by this class.
      * Used for JOINED and SINGLE_TABLE inheritance mapping strategies.
      *
-     * @psalm-param array<string, class-string> $map
+     * @psalm-param array<int|string, class-string> $map
      *
      * @return void
      */
@@ -3233,9 +3233,8 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Adds one entry of the discriminator map with a new class and corresponding name.
      *
-     * @param string $name
-     * @param string $className
-     * @psalm-param class-string $className
+     * @param int|string   $name
+     * @param class-string $className
      *
      * @return void
      *
