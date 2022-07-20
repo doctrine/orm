@@ -15,18 +15,15 @@ class AnsiQuoteStrategy implements QuoteStrategy
 {
     use SQLResultCasing;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getColumnName($fieldName, ClassMetadata $class, AbstractPlatform $platform)
-    {
+    public function getColumnName(
+        string $fieldName,
+        ClassMetadata $class,
+        AbstractPlatform $platform
+    ): string {
         return $class->fieldMappings[$fieldName]['columnName'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getTableName(ClassMetadata $class, AbstractPlatform $platform)
+    public function getTableName(ClassMetadata $class, AbstractPlatform $platform): string
     {
         return $class->table['name'];
     }
@@ -34,7 +31,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
     /**
      * {@inheritdoc}
      */
-    public function getSequenceName(array $definition, ClassMetadata $class, AbstractPlatform $platform)
+    public function getSequenceName(array $definition, ClassMetadata $class, AbstractPlatform $platform): string
     {
         return $definition['sequenceName'];
     }
@@ -42,7 +39,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
     /**
      * {@inheritdoc}
      */
-    public function getJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform)
+    public function getJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform): string
     {
         return $joinColumn['name'];
     }
@@ -50,15 +47,18 @@ class AnsiQuoteStrategy implements QuoteStrategy
     /**
      * {@inheritdoc}
      */
-    public function getReferencedJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform)
-    {
+    public function getReferencedJoinColumnName(
+        array $joinColumn,
+        ClassMetadata $class,
+        AbstractPlatform $platform
+    ): string {
         return $joinColumn['referencedColumnName'];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform)
+    public function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform): string
     {
         return $association['joinTable']['name'];
     }
@@ -66,16 +66,17 @@ class AnsiQuoteStrategy implements QuoteStrategy
     /**
      * {@inheritdoc}
      */
-    public function getIdentifierColumnNames(ClassMetadata $class, AbstractPlatform $platform)
+    public function getIdentifierColumnNames(ClassMetadata $class, AbstractPlatform $platform): array
     {
         return $class->identifier;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getColumnAlias($columnName, $counter, AbstractPlatform $platform, ?ClassMetadata $class = null)
-    {
+    public function getColumnAlias(
+        string $columnName,
+        int $counter,
+        AbstractPlatform $platform,
+        ?ClassMetadata $class = null
+    ): string {
         return $this->getSQLResultCasing($platform, $columnName . '_' . $counter);
     }
 }
