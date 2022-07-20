@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
-use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -27,7 +27,7 @@ class ValidateSchemaCommandTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        if (! $this->_em->getConnection()->getDatabasePlatform() instanceof SqlitePlatform) {
+        if (! $this->_em->getConnection()->getDatabasePlatform() instanceof SQLitePlatform) {
             self::markTestSkipped('Only with sqlite');
         }
 

@@ -8,7 +8,7 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
-use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Column;
@@ -30,7 +30,11 @@ use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmTestCase;
 use Exception;
 
+use function class_exists;
 use function sprintf;
+
+// DBAL 3 compatibility
+class_exists('Doctrine\\DBAL\\Platforms\\SqlitePlatform');
 
 class SelectSqlGenerationTest extends OrmTestCase
 {
@@ -929,7 +933,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
     public function testBooleanLiteralInWhereOnSqlite(): void
     {
-        $this->entityManager = $this->createTestEntityManagerWithPlatform(new SqlitePlatform());
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new SQLitePlatform());
         $this->assertSqlGeneration(
             'SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true',
             'SELECT b0_.id AS id_0, b0_.booleanField AS booleanField_1 FROM boolean_model b0_ WHERE b0_.booleanField = 1'
@@ -1064,7 +1068,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testPessimisticWriteLockQueryHint(): void
     {
-        if ($this->entityManager->getConnection()->getDatabasePlatform() instanceof SqlitePlatform) {
+        if ($this->entityManager->getConnection()->getDatabasePlatform() instanceof SQLitePlatform) {
             self::markTestSkipped('SqLite does not support Row locking at all.');
         }
 

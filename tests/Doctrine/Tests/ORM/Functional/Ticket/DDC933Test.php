@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\LockMode;
-use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\TransactionRequiredException;
@@ -30,7 +30,7 @@ class DDC933Test extends OrmFunctionalTestCase
      */
     public function testLockCTIClass(): void
     {
-        if ($this->_em->getConnection()->getDatabasePlatform() instanceof SqlitePlatform) {
+        if ($this->_em->getConnection()->getDatabasePlatform() instanceof SQLitePlatform) {
             self::markTestSkipped('It should not run on in-memory databases');
         }
 

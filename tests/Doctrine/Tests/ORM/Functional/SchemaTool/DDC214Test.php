@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
-use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -25,7 +25,7 @@ class DDC214Test extends OrmFunctionalTestCase
 
         $conn = $this->_em->getConnection();
 
-        if ($conn->getDatabasePlatform() instanceof SqlitePlatform) {
+        if ($conn->getDatabasePlatform() instanceof SQLitePlatform) {
             self::markTestSkipped('SQLite does not support ALTER TABLE statements.');
         }
     }
