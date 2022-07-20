@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use DateTimeImmutable;
-use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -317,7 +317,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         if (
             $unit === 'month'
             && $inOneUnit->format('m') === $now->modify('+2 month')->format('m')
-            && ! $this->_em->getConnection()->getDatabasePlatform() instanceof SqlitePlatform
+            && ! $this->_em->getConnection()->getDatabasePlatform() instanceof SQLitePlatform
         ) {
             $inOneUnit = new DateTimeImmutable('last day of next month');
         }
@@ -355,7 +355,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         if (
             $unit === 'month'
             && $oneUnitAgo->format('m') === $now->format('m')
-            && ! $this->_em->getConnection()->getDatabasePlatform() instanceof SqlitePlatform
+            && ! $this->_em->getConnection()->getDatabasePlatform() instanceof SQLitePlatform
         ) {
             $oneUnitAgo = new DateTimeImmutable('last day of previous month');
         }

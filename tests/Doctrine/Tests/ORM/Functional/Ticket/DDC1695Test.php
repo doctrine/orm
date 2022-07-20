@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use DateTimeZone;
-use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -20,7 +20,7 @@ class DDC1695Test extends OrmFunctionalTestCase
 {
     public function testIssue(): void
     {
-        if (! $this->_em->getConnection()->getDatabasePlatform() instanceof SqlitePlatform) {
+        if (! $this->_em->getConnection()->getDatabasePlatform() instanceof SQLitePlatform) {
             self::markTestSkipped('Only with sqlite');
         }
 

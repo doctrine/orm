@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Console\Command\SchemaTool;
 
-use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\AbstractCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
@@ -22,7 +22,7 @@ abstract class AbstractCommandTest extends OrmFunctionalTestCase
             __DIR__ . '/Models',
         ]));
 
-        if (! $entityManager->getConnection()->getDatabasePlatform() instanceof SqlitePlatform) {
+        if (! $entityManager->getConnection()->getDatabasePlatform() instanceof SQLitePlatform) {
             self::markTestSkipped('We are testing the symfony/console integration');
         }
 
