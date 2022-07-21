@@ -459,8 +459,7 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php">
-    <ArgumentTypeCoercion occurrences="2">
-      <code>$class</code>
+    <ArgumentTypeCoercion occurrences="1">
       <code>$repositoryClassName</code>
     </ArgumentTypeCoercion>
     <DeprecatedMethod occurrences="1">
@@ -829,8 +828,7 @@
     </MissingParamType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php">
-    <ArgumentTypeCoercion occurrences="3">
-      <code>$map</code>
+    <ArgumentTypeCoercion occurrences="2">
       <code>(string) $xmlRoot['repository-class']</code>
       <code>isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null</code>
     </ArgumentTypeCoercion>
