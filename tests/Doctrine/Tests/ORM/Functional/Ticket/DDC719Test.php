@@ -24,11 +24,7 @@ class DDC719Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC719Group::class),
-            ]
-        );
+        $this->createSchemaForModels(DDC719Group::class);
     }
 
     public function testIsEmptySqlGeneration(): void

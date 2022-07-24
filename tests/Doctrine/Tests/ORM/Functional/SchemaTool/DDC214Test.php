@@ -6,10 +6,8 @@ namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\Comparator;
-use Doctrine\ORM\Tools;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function array_filter;
 use function implode;
@@ -23,12 +21,6 @@ use const PHP_EOL;
  */
 class DDC214Test extends OrmFunctionalTestCase
 {
-    /** @psalm-var list<class-string> */
-    private $classes = [];
-
-    /** @var Tools\SchemaTool */
-    private $schemaTool = null;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -38,8 +30,6 @@ class DDC214Test extends OrmFunctionalTestCase
         if ($conn->getDriver()->getDatabasePlatform() instanceof SqlitePlatform) {
             self::markTestSkipped('SQLite does not support ALTER TABLE statements.');
         }
-
-        $this->schemaTool = new Tools\SchemaTool($this->_em);
     }
 
     /**
@@ -47,16 +37,14 @@ class DDC214Test extends OrmFunctionalTestCase
      */
     public function testCmsAddressModel(): void
     {
-        $this->classes = [
+        $this->assertCreatedSchemaNeedsNoUpdates(
             Models\CMS\CmsUser::class,
             Models\CMS\CmsPhonenumber::class,
             Models\CMS\CmsAddress::class,
             Models\CMS\CmsGroup::class,
             Models\CMS\CmsArticle::class,
-            Models\CMS\CmsEmail::class,
-        ];
-
-        $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
+            Models\CMS\CmsEmail::class
+        );
     }
 
     /**
@@ -64,7 +52,7 @@ class DDC214Test extends OrmFunctionalTestCase
      */
     public function testCompanyModel(): void
     {
-        $this->classes = [
+        $this->assertCreatedSchemaNeedsNoUpdates(
             Models\Company\CompanyPerson::class,
             Models\Company\CompanyEmployee::class,
             Models\Company\CompanyManager::class,
@@ -72,29 +60,21 @@ class DDC214Test extends OrmFunctionalTestCase
             Models\Company\CompanyEvent::class,
             Models\Company\CompanyAuction::class,
             Models\Company\CompanyRaffle::class,
-            Models\Company\CompanyCar::class,
-        ];
-
-        $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
+            Models\Company\CompanyCar::class
+        );
     }
 
-    public function assertCreatedSchemaNeedsNoUpdates($classes): void
+    /**
+     * @param class-string ...$classes
+     */
+    public function assertCreatedSchemaNeedsNoUpdates(string ...$classes): void
     {
-        $classMetadata = [];
-        foreach ($classes as $class) {
-            $classMetadata[] = $this->_em->getClassMetadata($class);
-        }
-
-        try {
-            $this->schemaTool->createSchema($classMetadata);
-        } catch (Exception $e) {
-            // was already created
-        }
+        $this->createSchemaForModels(...$classes);
 
         $sm = $this->createSchemaManager();
 
         $fromSchema = $sm->createSchema();
-        $toSchema   = $this->schemaTool->getSchemaFromMetadata($classMetadata);
+        $toSchema   = $this->getSchemaForModels(...$classes);
 
         if (method_exists($sm, 'createComparator')) {
             $comparator = $sm->createComparator();

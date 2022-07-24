@@ -23,10 +23,7 @@ class DDC440Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(DDC440Phone::class),
-            $this->_em->getClassMetadata(DDC440Client::class),
-        ]);
+        $this->createSchemaForModels(DDC440Phone::class, DDC440Client::class);
     }
 
     /**

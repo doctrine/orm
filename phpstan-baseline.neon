@@ -221,6 +221,11 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
 
 		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
+
+		-
 			message: "#^Empty array passed to foreach\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
@@ -469,11 +474,6 @@ parameters:
 			message: "#^PHPDoc type array\\<string\\> of property Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Select\\:\\:\\$allowedClasses is not covariant with PHPDoc type array\\<int, class\\-string\\> of overridden property Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Base\\:\\:\\$allowedClasses\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/Expr/Select.php
-
-		-
-			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticFactor\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\|string\\.$#"

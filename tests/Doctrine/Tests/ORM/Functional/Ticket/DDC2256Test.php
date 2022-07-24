@@ -33,11 +33,9 @@ class DDC2256Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC2256User::class),
-                $this->_em->getClassMetadata(DDC2256Group::class),
-            ]
+        $this->createSchemaForModels(
+            DDC2256User::class,
+            DDC2256Group::class
         );
     }
 

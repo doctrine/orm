@@ -16,11 +16,9 @@ class DDC1458Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(TestEntity::class),
-                $this->_em->getClassMetadata(TestAdditionalEntity::class),
-            ]
+        $this->createSchemaForModels(
+            TestEntity::class,
+            TestAdditionalEntity::class
         );
     }
 

@@ -16,7 +16,6 @@ use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 /**
  * @group DDC-1452
@@ -28,15 +27,10 @@ class DDC1452Test extends OrmFunctionalTestCase
         $this->useModelSet('cms');
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1452EntityA::class),
-                    $this->_em->getClassMetadata(DDC1452EntityB::class),
-                ]
-            );
-        } catch (Exception $ignored) {
-        }
+        $this->createSchemaForModels(
+            DDC1452EntityA::class,
+            DDC1452EntityB::class
+        );
     }
 
     public function testIssue(): void

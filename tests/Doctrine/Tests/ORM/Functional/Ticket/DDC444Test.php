@@ -20,11 +20,7 @@ class DDC444Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC444User::class),
-            ]
-        );
+        $this->createSchemaForModels(DDC444User::class);
     }
 
     public function testExplicitPolicy(): void

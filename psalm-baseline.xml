@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.23.0@f1fe6ff483bf325c803df9f510d09a03fd796f88">
+<files psalm-version="4.24.0@06dd975cb55d36af80f242561738f16c5f58264f">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass occurrences="1">
       <code>IterableResult</code>
@@ -459,8 +459,7 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php">
-    <ArgumentTypeCoercion occurrences="2">
-      <code>$class</code>
+    <ArgumentTypeCoercion occurrences="1">
       <code>$repositoryClassName</code>
     </ArgumentTypeCoercion>
     <DeprecatedMethod occurrences="1">
@@ -517,6 +516,9 @@
     <InvalidArrayOffset occurrences="1">
       <code>$subClass-&gt;table[$indexType][$indexName]</code>
     </InvalidArrayOffset>
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>$subClass-&gt;table</code>
+    </InvalidPropertyAssignmentValue>
     <MissingConstructor occurrences="2">
       <code>$driver</code>
       <code>$evm</code>
@@ -524,9 +526,6 @@
     <PossiblyInvalidArrayAssignment occurrences="1">
       <code>$subClass-&gt;table[$indexType][$indexName]</code>
     </PossiblyInvalidArrayAssignment>
-    <InvalidPropertyAssignmentValue occurrences="1">
-      <code>$subClass-&gt;table</code>
-    </InvalidPropertyAssignmentValue>
     <PossiblyInvalidIterator occurrences="1">
       <code>$parentClass-&gt;table[$indexType]</code>
     </PossiblyInvalidIterator>
@@ -569,15 +568,20 @@
       <code>protected function _validateAndCompleteManyToManyMapping(array $mapping)</code>
       <code>protected function _validateAndCompleteOneToOneMapping(array $mapping)</code>
     </InvalidDocblock>
-    <InvalidNullableReturnType occurrences="3">
+    <InvalidNullableReturnType occurrences="2">
       <code>ReflectionProperty</code>
       <code>ReflectionProperty</code>
-      <code>getReflectionClass</code>
     </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue occurrences="2">
       <code>$definition</code>
       <code>$this-&gt;subClasses</code>
     </InvalidPropertyAssignmentValue>
+    <InvalidReturnStatement occurrences="1">
+      <code>$this-&gt;reflClass</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>getReflectionClass</code>
+    </InvalidReturnType>
     <LessSpecificReturnStatement occurrences="4">
       <code>$cache</code>
       <code>$className</code>
@@ -747,6 +751,9 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php">
+    <DocblockTypeContradiction occurrences="1">
+      <code>new ReflectionClass($metadata-&gt;name)</code>
+    </DocblockTypeContradiction>
     <InvalidArrayAccess occurrences="4">
       <code>$value[0]</code>
       <code>$value[0]</code>
@@ -768,7 +775,8 @@
       <code>assert($method instanceof ReflectionMethod)</code>
       <code>assert($property instanceof ReflectionProperty)</code>
     </RedundantCondition>
-    <RedundantConditionGivenDocblockType occurrences="1">
+    <RedundantConditionGivenDocblockType occurrences="2">
+      <code>$metadata-&gt;getReflectionClass()</code>
       <code>assert($cacheAttribute instanceof Mapping\Cache)</code>
     </RedundantConditionGivenDocblockType>
   </file>
@@ -820,8 +828,7 @@
     </MissingParamType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php">
-    <ArgumentTypeCoercion occurrences="3">
-      <code>$map</code>
+    <ArgumentTypeCoercion occurrences="2">
       <code>(string) $xmlRoot['repository-class']</code>
       <code>isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null</code>
     </ArgumentTypeCoercion>
@@ -2050,10 +2057,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$stringPattern</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="2">
-      <code>call_user_func($functionClass, $functionName)</code>
-      <code>call_user_func($functionClass, $functionName)</code>
-    </DocblockTypeContradiction>
     <InvalidArgument occurrences="1">
       <code>$lookaheadType</code>
     </InvalidArgument>
@@ -2105,7 +2108,9 @@
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
     </InvalidScalarArgument>
-    <InvalidStringClass occurrences="1">
+    <InvalidStringClass occurrences="3">
+      <code>new $functionClass($functionName)</code>
+      <code>new $functionClass($functionName)</code>
       <code>new $functionClass($functionName)</code>
     </InvalidStringClass>
     <LessSpecificReturnStatement occurrences="4">
@@ -2241,10 +2246,8 @@
     <PossiblyUndefinedVariable occurrences="1">
       <code>$args</code>
     </PossiblyUndefinedVariable>
-    <RedundantConditionGivenDocblockType occurrences="3">
+    <RedundantConditionGivenDocblockType occurrences="1">
       <code>$AST instanceof AST\SelectStatement</code>
-      <code>is_string($functionClass)</code>
-      <code>is_string($functionClass)</code>
     </RedundantConditionGivenDocblockType>
     <UnsafeInstantiation occurrences="3">
       <code>new $funcClass($funcNameLower)</code>
@@ -2568,7 +2571,8 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Repository/DefaultRepositoryFactory.php">
-    <InvalidReturnStatement occurrences="1">
+    <InvalidReturnStatement occurrences="2">
+      <code>$this-&gt;repositoryList[$repositoryHash]</code>
       <code>$this-&gt;repositoryList[$repositoryHash] = $this-&gt;createRepository($entityManager, $entityName)</code>
     </InvalidReturnStatement>
     <InvalidReturnType occurrences="1">
@@ -2782,12 +2786,6 @@
     <InvalidDocblock occurrences="1">
       <code>public function setFieldVisibility($visibility)</code>
     </InvalidDocblock>
-    <MissingParamType occurrences="1">
-      <code>$visibility</code>
-    </MissingParamType>
-    <MissingReturnType occurrences="1">
-      <code>setFieldVisibility</code>
-    </MissingReturnType>
     <PossiblyFalseArgument occurrences="2">
       <code>$last</code>
       <code>strrpos($metadata-&gt;name, '\\')</code>
@@ -3137,8 +3135,7 @@
       <code>setValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
-    <PossiblyUndefinedMethod occurrences="4">
-      <code>addPropertyChangedListener</code>
+    <PossiblyUndefinedMethod occurrences="3">
       <code>unwrap</code>
       <code>unwrap</code>
       <code>unwrap</code>

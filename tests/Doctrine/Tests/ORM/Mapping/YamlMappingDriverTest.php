@@ -8,10 +8,11 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\Models\DDC3711\DDC3711EntityA;
 use Doctrine\Tests\Models\DirectoryTree\Directory;
 use Doctrine\Tests\Models\DirectoryTree\File;
-use Doctrine\Tests\Models\Generic\SerializationModel;
+use Doctrine\Tests\Models\Generic\BooleanModel;
 use Symfony\Component\Yaml\Yaml;
 
 use function class_exists;
@@ -56,11 +57,11 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-1468
      */
-    public function testInvalidMappingFileException(): void
+    public function testItMentionsFilenameAndEntityNameOnInvalidMapping(): void
     {
-        $this->expectException('Doctrine\Persistence\Mapping\MappingException');
-        $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.SerializationModel.dcm.yml\' for class \'Doctrine\Tests\Models\Generic\SerializationModel\'.');
-        $this->createClassMetadata(SerializationModel::class);
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.BooleanModel.dcm.yml\' for class \'Doctrine\Tests\Models\Generic\BooleanModel\'.');
+        $this->createClassMetadata(BooleanModel::class);
     }
 
     /**

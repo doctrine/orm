@@ -17,9 +17,7 @@ class Ticket2481Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(Ticket2481Product::class),
-        ]);
+        $this->createSchemaForModels(Ticket2481Product::class);
     }
 
     public function testEmptyInsert(): void

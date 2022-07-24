@@ -266,21 +266,4 @@
         <!-- https://github.com/doctrine/orm/issues/8537 -->
         <exclude-pattern>lib/Doctrine/ORM/QueryBuilder.php</exclude-pattern>
     </rule>
-
-    <rule ref="Generic.WhiteSpace.ScopeIndent.Incorrect">
-        <!-- see https://github.com/squizlabs/PHP_CodeSniffer/issues/3474 -->
-        <exclude-pattern>tests/Doctrine/Tests/Models/Enums/AccessLevel.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/Models/Enums/City.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/Models/Enums/Suit.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/Models/Enums/Unit.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/Models/Enums/UserStatus.php</exclude-pattern>
-    </rule>
-    <rule ref="Generic.WhiteSpace.ScopeIndent.IncorrectExact">
-        <!-- see https://github.com/squizlabs/PHP_CodeSniffer/issues/3474 -->
-        <exclude-pattern>tests/Doctrine/Tests/Models/Enums/AccessLevel.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/Models/Enums/City.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/Models/Enums/Suit.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/Models/Enums/Unit.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/Models/Enums/UserStatus.php</exclude-pattern>
-    </rule>
 </ruleset>

@@ -15,15 +15,11 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class DiscriminatorMap implements Annotation
 {
-    /**
-     * @var array<string, string>
-     * @psalm-var array<string, class-string>
-     */
+    /** @var array<int|string, string> */
     public $value;
 
     /**
-     * @param array<string, string> $value
-     * @psalm-param array<string, class-string> $value
+     * @param array<int|string, string> $value
      */
     public function __construct(array $value)
     {
