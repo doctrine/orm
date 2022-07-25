@@ -49,7 +49,6 @@ class WhereInWalker extends TreeWalkerAdapter
 
     public function walkSelectStatement(SelectStatement $AST)
     {
-        $queryComponents = $this->_getQueryComponents();
         // Get the root entity and alias from the AST fromClause
         $from = $AST->fromClause->identificationVariableDeclarations;
 
@@ -57,10 +56,9 @@ class WhereInWalker extends TreeWalkerAdapter
             throw new RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
         }
 
-        $fromRoot  = reset($from);
-        $rootAlias = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
-        assert(isset($queryComponents[$rootAlias]['metadata']));
-        $rootClass           = $queryComponents[$rootAlias]['metadata'];
+        $fromRoot            = reset($from);
+        $rootAlias           = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
+        $rootClass           = $this->getMetadataForDqlAlias($rootAlias);
         $identifierFieldName = $rootClass->getSingleIdentifierFieldName();
 
         $pathType = PathExpression::TYPE_STATE_FIELD;

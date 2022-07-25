@@ -15,7 +15,6 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 use RuntimeException;
 
-use function assert;
 use function count;
 use function is_string;
 use function reset;
@@ -38,13 +37,11 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
     public function walkSelectStatement(SelectStatement $AST)
     {
-        $queryComponents = $this->_getQueryComponents();
         // Get the root entity and alias from the AST fromClause
         $from      = $AST->fromClause->identificationVariableDeclarations;
         $fromRoot  = reset($from);
         $rootAlias = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
-        assert(isset($queryComponents[$rootAlias]['metadata']));
-        $rootClass = $queryComponents[$rootAlias]['metadata'];
+        $rootClass = $this->getMetadataForDqlAlias($rootAlias);
 
         $this->validate($AST);
         $identifier = $rootClass->getSingleIdentifierFieldName();
@@ -75,6 +72,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
             return;
         }
 
+        $queryComponents = $this->_getQueryComponents();
         foreach ($AST->orderByClause->orderByItems as $item) {
             if ($item->expression instanceof PathExpression) {
                 $AST->selectClause->selectExpressions[] = new SelectExpression(
