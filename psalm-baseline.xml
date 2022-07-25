@@ -322,8 +322,7 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php">
-    <ArgumentTypeCoercion occurrences="2">
-      <code>$class</code>
+    <ArgumentTypeCoercion occurrences="1">
       <code>$repositoryClassName</code>
     </ArgumentTypeCoercion>
   </file>
@@ -643,8 +642,7 @@
     </MissingParamType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php">
-    <ArgumentTypeCoercion occurrences="3">
-      <code>$map</code>
+    <ArgumentTypeCoercion occurrences="2">
       <code>(string) $xmlRoot['repository-class']</code>
       <code>isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null</code>
     </ArgumentTypeCoercion>
@@ -803,16 +801,12 @@
     <DocblockTypeContradiction occurrences="1">
       <code>isset($offset)</code>
     </DocblockTypeContradiction>
-    <ImplementedReturnTypeMismatch occurrences="1">
-      <code>object|null</code>
-    </ImplementedReturnTypeMismatch>
     <InvalidDocblock occurrences="1">
       <code>final class PersistentCollection extends AbstractLazyCollection implements Selectable</code>
     </InvalidDocblock>
     <InvalidReturnStatement occurrences="1"/>
-    <MissingParamType occurrences="2">
+    <MissingParamType occurrences="1">
       <code>$key</code>
-      <code>$offset</code>
     </MissingParamType>
     <ParamNameMismatch occurrences="1">
       <code>$value</code>
@@ -1126,9 +1120,6 @@
     <PossiblyUndefinedVariable occurrences="1">
       <code>$columnList</code>
     </PossiblyUndefinedVariable>
-    <RedundantCastGivenDocblockType occurrences="1">
-      <code>(string) $discrValues[$subclassName]</code>
-    </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Proxy/ProxyFactory.php">
     <ArgumentTypeCoercion occurrences="2">
@@ -1742,11 +1733,6 @@
       <code>SingleTableDeleteUpdateExecutor</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Expr.php">
-    <MissingParamType occurrences="1">
-      <code>$y</code>
-    </MissingParamType>
-  </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Andx.php">
     <NonInvariantDocblockPropertyType occurrences="2">
       <code>$allowedClasses</code>
@@ -2243,7 +2229,7 @@
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/DebugUnitOfWorkListener.php">
-    <PossiblyNullArgument occurrences="2">
+    <PossiblyNullArgument occurrences="1">
       <code>$entity</code>
       <code>$entity</code>
     </PossiblyNullArgument>
@@ -2285,15 +2271,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$parameters</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="1">
-      <code>$this-&gt;count === null</code>
-    </DocblockTypeContradiction>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$count</code>
-    </PropertyNotSetInConstructor>
-    <RedundantCastGivenDocblockType occurrences="1">
-      <code>(bool) $fetchJoinCollection</code>
-    </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/RowNumberOverFunction.php">
     <PropertyNotSetInConstructor occurrences="1">

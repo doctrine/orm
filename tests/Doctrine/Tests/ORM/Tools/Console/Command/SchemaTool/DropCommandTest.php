@@ -9,11 +9,15 @@ use Doctrine\Tests\ORM\Tools\Console\Command\SchemaTool\Models\Keyboard;
 
 final class DropCommandTest extends AbstractCommandTest
 {
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testItPrintsTheSql(): void
     {
         $this->createSchemaForModels(Keyboard::class);
         $tester = $this->getCommandTester(DropCommand::class);
         $tester->execute(['--dump-sql' => true]);
-        self::assertStringContainsString('DROP TABLE keyboard', $tester->getDisplay());
+
+        self::$sharedConn->executeStatement($tester->getDisplay());
     }
 }

@@ -6,11 +6,14 @@ namespace Doctrine\ORM\Query;
 
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use LogicException;
 
 use function array_diff;
 use function array_keys;
 use function debug_backtrace;
 use function is_a;
+use function sprintf;
 
 use const DEBUG_BACKTRACE_IGNORE_ARGS;
 
@@ -799,5 +802,16 @@ abstract class TreeWalkerAdapter implements TreeWalker
         );
 
         return null;
+    }
+
+    final protected function getMetadataForDqlAlias(string $dqlAlias): ClassMetadata
+    {
+        $metadata = $this->_getQueryComponents()[$dqlAlias]['metadata'] ?? null;
+
+        if ($metadata === null) {
+            throw new LogicException(sprintf('No metadata for DQL alias: %s', $dqlAlias));
+        }
+
+        return $metadata;
     }
 }
