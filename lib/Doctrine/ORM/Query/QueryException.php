@@ -122,24 +122,14 @@ class QueryException extends Exception implements ORMException
         return new self('DQL Query parameter and type numbers mismatch, but have to be exactly equal.');
     }
 
-    /**
-     * @param PathExpression $pathExpr
-     *
-     * @return QueryException
-     */
-    public static function invalidPathExpression($pathExpr)
+    public static function invalidPathExpression(PathExpression $pathExpr): self
     {
         return new self(
             "Invalid PathExpression '" . $pathExpr->identificationVariable . '.' . $pathExpr->field . "'."
         );
     }
 
-    /**
-     * @param string|Stringable $literal
-     *
-     * @return QueryException
-     */
-    public static function invalidLiteral($literal)
+    public static function invalidLiteral(string|Stringable $literal): self
     {
         return new self("Invalid literal '" . $literal . "'");
     }

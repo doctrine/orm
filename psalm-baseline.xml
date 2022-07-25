@@ -1341,9 +1341,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/LengthFunction.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$this-&gt;stringPrimary</code>
-    </ArgumentTypeCoercion>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$stringPrimary</code>
     </PropertyNotSetInConstructor>
@@ -1361,9 +1358,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/LowerFunction.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$this-&gt;stringPrimary</code>
-    </ArgumentTypeCoercion>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$stringPrimary</code>
     </PropertyNotSetInConstructor>
@@ -1447,9 +1441,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/UpperFunction.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$this-&gt;stringPrimary</code>
-    </ArgumentTypeCoercion>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$stringPrimary</code>
     </PropertyNotSetInConstructor>
@@ -2002,90 +1993,23 @@
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
     <DocblockTypeContradiction occurrences="2">
-      <code>''</code>
       <code>is_string($expression)</code>
     </DocblockTypeContradiction>
-    <ImplementedReturnTypeMismatch occurrences="46">
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-    </ImplementedReturnTypeMismatch>
-    <ImplicitToStringCast occurrences="1">
-      <code>$expr</code>
-    </ImplicitToStringCast>
-    <InvalidArgument occurrences="4">
-      <code>$condExpr</code>
-      <code>$condTerm</code>
-      <code>$factor</code>
+    <InvalidArgument occurrences="2">
+      <code>$join-&gt;conditionalExpression</code>
       <code>$selectedClass['class']-&gt;name</code>
     </InvalidArgument>
-    <InvalidNullableReturnType occurrences="1">
-      <code>string</code>
-    </InvalidNullableReturnType>
-    <InvalidScalarArgument occurrences="3">
+    <PossiblyInvalidArgument occurrences="4">
+      <code>$expr</code>
       <code>$this-&gt;queryComponents[$expr]['token']['value']</code>
       <code>$this-&gt;queryComponents[$factor]['token']['value']</code>
       <code>$this-&gt;queryComponents[$term]['token']['value']</code>
-    </InvalidScalarArgument>
-    <MoreSpecificImplementedParamType occurrences="1">
-      <code>$query</code>
-    </MoreSpecificImplementedParamType>
-    <PossiblyInvalidArgument occurrences="2">
-      <code>$aggExpression-&gt;pathExpression</code>
-      <code>$whereClause-&gt;conditionalExpression</code>
     </PossiblyInvalidArgument>
-    <PossiblyNullArgument occurrences="8">
-      <code>$AST-&gt;whereClause</code>
-      <code>$AST-&gt;whereClause</code>
-      <code>$AST-&gt;whereClause</code>
+    <PossiblyNullArgument occurrences="4">
       <code>$arithmeticExpr-&gt;simpleArithmeticExpression</code>
       <code>$arithmeticExpr-&gt;subselect</code>
       <code>$condExpr</code>
       <code>$identificationVariableDecl-&gt;rangeVariableDeclaration</code>
-      <code>$subselect-&gt;whereClause</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayOffset occurrences="4">
       <code>$targetClass-&gt;associationMappings</code>
@@ -2111,32 +2035,6 @@
       <code>$mapping['isOwningSide']</code>
       <code>$owningAssoc['joinTable']</code>
     </PossiblyUndefinedArrayOffset>
-    <RedundantConditionGivenDocblockType occurrences="2">
-      <code>$whereClause !== null</code>
-      <code>($factor-&gt;not ? 'NOT ' : '') . $this-&gt;walkConditionalPrimary($factor-&gt;conditionalPrimary)</code>
-    </RedundantConditionGivenDocblockType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/TreeWalkerAdapter.php">
-    <InvalidNullableReturnType occurrences="1">
-      <code>getExecutor</code>
-    </InvalidNullableReturnType>
-    <NullableReturnStatement occurrences="1">
-      <code>null</code>
-    </NullableReturnStatement>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/TreeWalkerChain.php">
-    <InvalidNullableReturnType occurrences="1">
-      <code>getExecutor</code>
-    </InvalidNullableReturnType>
-    <MissingParamType occurrences="1">
-      <code>$dqlAlias</code>
-    </MissingParamType>
-    <NullableReturnStatement occurrences="1">
-      <code>null</code>
-    </NullableReturnStatement>
-    <ParamNameMismatch occurrences="1">
-      <code>$condPrimary</code>
-    </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/QueryBuilder.php">
     <ArgumentTypeCoercion occurrences="2">
@@ -2238,27 +2136,19 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/CountOutputWalker.php">
-    <MoreSpecificImplementedParamType occurrences="1">
-      <code>$query</code>
-    </MoreSpecificImplementedParamType>
     <PossiblyUndefinedArrayOffset occurrences="1">
       <code>$rootClass-&gt;associationMappings[$property]['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php">
-    <MoreSpecificImplementedParamType occurrences="1">
-      <code>$query</code>
-    </MoreSpecificImplementedParamType>
     <PossiblyFalseArgument occurrences="1">
       <code>strrpos($orderByItemString, ' ')</code>
     </PossiblyFalseArgument>
     <PossiblyNullIterator occurrences="1">
       <code>$orderByClause-&gt;orderByItems</code>
     </PossiblyNullIterator>
-    <PossiblyNullPropertyAssignmentValue occurrences="3">
+    <PossiblyNullPropertyAssignmentValue occurrences="1">
       <code>$AST-&gt;orderByClause</code>
-      <code>$query-&gt;getFirstResult()</code>
-      <code>$query-&gt;getMaxResults()</code>
     </PossiblyNullPropertyAssignmentValue>
     <PossiblyNullPropertyFetch occurrences="1">
       <code>$orderByClause-&gt;orderByItems</code>
@@ -2279,14 +2169,14 @@
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/WhereInWalker.php">
     <DocblockTypeContradiction occurrences="3">
-      <code>$AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalFactor</code>
-      <code>$AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalPrimary</code>
+      <code>$selectStatement-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalFactor</code>
+      <code>$selectStatement-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalPrimary</code>
     </DocblockTypeContradiction>
     <MissingClosureReturnType occurrences="1">
       <code>static function ($id) use ($connection, $type) {</code>
     </MissingClosureReturnType>
     <PossiblyInvalidPropertyAssignmentValue occurrences="1">
-      <code>$AST-&gt;whereClause-&gt;conditionalExpression</code>
+      <code>$selectStatement-&gt;whereClause-&gt;conditionalExpression</code>
     </PossiblyInvalidPropertyAssignmentValue>
     <RedundantConditionGivenDocblockType occurrences="1"/>
   </file>

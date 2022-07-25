@@ -84,12 +84,12 @@ class DDC736Test extends OrmFunctionalTestCase
 
 class DisableFetchJoinTreeWalker extends TreeWalkerAdapter
 {
-    public function walkSelectStatement(SelectStatement $AST): void
+    public function walkSelectStatement(SelectStatement $selectStatement): void
     {
-        foreach ($AST->selectClause->selectExpressions as $key => $selectExpr) {
+        foreach ($selectStatement->selectClause->selectExpressions as $key => $selectExpr) {
             assert($selectExpr instanceof SelectExpression);
             if ($selectExpr->expression === 'c') {
-                unset($AST->selectClause->selectExpressions[$key]);
+                unset($selectStatement->selectClause->selectExpressions[$key]);
                 break;
             }
         }

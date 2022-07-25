@@ -38,23 +38,13 @@ use function sprintf;
  */
 class CountOutputWalker extends SqlWalker
 {
-    /** @var AbstractPlatform */
-    private $platform;
-
-    /** @var ResultSetMapping */
-    private $rsm;
+    private AbstractPlatform $platform;
+    private ResultSetMapping $rsm;
 
     /**
-     * Stores various parameters that are otherwise unavailable
-     * because Doctrine\ORM\Query\SqlWalker keeps everything private without
-     * accessors.
-     *
-     * @param Query        $query
-     * @param ParserResult $parserResult
-     * @param mixed[]      $queryComponents
-     * @psalm-param array<string, QueryComponent> $queryComponents
+     * {@inheritdoc}
      */
-    public function __construct($query, $parserResult, array $queryComponents)
+    public function __construct(Query $query, ParserResult $parserResult, array $queryComponents)
     {
         $this->platform = $query->getEntityManager()->getConnection()->getDatabasePlatform();
         $this->rsm      = $parserResult->getResultSetMapping();
@@ -62,18 +52,15 @@ class CountOutputWalker extends SqlWalker
         parent::__construct($query, $parserResult, $queryComponents);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function walkSelectStatement(SelectStatement $AST)
+    public function walkSelectStatement(SelectStatement $selectStatement): string
     {
         if ($this->platform instanceof SQLServerPlatform) {
-            $AST->orderByClause = null;
+            $selectStatement->orderByClause = null;
         }
 
-        $sql = parent::walkSelectStatement($AST);
+        $sql = parent::walkSelectStatement($selectStatement);
 
-        if ($AST->groupByClause) {
+        if ($selectStatement->groupByClause) {
             return sprintf(
                 'SELECT COUNT(*) AS dctrn_count FROM (%s) dctrn_table',
                 $sql
@@ -86,7 +73,7 @@ class CountOutputWalker extends SqlWalker
         // so for now, It's not supported.
 
         // Get the root entity and alias from the AST fromClause
-        $from = $AST->fromClause->identificationVariableDeclarations;
+        $from = $selectStatement->fromClause->identificationVariableDeclarations;
         if (count($from) > 1) {
             throw new RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
         }

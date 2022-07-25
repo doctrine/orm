@@ -30,20 +30,18 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
     /**
      * Counter for generating unique order column aliases.
-     *
-     * @var int
      */
-    private $_aliasCounter = 0;
+    private int $aliasCounter = 0;
 
-    public function walkSelectStatement(SelectStatement $AST)
+    public function walkSelectStatement(SelectStatement $selectStatement): void
     {
         // Get the root entity and alias from the AST fromClause
-        $from      = $AST->fromClause->identificationVariableDeclarations;
+        $from      = $selectStatement->fromClause->identificationVariableDeclarations;
         $fromRoot  = reset($from);
         $rootAlias = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
         $rootClass = $this->getMetadataForDqlAlias($rootAlias);
 
-        $this->validate($AST);
+        $this->validate($selectStatement);
         $identifier = $rootClass->getSingleIdentifierFieldName();
 
         if (isset($rootClass->associationMappings[$identifier])) {
@@ -65,19 +63,19 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
         $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
 
-        $AST->selectClause->selectExpressions = [new SelectExpression($pathExpression, '_dctrn_id')];
-        $AST->selectClause->isDistinct        = true;
+        $selectStatement->selectClause->selectExpressions = [new SelectExpression($pathExpression, '_dctrn_id')];
+        $selectStatement->selectClause->isDistinct        = true;
 
-        if (! isset($AST->orderByClause)) {
+        if (! isset($selectStatement->orderByClause)) {
             return;
         }
 
-        $queryComponents = $this->_getQueryComponents();
-        foreach ($AST->orderByClause->orderByItems as $item) {
+        $queryComponents = $this->getQueryComponents();
+        foreach ($selectStatement->orderByClause->orderByItems as $item) {
             if ($item->expression instanceof PathExpression) {
-                $AST->selectClause->selectExpressions[] = new SelectExpression(
+                $selectStatement->selectClause->selectExpressions[] = new SelectExpression(
                     $this->createSelectExpressionItem($item->expression),
-                    '_dctrn_ord' . $this->_aliasCounter++
+                    '_dctrn_ord' . $this->aliasCounter++
                 );
 
                 continue;
@@ -87,7 +85,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                 $qComp = $queryComponents[$item->expression];
 
                 if (isset($qComp['resultVariable'])) {
-                    $AST->selectClause->selectExpressions[] = new SelectExpression(
+                    $selectStatement->selectClause->selectExpressions[] = new SelectExpression(
                         $qComp['resultVariable'],
                         $item->expression
                     );

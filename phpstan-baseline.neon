@@ -271,21 +271,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php
 
 		-
-			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/LengthFunction.php
-
-		-
-			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/LowerFunction.php
-
-		-
-			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/UpperFunction.php
-
-		-
 			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\AST\\\\IndexBy\\:\\:dispatch\\(\\) should return string but returns void\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/AST/IndexBy.php
@@ -391,13 +376,8 @@ parameters:
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-
-			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkConditionalPrimary\\(\\) should return string but return statement is missing\\.$#"
-			count: 1
+			message: "#^Match arm is unreachable because previous comparison is always true\\.$#"
+			count: 2
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-
@@ -406,19 +386,14 @@ parameters:
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-
-			message: "#^Result of && is always false\\.$#"
+			message: "#^Parameter \\#3 \\$condExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkJoinAssociationDeclaration\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalPrimary\\|null, Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalExpression\\|null given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\TreeWalkerAdapter\\:\\:getExecutor\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\Exec\\\\AbstractSqlExecutor but returns null\\.$#"
+			message: "#^Result of && is always false\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/TreeWalkerAdapter.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\TreeWalkerChain\\:\\:getExecutor\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\Exec\\\\AbstractSqlExecutor but returns null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/TreeWalkerChain.php
+			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-
 			message: "#^Parameter \\#2 \\$dqlPart of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:add\\(\\) expects array\\<'join'\\|int, array\\<int\\|string, object\\>\\|string\\>\\|object\\|string, non\\-empty\\-array\\<string, Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Join\\> given\\.$#"
