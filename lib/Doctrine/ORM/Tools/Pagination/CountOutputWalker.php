@@ -71,9 +71,7 @@ class CountOutputWalker extends SqlWalker
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
-        if ($this->platform instanceof SQLServerPlatform) {
-            $AST->orderByClause = null;
-        }
+        $AST->orderByClause = null;
 
         $sql = parent::walkSelectStatement($AST);
 
