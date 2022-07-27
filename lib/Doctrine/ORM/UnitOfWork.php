@@ -54,6 +54,7 @@ use function array_merge;
 use function array_pop;
 use function array_sum;
 use function array_values;
+use function assert;
 use function count;
 use function current;
 use function get_class;
@@ -1612,6 +1613,8 @@ class UnitOfWork implements PropertyChangedListener
             case $class->isIdentifierNatural():
                 // Check for a version field, if available, to avoid a db lookup.
                 if ($class->isVersioned) {
+                    assert($class->versionField !== null);
+
                     return $class->getFieldValue($entity, $class->versionField)
                         ? self::STATE_DETACHED
                         : self::STATE_NEW;
@@ -2061,6 +2064,7 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
+        assert($class->versionField !== null);
         $reflField          = $class->reflFields[$class->versionField];
         $managedCopyVersion = $reflField->getValue($managedCopy);
         $entityVersion      = $reflField->getValue($entity);
@@ -2495,6 +2499,7 @@ class UnitOfWork implements PropertyChangedListener
                     $entity->__load();
                 }
 
+                assert($class->versionField !== null);
                 $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
 
                 // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedNotEqualOperator
