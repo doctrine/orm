@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
@@ -48,6 +49,8 @@ class PersistentCollectionTest extends OrmTestCase
         $connection = $this->createMock(Connection::class);
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);
+        $connection->method('getEventManager')
+            ->willReturn(new EventManager());
         $connection->method('executeQuery')
             ->willReturn($this->createMock(Result::class));
 

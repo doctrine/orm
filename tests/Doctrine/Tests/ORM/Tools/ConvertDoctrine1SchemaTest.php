@@ -38,15 +38,15 @@ class ConvertDoctrine1SchemaTest extends OrmTestCase
         $connection = $this->createMock(Connection::class);
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);
+        $connection->method('getEventManager')
+            ->willReturn(new EventManager());
 
         $config = new Configuration();
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $eventManager = new EventManager();
-
         $config->setMetadataDriverImpl($metadataDriver);
 
-        return EntityManagerMock::create($connection, $config, $eventManager);
+        return EntityManagerMock::create($connection, $config);
     }
 
     public function testTest(): void
