@@ -851,7 +851,7 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_connectionMock = $this->getMockBuilderWithOnlyMethods(ConnectionMock::class, ['commit'])
             ->setConstructorArgs([[], $driver])
             ->getMock();
-        $this->_emMock         = EntityManagerMock::create($this->_connectionMock, null);
+        $this->_emMock         = EntityManagerMock::create($this->_connectionMock);
         $this->_unitOfWork     = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
 
