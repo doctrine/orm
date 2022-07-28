@@ -366,10 +366,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $className The class name of the filter.
      * @psalm-param class-string<SQLFilter> $className
-     *
-     * @return void
      */
-    public function addFilter(string $name, string $className)
+    public function addFilter(string $name, string $className): void
     {
         $this->_attributes['filters'][$name] = $className;
     }
