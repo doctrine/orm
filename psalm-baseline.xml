@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.24.0@06dd975cb55d36af80f242561738f16c5f58264f">
+<files psalm-version="v4.25.0@d7cd84c4ebca74ba3419b9601f81d177bcbe2aac">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass occurrences="1">
       <code>IterableResult</code>
@@ -281,13 +281,10 @@
     </TooManyArguments>
   </file>
   <file src="lib/Doctrine/ORM/EntityManager.php">
-    <ArgumentTypeCoercion occurrences="6">
+    <ArgumentTypeCoercion occurrences="3">
       <code>$className</code>
       <code>$connection</code>
       <code>$entityName</code>
-      <code>ltrim($className, '\\')</code>
-      <code>ltrim($entityName, '\\')</code>
-      <code>ltrim($entityName, '\\')</code>
     </ArgumentTypeCoercion>
     <DeprecatedMethod occurrences="2">
       <code>getMetadataCacheImpl</code>
@@ -696,10 +693,9 @@
       <code>$table</code>
       <code>$tableGeneratorDefinition</code>
     </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="13">
+    <PropertyTypeCoercion occurrences="12">
       <code>$this-&gt;associationMappings</code>
       <code>$this-&gt;associationMappings</code>
-      <code>$this-&gt;discriminatorMap</code>
       <code>$this-&gt;entityListeners</code>
       <code>$this-&gt;fieldMappings</code>
       <code>$this-&gt;fullyQualifiedClassName($repositoryClassName)</code>
@@ -1028,6 +1024,10 @@
     </MissingParamType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/MappingException.php">
+    <ArgumentTypeCoercion occurrences="2">
+      <code>$className</code>
+      <code>$entityName</code>
+    </ArgumentTypeCoercion>
     <MissingParamType occurrences="4">
       <code>$className</code>
       <code>$className</code>
