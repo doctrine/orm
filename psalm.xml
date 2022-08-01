@@ -43,6 +43,7 @@
                 <file name="lib/Doctrine/ORM/Configuration.php"/>
                 <file name="lib/Doctrine/ORM/Query/Lexer.php"/>
                 <file name="lib/Doctrine/ORM/Query/Parser.php"/>
+                <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
             </errorLevel>
         </DeprecatedConstant>
         <DeprecatedInterface>
