@@ -75,15 +75,15 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Finds an entity by its primary key / identifier.
      *
-     * @param int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
-     *                           or NULL if no specific lock mode should be used
-     *                           during the search.
+     * @param LockMode|int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
+     *                                    or NULL if no specific lock mode should be used
+     *                                    during the search.
      * @psalm-param LockMode::*|null $lockMode
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
      * @psalm-return ?T
      */
-    public function find(mixed $id, ?int $lockMode = null, ?int $lockVersion = null): ?object
+    public function find(mixed $id, LockMode|int|null $lockMode = null, ?int $lockVersion = null): ?object
     {
         return $this->em->find($this->entityName, $id, $lockMode, $lockVersion);
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Performance\Mock;
 
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 
 /**
@@ -23,7 +24,7 @@ class NonLoadingPersister extends BasicEntityPersister
         ?object $entity = null,
         ?array $assoc = null,
         array $hints = [],
-        ?int $lockMode = null,
+        LockMode|int|null $lockMode = null,
         ?int $limit = null,
         ?array $orderBy = null
     ): ?object {

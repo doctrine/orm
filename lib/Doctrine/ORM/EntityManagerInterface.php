@@ -110,13 +110,13 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Finds an Entity by its identifier.
      *
-     * @param string   $className   The class name of the entity to find.
-     * @param mixed    $id          The identity of the entity to find.
-     * @param int|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
-     *                              or NULL if no specific lock mode should be used
-     *                              during the search.
-     * @param int|null $lockVersion The version of the entity to find when using
-     *                              optimistic locking.
+     * @param string            $className   The class name of the entity to find.
+     * @param mixed             $id          The identity of the entity to find.
+     * @param LockMode|int|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
+     *                                       or NULL if no specific lock mode should be used
+     *                                       during the search.
+     * @param int|null          $lockVersion The version of the entity to find when using
+     *                                       optimistic locking.
      * @psalm-param class-string<T> $className
      * @psalm-param LockMode::*|null $lockMode
      *
@@ -130,7 +130,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @template T of object
      */
-    public function find(string $className, mixed $id, ?int $lockMode = null, ?int $lockVersion = null): ?object;
+    public function find(string $className, mixed $id, LockMode|int|null $lockMode = null, ?int $lockVersion = null): ?object;
 
     /**
      * Gets a reference to the entity identified by the given type and identifier
@@ -189,7 +189,7 @@ interface EntityManagerInterface extends ObjectManager
      * @throws OptimisticLockException
      * @throws PessimisticLockException
      */
-    public function lock(object $entity, int $lockMode, $lockVersion = null): void;
+    public function lock(object $entity, LockMode|int $lockMode, $lockVersion = null): void;
 
     /**
      * Gets the EventManager used by the EntityManager.

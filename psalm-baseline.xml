@@ -1030,10 +1030,9 @@
       <code>array</code>
       <code>array</code>
     </MoreSpecificReturnType>
-    <PossiblyNullArgument occurrences="3">
+    <PossiblyNullArgument occurrences="2">
       <code>$assoc['mappedBy']</code>
       <code>$association</code>
-      <code>$type</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess occurrences="1">
       <code>$assoc['isOwningSide']</code>
@@ -2244,16 +2243,10 @@
       <code>$collectionToUpdate</code>
       <code>$commitOrder[$i]</code>
     </ArgumentTypeCoercion>
-    <InvalidNullableReturnType occurrences="1">
-      <code>object</code>
-    </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue occurrences="2">
       <code>$this-&gt;entityChangeSets</code>
       <code>$this-&gt;entityChangeSets</code>
     </InvalidPropertyAssignmentValue>
-    <NullableReturnStatement occurrences="1">
-      <code>$this-&gt;identityMap[$rootClassName][$idHash]</code>
-    </NullableReturnStatement>
     <PossiblyInvalidArrayOffset occurrences="1">
       <code>$this-&gt;identityMap[$rootClassName]</code>
     </PossiblyInvalidArrayOffset>

@@ -648,7 +648,7 @@ final class Query extends AbstractQuery
      *
      * @throws TransactionRequiredException
      */
-    public function setLockMode(int $lockMode): self
+    public function setLockMode(LockMode|int $lockMode): self
     {
         if (in_array($lockMode, [LockMode::NONE, LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE], true)) {
             if (! $this->em->getConnection()->isTransactionActive()) {

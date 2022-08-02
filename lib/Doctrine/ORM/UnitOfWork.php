@@ -2013,7 +2013,7 @@ class UnitOfWork implements PropertyChangedListener
      * @throws TransactionRequiredException
      * @throws OptimisticLockException
      */
-    public function lock(object $entity, int $lockMode, $lockVersion = null): void
+    public function lock(object $entity, LockMode|int $lockMode, $lockVersion = null): void
     {
         if ($this->getEntityState($entity, self::STATE_DETACHED) !== self::STATE_MANAGED) {
             throw ORMInvalidArgumentException::entityNotManaged($entity);

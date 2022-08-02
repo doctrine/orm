@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Cache\Persister\Entity;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Util\ClassUtils;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
@@ -83,8 +84,14 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         return $this->persister->getInserts();
     }
 
-    public function getSelectSQL(array|Criteria $criteria, ?array $assoc = null, ?int $lockMode = null, ?int $limit = null, ?int $offset = null, ?array $orderBy = null): string
-    {
+    public function getSelectSQL(
+        array|Criteria $criteria,
+        ?array $assoc = null,
+        LockMode|int|null $lockMode = null,
+        ?int $limit = null,
+        ?int $offset = null,
+        ?array $orderBy = null
+    ): string {
         return $this->persister->getSelectSQL($criteria, $assoc, $lockMode, $limit, $offset, $orderBy);
     }
 
@@ -103,8 +110,12 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         return $this->persister->getResultSetMapping();
     }
 
-    public function getSelectConditionStatementSQL(string $field, mixed $value, ?array $assoc = null, ?string $comparison = null): string
-    {
+    public function getSelectConditionStatementSQL(
+        string $field,
+        mixed $value,
+        ?array $assoc = null,
+        ?string $comparison = null
+    ): string {
         return $this->persister->getSelectConditionStatementSQL($field, $value, $assoc, $comparison);
     }
 
@@ -191,8 +202,13 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      * @param string[]|Criteria $criteria
      * @param string[]          $orderBy
      */
-    protected function getHash(string $query, array|Criteria $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null): string
-    {
+    protected function getHash(
+        string $query,
+        array|Criteria $criteria,
+        ?array $orderBy = null,
+        ?int $limit = null,
+        ?int $offset = null
+    ): string {
         [$params] = $criteria instanceof Criteria
             ? $this->persister->expandCriteriaParameters($criteria)
             : $this->persister->expandParameters($criteria);
@@ -224,16 +240,24 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function getManyToManyCollection(array $assoc, object $sourceEntity, ?int $offset = null, ?int $limit = null): array
-    {
+    public function getManyToManyCollection(
+        array $assoc,
+        object $sourceEntity,
+        ?int $offset = null,
+        ?int $limit = null
+    ): array {
         return $this->persister->getManyToManyCollection($assoc, $sourceEntity, $offset, $limit);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getOneToManyCollection(array $assoc, object $sourceEntity, ?int $offset = null, ?int $limit = null): array
-    {
+    public function getOneToManyCollection(
+        array $assoc,
+        object $sourceEntity,
+        ?int $offset = null,
+        ?int $limit = null
+    ): array {
         return $this->persister->getOneToManyCollection($assoc, $sourceEntity, $offset, $limit);
     }
 
@@ -255,8 +279,15 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function load(array $criteria, ?object $entity = null, ?array $assoc = null, array $hints = [], ?int $lockMode = null, ?int $limit = null, ?array $orderBy = null): ?object
-    {
+    public function load(
+        array $criteria,
+        ?object $entity = null,
+        ?array $assoc = null,
+        array $hints = [],
+        LockMode|int|null $lockMode = null,
+        ?int $limit = null,
+        ?array $orderBy = null
+    ): ?object {
         if ($entity !== null || $assoc !== null || $hints !== [] || $lockMode !== null) {
             return $this->persister->load($criteria, $entity, $assoc, $hints, $lockMode, $limit, $orderBy);
         }
@@ -295,8 +326,12 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function loadAll(array $criteria = [], ?array $orderBy = null, ?int $limit = null, ?int $offset = null): array
-    {
+    public function loadAll(
+        array $criteria = [],
+        ?array $orderBy = null,
+        ?int $limit = null,
+        ?int $offset = null
+    ): array {
         $query      = $this->persister->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);
         $hash       = $this->getHash($query, $criteria);
         $rsm        = $this->getResultSetMapping();
@@ -419,8 +454,11 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function loadManyToManyCollection(array $assoc, object $sourceEntity, PersistentCollection $collection): array
-    {
+    public function loadManyToManyCollection(
+        array $assoc,
+        object $sourceEntity,
+        PersistentCollection $collection
+    ): array {
         $persister = $this->uow->getCollectionPersister($assoc);
         $hasCache  = ($persister instanceof CachedPersister);
 
@@ -450,8 +488,11 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function loadOneToManyCollection(array $assoc, object $sourceEntity, PersistentCollection $collection): mixed
-    {
+    public function loadOneToManyCollection(
+        array $assoc,
+        object $sourceEntity,
+        PersistentCollection $collection
+    ): mixed {
         $persister = $this->uow->getCollectionPersister($assoc);
         $hasCache  = ($persister instanceof CachedPersister);
 
@@ -489,7 +530,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function lock(array $criteria, int $lockMode): void
+    public function lock(array $criteria, LockMode|int $lockMode): void
     {
         $this->persister->lock($criteria, $lockMode);
     }
@@ -497,7 +538,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function refresh(array $id, object $entity, ?int $lockMode = null): void
+    public function refresh(array $id, object $entity, LockMode|int|null $lockMode = null): void
     {
         $this->persister->refresh($id, $entity, $lockMode);
     }

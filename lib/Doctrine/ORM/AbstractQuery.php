@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Result;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
@@ -327,15 +328,15 @@ abstract class AbstractQuery
     /**
      * Sets a query parameter.
      *
-     * @param string|int      $key   The parameter position or name.
-     * @param mixed           $value The parameter value.
-     * @param string|int|null $type  The parameter type. If specified, the given value will be run through
-     *                               the type conversion of this type. This is usually not needed for
-     *                               strings and numeric types.
+     * @param string|int                    $key   The parameter position or name.
+     * @param mixed                         $value The parameter value.
+     * @param ParameterType|string|int|null $type  The parameter type. If specified, the given value will be run through
+     *                                             the type conversion of this type. This is usually not needed for
+     *                                             strings and numeric types.
      *
      * @return $this
      */
-    public function setParameter(string|int $key, mixed $value, string|int|null $type = null): static
+    public function setParameter(string|int $key, mixed $value, ParameterType|string|int|null $type = null): static
     {
         $existingParameter = $this->getParameter($key);
 

@@ -11,3 +11,13 @@ parameters:
 
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'
+
+        # We can be certain that those values are not matched.
+        -
+            message: '~^Match expression does not handle remaining values:~'
+            path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+
+        # DBAL 4 compatibility
+        -
+            message: '~^Method Doctrine\\ORM\\Query\\AST\\Functions\\TrimFunction::getTrimMode\(\) never returns .* so it can be removed from the return type\.$~'
+            path: lib/Doctrine/ORM/Query/AST/Functions/TrimFunction.php

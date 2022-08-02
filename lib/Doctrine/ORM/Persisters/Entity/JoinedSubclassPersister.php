@@ -236,7 +236,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         return (bool) $this->conn->delete($rootTable, $id, $rootTypes);
     }
 
-    public function getSelectSQL(array|Criteria $criteria, ?array $assoc = null, ?int $lockMode = null, ?int $limit = null, ?int $offset = null, ?array $orderBy = null): string
+    public function getSelectSQL(array|Criteria $criteria, ?array $assoc = null, LockMode|int|null $lockMode = null, ?int $limit = null, ?int $offset = null, ?array $orderBy = null): string
     {
         $this->switchPersisterContext($offset, $limit);
 
@@ -324,7 +324,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             . (empty($conditionSql) ? '' : ' WHERE ' . $conditionSql);
     }
 
-    protected function getLockTablesSql(int $lockMode): string
+    protected function getLockTablesSql(LockMode|int $lockMode): string
     {
         $joinSql           = '';
         $identifierColumns = $this->class->getIdentifierColumnNames();

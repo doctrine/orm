@@ -270,7 +270,7 @@ use function ltrim;
     /**
      * {@inheritdoc}
      */
-    public function find($className, mixed $id, ?int $lockMode = null, ?int $lockVersion = null): ?object
+    public function find($className, mixed $id, LockMode|int|null $lockMode = null, ?int $lockVersion = null): ?object
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($className, '\\'));
 
@@ -520,7 +520,7 @@ use function ltrim;
     /**
      * {@inheritDoc}
      */
-    public function lock(object $entity, int $lockMode, $lockVersion = null): void
+    public function lock(object $entity, LockMode|int $lockMode, $lockVersion = null): void
     {
         $this->unitOfWork->lock($entity, $lockMode, $lockVersion);
     }
@@ -689,7 +689,7 @@ use function ltrim;
      * @throws OptimisticLockException
      * @throws TransactionRequiredException
      */
-    private function checkLockRequirements(int $lockMode, ClassMetadata $class): void
+    private function checkLockRequirements(LockMode|int $lockMode, ClassMetadata $class): void
     {
         switch ($lockMode) {
             case LockMode::OPTIMISTIC:
