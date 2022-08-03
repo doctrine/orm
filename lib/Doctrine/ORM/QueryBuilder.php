@@ -6,7 +6,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Deprecations\Deprecation;
+use Doctrine\ORM\Internal\QueryType;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
@@ -38,21 +38,6 @@ use function substr;
  */
 class QueryBuilder
 {
-    /** @deprecated */
-    public const SELECT = 0;
-
-    /** @deprecated */
-    public const DELETE = 1;
-
-    /** @deprecated */
-    public const UPDATE = 2;
-
-    /** @deprecated */
-    public const STATE_DIRTY = 0;
-
-    /** @deprecated */
-    public const STATE_CLEAN = 1;
-
     /**
      * The array of DQL parts collected.
      *
@@ -70,19 +55,7 @@ class QueryBuilder
         'orderBy' => [],
     ];
 
-    /**
-     * The type of query this is. Can be select, update or delete.
-     *
-     * @psalm-var self::SELECT|self::DELETE|self::UPDATE
-     */
-    private int $type = self::SELECT;
-
-    /**
-     * The state of the query object. Can be dirty or clean.
-     *
-     * @psalm-var self::STATE_*
-     */
-    private int $state = self::STATE_CLEAN;
+    private QueryType $type = QueryType::Select;
 
     /**
      * The complete DQL string for this query.
@@ -241,49 +214,11 @@ class QueryBuilder
     }
 
     /**
-     * Gets the type of the currently built query.
-     *
-     * @deprecated If necessary, track the type of the query being built outside of the builder.
-     *
-     * @psalm-return self::SELECT|self::DELETE|self::UPDATE
-     */
-    public function getType(): int
-    {
-        Deprecation::trigger(
-            'doctrine/dbal',
-            'https://github.com/doctrine/orm/pull/9945',
-            'Relying on the type of the query being built is deprecated.'
-            . ' If necessary, track the type of the query being built outside of the builder.'
-        );
-
-        return $this->type;
-    }
-
-    /**
      * Gets the associated EntityManager for this query builder.
      */
     public function getEntityManager(): EntityManagerInterface
     {
         return $this->em;
-    }
-
-    /**
-     * Gets the state of this query builder instance.
-     *
-     * @deprecated The builder state is an internal concern.
-     *
-     * @return int Either QueryBuilder::STATE_DIRTY or QueryBuilder::STATE_CLEAN.
-     * @psalm-return self::STATE_*
-     */
-    public function getState(): int
-    {
-        Deprecation::trigger(
-            'doctrine/dbal',
-            'https://github.com/doctrine/orm/pull/9945',
-            'Relying on the query builder state is deprecated as it is an internal concern.'
-        );
-
-        return $this->state;
     }
 
     /**
@@ -298,20 +233,11 @@ class QueryBuilder
      */
     public function getDQL(): string
     {
-        if ($this->dql !== null && $this->state === self::STATE_CLEAN) {
-            return $this->dql;
-        }
-
-        $dql = match ($this->type) {
-            self::DELETE => $this->getDQLForDelete(),
-            self::UPDATE => $this->getDQLForUpdate(),
-            self::SELECT => $this->getDQLForSelect(),
+        return $this->dql ??= match ($this->type) {
+            QueryType::Select => $this->getDQLForSelect(),
+            QueryType::Delete => $this->getDQLForDelete(),
+            QueryType::Update => $this->getDQLForUpdate(),
         };
-
-        $this->state = self::STATE_CLEAN;
-        $this->dql   = $dql;
-
-        return $dql;
     }
 
     /**
@@ -670,7 +596,7 @@ class QueryBuilder
             $this->dqlParts[$dqlPartName] = $isMultiple ? [$dqlPart] : $dqlPart;
         }
 
-        $this->state = self::STATE_DIRTY;
+        $this->dql = null;
 
         return $this;
     }
@@ -690,7 +616,7 @@ class QueryBuilder
      */
     public function select(mixed ...$select): static
     {
-        $this->type = self::SELECT;
+        $this->type = QueryType::Select;
 
         if ($select === []) {
             return $this;
@@ -733,7 +659,7 @@ class QueryBuilder
      */
     public function addSelect(mixed ...$select): static
     {
-        $this->type = self::SELECT;
+        $this->type = QueryType::Select;
 
         if ($select === []) {
             return $this;
@@ -760,18 +686,18 @@ class QueryBuilder
      */
     public function delete(?string $delete = null, ?string $alias = null): static
     {
-        $this->type = self::DELETE;
+        $this->type = QueryType::Delete;
 
         if (! $delete) {
             return $this;
         }
 
         if (! $alias) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/issues/9733',
-                'Omitting the alias is deprecated and will throw an exception in Doctrine 3.0.'
-            );
+            throw new InvalidArgumentException(sprintf(
+                '%s(): The alias for entity %s must not be omitted.',
+                __METHOD__,
+                $delete
+            ));
         }
 
         return $this->add('from', new Expr\From($delete, $alias));
@@ -795,18 +721,18 @@ class QueryBuilder
      */
     public function update(?string $update = null, ?string $alias = null): static
     {
-        $this->type = self::UPDATE;
+        $this->type = QueryType::Update;
 
         if (! $update) {
             return $this;
         }
 
         if (! $alias) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/issues/9733',
-                'Omitting the alias is deprecated and will throw an exception in Doctrine 3.0.'
-            );
+            throw new InvalidArgumentException(sprintf(
+                '%s(): The alias for entity %s must not be omitted.',
+                __METHOD__,
+                $update
+            ));
         }
 
         return $this->add('from', new Expr\From($update, $alias));
@@ -1386,7 +1312,7 @@ class QueryBuilder
     public function resetDQLPart(string $part): static
     {
         $this->dqlParts[$part] = is_array($this->dqlParts[$part]) ? [] : null;
-        $this->state           = self::STATE_DIRTY;
+        $this->dql             = null;
 
         return $this;
     }

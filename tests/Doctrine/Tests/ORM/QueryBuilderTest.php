@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
@@ -29,8 +28,6 @@ use function array_filter;
  */
 class QueryBuilderTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     private EntityManagerMock $entityManager;
 
     protected function setUp(): void
@@ -52,16 +49,7 @@ class QueryBuilderTest extends OrmTestCase
             ->delete(CmsUser::class, 'u')
             ->select('u.id', 'u.username');
 
-        self::assertEquals($qb->getType(), QueryBuilder::SELECT);
-    }
-
-    public function testEmptySelectSetsType(): void
-    {
-        $qb = $this->entityManager->createQueryBuilder()
-            ->delete(CmsUser::class, 'u')
-            ->select();
-
-        self::assertEquals($qb->getType(), QueryBuilder::SELECT);
+        $this->assertValidQueryBuilder($qb, 'SELECT u.id, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
     public function testDeleteSetsType(): void
@@ -70,7 +58,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u')
             ->delete();
 
-        self::assertEquals($qb->getType(), QueryBuilder::DELETE);
+        $this->assertValidQueryBuilder($qb, 'DELETE Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
     public function testUpdateSetsType(): void
@@ -79,7 +67,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u')
             ->update();
 
-        self::assertEquals($qb->getType(), QueryBuilder::UPDATE);
+        $this->assertValidQueryBuilder($qb, 'UPDATE Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
     public function testSimpleSelect(): void
@@ -828,21 +816,6 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals($this->entityManager, $qb->getEntityManager());
     }
 
-    public function testInitialStateIsClean(): void
-    {
-        $qb = $this->entityManager->createQueryBuilder();
-        self::assertEquals(QueryBuilder::STATE_CLEAN, $qb->getState());
-    }
-
-    public function testAlteringQueryChangesStateToDirty(): void
-    {
-        $qb = $this->entityManager->createQueryBuilder()
-            ->select('u')
-            ->from(CmsUser::class, 'u');
-
-        self::assertEquals(QueryBuilder::STATE_DIRTY, $qb->getState());
-    }
-
     public function testSelectWithFuncExpression(): void
     {
         $qb   = $this->entityManager->createQueryBuilder();
@@ -1281,24 +1254,21 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN Doctrine\Tests\Models\CMS\CmsArticle a0 INNER JOIN Doctrine\Tests\Models\CMS\CmsArticle a1', $builder->getDQL());
     }
 
-    public function testUpdateDeprecationMessage(): void
+    public function testUpdateWithoutAlias(): void
     {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/9733');
+        $qb = $this->entityManager->createQueryBuilder();
 
-        $qb = $this->entityManager->createQueryBuilder()
-            ->update(CmsUser::class . ' u')
-            ->set('u.username', ':username');
-
-        $this->assertValidQueryBuilder($qb, 'UPDATE Doctrine\Tests\Models\CMS\CmsUser u  SET u.username = :username');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Doctrine\ORM\QueryBuilder::update(): The alias for entity Doctrine\Tests\Models\CMS\CmsUser u must not be omitted.');
+        $qb->update(CmsUser::class . ' u');
     }
 
-    public function testDeleteDeprecationMessage(): void
+    public function testDeleteWithoutAlias(): void
     {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/9733');
+        $qb = $this->entityManager->createQueryBuilder();
 
-        $qb = $this->entityManager->createQueryBuilder()
-            ->delete(CmsUser::class . ' u');
-
-        $this->assertValidQueryBuilder($qb, 'DELETE Doctrine\Tests\Models\CMS\CmsUser u ');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Doctrine\ORM\QueryBuilder::delete(): The alias for entity Doctrine\Tests\Models\CMS\CmsUser u must not be omitted.');
+        $qb->delete(CmsUser::class . ' u');
     }
 }

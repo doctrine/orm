@@ -2062,10 +2062,6 @@
     <PossiblyInvalidIterator occurrences="1">
       <code>$dqlPart</code>
     </PossiblyInvalidIterator>
-    <PossiblyNullArgument occurrences="2">
-      <code>$alias</code>
-      <code>$alias</code>
-    </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Repository/DefaultRepositoryFactory.php">
     <InvalidReturnStatement occurrences="1">
