@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.24.0@06dd975cb55d36af80f242561738f16c5f58264f">
+<files psalm-version="v4.25.0@d7cd84c4ebca74ba3419b9601f81d177bcbe2aac">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <FalsableReturnStatement occurrences="1">
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
@@ -179,12 +179,9 @@
     </ArgumentTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/EntityManager.php">
-    <ArgumentTypeCoercion occurrences="5">
+    <ArgumentTypeCoercion occurrences="2">
       <code>$className</code>
       <code>$connection</code>
-      <code>ltrim($className, '\\')</code>
-      <code>ltrim($entityName, '\\')</code>
-      <code>ltrim($entityName, '\\')</code>
     </ArgumentTypeCoercion>
     <InvalidReturnStatement occurrences="10">
       <code>$entity</code>
@@ -498,10 +495,9 @@
       <code>$sequenceGeneratorDefinition</code>
       <code>$table</code>
     </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="13">
+    <PropertyTypeCoercion occurrences="12">
       <code>$this-&gt;associationMappings</code>
       <code>$this-&gt;associationMappings</code>
-      <code>$this-&gt;discriminatorMap</code>
       <code>$this-&gt;entityListeners</code>
       <code>$this-&gt;fieldMappings</code>
       <code>$this-&gt;fullyQualifiedClassName($repositoryClassName)</code>
@@ -743,6 +739,10 @@
     </MissingParamType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/MappingException.php">
+    <ArgumentTypeCoercion occurrences="2">
+      <code>$className</code>
+      <code>$entityName</code>
+    </ArgumentTypeCoercion>
     <MissingParamType occurrences="4">
       <code>$className</code>
       <code>$className</code>
@@ -1992,6 +1992,7 @@
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
     <DocblockTypeContradiction occurrences="2">
+      <code>$this-&gt;conn-&gt;quote((string) $newValue)</code>
       <code>is_string($expression)</code>
     </DocblockTypeContradiction>
     <InvalidArgument occurrences="2">
@@ -2127,7 +2128,6 @@
   </file>
   <file src="lib/Doctrine/ORM/Tools/DebugUnitOfWorkListener.php">
     <PossiblyNullArgument occurrences="1">
-      <code>$entity</code>
       <code>$entity</code>
     </PossiblyNullArgument>
     <RedundantConditionGivenDocblockType occurrences="1">

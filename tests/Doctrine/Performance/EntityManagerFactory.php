@@ -71,6 +71,6 @@ final class EntityManagerFactory
             }
         };
 
-        return EntityManager::create($connection, $config);
+        return EntityManager::create($connection, $config, $connection->getEventManager());
     }
 }

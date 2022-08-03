@@ -232,7 +232,8 @@ class ClassMetadataFactoryTest extends OrmTestCase
     public function testGetAllMetadataWorksWithBadConnection(): void
     {
         // DDC-3551
-        $conn       = $this->createMock(Connection::class);
+        $conn = $this->createMock(Connection::class);
+        $conn->method('getEventManager')->willReturn($this->createMock(EventManager::class));
         $mockDriver = new MetadataDriverMock();
         $em         = $this->createEntityManager($mockDriver, $conn);
 
@@ -269,7 +270,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $config->setMetadataDriverImpl($metadataDriver);
 
-        return EntityManagerMock::create($conn, $config, $eventManager);
+        return EntityManagerMock::create($conn, $config);
     }
 
     protected function createTestFactory(): ClassMetadataFactoryTestSubject

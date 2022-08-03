@@ -695,7 +695,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * READ-ONLY: The name of the field which is used for versioning in optimistic locking (if any).
      *
-     * @var mixed
+     * @var string|null
      */
     public $versionField;
 
@@ -3213,7 +3213,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Sets the name of the field that is to be used for versioning if this class is
      * versioned for optimistic locking.
      *
-     * @param string $versionField
+     * @param string|null $versionField
      *
      * @return void
      */

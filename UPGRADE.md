@@ -460,6 +460,20 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.13
 
+## Deprecated `QueryBuilder` methods and constants.
+
+1. The `QueryBuilder::getState()` method has been deprecated as the builder state is an internal concern.
+2. Relying on the type of the query being built by using `QueryBuilder::getType()` has been deprecated.
+   If necessary, track the type of the query being built outside of the builder.
+
+The following `QueryBuilder` constants related to the above methods have been deprecated:
+
+1. `SELECT`,
+2. `DELETE`,
+3. `UPDATE`,
+4. `STATE_DIRTY`,
+5. `STATE_CLEAN`.
+
 ## Deprecated omitting only the alias argument for `QueryBuilder::update` and `QueryBuilder::delete`
 
 When building an UPDATE or DELETE query and when passing a class/type to the function, the alias argument must not be omitted.

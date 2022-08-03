@@ -90,9 +90,9 @@ class UnitOfWorkTest extends OrmTestCase
         $driver->method('connect')
             ->willReturn($driverConnection);
 
-        $this->connection   = new Connection([], $driver);
         $this->eventManager = $this->getMockBuilder(EventManager::class)->getMock();
-        $this->_emMock      = EntityManagerMock::create($this->connection, null, $this->eventManager);
+        $this->connection   = new Connection([], $driver, null, $this->eventManager);
+        $this->_emMock      = EntityManagerMock::create($this->connection);
         // SUT
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
@@ -611,7 +611,7 @@ class UnitOfWorkTest extends OrmTestCase
             ->onlyMethods(['commit'])
             ->setConstructorArgs([[], $driver])
             ->getMock();
-        $this->_emMock     = EntityManagerMock::create($this->connection, null, $this->eventManager);
+        $this->_emMock     = EntityManagerMock::create($this->connection);
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
 

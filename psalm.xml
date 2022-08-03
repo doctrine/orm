@@ -17,11 +17,6 @@
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
-        <DeprecatedConstant>
-            <errorLevel type="suppress">
-                <file name="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php" />
-            </errorLevel>
-        </DeprecatedConstant>
         <DeprecatedClass>
             <errorLevel type="suppress">
                 <!-- Remove on 3.0.x -->
@@ -32,6 +27,12 @@
                 <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
             </errorLevel>
         </DeprecatedClass>
+        <DeprecatedConstant>
+            <errorLevel type="suppress">
+                <file name="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php" />
+                <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
+            </errorLevel>
+        </DeprecatedConstant>
         <DeprecatedMethod>
             <errorLevel type="suppress">
                 <!-- We're calling the deprecated method for BC here. -->
