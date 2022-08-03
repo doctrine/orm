@@ -9,7 +9,7 @@
     <!-- Ignore warnings, show progress of the run and show sniff names -->
     <arg value="nps"/>
 
-    <config name="php_version" value="80000"/>
+    <config name="php_version" value="80100"/>
 
     <file>lib</file>
     <file>tests</file>

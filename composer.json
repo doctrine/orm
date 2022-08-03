@@ -20,7 +20,7 @@
         "sort-packages": true
     },
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "composer-runtime-api": "^2",
         "ext-ctype": "*",
         "doctrine/collections": "^1.5",

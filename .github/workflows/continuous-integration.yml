@@ -19,17 +19,14 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.0"
           - "8.1"
         dbal-version:
           - "default"
+          - "3@dev"
+          - "4@dev"
         include:
-          - php-version: "8.1"
-            dbal-version: "3@dev"
           - php-version: "8.2"
             dbal-version: "3@dev"
-          - php-version: "8.1"
-            dbal-version: "4@dev"
 
     steps:
       - name: "Checkout"
