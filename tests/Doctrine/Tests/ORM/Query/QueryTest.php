@@ -35,8 +35,6 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function array_map;
 
-use const PHP_VERSION_ID;
-
 class QueryTest extends OrmTestCase
 {
     use VerifyDeprecations;
@@ -230,10 +228,7 @@ class QueryTest extends OrmTestCase
         yield 'simple_array' => [$baseArray];
         yield 'doctrine_collection' => [new ArrayCollection($baseArray)];
         yield 'generator' => [$gen()];
-
-        if (PHP_VERSION_ID >= 80100) {
-            yield 'array_of_enum' => [array_map([City::class, 'from'], $baseArray)];
-        }
+        yield 'array_of_enum' => [array_map([City::class, 'from'], $baseArray)];
     }
 
     /**

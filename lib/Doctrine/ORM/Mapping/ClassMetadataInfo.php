@@ -54,8 +54,6 @@ use function strtolower;
 use function trait_exists;
 use function trim;
 
-use const PHP_VERSION_ID;
-
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
  * of an entity and its associations.
@@ -1448,7 +1446,7 @@ class ClassMetadataInfo implements ClassMetadata
                 ! isset($mapping['type'])
                 && ($type instanceof ReflectionNamedType)
             ) {
-                if (PHP_VERSION_ID >= 80100 && ! $type->isBuiltin() && enum_exists($type->getName())) {
+                if (! $type->isBuiltin() && enum_exists($type->getName())) {
                     $mapping['enumType'] = $type->getName();
 
                     $reflection = new ReflectionEnum($type->getName());
@@ -1581,10 +1579,6 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         if (isset($mapping['enumType'])) {
-            if (PHP_VERSION_ID < 80100) {
-                throw MappingException::enumsRequirePhp81($this->name, $mapping['fieldName']);
-            }
-
             if (! enum_exists($mapping['enumType'])) {
                 throw MappingException::nonEnumTypeMapped($this->name, $mapping['fieldName'], $mapping['enumType']);
             }
@@ -3439,7 +3433,7 @@ class ClassMetadataInfo implements ClassMetadata
     private function getAccessibleProperty(ReflectionService $reflService, string $class, string $field): ?ReflectionProperty
     {
         $reflectionProperty = $reflService->getAccessibleProperty($class, $field);
-        if ($reflectionProperty !== null && PHP_VERSION_ID >= 80100 && $reflectionProperty->isReadOnly()) {
+        if ($reflectionProperty?->isReadOnly()) {
             $reflectionProperty = new ReflectionReadonlyProperty($reflectionProperty);
         }
 

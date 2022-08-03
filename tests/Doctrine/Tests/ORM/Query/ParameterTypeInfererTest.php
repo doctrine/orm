@@ -16,8 +16,6 @@ use Doctrine\Tests\Models\Enums\UserStatus;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
 
-use const PHP_VERSION_ID;
-
 class ParameterTypeInfererTest extends OrmTestCase
 {
     /** @psalm-return Generator<string, array{mixed, (int|string)}> */
@@ -34,13 +32,10 @@ class ParameterTypeInfererTest extends OrmTestCase
         yield 'array_of_numeric_string' => [['1', '2'], Connection::PARAM_STR_ARRAY];
         yield 'empty_array' => [[], Connection::PARAM_STR_ARRAY];
         yield 'boolean' => [true, Types::BOOLEAN];
-
-        if (PHP_VERSION_ID >= 80100) {
-            yield 'int_backed_enum' => [AccessLevel::Admin, Types::INTEGER];
-            yield 'string_backed_enum' => [UserStatus::Active, Types::STRING];
-            yield 'array_of_int_backed_enum' => [[AccessLevel::Admin], Connection::PARAM_INT_ARRAY];
-            yield 'array_of_string_backed_enum' => [[UserStatus::Active], Connection::PARAM_STR_ARRAY];
-        }
+        yield 'int_backed_enum' => [AccessLevel::Admin, Types::INTEGER];
+        yield 'string_backed_enum' => [UserStatus::Active, Types::STRING];
+        yield 'array_of_int_backed_enum' => [[AccessLevel::Admin], Connection::PARAM_INT_ARRAY];
+        yield 'array_of_string_backed_enum' => [[UserStatus::Active], Connection::PARAM_STR_ARRAY];
     }
 
     /**
