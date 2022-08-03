@@ -18,8 +18,8 @@ final class ReflectionEnumProperty extends ReflectionProperty
      * @param class-string<BackedEnum> $enumType
      */
     public function __construct(
-        private ReflectionProperty $originalReflectionProperty,
-        private string $enumType
+        private readonly ReflectionProperty $originalReflectionProperty,
+        private readonly string $enumType
     ) {
         parent::__construct(
             $originalReflectionProperty->getDeclaringClass()->getName(),

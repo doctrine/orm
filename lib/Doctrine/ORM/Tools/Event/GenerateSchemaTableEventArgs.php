@@ -17,9 +17,9 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 class GenerateSchemaTableEventArgs extends EventArgs
 {
     public function __construct(
-        private ClassMetadata $classMetadata,
-        private Schema $schema,
-        private Table $classTable
+        private readonly ClassMetadata $classMetadata,
+        private readonly Schema $schema,
+        private readonly Table $classTable
     ) {
     }
 

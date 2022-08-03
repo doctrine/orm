@@ -28,7 +28,7 @@ use Doctrine\ORM\UnitOfWork;
  */
 class NonProxyLoadingEntityManager implements EntityManagerInterface
 {
-    public function __construct(private EntityManagerInterface $realEntityManager)
+    public function __construct(private readonly EntityManagerInterface $realEntityManager)
     {
     }
 

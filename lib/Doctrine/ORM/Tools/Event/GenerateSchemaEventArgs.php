@@ -16,8 +16,8 @@ use Doctrine\ORM\EntityManagerInterface;
 class GenerateSchemaEventArgs extends EventArgs
 {
     public function __construct(
-        private EntityManagerInterface $em,
-        private Schema $schema
+        private readonly EntityManagerInterface $em,
+        private readonly Schema $schema
     ) {
     }
 

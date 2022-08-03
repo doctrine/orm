@@ -33,7 +33,7 @@ abstract class SQLFilter
     private array $parameters = [];
 
     final public function __construct(
-        private EntityManagerInterface $em
+        private readonly EntityManagerInterface $em
     ) {
     }
 

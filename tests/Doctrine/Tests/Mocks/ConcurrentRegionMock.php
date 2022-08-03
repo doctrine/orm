@@ -32,7 +32,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
     public array $locks = [];
 
     public function __construct(
-        private Region $region
+        private readonly Region $region
     ) {
     }
 

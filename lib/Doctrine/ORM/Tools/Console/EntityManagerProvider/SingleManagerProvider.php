@@ -10,8 +10,8 @@ use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 final class SingleManagerProvider implements EntityManagerProvider
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private string $defaultManagerName = 'default',
+        private readonly EntityManagerInterface $entityManager,
+        private readonly string $defaultManagerName = 'default',
     ) {
     }
 

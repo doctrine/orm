@@ -19,8 +19,10 @@ final class HydrationCompleteHandler
     /** @var mixed[][] */
     private array $deferredPostLoadInvocations = [];
 
-    public function __construct(private ListenersInvoker $listenersInvoker, private EntityManagerInterface $em)
-    {
+    public function __construct(
+        private readonly ListenersInvoker $listenersInvoker,
+        private readonly EntityManagerInterface $em,
+    ) {
     }
 
     /**

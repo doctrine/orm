@@ -49,8 +49,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * @psalm-param self::COLUMN_RENAMING_* $defaultRenameMode
      */
     public function __construct(
-        private EntityManagerInterface $em,
-        private int $defaultRenameMode = self::COLUMN_RENAMING_NONE,
+        private readonly EntityManagerInterface $em,
+        private readonly int $defaultRenameMode = self::COLUMN_RENAMING_NONE,
     ) {
     }
 

@@ -32,8 +32,8 @@ class DebugUnitOfWorkListener
      * The stream can be php://output to print to the screen.
      */
     public function __construct(
-        private string $file = 'php://output',
-        private string $context = ''
+        private readonly string $file = 'php://output',
+        private readonly string $context = ''
     ) {
     }
 

@@ -19,13 +19,13 @@ use function assert;
  */
 class DefaultCollectionHydrator implements CollectionHydrator
 {
-    private UnitOfWork $uow;
+    private readonly UnitOfWork $uow;
 
     /** @var array<string,mixed> */
     private static array $hints = [Query::HINT_CACHE_ENABLED => true];
 
     public function __construct(
-        private EntityManagerInterface $em
+        private readonly EntityManagerInterface $em
     ) {
         $this->uow = $em->getUnitOfWork();
     }

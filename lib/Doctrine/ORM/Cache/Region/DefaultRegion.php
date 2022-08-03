@@ -27,9 +27,9 @@ class DefaultRegion implements Region
     private const REGION_PREFIX        = 'DC2_REGION_';
 
     public function __construct(
-        private string $name,
-        private CacheItemPoolInterface $cacheItemPool,
-        private int $lifetime = 0
+        private readonly string $name,
+        private readonly CacheItemPoolInterface $cacheItemPool,
+        private readonly int $lifetime = 0
     ) {
     }
 

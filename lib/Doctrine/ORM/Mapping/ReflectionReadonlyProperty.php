@@ -20,7 +20,7 @@ use function sprintf;
 final class ReflectionReadonlyProperty extends ReflectionProperty
 {
     public function __construct(
-        private ReflectionProperty $wrappedProperty
+        private readonly ReflectionProperty $wrappedProperty
     ) {
         if (! $wrappedProperty->isReadOnly()) {
             throw new InvalidArgumentException('Given property is not readonly.');

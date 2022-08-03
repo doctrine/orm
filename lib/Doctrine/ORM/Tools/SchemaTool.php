@@ -48,15 +48,15 @@ class SchemaTool
 {
     private const KNOWN_COLUMN_OPTIONS = ['comment', 'unsigned', 'fixed', 'default'];
 
-    private AbstractPlatform $platform;
-    private QuoteStrategy $quoteStrategy;
-    private AbstractSchemaManager $schemaManager;
+    private readonly AbstractPlatform $platform;
+    private readonly QuoteStrategy $quoteStrategy;
+    private readonly AbstractSchemaManager $schemaManager;
 
     /**
      * Initializes a new SchemaTool instance that uses the connection of the
      * provided EntityManager.
      */
-    public function __construct(private EntityManagerInterface $em)
+    public function __construct(private readonly EntityManagerInterface $em)
     {
         $this->platform      = $em->getConnection()->getDatabasePlatform();
         $this->quoteStrategy = $em->getConfiguration()->getQuoteStrategy();
