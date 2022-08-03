@@ -286,6 +286,25 @@ class ClassMetadataTest extends OrmTestCase
         $cm->setVersionMapping($field);
     }
 
+    public function testDisablingVersioningRestoresOriginalState(): void
+    {
+        $field = ['fieldName' => 'version', 'type' => 'integer'];
+        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+        $cm->setVersionMapping($field);
+
+        self::assertTrue($cm->isVersioned);
+        self::assertEquals('version', $cm->versionField);
+        self::assertTrue($cm->requiresFetchAfterChange);
+
+        $cm->setVersioned(false);
+        $cm->setVersionField(null);
+
+        self::assertFalse($cm->isVersioned);
+        self::assertNull($cm->versionField);
+        self::assertFalse($cm->requiresFetchAfterChange);
+    }
+
     public function testGetSingleIdentifierFieldNameMultipleIdentifierEntityThrowsException(): void
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
