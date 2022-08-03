@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,14 +20,14 @@
 
 namespace Doctrine\ORM\Query\Expr;
 
+use function implode;
+use function is_object;
+use function preg_match;
+
 /**
  * Expression class for building DQL and parts.
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class Composite extends Base
 {
@@ -62,7 +63,7 @@ class Composite extends Base
         }
 
         // Fixes DDC-1237: User may have added a where item containing nested expression (with "OR" or "AND")
-        if (stripos($queryPart, ' OR ') !== false || stripos($queryPart, ' AND ') !== false) {
+        if (preg_match('/\s(OR|AND)\s/i', $queryPart)) {
             return $this->preSeparator . $queryPart . $this->postSeparator;
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -22,9 +23,6 @@ namespace Doctrine\ORM\Mapping;
 /**
  * This annotation is used to override association mappings of relationship properties.
  *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since   2.3
- *
  * @Annotation
  * @Target("CLASS")
  */
@@ -33,7 +31,7 @@ final class AssociationOverrides implements Annotation
     /**
      * Mapping overrides of relationship properties.
      *
-     * @var array<\Doctrine\ORM\Mapping\AssociationOverride> 
+     * @var array<\Doctrine\ORM\Mapping\AssociationOverride>
      */
     public $value;
 }

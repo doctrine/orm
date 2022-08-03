@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ValueConversionType;
 
 /**
@@ -9,12 +11,14 @@ namespace Doctrine\Tests\Models\ValueConversionType;
 class OwningManyToOneExtraLazyEntity
 {
     /**
+     * @var string
      * @Column(type="rot13")
      * @Id
      */
     public $id2;
 
     /**
+     * @var InversedOneToManyExtraLazyEntity
      * @ManyToOne(targetEntity="InversedOneToManyExtraLazyEntity", inversedBy="associatedEntities")
      * @JoinColumn(name="associated_id", referencedColumnName="id1")
      */

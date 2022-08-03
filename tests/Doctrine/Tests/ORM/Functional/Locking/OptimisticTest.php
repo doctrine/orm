@@ -6,10 +6,14 @@ use DateTime;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+use function date;
+use function strtotime;
 
 class OptimisticTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -19,21 +23,21 @@ class OptimisticTest extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(OptimisticJoinedParent::class),
                     $this->_em->getClassMetadata(OptimisticJoinedChild::class),
                     $this->_em->getClassMetadata(OptimisticStandard::class),
-                    $this->_em->getClassMetadata(OptimisticTimestamp::class)
+                    $this->_em->getClassMetadata(OptimisticTimestamp::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
 
         $this->_conn = $this->_em->getConnection();
     }
 
-    public function testJoinedChildInsertSetsInitialVersionValue()
+    public function testJoinedChildInsertSetsInitialVersionValue(): OptimisticJoinedChild
     {
         $test = new OptimisticJoinedChild();
 
-        $test->name = 'child';
+        $test->name     = 'child';
         $test->whatever = 'whatever';
 
         $this->_em->persist($test);
@@ -47,7 +51,7 @@ class OptimisticTest extends OrmFunctionalTestCase
     /**
      * @depends testJoinedChildInsertSetsInitialVersionValue
      */
-    public function testJoinedChildFailureThrowsException(OptimisticJoinedChild $child)
+    public function testJoinedChildFailureThrowsException(OptimisticJoinedChild $child): void
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedChild t WHERE t.id = :id');
 
@@ -70,7 +74,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testJoinedParentInsertSetsInitialVersionValue()
+    public function testJoinedParentInsertSetsInitialVersionValue(): OptimisticJoinedParent
     {
         $test = new OptimisticJoinedParent();
 
@@ -87,7 +91,7 @@ class OptimisticTest extends OrmFunctionalTestCase
     /**
      * @depends testJoinedParentInsertSetsInitialVersionValue
      */
-    public function testJoinedParentFailureThrowsException(OptimisticJoinedParent $parent)
+    public function testJoinedParentFailureThrowsException(OptimisticJoinedParent $parent): void
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedParent t WHERE t.id = :id');
 
@@ -110,7 +114,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testMultipleFlushesDoIncrementalUpdates()
+    public function testMultipleFlushesDoIncrementalUpdates(): void
     {
         $test = new OptimisticStandard();
 
@@ -125,7 +129,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testStandardInsertSetsInitialVersionValue()
+    public function testStandardInsertSetsInitialVersionValue(): OptimisticStandard
     {
         $test = new OptimisticStandard();
 
@@ -143,7 +147,7 @@ class OptimisticTest extends OrmFunctionalTestCase
     /**
      * @depends testStandardInsertSetsInitialVersionValue
      */
-    public function testStandardFailureThrowsException(OptimisticStandard $entity)
+    public function testStandardFailureThrowsException(OptimisticStandard $entity): void
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard t WHERE t.id = :id');
 
@@ -166,9 +170,9 @@ class OptimisticTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testLockWorksWithProxy()
+    public function testLockWorksWithProxy(): void
     {
-        $test = new OptimisticStandard();
+        $test       = new OptimisticStandard();
         $test->name = 'test';
 
         $this->_em->persist($test);
@@ -182,13 +186,13 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testOptimisticTimestampSetsDefaultValue()
+    public function testOptimisticTimestampSetsDefaultValue(): OptimisticTimestamp
     {
         $test = new OptimisticTimestamp();
 
         $test->name = 'Testing';
 
-        $this->assertNull($test->version, "Pre-Condition");
+        $this->assertNull($test->version, 'Pre-Condition');
 
         $this->_em->persist($test);
         $this->_em->flush();
@@ -201,7 +205,7 @@ class OptimisticTest extends OrmFunctionalTestCase
     /**
      * @depends testOptimisticTimestampSetsDefaultValue
      */
-    public function testOptimisticTimestampFailureThrowsException(OptimisticTimestamp $entity)
+    public function testOptimisticTimestampFailureThrowsException(OptimisticTimestamp $entity): void
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp t WHERE t.id = :id');
 
@@ -214,12 +218,11 @@ class OptimisticTest extends OrmFunctionalTestCase
         // Manually increment the version datetime column
         $format = $this->_em->getConnection()->getDatabasePlatform()->getDateTimeFormatString();
 
-        $this->_conn->executeQuery('UPDATE optimistic_timestamp SET version = ? WHERE id = ?', [date($format, strtotime($test->version->format($format)) + 3600), $test->id]
-        );
+        $this->_conn->executeQuery('UPDATE optimistic_timestamp SET version = ? WHERE id = ?', [date($format, strtotime($test->version->format($format)) + 3600), $test->id]);
 
         // Try and update the record and it should throw an exception
         $caughtException = null;
-        $test->name = 'Testing again';
+        $test->name      = 'Testing again';
 
         try {
             $this->_em->flush();
@@ -227,15 +230,14 @@ class OptimisticTest extends OrmFunctionalTestCase
             $caughtException = $e;
         }
 
-        $this->assertNotNull($caughtException, "No OptimisticLockingException was thrown");
+        $this->assertNotNull($caughtException, 'No OptimisticLockingException was thrown');
         $this->assertSame($test, $caughtException->getEntity());
-
     }
 
     /**
      * @depends testOptimisticTimestampSetsDefaultValue
      */
-    public function testOptimisticTimestampLockFailureThrowsException(OptimisticTimestamp $entity)
+    public function testOptimisticTimestampLockFailureThrowsException(OptimisticTimestamp $entity): void
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp t WHERE t.id = :id');
 
@@ -249,18 +251,16 @@ class OptimisticTest extends OrmFunctionalTestCase
         $caughtException = null;
 
         try {
-            $expectedVersionExpired = DateTime::createFromFormat('U', $test->version->getTimestamp()-3600);
+            $expectedVersionExpired = DateTime::createFromFormat('U', $test->version->getTimestamp() - 3600);
 
             $this->_em->lock($test, LockMode::OPTIMISTIC, $expectedVersionExpired);
         } catch (OptimisticLockException $e) {
             $caughtException = $e;
         }
 
-        $this->assertNotNull($caughtException, "No OptimisticLockingException was thrown");
+        $this->assertNotNull($caughtException, 'No OptimisticLockingException was thrown');
         $this->assertSame($test, $caughtException->getEntity());
-
     }
-
 }
 
 /**
@@ -273,18 +273,22 @@ class OptimisticTest extends OrmFunctionalTestCase
 class OptimisticJoinedParent
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
+     * @var string
      * @Column(type="string", length=255)
      */
     public $name;
 
     /**
-     * @Version @Column(type="integer")
+     * @var int
+     * @Version
+     * @Column(type="integer")
      */
     public $version;
 }
@@ -296,6 +300,7 @@ class OptimisticJoinedParent
 class OptimisticJoinedChild extends OptimisticJoinedParent
 {
     /**
+     * @var string
      * @Column(type="string", length=255)
      */
     public $whatever;
@@ -308,22 +313,26 @@ class OptimisticJoinedChild extends OptimisticJoinedParent
 class OptimisticStandard
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
+     * @var string
      * @Column(type="string", length=255)
      */
     public $name;
 
     /**
-     * @Version @Column(type="integer")
+     * @var int
+     * @Version
+     * @Column(type="integer")
      */
     private $version;
 
-    public function getVersion()
+    public function getVersion(): int
     {
         return $this->version;
     }
@@ -336,18 +345,22 @@ class OptimisticStandard
 class OptimisticTimestamp
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
+     * @var string
      * @Column(type="string", length=255)
      */
     public $name;
 
     /**
-     * @Version @Column(type="datetime")
+     * @var DateTime
+     * @Version
+     * @Column(type="datetime")
      */
     public $version;
 }

@@ -1,16 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Tools\ToolsException;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2862
  * @group DDC-2183
  */
-class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2862Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->enableSecondLevelCache();
         parent::setUp();
@@ -18,18 +21,18 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC2862User::class),
-                $this->_em->getClassMetadata(DDC2862Driver::class),
+                    $this->_em->getClassMetadata(DDC2862User::class),
+                    $this->_em->getClassMetadata(DDC2862Driver::class),
                 ]
             );
         } catch (ToolsException $exc) {
         }
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
-        $user1    = new DDC2862User('Foo');
-        $driver1  = new DDC2862Driver('Bar' , $user1);
+        $user1   = new DDC2862User('Foo');
+        $driver1 = new DDC2862Driver('Bar', $user1);
 
         $this->_em->persist($user1);
         $this->_em->persist($driver1);
@@ -64,10 +67,10 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Foo', $driver3->getUserProfile()->getName());
     }
 
-    public function testIssueReopened()
+    public function testIssueReopened(): void
     {
-        $user1    = new DDC2862User('Foo');
-        $driver1  = new DDC2862Driver('Bar' , $user1);
+        $user1   = new DDC2862User('Foo');
+        $driver1 = new DDC2862Driver('Bar', $user1);
 
         $this->_em->persist($user1);
         $this->_em->persist($driver1);
@@ -120,6 +123,7 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC2862Driver
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -135,7 +139,7 @@ class DDC2862Driver
     /**
      * @Cache()
      * @OneToOne(targetEntity="DDC2862User")
-     * @var User
+     * @var DDC2862User
      */
     protected $userProfile;
 
@@ -145,46 +149,30 @@ class DDC2862Driver
         $this->userProfile = $userProfile;
     }
 
-    /**
-     * @return integer
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param \Entities\User $userProfile
-     */
-    public function setUserProfile($userProfile)
+    public function setUserProfile(DDC2862User $userProfile): void
     {
         $this->userProfile = $userProfile;
     }
 
-    /**
-     * @return \Entities\User
-     */
-    public function getUserProfile()
+    public function getUserProfile(): DDC2862User
     {
         return $this->userProfile;
     }
-
 }
 
 /**
@@ -195,6 +183,7 @@ class DDC2862Driver
 class DDC2862User
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -212,28 +201,18 @@ class DDC2862User
         $this->name = $name;
     }
 
-    /**
-     * @return integer
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
-
 }

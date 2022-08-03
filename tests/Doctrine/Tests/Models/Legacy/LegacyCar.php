@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Legacy;
+
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -9,31 +13,40 @@ namespace Doctrine\Tests\Models\Legacy;
 class LegacyCar
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(name="iCarId", type="integer", nullable=false)
      */
-    public $_id;
-    /**
-     * @ManyToMany(targetEntity="LegacyUser", mappedBy="_cars")
-     */
-    public $_users;
+    public $id;
 
     /**
+     * @psalm-var Collection<int, LegacyUser>
+     * @ManyToMany(targetEntity="LegacyUser", mappedBy="cars")
+     */
+    public $users;
+
+    /**
+     * @var string
      * @Column(name="sDescription", type="string", length=255, unique=true)
      */
-    public $_description;
+    public $description;
 
-    function getDescription()
+    public function getDescription(): string
     {
-        return $this->_description;
+        return $this->description;
     }
 
-    public function addUser(LegacyUser $user) {
-        $this->_users[] = $user;
+    public function addUser(LegacyUser $user): void
+    {
+        $this->users[] = $user;
     }
 
-    public function getUsers() {
-        return $this->_users;
+    /**
+     * @psalm-return Collection<int, LegacyUser>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
     }
 }

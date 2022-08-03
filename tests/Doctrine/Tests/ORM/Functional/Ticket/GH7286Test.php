@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
@@ -11,10 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH7286Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -32,7 +31,7 @@ final class GH7286Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function testAggregateExpressionInFunction() : void
+    public function testAggregateExpressionInFunction(): void
     {
         $query = $this->_em->createQuery(
             'SELECT CONCAT(e.type, MIN(e.version)) pair'
@@ -54,7 +53,7 @@ final class GH7286Test extends OrmFunctionalTestCase
     /**
      * @group DDC-1091
      */
-    public function testAggregateFunctionInCustomFunction() : void
+    public function testAggregateFunctionInCustomFunction(): void
     {
         $this->_em->getConfiguration()->addCustomStringFunction('CC', GH7286CustomConcat::class);
 
@@ -113,7 +112,7 @@ class GH7286CustomConcat extends FunctionNode
     /** @var Node */
     private $second;
 
-    public function parse(Parser $parser) : void
+    public function parse(Parser $parser): void
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
@@ -125,7 +124,7 @@ class GH7286CustomConcat extends FunctionNode
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 
-    public function getSql(SqlWalker $walker) : string
+    public function getSql(SqlWalker $walker): string
     {
         return $walker->getConnection()->getDatabasePlatform()->getConcatExpression(
             $this->first->dispatch($walker),

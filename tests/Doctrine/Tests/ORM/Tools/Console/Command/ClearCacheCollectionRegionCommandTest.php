@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Tools\Console\Command\ClearCache\CollectionRegionCommand;
@@ -15,17 +17,13 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var \Symfony\Component\Console\Application
-     */
+    /** @var Application */
     private $application;
 
-    /**
-     * @var \Doctrine\ORM\Tools\Console\Command\ClearCache\CollectionRegionCommand
-     */
+    /** @var CollectionRegionCommand */
     private $command;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->enableSecondLevelCache();
         parent::setUp();
@@ -37,7 +35,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
         $this->application->add($this->command);
     }
 
-    public function testClearAllRegion()
+    public function testClearAllRegion(): void
     {
         $command = $this->application->find('orm:clear-cache:region:collection');
         $tester  = new CommandTester($command);
@@ -53,7 +51,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
         self::assertStringContainsString(' // Clearing all second-level cache collection regions', $tester->getDisplay());
     }
 
-    public function testClearByOwnerEntityClassName()
+    public function testClearByOwnerEntityClassName(): void
     {
         $command = $this->application->find('orm:clear-cache:region:collection');
         $tester  = new CommandTester($command);
@@ -73,7 +71,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testClearCacheEntryName()
+    public function testClearCacheEntryName(): void
     {
         $command = $this->application->find('orm:clear-cache:region:collection');
         $tester  = new CommandTester($command);
@@ -93,10 +91,10 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
             $tester->getDisplay()
         );
 
-        self::assertStringContainsString(' // entity identified by "1"', $tester->getDisplay());
+        self::assertStringContainsString('identified by "1"', $tester->getDisplay());
     }
 
-    public function testFlushRegionName()
+    public function testFlushRegionName(): void
     {
         $command = $this->application->find('orm:clear-cache:region:collection');
         $tester  = new CommandTester($command);

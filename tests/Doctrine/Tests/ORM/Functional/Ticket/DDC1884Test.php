@@ -1,18 +1,21 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Taxi\Car;
 use Doctrine\Tests\Models\Taxi\Driver;
-use Doctrine\Tests\Models\Taxi\Ride;
 use Doctrine\Tests\Models\Taxi\PaidRide;
+use Doctrine\Tests\Models\Taxi\Ride;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1884
- * @author Sander Coolen <sander@jibber.nl>
  */
-class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1884Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('taxi');
         parent::setUp();
@@ -51,21 +54,26 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    private function createCars($class)
+    /**
+     * @psalm-return array{Car, Car, Car, Car}
+     *
+     * @psalm-var class-string<Car> $class
+     */
+    private function createCars(string $class): array
     {
-        $bimmer = new $class;
+        $bimmer = new $class();
         $bimmer->setBrand('BMW');
         $bimmer->setModel('7-Series');
 
-        $crysler = new $class;
+        $crysler = new $class();
         $crysler->setBrand('Crysler');
         $crysler->setModel('300');
 
-        $merc = new $class;
+        $merc = new $class();
         $merc->setBrand('Mercedes');
         $merc->setModel('C-Class');
 
-        $volvo = new $class;
+        $volvo = new $class();
         $volvo->setBrand('Volvo');
         $volvo->setModel('XC90');
 
@@ -77,12 +85,17 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
         return [$bimmer, $crysler, $merc, $volvo];
     }
 
-    private function createDrivers($class)
+    /**
+     * @psalm-return array{Driver, Driver}
+     *
+     * @psalm-var class-string<Driver> $class
+     */
+    private function createDrivers(string $class): array
     {
-        $john = new $class;
+        $john = new $class();
         $john->setName('John Doe');
 
-        $foo = new $class;
+        $foo = new $class();
         $foo->setName('Foo Bar');
 
         $this->_em->persist($foo);
@@ -95,7 +108,7 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
      * 1) Ride contains only columns that are part of its composite primary key
      * 2) We use fetch joins here
      */
-    public function testSelectFromInverseSideWithCompositePkAndSolelyIdentifierColumnsUsingFetchJoins()
+    public function testSelectFromInverseSideWithCompositePkAndSolelyIdentifierColumnsUsingFetchJoins(): void
     {
         $qb = $this->_em->createQueryBuilder();
 
@@ -117,7 +130,7 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
      * 1) PaidRide contains an extra column that is not part of the composite primary key
      * 2) Again we will use fetch joins
      */
-    public function testSelectFromInverseSideWithCompositePkUsingFetchJoins()
+    public function testSelectFromInverseSideWithCompositePkUsingFetchJoins(): void
     {
         $qb = $this->_em->createQueryBuilder();
 
@@ -137,7 +150,7 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * The other way around will fail too
      */
-    public function testSelectFromOwningSideUsingFetchJoins()
+    public function testSelectFromOwningSideUsingFetchJoins(): void
     {
         $qb = $this->_em->createQueryBuilder();
 

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -22,21 +23,14 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * JoinClassPathExpression ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
  *
- * @license http://www.opensource.org/licenses/mit-license.php MIT
  * @link    www.doctrine-project.org
- * @since   2.3
- * @author  Alexander <iam.asm89@gmail.com>
  */
 class JoinClassPathExpression extends Node
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $abstractSchemaName;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $aliasIdentificationVariable;
 
     /**
@@ -45,7 +39,7 @@ class JoinClassPathExpression extends Node
      */
     public function __construct($abstractSchemaName, $aliasIdentificationVar)
     {
-        $this->abstractSchemaName = $abstractSchemaName;
+        $this->abstractSchemaName          = $abstractSchemaName;
         $this->aliasIdentificationVariable = $aliasIdentificationVar;
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,11 +22,10 @@ namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\ORMException;
 
+use function sprintf;
+
 /**
  * Exception for cache.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class CacheException extends ORMException
 {
@@ -33,7 +33,7 @@ class CacheException extends ORMException
      * @param string $sourceEntity
      * @param string $fieldName
      *
-     * @return \Doctrine\ORM\Cache\CacheException
+     * @return CacheException
      */
     public static function updateReadOnlyCollection($sourceEntity, $fieldName)
     {
@@ -43,7 +43,7 @@ class CacheException extends ORMException
     /**
      * @param string $entityName
      *
-     * @return \Doctrine\ORM\Cache\CacheException
+     * @return CacheException
      */
     public static function updateReadOnlyEntity($entityName)
     {
@@ -53,7 +53,7 @@ class CacheException extends ORMException
     /**
      * @param string $entityName
      *
-     * @return \Doctrine\ORM\Cache\CacheException
+     * @return CacheException
      */
     public static function nonCacheableEntity($entityName)
     {

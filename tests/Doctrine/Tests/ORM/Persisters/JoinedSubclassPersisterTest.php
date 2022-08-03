@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Persisters;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\Tests\Models\JoinedInheritanceType\RootClass;
 use Doctrine\Tests\OrmTestCase;
@@ -13,31 +16,24 @@ use Doctrine\Tests\OrmTestCase;
  */
 class JoinedSubClassPersisterTest extends OrmTestCase
 {
-    /**
-     * @var JoinedSubclassPersister
-     */
+    /** @var JoinedSubclassPersister */
     protected $persister;
 
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
+    /** @var EntityManager */
     protected $em;
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->em = $this->_getTestEntityManager();
+        $this->em        = $this->getTestEntityManager();
         $this->persister = new JoinedSubclassPersister($this->em, $this->em->getClassMetadata(RootClass::class));
     }
 
     /**
      * @group DDC-3470
      */
-    public function testExecuteInsertsWillReturnEmptySetWithNoQueuedInserts()
+    public function testExecuteInsertsWillReturnEmptySetWithNoQueuedInserts(): void
     {
         $this->assertSame([], $this->persister->executeInserts());
     }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,41 +20,35 @@
 
 namespace Doctrine\ORM\Query\Expr;
 
+use function implode;
+
 /**
  * Expression class for generating DQL functions.
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class Func
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $name;
 
-    /**
-     * @var array
-     */
+    /** @var mixed[] */
     protected $arguments;
 
     /**
      * Creates a function, with the given argument.
      *
      * @param string $name
-     * @param array  $arguments
+     * @psalm-param list<mixed> $arguments
      */
     public function __construct($name, $arguments)
     {
-        $this->name         = $name;
-        $this->arguments    = (array) $arguments;
+        $this->name      = $name;
+        $this->arguments = (array) $arguments;
     }
 
     /**
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -61,7 +56,7 @@ class Func
     }
 
     /**
-     * @return array
+     * @psalm-return list<mixed>
      */
     public function getArguments()
     {

@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ValueConversionType;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -11,12 +14,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 class OwningManyToManyCompositeIdForeignKeyEntity
 {
     /**
+     * @var string
      * @Column(type="rot13")
      * @Id
      */
     public $id2;
 
     /**
+     * @var Collection<int, InversedManyToManyCompositeIdForeignKeyEntity>
      * @ManyToMany(targetEntity="InversedManyToManyCompositeIdForeignKeyEntity", inversedBy="associatedEntities")
      * @JoinTable(
      *     name="vct_xref_manytomany_compositeid_foreignkey",

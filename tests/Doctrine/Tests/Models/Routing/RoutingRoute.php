@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Routing;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -10,13 +13,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 class RoutingRoute
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
-     * @column(type="integer")
+     * @Column(type="integer")
      */
     public $id;
 
     /**
+     * @var Collection<int, RoutingLeg>
      * @ManyToMany(targetEntity="RoutingLeg", cascade={"all"})
      * @JoinTable(name="RoutingRouteLegs",
      *     joinColumns={@JoinColumn(name="route_id", referencedColumnName="id")},
@@ -27,6 +32,7 @@ class RoutingRoute
     public $legs;
 
     /**
+     * @var Collection<int, RoutingRouteBooking>
      * @OneToMany(targetEntity="RoutingRouteBooking", mappedBy="route")
      * @OrderBy({"passengerName" = "ASC"})
      */

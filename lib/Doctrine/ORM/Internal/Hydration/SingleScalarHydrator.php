@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,15 +20,16 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use PDO;
+
+use function array_shift;
+use function count;
+use function key;
 
 /**
  * Hydrator that hydrates a single scalar value from the result set.
- *
- * @since  2.0
- * @author Roman Borschel <roman@code-factory.org>
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class SingleScalarHydrator extends AbstractHydrator
 {
@@ -36,7 +38,7 @@ class SingleScalarHydrator extends AbstractHydrator
      */
     protected function hydrateAllData()
     {
-        $data    = $this->_stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $data    = $this->_stmt->fetchAll(PDO::FETCH_ASSOC);
         $numRows = count($data);
 
         if ($numRows === 0) {
@@ -46,7 +48,7 @@ class SingleScalarHydrator extends AbstractHydrator
         if ($numRows > 1) {
             throw new NonUniqueResultException('The query returned multiple rows. Change the query or use a different result function like getScalarResult().');
         }
-        
+
         if (count($data[key($data)]) > 1) {
             throw new NonUniqueResultException('The query returned a row containing multiple columns. Change the query or use a different result function like getScalarResult().');
         }

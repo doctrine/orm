@@ -1,29 +1,32 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Pagination;
 
 /**
  * Department
  *
- * @package Doctrine\Tests\Models\Pagination
- *
- * @author Bill Schaller
  * @Entity
  * @Table(name="pagination_department")
  */
 class Department
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
 
     /**
+     * @var string
      * @Column(type="string")
      */
     public $name;
 
     /**
+     * @var Company
      * @ManyToOne(targetEntity="Company", inversedBy="departments", cascade={"persist"})
      */
     public $company;

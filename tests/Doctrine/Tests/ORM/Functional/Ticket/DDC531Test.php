@@ -1,26 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC531Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC531Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC531Item::class),
-            $this->_em->getClassMetadata(DDC531SubItem::class),
+                $this->_em->getClassMetadata(DDC531Item::class),
+                $this->_em->getClassMetadata(DDC531SubItem::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
-        $item1 = new DDC531Item;
-        $item2 = new DDC531Item;
+        $item1         = new DDC531Item();
+        $item2         = new DDC531Item();
         $item2->parent = $item1;
         $item1->getChildren()->add($item2);
         $this->_em->persist($item1);
@@ -49,6 +54,7 @@ class DDC531Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC531Item
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -56,11 +62,13 @@ class DDC531Item
     public $id;
 
     /**
+     * @psalm-var Collection<int, DDC531Item>
      * @OneToMany(targetEntity="DDC531Item", mappedBy="parent")
      */
     protected $children;
 
     /**
+     * @var DDC531Item
      * @ManyToOne(targetEntity="DDC531Item", inversedBy="children")
      * @JoinColumn(name="parentId", referencedColumnName="id")
      */
@@ -68,15 +76,18 @@ class DDC531Item
 
     public function __construct()
     {
-        $this->children = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->children = new ArrayCollection();
     }
 
-    public function getParent()
+    public function getParent(): DDC531Item
     {
         return $this->parent;
     }
 
-    public function getChildren()
+    /**
+     * @psalm-return Collection<int, DDC531Item>
+     */
+    public function getChildren(): Collection
     {
         return $this->children;
     }

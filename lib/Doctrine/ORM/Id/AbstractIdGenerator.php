@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -26,8 +27,8 @@ abstract class AbstractIdGenerator
     /**
      * Generates an identifier for an entity.
      *
-     * @param EntityManager $em
      * @param object|null $entity
+     *
      * @return mixed
      */
     abstract public function generate(EntityManager $em, $entity);

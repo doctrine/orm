@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Criteria;
@@ -11,37 +13,35 @@ use Doctrine\Tests\Models\Tweet\User;
 use Doctrine\Tests\Models\Tweet\User as TweetUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @author Michaël Gallego <mic.gallego@gmail.com>
- */
 class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('tweet');
         $this->useModelSet('quote');
         parent::setUp();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         if ($this->_em) {
             $this->_em->getConfiguration()->setEntityNamespaces([]);
         }
+
         parent::tearDown();
     }
 
-    public function loadTweetFixture()
+    public function loadTweetFixture(): void
     {
-        $author = new TweetUser();
+        $author       = new TweetUser();
         $author->name = 'ngal';
         $this->_em->persist($author);
 
-        $tweet1 = new Tweet();
+        $tweet1          = new Tweet();
         $tweet1->content = 'Foo';
         $author->addTweet($tweet1);
 
-        $tweet2 = new Tweet();
+        $tweet2          = new Tweet();
         $tweet2->content = 'Bar';
         $author->addTweet($tweet2);
 
@@ -54,9 +54,9 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function loadQuoteFixture()
+    public function loadQuoteFixture(): void
     {
-        $user = new QuoteUser();
+        $user       = new QuoteUser();
         $user->name = 'mgal';
         $this->_em->persist($user);
 
@@ -71,7 +71,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function testCanCountWithoutLoadingPersistentCollection()
+    public function testCanCountWithoutLoadingPersistentCollection(): void
     {
         $this->loadTweetFixture();
 

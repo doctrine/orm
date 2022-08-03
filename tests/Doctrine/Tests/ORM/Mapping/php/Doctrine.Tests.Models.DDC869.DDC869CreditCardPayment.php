@@ -1,7 +1,10 @@
 <?php
+
+declare(strict_types=1);
+
 $metadata->mapField(
     [
-   'fieldName'  => 'creditCardNumber',
-   'type'       => 'string',
+        'fieldName'  => 'creditCardNumber',
+        'type'       => 'string',
     ]
 );

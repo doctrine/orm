@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping\Reflection;
 
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
@@ -7,8 +9,11 @@ use Doctrine\Persistence\Mapping\ReflectionService;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\Reflection\ClassWithMixedProperties;
 use Doctrine\Tests\Models\Reflection\ParentClass;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+
+use function assert;
 
 /**
  * Tests for {@see \Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter}
@@ -17,7 +22,7 @@ use ReflectionClass;
  */
 class ReflectionPropertiesGetterTest extends TestCase
 {
-    public function testRetrievesProperties()
+    public function testRetrievesProperties(): void
     {
         $properties = (new ReflectionPropertiesGetter(new RuntimeReflectionService()))
             ->getProperties(ClassWithMixedProperties::class);
@@ -29,7 +34,7 @@ class ReflectionPropertiesGetterTest extends TestCase
         }
     }
 
-    public function testRetrievedInstancesAreNotStatic()
+    public function testRetrievedInstancesAreNotStatic(): void
     {
         $properties = (new ReflectionPropertiesGetter(new RuntimeReflectionService()))
             ->getProperties(ClassWithMixedProperties::class);
@@ -39,7 +44,7 @@ class ReflectionPropertiesGetterTest extends TestCase
         }
     }
 
-    public function testExpectedKeys()
+    public function testExpectedKeys(): void
     {
         $properties = (new ReflectionPropertiesGetter(new RuntimeReflectionService()))
             ->getProperties(ClassWithMixedProperties::class);
@@ -61,12 +66,12 @@ class ReflectionPropertiesGetterTest extends TestCase
             $properties
         );
         $this->assertArrayHasKey(
-            "publicProperty",
+            'publicProperty',
             $properties
         );
     }
 
-    public function testPropertiesAreAccessible()
+    public function testPropertiesAreAccessible(): void
     {
         $object     = new ClassWithMixedProperties();
         $properties = (new ReflectionPropertiesGetter(new RuntimeReflectionService()))
@@ -77,7 +82,7 @@ class ReflectionPropertiesGetterTest extends TestCase
         }
     }
 
-    public function testPropertyGetterIsIdempotent()
+    public function testPropertyGetterIsIdempotent(): void
     {
         $getter = (new ReflectionPropertiesGetter(new RuntimeReflectionService()));
 
@@ -87,10 +92,10 @@ class ReflectionPropertiesGetterTest extends TestCase
         );
     }
 
-    public function testPropertyGetterWillSkipPropertiesNotRetrievedByTheRuntimeReflectionService()
+    public function testPropertyGetterWillSkipPropertiesNotRetrievedByTheRuntimeReflectionService(): void
     {
-        /* @var $reflectionService ReflectionService|\PHPUnit_Framework_MockObject_MockObject */
         $reflectionService = $this->createMock(ReflectionService::class);
+        assert($reflectionService instanceof ReflectionService || $reflectionService instanceof MockObject);
 
         $reflectionService
             ->expects($this->exactly(2))
@@ -110,10 +115,10 @@ class ReflectionPropertiesGetterTest extends TestCase
         $this->assertEmpty($getter->getProperties(ClassWithMixedProperties::class));
     }
 
-    public function testPropertyGetterWillSkipClassesNotRetrievedByTheRuntimeReflectionService()
+    public function testPropertyGetterWillSkipClassesNotRetrievedByTheRuntimeReflectionService(): void
     {
-        /* @var $reflectionService ReflectionService|\PHPUnit_Framework_MockObject_MockObject */
         $reflectionService = $this->createMock(ReflectionService::class);
+        assert($reflectionService instanceof ReflectionService || $reflectionService instanceof MockObject);
 
         $reflectionService
             ->expects($this->once())

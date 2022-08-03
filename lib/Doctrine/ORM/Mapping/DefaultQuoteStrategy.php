@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,11 +22,14 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
+use function array_map;
+use function array_merge;
+use function is_numeric;
+use function preg_replace;
+use function substr;
+
 /**
  * A set of rules for determining the physical column, alias and table quotes
- *
- * @since   2.3
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class DefaultQuoteStrategy implements QuoteStrategy
 {
@@ -48,10 +52,10 @@ class DefaultQuoteStrategy implements QuoteStrategy
     {
         $tableName = $class->table['name'];
 
-        if ( ! empty($class->table['schema'])) {
+        if (! empty($class->table['schema'])) {
             $tableName = $class->table['schema'] . '.' . $class->table['name'];
 
-            if ( ! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
+            if (! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
                 $tableName = $class->table['schema'] . '__' . $class->table['name'];
             }
         }
@@ -129,8 +133,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
             // Association defined as Id field
             $joinColumns            = $class->associationMappings[$fieldName]['joinColumns'];
             $assocQuotedColumnNames = array_map(
-                function ($joinColumn) use ($platform)
-                {
+                static function ($joinColumn) use ($platform) {
                     return isset($joinColumn['quoted'])
                         ? $platform->quoteIdentifier($joinColumn['name'])
                         : $joinColumn['name'];
@@ -147,17 +150,17 @@ class DefaultQuoteStrategy implements QuoteStrategy
     /**
      * {@inheritdoc}
      */
-    public function getColumnAlias($columnName, $counter, AbstractPlatform $platform, ClassMetadata $class = null)
+    public function getColumnAlias($columnName, $counter, AbstractPlatform $platform, ?ClassMetadata $class = null)
     {
         // 1 ) Concatenate column name and counter
         // 2 ) Trim the column alias to the maximum identifier length of the platform.
         //     If the alias is to long, characters are cut off from the beginning.
         // 3 ) Strip non alphanumeric characters
         // 4 ) Prefix with "_" if the result its numeric
-        $columnName = $columnName . '_' . $counter;
-        $columnName = substr($columnName, -$platform->getMaxIdentifierLength());
-        $columnName = preg_replace('/[^A-Za-z0-9_]/', '', $columnName);
-        $columnName = is_numeric($columnName) ? '_' . $columnName : $columnName;
+        $columnName .= '_' . $counter;
+        $columnName  = substr($columnName, -$platform->getMaxIdentifierLength());
+        $columnName  = preg_replace('/[^A-Za-z0-9_]/', '', $columnName);
+        $columnName  = is_numeric($columnName) ? '_' . $columnName : $columnName;
 
         return $platform->getSQLResultCasing($columnName);
     }

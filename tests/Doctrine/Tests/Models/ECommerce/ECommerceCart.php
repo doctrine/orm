@@ -1,20 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ECommerce;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * ECommerceCart
  * Represents a typical cart of a shopping application.
  *
- * @author Giorgio Sironi
  * @Entity
  * @Table(name="ecommerce_carts")
  */
 class ECommerceCart
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
@@ -22,70 +25,84 @@ class ECommerceCart
     private $id;
 
     /**
+     * @var string
      * @Column(length=50, nullable=true)
      */
     private $payment;
 
     /**
+     * @var ECommerceCustomer|null
      * @OneToOne(targetEntity="ECommerceCustomer", inversedBy="cart")
      * @JoinColumn(name="customer_id", referencedColumnName="id")
      */
     private $customer;
 
     /**
+     * @psalm-var Collection<int, ECommerceProduct>
      * @ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
      * @JoinTable(name="ecommerce_carts_products",
-            joinColumns={@JoinColumn(name="cart_id", referencedColumnName="id")},
-            inverseJoinColumns={@JoinColumn(name="product_id", referencedColumnName="id")})
+     *      joinColumns={@JoinColumn(name="cart_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@JoinColumn(name="product_id", referencedColumnName="id")})
      */
     private $products;
 
     public function __construct()
     {
-        $this->products = new ArrayCollection;
+        $this->products = new ArrayCollection();
     }
 
-    public function getId() {
+    public function getId(): int
+    {
         return $this->id;
     }
 
-    public function getPayment() {
+    public function getPayment(): string
+    {
         return $this->payment;
     }
 
-    public function setPayment($payment) {
+    public function setPayment(string $payment): void
+    {
         $this->payment = $payment;
     }
 
-    public function setCustomer(ECommerceCustomer $customer) {
+    public function setCustomer(ECommerceCustomer $customer): void
+    {
         if ($this->customer !== $customer) {
             $this->customer = $customer;
             $customer->setCart($this);
         }
     }
 
-    public function removeCustomer() {
+    public function removeCustomer(): void
+    {
         if ($this->customer !== null) {
-            $customer = $this->customer;
+            $customer       = $this->customer;
             $this->customer = null;
             $customer->removeCart();
         }
     }
 
-    public function getCustomer() {
+    public function getCustomer(): ?ECommerceCustomer
+    {
         return $this->customer;
     }
 
-    public function getProducts()
+    /**
+     * @psalm-return Collection<int, ECommerceProduct>
+     */
+    public function getProducts(): Collection
     {
         return $this->products;
     }
 
-    public function addProduct(ECommerceProduct $product) {
+    public function addProduct(ECommerceProduct $product): void
+    {
         $this->products[] = $product;
     }
 
-    public function removeProduct(ECommerceProduct $product) {
+    public function removeProduct(ECommerceProduct $product): bool
+    {
         return $this->products->removeElement($product);
     }
 }

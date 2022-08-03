@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -22,34 +23,23 @@ namespace Doctrine\ORM\Event;
 use Doctrine\Persistence\Event\ManagerEventArgs;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
-use function interface_exists;
 
 /**
  * Class that holds event arguments for a `onClassMetadataNotFound` event.
  *
  * This object is mutable by design, allowing callbacks having access to it to set the
  * found metadata in it, and therefore "cancelling" a `onClassMetadataNotFound` event
- *
- * @author Marco Pivetta <ocramius@gmail.com>
- * @since  2.5
  */
 class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $className;
 
-    /**
-     * @var ClassMetadata|null
-     */
+    /** @var ClassMetadata|null */
     private $foundMetadata;
 
     /**
-     * Constructor.
-     *
-     * @param string        $className
-     * @param ObjectManager $objectManager
+     * @param string $className
      */
     public function __construct($className, ObjectManager $objectManager)
     {
@@ -58,10 +48,7 @@ class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
         parent::__construct($objectManager);
     }
 
-    /**
-     * @param ClassMetadata|null $classMetadata
-     */
-    public function setFoundMetadata(ClassMetadata $classMetadata = null)
+    public function setFoundMetadata(?ClassMetadata $classMetadata = null)
     {
         $this->foundMetadata = $classMetadata;
     }

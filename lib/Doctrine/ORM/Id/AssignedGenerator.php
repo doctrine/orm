@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -22,14 +23,10 @@ namespace Doctrine\ORM\Id;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMException;
 
+use function get_class;
+
 /**
  * Special generator for application-assigned identifiers (doesn't really generate anything).
- *
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class AssignedGenerator extends AbstractIdGenerator
 {
@@ -38,7 +35,7 @@ class AssignedGenerator extends AbstractIdGenerator
      *
      * {@inheritDoc}
      *
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
     public function generate(EntityManager $em, $entity)
     {
@@ -49,7 +46,7 @@ class AssignedGenerator extends AbstractIdGenerator
         foreach ($idFields as $idField) {
             $value = $class->getFieldValue($entity, $idField);
 
-            if ( ! isset($value)) {
+            if (! isset($value)) {
                 throw ORMException::entityMissingAssignedIdForField($entity, $idField);
             }
 

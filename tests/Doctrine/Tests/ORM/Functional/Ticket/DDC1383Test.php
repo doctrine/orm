@@ -1,56 +1,67 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\VerifyDeprecations;
+use Exception;
+
+use function get_class;
 
 /**
  * @group DDC-1383
  */
-class DDC1383Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1383Test extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1383AbstractEntity::class),
-                $this->_em->getClassMetadata(DDC1383Entity::class),
+                    $this->_em->getClassMetadata(DDC1383AbstractEntity::class),
+                    $this->_em->getClassMetadata(DDC1383Entity::class),
                 ]
             );
-        } catch(\Exception $ignored) {}
+        } catch (Exception $ignored) {
+        }
     }
 
-    public function testFailingCase()
+    public function testFailingCase(): void
     {
-		$parent = new DDC1383Entity();
-		$child = new DDC1383Entity();
+        $parent = new DDC1383Entity();
+        $child  = new DDC1383Entity();
 
-		$child->setReference($parent);
+        $child->setReference($parent);
 
-		$this->_em->persist($parent);
-		$this->_em->persist($child);
+        $this->_em->persist($parent);
+        $this->_em->persist($child);
 
-		$id = $child->getId();
+        $id = $child->getId();
 
-		$this->_em->flush();
-		$this->_em->clear();
+        $this->_em->flush();
+        $this->_em->clear();
 
-		// Try merging the parent entity
-		$child = $this->_em->merge($child);
-		$parent = $child->getReference();
+        // Try merging the parent entity
+        $child  = $this->_em->merge($child);
+        $parent = $child->getReference();
 
-		// Parent is not instance of the abstract class
-		self::assertTrue($parent instanceof DDC1383AbstractEntity,
-				"Entity class is " . get_class($parent) . ', "DDC1383AbstractEntity" was expected');
+        // Parent is not instance of the abstract class
+        self::assertTrue(
+            $parent instanceof DDC1383AbstractEntity,
+            'Entity class is ' . get_class($parent) . ', "DDC1383AbstractEntity" was expected'
+        );
 
-		// Parent is NOT instance of entity
-		self::assertTrue($parent instanceof DDC1383Entity,
-				"Entity class is " . get_class($parent) . ', "DDC1383Entity" was expected');
+        // Parent is NOT instance of entity
+        self::assertTrue(
+            $parent instanceof DDC1383Entity,
+            'Entity class is ' . get_class($parent) . ', "DDC1383Entity" was expected'
+        );
         $this->assertHasDeprecationMessages();
     }
 }
@@ -63,22 +74,23 @@ class DDC1383Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 abstract class DDC1383AbstractEntity
 {
-	/**
-	 * @Id
-	 * @Column(type="integer")
-	 * @GeneratedValue
-	 */
-	protected $id;
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
+    protected $id;
 
-	public function getId()
-	{
-		return $this->id;
-	}
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-	public function setId($id)
-	{
-		$this->id = $id;
-	}
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
 }
 
 /**
@@ -86,18 +98,19 @@ abstract class DDC1383AbstractEntity
  */
 class DDC1383Entity extends DDC1383AbstractEntity
 {
-	/**
-	 * @ManyToOne(targetEntity="DDC1383AbstractEntity")
-	 */
-	protected $reference;
+    /**
+     * @var DDC1383AbstractEntity
+     * @ManyToOne(targetEntity="DDC1383AbstractEntity")
+     */
+    protected $reference;
 
-	public function getReference()
-	{
-		return $this->reference;
-	}
+    public function getReference(): DDC1383AbstractEntity
+    {
+        return $this->reference;
+    }
 
-	public function setReference(DDC1383AbstractEntity $reference)
-	{
-		$this->reference = $reference;
-	}
+    public function setReference(DDC1383AbstractEntity $reference): void
+    {
+        $this->reference = $reference;
+    }
 }

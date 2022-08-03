@@ -1,11 +1,14 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC3303Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -19,7 +22,7 @@ class DDC3303Test extends OrmFunctionalTestCase
      *
      * When using an embedded field in an inheritance, private properties should also be inherited.
      */
-    public function testEmbeddedObjectsAreAlsoInherited()
+    public function testEmbeddedObjectsAreAlsoInherited(): void
     {
         $employee = new DDC3303Employee(
             'John Doe',
@@ -38,13 +41,21 @@ class DDC3303Test extends OrmFunctionalTestCase
 /** @MappedSuperclass */
 abstract class DDC3303Person
 {
-    /** @Id @GeneratedValue(strategy="NONE") @Column(type="string") @var string */
+    /**
+     * @var string
+     * @Id
+     * @GeneratedValue(strategy="NONE")
+     * @Column(type="string")
+     */
     private $name;
 
-    /** @Embedded(class="DDC3303Address") @var DDC3303Address */
+    /**
+     * @var DDC3303Address
+     * @Embedded(class="DDC3303Address")
+     */
     private $address;
 
-    public function __construct($name, DDC3303Address $address)
+    public function __construct(string $name, DDC3303Address $address)
     {
         $this->name    = $name;
         $this->address = $address;
@@ -56,16 +67,25 @@ abstract class DDC3303Person
  */
 class DDC3303Address
 {
-    /** @Column(type="string") @var string */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $street;
 
-    /** @Column(type="integer") @var int */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     private $number;
 
-    /** @Column(type="string") @var string */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $city;
 
-    public function __construct($street, $number, $city)
+    public function __construct(string $street, int $number, string $city)
     {
         $this->street = $street;
         $this->number = $number;
@@ -79,10 +99,13 @@ class DDC3303Address
  */
 class DDC3303Employee extends DDC3303Person
 {
-    /** @Column(type="string") @var string */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $company;
 
-    public function __construct($name, DDC3303Address $address, $company)
+    public function __construct(string $name, DDC3303Address $address, $company)
     {
         parent::__construct($name, $address);
 

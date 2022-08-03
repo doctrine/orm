@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Issue5989;
 
 /**
@@ -16,6 +18,7 @@ namespace Doctrine\Tests\Models\Issue5989;
 class Issue5989Person
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue

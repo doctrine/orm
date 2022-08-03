@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3597\Embeddable;
 
 /**
@@ -7,8 +9,8 @@ namespace Doctrine\Tests\Models\DDC3597\Embeddable;
  *
  * @Embeddable
  */
-class DDC3597Dimension {
-
+class DDC3597Dimension
+{
     /**
      * @var int
      * @Column(type="integer", name="width")
@@ -21,36 +23,29 @@ class DDC3597Dimension {
      */
     private $height;
 
-    function __construct($width = 0, $height = 0) {
+    public function __construct($width = 0, $height = 0)
+    {
         $this->setWidth($width);
         $this->setHeight($height);
     }
 
-    /**
-     * @return int
-     */
-    public function getWidth() {
+    public function getWidth(): int
+    {
         return $this->width;
     }
 
-    /**
-     * @param int $width
-     */
-    public function setWidth($width) {
-        $this->width = (int)$width;
+    public function setWidth(int $width): void
+    {
+        $this->width = (int) $width;
     }
 
-    /**
-     * @return int
-     */
-    public function getHeight() {
+    public function getHeight(): int
+    {
         return $this->height;
     }
 
-    /**
-     * @param int $height
-     */
-    public function setHeight($height) {
-        $this->height = (int)$height;
+    public function setHeight(int $height): void
+    {
+        $this->height = (int) $height;
     }
 }

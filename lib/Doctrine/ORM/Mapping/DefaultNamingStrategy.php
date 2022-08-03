@@ -20,13 +20,15 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use function strpos;
+use function strrpos;
+use function strtolower;
+use function substr;
+
 /**
  * The default NamingStrategy
  *
- *
  * @link    www.doctrine-project.org
- * @since   2.3
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class DefaultNamingStrategy implements NamingStrategy
 {
@@ -55,7 +57,7 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function embeddedFieldToColumnName($propertyName, $embeddedColumnName, $className = null, $embeddedClassName = null)
     {
-        return $propertyName.'_'.$embeddedColumnName;
+        return $propertyName . '_' . $embeddedColumnName;
     }
 
     /**

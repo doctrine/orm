@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
@@ -11,11 +13,11 @@ class ClassMetadataLoadEventTest extends OrmTestCase
     /**
      * @group DDC-1610
      */
-    public function testEvent()
+    public function testEvent(): void
     {
-        $em = $this->_getTestEntityManager();
+        $em              = $this->getTestEntityManager();
         $metadataFactory = $em->getMetadataFactory();
-        $evm = $em->getEventManager();
+        $evm             = $em->getEventManager();
         $evm->addEventListener(Events::loadClassMetadata, $this);
         $classMetadata = $metadataFactory->getMetadataFor(LoadEventTestEntity::class);
         $this->assertTrue($classMetadata->hasField('about'));
@@ -23,13 +25,13 @@ class ClassMetadataLoadEventTest extends OrmTestCase
         $this->assertInstanceOf('ReflectionProperty', $classMetadata->reflFields['about']);
     }
 
-    public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs): void
     {
         $classMetadata = $eventArgs->getClassMetadata();
-        $field = [
+        $field         = [
             'fieldName' => 'about',
             'type' => 'string',
-            'length' => 255
+            'length' => 255,
         ];
         $classMetadata->mapField($field);
     }
@@ -42,14 +44,18 @@ class ClassMetadataLoadEventTest extends OrmTestCase
 class LoadEventTestEntity
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
+
     /**
+     * @var string
      * @Column(type="string", length=255)
      */
     private $name;
 
+    /** @var mixed */
     private $about;
 }

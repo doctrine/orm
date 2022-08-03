@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function get_class;
 
 /**
  * Tests a unidirectional one-to-one association mapping (without inheritance).
@@ -15,10 +18,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
 {
+    /** @var ECommerceProduct */
     private $product;
+
+    /** @var ECommerceShipping */
     private $shipping;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
@@ -28,7 +34,8 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->shipping->setDays('5');
     }
 
-    public function testSavesAOneToOneAssociationWithCascadeSaveSet() {
+    public function testSavesAOneToOneAssociationWithCascadeSaveSet(): void
+    {
         $this->product->setShipping($this->shipping);
         $this->_em->persist($this->product);
         $this->_em->flush();
@@ -36,7 +43,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->assertForeignKeyIs($this->shipping->getId());
     }
 
-    public function testRemovesOneToOneAssociation()
+    public function testRemovesOneToOneAssociation(): void
     {
         $this->product->setShipping($this->shipping);
         $this->_em->persist($this->product);
@@ -47,48 +54,50 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->assertForeignKeyIs(null);
     }
 
-    public function _testEagerLoad()
+    public function testEagerLoad(): void
     {
-        $this->_createFixture();
+        $this->createFixture();
 
-        $query = $this->_em->createQuery('select p, s from Doctrine\Tests\Models\ECommerce\ECommerceProduct p left join p.shipping s');
-        $result = $query->getResult();
+        $query   = $this->_em->createQuery('select p, s from Doctrine\Tests\Models\ECommerce\ECommerceProduct p left join p.shipping s');
+        $result  = $query->getResult();
         $product = $result[0];
 
         $this->assertInstanceOf(ECommerceShipping::class, $product->getShipping());
         $this->assertEquals(1, $product->getShipping()->getDays());
     }
 
-    public function testLazyLoadsObjects() {
-        $this->_createFixture();
-        $metadata = $this->_em->getClassMetadata(ECommerceProduct::class);
+    public function testLazyLoadsObjects(): void
+    {
+        $this->createFixture();
+        $metadata                                           = $this->_em->getClassMetadata(ECommerceProduct::class);
         $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
 
-        $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
-        $result = $query->getResult();
+        $query   = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
+        $result  = $query->getResult();
         $product = $result[0];
 
         $this->assertInstanceOf(ECommerceShipping::class, $product->getShipping());
         $this->assertEquals(1, $product->getShipping()->getDays());
     }
 
-    public function testDoesNotLazyLoadObjectsIfConfigurationDoesNotAllowIt() {
-        $this->_createFixture();
+    public function testDoesNotLazyLoadObjectsIfConfigurationDoesNotAllowIt(): void
+    {
+        $this->createFixture();
 
         $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
 
-        $result = $query->getResult();
+        $result  = $query->getResult();
         $product = $result[0];
 
         $this->assertNull($product->getShipping());
     }
 
-    protected function _createFixture()
+    protected function createFixture(): void
     {
-        $product = new ECommerceProduct;
+        $product = new ECommerceProduct();
         $product->setName('Php manual');
-        $shipping = new ECommerceShipping;
+        $shipping = new ECommerceShipping();
         $shipping->setDays('1');
         $product->setShipping($shipping);
 
@@ -98,7 +107,8 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function assertForeignKeyIs($value) {
+    public function assertForeignKeyIs($value): void
+    {
         $foreignKey = $this->_em->getConnection()->executeQuery(
             'SELECT shipping_id FROM ecommerce_products WHERE id=?',
             [$this->product->getId()]
@@ -109,7 +119,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
     /**
      * @group DDC-762
      */
-    public function testNullForeignKey()
+    public function testNullForeignKey(): void
     {
         $product = new ECommerceProduct();
         $product->setName('Doctrine 2 Manual');

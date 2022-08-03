@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
@@ -17,30 +20,21 @@ use Doctrine\Tests\OrmTestCase;
  */
 class QuoteStrategyTest extends OrmTestCase
 {
-
-    /**
-     * @var \Doctrine\ORM\Mapping\DefaultQuoteStrategy
-     */
+    /** @var DefaultQuoteStrategy */
     private $strategy;
 
-    /**
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
-     */
+    /** @var AbstractPlatform */
     private $platform;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
-        $em = $this->_getTestEntityManager();
+        $em             = $this->getTestEntityManager();
         $this->platform = $em->getConnection()->getDatabasePlatform();
         $this->strategy = new DefaultQuoteStrategy();
     }
 
-    /**
-     * @param   string $className
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
-     */
-    private function createClassMetadata($className)
+    private function createClassMetadata(string $className): ClassMetadata
     {
         $cm = new ClassMetadata($className);
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -48,9 +42,9 @@ class QuoteStrategyTest extends OrmTestCase
         return $cm;
     }
 
-    public function testConfiguration()
+    public function testConfiguration(): void
     {
-        $em     = $this->_getTestEntityManager();
+        $em     = $this->getTestEntityManager();
         $config = $em->getConfiguration();
 
         $this->assertInstanceOf(QuoteStrategy::class, $config->getQuoteStrategy());
@@ -62,78 +56,73 @@ class QuoteStrategyTest extends OrmTestCase
         $this->assertInstanceOf(MyQuoteStrategy::class, $config->getQuoteStrategy());
     }
 
-    public function testGetColumnName()
+    public function testGetColumnName(): void
     {
         $cm = $this->createClassMetadata(CmsUser::class);
         $cm->mapField(['fieldName' => 'name', 'columnName' => '`name`']);
         $cm->mapField(['fieldName' => 'id', 'columnName' => 'id']);
 
-        $this->assertEquals('id' ,$this->strategy->getColumnName('id', $cm, $this->platform));
-        $this->assertEquals('"name"' ,$this->strategy->getColumnName('name', $cm, $this->platform));
+        $this->assertEquals('id', $this->strategy->getColumnName('id', $cm, $this->platform));
+        $this->assertEquals('"name"', $this->strategy->getColumnName('name', $cm, $this->platform));
     }
 
-    public function testGetTableName()
+    public function testGetTableName(): void
     {
         $cm = $this->createClassMetadata(CmsUser::class);
-        $cm->setPrimaryTable(['name'=>'`cms_user`']);
+        $cm->setPrimaryTable(['name' => '`cms_user`']);
         $this->assertEquals('"cms_user"', $this->strategy->getTableName($cm, $this->platform));
 
         $cm = new ClassMetadata(CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->setPrimaryTable(['name'=>'cms_user']);
+        $cm->setPrimaryTable(['name' => 'cms_user']);
         $this->assertEquals('cms_user', $this->strategy->getTableName($cm, $this->platform));
     }
 
-    public function testJoinTableName()
+    public function testJoinTableName(): void
     {
         $cm1 = $this->createClassMetadata(CmsAddress::class);
         $cm2 = $this->createClassMetadata(CmsAddress::class);
 
         $cm1->mapManyToMany(
             [
-            'fieldName'     => 'user',
-            'targetEntity'  => 'CmsUser',
-            'inversedBy'    => 'users',
-            'joinTable'     => [
-                'name'  => '`cmsaddress_cmsuser`'
-            ]
+                'fieldName'     => 'user',
+                'targetEntity'  => 'CmsUser',
+                'inversedBy'    => 'users',
+                'joinTable'     => ['name' => '`cmsaddress_cmsuser`'],
             ]
         );
 
         $cm2->mapManyToMany(
             [
-            'fieldName'     => 'user',
-            'targetEntity'  => 'CmsUser',
-            'inversedBy'    => 'users',
-            'joinTable'     => [
-                    'name'  => 'cmsaddress_cmsuser'
-            ]
+                'fieldName'     => 'user',
+                'targetEntity'  => 'CmsUser',
+                'inversedBy'    => 'users',
+                'joinTable'     => ['name' => 'cmsaddress_cmsuser'],
             ]
         );
 
         $this->assertEquals('"cmsaddress_cmsuser"', $this->strategy->getJoinTableName($cm1->associationMappings['user'], $cm1, $this->platform));
         $this->assertEquals('cmsaddress_cmsuser', $this->strategy->getJoinTableName($cm2->associationMappings['user'], $cm2, $this->platform));
-
     }
 
-    public function testIdentifierColumnNames()
+    public function testIdentifierColumnNames(): void
     {
         $cm1 = $this->createClassMetadata(CmsAddress::class);
         $cm2 = $this->createClassMetadata(CmsAddress::class);
 
         $cm1->mapField(
             [
-            'id'            => true,
-            'fieldName'     => 'id',
-            'columnName'    => '`id`',
+                'id'            => true,
+                'fieldName'     => 'id',
+                'columnName'    => '`id`',
             ]
         );
 
         $cm2->mapField(
             [
-            'id'            => true,
-            'fieldName'     => 'id',
-            'columnName'    => 'id',
+                'id'            => true,
+                'fieldName'     => 'id',
+                'columnName'    => 'id',
             ]
         );
 
@@ -141,8 +130,7 @@ class QuoteStrategyTest extends OrmTestCase
         $this->assertEquals(['id'], $this->strategy->getIdentifierColumnNames($cm2, $this->platform));
     }
 
-
-    public function testColumnAlias()
+    public function testColumnAlias(): void
     {
         $i = 0;
         $this->assertEquals('columnName_0', $this->strategy->getColumnAlias('columnName', $i++, $this->platform));
@@ -151,70 +139,63 @@ class QuoteStrategyTest extends OrmTestCase
         $this->assertEquals('COLUMNNAME_3', $this->strategy->getColumnAlias('COLUMN-NAME-', $i++, $this->platform));
     }
 
-    public function testQuoteIdentifierJoinColumns()
+    public function testQuoteIdentifierJoinColumns(): void
     {
         $cm = $this->createClassMetadata(DDC117ArticleDetails::class);
 
         $cm->mapOneToOne(
             [
-            'id'            => true,
-            'fieldName'     => 'article',
-            'targetEntity'  => DDC117Article::class,
-            'joinColumns'    => [
-                [
-                'name'  => '`article`'
-                ]
-            ],
+                'id'            => true,
+                'fieldName'     => 'article',
+                'targetEntity'  => DDC117Article::class,
+                'joinColumns'    => [
+                    ['name' => '`article`'],
+                ],
             ]
         );
 
         $this->assertEquals(['"article"'], $this->strategy->getIdentifierColumnNames($cm, $this->platform));
     }
 
-    public function testJoinColumnName()
+    public function testJoinColumnName(): void
     {
         $cm = $this->createClassMetadata(DDC117ArticleDetails::class);
 
         $cm->mapOneToOne(
             [
-            'id'            => true,
-            'fieldName'     => 'article',
-            'targetEntity'  => DDC117Article::class,
-            'joinColumns'    => [
-                [
-                'name'  => '`article`'
-                ]
-            ],
+                'id'            => true,
+                'fieldName'     => 'article',
+                'targetEntity'  => DDC117Article::class,
+                'joinColumns'    => [
+                    ['name' => '`article`'],
+                ],
             ]
         );
 
         $joinColumn = $cm->associationMappings['article']['joinColumns'][0];
-        $this->assertEquals('"article"',$this->strategy->getJoinColumnName($joinColumn, $cm, $this->platform));
+        $this->assertEquals('"article"', $this->strategy->getJoinColumnName($joinColumn, $cm, $this->platform));
     }
 
-    public function testReferencedJoinColumnName()
+    public function testReferencedJoinColumnName(): void
     {
         $cm = $this->createClassMetadata(DDC117ArticleDetails::class);
 
         $cm->mapOneToOne(
             [
-            'id'            => true,
-            'fieldName'     => 'article',
-            'targetEntity'  => DDC117Article::class,
-            'joinColumns'    => [
-                [
-                'name'  => '`article`'
-                ]
-            ],
+                'id'            => true,
+                'fieldName'     => 'article',
+                'targetEntity'  => DDC117Article::class,
+                'joinColumns'    => [
+                    ['name' => '`article`'],
+                ],
             ]
         );
 
         $joinColumn = $cm->associationMappings['article']['joinColumns'][0];
-        $this->assertEquals('"id"',$this->strategy->getReferencedJoinColumnName($joinColumn, $cm, $this->platform));
+        $this->assertEquals('"id"', $this->strategy->getReferencedJoinColumnName($joinColumn, $cm, $this->platform));
     }
 }
 
 class MyQuoteStrategy extends DefaultQuoteStrategy
 {
-
 }

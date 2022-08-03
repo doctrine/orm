@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC117;
 
 /**
@@ -8,17 +10,22 @@ namespace Doctrine\Tests\Models\DDC117;
 class DDC117ApproveChanges
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      */
     private $id;
 
     /**
+     * @var DDC117ArticleDetails
      * @ManyToOne(targetEntity="DDC117ArticleDetails")
      * @JoinColumn(name="details_id", referencedColumnName="article_id")
      */
     private $articleDetails;
 
     /**
+     * @var DDC117Reference
      * @ManyToOne(targetEntity="DDC117Reference")
      * @JoinColumns({
      *  @JoinColumn(name="source_id", referencedColumnName="source_id"),
@@ -28,6 +35,7 @@ class DDC117ApproveChanges
     private $reference;
 
     /**
+     * @var DDC117Translation
      * @ManyToOne(targetEntity="DDC117Translation")
      * @JoinColumns({
      *  @JoinColumn(name="trans_article_id", referencedColumnName="article_id"),
@@ -36,29 +44,32 @@ class DDC117ApproveChanges
      */
     private $translation;
 
-    public function __construct($details, $reference, $translation)
-    {
+    public function __construct(
+        DDC117ArticleDetails $details,
+        DDC117Reference $reference,
+        DDC117Translation $translation
+    ) {
         $this->articleDetails = $details;
-        $this->reference = $reference;
-        $this->translation = $translation;
+        $this->reference      = $reference;
+        $this->translation    = $translation;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getArticleDetails()
+    public function getArticleDetails(): DDC117ArticleDetails
     {
         return $this->articleDetails;
     }
 
-    public function getReference()
+    public function getReference(): DDC117Reference
     {
         return $this->reference;
     }
 
-    public function getTranslation()
+    public function getTranslation(): DDC117Translation
     {
         return $this->translation;
     }

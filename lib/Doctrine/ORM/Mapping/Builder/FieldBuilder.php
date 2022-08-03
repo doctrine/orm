@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,49 +20,35 @@
 
 namespace Doctrine\ORM\Mapping\Builder;
 
+use function constant;
+
 /**
  * Field Builder
  *
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        www.doctrine-project.com
- * @since       2.2
- * @author      Benjamin Eberlei <kontakt@beberlei.de>
  */
 class FieldBuilder
 {
-    /**
-     * @var ClassMetadataBuilder
-     */
+    /** @var ClassMetadataBuilder */
     private $builder;
 
-    /**
-     * @var array
-     */
+    /** @var mixed[] */
     private $mapping;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $version;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $generatedValue;
 
-    /**
-     * @var array
-     */
+    /** @var mixed[] */
     private $sequenceDef;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $customIdGenerator;
 
     /**
-     * @param ClassMetadataBuilder $builder
-     * @param array                $mapping
+     * @param mixed[] $mapping
      */
     public function __construct(ClassMetadataBuilder $builder, array $mapping)
     {
@@ -157,6 +144,7 @@ class FieldBuilder
      * Sets field as primary key.
      *
      * @deprecated Use makePrimaryKey() instead
+     *
      * @return FieldBuilder
      */
     public function isPrimaryKey()

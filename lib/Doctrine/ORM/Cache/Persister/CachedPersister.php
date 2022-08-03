@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,11 +20,10 @@
 
 namespace Doctrine\ORM\Cache\Persister;
 
+use Doctrine\ORM\Cache\Region;
+
 /**
  * Interface for persister that support second level cache.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 interface CachedPersister
 {
@@ -40,7 +40,7 @@ interface CachedPersister
     /**
      * Gets the The region access.
      *
-     * @return \Doctrine\ORM\Cache\Region
+     * @return Region
      */
     public function getCacheRegion();
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
 use Doctrine\Tests\Models;
@@ -16,18 +18,18 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OneToManyCompositeIdTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('vct_onetomany_compositeid');
 
         parent::setUp();
 
-        $inversed = new Entity\InversedOneToManyCompositeIdEntity();
-        $inversed->id1 = 'abc';
-        $inversed->id2 = 'def';
+        $inversed               = new Entity\InversedOneToManyCompositeIdEntity();
+        $inversed->id1          = 'abc';
+        $inversed->id2          = 'def';
         $inversed->someProperty = 'some value to be loaded';
 
-        $owning = new Entity\OwningManyToOneCompositeIdEntity();
+        $owning      = new Entity\OwningManyToOneCompositeIdEntity();
         $owning->id3 = 'ghi';
 
         $inversed->associatedEntities->add($owning);
@@ -40,15 +42,15 @@ class OneToManyCompositeIdTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public static function tearDownAfterClass() : void
+    public static function tearDownAfterClass(): void
     {
-        $conn = static::$_sharedConn;
+        $conn = static::$sharedConn;
 
         $conn->executeUpdate('DROP TABLE vct_owning_manytoone_compositeid');
         $conn->executeUpdate('DROP TABLE vct_inversed_onetomany_compositeid');
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase(): void
     {
         $conn = $this->_em->getConnection();
 
@@ -63,7 +65,7 @@ class OneToManyCompositeIdTest extends OrmFunctionalTestCase
     /**
      * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
      */
-    public function testThatEntitiesAreFetchedFromTheDatabase()
+    public function testThatEntitiesAreFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
             Models\ValueConversionType\InversedOneToManyCompositeIdEntity::class,
@@ -82,7 +84,7 @@ class OneToManyCompositeIdTest extends OrmFunctionalTestCase
     /**
      * @depends testThatEntitiesAreFetchedFromTheDatabase
      */
-    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
             Models\ValueConversionType\InversedOneToManyCompositeIdEntity::class,
@@ -102,7 +104,7 @@ class OneToManyCompositeIdTest extends OrmFunctionalTestCase
     /**
      * @depends testThatEntitiesAreFetchedFromTheDatabase
      */
-    public function testThatTheProxyFromOwningToInversedIsLoaded()
+    public function testThatTheProxyFromOwningToInversedIsLoaded(): void
     {
         $owning = $this->_em->find(
             Models\ValueConversionType\OwningManyToOneCompositeIdEntity::class,
@@ -117,7 +119,7 @@ class OneToManyCompositeIdTest extends OrmFunctionalTestCase
     /**
      * @depends testThatEntitiesAreFetchedFromTheDatabase
      */
-    public function testThatTheCollectionFromInversedToOwningIsLoaded()
+    public function testThatTheCollectionFromInversedToOwningIsLoaded(): void
     {
         $inversed = $this->_em->find(
             Models\ValueConversionType\InversedOneToManyCompositeIdEntity::class,

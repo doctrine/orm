@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC753;
 
 /**
@@ -7,15 +9,17 @@ namespace Doctrine\Tests\Models\DDC753;
  */
 class DDC753EntityWithDefaultCustomRepository
 {
-
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
     protected $id;
 
-    /** @column(type="string") */
+    /**
+     * @var string
+     * @column(type="string")
+     */
     protected $name;
-
 }

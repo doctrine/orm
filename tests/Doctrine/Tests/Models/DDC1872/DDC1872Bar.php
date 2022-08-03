@@ -1,12 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC1872;
 
 /**
-* @Entity
-*/
+ * @Entity
+ */
 class DDC1872Bar
 {
-    /** @Id @Column(type="string") */
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string")
+     */
     private $id;
 }

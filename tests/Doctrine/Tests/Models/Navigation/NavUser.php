@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Navigation;
 
 /**
@@ -9,6 +11,7 @@ namespace Doctrine\Tests\Models\Navigation;
 class NavUser
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @generatedValue
@@ -16,13 +19,13 @@ class NavUser
     private $id;
 
     /**
+     * @var string
      * @column(type="string")
      */
     private $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 }
-

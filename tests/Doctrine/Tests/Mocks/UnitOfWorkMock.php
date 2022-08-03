@@ -1,22 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\UnitOfWork;
+
+use function spl_object_hash;
 
 /**
  * Mock class for UnitOfWork.
  */
 class UnitOfWorkMock extends UnitOfWork
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     private $_mockDataChangeSets = [];
 
-    /**
-     * @var array|null
-     */
+    /** @var array|null */
     private $_persisterMock;
 
     /**
@@ -24,9 +25,7 @@ class UnitOfWorkMock extends UnitOfWork
      */
     public function getEntityPersister($entityName)
     {
-        return isset($this->_persisterMock[$entityName])
-            ? $this->_persisterMock[$entityName]
-            : parent::getEntityPersister($entityName);
+        return $this->_persisterMock[$entityName] ?? parent::getEntityPersister($entityName);
     }
 
     /**
@@ -50,13 +49,8 @@ class UnitOfWorkMock extends UnitOfWork
     /**
      * Sets a (mock) persister for an entity class that will be returned when
      * getEntityPersister() is invoked for that class.
-     *
-     * @param string                                               $entityName
-     * @param \Doctrine\ORM\Persisters\Entity\BasicEntityPersister $persister
-     *
-     * @return void
      */
-    public function setEntityPersister($entityName, $persister)
+    public function setEntityPersister(string $entityName, BasicEntityPersister $persister): void
     {
         $this->_persisterMock[$entityName] = $persister;
     }

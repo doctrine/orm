@@ -2,11 +2,16 @@ name: "Coding Standards"
 
 on:
   pull_request:
+    branches:
+      - "*.x"
+  push:
+    branches:
+      - "*.x"
 
 jobs:
   coding-standards:
     name: "Coding Standards"
-    runs-on: "ubuntu-latest"
+    runs-on: "ubuntu-20.04"
 
     strategy:
       matrix:
@@ -16,8 +21,6 @@ jobs:
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v2"
-        with:
-          fetch-depth: 10
 
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
@@ -28,12 +31,9 @@ jobs:
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
+        with:
+          dependency-versions: "highest"
 
-      - name: "Install git-phpcs"
-        run: "wget https://github.com/diff-sniffer/git/releases/download/0.3.2/git-phpcs.phar"
-
-      - name: "Fetch head branch"
-        run: "git remote set-branches --add origin $GITHUB_BASE_REF && git fetch origin $GITHUB_BASE_REF"
-
-      - name: "Run git-phpcs"
-        run: "php git-phpcs.phar origin/$GITHUB_BASE_REF...$GITHUB_SHA --report=checkstyle | cs2pr"
+      # https://github.com/doctrine/.github/issues/3
+      - name: "Run PHP_CodeSniffer"
+        run: "vendor/bin/phpcs -q --no-colors --report=checkstyle | cs2pr"

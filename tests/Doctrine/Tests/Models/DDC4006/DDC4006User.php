@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC4006;
 
 /**
@@ -8,6 +10,7 @@ namespace Doctrine\Tests\Models\DDC4006;
 class DDC4006User
 {
     /**
+     * @var DDC4006UserId
      * @Embedded(class="DDC4006UserId")
      */
     private $id;

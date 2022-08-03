@@ -1,34 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Tests\OrmFunctionalTestCase;
+use PDOException;
 
 /**
  * @group DDC-1250
  */
-class DDC1250Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1250Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(DDC1250ClientHistory::class),
-                ]
+                [$this->_em->getClassMetadata(DDC1250ClientHistory::class)]
             );
-        } catch(\PDOException $e) {
-
+        } catch (PDOException $e) {
         }
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
-        $c1 = new DDC1250ClientHistory;
-        $c2 = new DDC1250ClientHistory;
+        $c1                         = new DDC1250ClientHistory();
+        $c2                         = new DDC1250ClientHistory();
         $c1->declinedClientsHistory = $c2;
-        $c1->declinedBy = $c2;
-        $c2->declinedBy = $c1;
-        $c2->declinedClientsHistory= $c1;
+        $c1->declinedBy             = $c2;
+        $c2->declinedBy             = $c1;
+        $c2->declinedClientsHistory = $c1;
 
         $this->_em->persist($c1);
         $this->_em->persist($c2);
@@ -47,22 +49,27 @@ class DDC1250Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC1250ClientHistory
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id @GeneratedValue @Column(type="integer")
+     */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC1250ClientHistory", inversedBy="declinedBy")
+    /**
+     * @var DDC1250ClientHistory
+     * @OneToOne(targetEntity="DDC1250ClientHistory", inversedBy="declinedBy")
      * @JoinColumn(name="declined_clients_history_id", referencedColumnName="id")
      */
     public $declinedClientsHistory;
 
     /**
+     * @var DDC1250ClientHistory
      * @OneToOne(targetEntity="DDC1250ClientHistory", mappedBy="declinedClientsHistory")
-     * @var
      */
     public $declinedBy;
 }
 
-/**
+/*
  *
 Entities\ClientsHistory:
 type: entity

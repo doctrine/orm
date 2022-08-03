@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,33 +20,43 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Mapping\ClassMetadata;
+
+use function array_diff;
+use function array_keys;
+
 /**
  * An adapter implementation of the TreeWalker interface. The methods in this class
- * are empty. ﻿This class exists as convenience for creating tree walkers.
- *
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
+ * are empty. This class exists as convenience for creating tree walkers.
  */
 abstract class TreeWalkerAdapter implements TreeWalker
 {
     /**
      * The original Query.
      *
-     * @var \Doctrine\ORM\AbstractQuery
+     * @var AbstractQuery
      */
     private $_query;
 
     /**
      * The ParserResult of the original query that was produced by the Parser.
      *
-     * @var \Doctrine\ORM\Query\ParserResult
+     * @var ParserResult
      */
     private $_parserResult;
 
     /**
      * The query components of the original query (the "symbol table") that was produced by the Parser.
      *
-     * @var array
+     * @psalm-var array<string, array{
+     *                metadata: ClassMetadata,
+     *                parent: string,
+     *                relation: mixed[],
+     *                map: mixed,
+     *                nestingLevel: int,
+     *                token: array
+     *            }>
      */
     private $_queryComponents;
 
@@ -54,8 +65,8 @@ abstract class TreeWalkerAdapter implements TreeWalker
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
-        $this->_query = $query;
-        $this->_parserResult = $parserResult;
+        $this->_query           = $query;
+        $this->_parserResult    = $parserResult;
         $this->_queryComponents = $queryComponents;
     }
 
@@ -82,7 +93,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * @return array
+     * {@inheritDoc}
      */
     protected function _getQueryComponents()
     {
@@ -92,7 +103,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     /**
      * Retrieves the Query Instance responsible for the current walkers execution.
      *
-     * @return \Doctrine\ORM\AbstractQuery
+     * @return AbstractQuery
      */
     protected function _getQuery()
     {
@@ -102,7 +113,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     /**
      * Retrieves the ParserResult.
      *
-     * @return \Doctrine\ORM\Query\ParserResult
+     * @return ParserResult
      */
     protected function _getParserResult()
     {

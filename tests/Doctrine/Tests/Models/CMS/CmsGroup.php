@@ -1,31 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CMS;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use IteratorAggregate;
 use Traversable;
 
 /**
  * Description of CmsGroup
  *
- * @author robo
  * @Entity
  * @Table(name="cms_groups")
  */
 class CmsGroup implements IteratorAggregate
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
+
     /**
+     * @var string
      * @Column(length=50)
      */
     public $name;
+
     /**
+     * @psalm-var Collection<int, CmsUser>
      * @ManyToMany(targetEntity="CmsUser", mappedBy="groups")
      */
     public $users;
@@ -35,19 +42,26 @@ class CmsGroup implements IteratorAggregate
         $this->users = new ArrayCollection();
     }
 
-    public function setName($name) {
+    public function setName(string $name): void
+    {
         $this->name = $name;
     }
 
-    public function getName() {
+    public function getName(): string
+    {
         return $this->name;
     }
 
-    public function addUser(CmsUser $user) {
+    public function addUser(CmsUser $user): void
+    {
         $this->users[] = $user;
     }
 
-    public function getUsers() {
+    /**
+     * @psalm-return Collection<int, CmsUser>
+     */
+    public function getUsers(): Collection
+    {
         return $this->users;
     }
 
@@ -59,4 +73,3 @@ class CmsGroup implements IteratorAggregate
         return $this->getUsers();
     }
 }
-

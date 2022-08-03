@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 $metadata->mapField(
     [
-   'id'                 => true,
-   'fieldName'          => 'id',
-   'columnDefinition'   => 'INT unsigned NOT NULL',
+        'id'                 => true,
+        'fieldName'          => 'id',
+        'columnDefinition'   => 'INT unsigned NOT NULL',
     ]
 );
 
 $metadata->mapField(
     [
-    'fieldName'         => 'value',
-    'columnDefinition'  => 'VARCHAR(255) NOT NULL'
+        'fieldName'         => 'value',
+        'columnDefinition'  => 'VARCHAR(255) NOT NULL',
     ]
 );
 

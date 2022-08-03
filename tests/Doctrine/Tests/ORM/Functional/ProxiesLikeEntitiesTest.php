@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -11,6 +13,9 @@ use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser as CmsUserProxy;
+use Exception;
+
+use function assert;
 
 /**
  * Test that Doctrine ORM correctly works with proxy instances exactly like with ordinary Entities
@@ -18,16 +23,15 @@ use Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser as CmsUserPr
  * The test considers two possible cases:
  *  a) __initialized__ = true and no identifier set in proxy
  *  b) __initialized__ = false and identifier set in proxy and in property
+ *
  * @todo All other cases would cause lazy loading
  */
 class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var CmsUser
-     */
+    /** @var CmsUser */
     protected $user;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         try {
@@ -42,11 +46,12 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(CmsGroup::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
-        $this->user = new CmsUser();
+
+        $this->user           = new CmsUser();
         $this->user->username = 'ocramius';
-        $this->user->name = 'Marco';
+        $this->user->name     = 'Marco';
         $this->_em->persist($this->user);
         $this->_em->flush();
         $this->_em->clear();
@@ -55,14 +60,14 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     /**
      * Verifies that a proxy can be successfully persisted and updated
      */
-    public function testPersistUpdate()
+    public function testPersistUpdate(): void
     {
         // Considering case (a)
-        $proxy = $this->_em->getProxyFactory()->getProxy(CmsUser::class, ['id' => 123]);
+        $proxy                    = $this->_em->getProxyFactory()->getProxy(CmsUser::class, ['id' => 123]);
         $proxy->__isInitialized__ = true;
-        $proxy->id = null;
-        $proxy->username = 'ocra';
-        $proxy->name = 'Marco';
+        $proxy->id                = null;
+        $proxy->username          = 'ocra';
+        $proxy->name              = 'Marco';
         $this->_em->persist($proxy);
         $this->_em->flush();
         $this->assertNotNull($proxy->getId());
@@ -75,11 +80,11 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    public function testEntityWithIdentifier()
+    public function testEntityWithIdentifier(): void
     {
-        $userId = $this->user->getId();
-        /* @var $uninitializedProxy CmsUserProxy */
+        $userId             = $this->user->getId();
         $uninitializedProxy = $this->_em->getReference(CmsUser::class, $userId);
+        assert($uninitializedProxy instanceof CmsUserProxy);
         $this->assertInstanceOf(CmsUserProxy::class, $uninitializedProxy);
 
         $this->_em->persist($uninitializedProxy);
@@ -93,12 +98,11 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     /**
      * Verifying that proxies can be used without problems as query parameters
      */
-    public function testProxyAsDqlParameterPersist()
+    public function testProxyAsDqlParameterPersist(): void
     {
-        $proxy = $this->_em->getProxyFactory()->getProxy(CmsUser::class, ['id' => $this->user->getId()]
-        );
+        $proxy     = $this->_em->getProxyFactory()->getProxy(CmsUser::class, ['id' => $this->user->getId()]);
         $proxy->id = $this->user->getId();
-        $result = $this
+        $result    = $this
             ->_em
             ->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u = ?1')
             ->setParameter(1, $proxy)
@@ -111,7 +115,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     /**
      * Verifying that proxies can be used without problems as query parameters
      */
-    public function testFindWithProxyName()
+    public function testFindWithProxyName(): void
     {
         $result = $this->_em->find(CmsUserProxy::class, $this->user->getId());
         $this->assertSame($this->user->getId(), $result->getId());
@@ -134,7 +138,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         $this->_em->createQuery('DELETE FROM Doctrine\Tests\Models\CMS\CmsUser u')->execute();
     }

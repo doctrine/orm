@@ -1,30 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC889;
+
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 class DDC889Class extends DDC889SuperClass
 {
-
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
     protected $id;
 
-
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
         $metadata->mapField(
             [
-           'id'         => true,
-           'fieldName'  => 'id',
-           'type'       => 'integer',
-           'columnName' => 'id',
+                'id'         => true,
+                'fieldName'  => 'id',
+                'type'       => 'integer',
+                'columnName' => 'id',
             ]
         );
 
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
     }
-
 }

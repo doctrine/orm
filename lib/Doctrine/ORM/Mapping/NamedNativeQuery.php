@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -23,9 +24,6 @@ namespace Doctrine\ORM\Mapping;
  * Is used to specify a native SQL named query.
  * The NamedNativeQuery annotation can be applied to an entity or mapped superclass.
  *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since   2.3
- *
  * @Annotation
  * @Target("ANNOTATION")
  */
@@ -41,7 +39,7 @@ final class NamedNativeQuery implements Annotation
     /**
      * The SQL query string.
      *
-     * @var string 
+     * @var string
      */
     public $query;
 
@@ -54,7 +52,7 @@ final class NamedNativeQuery implements Annotation
 
     /**
      * The name of a SqlResultSetMapping, as defined in metadata.
-     * 
+     *
      * @var string
      */
     public $resultSetMapping;

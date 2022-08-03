@@ -1,63 +1,74 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function assert;
 
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
- *
- * @author robo
  */
-class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase {
-    protected function setUp() : void
+class DDC69Test extends OrmFunctionalTestCase
+{
+    protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(Lemma::class),
-                    $this->_em->getClassMetadata(Relation::class),
-                    $this->_em->getClassMetadata(RelationType::class)
-                ]
-            );
-        } catch (\Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(Lemma::class),
+            $this->_em->getClassMetadata(Relation::class),
+            $this->_em->getClassMetadata(RelationType::class),
+        ]);
     }
 
-    public function testIssue()
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        $this->_schemaTool->dropSchema([
+            $this->_em->getClassMetadata(Lemma::class),
+            $this->_em->getClassMetadata(Relation::class),
+            $this->_em->getClassMetadata(RelationType::class),
+        ]);
+    }
+
+    public function testIssue(): void
     {
         //setup
-        $lemma1 = new Lemma;
+        $lemma1 = new Lemma();
         $lemma1->setLemma('foo');
 
-        $lemma2 = new Lemma;
+        $lemma2 = new Lemma();
         $lemma2->setLemma('bar');
 
-        $lemma3 = new Lemma;
+        $lemma3 = new Lemma();
         $lemma3->setLemma('batz');
 
-        $lemma4 = new Lemma;
+        $lemma4 = new Lemma();
         $lemma4->setLemma('bla');
 
-        $type1 = new RelationType;
+        $type1 = new RelationType();
         $type1->setType('nonsense');
         $type1->setAbbreviation('non');
 
-        $type2 = new RelationType;
+        $type2 = new RelationType();
         $type2->setType('quatsch');
         $type2->setAbbreviation('qu');
 
-        $relation1 = new Relation;
+        $relation1 = new Relation();
         $relation1->setParent($lemma1);
         $relation1->setChild($lemma2);
         $relation1->setType($type1);
 
-        $relation2 = new Relation;
+        $relation2 = new Relation();
         $relation2->setParent($lemma1);
         $relation2->setChild($lemma3);
         $relation2->setType($type1);
 
-        $relation3 = new Relation;
+        $relation3 = new Relation();
         $relation3->setParent($lemma1);
         $relation3->setChild($lemma4);
         $relation3->setType($type2);
@@ -79,20 +90,19 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase {
 
         // test One To Many
         $query = $this->_em->createQuery("SELECT l FROM Doctrine\Tests\ORM\Functional\Ticket\Lemma l Where l.lemma = 'foo'");
-        $res = $query->getResult();
+        $res   = $query->getResult();
         $lemma = $res[0];
 
         $this->assertEquals('foo', $lemma->getLemma());
         $this->assertInstanceOf(Lemma::class, $lemma);
         $relations = $lemma->getRelations();
 
-        foreach($relations as $relation) {
+        foreach ($relations as $relation) {
             $this->assertInstanceOf(Relation::class, $relation);
-            $this->assertTrue($relation->getType()->getType() != '');
+            $this->assertTrue($relation->getType()->getType() !== '');
         }
 
         $this->_em->clear();
-
     }
 }
 
@@ -100,9 +110,9 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase {
  * @Entity
  * @Table(name="lemma")
  */
-class Lemma {
-
-    const CLASS_NAME = __CLASS__;
+class Lemma
+{
+    public const CLASS_NAME = self::class;
 
     /**
      * @var int
@@ -113,92 +123,69 @@ class Lemma {
     private $id;
 
     /**
-     *
      * @var string
      * @Column(type="string", name="lemma_name", unique=true, length=255)
      */
     private $lemma;
 
-
     /**
-     * @var kateglo\application\utilities\collections\ArrayCollection
+     * @var Collection<int, Relation>
      * @OneToMany(targetEntity="Relation", mappedBy="parent", cascade={"persist"})
      */
     private $relations;
 
-    public function __construct() {
-        $this->types = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->relations = new \Doctrine\Common\Collections\ArrayCollection();
+    public function __construct()
+    {
+        $this->types     = new ArrayCollection();
+        $this->relations = new ArrayCollection();
     }
 
-
-    /**
-     *
-     * @return int
-     */
-    public function getId() {
+    public function getId(): int
+    {
         return $this->id;
     }
 
-    /**
-     *
-     * @param string $lemma
-     * @return void
-     */
-    public function setLemma($lemma) {
+    public function setLemma(string $lemma): void
+    {
         $this->lemma = $lemma;
     }
 
-    /**
-     *
-     * @return string
-     */
-    public function getLemma() {
+    public function getLemma(): string
+    {
         return $this->lemma;
     }
 
-
-    /**
-     *
-     * @param Relation $relation
-     * @return void
-     */
-    public function addRelation(Relation $relation) {
+    public function addRelation(Relation $relation): void
+    {
         $this->relations[] = $relation;
         $relation->setParent($this);
     }
 
-    /**
-     *
-     * @param Relation $relation
-     * @return void
-     */
-    public function removeRelation(Relation $relation) {
-        /*@var $removed Relation */
+    public function removeRelation(Relation $relation): void
+    {
         $removed = $this->relations->removeElement($relation);
+        assert($removed instanceof Relation);
         if ($removed !== null) {
             $removed->removeParent();
         }
     }
 
     /**
-     *
-     * @return kateglo\application\utilities\collections\ArrayCollection
+     * @psalm-return Collection<int, Relation>
      */
-    public function getRelations() {
+    public function getRelations(): Collection
+    {
         return $this->relations;
     }
-
 }
 
 /**
- *
  * @Entity
  * @Table(name="relation")
  */
-class Relation {
-
-    const CLASS_NAME = __CLASS__;
+class Relation
+{
+    public const CLASS_NAME = self::class;
 
     /**
      * @var int
@@ -209,7 +196,7 @@ class Relation {
     private $id;
 
     /**
-     * @var Lemma
+     * @var Lemma|null
      * @ManyToOne(targetEntity="Lemma", inversedBy="relations")
      * @JoinColumn(name="relation_parent_id", referencedColumnName="lemma_id")
      */
@@ -229,78 +216,49 @@ class Relation {
      */
     private $type;
 
-    /**
-     *
-     * @param Lemma $parent
-     * @return void
-     */
-    public function setParent(Lemma $parent) {
+    public function setParent(Lemma $parent): void
+    {
         $this->parent = $parent;
     }
 
-    /**
-     *
-     * @return Phrase
-     */
-    public function getParent() {
+    public function getParent(): Phrase
+    {
         return $this->parent;
     }
 
-    /**
-     *
-     * @return void
-     */
-    public function removeParent() {
+    public function removeParent(): void
+    {
         if ($this->lemma !== null) {
-            /*@var $phrase Lemma */
-            $lemma = $this->parent;
+            $lemma        = $this->parent;
             $this->parent = null;
             $lemma->removeRelation($this);
         }
     }
 
-    /**
-     *
-     * @param Lemma $child
-     * @return void
-     */
-    public function setChild(Lemma $child) {
+    public function setChild(Lemma $child): void
+    {
         $this->child = $child;
     }
 
-    /**
-     *
-     * @return Lemma
-     */
-    public function getChild() {
+    public function getChild(): Lemma
+    {
         return $this->child;
     }
 
-    /**
-     *
-     * @param RelationType $type
-     * @return void
-     */
-    public function setType(RelationType $type) {
+    public function setType(RelationType $type): void
+    {
         $this->type = $type;
     }
 
-    /**
-     *
-     * @return RelationType
-     */
-    public function getType() {
+    public function getType(): RelationType
+    {
         return $this->type;
     }
 
-    /**
-     *
-     * @return void
-     */
-    public function removeType() {
+    public function removeType(): void
+    {
         if ($this->type !== null) {
-            /*@var $phrase RelationType */
-            $type = $this->type;
+            $type       = $this->type;
             $this->type = null;
             $type->removeRelation($this);
         }
@@ -308,16 +266,14 @@ class Relation {
 }
 
 /**
- *
  * @Entity
  * @Table(name="relation_type")
  */
-class RelationType {
-
-    const CLASS_NAME = __CLASS__;
+class RelationType
+{
+    public const CLASS_NAME = self::class;
 
     /**
-     *
      * @var int
      * @Id
      * @Column(type="integer", name="relation_type_id")
@@ -326,100 +282,73 @@ class RelationType {
     private $id;
 
     /**
-     *
      * @var string
      * @Column(type="string", name="relation_type_name", unique=true, length=255)
      */
     private $type;
 
     /**
-     *
      * @var string
      * @Column(type="string", name="relation_type_abbreviation", unique=true, length=255)
      */
     private $abbreviation;
 
     /**
-     * @var kateglo\application\utilities\collections\ArrayCollection
+     * @var Collection<int, Relation>
      * @OneToMany(targetEntity="Relation", mappedBy="type", cascade={"persist"})
      */
     private $relations;
 
-    public function __construct() {
-        $relations = new \Doctrine\Common\Collections\ArrayCollection();
+    public function __construct()
+    {
+        $relations = new ArrayCollection();
     }
 
-    /**
-     *
-     * @return int
-     */
-    public function getId() {
+    public function getId(): int
+    {
         return $this->id;
     }
 
-    /**
-     *
-     * @param string $type
-     * @return void
-     */
-    public function setType($type) {
+    public function setType(string $type): void
+    {
         $this->type = $type;
     }
 
-    /**
-     *
-     * @return string
-     */
-    public function getType() {
+    public function getType(): string
+    {
         return $this->type;
     }
 
-    /**
-     *
-     * @param string $abbreviation
-     * @return void
-     */
-    public function setAbbreviation($abbreviation) {
+    public function setAbbreviation(string $abbreviation): void
+    {
         $this->abbreviation = $abbreviation;
     }
 
-    /**
-     *
-     * @return string
-     */
-    public function getAbbreviation() {
+    public function getAbbreviation(): string
+    {
         return $this->abbreviation;
     }
 
-    /**
-     *
-     * @param Relation $relation
-     * @return void
-     */
-    public function addRelation(Relation $relation) {
+    public function addRelation(Relation $relation): void
+    {
         $this->relations[] = $relation;
         $relation->setType($this);
     }
 
-    /**
-     *
-     * @param Relation $relation
-     * @return void
-     */
-    public function removeRelation(Relation $relation) {
-        /*@var $removed Relation */
+    public function removeRelation(Relation $relation): void
+    {
         $removed = $this->relations->removeElement($relation);
+        assert($removed instanceof Relation);
         if ($removed !== null) {
             $removed->removeLemma();
         }
     }
 
     /**
-     *
-     * @return kateglo\application\utilities\collections\ArrayCollection
+     * @psalm-return Collection<int, Relation>
      */
-    public function getRelations() {
+    public function getRelations(): Collection
+    {
         return $this->relations;
     }
 }
-

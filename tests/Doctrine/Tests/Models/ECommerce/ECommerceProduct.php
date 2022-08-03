@@ -1,20 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ECommerce;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * ECommerceProduct
  * Represents a type of product of a shopping application.
  *
- * @author Giorgio Sironi
  * @Entity
  * @Table(name="ecommerce_products",indexes={@Index(name="name_idx", columns={"name"})})
  */
 class ECommerceProduct
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
@@ -22,22 +25,26 @@ class ECommerceProduct
     private $id;
 
     /**
+     * @var string
      * @Column(type="string", length=50, nullable=true)
      */
     private $name;
 
     /**
+     * @var ECommerceShipping|null
      * @OneToOne(targetEntity="ECommerceShipping", cascade={"persist"})
      * @JoinColumn(name="shipping_id", referencedColumnName="id")
      */
     private $shipping;
 
     /**
+     * @psalm-var Collection<int, ECommerceFeature>
      * @OneToMany(targetEntity="ECommerceFeature", mappedBy="product", cascade={"persist"})
      */
     private $features;
 
     /**
+     * @psalm-var Collection<int, ECommerceCategory>
      * @ManyToMany(targetEntity="ECommerceCategory", cascade={"persist"}, inversedBy="products")
      * @JoinTable(name="ecommerce_products_categories",
      *      joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
@@ -48,6 +55,8 @@ class ECommerceProduct
     /**
      * This relation is saved with two records in the association table for
      * simplicity.
+     *
+     * @psalm-var Collection<int, ECommerceProduct>
      * @ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
      * @JoinTable(name="ecommerce_products_related",
      *      joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
@@ -55,81 +64,88 @@ class ECommerceProduct
      */
     private $related;
 
+    /** @var bool */
     public $isCloned = false;
+
+    /** @var bool */
     public $wakeUp = false;
 
     public function __construct()
     {
-        $this->features = new ArrayCollection;
-        $this->categories = new ArrayCollection;
-        $this->related = new ArrayCollection;
+        $this->features   = new ArrayCollection();
+        $this->categories = new ArrayCollection();
+        $this->related    = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getShipping()
+    public function getShipping(): ?ECommerceShipping
     {
         return $this->shipping;
     }
 
-    public function setShipping(ECommerceShipping $shipping)
+    public function setShipping(ECommerceShipping $shipping): void
     {
         $this->shipping = $shipping;
     }
 
-    public function removeShipping()
+    public function removeShipping(): void
     {
         $this->shipping = null;
     }
 
-    public function getFeatures()
+    /**
+     * @psalm-return Collection<int, ECommerceFeature>
+     */
+    public function getFeatures(): Collection
     {
         return $this->features;
     }
 
-    public function addFeature(ECommerceFeature $feature)
+    public function addFeature(ECommerceFeature $feature): void
     {
         $this->features[] = $feature;
         $feature->setProduct($this);
     }
 
     /** does not set the owning side */
-    public function brokenAddFeature(ECommerceFeature $feature)
+    public function brokenAddFeature(ECommerceFeature $feature): void
     {
         $this->features[] = $feature;
     }
 
-    public function removeFeature(ECommerceFeature $feature)
+    public function removeFeature(ECommerceFeature $feature): bool
     {
         $removed = $this->features->removeElement($feature);
         if ($removed) {
             $feature->removeProduct();
         }
+
         return $removed;
     }
 
-    public function addCategory(ECommerceCategory $category)
+    public function addCategory(ECommerceCategory $category): void
     {
-        if (!$this->categories->contains($category)) {
+        if (! $this->categories->contains($category)) {
             $this->categories[] = $category;
             $category->addProduct($this);
         }
     }
 
-    public function removeCategory(ECommerceCategory $category)
+    public function removeCategory(ECommerceCategory $category): void
     {
         $removed = $this->categories->removeElement($category);
         if ($removed) {
@@ -137,30 +153,39 @@ class ECommerceProduct
         }
     }
 
-    public function setCategories($categories)
+    /**
+     * @psalm-param Collection<int, ECommerceCategory> $categories
+     */
+    public function setCategories(Collection $categories): void
     {
         $this->categories = $categories;
     }
 
-    public function getCategories()
+    /**
+     * @psalm-return Collection<int, ECommerceCategory> $categories
+     */
+    public function getCategories(): Collection
     {
         return $this->categories;
     }
 
-    public function getRelated()
+    /**
+     * @psalm-return Collection<int, ECommerceProduct> $categories
+     */
+    public function getRelated(): Collection
     {
         return $this->related;
     }
 
-    public function addRelated(ECommerceProduct $related)
+    public function addRelated(ECommerceProduct $related): void
     {
-        if (!$this->related->contains($related)) {
+        if (! $this->related->contains($related)) {
             $this->related[] = $related;
             $related->addRelated($this);
         }
     }
 
-    public function removeRelated(ECommerceProduct $related)
+    public function removeRelated(ECommerceProduct $related): void
     {
         $removed = $this->related->removeElement($related);
         if ($removed) {
@@ -179,7 +204,7 @@ class ECommerceProduct
     /**
      * Testing docblock contents here
      */
-    public function __wakeup()
+    public function __wakeup(): void
     {
         $this->wakeUp = true;
     }

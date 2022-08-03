@@ -23,25 +23,23 @@ class PaginatorTest extends OrmTestCase
     /** @var AbstractHydrator */
     private $hydrator;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->connection = $this->getMockBuilder(ConnectionMock::class)
             ->setConstructorArgs([[], new DriverMock()])
             ->setMethods(['executeQuery'])
-            ->getMock()
-        ;
+            ->getMock();
 
         $this->em = $this->getMockBuilder(EntityManagerDecorator::class)
-            ->setConstructorArgs([$this->_getTestEntityManager($this->connection)])
+            ->setConstructorArgs([$this->getTestEntityManager($this->connection)])
             ->setMethods(['newHydrator'])
-            ->getMock()
-        ;
+            ->getMock();
 
         $this->hydrator = $this->createMock(AbstractHydrator::class);
         $this->em->method('newHydrator')->willReturn($this->hydrator);
     }
 
-    public function testExtraParametersAreStrippedWhenWalkerRemovingOriginalSelectElementsIsUsed() : void
+    public function testExtraParametersAreStrippedWhenWalkerRemovingOriginalSelectElementsIsUsed(): void
     {
         $paramInWhere     = 1;
         $paramInSubSelect = 2;
@@ -64,28 +62,20 @@ class PaginatorTest extends OrmTestCase
         $query->setMaxResults(1);
         $paginator = (new Paginator($query, true))->setUseOutputWalkers(false);
 
-        $this->connection->expects($this->exactly(3))->method('executeQuery');
-
-        $this->connection->expects($this->at(0))
+        $this->connection
+            ->expects($this->exactly(3))
             ->method('executeQuery')
-            ->with($this->anything(), [$paramInWhere])
-        ;
-
-        $this->connection->expects($this->at(1))
-            ->method('executeQuery')
-            ->with($this->anything(), [$paramInWhere])
-        ;
-
-        $this->connection->expects($this->at(2))
-            ->method('executeQuery')
-            ->with($this->anything(), [$paramInSubSelect, $paramInWhere, $returnedIds])
-        ;
+            ->withConsecutive(
+                [$this->anything(), [$paramInWhere]],
+                [$this->anything(), [$paramInWhere]],
+                [$this->anything(), [$paramInSubSelect, $paramInWhere, $returnedIds]]
+            );
 
         $paginator->count();
         $paginator->getIterator();
     }
 
-    public function testPaginatorNotCaringAboutExtraParametersWithoutOutputWalkers() : void
+    public function testPaginatorNotCaringAboutExtraParametersWithoutOutputWalkers(): void
     {
         $this->connection->expects($this->exactly(3))->method('executeQuery');
 
@@ -94,7 +84,7 @@ class PaginatorTest extends OrmTestCase
         $this->createPaginatorWithExtraParametersWithoutOutputWalkers([])->getIterator();
     }
 
-    public function testgetIteratorDoesCareAboutExtraParametersWithoutOutputWalkersWhenResultIsNotEmpty() : void
+    public function testgetIteratorDoesCareAboutExtraParametersWithoutOutputWalkersWhenResultIsNotEmpty(): void
     {
         $this->connection->expects($this->exactly(1))->method('executeQuery');
         $this->expectException(Query\QueryException::class);
@@ -106,7 +96,7 @@ class PaginatorTest extends OrmTestCase
     /**
      * @param int[][] $willReturnRows
      */
-    private function createPaginatorWithExtraParametersWithoutOutputWalkers(array $willReturnRows) : Paginator
+    private function createPaginatorWithExtraParametersWithoutOutputWalkers(array $willReturnRows): Paginator
     {
         $this->hydrator->method('hydrateAll')->willReturn($willReturnRows);
         $this->connection->method('executeQuery')->with($this->anything(), []);

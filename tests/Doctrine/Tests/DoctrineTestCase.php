@@ -1,12 +1,12 @@
 <?php
 
-namespace Doctrine\Tests;
+declare(strict_types=1);
 
-use PHPUnit\Framework\TestCase;
+namespace Doctrine\Tests;
 
 /**
  * Base testcase class for all Doctrine testcases.
  */
-abstract class DoctrineTestCase extends TestCase
+abstract class DoctrineTestCase extends PolyfillableTestCase
 {
 }
