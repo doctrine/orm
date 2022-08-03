@@ -11,8 +11,6 @@ use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use stdClass;
 
-use const PHP_VERSION_ID;
-
 class AttributeDriverTest extends MappingDriverTestCase
 {
     protected function loadDriver(): MappingDriver
@@ -25,42 +23,6 @@ class AttributeDriverTest extends MappingDriverTestCase
     public function testSqlResultSetMapping(): void
     {
         self::markTestSkipped('AttributeDriver does not support named sql resultset mapping.');
-    }
-
-    public function testAssociationOverridesMapping(): void
-    {
-        if (PHP_VERSION_ID < 80100) {
-            self::markTestSkipped('AttributeDriver does not support association overrides.');
-        } else {
-            parent::testAssociationOverridesMapping();
-        }
-    }
-
-    public function testInversedByOverrideMapping(): void
-    {
-        if (PHP_VERSION_ID < 80100) {
-            self::markTestSkipped('AttributeDriver does not support association overrides.');
-        } else {
-            parent::testInversedByOverrideMapping();
-        }
-    }
-
-    public function testFetchOverrideMapping(): void
-    {
-        if (PHP_VERSION_ID < 80100) {
-            self::markTestSkipped('AttributeDriver does not support association overrides.');
-        } else {
-            parent::testFetchOverrideMapping();
-        }
-    }
-
-    public function testAttributeOverridesMapping(): void
-    {
-        if (PHP_VERSION_ID < 80100) {
-            self::markTestSkipped('AttributeDriver does not support association overrides.');
-        } else {
-            parent::testAttributeOverridesMapping();
-        }
     }
 
     public function testOriginallyNestedAttributesDeclaredWithoutOriginalParent(): void

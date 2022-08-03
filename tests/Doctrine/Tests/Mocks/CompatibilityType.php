@@ -8,9 +8,7 @@ use Doctrine\DBAL\ParameterType;
 
 use function enum_exists;
 
-use const PHP_VERSION_ID;
-
-if (PHP_VERSION_ID < 80100 || ! enum_exists(ParameterType::class)) {
+if (! enum_exists(ParameterType::class)) {
     trait CompatibilityType
     {
         public function getBindingType(): int

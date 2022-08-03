@@ -930,11 +930,6 @@ class MappingException extends Exception implements ORMException
         ));
     }
 
-    public static function enumsRequirePhp81(string $className, string $fieldName): self
-    {
-        return new self(sprintf('Enum types require PHP 8.1 in %s::$%s', $className, $fieldName));
-    }
-
     public static function nonEnumTypeMapped(string $className, string $fieldName, string $enumType): self
     {
         return new self(sprintf(
