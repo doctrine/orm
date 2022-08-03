@@ -84,7 +84,7 @@ class TrimFunction extends FunctionNode
     /**
      * @psalm-return TrimMode::*
      */
-    private function getTrimMode(): int
+    private function getTrimMode(): TrimMode|int
     {
         if ($this->leading) {
             return TrimMode::LEADING;

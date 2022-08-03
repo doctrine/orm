@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\PersistentCollection;
@@ -47,7 +48,14 @@ interface EntityPersister
      * @param mixed[]|null     $orderBy
      * @psalm-param LockMode::*|null $lockMode
      */
-    public function getSelectSQL(array|Criteria $criteria, ?array $assoc = null, ?int $lockMode = null, ?int $limit = null, ?int $offset = null, ?array $orderBy = null): string;
+    public function getSelectSQL(
+        array|Criteria $criteria,
+        ?array $assoc = null,
+        LockMode|int|null $lockMode = null,
+        ?int $limit = null,
+        ?int $offset = null,
+        ?array $orderBy = null
+    ): string;
 
     /**
      * Get the COUNT SQL to count entities (optionally based on a criteria)
@@ -61,14 +69,14 @@ interface EntityPersister
      *
      * @param string[] $criteria
      *
-     * @psalm-return array{list<mixed>, list<int|string|null>}
+     * @psalm-return array{list<mixed>, list<ParameterType::*|int|string>}
      */
     public function expandParameters(array $criteria): array;
 
     /**
      * Expands Criteria Parameters by walking the expressions and grabbing all parameters and types from it.
      *
-     * @psalm-return array{list<mixed>, list<int|string|null>}
+     * @psalm-return array{list<mixed>, list<ParameterType::*|int|string>}
      */
     public function expandCriteriaParameters(Criteria $criteria): array;
 
@@ -77,7 +85,12 @@ interface EntityPersister
      *
      * @psalm-param array<string, mixed>|null  $assoc
      */
-    public function getSelectConditionStatementSQL(string $field, mixed $value, ?array $assoc = null, ?string $comparison = null): string;
+    public function getSelectConditionStatementSQL(
+        string $field,
+        mixed $value,
+        ?array $assoc = null,
+        ?string $comparison = null
+    ): string;
 
     /**
      * Adds an entity to the queued insertions.
@@ -137,17 +150,17 @@ interface EntityPersister
     /**
      * Loads an entity by a list of field criteria.
      *
-     * @param mixed[]       $criteria The criteria by which to load the entity.
-     * @param object|null   $entity   The entity to load the data into. If not specified,
-     *                                a new entity is created.
-     * @param mixed[]|null  $assoc    The association that connects the entity
-     *                                to load to another entity, if any.
-     * @param mixed[]       $hints    Hints for entity creation.
-     * @param int|null      $lockMode One of the \Doctrine\DBAL\LockMode::* constants
-     *                                or NULL if no specific lock mode should be used
-     *                                for loading the entity.
-     * @param int|null      $limit    Limit number of results.
-     * @param string[]|null $orderBy  Criteria to order by.
+     * @param mixed[]           $criteria The criteria by which to load the entity.
+     * @param object|null       $entity   The entity to load the data into. If not specified,
+     *                                    a new entity is created.
+     * @param mixed[]|null      $assoc    The association that connects the entity
+     *                                    to load to another entity, if any.
+     * @param mixed[]           $hints    Hints for entity creation.
+     * @param LockMode|int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
+     *                                    or NULL if no specific lock mode should be used
+     *                                    for loading the entity.
+     * @param int|null          $limit    Limit number of results.
+     * @param string[]|null     $orderBy  Criteria to order by.
      * @psalm-param array<string, mixed>       $criteria
      * @psalm-param array<string, mixed>|null  $assoc
      * @psalm-param array<string, mixed>       $hints
@@ -163,7 +176,7 @@ interface EntityPersister
         ?object $entity = null,
         ?array $assoc = null,
         array $hints = [],
-        ?int $lockMode = null,
+        LockMode|int|null $lockMode = null,
         ?int $limit = null,
         ?array $orderBy = null
     ): ?object;
@@ -199,15 +212,15 @@ interface EntityPersister
     /**
      * Refreshes a managed entity.
      *
-     * @param int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
-     *                           or NULL if no specific lock mode should be used
-     *                           for refreshing the managed entity.
+     * @param LockMode|int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
+     *                                    or NULL if no specific lock mode should be used
+     *                                    for refreshing the managed entity.
      * @psalm-param array<string, mixed> $id The identifier of the entity as an
      *                                       associative array from column or
      *                                       field names to values.
      * @psalm-param LockMode::*|null $lockMode
      */
-    public function refresh(array $id, object $entity, ?int $lockMode = null): void;
+    public function refresh(array $id, object $entity, LockMode|int|null $lockMode = null): void;
 
     /**
      * Loads Entities matching the given Criteria object.
@@ -224,7 +237,12 @@ interface EntityPersister
      *
      * @return mixed[]
      */
-    public function loadAll(array $criteria = [], ?array $orderBy = null, ?int $limit = null, ?int $offset = null): array;
+    public function loadAll(
+        array $criteria = [],
+        ?array $orderBy = null,
+        ?int $limit = null,
+        ?int $offset = null
+    ): array;
 
     /**
      * Gets (sliced or full) elements of the given collection.
@@ -233,7 +251,12 @@ interface EntityPersister
      *
      * @return mixed[]
      */
-    public function getManyToManyCollection(array $assoc, object $sourceEntity, ?int $offset = null, ?int $limit = null): array;
+    public function getManyToManyCollection(
+        array $assoc,
+        object $sourceEntity,
+        ?int $offset = null,
+        ?int $limit = null
+    ): array;
 
     /**
      * Loads a collection of entities of a many-to-many association.
@@ -244,7 +267,11 @@ interface EntityPersister
      *
      * @return mixed[]
      */
-    public function loadManyToManyCollection(array $assoc, object $sourceEntity, PersistentCollection $collection): array;
+    public function loadManyToManyCollection(
+        array $assoc,
+        object $sourceEntity,
+        PersistentCollection $collection
+    ): array;
 
     /**
      * Loads a collection of entities in a one-to-many association.
@@ -252,7 +279,11 @@ interface EntityPersister
      * @param PersistentCollection $collection The collection to load/fill.
      * @psalm-param array<string, mixed> $assoc
      */
-    public function loadOneToManyCollection(array $assoc, object $sourceEntity, PersistentCollection $collection): mixed;
+    public function loadOneToManyCollection(
+        array $assoc,
+        object $sourceEntity,
+        PersistentCollection $collection
+    ): mixed;
 
     /**
      * Locks all rows of this entity matching the given criteria with the specified pessimistic lock mode.
@@ -260,7 +291,7 @@ interface EntityPersister
      * @psalm-param array<string, mixed> $criteria
      * @psalm-param LockMode::* $lockMode
      */
-    public function lock(array $criteria, int $lockMode): void;
+    public function lock(array $criteria, LockMode|int $lockMode): void;
 
     /**
      * Returns an array with (sliced or full list) of elements in the specified collection.
@@ -269,7 +300,12 @@ interface EntityPersister
      *
      * @return mixed[]
      */
-    public function getOneToManyCollection(array $assoc, object $sourceEntity, ?int $offset = null, ?int $limit = null): array;
+    public function getOneToManyCollection(
+        array $assoc,
+        object $sourceEntity,
+        ?int $offset = null,
+        ?int $limit = null
+    ): array;
 
     /**
      * Checks whether the given managed entity exists in the database.

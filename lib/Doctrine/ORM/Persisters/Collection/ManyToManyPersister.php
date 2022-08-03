@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Persisters\Collection;
 use BadMethodCallException;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Exception as DBALException;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
@@ -86,7 +87,14 @@ class ManyToManyPersister extends AbstractCollectionPersister
             ? $mapping['inversedBy']
             : $mapping['mappedBy'];
 
-        return $persister->load([$mappedKey => $collection->getOwner(), $mapping['indexBy'] => $index], null, $mapping, [], 0, 1);
+        return $persister->load(
+            [$mappedKey => $collection->getOwner(), $mapping['indexBy'] => $index],
+            null,
+            $mapping,
+            [],
+            LockMode::NONE,
+            1
+        );
     }
 
     public function count(PersistentCollection $collection): int

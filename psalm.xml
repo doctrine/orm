@@ -148,6 +148,12 @@
                 <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
             </errorLevel>
         </UndefinedClass>
+        <UnhandledMatchCondition>
+            <errorLevel type="suppress">
+                <!-- We can be certain that those values are not matched. -->
+                <file name="lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php"/>
+            </errorLevel>
+        </UnhandledMatchCondition>
         <ArgumentTypeCoercion>
             <errorLevel type="suppress">
                 <!-- See https://github.com/JetBrains/phpstorm-stubs/pull/1383 -->

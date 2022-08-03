@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Decorator;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
@@ -119,12 +120,12 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritdoc}
      */
-    public function lock(object $entity, int $lockMode, $lockVersion = null): void
+    public function lock(object $entity, LockMode|int $lockMode, $lockVersion = null): void
     {
         $this->wrapped->lock($entity, $lockMode, $lockVersion);
     }
 
-    public function find(string $className, mixed $id, ?int $lockMode = null, ?int $lockVersion = null): ?object
+    public function find(string $className, mixed $id, LockMode|int|null $lockMode = null, ?int $lockVersion = null): ?object
     {
         return $this->wrapped->find($className, $id, $lockMode, $lockVersion);
     }

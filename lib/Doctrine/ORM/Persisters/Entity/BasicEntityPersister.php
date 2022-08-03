@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
@@ -329,8 +330,8 @@ class BasicEntityPersister implements EntityPersister
     /**
      * @param mixed[] $id
      *
-     * @return int[]|null[]|string[]
-     * @psalm-return list<int|string|null>
+     * @return list<ParameterType|int|string>
+     * @psalm-return list<ParameterType::*|int|string>
      */
     private function extractIdentifierTypes(array $id, ClassMetadata $versionedClass): array
     {
@@ -689,8 +690,15 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function load(array $criteria, ?object $entity = null, ?array $assoc = null, array $hints = [], ?int $lockMode = null, ?int $limit = null, ?array $orderBy = null): ?object
-    {
+    public function load(
+        array $criteria,
+        ?object $entity = null,
+        ?array $assoc = null,
+        array $hints = [],
+        LockMode|int|null $lockMode = null,
+        ?int $limit = null,
+        ?array $orderBy = null
+    ): ?object {
         $this->switchPersisterContext(null, $limit);
 
         $sql              = $this->getSelectSQL($criteria, $assoc, $lockMode, $limit, null, $orderBy);
@@ -779,7 +787,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function refresh(array $id, object $entity, ?int $lockMode = null): void
+    public function refresh(array $id, object $entity, LockMode|int|null $lockMode = null): void
     {
         $sql              = $this->getSelectSQL($id, null, $lockMode);
         [$params, $types] = $this->expandParameters($id);
@@ -852,8 +860,12 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function loadAll(array $criteria = [], ?array $orderBy = null, ?int $limit = null, ?int $offset = null): array
-    {
+    public function loadAll(
+        array $criteria = [],
+        ?array $orderBy = null,
+        ?int $limit = null,
+        ?int $offset = null
+    ): array {
         $this->switchPersisterContext($offset, $limit);
 
         $sql              = $this->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);
@@ -868,8 +880,12 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function getManyToManyCollection(array $assoc, object $sourceEntity, ?int $offset = null, ?int $limit = null): array
-    {
+    public function getManyToManyCollection(
+        array $assoc,
+        object $sourceEntity,
+        ?int $offset = null,
+        ?int $limit = null
+    ): array {
         $this->switchPersisterContext($offset, $limit);
 
         $stmt = $this->getManyToManyStatement($assoc, $sourceEntity, $offset, $limit);
@@ -1006,11 +1022,16 @@ class BasicEntityPersister implements EntityPersister
         return $this->conn->executeQuery($sql, $params, $types);
     }
 
-    public function getSelectSQL(array|Criteria $criteria, ?array $assoc = null, ?int $lockMode = null, ?int $limit = null, ?int $offset = null, ?array $orderBy = null): string
-    {
+    public function getSelectSQL(
+        array|Criteria $criteria,
+        ?array $assoc = null,
+        LockMode|int|null $lockMode = null,
+        ?int $limit = null,
+        ?int $offset = null,
+        ?array $orderBy = null
+    ): string {
         $this->switchPersisterContext($offset, $limit);
 
-        $lockSql    = '';
         $joinSql    = '';
         $orderBySql = '';
 
@@ -1030,15 +1051,11 @@ class BasicEntityPersister implements EntityPersister
             ? $this->getSelectConditionCriteriaSQL($criteria)
             : $this->getSelectConditionSQL($criteria, $assoc);
 
-        switch ($lockMode) {
-            case LockMode::PESSIMISTIC_READ:
-                $lockSql = ' ' . $this->platform->getReadLockSQL();
-                break;
-
-            case LockMode::PESSIMISTIC_WRITE:
-                $lockSql = ' ' . $this->platform->getWriteLockSQL();
-                break;
-        }
+        $lockSql = match ($lockMode) {
+            LockMode::PESSIMISTIC_READ => ' ' . $this->platform->getReadLockSQL(),
+            LockMode::PESSIMISTIC_WRITE => ' ' . $this->platform->getWriteLockSQL(),
+            default => '',
+        };
 
         $columnList = $this->getSelectColumnsSQL();
         $tableAlias = $this->getSQLTableAlias($this->class->name);
@@ -1268,8 +1285,12 @@ class BasicEntityPersister implements EntityPersister
      *
      * @param mixed[] $assoc
      */
-    protected function getSelectColumnAssociationSQL(string $field, array $assoc, ClassMetadata $class, string $alias = 'r'): string
-    {
+    protected function getSelectColumnAssociationSQL(
+        string $field,
+        array $assoc,
+        ClassMetadata $class,
+        string $alias = 'r'
+    ): string {
         if (! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
             return '';
         }
@@ -1458,20 +1479,15 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function lock(array $criteria, int $lockMode): void
+    public function lock(array $criteria, LockMode|int $lockMode): void
     {
-        $lockSql      = '';
         $conditionSql = $this->getSelectConditionSQL($criteria);
 
-        switch ($lockMode) {
-            case LockMode::PESSIMISTIC_READ:
-                $lockSql = $this->platform->getReadLockSQL();
-
-                break;
-            case LockMode::PESSIMISTIC_WRITE:
-                $lockSql = $this->platform->getWriteLockSQL();
-                break;
-        }
+        $lockSql = match ($lockMode) {
+            LockMode::PESSIMISTIC_READ => $this->platform->getReadLockSQL(),
+            LockMode::PESSIMISTIC_WRITE => $this->platform->getWriteLockSQL(),
+            default => '',
+        };
 
         $lock  = $this->getLockTablesSql($lockMode);
         $where = ($conditionSql ? ' WHERE ' . $conditionSql : '') . ' ';
@@ -1490,7 +1506,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @psalm-param LockMode::* $lockMode
      */
-    protected function getLockTablesSql(int $lockMode): string
+    protected function getLockTablesSql(LockMode|int $lockMode): string
     {
         return $this->platform->appendLockHint(
             'FROM '
@@ -1516,8 +1532,12 @@ class BasicEntityPersister implements EntityPersister
         return $visitor->dispatch($expression);
     }
 
-    public function getSelectConditionStatementSQL(string $field, mixed $value, ?array $assoc = null, ?string $comparison = null): string
-    {
+    public function getSelectConditionStatementSQL(
+        string $field,
+        mixed $value,
+        ?array $assoc = null,
+        ?string $comparison = null
+    ): string {
         $selectedColumns = [];
         $columns         = $this->getSelectConditionStatementColumnSQL($field, $assoc);
 
@@ -1675,8 +1695,12 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function getOneToManyCollection(array $assoc, object $sourceEntity, ?int $offset = null, ?int $limit = null): array
-    {
+    public function getOneToManyCollection(
+        array $assoc,
+        object $sourceEntity,
+        ?int $offset = null,
+        ?int $limit = null
+    ): array {
         $this->switchPersisterContext($offset, $limit);
 
         $stmt = $this->getOneToManyStatement($assoc, $sourceEntity, $offset, $limit);
@@ -1687,8 +1711,11 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function loadOneToManyCollection(array $assoc, object $sourceEntity, PersistentCollection $collection): mixed
-    {
+    public function loadOneToManyCollection(
+        array $assoc,
+        object $sourceEntity,
+        PersistentCollection $collection
+    ): mixed {
         $stmt = $this->getOneToManyStatement($assoc, $sourceEntity);
 
         return $this->loadCollectionFromStatement($assoc, $stmt, $collection);
@@ -1780,7 +1807,7 @@ class BasicEntityPersister implements EntityPersister
      *                             - class to which the field belongs to
      *
      * @return mixed[][]
-     * @psalm-return array{0: array, 1: list<int|string|null>}
+     * @psalm-return array{0: array, 1: list<ParameterType::*|int|string>}
      */
     private function expandToManyParameters(array $criteria): array
     {
@@ -1802,8 +1829,8 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Infers field types to be used by parameter type casting.
      *
-     * @return int[]|null[]|string[]
-     * @psalm-return list<int|string|null>
+     * @return list<ParameterType|int|string>
+     * @psalm-return list<ParameterType::*|int|string>
      *
      * @throws QueryException
      */
@@ -1836,19 +1863,28 @@ class BasicEntityPersister implements EntityPersister
                 break;
 
             default:
-                $types[] = null;
+                $types[] = ParameterType::STRING;
                 break;
         }
 
         if (is_array($value)) {
-            return array_map(static function ($type) {
-                $type = Type::getType($type);
-
-                return $type->getBindingType() + Connection::ARRAY_PARAM_OFFSET;
-            }, $types);
+            return array_map([$this, 'getArrayBindingType'], $types);
         }
 
         return $types;
+    }
+
+    private function getArrayBindingType(ParameterType|int|string $type): int
+    {
+        if (! $type instanceof ParameterType) {
+            $type = Type::getType((string) $type)->getBindingType();
+        }
+
+        return match ($type) {
+            ParameterType::STRING => Connection::PARAM_STR_ARRAY,
+            ParameterType::INTEGER => Connection::PARAM_INT_ARRAY,
+            ParameterType::ASCII => Connection::PARAM_ASCII_STR_ARRAY,
+        };
     }
 
     /**

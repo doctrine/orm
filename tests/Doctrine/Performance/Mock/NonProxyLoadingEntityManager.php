@@ -6,6 +6,7 @@ namespace Doctrine\Performance\Mock;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
@@ -132,7 +133,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function lock(object $entity, int $lockMode, $lockVersion = null): void
+    public function lock(object $entity, LockMode|int $lockMode, $lockVersion = null): void
     {
         $this->realEntityManager->lock($entity, $lockMode, $lockVersion);
     }
@@ -175,7 +176,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
         return $this->realEntityManager->hasFilters();
     }
 
-    public function find(string $className, mixed $id, ?int $lockMode = null, ?int $lockVersion = null): ?object
+    public function find(string $className, mixed $id, LockMode|int|null $lockMode = null, ?int $lockVersion = null): ?object
     {
         return $this->realEntityManager->find($className, $id, $lockMode, $lockVersion);
     }
