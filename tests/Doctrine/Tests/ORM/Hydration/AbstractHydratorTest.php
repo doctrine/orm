@@ -23,17 +23,10 @@ use function iterator_to_array;
  */
 class AbstractHydratorTest extends OrmFunctionalTestCase
 {
-    /** @var EventManager&MockObject */
-    private EventManager $mockEventManager;
-
-    /** @var Result&MockObject */
-    private Result $mockResult;
-
-    /** @var ResultSetMapping&MockObject */
-    private ResultSetMapping $mockResultMapping;
-
-    /** @var AbstractHydrator&MockObject */
-    private AbstractHydrator $hydrator;
+    private EventManager&MockObject $mockEventManager;
+    private Result&MockObject $mockResult;
+    private ResultSetMapping&MockObject $mockResultMapping;
+    private AbstractHydrator&MockObject $hydrator;
 
     protected function setUp(): void
     {

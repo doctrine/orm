@@ -18,12 +18,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class PaginatorTest extends OrmTestCase
 {
-    /** @var Connection&MockObject */
-    private $connection;
-    /** @var EntityManagerInterface&MockObject */
-    private $em;
-    /** @var AbstractHydrator&MockObject */
-    private $hydrator;
+    private Connection&MockObject $connection;
+    private EntityManagerInterface&MockObject $em;
+    private AbstractHydrator&MockObject $hydrator;
 
     protected function setUp(): void
     {

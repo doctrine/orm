@@ -22,12 +22,8 @@ use PHPUnit\Framework\TestCase;
  */
 class DefaultRepositoryFactoryTest extends TestCase
 {
-    /** @var EntityManagerInterface&MockObject */
-    private EntityManagerInterface $entityManager;
-
-    /** @var Configuration&MockObject */
-    private Configuration $configuration;
-
+    private EntityManagerInterface&MockObject $entityManager;
+    private Configuration&MockObject $configuration;
     private DefaultRepositoryFactory $repositoryFactory;
 
     protected function setUp(): void
@@ -109,12 +105,11 @@ class DefaultRepositoryFactoryTest extends TestCase
     /**
      * @psalm-param class-string<TEntity> $className
      *
-     * @return ClassMetadata&MockObject
      * @psalm-return ClassMetadata<TEntity>&MockObject
      *
      * @template TEntity of object
      */
-    private function buildClassMetadata(string $className): ClassMetadata
+    private function buildClassMetadata(string $className): ClassMetadata&MockObject
     {
         $metadata = $this->createMock(ClassMetadata::class);
         $metadata->method('getName')->will(self::returnValue($className));
@@ -125,10 +120,7 @@ class DefaultRepositoryFactoryTest extends TestCase
         return $metadata;
     }
 
-    /**
-     * @return EntityManagerInterface&MockObject
-     */
-    private function createEntityManager(): EntityManagerInterface
+    private function createEntityManager(): EntityManagerInterface&MockObject
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->method('getConfiguration')->willReturn($this->configuration);
