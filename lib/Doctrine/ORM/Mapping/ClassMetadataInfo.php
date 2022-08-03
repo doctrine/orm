@@ -3509,9 +3509,8 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $this->isVersioned = $bool;
 
-        if ($bool) {
-            $this->requiresFetchAfterChange = true;
-        }
+        $this->requiresFetchAfterChange = $bool 
+                                          || count(array_column($this->fieldMappings, 'generated')) > 0;
     }
 
     /**

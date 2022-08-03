@@ -288,10 +288,11 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testDisablingVersioningRestoresOriginalState(): void
     {
-        $field = ['fieldName' => 'version', 'type' => 'integer'];
+        $versionedField = ['fieldName' => 'version', 'type' => 'integer'];
+        
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->setVersionMapping($field);
+        $cm->setVersionMapping($versionedField);
 
         self::assertTrue($cm->isVersioned);
         self::assertEquals('version', $cm->versionField);
