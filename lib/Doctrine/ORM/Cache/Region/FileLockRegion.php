@@ -43,9 +43,9 @@ class FileLockRegion implements ConcurrentRegion
      * @throws InvalidArgumentException
      */
     public function __construct(
-        private Region $region,
-        private string $directory,
-        private string|int $lockLifetime
+        private readonly Region $region,
+        private readonly string $directory,
+        private readonly string|int $lockLifetime
     ) {
         if (! is_dir($directory) && ! @mkdir($directory, 0775, true)) {
             throw new InvalidArgumentException(sprintf('The directory "%s" does not exist and could not be created.', $directory));

@@ -138,7 +138,7 @@ class QueryBuilder
      * @param EntityManagerInterface $em The EntityManager to use.
      */
     public function __construct(
-        private EntityManagerInterface $em
+        private readonly EntityManagerInterface $em
     ) {
         $this->parameters = new ArrayCollection();
     }

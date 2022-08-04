@@ -247,17 +247,17 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * The EventManager used for dispatching events.
      */
-    private EventManager $evm;
+    private readonly EventManager $evm;
 
     /**
      * The ListenersInvoker used for dispatching events.
      */
-    private ListenersInvoker $listenersInvoker;
+    private readonly ListenersInvoker $listenersInvoker;
 
     /**
      * The IdentifierFlattener used for manipulating identifiers
      */
-    private IdentifierFlattener $identifierFlattener;
+    private readonly IdentifierFlattener $identifierFlattener;
 
     /**
      * Orphaned entities that are scheduled for removal.
@@ -285,7 +285,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Helper for handling completion of hydration
      */
-    private HydrationCompleteHandler $hydrationCompleteHandler;
+    private readonly HydrationCompleteHandler $hydrationCompleteHandler;
 
     /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
@@ -293,7 +293,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param EntityManagerInterface $em The EntityManager that "owns" this UnitOfWork instance.
      */
     public function __construct(
-        private EntityManagerInterface $em
+        private readonly EntityManagerInterface $em
     ) {
         $this->evm                      = $em->getEventManager();
         $this->listenersInvoker         = new ListenersInvoker($em);

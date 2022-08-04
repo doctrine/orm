@@ -26,11 +26,11 @@ final class IdentifierFlattener
         /**
          * The UnitOfWork used to coordinate object-level transactions.
          */
-        private UnitOfWork $unitOfWork,
+        private readonly UnitOfWork $unitOfWork,
         /**
          * The metadata factory, used to retrieve the ORM metadata of entity classes.
          */
-        private ClassMetadataFactory $metadataFactory
+        private readonly ClassMetadataFactory $metadataFactory
     ) {
     }
 

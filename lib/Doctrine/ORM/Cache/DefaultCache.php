@@ -20,8 +20,8 @@ use function is_object;
  */
 class DefaultCache implements Cache
 {
-    private UnitOfWork $uow;
-    private CacheFactory $cacheFactory;
+    private readonly UnitOfWork $uow;
+    private readonly CacheFactory $cacheFactory;
 
     /**
      * @var QueryCache[]
@@ -32,7 +32,7 @@ class DefaultCache implements Cache
     private ?QueryCache $defaultQueryCache = null;
 
     public function __construct(
-        private EntityManagerInterface $em
+        private readonly EntityManagerInterface $em
     ) {
         $this->uow          = $em->getUnitOfWork();
         $this->cacheFactory = $em->getConfiguration()

@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 
 abstract class AbstractEntityManagerCommand extends Command
 {
-    public function __construct(private EntityManagerProvider $entityManagerProvider)
+    public function __construct(private readonly EntityManagerProvider $entityManagerProvider)
     {
         parent::__construct();
     }

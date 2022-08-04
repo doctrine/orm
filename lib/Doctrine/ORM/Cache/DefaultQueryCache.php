@@ -32,16 +32,16 @@ use function reset;
  */
 class DefaultQueryCache implements QueryCache
 {
-    private UnitOfWork $uow;
-    private QueryCacheValidator $validator;
+    private readonly UnitOfWork $uow;
+    private readonly QueryCacheValidator $validator;
     protected ?CacheLogger $cacheLogger = null;
 
     /** @var array<string,mixed> */
     private static array $hints = [Query::HINT_CACHE_ENABLED => true];
 
     public function __construct(
-        private EntityManagerInterface $em,
-        private Region $region
+        private readonly EntityManagerInterface $em,
+        private readonly Region $region
     ) {
         $cacheConfig = $em->getConfiguration()->getSecondLevelCacheConfiguration();
 

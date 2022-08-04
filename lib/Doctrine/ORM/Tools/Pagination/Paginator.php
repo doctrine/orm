@@ -31,15 +31,17 @@ class Paginator implements Countable, IteratorAggregate
 {
     use SQLResultCasing;
 
-    private Query $query;
+    private readonly Query $query;
     private ?bool $useOutputWalkers = null;
     private ?int $count             = null;
 
     /**
      * @param bool $fetchJoinCollection Whether the query joins a collection (true by default).
      */
-    public function __construct(Query|QueryBuilder $query, private bool $fetchJoinCollection = true)
-    {
+    public function __construct(
+        Query|QueryBuilder $query,
+        private readonly bool $fetchJoinCollection = true
+    ) {
         if ($query instanceof QueryBuilder) {
             $query = $query->getQuery();
         }

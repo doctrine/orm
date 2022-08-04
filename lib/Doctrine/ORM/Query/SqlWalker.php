@@ -54,7 +54,7 @@ class SqlWalker
      */
     public const HINT_PARTIAL = 'doctrine.partial';
 
-    private ResultSetMapping $rsm;
+    private readonly ResultSetMapping $rsm;
 
     /**
      * Counter for generating unique column aliases.
@@ -81,8 +81,8 @@ class SqlWalker
      */
     private int $newObjectCounter = 0;
 
-    private EntityManagerInterface $em;
-    private Connection $conn;
+    private readonly EntityManagerInterface $em;
+    private readonly Connection $conn;
 
     /** @var mixed[] */
     private array $tableAliasMap = [];
@@ -131,19 +131,19 @@ class SqlWalker
     /**
      * The database platform abstraction.
      */
-    private AbstractPlatform $platform;
+    private readonly AbstractPlatform $platform;
 
     /**
      * The quote strategy.
      */
-    private QuoteStrategy $quoteStrategy;
+    private readonly QuoteStrategy $quoteStrategy;
 
     /**
      * @psalm-param array<string, QueryComponent> $queryComponents The query components (symbol table).
      */
     public function __construct(
-        private Query $query,
-        private ParserResult $parserResult,
+        private readonly Query $query,
+        private readonly ParserResult $parserResult,
         private array $queryComponents
     ) {
         $this->rsm           = $parserResult->getResultSetMapping();

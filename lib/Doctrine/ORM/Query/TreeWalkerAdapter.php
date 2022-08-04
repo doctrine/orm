@@ -24,8 +24,8 @@ abstract class TreeWalkerAdapter implements TreeWalker
      * {@inheritdoc}
      */
     public function __construct(
-        private AbstractQuery $query,
-        private ParserResult $parserResult,
+        private readonly AbstractQuery $query,
+        private readonly ParserResult $parserResult,
         private array $queryComponents
     ) {
     }

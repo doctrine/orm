@@ -8,7 +8,7 @@ use Psr\Log\AbstractLogger;
 
 final class SqlLogger extends AbstractLogger
 {
-    public function __construct(private QueryLog $queryLog)
+    public function __construct(private readonly QueryLog $queryLog)
     {
     }
 

@@ -26,9 +26,9 @@ final class ReflectionEmbeddedProperty extends ReflectionProperty
      * @psalm-param class-string $embeddedClass
      */
     public function __construct(
-        private ReflectionProperty $parentProperty,
-        private ReflectionProperty $childProperty,
-        private string $embeddedClass
+        private readonly ReflectionProperty $parentProperty,
+        private readonly ReflectionProperty $childProperty,
+        private readonly string $embeddedClass
     ) {
         parent::__construct($childProperty->getDeclaringClass()->getName(), $childProperty->getName());
     }

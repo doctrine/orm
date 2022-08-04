@@ -10,7 +10,7 @@ use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 
 final class ConnectionFromManagerProvider implements ConnectionProvider
 {
-    public function __construct(private EntityManagerProvider $entityManagerProvider)
+    public function __construct(private readonly EntityManagerProvider $entityManagerProvider)
     {
     }
 

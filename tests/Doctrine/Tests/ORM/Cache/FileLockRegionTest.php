@@ -13,24 +13,17 @@ use Doctrine\Tests\Mocks\CacheKeyMock;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ReflectionMethod;
-use ReflectionProperty;
 
 use function file_put_contents;
 use function is_dir;
-use function restore_error_handler;
 use function rmdir;
-use function set_error_handler;
-use function str_repeat;
 use function sys_get_temp_dir;
 use function uniqid;
 use function unlink;
 
-use const E_WARNING;
-
 /**
  * @extends RegionTestCase<FileLockRegion>
  * @group DDC-2183
- * @extends AbstractRegionTest<FileLockRegion>
  */
 class FileLockRegionTest extends RegionTestCase
 {
@@ -45,18 +38,16 @@ class FileLockRegionTest extends RegionTestCase
     {
         $reflection = new ReflectionMethod($region, 'getLockFileName');
 
-        $reflection->setAccessible(true);
-
         return $reflection->invoke($region, $key);
     }
 
-    protected function createRegion(): FileLockRegion
+    protected function createRegion(int $lockLifetime = 60): FileLockRegion
     {
         $this->directory = sys_get_temp_dir() . '/doctrine_lock_' . uniqid();
 
         $region = new DefaultRegion('concurren_region_test', $this->cacheItemPool);
 
-        return new FileLockRegion($region, $this->directory, 60);
+        return new FileLockRegion($region, $this->directory, $lockLifetime);
     }
 
     public function testGetRegionName(): void
@@ -221,13 +212,10 @@ class FileLockRegionTest extends RegionTestCase
 
     public function testLockLifetime(): void
     {
-        $key      = new CacheKeyMock('key');
-        $entry    = new CacheEntryMock(['foo' => 'bar']);
-        $file     = $this->getFileName($this->region, $key);
-        $property = new ReflectionProperty($this->region, 'lockLifetime');
-
-        $property->setAccessible(true);
-        $property->setValue($this->region, -10);
+        $this->region = $this->createRegion(-10);
+        $key          = new CacheKeyMock('key');
+        $entry        = new CacheEntryMock(['foo' => 'bar']);
+        $file         = $this->getFileName($this->region, $key);
 
         self::assertFalse($this->region->contains($key));
         self::assertTrue($this->region->put($key, $entry));
@@ -241,26 +229,6 @@ class FileLockRegionTest extends RegionTestCase
         self::assertTrue($this->region->contains($key));
         self::assertNotNull($this->region->get($key));
         self::assertFileDoesNotExist($file);
-    }
-
-    /**
-     * @group 1072
-     * @group DDC-3191
-     */
-    public function testHandlesScanErrorsGracefullyOnEvictAll(): void
-    {
-        $region              = $this->createRegion();
-        $reflectionDirectory = new ReflectionProperty($region, 'directory');
-
-        $reflectionDirectory->setAccessible(true);
-        $reflectionDirectory->setValue($region, str_repeat('a', 10000));
-
-        set_error_handler(static fn (): bool => true, E_WARNING);
-        try {
-            self::assertTrue($region->evictAll());
-        } finally {
-            restore_error_handler();
-        }
     }
 
     private function cleanTestDirectory(?string $path): void
