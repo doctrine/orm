@@ -309,7 +309,7 @@ class ClassMetadataTest extends OrmTestCase
     public function testDisablingVersioningWithGeneratedFieldsRestoresOriginalState(): void
     {
         $versionedField = ['fieldName' => 'version', 'type' => 'integer'];
-        $generatedField = ['fieldName' => 'id', 'type' => 'integer', 'generated'=> ClassMetadata::GENERATED_ALWAYS];
+        $generatedField = ['fieldName' => 'id', 'type' => 'integer', 'generated' => ClassMetadata::GENERATED_ALWAYS];
 
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());

@@ -28,6 +28,7 @@ use ReflectionNamedType;
 use ReflectionProperty;
 use RuntimeException;
 
+use function array_column;
 use function array_diff;
 use function array_flip;
 use function array_intersect;
@@ -3509,7 +3510,7 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $this->isVersioned = $bool;
 
-        $this->requiresFetchAfterChange = $bool 
+        $this->requiresFetchAfterChange = $bool
                                           || count(array_column($this->fieldMappings, 'generated')) > 0;
     }
 
