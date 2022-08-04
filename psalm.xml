@@ -30,7 +30,6 @@
         <DeprecatedConstant>
             <errorLevel type="suppress">
                 <file name="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php" />
-                <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
             </errorLevel>
         </DeprecatedConstant>
         <DeprecatedMethod>

@@ -1,5 +1,39 @@
 # Upgrade to 3.0
 
+## BC BREAK: Removed `QueryBuilder` methods and constants.
+
+The following `QueryBuilder` constants and methods have been removed:
+
+1. `SELECT`,
+2. `DELETE`,
+3. `UPDATE`,
+4. `STATE_DIRTY`,
+5. `STATE_CLEAN`,
+6. `getState()`,
+7. `getType()`.
+
+## BC BREAK: Omitting only the alias argument for `QueryBuilder::update` and `QueryBuilder::delete` is not supported anymore
+
+When building an UPDATE or DELETE query and when passing a class/type to the function, the alias argument must not be omitted.
+
+### Before
+
+```php
+$qb = $em->createQueryBuilder()
+    ->delete('User u')
+    ->where('u.id = :user_id')
+    ->setParameter('user_id', 1);
+```
+
+### After
+
+```php
+$qb = $em->createQueryBuilder()
+    ->delete('User', 'u')
+    ->where('u.id = :user_id')
+    ->setParameter('user_id', 1);
+```
+
 ## BC BREAK: Split output walkers and tree walkers
 
 `SqlWalker` and its child classes don't implement the `TreeWalker` interface
