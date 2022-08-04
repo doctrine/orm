@@ -36,9 +36,7 @@ use Psr\Cache\CacheItemPoolInterface;
  */
 class DefaultCacheFactoryTest extends OrmTestCase
 {
-    /** @var CacheFactory&MockObject */
-    private CacheFactory $factory;
-
+    private CacheFactory&MockObject $factory;
     private EntityManagerMock $em;
     private RegionsConfiguration $regionsConfig;
 

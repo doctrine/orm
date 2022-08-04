@@ -204,10 +204,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $config->addFilter('soft_delete', '\Doctrine\Tests\ORM\Functional\MySoftDeleteFilter');
     }
 
-    /**
-     * @return Connection&MockObject
-     */
-    private function getMockConnection(): Connection
+    private function getMockConnection(): Connection&MockObject
     {
         $connection = $this->createMock(Connection::class);
         $connection->method('getEventManager')
@@ -216,20 +213,12 @@ class SQLFilterTest extends OrmFunctionalTestCase
         return $connection;
     }
 
-    /**
-     * @return EntityManagerInterface&MockObject
-     */
-    private function getMockEntityManager(): EntityManagerInterface
+    private function getMockEntityManager(): EntityManagerInterface&MockObject
     {
         return $this->createMock(EntityManagerInterface::class);
     }
 
-    /**
-     * @psalm-param EntityManagerInterface&MockObject $em
-     *
-     * @return FilterCollection&MockObject
-     */
-    private function addMockFilterCollection(EntityManagerInterface $em): FilterCollection
+    private function addMockFilterCollection(EntityManagerInterface&MockObject $em): FilterCollection&MockObject
     {
         $filterCollection = $this->createMock(FilterCollection::class);
 

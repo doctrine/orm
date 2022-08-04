@@ -132,6 +132,11 @@
         <exclude-pattern>tests/Doctrine/Tests/Models/DDC1872/DDC1872ExampleTrait.php</exclude-pattern>
     </rule>
 
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses.UnusedUse">
+        <!-- The Sniff does not understand native intersection types -->
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+
     <rule name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>

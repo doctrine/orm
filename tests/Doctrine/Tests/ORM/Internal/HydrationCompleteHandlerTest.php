@@ -24,12 +24,8 @@ use function in_array;
  */
 class HydrationCompleteHandlerTest extends TestCase
 {
-    /** @var ListenersInvoker&MockObject */
-    private $listenersInvoker;
-
-    /** @var EntityManagerInterface&MockObject */
-    private $entityManager;
-
+    private ListenersInvoker&MockObject $listenersInvoker;
+    private EntityManagerInterface&MockObject $entityManager;
     private HydrationCompleteHandler $handler;
 
     protected function setUp(): void

@@ -22,12 +22,8 @@ use PHPUnit\Framework\MockObject\MockObject;
  */
 abstract class CollectionPersisterTestCase extends OrmTestCase
 {
-    /** @var Region&MockObject */
-    protected Region $region;
-
-    /** @var CollectionPersister&MockObject */
-    protected CollectionPersister $collectionPersister;
-
+    protected Region&MockObject $region;
+    protected CollectionPersister&MockObject $collectionPersister;
     protected EntityManagerMock $em;
 
     abstract protected function createPersister(EntityManagerInterface $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister;
@@ -43,10 +39,7 @@ abstract class CollectionPersisterTestCase extends OrmTestCase
         $this->collectionPersister = $this->createMock(CollectionPersister::class);
     }
 
-    /**
-     * @return Region&MockObject
-     */
-    protected function createRegion(): Region
+    protected function createRegion(): Region&MockObject
     {
         return $this->createMock(Region::class);
     }

@@ -26,10 +26,7 @@ class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
         return new ReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
     }
 
-    /**
-     * @return ConcurrentRegion&MockObject
-     */
-    protected function createRegion(): ConcurrentRegion
+    protected function createRegion(): ConcurrentRegion&MockObject
     {
         return $this->createMock(ConcurrentRegion::class);
     }

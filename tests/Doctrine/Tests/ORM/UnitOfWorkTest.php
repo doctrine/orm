@@ -52,18 +52,15 @@ class UnitOfWorkTest extends OrmTestCase
 
     /**
      * Provides a sequence mock to the UnitOfWork
-     *
-     * @var Connection&MockObject
      */
-    private $connection;
+    private Connection $connection;
 
     /**
      * The EntityManager mock that provides the mock persisters
      */
     private EntityManagerMock $_emMock;
 
-    /** @var EventManager&MockObject */
-    private $eventManager;
+    private EventManager&MockObject $eventManager;
 
     protected function setUp(): void
     {

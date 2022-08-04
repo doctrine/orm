@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\Tests\Models\Cache\Country;
+use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionProperty;
 
 /**
@@ -26,7 +27,7 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         return new ReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
     }
 
-    protected function createRegion(): Region
+    protected function createRegion(): ConcurrentRegion&MockObject
     {
         return $this->createMock(ConcurrentRegion::class);
     }
