@@ -33,7 +33,7 @@ class GH7869Test extends OrmTestCase
         $connection->method('getEventManager')
             ->willReturn(new EventManager());
 
-        $em = new class (EntityManagerMock::create($connection)) extends EntityManagerDecorator {
+        $em = new class (new EntityManagerMock($connection)) extends EntityManagerDecorator {
             /** @var int */
             public $getClassMetadataCalls = 0;
 

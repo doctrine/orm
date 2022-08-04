@@ -136,6 +136,7 @@ step:
 
     <?php
     // bootstrap.php
+    use Doctrine\DBAL\DriverManager;
     use Doctrine\ORM\EntityManager;
     use Doctrine\ORM\ORMSetup;
 
@@ -160,14 +161,14 @@ step:
     //    isDevMode: true,
     // );
 
-    // database configuration parameters
-    $conn = array(
+    // configuring the database connection
+    $connection = DriverManager::getConnection([
         'driver' => 'pdo_sqlite',
         'path' => __DIR__ . '/db.sqlite',
-    );
+    ], $config)
 
     // obtaining the entity manager
-    $entityManager = EntityManager::create($conn, $config);
+    $entityManager = new EntityManager($connection, $config);
 
 .. note::
     The YAML driver is deprecated and will be removed in version 3.0.

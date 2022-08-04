@@ -47,7 +47,7 @@ class DDC3634Test extends OrmFunctionalTestCase
     {
         $veryLargeId = PHP_INT_MAX . PHP_INT_MAX;
 
-        $entityManager = EntityManager::create(
+        $entityManager = new EntityManager(
             new DDC3634LastInsertIdMockingConnection($veryLargeId, $this->_em->getConnection()),
             $this->_em->getConfiguration()
         );

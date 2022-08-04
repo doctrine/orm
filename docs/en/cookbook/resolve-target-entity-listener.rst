@@ -127,7 +127,8 @@ the targetEntity resolution will occur reliably:
     // Add the ResolveTargetEntityListener
     $evm->addEventListener(Doctrine\ORM\Events::loadClassMetadata, $rtel);
 
-    $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $evm);
+    $connection = \Doctrine\DBAL\DriverManager::createConnection($connectionOptions, $config, $evm);
+    $em = new \Doctrine\ORM\EntityManager($connection, $config, $evm);
 
 Final Thoughts
 --------------
@@ -136,5 +137,3 @@ With the ``ResolveTargetEntityListener``, we are able to decouple our
 bundles, keeping them usable by themselves, but still being able to
 define relationships between different objects. By using this method,
 I've found my bundles end up being easier to maintain independently.
-
-

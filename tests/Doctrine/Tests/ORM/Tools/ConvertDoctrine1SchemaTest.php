@@ -46,7 +46,7 @@ class ConvertDoctrine1SchemaTest extends OrmTestCase
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setMetadataDriverImpl($metadataDriver);
 
-        return EntityManagerMock::create($connection, $config);
+        return new EntityManagerMock($connection, $config);
     }
 
     public function testTest(): void

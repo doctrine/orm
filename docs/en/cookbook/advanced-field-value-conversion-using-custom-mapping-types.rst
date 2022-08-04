@@ -196,7 +196,7 @@ Example usage
     <?php
 
     // Bootstrapping stuff...
-    // $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
+    // $em = new \Doctrine\ORM\EntityManager($connection, $config);
 
     // Setup custom mapping type
     use Doctrine\DBAL\Types\Type;
