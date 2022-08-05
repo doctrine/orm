@@ -24,21 +24,11 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
  */
 class ProxyFactory extends AbstractProxyFactory
 {
-    /** @var EntityManagerInterface The EntityManager this factory is bound to. */
-    private $em;
+    /** The UnitOfWork this factory uses to retrieve persisters */
+    private readonly UnitOfWork $uow;
 
-    /** @var UnitOfWork The UnitOfWork this factory uses to retrieve persisters */
-    private $uow;
-
-    /** @var string */
-    private $proxyNs;
-
-    /**
-     * The IdentifierFlattener used for manipulating identifiers
-     *
-     * @var IdentifierFlattener
-     */
-    private $identifierFlattener;
+    /** The IdentifierFlattener used for manipulating identifiers */
+    private readonly IdentifierFlattener $identifierFlattener;
 
     /**
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
@@ -51,23 +41,22 @@ class ProxyFactory extends AbstractProxyFactory
      *                                             values are constants of {@see AbstractProxyFactory}.
      * @psalm-param bool|AutogenerateMode $autoGenerate
      */
-    public function __construct(EntityManagerInterface $em, $proxyDir, $proxyNs, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        string $proxyDir,
+        private readonly string $proxyNs,
+        bool|int $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER,
+    ) {
         $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
 
         $proxyGenerator->setPlaceholder('baseProxyInterface', Proxy::class);
         parent::__construct($proxyGenerator, $em->getMetadataFactory(), $autoGenerate);
 
-        $this->em                  = $em;
         $this->uow                 = $em->getUnitOfWork();
-        $this->proxyNs             = $proxyNs;
         $this->identifierFlattener = new IdentifierFlattener($this->uow, $em->getMetadataFactory());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function skipClass(ClassMetadata $metadata)
+    protected function skipClass(ClassMetadata $metadata): bool
     {
         return $metadata->isMappedSuperclass
             || $metadata->isEmbeddedClass
@@ -77,7 +66,7 @@ class ProxyFactory extends AbstractProxyFactory
     /**
      * {@inheritDoc}
      */
-    protected function createProxyDefinition($className)
+    protected function createProxyDefinition($className): ProxyDefinition
     {
         $classMetadata   = $this->em->getClassMetadata($className);
         $entityPersister = $this->uow->getEntityPersister($className);
@@ -175,7 +164,6 @@ class ProxyFactory extends AbstractProxyFactory
                     continue;
                 }
 
-                $property->setAccessible(true);
                 $property->setValue($proxy, $property->getValue($original));
             }
         };

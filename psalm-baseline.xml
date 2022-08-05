@@ -1096,8 +1096,9 @@
     <PossiblyNullPropertyFetch occurrences="1">
       <code>$property-&gt;name</code>
     </PossiblyNullPropertyFetch>
-    <PossiblyNullReference occurrences="1">
-      <code>setAccessible</code>
+    <PossiblyNullReference occurrences="2">
+      <code>getValue</code>
+      <code>setValue</code>
     </PossiblyNullReference>
     <UndefinedInterfaceMethod occurrences="1">
       <code>__wakeup</code>
