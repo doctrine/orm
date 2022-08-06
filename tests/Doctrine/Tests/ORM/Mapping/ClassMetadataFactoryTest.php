@@ -151,7 +151,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $actual = $cmf->getMetadataFor($cm1->name);
     }
 
-    public function testHasGetMetadataNamespaceSeparatorIsNotNormalized(): void
+    public function testHasGetMetadataClassIsNormalized(): void
     {
         require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
@@ -165,9 +165,9 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $h2 = $mf->hasMetadataFor('\\' . DoctrineGlobalArticle::class);
         $m2 = $mf->getMetadataFor('\\' . DoctrineGlobalArticle::class);
 
-        self::assertNotSame($m1, $m2);
-        self::assertFalse($h2);
+        self::assertSame($m1, $m2);
         self::assertTrue($h1);
+        self::assertTrue($h2);
     }
 
     /**
