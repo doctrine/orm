@@ -69,7 +69,6 @@
                 <referencedMethod name="Doctrine\DBAL\Connection::getSchemaManager"/>
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::supportsForeignKeyConstraints"/>
-                <referencedMethod name="Doctrine\DBAL\Types\Type::getName"/>
                 <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
                 <referencedMethod name="Doctrine\ORM\Internal\Hydration\AbstractHydrator::hydrateRow"/>
