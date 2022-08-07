@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-use InvalidArgumentException;
-
 use function get_class;
-use function gettype;
-use function is_object;
-use function sprintf;
 use function trim;
 
 /**
@@ -18,12 +13,9 @@ use function trim;
 class DefaultEntityListenerResolver implements EntityListenerResolver
 {
     /** @psalm-var array<class-string, object> Map to store entity listener instances. */
-    private $instances = [];
+    private array $instances = [];
 
-    /**
-     * {@inheritdoc}
-     */
-    public function clear($className = null)
+    public function clear(?string $className = null): void
     {
         if ($className === null) {
             $this->instances = [];
@@ -32,33 +24,18 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
         }
 
         $className = trim($className, '\\');
-        if (isset($this->instances[$className])) {
-            unset($this->instances[$className]);
-        }
+        unset($this->instances[$className]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function register($object)
+    public function register(object $object): void
     {
-        if (! is_object($object)) {
-            throw new InvalidArgumentException(sprintf('An object was expected, but got "%s".', gettype($object)));
-        }
-
         $this->instances[get_class($object)] = $object;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function resolve($className)
+    public function resolve(string $className): object
     {
         $className = trim($className, '\\');
-        if (isset($this->instances[$className])) {
-            return $this->instances[$className];
-        }
 
-        return $this->instances[$className] = new $className();
+        return $this->instances[$className] ??= new $className();
     }
 }
