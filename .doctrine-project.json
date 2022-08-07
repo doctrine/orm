@@ -12,20 +12,26 @@
             "upcoming": true
         },
         {
-            "name": "2.13",
-            "branchName": "2.13.x",
-            "slug": "2.13",
+            "name": "2.14",
+            "branchName": "2.14.x",
+            "slug": "2.14",
             "upcoming": true
         },
         {
-            "name": "2.12",
-            "branchName": "2.12.x",
-            "slug": "2.12",
+            "name": "2.13",
+            "branchName": "2.13.x",
+            "slug": "2.13",
             "current": true,
             "aliases": [
                 "current",
                 "stable"
             ]
+        },
+        {
+            "name": "2.12",
+            "branchName": "2.12.x",
+            "slug": "2.12",
+            "maintained": false
         },
         {
             "name": "2.11",

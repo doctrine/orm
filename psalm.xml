@@ -43,7 +43,6 @@
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::usesSequenceEmulatedIdentityColumns"/>
                 <!-- We need to keep the calls for DBAL 3.3 compatibility. -->
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::supportsForeignKeyConstraints"/>
-                <referencedMethod name="Doctrine\DBAL\Types\Type::getName"/>
                 <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
                 <referencedMethod name="Doctrine\ORM\Query\TreeWalkerAdapter::_getQueryComponents"/>

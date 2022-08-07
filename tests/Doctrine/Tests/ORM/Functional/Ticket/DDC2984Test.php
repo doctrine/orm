@@ -129,9 +129,11 @@ class DDC2984DomainUserId implements Stringable
 
 class DDC2984UserIdCustomDbalType extends StringType
 {
+    private const TYPE_NAME = 'ddc2984_domain_user_id';
+
     public function getName(): string
     {
-        return 'ddc2984_domain_user_id';
+        return self::TYPE_NAME;
     }
 
     /**
@@ -158,7 +160,7 @@ class DDC2984UserIdCustomDbalType extends StringType
         }
 
         if (! $value instanceof DDC2984DomainUserId) {
-            throw ConversionException::conversionFailed($value, $this->getName());
+            throw ConversionException::conversionFailed($value, self::TYPE_NAME);
         }
 
         return $value->toString();
