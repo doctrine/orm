@@ -39,7 +39,6 @@ use Doctrine\Tests\Models\JoinedInheritanceType\ChildClass;
 use Doctrine\Tests\Models\JoinedInheritanceType\RootClass;
 use Doctrine\Tests\Models\Quote;
 use Doctrine\Tests\OrmTestCase;
-use DoctrineGlobalArticle;
 use Exception;
 use InvalidArgumentException;
 use ReflectionClass;
