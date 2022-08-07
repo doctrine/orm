@@ -41,7 +41,6 @@ use Doctrine\Tests\Models\Quote\Group;
 use Doctrine\Tests\Models\Quote\Phone;
 use Doctrine\Tests\Models\Quote\User;
 use Doctrine\Tests\OrmTestCase;
-use DoctrineGlobalArticle;
 use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\Assert;
@@ -150,25 +149,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $this->expectException(ORMException::class);
 
         $actual = $cmf->getMetadataFor($cm1->name);
-    }
-
-    public function testHasGetMetadataNamespaceSeparatorIsNotNormalized(): void
-    {
-        require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
-
-        $metadataDriver = $this->createAnnotationDriver([__DIR__ . '/../../Models/Global/']);
-
-        $entityManager = $this->createEntityManager($metadataDriver);
-
-        $mf = $entityManager->getMetadataFactory();
-        $m1 = $mf->getMetadataFor(DoctrineGlobalArticle::class);
-        $h1 = $mf->hasMetadataFor(DoctrineGlobalArticle::class);
-        $h2 = $mf->hasMetadataFor('\\' . DoctrineGlobalArticle::class);
-        $m2 = $mf->getMetadataFor('\\' . DoctrineGlobalArticle::class);
-
-        self::assertNotSame($m1, $m2);
-        self::assertFalse($h2);
-        self::assertTrue($h1);
     }
 
     /**

@@ -1485,6 +1485,11 @@ class SqlWalker
                     $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
                     $sqlSelectExpressions[] = $col . ' AS ' . $columnAlias;
+
+                    if (! empty($fieldMapping['enumType'])) {
+                        $this->rsm->addEnumResult($columnAlias, $fieldMapping['enumType']);
+                    }
+
                     break;
 
                 case $e instanceof AST\Literal:

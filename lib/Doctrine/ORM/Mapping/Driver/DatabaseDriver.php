@@ -38,6 +38,20 @@ use function strtolower;
  */
 class DatabaseDriver implements MappingDriver
 {
+    /**
+     * Replacement for {@see Types::ARRAY}.
+     *
+     * To be removed as soon as support for DBAL 3 is dropped.
+     */
+    private const ARRAY = 'array';
+
+    /**
+     * Replacement for {@see Types::OBJECT}.
+     *
+     * To be removed as soon as support for DBAL 3 is dropped.
+     */
+    private const OBJECT = 'object';
+
     /** @var AbstractSchemaManager */
     private $_sm;
 
@@ -409,10 +423,10 @@ class DatabaseDriver implements MappingDriver
 
         // Type specific elements
         switch ($fieldMapping['type']) {
-            case Types::ARRAY:
+            case self::ARRAY:
             case Types::BLOB:
             case Types::GUID:
-            case Types::OBJECT:
+            case self::OBJECT:
             case Types::SIMPLE_ARRAY:
             case Types::STRING:
             case Types::TEXT:
