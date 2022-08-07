@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="v4.25.0@d7cd84c4ebca74ba3419b9601f81d177bcbe2aac">
+<files psalm-version="4.26.0@6998fabb2bf528b65777bf9941920888d23c03ac">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass occurrences="1">
       <code>IterableResult</code>
@@ -1633,7 +1633,7 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php">
-    <InvalidScalarArgument occurrences="7">
+    <ArgumentTypeCoercion occurrences="7">
       <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
       <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
       <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
@@ -1641,7 +1641,7 @@
       <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
       <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
       <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-    </InvalidScalarArgument>
+    </ArgumentTypeCoercion>
     <PossiblyInvalidPropertyAssignmentValue occurrences="2">
       <code>$parser-&gt;ArithmeticPrimary()</code>
       <code>$parser-&gt;ArithmeticPrimary()</code>
@@ -1666,7 +1666,7 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php">
-    <InvalidScalarArgument occurrences="7">
+    <ArgumentTypeCoercion occurrences="7">
       <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
       <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
       <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
@@ -1674,7 +1674,7 @@
       <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
       <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
       <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-    </InvalidScalarArgument>
+    </ArgumentTypeCoercion>
     <UndefinedPropertyFetch occurrences="1">
       <code>$this-&gt;unit-&gt;value</code>
     </UndefinedPropertyFetch>
@@ -2786,9 +2786,6 @@
       <code>$this-&gt;getClassToExtend() ?: $metadata-&gt;name</code>
       <code>array_map('strlen', $paramTypes)</code>
     </ArgumentTypeCoercion>
-    <DeprecatedConstant occurrences="1">
-      <code>ClassMetadataInfo::GENERATOR_TYPE_UUID</code>
-    </DeprecatedConstant>
     <DocblockTypeContradiction occurrences="1">
       <code>class_exists($metadata-&gt;name)</code>
     </DocblockTypeContradiction>
