@@ -151,25 +151,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $actual = $cmf->getMetadataFor($cm1->name);
     }
 
-    public function testHasGetMetadataClassIsNormalized(): void
-    {
-        require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
-
-        $metadataDriver = $this->createAnnotationDriver([__DIR__ . '/../../Models/Global/']);
-
-        $entityManager = $this->createEntityManager($metadataDriver);
-
-        $mf = $entityManager->getMetadataFactory();
-        $m1 = $mf->getMetadataFor(DoctrineGlobalArticle::class);
-        $h1 = $mf->hasMetadataFor(DoctrineGlobalArticle::class);
-        $h2 = $mf->hasMetadataFor('\\' . DoctrineGlobalArticle::class);
-        $m2 = $mf->getMetadataFor('\\' . DoctrineGlobalArticle::class);
-
-        self::assertSame($m1, $m2);
-        self::assertTrue($h1);
-        self::assertTrue($h2);
-    }
-
     /**
      * @group DDC-1512
      */
