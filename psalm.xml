@@ -24,30 +24,12 @@
                 <!-- Remove on 3.0.x -->
                 <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
                 <referencedClass name="Doctrine\ORM\Event\LifecycleEventArgs"/>
-                <referencedClass name="Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper"/>
-                <referencedClass name="Doctrine\ORM\Tools\Console\EntityManagerProvider\HelperSetManagerProvider"/>
-                <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand"/>
-                <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
             </errorLevel>
         </DeprecatedClass>
-        <DeprecatedConstant>
-            <errorLevel type="suppress">
-                <file name="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php" />
-            </errorLevel>
-        </DeprecatedConstant>
         <DeprecatedMethod>
             <errorLevel type="suppress">
-                <!-- We're calling the deprecated method for BC here. -->
-                <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
-                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getIdentitySequenceName"/>
-                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::usesSequenceEmulatedIdentityColumns"/>
-                <!-- We need to keep the calls for DBAL 3.3 compatibility. -->
-                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::supportsForeignKeyConstraints"/>
                 <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
-                <referencedMethod name="Doctrine\ORM\Query\TreeWalkerAdapter::_getQueryComponents"/>
-                <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
-                <file name="lib/Doctrine/ORM/Query/TreeWalkerChain.php"/>
             </errorLevel>
         </DeprecatedMethod>
         <DocblockTypeContradiction>
