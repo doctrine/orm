@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 class GroupByClause extends Node
 {
     /** @var mixed[] */
@@ -17,11 +19,8 @@ class GroupByClause extends Node
         $this->groupByItems = $groupByItems;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkGroupByClause($this);
+        return $walker->walkGroupByClause($this);
     }
 }

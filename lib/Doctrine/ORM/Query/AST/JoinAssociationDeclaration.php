@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * JoinAssociationDeclaration ::= JoinAssociationPathExpression ["AS"] AliasIdentificationVariable
  *
@@ -32,11 +34,8 @@ class JoinAssociationDeclaration extends Node
         $this->indexBy                       = $indexBy;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkJoinAssociationDeclaration($this);
+        return $walker->walkJoinAssociationDeclaration($this);
     }
 }

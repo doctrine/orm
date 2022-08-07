@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * ComparisonExpression ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression ) |
  *                          StringExpression ComparisonOperator (StringExpression | QuantifiedExpression) |
@@ -37,11 +39,8 @@ class ComparisonExpression extends Node
         $this->operator        = $operator;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkComparisonExpression($this);
+        return $walker->walkComparisonExpression($this);
     }
 }

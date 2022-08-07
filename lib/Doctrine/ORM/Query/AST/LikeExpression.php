@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\AST;
 
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
+use Doctrine\ORM\Query\SqlWalker;
 
 /**
  * LikeExpression ::= StringExpression ["NOT"] "LIKE" string ["ESCAPE" char]
@@ -37,11 +38,8 @@ class LikeExpression extends Node
         $this->escapeChar       = $escapeChar;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkLikeExpression($this);
+        return $walker->walkLikeExpression($this);
     }
 }

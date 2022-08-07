@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * OrderByClause ::= "ORDER" "BY" OrderByItem {"," OrderByItem}*
  *
@@ -22,11 +24,8 @@ class OrderByClause extends Node
         $this->orderByItems = $orderByItems;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkOrderByClause($this);
+        return $walker->walkOrderByClause($this);
     }
 }

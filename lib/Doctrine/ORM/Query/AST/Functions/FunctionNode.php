@@ -33,12 +33,7 @@ abstract class FunctionNode extends Node
      */
     abstract public function getSql(SqlWalker $sqlWalker);
 
-    /**
-     * @param SqlWalker $sqlWalker
-     *
-     * @return string
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $sqlWalker): string
     {
         return $sqlWalker->walkFunction($this);
     }

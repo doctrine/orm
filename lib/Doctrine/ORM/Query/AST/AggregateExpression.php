@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 class AggregateExpression extends Node
 {
     /** @var string */
@@ -31,10 +33,7 @@ class AggregateExpression extends Node
         $this->isDistinct     = $isDistinct;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatch($walker)
+    public function dispatch(SqlWalker $walker): string
     {
         return $walker->walkAggregateExpression($this);
     }
