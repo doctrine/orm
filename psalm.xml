@@ -26,10 +26,9 @@
                 <referencedClass name="Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver"/>
                 <!-- We wire the command as long as DBAL ships it -->
                 <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand" />
-                <!-- Remove on 2.13.x -->
-                <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
                 <!-- Remove on 3.0.x -->
                 <referencedClass name="Doctrine\Common\Persistence\PersistentObject"/>
+                <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
                 <referencedClass name="Doctrine\ORM\Event\LifecycleEventArgs"/>
                 <referencedClass name="Doctrine\ORM\Exception\UnknownEntityNamespace"/>
                 <referencedClass name="Doctrine\ORM\Mapping\Driver\YamlDriver"/>
@@ -49,8 +48,6 @@
                 <file name="lib/Doctrine/ORM/Query/Parser.php"/>
                 <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
                 <file name="lib/Doctrine/ORM/Tools/EntityGenerator.php"/>
-                <!-- Remove on 2.13.x. -->
-                <file name="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php" />
             </errorLevel>
         </DeprecatedConstant>
         <DeprecatedInterface>
@@ -73,9 +70,8 @@
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::supportsForeignKeyConstraints"/>
                 <referencedMethod name="Doctrine\DBAL\Types\Type::getName"/>
-                <!-- Remove on 2.13.x -->
-                <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
                 <!-- Remove on 3.0.x -->
+                <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
                 <referencedMethod name="Doctrine\ORM\Internal\Hydration\AbstractHydrator::hydrateRow"/>
                 <referencedMethod name="Doctrine\ORM\Configuration::ensureProductionSettings"/>
                 <referencedMethod name="Doctrine\ORM\Configuration::newDefaultAnnotationDriver"/>
