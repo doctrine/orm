@@ -24,6 +24,11 @@
                 <referencedClass name="Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper"/>
                 <!-- The exception is thrown by a deprecated method. -->
                 <referencedClass name="Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver"/>
+                <!-- We wire the command as long as DBAL ships it -->
+                <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand" />
+                <!-- Remove on 2.13.x -->
+                <referencedClass name="Doctrine\DBAL\Schema\Visitor\DropSchemaSqlCollector"/>
+                <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
                 <!-- Remove on 3.0.x -->
                 <referencedClass name="Doctrine\Common\Persistence\PersistentObject"/>
                 <referencedClass name="Doctrine\ORM\Exception\UnknownEntityNamespace"/>
@@ -42,6 +47,9 @@
                 <file name="lib/Doctrine/ORM/Configuration.php"/>
                 <file name="lib/Doctrine/ORM/Query/Lexer.php"/>
                 <file name="lib/Doctrine/ORM/Query/Parser.php"/>
+                <file name="lib/Doctrine/ORM/Tools/EntityGenerator.php"/>
+                <!-- Remove on 2.13.x. -->
+                <file name="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php" />
             </errorLevel>
         </DeprecatedConstant>
         <DeprecatedInterface>
@@ -53,6 +61,8 @@
             <errorLevel type="suppress">
                 <!-- We're calling the deprecated method for BC here. -->
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
+                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getIdentitySequenceName"/>
+                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::usesSequenceEmulatedIdentityColumns"/>
                 <!-- We need to keep the calls for DBAL 2.13 compatibility. -->
                 <referencedMethod name="Doctrine\DBAL\Cache\QueryCacheProfile::getResultCacheDriver"/>
                 <referencedMethod name="Doctrine\DBAL\Cache\QueryCacheProfile::setResultCacheDriver"/>
@@ -60,6 +70,11 @@
                 <referencedMethod name="Doctrine\DBAL\Configuration::setResultCacheImpl"/>
                 <referencedMethod name="Doctrine\DBAL\Connection::getSchemaManager"/>
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
+                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::supportsForeignKeyConstraints"/>
+                <referencedMethod name="Doctrine\DBAL\Types\Type::getName"/>
+                <!-- Remove on 2.13.x -->
+                <referencedMethod name="Doctrine\DBAL\Schema\AbstractSchemaManager::getDatabasePlatform"/>
+                <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
                 <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\ORM\Internal\Hydration\AbstractHydrator::hydrateRow"/>
                 <referencedMethod name="Doctrine\ORM\Configuration::ensureProductionSettings"/>
