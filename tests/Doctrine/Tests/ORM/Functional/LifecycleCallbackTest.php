@@ -6,8 +6,13 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostLoadEventArgs;
+use Doctrine\ORM\Event\PostPersistEventArgs;
+use Doctrine\ORM\Event\PostRemoveEventArgs;
+use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
+use Doctrine\ORM\Event\PrePersistEventArgs;
+use Doctrine\ORM\Event\PreRemoveEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -402,13 +407,13 @@ DQL;
         self::assertArrayHasKey('postRemoveHandler', $e->calls);
 
         self::assertInstanceOf(PreFlushEventArgs::class, $e->calls['preFlushHandler']);
-        self::assertInstanceOf(LifecycleEventArgs::class, $e->calls['postLoadHandler']);
-        self::assertInstanceOf(LifecycleEventArgs::class, $e->calls['prePersistHandler']);
-        self::assertInstanceOf(LifecycleEventArgs::class, $e->calls['postPersistHandler']);
+        self::assertInstanceOf(PostLoadEventArgs::class, $e->calls['postLoadHandler']);
+        self::assertInstanceOf(PrePersistEventArgs::class, $e->calls['prePersistHandler']);
+        self::assertInstanceOf(PostPersistEventArgs::class, $e->calls['postPersistHandler']);
         self::assertInstanceOf(PreUpdateEventArgs::class, $e->calls['preUpdateHandler']);
-        self::assertInstanceOf(LifecycleEventArgs::class, $e->calls['postUpdateHandler']);
-        self::assertInstanceOf(LifecycleEventArgs::class, $e->calls['preRemoveHandler']);
-        self::assertInstanceOf(LifecycleEventArgs::class, $e->calls['postRemoveHandler']);
+        self::assertInstanceOf(PostUpdateEventArgs::class, $e->calls['postUpdateHandler']);
+        self::assertInstanceOf(PreRemoveEventArgs::class, $e->calls['preRemoveHandler']);
+        self::assertInstanceOf(PostRemoveEventArgs::class, $e->calls['postRemoveHandler']);
     }
 }
 
@@ -662,19 +667,19 @@ class LifecycleCallbackEventArgEntity
     public $calls = [];
 
     /** @PostPersist */
-    public function postPersistHandler(LifecycleEventArgs $event): void
+    public function postPersistHandler(PostPersistEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
     /** @PrePersist */
-    public function prePersistHandler(LifecycleEventArgs $event): void
+    public function prePersistHandler(PrePersistEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
     /** @PostUpdate */
-    public function postUpdateHandler(LifecycleEventArgs $event): void
+    public function postUpdateHandler(PostUpdateEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
@@ -686,13 +691,13 @@ class LifecycleCallbackEventArgEntity
     }
 
     /** @PostRemove */
-    public function postRemoveHandler(LifecycleEventArgs $event): void
+    public function postRemoveHandler(PostRemoveEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
     /** @PreRemove */
-    public function preRemoveHandler(LifecycleEventArgs $event): void
+    public function preRemoveHandler(PreRemoveEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
@@ -704,7 +709,7 @@ class LifecycleCallbackEventArgEntity
     }
 
     /** @PostLoad */
-    public function postLoadHandler(LifecycleEventArgs $event): void
+    public function postLoadHandler(PostLoadEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
