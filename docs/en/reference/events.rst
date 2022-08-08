@@ -541,7 +541,7 @@ mentioned sets. See this example:
     {
         public function onFlush(OnFlushEventArgs $eventArgs)
         {
-            $em = $eventArgs->getEntityManager();
+            $em = $eventArgs->getObjectManager();
             $uow = $em->getUnitOfWork();
 
             foreach ($uow->getScheduledEntityInsertions() as $entity) {
