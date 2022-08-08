@@ -54,6 +54,20 @@ class DDC964User
     protected $groups;
 
     /**
+     * @psalm-var Collection<int, DDC964Organization>
+     * @ManyToMany(targetEntity="DDC964Organization")
+     * @JoinTable(name="ddc964_users_organizations",
+     *  joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+     *  inverseJoinColumns={@JoinColumn(name="organization_id", referencedColumnName="id")}
+     * )
+     */
+    #[ManyToMany(targetEntity: DDC964Organization::class)]
+    #[JoinTable(name: 'ddc964_users_organizations')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'organization_id', referencedColumnName: 'id')]
+    protected $organizations;
+
+    /**
      * @var DDC964Address
      * @ManyToOne(targetEntity="DDC964Address", cascade={"persist", "merge"})
      * @JoinColumn(name="address_id", referencedColumnName="id")
@@ -64,8 +78,9 @@ class DDC964User
 
     public function __construct(?string $name = null)
     {
-        $this->name   = $name;
-        $this->groups = new ArrayCollection();
+        $this->name          = $name;
+        $this->groups        = new ArrayCollection();
+        $this->organizations = new ArrayCollection();
     }
 
     public function getId(): int
@@ -92,9 +107,22 @@ class DDC964User
     /**
      * @psalm-return Collection<int, DDC964Group>
      */
-    public function getGroups(): ArrayCollection
+    public function getGroups(): Collection
     {
         return $this->groups;
+    }
+
+    public function addOrganization(DDC964Organization $organization): void
+    {
+        $this->organizations->add($organization);
+    }
+
+    /**
+     * @psalm-return Collection<int, DDC964Organization>
+     */
+    public function getOrganizations(): Collection
+    {
+        return $this->organizations;
     }
 
     public function getAddress(): DDC964Address
@@ -157,6 +185,28 @@ class DDC964User
                     'inverseJoinColumns' => [
                         [
                             'name' => 'group_id',
+                            'referencedColumnName' => 'id',
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        $metadata->mapManyToMany(
+            [
+                'fieldName'      => 'organizations',
+                'targetEntity'   => 'DDC964Organization',
+                'joinTable'      => [
+                    'name'          => 'ddc964_users_organizations',
+                    'joinColumns'   => [
+                        [
+                            'name' => 'user_id',
+                            'referencedColumnName' => 'id',
+                        ],
+                    ],
+                    'inverseJoinColumns' => [
+                        [
+                            'name' => 'organization_id',
                             'referencedColumnName' => 'id',
                         ],
                     ],

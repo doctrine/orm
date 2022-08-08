@@ -16,6 +16,9 @@
                     </inverse-join-columns>
                 </join-table>
             </association-override>
+            <association-override name="organizations">
+                <join-table name="ddc964_users_adminorganizations"/>
+            </association-override>
             <association-override name="address">
                 <join-columns>
                     <join-column name="adminaddress_id" referenced-column-name="id"/>
@@ -23,5 +26,5 @@
             </association-override>
         </association-overrides>
     </entity>
-        
+
 </doctrine-mapping>

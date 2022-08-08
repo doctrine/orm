@@ -4,18 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC964;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\ManyToMany;
 
 /**
  * @Entity
  */
-class DDC964Group
+class DDC964Organization
 {
     /**
      * @var int
@@ -31,16 +28,9 @@ class DDC964Group
      */
     private $name;
 
-    /**
-     * @psalm-var Collection<int, DDC964User>
-     * @ManyToMany(targetEntity="DDC964User", mappedBy="groups")
-     */
-    private $users;
-
     public function __construct(?string $name = null)
     {
-        $this->name  = $name;
-        $this->users = new ArrayCollection();
+        $this->name = $name;
     }
 
     public function setName(string $name): void
@@ -51,18 +41,5 @@ class DDC964Group
     public function getName(): ?string
     {
         return $this->name;
-    }
-
-    public function addUser(DDC964User $user): void
-    {
-        $this->users[] = $user;
-    }
-
-    /**
-     * @psalm-return Collection<int, DDC964User>
-     */
-    public function getUsers(): Collection
-    {
-        return $this->users;
     }
 }

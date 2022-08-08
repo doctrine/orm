@@ -59,4 +59,26 @@ $metadata->mapManyToMany(
     ]
 );
 
+$metadata->mapManyToMany(
+    [
+        'fieldName'      => 'organizations',
+        'targetEntity'   => 'DDC964Organization',
+        'joinTable'      => [
+            'name'          => 'ddc964_users_organizations',
+            'joinColumns'   => [
+                [
+                    'name' => 'user_id',
+                    'referencedColumnName' => 'id',
+                ],
+            ],
+            'inverseJoinColumns' => [
+                [
+                    'name' => 'organization_id',
+                    'referencedColumnName' => 'id',
+                ],
+            ],
+        ],
+    ]
+);
+
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);

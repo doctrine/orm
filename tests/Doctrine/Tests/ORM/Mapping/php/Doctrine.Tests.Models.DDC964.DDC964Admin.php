@@ -29,3 +29,10 @@ $metadata->setAssociationOverride(
         ],
     ]
 );
+
+$metadata->setAssociationOverride(
+    'organizations',
+    [
+        'joinTable' => ['name' => 'ddc964_users_adminorganizations'],
+    ]
+);
