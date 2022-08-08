@@ -503,9 +503,6 @@
     </MissingConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DefaultEntityListenerResolver.php">
-    <DocblockTypeContradiction occurrences="1">
-      <code>is_object($object)</code>
-    </DocblockTypeContradiction>
     <InvalidStringClass occurrences="1">
       <code>new $className()</code>
     </InvalidStringClass>
