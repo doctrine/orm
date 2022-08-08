@@ -509,9 +509,6 @@
     <InvalidStringClass occurrences="1">
       <code>new $className()</code>
     </InvalidStringClass>
-    <MissingReturnType occurrences="1">
-      <code>register</code>
-    </MissingReturnType>
     <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;instances</code>
     </PropertyTypeCoercion>
@@ -679,11 +676,6 @@
     <MissingParamType occurrences="1">
       <code>$columnPrefix</code>
     </MissingParamType>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/EntityListenerResolver.php">
-    <MissingReturnType occurrences="1">
-      <code>register</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/EntityResult.php">
     <MissingConstructor occurrences="2">

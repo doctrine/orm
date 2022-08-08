@@ -214,7 +214,7 @@ specific to a particular entity class's lifecycle.
 
         <?php
         use Doctrine\DBAL\Types\Types;
-        use Doctrine\Persistence\Event\LifecycleEventArgs;
+        use Doctrine\ORM\Event\LifecycleEventArgs;
 
         #[Entity]
         #[HasLifecycleCallbacks]
@@ -530,7 +530,7 @@ mentioned sets. See this example:
     {
         public function onFlush(OnFlushEventArgs $eventArgs)
         {
-            $em = $eventArgs->getEntityManager();
+            $em = $eventArgs->getObjectManager();
             $uow = $em->getUnitOfWork();
 
             foreach ($uow->getScheduledEntityInsertions() as $entity) {
