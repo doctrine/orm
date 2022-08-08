@@ -271,16 +271,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\AST\\\\IndexBy\\:\\:dispatch\\(\\) should return string but returns void\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/IndexBy.php
-
-		-
-			message: "#^Result of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkIndexBy\\(\\) \\(void\\) is used\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/IndexBy.php
-
-		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkJoinPathExpression\\(\\)\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/AST/JoinClassPathExpression.php

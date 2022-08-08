@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * UpdateStatement = UpdateClause [WhereClause]
  *
@@ -25,11 +27,8 @@ class UpdateStatement extends Node
         $this->updateClause = $updateClause;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkUpdateStatement($this);
+        return $walker->walkUpdateStatement($this);
     }
 }

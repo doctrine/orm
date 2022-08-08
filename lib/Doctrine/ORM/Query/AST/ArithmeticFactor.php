@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * ArithmeticFactor ::= [("+" | "-")] ArithmeticPrimary
  *
@@ -47,11 +49,8 @@ class ArithmeticFactor extends Node
         return $this->sign === false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkArithmeticFactor($this);
+        return $walker->walkArithmeticFactor($this);
     }
 }

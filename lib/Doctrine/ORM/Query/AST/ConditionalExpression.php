@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * ConditionalExpression ::= ConditionalTerm {"OR" ConditionalTerm}*
  *
@@ -22,11 +24,8 @@ class ConditionalExpression extends Node
         $this->conditionalTerms = $conditionalTerms;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkConditionalExpression($this);
+        return $walker->walkConditionalExpression($this);
     }
 }

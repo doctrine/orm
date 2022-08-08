@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * AssociationPathExpression ::= CollectionValuedPathExpression | SingleValuedAssociationPathExpression
  * SingleValuedPathExpression ::= StateFieldPathExpression | SingleValuedAssociationPathExpression
@@ -50,10 +52,7 @@ class PathExpression extends Node
         $this->field                  = $field;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatch($walker)
+    public function dispatch(SqlWalker $walker): string
     {
         return $walker->walkPathExpression($this);
     }

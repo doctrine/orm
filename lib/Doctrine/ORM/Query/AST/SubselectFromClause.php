@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * SubselectFromClause ::= "FROM" SubselectIdentificationVariableDeclaration {"," SubselectIdentificationVariableDeclaration}*
  *
@@ -22,11 +24,8 @@ class SubselectFromClause extends Node
         $this->identificationVariableDeclarations = $identificationVariableDeclarations;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkSubselectFromClause($this);
+        return $walker->walkSubselectFromClause($this);
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * DeleteStatement = DeleteClause [WhereClause]
  *
@@ -25,11 +27,8 @@ class DeleteStatement extends Node
         $this->deleteClause = $deleteClause;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkDeleteStatement($this);
+        return $walker->walkDeleteStatement($this);
     }
 }

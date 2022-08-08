@@ -27,13 +27,9 @@ abstract class Node
      *
      * Implementation is not mandatory for all nodes.
      *
-     * @param SqlWalker $walker
-     *
-     * @return string
-     *
      * @throws ASTException
      */
-    public function dispatch($walker)
+    public function dispatch(SqlWalker $walker): string
     {
         throw ASTException::noDispatchForNode($this);
     }

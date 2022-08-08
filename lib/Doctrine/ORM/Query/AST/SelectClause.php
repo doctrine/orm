@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * SelectClause = "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}
  *
@@ -27,11 +29,8 @@ class SelectClause extends Node
         $this->selectExpressions = $selectExpressions;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkSelectClause($this);
+        return $walker->walkSelectClause($this);
     }
 }

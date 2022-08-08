@@ -1118,92 +1118,30 @@
       <code>$parserResult</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/ArithmeticFactor.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/ArithmeticTerm.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/BetweenExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$not</code>
     </PropertyNotSetInConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/CoalesceExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/CollectionMemberExpression.php">
     <PropertyNotSetInConstructor occurrences="1">
       <code>$not</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/ComparisonExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/ConditionalExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/ConditionalFactor.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/ConditionalPrimary.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/ConditionalTerm.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/DeleteClause.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$aliasIdentificationVariable</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/DeleteStatement.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/EmptyCollectionComparisonExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$not</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/ExistsExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$not</code>
     </PropertyNotSetInConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/FromClause.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/AbsFunction.php">
     <PossiblyInvalidPropertyAssignmentValue occurrences="1">
@@ -1400,66 +1338,21 @@
       <code>$stringPrimary</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/GeneralCaseExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/GroupByClause.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/HavingClause.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/IdentificationVariableDeclaration.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/InExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$not</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/IndexBy.php">
-    <InvalidNullableReturnType occurrences="1">
-      <code>dispatch</code>
-    </InvalidNullableReturnType>
-    <NullableReturnStatement occurrences="1">
-      <code>$sqlWalker-&gt;walkIndexBy($this)</code>
-    </NullableReturnStatement>
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
     <PossiblyNullPropertyAssignmentValue occurrences="1">
       <code>null</code>
     </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/InstanceOfExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="2">
       <code>$not</code>
       <code>$value</code>
     </PropertyNotSetInConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Join.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/JoinAssociationDeclaration.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/JoinClassPathExpression.php">
     <UndefinedMethod occurrences="1">
@@ -1471,16 +1364,6 @@
       <code>walkJoinVariableDeclaration</code>
     </UndefinedMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/LikeExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/NewObjectExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/Node.php">
     <DocblockTypeContradiction occurrences="1">
       <code>is_array($obj)</code>
@@ -1490,131 +1373,47 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/NullComparisonExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$not</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/NullIfExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/OrderByClause.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/OrderByItem.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$type</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/QuantifiedExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$type</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/SelectClause.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/SelectExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/SelectStatement.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/SimpleArithmeticExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/SimpleCaseExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
     <PossiblyNullPropertyAssignmentValue occurrences="1">
       <code>null</code>
     </PossiblyNullPropertyAssignmentValue>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/SimpleSelectClause.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/SimpleSelectExpression.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$fieldIdentificationVariable</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/SimpleWhenClause.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
     <UndefinedMethod occurrences="1">
       <code>walkWhenClauseExpression</code>
     </UndefinedMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Subselect.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/SubselectFromClause.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/UpdateClause.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$aliasIdentificationVariable</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/UpdateItem.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/UpdateStatement.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/WhenClause.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
     <PossiblyNullPropertyAssignmentValue occurrences="1">
       <code>null</code>
     </PossiblyNullPropertyAssignmentValue>
     <UndefinedMethod occurrences="1">
       <code>walkWhenClauseExpression</code>
     </UndefinedMethod>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/WhereClause.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$sqlWalker</code>
-    </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php">
     <PossiblyNullPropertyAssignmentValue occurrences="1">

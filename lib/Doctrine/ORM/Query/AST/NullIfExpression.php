@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * NullIfExpression ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
  *
@@ -27,11 +29,8 @@ class NullIfExpression extends Node
         $this->secondExpression = $secondExpression;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkNullIfExpression($this);
+        return $walker->walkNullIfExpression($this);
     }
 }

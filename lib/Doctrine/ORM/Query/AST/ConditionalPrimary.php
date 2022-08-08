@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * ConditionalPrimary ::= SimpleConditionalExpression | "(" ConditionalExpression ")"
  *
@@ -33,11 +35,8 @@ class ConditionalPrimary extends Node
         return (bool) $this->conditionalExpression;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkConditionalPrimary($this);
+        return $walker->walkConditionalPrimary($this);
     }
 }

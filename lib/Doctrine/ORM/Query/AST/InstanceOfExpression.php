@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * InstanceOfExpression ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (InstanceOfParameter | "(" InstanceOfParameter {"," InstanceOfParameter}* ")")
  * InstanceOfParameter  ::= AbstractSchemaName | InputParameter
@@ -29,11 +31,8 @@ class InstanceOfExpression extends Node
         $this->identificationVariable = $identVariable;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkInstanceOfExpression($this);
+        return $walker->walkInstanceOfExpression($this);
     }
 }
