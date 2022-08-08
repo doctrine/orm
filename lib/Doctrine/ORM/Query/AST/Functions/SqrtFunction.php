@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
@@ -18,7 +19,7 @@ use function sprintf;
  */
 class SqrtFunction extends FunctionNode
 {
-    /** @var SimpleArithmeticExpression */
+    /** @var SimpleArithmeticExpression|PathExpression|FunctionNode */
     public $simpleArithmeticExpression;
 
     /**

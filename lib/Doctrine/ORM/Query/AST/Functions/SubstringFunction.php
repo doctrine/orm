@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\AST\InputParameter;
+use Doctrine\ORM\Query\AST\Literal;
 use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\Lexer;
@@ -20,10 +22,10 @@ class SubstringFunction extends FunctionNode
     /** @var Node */
     public $stringPrimary;
 
-    /** @var SimpleArithmeticExpression */
+    /** @var SimpleArithmeticExpression|Literal */
     public $firstSimpleArithmeticExpression;
 
-    /** @var SimpleArithmeticExpression|null */
+    /** @var SimpleArithmeticExpression|Literal|InputParameter|null */
     public $secondSimpleArithmeticExpression = null;
 
     /**
