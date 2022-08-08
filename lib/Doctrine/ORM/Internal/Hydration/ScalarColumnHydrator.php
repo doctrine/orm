@@ -8,6 +8,7 @@ use Doctrine\DBAL\Driver\Exception;
 use Doctrine\ORM\Exception\MultipleSelectorsFoundException;
 
 use function array_column;
+use function array_combine;
 use function count;
 
 /**
@@ -29,6 +30,12 @@ final class ScalarColumnHydrator extends AbstractHydrator
 
         $result = $this->statement()->fetchAllNumeric();
 
-        return array_column($result, 0);
+        $resultColumn = array_column($result, 0);
+
+        if (isset($this->resultSetMapping()->indexByMap['scalars'])) {
+            return array_combine($resultColumn, $resultColumn);
+        }
+
+        return $resultColumn;
     }
 }

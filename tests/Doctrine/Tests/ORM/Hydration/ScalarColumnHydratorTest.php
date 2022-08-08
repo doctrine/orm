@@ -82,8 +82,8 @@ class ScalarColumnHydratorTest extends HydrationTestCase
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
 
-        $this->assertEquals(1, $result[0]);
-        $this->assertEquals(2, $result[1]);
+        $this->assertEquals(1, $result[1]);
+        $this->assertEquals(2, $result[2]);
     }
 
     /**
