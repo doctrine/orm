@@ -214,8 +214,8 @@ This might look like this:
 
     <?php
     use Doctrine\Common\EventSubscriber;
+    use Doctrine\ORM\Event\LifecycleEventArgs;
     use Doctrine\ORM\Events;
-    use Doctrine\Persistence\Event\LifecycleEventArgs;
 
     /**
      * The BlockStrategyEventListener will initialize a strategy after the
