@@ -561,7 +561,7 @@ OrphanRemoval works with one-to-one, one-to-many and many-to-many associations.
 
 .. note::
 
-    ``orphanRemoval=true`` option should be used in combination with `cascade=["persist"]` option
+    ``orphanRemoval=true`` option should be used in combination with ``cascade=["persist"]`` option
     as the child entity, that is manually persisted, will not be deleted automatically by Doctrine
     when a collection is still an instance of ArrayCollection (before first flush / hydration).
     This is a Doctrine limitation since ArrayCollection does not have access to a UnitOfWork.
