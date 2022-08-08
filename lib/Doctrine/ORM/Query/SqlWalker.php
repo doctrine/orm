@@ -25,6 +25,7 @@ use function array_filter;
 use function array_keys;
 use function array_map;
 use function array_merge;
+use function array_reverse;
 use function assert;
 use function count;
 use function implode;
@@ -1725,6 +1726,31 @@ class SqlWalker implements TreeWalker
         return ' GROUP BY ' . implode(', ', $sqlParts);
     }
 
+    public function walkGroupByPathExpression(AST\PathExpression $pathExpr): string
+    {
+        $fieldName = $pathExpr->field;
+        $dqlAlias  = $pathExpr->identificationVariable;
+        $class     = $this->getMetadataForDqlAlias($dqlAlias);
+
+        // Needed mainly for PostgreSql: see DDC-2917
+        $requiredWalkGroupByInherited = $class->isInheritanceTypeJoined() && $class->getSingleIdentifierFieldName() === $fieldName;
+
+        if (! $requiredWalkGroupByInherited) {
+            return $this->walkPathExpression($pathExpr);
+        }
+
+        $relatedClassesNames = array_merge(array_reverse($class->parentClasses), [$class->name], $class->subClasses);
+        $relatedClasses      = array_map([$this->em, 'getClassMetadata'], $relatedClassesNames);
+
+        $sqlParts = [];
+
+        foreach ($relatedClasses as $subClassMetadata) {
+            $sqlParts[] = $this->getSQLTableAlias($subClassMetadata->getTableName(), $dqlAlias) . '.' . $this->quoteStrategy->getColumnName($fieldName, $subClassMetadata, $this->platform);
+        }
+
+        return implode(', ', $sqlParts);
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -1732,7 +1758,7 @@ class SqlWalker implements TreeWalker
     {
         // StateFieldPathExpression
         if (! is_string($groupByItem)) {
-            return $this->walkPathExpression($groupByItem);
+            return $this->walkGroupByPathExpression($groupByItem);
         }
 
         // ResultVariable
@@ -1740,11 +1766,11 @@ class SqlWalker implements TreeWalker
             $resultVariable = $this->queryComponents[$groupByItem]['resultVariable'];
 
             if ($resultVariable instanceof AST\PathExpression) {
-                return $this->walkPathExpression($resultVariable);
+                return $this->walkGroupByPathExpression($resultVariable);
             }
 
             if ($resultVariable instanceof AST\Node && isset($resultVariable->pathExpression)) {
-                return $this->walkPathExpression($resultVariable->pathExpression);
+                return $this->walkGroupByPathExpression($resultVariable->pathExpression);
             }
 
             return $this->walkResultVariable($groupByItem);
@@ -1757,7 +1783,7 @@ class SqlWalker implements TreeWalker
             $item       = new AST\PathExpression(AST\PathExpression::TYPE_STATE_FIELD, $groupByItem, $field);
             $item->type = AST\PathExpression::TYPE_STATE_FIELD;
 
-            $sqlParts[] = $this->walkPathExpression($item);
+            $sqlParts[] = $this->walkGroupByPathExpression($item);
         }
 
         foreach ($this->getMetadataForDqlAlias($groupByItem)->associationMappings as $mapping) {
@@ -1765,7 +1791,7 @@ class SqlWalker implements TreeWalker
                 $item       = new AST\PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $groupByItem, $mapping['fieldName']);
                 $item->type = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
 
-                $sqlParts[] = $this->walkPathExpression($item);
+                $sqlParts[] = $this->walkGroupByPathExpression($item);
             }
         }
 
