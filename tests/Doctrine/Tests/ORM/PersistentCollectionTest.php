@@ -17,7 +17,6 @@ use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
-
 use function array_keys;
 use function assert;
 use function method_exists;
@@ -293,5 +292,68 @@ class PersistentCollectionTest extends OrmTestCase
         $this->_emMock->setUnitOfWork($unitOfWork);
 
         $this->collection->clear();
+    }
+
+    public function getTakeSnapshotShouldNotChangeCollectionStatusTests()
+    {
+        return [
+            [[]],
+            [['initialized' => false, 'dirty' => false]],
+            [['initialized' => false, 'dirty' => true]],
+            [['initialized' => true, 'dirty' => false]],
+            [['initialized' => true, 'dirty' => true]],
+        ];
+    }
+
+    /**
+     * @dataProvider getTakeSnapshotShouldNotChangeCollectionStatusTests
+     *
+     * @param array $expected
+     *
+     * @return void
+     */
+    public function testTakeSnapshotShouldNotChangeCollectionStatus(array $expected = []): void
+    {
+        $expected = array_merge(['initialized' => true, 'dirty' => false], $expected);
+
+        $this->collection->setInitialized($expected['initialized']);
+        $this->collection->setDirty($expected['dirty']);
+
+        $this->collection->takeSnapshot();
+
+        self::assertEquals($expected['initialized'], $this->collection->isInitialized());
+        self::assertEquals($expected['dirty'], $this->collection->isDirty());
+    }
+
+    public function getClearShouldNotResetDirtyFlagTests()
+    {
+        return [
+            [[], true],
+            [['initialized' => false, 'dirty' => false], true],
+            [['initialized' => false, 'dirty' => true], true],
+            [['initialized' => true, 'dirty' => false], false],
+            [['initialized' => true, 'dirty' => true], true],
+        ];
+    }
+
+    /**
+     * @dataProvider getClearShouldNotResetDirtyFlagTests
+     *
+     * @param array $collectionStatus
+     * @param bool  $expectedDirty
+     *
+     * @return void
+     */
+    public function testClearShouldNotResetDirtyFlag(array $collectionStatus = [], bool $expectedDirty = true): void
+    {
+        $collectionStatus = array_merge(['initialized' => false, 'dirty' => false], $collectionStatus);
+
+        $this->collection->setInitialized($collectionStatus['initialized']);
+        $this->collection->setDirty($collectionStatus['dirty']);
+
+        $this->collection->clear();
+
+        self::assertTrue($this->collection->isInitialized());
+        self::assertEquals($expectedDirty, $this->collection->isDirty());
     }
 }
