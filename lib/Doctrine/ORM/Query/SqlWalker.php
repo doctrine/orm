@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use BadMethodCallException;
+use LogicException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -2002,7 +2003,28 @@ class SqlWalker implements TreeWalker
             $sqlParts    = [];
 
             foreach ($joinColumns as $joinColumn) {
-                $targetColumn = $this->quoteStrategy->getColumnName($class->fieldNames[$joinColumn['referencedColumnName']], $class, $this->platform);
+                $referencedColumnName = $joinColumn['referencedColumnName'];
+
+                // when the referenced column is an association
+                $targetColumn = null;
+                if (! isset($class->fieldNames[$referencedColumnName])) {
+                    foreach ($class->associationMappings as $associationMapping) {
+                        if ($associationMapping['isOwningSide'] && isset($associationMapping['joinColumnFieldNames'][$referencedColumnName])) {
+                            $joinColumnFieldName = $associationMapping['joinColumnFieldNames'][$referencedColumnName];
+                            foreach ($associationMapping['joinColumns'] as $joinColumn) {
+                                if ($joinColumn['name'] === $joinColumnFieldName) {
+                                    $targetColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if ($targetColumn === null) {
+                        throw new LogicException('walkCollectionMemberExpression called for association with referencedColumnName that does not exist as field or association.');
+                    }
+                } else {
+                    $targetColumn = $this->quoteStrategy->getColumnName($class->fieldNames[$referencedColumnName], $class, $this->platform);
+                }
 
                 $sqlParts[] = $joinTableAlias . '.' . $joinColumn['name'] . ' = ' . $sourceTableAlias . '.' . $targetColumn;
             }
