@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use BadMethodCallException;
+use LogicException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -2005,7 +2006,8 @@ class SqlWalker implements TreeWalker
                 $referencedColumnName = $joinColumn['referencedColumnName'];
 
                 // when the referenced column is an association
-                if (!isset($class->fieldNames[$referencedColumnName])) {
+                $targetColumn = null;
+                if (! isset($class->fieldNames[$referencedColumnName])) {
                     foreach ($class->associationMappings as $associationMapping) {
                         if ($associationMapping['isOwningSide'] && isset($associationMapping['joinColumnFieldNames'][$referencedColumnName])) {
                             $joinColumnFieldName = $associationMapping['joinColumnFieldNames'][$referencedColumnName];
@@ -2016,6 +2018,9 @@ class SqlWalker implements TreeWalker
                                 }
                             }
                         }
+                    }
+                    if ($targetColumn === null) {
+                        throw new LogicException('walkCollectionMemberExpression called for association with referencedColumnName that does not exist as field or association.');
                     }
                 } else {
                     $targetColumn = $this->quoteStrategy->getColumnName($class->fieldNames[$referencedColumnName], $class, $this->platform);
