@@ -793,7 +793,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * The ReflectionProperty instances of the mapped class.
      *
-     * @var array<string, ReflectionProperty|null>
+     * @var array<string, ReflectionProperty>
      */
     public $reflFields = [];
 
@@ -818,8 +818,8 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets the ReflectionProperties of the mapped class.
      *
-     * @return ReflectionProperty[]|null[] An array of ReflectionProperty instances.
-     * @psalm-return array<ReflectionProperty|null>
+     * @return ReflectionProperty[] An array of ReflectionProperty instances.
+     * @psalm-return array<ReflectionProperty>
      */
     public function getReflectionProperties()
     {
