@@ -1,8 +1,6 @@
 <?php
 /**
  * @author   : Sören Bernstein
- * @copyright:  Copyright (c) 2022, Redlink GmbH
- * @license  : proprietary
  */
 
 namespace Doctrine\Tests\ORM\Functional;
