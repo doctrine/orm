@@ -11,6 +11,7 @@ use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\Enums\UserStatus;
 use Doctrine\Tests\Models\Forum\ForumBoard;
 use Doctrine\Tests\Models\Forum\ForumCategory;
 
@@ -1221,5 +1222,66 @@ class ArrayHydratorTest extends HydrationTestCase
 
         self::assertArrayHasKey(2, $result);
         self::assertEquals(2, $result[2][$userEntityKey]['id']);
+    }
+
+    public function testArrayResultWithEnumField(): void
+    {
+        $rsm = new ResultSetMapping();
+
+        $rsm->addEntityResult(CmsUser::class, 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__enum_status', 'enumStatus');
+        $rsm->addIndexBy('u', 'id');
+
+        // Faked result set
+        $resultSet = [
+            //row1
+            [
+                'u__id' => '1',
+                'u__enum_status' => 'active',
+            ],
+            [
+                'u__id' => '2',
+                'u__enum_status' => 'inactive',
+            ],
+        ];
+
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $hydrator = new ArrayHydrator($this->entityManager);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+
+        self::assertCount(2, $result);
+        self::assertEquals(UserStatus::Active, $result[1]['enumStatus']);
+        self::assertEquals(UserStatus::Inactive, $result[2]['enumStatus']);
+    }
+
+    public function testScalarResultWithEnumField(): void
+    {
+        $rsm = new ResultSetMapping();
+
+        $rsm->addEntityResult(CmsUser::class, 'u');
+        $rsm->addScalarResult('u__enum_status', 'someStatus', 'string');
+        $rsm->addEnumResult('u__enum_status', UserStatus::class);
+
+        // Faked result set
+        $resultSet = [
+            //row1
+            [
+                'u__id' => '1',
+                'u__enum_status' => 'active',
+            ],
+            [
+                'u__id' => '2',
+                'u__enum_status' => 'inactive',
+            ],
+        ];
+
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $hydrator = new ArrayHydrator($this->entityManager);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+
+        self::assertCount(2, $result);
+        self::assertEquals(UserStatus::Active, $result[0]['someStatus']);
+        self::assertEquals(UserStatus::Inactive, $result[1]['someStatus']);
     }
 }

@@ -26,6 +26,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\SqlResultSetMapping;
 use Doctrine\ORM\Mapping\SqlResultSetMappings;
 use Doctrine\ORM\Mapping\Table;
+use Doctrine\Tests\Models\Enums\UserStatus;
 
 /**
  * @Entity
@@ -156,6 +157,12 @@ class CmsUser
     public $status;
 
     /**
+     * @var UserStatus
+     * @Column(type="string", enumType="\Doctrine\Tests\Models\Enums\UserStatus", length=50, nullable=true)
+     */
+    public $enumStatus;
+
+    /**
      * @var string
      * @Column(type="string", length=255, unique=true)
      */
@@ -234,6 +241,11 @@ class CmsUser
     public function getStatus(): string
     {
         return $this->status;
+    }
+
+    public function getEnumStatus(): UserStatus
+    {
+        return $this->enumStatus;
     }
 
     public function getUsername(): string
