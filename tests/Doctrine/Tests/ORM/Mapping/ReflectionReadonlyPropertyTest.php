@@ -7,11 +7,13 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\ORM\Mapping\ReflectionReadonlyProperty;
 use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\ReadonlyProperties\Author;
+use Doctrine\Tests\Models\ReadonlyProperties\Library;
 use Generator;
 use InvalidArgumentException;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @requires PHP 8.1
@@ -49,6 +51,13 @@ class ReflectionReadonlyPropertyTest extends TestCase
             'value' => 'John Doe',
             'sameValue' => 'John Doe',
         ];
+
+        yield 'uuid' => [
+            'entity' => new Library(),
+            'property' => 'uuid',
+            'value' => Uuid::fromString('438d5dc3-36c9-410a-88db-7a184856ebb8'),
+            'sameValue' => Uuid::fromString('438d5dc3-36c9-410a-88db-7a184856ebb8'),
+        ];
     }
 
     /**
@@ -79,6 +88,14 @@ class ReflectionReadonlyPropertyTest extends TestCase
             'value' => 'John Doe',
             'differentValue' => 'Jane Doe',
             'expectedExceptionMessage' => 'Attempting to change readonly property Doctrine\Tests\Models\ReadonlyProperties\Author::$name.',
+        ];
+
+        yield 'uuid' => [
+            'entity' => new Library(),
+            'property' => 'uuid',
+            'value' => Uuid::fromString('438d5dc3-36c9-410a-88db-7a184856ebb8'),
+            'differentValue' => Uuid::fromString('5d5049ee-01fd-4b66-9f82-9f637fff6a7d'),
+            'expectedExceptionMessage' => 'Attempting to change readonly property Doctrine\Tests\Models\ReadonlyProperties\Library::$uuid.',
         ];
     }
 

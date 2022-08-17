@@ -12,6 +12,7 @@ use function assert;
 use function func_get_args;
 use function func_num_args;
 use function is_object;
+use function method_exists;
 use function sprintf;
 
 /**
@@ -44,8 +45,19 @@ final class ReflectionReadonlyProperty extends ReflectionProperty
 
         assert(is_object($objectOrValue));
 
-        if (parent::getValue($objectOrValue) !== $value) {
+        if ($this->isValueDifferent($objectOrValue, $value)) {
             throw new LogicException(sprintf('Attempting to change readonly property %s::$%s.', $this->class, $this->name));
         }
+    }
+
+    private function isValueDifferent(object $object, mixed $value): bool
+    {
+        $objectValue = parent::getValue($object);
+
+        if (is_object($objectValue) && method_exists($objectValue, 'equals')) {
+            return ! $objectValue->equals($value);
+        }
+
+        return $objectValue !== $value;
     }
 }
