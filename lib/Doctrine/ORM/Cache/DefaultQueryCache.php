@@ -130,7 +130,9 @@ class DefaultQueryCache implements QueryCache
 
             foreach ($entry['associations'] as $name => $assoc) {
                 $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
-                assert($assocPersister instanceof CachedEntityPersister);
+                if (! $assocPersister instanceof CachedEntityPersister) {
+                    throw NonCacheableEntity::fromEntity($assoc['targetEntity']);
+                }
 
                 $assocRegion   = $assocPersister->getCacheRegion();
                 $assocMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
@@ -335,6 +337,10 @@ class DefaultQueryCache implements QueryCache
     private function storeAssociationCache(QueryCacheKey $key, array $assoc, $assocValue): ?array
     {
         $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
+        if (! $assocPersister instanceof CachedEntityPersister) {
+            throw NonCacheableEntity::fromEntity($assoc['targetEntity']);
+        }
+        
         $assocMetadata  = $assocPersister->getClassMetadata();
         $assocRegion    = $assocPersister->getCacheRegion();
 
