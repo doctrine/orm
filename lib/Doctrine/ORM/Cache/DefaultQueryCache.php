@@ -340,7 +340,7 @@ class DefaultQueryCache implements QueryCache
         if (! $assocPersister instanceof CachedEntityPersister) {
             throw NonCacheableEntity::fromEntity($assoc['targetEntity']);
         }
-        
+
         $assocMetadata  = $assocPersister->getClassMetadata();
         $assocRegion    = $assocPersister->getCacheRegion();
 
