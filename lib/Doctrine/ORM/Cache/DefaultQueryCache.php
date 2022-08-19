@@ -134,8 +134,8 @@ class DefaultQueryCache implements QueryCache
                     throw NonCacheableEntity::fromEntity($assoc['targetEntity']);
                 }
 
-                $assocRegion   = $assocPersister->getCacheRegion();
-                $assocMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
+                $assocRegion    = $assocPersister->getCacheRegion();
+                $assocMetadata  = $this->em->getClassMetadata($assoc['targetEntity']);
 
                 if ($assoc['type'] & ClassMetadata::TO_ONE) {
                     $assocKey   = new EntityCacheKey($assocMetadata->rootEntityName, $assoc['identifier']);
