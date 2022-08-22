@@ -1,7 +1,6 @@
 <?php
-/**
- * @author   : Sören Bernstein
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
@@ -33,17 +32,15 @@ class PreUpdateEventTest extends OrmFunctionalTestCase
         $this->useModelSet('cms');
         parent::setUp();
         $this->listener = new PreUpdateListener();
-        $evm = $this->_em->getEventManager();
-        $evm->addEventListener(Events::preUpdate, $this->listener);
+        $this->_em->getEventManager()->addEventListener(Events::preUpdate, $this->listener);
     }
 
     private function createNewValidUser(): CmsUser
     {
-        $user = new CmsUser();
+        $user           = new CmsUser();
         $user->username = 'dfreudenberger';
-        $user->name = 'Daniel Freudenberger';
+        $user->name     = 'Daniel Freudenberger';
 
-        /** @var CmsGroup $group */
         $group = new CmsGroup();
         $group->addUser($user);
         $group->setName('test group');
@@ -64,7 +61,7 @@ class PreUpdateListener
 
     public function preUpdate(LifecycleEventArgs $args): void
     {
-        $this->wasNotified = true;
+        $this->wasNotified  = true;
         $this->receivedArgs = $args;
     }
 }

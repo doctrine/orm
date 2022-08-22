@@ -17,6 +17,7 @@ use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
+
 use function array_keys;
 use function assert;
 use function method_exists;
@@ -294,7 +295,7 @@ class PersistentCollectionTest extends OrmTestCase
         $this->collection->clear();
     }
 
-    public function getTakeSnapshotShouldNotChangeCollectionStatusTests()
+    public function getTakeSnapshotShouldNotChangeCollectionStatusTests(): array
     {
         return [
             [[]],

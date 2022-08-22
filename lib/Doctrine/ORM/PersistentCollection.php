@@ -678,7 +678,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $this->collection->clear();
         $this->em->getUnitOfWork()->loadCollection($this);
-        $this->isDirty  = false;
+        $this->isDirty = false;
         $this->takeSnapshot();
 
         if ($newlyAddedDirtyObjects) {
