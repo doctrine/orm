@@ -2992,8 +2992,9 @@
       <code>new ClassLoader('Doctrine', $directory)</code>
       <code>new ClassLoader('Symfony\Component', $directory . '/Doctrine')</code>
     </DeprecatedClass>
-    <UnresolvableInclude occurrences="1">
+    <UnresolvableInclude occurrences="2">
       <code>require_once $directory . '/Doctrine/Common/ClassLoader.php'</code>
+      <code>require_once dirname($directory) . '/src/ClassLoader.php'</code>
     </UnresolvableInclude>
   </file>
   <file src="lib/Doctrine/ORM/UnitOfWork.php">
