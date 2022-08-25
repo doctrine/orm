@@ -33,9 +33,6 @@ parameters:
 
         # False positive
         -
-            message: '/^Variable \$offset in isset\(\) always exists and is not nullable\.$/'
-            path: lib/Doctrine/ORM/PersistentCollection.php
-        -
             message: '/^Call to an undefined method Doctrine\\Common\\Cache\\Cache::deleteAll\(\)\.$/'
             count: 1
             path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php

@@ -251,23 +251,13 @@ parameters:
 			path: lib/Doctrine/ORM/NativeQuery.php
 
 		-
-			message: "#^Call to an undefined method Doctrine\\\\Common\\\\Collections\\\\Collection\\<\\(int\\|string\\), mixed\\>\\:\\:matching\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/PersistentCollection.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\PersistentCollection\\:\\:remove\\(\\) should return object but returns array\\|float\\|int\\|string\\|false\\|null\\.$#"
+			message: "#^Call to an undefined method Doctrine\\\\Common\\\\Collections\\\\Collection\\<TKey of \\(int\\|string\\), T\\>\\:\\:matching\\(\\)\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/PersistentCollection.php
 
 		-
 			message: "#^Right side of && is always true\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/PersistentCollection.php
-
-		-
-			message: "#^The @implements tag of class Doctrine\\\\ORM\\\\PersistentCollection describes Doctrine\\\\Common\\\\Collections\\\\Collection but the class implements\\: Doctrine\\\\Common\\\\Collections\\\\Selectable$#"
-			count: 1
 			path: lib/Doctrine/ORM/PersistentCollection.php
 
 		-

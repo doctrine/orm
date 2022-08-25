@@ -83,6 +83,8 @@
     </PossiblyNullArrayOffset>
     <PossiblyUndefinedArrayOffset occurrences="3">
       <code>$assoc['joinColumnFieldNames']</code>
+      <code>$assoc['targetToSourceKeyColumns']</code>
+      <code>$owningAssociation['targetToSourceKeyColumns']</code>
     </PossiblyUndefinedArrayOffset>
     <UndefinedInterfaceMethod occurrences="1">
       <code>getCacheRegion</code>
@@ -470,11 +472,6 @@
   <file src="lib/Doctrine/ORM/Internal/Hydration/SimpleObjectHydrator.php">
     <PropertyNotSetInConstructor occurrences="1">
       <code>$class</code>
-    </PropertyNotSetInConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/LazyCriteriaCollection.php">
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>LazyCriteriaCollection</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php">
@@ -1070,28 +1067,25 @@
     </PossiblyInvalidArgument>
   </file>
   <file src="lib/Doctrine/ORM/PersistentCollection.php">
-    <DocblockTypeContradiction occurrences="1">
-      <code>isset($offset)</code>
-    </DocblockTypeContradiction>
-    <ImplementedReturnTypeMismatch occurrences="1">
+    <ImplementedReturnTypeMismatch occurrences="2">
+      <code>Collection&lt;TKey, T&gt;</code>
       <code>object|null</code>
     </ImplementedReturnTypeMismatch>
-    <InvalidDocblock occurrences="1">
-      <code>final class PersistentCollection extends AbstractLazyCollection implements Selectable</code>
-    </InvalidDocblock>
-    <InvalidReturnStatement occurrences="1"/>
-    <MissingParamType occurrences="2">
-      <code>$key</code>
+    <InvalidReturnStatement occurrences="2">
+      <code>$this-&gt;em-&gt;find($this-&gt;typeClass-&gt;name, $key)</code>
+    </InvalidReturnStatement>
+    <MissingParamType occurrences="1">
       <code>$offset</code>
     </MissingParamType>
     <ParamNameMismatch occurrences="1">
       <code>$value</code>
     </ParamNameMismatch>
-    <PossiblyNullArgument occurrences="4">
+    <PossiblyNullArgument occurrences="5">
       <code>$this-&gt;association</code>
       <code>$this-&gt;association</code>
       <code>$this-&gt;association</code>
       <code>$this-&gt;association['targetEntity']</code>
+      <code>$this-&gt;backRefFieldName</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess occurrences="12">
       <code>$this-&gt;association['fetch']</code>
@@ -1111,13 +1105,9 @@
       <code>setValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$backRefFieldName</code>
-    </PropertyNotSetInConstructor>
-    <RedundantConditionGivenDocblockType occurrences="5">
+    <RedundantConditionGivenDocblockType occurrences="4">
       <code>$this-&gt;em</code>
       <code>$this-&gt;em</code>
-      <code>is_object($this-&gt;collection)</code>
       <code>is_object($value) &amp;&amp; $this-&gt;em</code>
       <code>is_object($value) &amp;&amp; $this-&gt;em</code>
     </RedundantConditionGivenDocblockType>
@@ -1353,6 +1343,8 @@
       <code>$association['joinTable']</code>
       <code>$association['joinTable']</code>
       <code>$association['joinTable']</code>
+      <code>$owningAssoc['targetToSourceKeyColumns']</code>
+      <code>$owningAssoc['targetToSourceKeyColumns']</code>
       <code>$this-&gt;class-&gt;associationMappings[$fieldName]['joinColumns']</code>
       <code>$this-&gt;class-&gt;associationMappings[$idField]['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
@@ -1384,6 +1376,7 @@
       <code>executeInserts</code>
     </MoreSpecificReturnType>
     <PossiblyUndefinedArrayOffset occurrences="3">
+      <code>$assoc['targetToSourceKeyColumns']</code>
       <code>$mapping['joinColumns']</code>
       <code>$mapping['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
@@ -1703,6 +1696,7 @@
     </PossiblyNullArrayOffset>
     <PossiblyUndefinedArrayOffset occurrences="2">
       <code>$owningAssoc['joinTable']</code>
+      <code>$owningAssoc['targetToSourceKeyColumns']</code>
     </PossiblyUndefinedArrayOffset>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$collectionPathExpression</code>
@@ -2428,8 +2422,11 @@
       <code>$assoc['joinColumns']</code>
       <code>$assoc['joinColumns']</code>
       <code>$assoc['sourceToTargetKeyColumns']</code>
+      <code>$assoc['targetToSourceKeyColumns']</code>
       <code>$association['sourceToTargetKeyColumns']</code>
+      <code>$association['targetToSourceKeyColumns']</code>
       <code>$owningAssoc['joinTable']</code>
+      <code>$owningAssoc['targetToSourceKeyColumns']</code>
     </PossiblyUndefinedArrayOffset>
     <RedundantConditionGivenDocblockType occurrences="2">
       <code>$whereClause !== null</code>
@@ -3092,6 +3089,7 @@
     <PossiblyUndefinedArrayOffset occurrences="3">
       <code>$assoc['joinColumns']</code>
       <code>$assoc['orphanRemoval']</code>
+      <code>$assoc['targetToSourceKeyColumns']</code>
     </PossiblyUndefinedArrayOffset>
     <PossiblyUndefinedMethod occurrences="3">
       <code>unwrap</code>
