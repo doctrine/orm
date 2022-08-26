@@ -301,11 +301,6 @@
       <code>$newObject['args']</code>
     </PossiblyUndefinedArrayOffset>
   </file>
-  <file src="lib/Doctrine/ORM/LazyCriteriaCollection.php">
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>LazyCriteriaCollection</code>
-    </PropertyNotSetInConstructor>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php">
     <ArgumentTypeCoercion occurrences="1">
       <code>$repositoryClassName</code>
@@ -762,24 +757,21 @@
     </PossiblyInvalidArgument>
   </file>
   <file src="lib/Doctrine/ORM/PersistentCollection.php">
-    <DocblockTypeContradiction occurrences="1">
-      <code>isset($offset)</code>
-    </DocblockTypeContradiction>
-    <InvalidDocblock occurrences="1">
-      <code>final class PersistentCollection extends AbstractLazyCollection implements Selectable</code>
-    </InvalidDocblock>
-    <InvalidReturnStatement occurrences="1"/>
-    <MissingParamType occurrences="1">
-      <code>$key</code>
-    </MissingParamType>
+    <ImplementedReturnTypeMismatch occurrences="1">
+      <code>Collection&lt;TKey, T&gt;</code>
+    </ImplementedReturnTypeMismatch>
+    <InvalidReturnStatement occurrences="2">
+      <code>$this-&gt;em-&gt;find($this-&gt;typeClass-&gt;name, $key)</code>
+    </InvalidReturnStatement>
     <ParamNameMismatch occurrences="1">
       <code>$value</code>
     </ParamNameMismatch>
-    <PossiblyNullArgument occurrences="4">
+    <PossiblyNullArgument occurrences="5">
       <code>$this-&gt;association</code>
       <code>$this-&gt;association</code>
       <code>$this-&gt;association</code>
       <code>$this-&gt;association['targetEntity']</code>
+      <code>$this-&gt;backRefFieldName</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess occurrences="12">
       <code>$this-&gt;association['fetch']</code>
@@ -799,13 +791,9 @@
       <code>setValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$backRefFieldName</code>
-    </PropertyNotSetInConstructor>
-    <RedundantConditionGivenDocblockType occurrences="5">
+    <RedundantConditionGivenDocblockType occurrences="4">
       <code>$this-&gt;em</code>
       <code>$this-&gt;em</code>
-      <code>is_object($this-&gt;collection)</code>
       <code>is_object($value) &amp;&amp; $this-&gt;em</code>
       <code>is_object($value) &amp;&amp; $this-&gt;em</code>
     </RedundantConditionGivenDocblockType>

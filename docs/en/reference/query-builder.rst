@@ -268,7 +268,7 @@ Doctrine\DBAL\ParameterType::* or a DBAL Type name for conversion.
     use Doctrine\DBAL\Types\Types;
     
     // prevents attempt to load metadata for date time class, improving performance
-    $qb->setParameter('date', new \DateTimeImmutable(), Types::DATE_IMMUTABLE)
+    $qb->setParameter('date', new \DateTimeImmutable(), Types::DATETIME_IMMUTABLE)
 
 If you've got several parameters to bind to your query, you can
 also use setParameters() instead of setParameter() with the

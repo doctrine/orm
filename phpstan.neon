@@ -4,11 +4,6 @@ includes:
 
 parameters:
     ignoreErrors:
-        # False positive
-        -
-            message: '/^Variable \$offset in isset\(\) always exists and is not nullable\.$/'
-            path: lib/Doctrine/ORM/PersistentCollection.php
-
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'
 
