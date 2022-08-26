@@ -6,8 +6,6 @@ parameters:
     reportUnmatchedIgnoredErrors: false
 
     ignoreErrors:
-        # https://github.com/doctrine/collections/pull/282
-        - '/Variable \$offset in isset\(\) always exists and is not nullable\./'
         # PHPStan doesn't understand our method_exists() safeguards.
         - '/Call to an undefined method Doctrine\\DBAL\\Connection::createSchemaManager\(\)\./'
         # Class name will change in DBAL 3.
