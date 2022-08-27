@@ -37,6 +37,11 @@
             would break signature compatibility.
         -->
         <exclude-pattern>tests/Doctrine/Tests/Mocks/HydratorMockStatement.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/Models/Cache/ComplexAction.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/Models/DDC117/DDC117ArticleDetails.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/Models/DDC117/DDC117Translation.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2579Test.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/ValueObjectsTest.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint">

@@ -365,7 +365,7 @@ class TrainOrder
 
     public function __construct(
         /** @OneToOne(targetEntity="Train", fetch="EAGER") */
-        public Train $train,
+        public Train|null $train = null,
     ) {
     }
 }

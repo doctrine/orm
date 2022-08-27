@@ -100,11 +100,12 @@ class DDC2579EntityAssoc
 {
     public function __construct(
         /**
+         * @var DDC2579AssocAssoc
          * @Id
          * @ManyToOne(targetEntity="DDC2579AssocAssoc")
          * @JoinColumn(name="association_id", referencedColumnName="associationId")
          */
-        public DDC2579AssocAssoc $assocAssoc,
+        public $assocAssoc,
     ) {
     }
 }

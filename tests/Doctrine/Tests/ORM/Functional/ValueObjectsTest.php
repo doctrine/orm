@@ -367,8 +367,11 @@ class DDC93Person
     public $timestamps;
 
     public function __construct(
-        /** @Column(type="string", length=255) */
-        public string|null $name = null,
+        /**
+         * @var string|null
+         * @Column(type="string", length=255)
+         */
+        public $name = null,
         /** @Embedded(class="DDC93Address") */
         public DDC93Address|null $address = null,
     ) {
@@ -430,14 +433,23 @@ class DDC93Country
 class DDC93Address
 {
     public function __construct(
-        /** @Column(type="string", length=255) */
-        public string|null $street = null,
-        /** @Column(type="string", length=255) */
-        public string|null $zip = null,
+        /**
+         * @var string|null
+         * @Column(type="string", length=255)
+         */
+        public $street = null,
+        /**
+         * @var string|null
+         * @Column(type="string", length=255)
+         */
+        public $zip = null,
         /** @Column(type="string", length=255) */
         public string|null $city = null,
-        /** @Embedded(class = "DDC93Country") */
-        public DDC93Country|null $country = null,
+        /**
+         * @var DDC93Country|null
+         * @Embedded(class = "DDC93Country")
+         */
+        public $country = null,
     ) {
     }
 }

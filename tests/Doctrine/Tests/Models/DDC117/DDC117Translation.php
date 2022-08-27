@@ -31,11 +31,12 @@ class DDC117Translation
 
     public function __construct(
         /**
+         * @var DDC117Article
          * @Id
          * @ManyToOne(targetEntity="DDC117Article", inversedBy="translations")
          * @JoinColumn(name="article_id", referencedColumnName="article_id")
          */
-        private DDC117Article $article,
+        private $article,
         /**
          * @Id
          * @Column(type="string", length=255)
