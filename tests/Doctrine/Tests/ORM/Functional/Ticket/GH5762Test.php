@@ -20,9 +20,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use function array_unique;
 use function count;
 
-/**
- * @group GH-5762
- */
+/** @group GH-5762 */
 class GH5762Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -59,9 +57,7 @@ class GH5762Test extends OrmFunctionalTestCase
         self::assertContains('Volvo', $cars);
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     private function fetchData()
     {
         $this->createData();

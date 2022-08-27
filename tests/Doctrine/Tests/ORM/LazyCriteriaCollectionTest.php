@@ -12,9 +12,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-/**
- * @covers \Doctrine\ORM\LazyCriteriaCollection
- */
+/** @covers \Doctrine\ORM\LazyCriteriaCollection */
 class LazyCriteriaCollectionTest extends TestCase
 {
     /** @var EntityPersister&MockObject */

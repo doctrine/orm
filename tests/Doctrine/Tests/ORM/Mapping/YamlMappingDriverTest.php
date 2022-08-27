@@ -54,9 +54,7 @@ class YamlMappingDriverTest extends MappingDriverTestCase
         self::assertEquals(Directory::class, $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
     }
 
-    /**
-     * @group DDC-1468
-     */
+    /** @group DDC-1468 */
     public function testItMentionsFilenameAndEntityNameOnInvalidMapping(): void
     {
         $this->expectException(MappingException::class);
@@ -64,9 +62,7 @@ class YamlMappingDriverTest extends MappingDriverTestCase
         $this->createClassMetadata(BooleanModel::class);
     }
 
-    /**
-     * @group DDC-2069
-     */
+    /** @group DDC-2069 */
     public function testSpacesShouldBeIgnoredWhenUseExplode(): void
     {
         $metadata = $this->createClassMetadata(DDC2069Entity::class);

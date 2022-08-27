@@ -36,9 +36,7 @@ class ClassMetadataBuilder
         $this->cm = $cm;
     }
 
-    /**
-     * @return ClassMetadataInfo
-     */
+    /** @return ClassMetadataInfo */
     public function getClassMetadata()
     {
         return $this->cm;

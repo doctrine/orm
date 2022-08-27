@@ -82,9 +82,7 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
         $this->queuedCache['update'][] = $entity;
     }
 
-    /**
-     * @param object $entity
-     */
+    /** @param object $entity */
     private function updateCache($entity, bool $isChanged): bool
     {
         $class     = $this->metadataFactory->getMetadataFor(get_class($entity));

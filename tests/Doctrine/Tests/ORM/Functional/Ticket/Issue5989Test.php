@@ -9,9 +9,7 @@ use Doctrine\Tests\Models\Issue5989\Issue5989Manager;
 use Doctrine\Tests\Models\Issue5989\Issue5989Person;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group issue-5989
- */
+/** @group issue-5989 */
 class Issue5989Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

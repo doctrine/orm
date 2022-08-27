@@ -9,9 +9,7 @@ use Doctrine\Tests\ORM\Tools\Console\Command\SchemaTool\Models\Keyboard;
 
 final class DropCommandTest extends AbstractCommandTest
 {
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testItPrintsTheSql(): void
     {
         $this->createSchemaForModels(Keyboard::class);

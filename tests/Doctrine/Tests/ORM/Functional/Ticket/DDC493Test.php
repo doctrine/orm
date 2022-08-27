@@ -62,16 +62,12 @@ class DDC493Customer
     public $contact;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC493Distributor extends DDC493Customer
 {
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC493Contact
 {
     /**

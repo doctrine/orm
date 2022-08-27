@@ -12,9 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function md5;
 
-/**
- * @group DDC-2415
- */
+/** @group DDC-2415 */
 class DDC2415Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

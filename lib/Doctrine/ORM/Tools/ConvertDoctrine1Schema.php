@@ -108,9 +108,7 @@ class ConvertDoctrine1Schema
         return $metadata;
     }
 
-    /**
-     * @param mixed[] $model
-     */
+    /** @param mixed[] $model */
     private function convertTableName(string $className, array $model, ClassMetadataInfo $metadata): void
     {
         if (isset($model['tableName']) && $model['tableName']) {
@@ -125,9 +123,7 @@ class ConvertDoctrine1Schema
         }
     }
 
-    /**
-     * @param mixed[] $model
-     */
+    /** @param mixed[] $model */
     private function convertColumns(
         string $className,
         array $model,
@@ -251,9 +247,7 @@ class ConvertDoctrine1Schema
         return $fieldMapping;
     }
 
-    /**
-     * @param mixed[] $model
-     */
+    /** @param mixed[] $model */
     private function convertIndexes(
         string $className,
         array $model,
@@ -273,9 +267,7 @@ class ConvertDoctrine1Schema
         }
     }
 
-    /**
-     * @param mixed[] $model
-     */
+    /** @param mixed[] $model */
     private function convertRelations(
         string $className,
         array $model,

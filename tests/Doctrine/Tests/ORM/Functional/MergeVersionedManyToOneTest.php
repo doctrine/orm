@@ -8,9 +8,7 @@ use Doctrine\Tests\Models\VersionedManyToOne\Article;
 use Doctrine\Tests\Models\VersionedManyToOne\Category;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group MergeVersionedOneToMany
- */
+/** @group MergeVersionedOneToMany */
 class MergeVersionedManyToOneTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

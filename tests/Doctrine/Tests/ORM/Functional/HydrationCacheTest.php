@@ -12,9 +12,7 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function method_exists;
 
-/**
- * @group DDC-1766
- */
+/** @group DDC-1766 */
 class HydrationCacheTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

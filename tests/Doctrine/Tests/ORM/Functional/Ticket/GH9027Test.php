@@ -23,9 +23,7 @@ class GH9027Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(GH9027Cart::class, GH9027Customer::class);
     }
 
-    /**
-     * @group GH-9027
-     */
+    /** @group GH-9027 */
     public function testUnitOfWorkHandlesNullRelations(): void
     {
         $uow   = new UnitOfWork($this->_em);

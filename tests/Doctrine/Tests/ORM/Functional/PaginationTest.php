@@ -27,9 +27,7 @@ use function count;
 use function iterator_to_array;
 use function sprintf;
 
-/**
- * @group DDC-1613
- */
+/** @group DDC-1613 */
 class PaginationTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -49,9 +47,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->populate();
     }
 
-    /**
-     * @dataProvider useOutputWalkers
-     */
+    /** @dataProvider useOutputWalkers */
     public function testCountSimpleWithoutJoin($useOutputWalkers): void
     {
         $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u';
@@ -62,9 +58,7 @@ class PaginationTest extends OrmFunctionalTestCase
         self::assertCount(9, $paginator);
     }
 
-    /**
-     * @dataProvider useOutputWalkers
-     */
+    /** @dataProvider useOutputWalkers */
     public function testCountWithFetchJoin($useOutputWalkers): void
     {
         $dql   = 'SELECT u,g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g';
@@ -99,9 +93,7 @@ class PaginationTest extends OrmFunctionalTestCase
         self::assertCount(3, $paginator);
     }
 
-    /**
-     * @dataProvider useOutputWalkers
-     */
+    /** @dataProvider useOutputWalkers */
     public function testCountWithComplexScalarOrderBy($useOutputWalkers): void
     {
         $dql   = 'SELECT l FROM Doctrine\Tests\Models\Pagination\Logo l ORDER BY l.imageWidth * l.imageHeight DESC';
@@ -112,9 +104,7 @@ class PaginationTest extends OrmFunctionalTestCase
         self::assertCount(9, $paginator);
     }
 
-    /**
-     * @dataProvider useOutputWalkersAndFetchJoinCollection
-     */
+    /** @dataProvider useOutputWalkersAndFetchJoinCollection */
     public function testIterateSimpleWithoutJoin($useOutputWalkers, $fetchJoinCollection): void
     {
         $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u';
@@ -226,9 +216,7 @@ class PaginationTest extends OrmFunctionalTestCase
         self::assertEquals($checkField . '5', $result[0]->$checkField);
     }
 
-    /**
-     * @dataProvider useOutputWalkersAndFetchJoinCollection
-     */
+    /** @dataProvider useOutputWalkersAndFetchJoinCollection */
     public function testIterateSimpleWithoutJoinWithOrder($useOutputWalkers, $fetchJoinCollection): void
     {
         // Ascending
@@ -237,9 +225,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDesc($useOutputWalkers, $fetchJoinCollection, $dql, 'username');
     }
 
-    /**
-     * @dataProvider useOutputWalkersAndFetchJoinCollection
-     */
+    /** @dataProvider useOutputWalkersAndFetchJoinCollection */
     public function testIterateSimpleWithoutJoinWithOrderAndLimit($useOutputWalkers, $fetchJoinCollection): void
     {
         // Ascending
@@ -248,9 +234,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimit($useOutputWalkers, $fetchJoinCollection, $dql, 'username');
     }
 
-    /**
-     * @dataProvider useOutputWalkersAndFetchJoinCollection
-     */
+    /** @dataProvider useOutputWalkersAndFetchJoinCollection */
     public function testIterateSimpleWithoutJoinWithOrderAndLimitAndOffset($useOutputWalkers, $fetchJoinCollection): void
     {
         // Ascending
@@ -259,9 +243,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimitAndOffset($useOutputWalkers, $fetchJoinCollection, $dql, 'username');
     }
 
-    /**
-     * @dataProvider fetchJoinCollection
-     */
+    /** @dataProvider fetchJoinCollection */
     public function testIterateSimpleWithOutputWalkerWithoutJoinWithComplexOrder($fetchJoinCollection): void
     {
         // Ascending
@@ -270,9 +252,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDesc(true, $fetchJoinCollection, $dql, 'image');
     }
 
-    /**
-     * @dataProvider fetchJoinCollection
-     */
+    /** @dataProvider fetchJoinCollection */
     public function testIterateSimpleWithOutputWalkerWithoutJoinWithComplexOrderAndLimit($fetchJoinCollection): void
     {
         // Ascending
@@ -281,9 +261,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimit(true, $fetchJoinCollection, $dql, 'image');
     }
 
-    /**
-     * @dataProvider fetchJoinCollection
-     */
+    /** @dataProvider fetchJoinCollection */
     public function testIterateSimpleWithOutputWalkerWithoutJoinWithComplexOrderAndLimitAndOffset($fetchJoinCollection): void
     {
         // Ascending
@@ -292,9 +270,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimitAndOffset(true, $fetchJoinCollection, $dql, 'image');
     }
 
-    /**
-     * @dataProvider useOutputWalkers
-     */
+    /** @dataProvider useOutputWalkers */
     public function testIterateWithFetchJoin($useOutputWalkers): void
     {
         $dql   = 'SELECT u,g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g';
@@ -305,9 +281,7 @@ class PaginationTest extends OrmFunctionalTestCase
         self::assertCount(9, $paginator->getIterator());
     }
 
-    /**
-     * @dataProvider useOutputWalkers
-     */
+    /** @dataProvider useOutputWalkers */
     public function testIterateWithFetchJoinWithOrder($useOutputWalkers): void
     {
         $dql = 'SELECT u,g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g ORDER BY u.username';
@@ -315,9 +289,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDesc($useOutputWalkers, true, $dql, 'username');
     }
 
-    /**
-     * @dataProvider useOutputWalkers
-     */
+    /** @dataProvider useOutputWalkers */
     public function testIterateWithFetchJoinWithOrderAndLimit($useOutputWalkers): void
     {
         $dql = 'SELECT u,g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g ORDER BY u.username';
@@ -325,9 +297,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimit($useOutputWalkers, true, $dql, 'username');
     }
 
-    /**
-     * @dataProvider useOutputWalkers
-     */
+    /** @dataProvider useOutputWalkers */
     public function testIterateWithFetchJoinWithOrderAndLimitAndOffset($useOutputWalkers): void
     {
         $dql = 'SELECT u,g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g ORDER BY u.username';
@@ -335,9 +305,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimitAndOffset($useOutputWalkers, true, $dql, 'username');
     }
 
-    /**
-     * @dataProvider useOutputWalkersAndFetchJoinCollection
-     */
+    /** @dataProvider useOutputWalkersAndFetchJoinCollection */
     public function testIterateWithRegularJoinWithOrderByColumnFromJoined($useOutputWalkers, $fetchJoinCollection): void
     {
         $dql = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.email e ORDER BY e.email';
@@ -345,9 +313,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDesc($useOutputWalkers, $fetchJoinCollection, $dql, 'username');
     }
 
-    /**
-     * @dataProvider useOutputWalkersAndFetchJoinCollection
-     */
+    /** @dataProvider useOutputWalkersAndFetchJoinCollection */
     public function testIterateWithRegularJoinWithOrderByColumnFromJoinedWithLimit($useOutputWalkers, $fetchJoinCollection): void
     {
         $dql = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.email e ORDER BY e.email';
@@ -355,9 +321,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimit($useOutputWalkers, $fetchJoinCollection, $dql, 'username');
     }
 
-    /**
-     * @dataProvider useOutputWalkersAndFetchJoinCollection
-     */
+    /** @dataProvider useOutputWalkersAndFetchJoinCollection */
     public function testIterateWithRegularJoinWithOrderByColumnFromJoinedWithLimitAndOffset($useOutputWalkers, $fetchJoinCollection): void
     {
         $dql = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.email e ORDER BY e.email';
@@ -365,9 +329,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimitAndOffset($useOutputWalkers, $fetchJoinCollection, $dql, 'username');
     }
 
-    /**
-     * @dataProvider fetchJoinCollection
-     */
+    /** @dataProvider fetchJoinCollection */
     public function testIterateWithOutputWalkersWithRegularJoinWithComplexOrderByReferencingJoined($fetchJoinCollection): void
     {
         // long function name is loooooooooooong
@@ -377,9 +339,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDesc(true, $fetchJoinCollection, $dql, 'name');
     }
 
-    /**
-     * @dataProvider fetchJoinCollection
-     */
+    /** @dataProvider fetchJoinCollection */
     public function testIterateWithOutputWalkersWithRegularJoinWithComplexOrderByReferencingJoinedWithLimit($fetchJoinCollection): void
     {
         // long function name is loooooooooooong
@@ -389,9 +349,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimit(true, $fetchJoinCollection, $dql, 'name');
     }
 
-    /**
-     * @dataProvider fetchJoinCollection
-     */
+    /** @dataProvider fetchJoinCollection */
     public function testIterateWithOutputWalkersWithRegularJoinWithComplexOrderByReferencingJoinedWithLimitAndOffset($fetchJoinCollection): void
     {
         // long function name is loooooooooooong
@@ -401,9 +359,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimitAndOffset(true, $fetchJoinCollection, $dql, 'name');
     }
 
-    /**
-     * @dataProvider useOutputWalkers
-     */
+    /** @dataProvider useOutputWalkers */
     public function testIterateWithFetchJoinWithOrderByColumnFromJoined($useOutputWalkers): void
     {
         $dql = 'SELECT u,g,e FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g JOIN u.email e ORDER BY e.email';
@@ -411,9 +367,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDesc($useOutputWalkers, true, $dql, 'username');
     }
 
-    /**
-     * @dataProvider useOutputWalkers
-     */
+    /** @dataProvider useOutputWalkers */
     public function testIterateWithFetchJoinWithOrderByColumnFromJoinedWithLimit($useOutputWalkers): void
     {
         $dql = 'SELECT u,g,e FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g JOIN u.email e ORDER BY e.email';
@@ -421,9 +375,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimit($useOutputWalkers, true, $dql, 'username');
     }
 
-    /**
-     * @dataProvider useOutputWalkers
-     */
+    /** @dataProvider useOutputWalkers */
     public function testIterateWithFetchJoinWithOrderByColumnFromJoinedWithLimitAndOffset($useOutputWalkers): void
     {
         $dql = 'SELECT u,g,e FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g JOIN u.email e ORDER BY e.email';
@@ -431,9 +383,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimitAndOffset($useOutputWalkers, true, $dql, 'username');
     }
 
-    /**
-     * @dataProvider fetchJoinCollection
-     */
+    /** @dataProvider fetchJoinCollection */
     public function testIterateWithOutputWalkersWithFetchJoinWithComplexOrderByReferencingJoined($fetchJoinCollection): void
     {
         $dql = 'SELECT c,l FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.logo l ORDER BY l.imageWidth * l.imageHeight';
@@ -441,9 +391,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDesc(true, $fetchJoinCollection, $dql, 'name');
     }
 
-    /**
-     * @dataProvider fetchJoinCollection
-     */
+    /** @dataProvider fetchJoinCollection */
     public function testIterateWithOutputWalkersWithFetchJoinWithComplexOrderByReferencingJoinedWithLimit($fetchJoinCollection): void
     {
         $dql = 'SELECT c,l FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.logo l ORDER BY l.imageWidth * l.imageHeight';
@@ -451,9 +399,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimit(true, $fetchJoinCollection, $dql, 'name');
     }
 
-    /**
-     * @dataProvider fetchJoinCollection
-     */
+    /** @dataProvider fetchJoinCollection */
     public function testIterateWithOutputWalkersWithFetchJoinWithComplexOrderByReferencingJoinedWithLimitAndOffset($fetchJoinCollection): void
     {
         $dql = 'SELECT c,l FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.logo l ORDER BY l.imageWidth * l.imageHeight';
@@ -461,9 +407,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimitAndOffset(true, $fetchJoinCollection, $dql, 'name');
     }
 
-    /**
-     * @dataProvider fetchJoinCollection
-     */
+    /** @dataProvider fetchJoinCollection */
     public function testIterateWithOutputWalkersWithFetchJoinWithComplexOrderByReferencingJoinedWithLimitAndOffsetWithInheritanceType($fetchJoinCollection): void
     {
         $dql = 'SELECT u FROM Doctrine\Tests\Models\Pagination\User u ORDER BY u.id';
@@ -490,9 +434,7 @@ class PaginationTest extends OrmFunctionalTestCase
         self::assertCount(1, $paginator->getIterator());
     }
 
-    /**
-     * @dataProvider useOutputWalkers
-     */
+    /** @dataProvider useOutputWalkers */
     public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromBoth($useOutputWalkers): void
     {
         $dql     = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
@@ -523,9 +465,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimit(false, true, $dqlDesc, 'name');
     }
 
-    /**
-     * @dataProvider useOutputWalkers
-     */
+    /** @dataProvider useOutputWalkers */
     public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromRoot($useOutputWalkers): void
     {
         $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
@@ -533,9 +473,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDesc($useOutputWalkers, true, $dql, 'name');
     }
 
-    /**
-     * @dataProvider useOutputWalkers
-     */
+    /** @dataProvider useOutputWalkers */
     public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromRootWithLimit($useOutputWalkers): void
     {
         $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
@@ -543,9 +481,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimit($useOutputWalkers, true, $dql, 'name');
     }
 
-    /**
-     * @dataProvider useOutputWalkers
-     */
+    /** @dataProvider useOutputWalkers */
     public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromRootWithLimitAndOffset($useOutputWalkers): void
     {
         $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
@@ -553,9 +489,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->iterateWithOrderDescWithLimitAndOffset($useOutputWalkers, true, $dql, 'name');
     }
 
-    /**
-     * @dataProvider useOutputWalkers
-     */
+    /** @dataProvider useOutputWalkers */
     public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromJoined($useOutputWalkers): void
     {
         $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY d.name';
@@ -660,9 +594,7 @@ class PaginationTest extends OrmFunctionalTestCase
         self::assertEquals(1, $paginator->count());
     }
 
-    /**
-     * @group GH-7890
-     */
+    /** @group GH-7890 */
     public function testCustomIdTypeWithoutOutputWalker(): void
     {
         $this->_em->persist(new CustomIdObjectTypeParent(new CustomIdObject('foo')));
@@ -712,9 +644,7 @@ class PaginationTest extends OrmFunctionalTestCase
         self::assertCount(9, $paginator);
     }
 
-    /**
-     * @dataProvider useOutputWalkersAndFetchJoinCollection
-     */
+    /** @dataProvider useOutputWalkersAndFetchJoinCollection */
     public function testPaginationWithSubSelectOrderByExpression($useOutputWalker, $fetchJoinCollection): void
     {
         $query = $this->_em->createQuery(

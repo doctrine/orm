@@ -36,9 +36,7 @@ abstract class Base
     /** @psalm-var list<string|object> */
     protected $parts = [];
 
-    /**
-     * @param mixed $args
-     */
+    /** @param mixed $args */
     public function __construct($args = [])
     {
         $this->addMultiple($args);
@@ -92,9 +90,7 @@ abstract class Base
         return count($this->parts);
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function __toString()
     {
         if ($this->count() === 1) {

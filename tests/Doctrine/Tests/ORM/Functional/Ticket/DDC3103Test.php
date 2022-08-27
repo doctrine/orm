@@ -12,14 +12,10 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use function serialize;
 use function unserialize;
 
-/**
- * @group DDC-3103
- */
+/** @group DDC-3103 */
 class DDC3103Test extends OrmFunctionalTestCase
 {
-    /**
-     * @covers \Doctrine\ORM\Mapping\ClassMetadata::__sleep
-     */
+    /** @covers \Doctrine\ORM\Mapping\ClassMetadata::__sleep */
     public function testIssue(): void
     {
         $classMetadata = new ClassMetadata(DDC3103ArticleId::class);
@@ -38,9 +34,7 @@ class DDC3103Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDC3103ArticleId
 {
     /**

@@ -40,9 +40,7 @@ class TypeTest extends OrmFunctionalTestCase
         self::assertSame('0.1515', $decimal->highScale);
     }
 
-    /**
-     * @group DDC-1394
-     */
+    /** @group DDC-1394 */
     public function testBoolean(): void
     {
         $bool               = new BooleanModel();

@@ -83,9 +83,7 @@ class EntityGeneratorTest extends OrmTestCase
         rmdir($this->tmpDir . '/' . $this->namespace);
     }
 
-    /**
-     * @param ClassMetadata[] $embeddedClasses
-     */
+    /** @param ClassMetadata[] $embeddedClasses */
     public function generateBookEntityFixture(array $embeddedClasses = []): ClassMetadata
     {
         $metadata                            = new ClassMetadata($this->namespace . '\EntityGeneratorBook');
@@ -180,9 +178,7 @@ class EntityGeneratorTest extends OrmTestCase
         return $metadata;
     }
 
-    /**
-     * @param string|bool $columnPrefix
-     */
+    /** @param string|bool $columnPrefix */
     private function mapEmbedded(
         string $fieldName,
         ClassMetadata $classMetadata,
@@ -224,9 +220,7 @@ class EntityGeneratorTest extends OrmTestCase
         require_once $path;
     }
 
-    /**
-     * @return mixed An instance of the given metadata's class.
-     */
+    /** @return mixed An instance of the given metadata's class. */
     public function newInstance(ClassMetadata $metadata)
     {
         $this->loadEntityClass($metadata);
@@ -234,9 +228,7 @@ class EntityGeneratorTest extends OrmTestCase
         return new $metadata->name();
     }
 
-    /**
-     * @group GH-6314
-     */
+    /** @group GH-6314 */
     public function testEmbeddedEntityWithNamedColumnPrefix(): void
     {
         $columnPrefix = 'GH6314Prefix_';
@@ -251,9 +243,7 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertStringContainsString($needle, $docComment);
     }
 
-    /**
-     * @group GH-6314
-     */
+    /** @group GH-6314 */
     public function testEmbeddedEntityWithoutColumnPrefix(): void
     {
         $testMetadata = $this->generateTestEmbeddableFixture();
@@ -389,9 +379,7 @@ class EntityGeneratorTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group DDC-3152
-     */
+    /** @group DDC-3152 */
     public function testDoesNotRegenerateExistingMethodsWithDifferentCase(): void
     {
         $metadata = $this->generateBookEntityFixture(['isbn' => $this->generateIsbnEmbeddableFixture()]);
@@ -419,9 +407,7 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertTrue($reflClass->hasMethod('setIsbn'));
     }
 
-    /**
-     * @group DDC-2121
-     */
+    /** @group DDC-2121 */
     public function testMethodDocBlockShouldStartWithBackSlash(): void
     {
         $embeddedMetadata = $this->generateIsbnEmbeddableFixture();
@@ -544,9 +530,7 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertEquals($cm->isEmbeddedClass, $embeddedMetadata->isEmbeddedClass);
     }
 
-    /**
-     * @group DDC-3272
-     */
+    /** @group DDC-3272 */
     public function testMappedSuperclassAnnotationGeneration(): void
     {
         $metadata                     = new ClassMetadata($this->namespace . '\EntityGeneratorBook');
@@ -566,9 +550,7 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertTrue($cm->isMappedSuperclass);
     }
 
-    /**
-     * @dataProvider getParseTokensInEntityFileData
-     */
+    /** @dataProvider getParseTokensInEntityFileData */
     public function testParseTokensInEntityFile($php, $classes): void
     {
         $r = new ReflectionObject($this->generator);
@@ -582,9 +564,7 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertEquals($classes, array_keys($p->getValue($this->generator)));
     }
 
-    /**
-     * @group DDC-1784
-     */
+    /** @group DDC-1784 */
     public function testGenerateEntityWithSequenceGenerator(): void
     {
         $metadata            = new ClassMetadata($this->namespace . '\DDC1784Entity');
@@ -618,9 +598,7 @@ class EntityGeneratorTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group DDC-2079
-     */
+    /** @group DDC-2079 */
     public function testGenerateEntityWithMultipleInverseJoinColumns(): void
     {
         $metadata            = new ClassMetadata($this->namespace . '\DDC2079Entity');
@@ -675,9 +653,7 @@ class EntityGeneratorTest extends OrmTestCase
         );
     }
 
-     /**
-      * @group DDC-2172
-      */
+     /** @group DDC-2172 */
     public function testGetInheritanceTypeString(): void
     {
         $reflection = new ReflectionClass(ClassMetadata::class);
@@ -704,9 +680,7 @@ class EntityGeneratorTest extends OrmTestCase
         $method->invoke($this->generator, 'INVALID');
     }
 
-    /**
-     * @group DDC-2172
-     */
+    /** @group DDC-2172 */
     public function testGetChangeTrackingPolicyString(): void
     {
         $reflection = new ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
@@ -733,9 +707,7 @@ class EntityGeneratorTest extends OrmTestCase
         $method->invoke($this->generator, 'INVALID');
     }
 
-    /**
-     * @group DDC-2172
-     */
+    /** @group DDC-2172 */
     public function testGetIdGeneratorTypeString(): void
     {
         $reflection = new ReflectionClass(ClassMetadata::class);
@@ -795,9 +767,7 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertEquals($value, $entity->{$getter}());
     }
 
-    /**
-     * @group DDC-2372
-     */
+    /** @group DDC-2372 */
     public function testTraitPropertiesAndMethodsAreNotDuplicated(): void
     {
         $cmf = new ClassMetadataFactory();
@@ -821,9 +791,7 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertFalse($reflClass->hasMethod('getAddress'));
     }
 
-    /**
-     * @group DDC-2372
-     */
+    /** @group DDC-2372 */
     public function testTraitPropertiesAndMethodsAreNotDuplicatedInChildClasses(): void
     {
         $cmf = new ClassMetadataFactory();
@@ -847,9 +815,7 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertFalse($reflClass->hasMethod('getAddress'));
     }
 
-    /**
-     * @group DDC-1590
-     */
+    /** @group DDC-1590 */
     public function testMethodsAndPropertiesAreNotDuplicatedInChildClasses(): void
     {
         $cmf = new ClassMetadataFactory();
@@ -917,9 +883,7 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertFalse($rc3->hasMethod('setCreatedAt'));
     }
 
-    /**
-     * @group DDC-3304
-     */
+    /** @group DDC-3304 */
     public function testGeneratedMutableEmbeddablesClass(): void
     {
         $embeddedMetadata = $this->generateTestEmbeddableFixture();
@@ -956,9 +920,7 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertEquals($embeddedMetadata->name, $reflParameters[0]->getType()->getName());
     }
 
-    /**
-     * @group DDC-3304
-     */
+    /** @group DDC-3304 */
     public function testGeneratedImmutableEmbeddablesClass(): void
     {
         $this->generator->setEmbeddablesImmutable(true);
@@ -1151,9 +1113,7 @@ class EntityGeneratorTest extends OrmTestCase
         ];
     }
 
-    /**
-     * @psalm-return list<array{string, array{string}}>
-     */
+    /** @psalm-return list<array{string, array{string}}> */
     public function getParseTokensInEntityFileData(): array
     {
         return [

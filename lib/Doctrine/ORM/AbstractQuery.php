@@ -198,9 +198,7 @@ abstract class AbstractQuery
         return $this;
     }
 
-    /**
-     * @return bool TRUE if the query results are enabled for second level cache, FALSE otherwise.
-     */
+    /** @return bool TRUE if the query results are enabled for second level cache, FALSE otherwise. */
     public function isCacheable()
     {
         return $this->cacheable;
@@ -228,17 +226,13 @@ abstract class AbstractQuery
         return $this->cacheRegion;
     }
 
-    /**
-     * @return bool TRUE if the query cache and second level cache are enabled, FALSE otherwise.
-     */
+    /** @return bool TRUE if the query cache and second level cache are enabled, FALSE otherwise. */
     protected function isCacheEnabled()
     {
         return $this->cacheable && $this->hasCache;
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     public function getLifetime()
     {
         return $this->lifetime;
@@ -582,9 +576,7 @@ abstract class AbstractQuery
         return $this;
     }
 
-    /**
-     * @return QueryCacheProfile|null
-     */
+    /** @return QueryCacheProfile|null */
     public function getHydrationCacheProfile()
     {
         return $this->_hydrationCacheProfile;
@@ -834,9 +826,7 @@ abstract class AbstractQuery
         return $this->_expireResultCache;
     }
 
-    /**
-     * @return QueryCacheProfile|null
-     */
+    /** @return QueryCacheProfile|null */
     public function getQueryCacheProfile()
     {
         return $this->_queryCacheProfile;

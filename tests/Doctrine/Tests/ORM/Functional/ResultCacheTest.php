@@ -115,9 +115,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $this->resetCache();
     }
 
-    /**
-     * @group DDC-1026
-     */
+    /** @group DDC-1026 */
     public function testUseResultCacheParams(): void
     {
         $cache = new ArrayAdapter();
@@ -186,9 +184,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $this->resetCache();
     }
 
-    /**
-     * @group DDC-1026
-     */
+    /** @group DDC-1026 */
     public function testEnableResultCacheParams(): void
     {
         $cache = new ArrayAdapter();
@@ -252,9 +248,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         return [$query, $cache];
     }
 
-    /**
-     * @depends testNativeQueryResultCaching
-     */
+    /** @depends testNativeQueryResultCaching */
     public function testResultCacheNotDependsOnQueryHints(array $previous): void
     {
         [$query, $cache] = $previous;
@@ -269,9 +263,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertCount($cacheCount, $cache->getValues());
     }
 
-    /**
-     * @depends testNativeQueryResultCaching
-     */
+    /** @depends testNativeQueryResultCaching */
     public function testResultCacheDependsOnParameters(array $previous): void
     {
         [$query, $cache] = $previous;
@@ -286,9 +278,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertCount($cacheCount + 1, $cache->getValues());
     }
 
-    /**
-     * @depends testNativeQueryResultCaching
-     */
+    /** @depends testNativeQueryResultCaching */
     public function testResultCacheNotDependsOnHydrationMode(array $previous): void
     {
         [$query, $cache] = $previous;
@@ -303,9 +293,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertCount($cacheCount, $cache->getValues());
     }
 
-    /**
-     * @group DDC-909
-     */
+    /** @group DDC-909 */
     public function testResultCacheWithObjectParameter(): void
     {
         $user1           = new CmsUser();

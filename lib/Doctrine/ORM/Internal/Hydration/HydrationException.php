@@ -11,9 +11,7 @@ use function sprintf;
 
 class HydrationException extends ORMException
 {
-    /**
-     * @return HydrationException
-     */
+    /** @return HydrationException */
     public static function nonUniqueResult()
     {
         return new self('The result returned by the query was not unique.');

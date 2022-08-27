@@ -28,9 +28,7 @@ final class GH8217Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group GH-8217
-     */
+    /** @group GH-8217 */
     public function testNoQueriesAfterSecondFlush(): void
     {
         $collection = new GH8217Collection();
@@ -45,9 +43,7 @@ final class GH8217Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH8217Collection
 {
     /**
@@ -76,9 +72,7 @@ class GH8217Collection
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH8217CollectionItem
 {
     /**

@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH-6464
- */
+/** @group GH-6464 */
 class GH6464Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

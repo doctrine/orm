@@ -21,9 +21,7 @@ use function array_keys;
 use function array_walk;
 use function count;
 
-/**
- * @group #6303
- */
+/** @group #6303 */
 class DDC6303Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -122,9 +120,7 @@ class DDC6303ChildA extends DDC6303BaseClass
      */
     private $originalData;
 
-    /**
-     * @param mixed $originalData
-     */
+    /** @param mixed $originalData */
     public function __construct(string $id, $originalData)
     {
         $this->id           = $id;
@@ -144,9 +140,7 @@ class DDC6303ChildB extends DDC6303BaseClass
      */
     private $originalData;
 
-    /**
-     * @param mixed[] $originalData
-     */
+    /** @param mixed[] $originalData */
     public function __construct(string $id, array $originalData)
     {
         $this->id           = $id;

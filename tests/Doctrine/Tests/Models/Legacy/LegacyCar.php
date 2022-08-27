@@ -48,9 +48,7 @@ class LegacyCar
         $this->users[] = $user;
     }
 
-    /**
-     * @psalm-return Collection<int, LegacyUser>
-     */
+    /** @psalm-return Collection<int, LegacyUser> */
     public function getUsers(): Collection
     {
         return $this->users;

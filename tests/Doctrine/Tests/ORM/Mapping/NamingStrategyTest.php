@@ -13,9 +13,7 @@ use Doctrine\Tests\OrmTestCase;
 use const CASE_LOWER;
 use const CASE_UPPER;
 
-/**
- * @group DDC-559
- */
+/** @group DDC-559 */
 class NamingStrategyTest extends OrmTestCase
 {
     private static function defaultNaming(): DefaultNamingStrategy
@@ -77,9 +75,7 @@ class NamingStrategyTest extends OrmTestCase
         ];
     }
 
-    /**
-     * @dataProvider dataClassToTableName
-     */
+    /** @dataProvider dataClassToTableName */
     public function testClassToTableName(NamingStrategy $strategy, string $expected, string $className): void
     {
         self::assertSame($expected, $strategy->classToTableName($className));
@@ -122,9 +118,7 @@ class NamingStrategyTest extends OrmTestCase
         ];
     }
 
-    /**
-     * @dataProvider dataPropertyToColumnName
-     */
+    /** @dataProvider dataPropertyToColumnName */
     public function testPropertyToColumnName(
         NamingStrategy $strategy,
         string $expected,
@@ -155,9 +149,7 @@ class NamingStrategyTest extends OrmTestCase
         ];
     }
 
-    /**
-     * @dataProvider dataReferenceColumnName
-     */
+    /** @dataProvider dataReferenceColumnName */
     public function testReferenceColumnName(NamingStrategy $strategy, string $expected): void
     {
         self::assertSame($expected, $strategy->referenceColumnName());
@@ -246,9 +238,7 @@ class NamingStrategyTest extends OrmTestCase
         ];
     }
 
-    /**
-     * @dataProvider dataJoinTableName
-     */
+    /** @dataProvider dataJoinTableName */
     public function testJoinTableName(
         NamingStrategy $strategy,
         string $expected,
@@ -293,9 +283,7 @@ class NamingStrategyTest extends OrmTestCase
         ];
     }
 
-    /**
-     * @dataProvider dataJoinKeyColumnName
-     */
+    /** @dataProvider dataJoinKeyColumnName */
     public function testJoinKeyColumnName(
         NamingStrategy $strategy,
         string $expected,

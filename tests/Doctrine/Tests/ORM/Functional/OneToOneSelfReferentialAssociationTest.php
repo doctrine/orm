@@ -80,9 +80,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->assertLoadingOfAssociation($customer);
     }
 
-    /**
-     * @group mine
-     */
+    /** @group mine */
     public function testLazyLoadsAssociation(): void
     {
         $this->createFixture();
@@ -147,9 +145,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class MultiSelfReference
 {
     /**

@@ -121,9 +121,7 @@ class DDC2494Currency
         return $this->temp;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC2494Campaign>
-     */
+    /** @psalm-return Collection<int, DDC2494Campaign> */
     public function getCampaigns(): Collection
     {
         return $this->campaigns;

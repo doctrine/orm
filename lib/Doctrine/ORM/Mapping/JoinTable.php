@@ -30,9 +30,7 @@ final class JoinTable implements Annotation
     /** @var array<string, mixed> */
     public $options = [];
 
-    /**
-     * @param array<string, mixed> $options
-     */
+    /** @param array<string, mixed> $options */
     public function __construct(
         ?string $name = null,
         ?string $schema = null,

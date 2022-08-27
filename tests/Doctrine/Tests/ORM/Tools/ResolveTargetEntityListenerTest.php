@@ -41,9 +41,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $this->listener = new ResolveTargetEntityListener();
     }
 
-    /**
-     * @group DDC-1544
-     */
+    /** @group DDC-1544 */
     public function testResolveTargetEntityListenerCanResolveTargetEntity(): void
     {
         $evm = $this->em->getEventManager();
@@ -78,9 +76,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         self::assertSame($this->factory->getMetadataFor(ResolveTargetEntity::class), $cm);
     }
 
-    /**
-     * @group DDC-2109
-     */
+    /** @group DDC-2109 */
     public function testAssertTableColumnsAreNotAddedInManyToMany(): void
     {
         $evm = $this->em->getEventManager();
@@ -126,9 +122,7 @@ interface Target extends ResolveTarget
 {
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class ResolveTargetEntity implements ResolveTarget
 {
     /**
@@ -170,9 +164,7 @@ class ResolveTargetEntity implements ResolveTarget
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class TargetEntity implements Target
 {
     /**

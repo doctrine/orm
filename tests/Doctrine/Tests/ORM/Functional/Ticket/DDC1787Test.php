@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1787
- */
+/** @group DDC-1787 */
 class DDC1787Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -70,9 +68,7 @@ class DDC1787Foo
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1787Bar extends DDC1787Foo
 {
 }

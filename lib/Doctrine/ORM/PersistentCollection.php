@@ -133,9 +133,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         return $this->owner;
     }
 
-    /**
-     * @return Mapping\ClassMetadata
-     */
+    /** @return Mapping\ClassMetadata */
     public function getTypeClass(): Mapping\ClassMetadataInfo
     {
         return $this->typeClass;

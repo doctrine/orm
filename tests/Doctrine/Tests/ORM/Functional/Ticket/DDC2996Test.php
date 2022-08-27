@@ -15,9 +15,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function get_class;
 
-/**
- * @group DDC-2996
- */
+/** @group DDC-2996 */
 class DDC2996Test extends OrmFunctionalTestCase
 {
     public function testIssue(): void
@@ -47,9 +45,7 @@ class DDC2996Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2996User
 {
     /**
@@ -91,9 +87,7 @@ class DDC2996UserPreference
      */
     public $user;
 
-    /**
-     * @PreFlush
-     */
+    /** @PreFlush */
     public function preFlush($event): void
     {
         $em  = $event->getEntityManager();

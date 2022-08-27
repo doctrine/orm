@@ -7,9 +7,7 @@ namespace Doctrine\Tests\Models\Pagination;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 
-/**
- * @Entity()
- */
+/** @Entity() */
 class User1 extends User
 {
     /**

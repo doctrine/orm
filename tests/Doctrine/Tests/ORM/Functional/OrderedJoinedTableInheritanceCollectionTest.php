@@ -129,16 +129,12 @@ abstract class OJTICPet
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class OJTICCat extends OJTICPet
 {
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class OJTICDog extends OJTICPet
 {
 }

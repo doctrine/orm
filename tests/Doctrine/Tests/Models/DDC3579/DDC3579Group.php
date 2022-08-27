@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 
-/**
- * @Entity
- */
+/** @Entity */
 #[Entity]
 class DDC3579Group
 {
@@ -62,9 +60,7 @@ class DDC3579Group
         $this->admins[] = $admin;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC3579Admin>
-     */
+    /** @psalm-return Collection<int, DDC3579Admin> */
     public function getAdmins(): Collection
     {
         return $this->admins;

@@ -86,9 +86,7 @@ class Traveler
         $this->profile = $profile;
     }
 
-    /**
-     * @psalm-return Collection<int, Travel>
-     */
+    /** @psalm-return Collection<int, Travel> */
     public function getTravels(): Collection
     {
         return $this->travels;

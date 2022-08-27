@@ -52,9 +52,7 @@ class DDC2350Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2350User
 {
     /**
@@ -72,9 +70,7 @@ class DDC2350User
     public $reportedBugs;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2350Bug
 {
     /**

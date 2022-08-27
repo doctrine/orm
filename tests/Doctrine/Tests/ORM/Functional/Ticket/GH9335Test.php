@@ -15,9 +15,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH9335
- */
+/** @group GH9335 */
 final class GH9335Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -101,9 +99,7 @@ class GH9335IntObject
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH9335Book
 {
     /**
@@ -171,9 +167,7 @@ class GH9335Book
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH9335Author
 {
     /**

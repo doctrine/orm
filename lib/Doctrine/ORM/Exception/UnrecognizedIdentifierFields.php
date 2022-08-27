@@ -9,9 +9,7 @@ use function sprintf;
 
 final class UnrecognizedIdentifierFields extends ORMException implements ManagerException
 {
-    /**
-     * @param string[] $fieldNames
-     */
+    /** @param string[] $fieldNames */
     public static function fromClassAndFieldNames(string $className, array $fieldNames): self
     {
         return new self(sprintf(

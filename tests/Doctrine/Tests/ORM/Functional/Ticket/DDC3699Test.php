@@ -11,9 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
 
-/**
- * @group DDC-3699
- */
+/** @group DDC-3699 */
 class DDC3699Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -23,9 +21,7 @@ class DDC3699Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @group DDC-3699
-     */
+    /** @group DDC-3699 */
     public function testMergingParentClassFieldsDoesNotStopMergingScalarFieldsForToOneUninitializedAssociations(): void
     {
         $id = 1;
@@ -65,9 +61,7 @@ class DDC3699Test extends OrmFunctionalTestCase
         self::assertSame($mergedChild->parentField, 'modifiedParentValue');
     }
 
-    /**
-     * @group DDC-3699
-     */
+    /** @group DDC-3699 */
     public function testMergingParentClassFieldsDoesNotStopMergingScalarFieldsForToManyUninitializedAssociations(): void
     {
         $id = 2;

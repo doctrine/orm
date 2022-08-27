@@ -25,9 +25,7 @@ use function reset;
 
 class DDC2138Test extends OrmFunctionalTestCase
 {
-    /**
-     * @group DDC-2138
-     */
+    /** @group DDC-2138 */
     public function testForeignKeyOnSTIWithMultipleMapping(): void
     {
         $em     = $this->_em;
@@ -106,9 +104,7 @@ abstract class DDC2138UserFollowedObject
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
 {
     /**
@@ -148,9 +144,7 @@ class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
 {
     /**

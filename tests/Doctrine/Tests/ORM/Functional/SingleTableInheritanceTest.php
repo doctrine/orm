@@ -263,9 +263,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals(1000, $contract->getFixPrice());
     }
 
-    /**
-     * @group non-cacheable
-     */
+    /** @group non-cacheable */
     public function testUpdateChildClassWithCondition(): void
     {
         $this->loadFullFixture();
@@ -322,9 +320,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertFalse($contracts[0]->isCompleted(), 'Only non completed contracts should be left.');
     }
 
-    /**
-     * @group DDC-130
-     */
+    /** @group DDC-130 */
     public function testDeleteJoinTableRecords(): void
     {
         $this->loadFullFixture();
@@ -336,9 +332,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertNull($this->_em->find(get_class($this->fix), $this->fix->getId()), 'Contract should not be present in the database anymore.');
     }
 
-    /**
-     * @group DDC-817
-     */
+    /** @group DDC-817 */
     public function testFindByAssociation(): void
     {
         $this->loadFullFixture();
@@ -360,9 +354,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertCount(1, $contracts, 'There should be 1 entities related to ' . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFlexUltraContract'");
     }
 
-    /**
-     * @group DDC-1637
-     */
+    /** @group DDC-1637 */
     public function testInheritanceMatching(): void
     {
         $this->loadFullFixture();
@@ -380,9 +372,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertCount(1, $contracts);
     }
 
-    /**
-     * @group DDC-2430
-     */
+    /** @group DDC-2430 */
     public function testMatchingNonObjectOnAssocationThrowsException(): void
     {
         $this->loadFullFixture();
@@ -400,9 +390,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         $contracts->toArray();
     }
 
-    /**
-     * @group DDC-834
-     */
+    /** @group DDC-834 */
     public function testGetReferenceEntityWithSubclasses(): void
     {
         $this->loadFullFixture();
@@ -417,9 +405,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertInstanceOf(Proxy::class, $ref, 'A proxy can be generated only if no subclasses exists for the requested reference.');
     }
 
-    /**
-     * @group DDC-952
-     */
+    /** @group DDC-952 */
     public function testEagerLoadInheritanceHierarchy(): void
     {
         $this->loadFullFixture();

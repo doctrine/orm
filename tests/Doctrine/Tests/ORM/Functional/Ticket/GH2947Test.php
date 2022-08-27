@@ -13,9 +13,7 @@ use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-/**
- * @group GH-2947
- */
+/** @group GH-2947 */
 class GH2947Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

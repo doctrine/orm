@@ -94,9 +94,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
         self::assertEquals('CREATE TABLE boolean_model (id INT AUTO_INCREMENT NOT NULL, booleanField TINYINT(1) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 ' . $collation . ' ENGINE = InnoDB', $sql[0]);
     }
 
-    /**
-     * @group DBAL-204
-     */
+    /** @group DBAL-204 */
     public function testGetCreateSchemaSql4(): void
     {
         $classes = [$this->_em->getClassMetadata(MysqlSchemaNamespacedEntity::class)];

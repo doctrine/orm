@@ -149,9 +149,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         );
     }
 
-    /**
-     * @group DDC-1468
-     */
+    /** @group DDC-1468 */
     public function testItMentionsFilenameAndEntityNameOnInvalidMapping(): void
     {
         $this->expectException(PersistenceMappingException::class);
@@ -177,9 +175,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         $this->assertEquals($metadata->getAssociationNames(), $associationNames);
     }
 
-    /**
-     * @psalm-return []array{0: class-string, 1: string, 2: list<string>, 3: list<string>}
-     */
+    /** @psalm-return []array{0: class-string, 1: string, 2: list<string>, 3: list<string>} */
     public static function dataValidSchema(): array
     {
         return [
@@ -223,9 +219,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         }
     }
 
-    /**
-     * @return non-empty-list<array{0: class-string, 1: non-empty-array<string, int>}>
-     */
+    /** @return non-empty-list<array{0: class-string, 1: non-empty-array<string, int>}> */
     public static function dataInvalidSchema(): array
     {
         return [
@@ -248,9 +242,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         ];
     }
 
-    /**
-     * @group GH-7141
-     */
+    /** @group GH-7141 */
     public function testOneToManyDefaultOrderByAsc(): void
     {
         $driver = $this->loadDriver();
@@ -279,9 +271,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         );
     }
 
-    /**
-     * @group DDC-889
-     */
+    /** @group DDC-889 */
     public function testInvalidEntityOrMappedSuperClassShouldMentionParentClasses(): void
     {
         $this->expectException(MappingException::class);

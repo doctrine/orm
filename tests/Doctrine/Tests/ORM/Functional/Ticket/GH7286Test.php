@@ -54,9 +54,7 @@ final class GH7286Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-1091
-     */
+    /** @group DDC-1091 */
     public function testAggregateFunctionInCustomFunction(): void
     {
         $this->_em->getConfiguration()->addCustomStringFunction('CC', GH7286CustomConcat::class);
@@ -76,9 +74,7 @@ final class GH7286Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7286Entity
 {
     /**
