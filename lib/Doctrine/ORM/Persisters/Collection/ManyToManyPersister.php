@@ -61,7 +61,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $this->conn->executeStatement(
                 $deleteSql,
                 $this->getDeleteRowSQLParameters($collection, $element),
-                $deleteTypes
+                $deleteTypes,
             );
         }
 
@@ -69,7 +69,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $this->conn->executeStatement(
                 $insertSql,
                 $this->getInsertRowSQLParameters($collection, $element),
-                $insertTypes
+                $insertTypes,
             );
         }
     }
@@ -93,7 +93,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $mapping,
             [],
             LockMode::NONE,
-            1
+            1,
         );
     }
 
@@ -156,7 +156,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritDoc}
      */
-    public function slice(PersistentCollection $collection, int $offset, ?int $length = null): array
+    public function slice(PersistentCollection $collection, int $offset, int|null $length = null): array
     {
         $mapping   = $collection->getMapping();
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
@@ -175,7 +175,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         [$quotedJoinTable, $whereClauses, $params, $types] = $this->getJoinTableRestrictionsWithKey(
             $collection,
             (string) $key,
-            true
+            true,
         );
 
         $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
@@ -192,7 +192,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         [$quotedJoinTable, $whereClauses, $params, $types] = $this->getJoinTableRestrictions(
             $collection,
             $element,
-            true
+            true,
         );
 
         $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
@@ -503,7 +503,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     private function collectJoinTableColumnParameters(
         PersistentCollection $collection,
-        object $element
+        object $element,
     ): array {
         $params      = [];
         $mapping     = $collection->getMapping();
@@ -552,7 +552,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     private function getJoinTableRestrictionsWithKey(
         PersistentCollection $collection,
         string $key,
-        bool $addFilters
+        bool $addFilters,
     ): array {
         $filterMapping = $collection->getMapping();
         $mapping       = $filterMapping;
@@ -639,7 +639,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     private function getJoinTableRestrictions(
         PersistentCollection $collection,
         object $element,
-        bool $addFilters
+        bool $addFilters,
     ): array {
         $filterMapping = $collection->getMapping();
         $mapping       = $filterMapping;
@@ -726,7 +726,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $field     = $this->quoteStrategy->getColumnName(
                     $name,
                     $targetClass,
-                    $this->platform
+                    $this->platform,
                 );
                 $orderBy[] = $field . ' ' . $direction;
             }
@@ -737,9 +737,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         return '';
     }
 
-    /**
-     * @throws DBALException
-     */
+    /** @throws DBALException */
     private function getLimitSql(Criteria $criteria): string
     {
         $limit  = $criteria->getMaxResults();

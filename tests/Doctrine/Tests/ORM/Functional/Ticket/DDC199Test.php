@@ -26,7 +26,7 @@ class DDC199Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC199ParentClass::class,
             DDC199ChildClass::class,
-            DDC199RelatedClass::class
+            DDC199RelatedClass::class,
         );
     }
 

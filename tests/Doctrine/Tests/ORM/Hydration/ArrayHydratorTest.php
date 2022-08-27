@@ -15,9 +15,7 @@ use Doctrine\Tests\Models\Forum\ForumCategory;
 
 class ArrayHydratorTest extends HydrationTestCase
 {
-    /**
-     * @psalm-return list<array{int|string}>
-     */
+    /** @psalm-return list<array{int|string}> */
     public function provideDataForUserEntityResult(): array
     {
         return [
@@ -438,7 +436,7 @@ class ArrayHydratorTest extends HydrationTestCase
             CmsPhonenumber::class,
             'p',
             'u',
-            'phonenumbers'
+            'phonenumbers',
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -509,7 +507,7 @@ class ArrayHydratorTest extends HydrationTestCase
             CmsPhonenumber::class,
             'p',
             'u',
-            'phonenumbers'
+            'phonenumbers',
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -587,13 +585,13 @@ class ArrayHydratorTest extends HydrationTestCase
             CmsPhonenumber::class,
             'p',
             'u',
-            'phonenumbers'
+            'phonenumbers',
         );
         $rsm->addJoinedEntityResult(
             CmsArticle::class,
             'a',
             'u',
-            'articles'
+            'articles',
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -706,19 +704,19 @@ class ArrayHydratorTest extends HydrationTestCase
             CmsPhonenumber::class,
             'p',
             'u',
-            'phonenumbers'
+            'phonenumbers',
         );
         $rsm->addJoinedEntityResult(
             CmsArticle::class,
             'a',
             'u',
-            'articles'
+            'articles',
         );
         $rsm->addJoinedEntityResult(
             CmsComment::class,
             'c',
             'a',
-            'comments'
+            'comments',
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -863,7 +861,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ForumBoard::class,
             'b',
             'c',
-            'boards'
+            'boards',
         );
 
         $rsm->addFieldResult('c', 'c__id', 'id');

@@ -33,7 +33,7 @@ class DDC1655Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC1655Foo::class,
             DDC1655Bar::class,
-            DDC1655Baz::class
+            DDC1655Baz::class,
         );
     }
 
@@ -124,9 +124,7 @@ class DDC1655Foo
      */
     public $baz;
 
-    /**
-     * @PostLoad
-     */
+    /** @PostLoad */
     public function postLoad(): void
     {
         $this->loaded++;
@@ -142,18 +140,14 @@ class DDC1655Bar extends DDC1655Foo
     /** @var int */
     public $subLoaded;
 
-    /**
-     * @PostLoad
-     */
+    /** @PostLoad */
     public function postSubLoaded(): void
     {
         $this->subLoaded++;
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1655Baz
 {
     /**

@@ -29,7 +29,7 @@ class DDC117Link
          * @JoinColumn(name="target_id", referencedColumnName="article_id")
          */
         public DDC117Article $target,
-        $description
+        $description,
     ) {
     }
 }

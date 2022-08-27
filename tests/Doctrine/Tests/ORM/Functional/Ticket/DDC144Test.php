@@ -22,13 +22,11 @@ class DDC144Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC144FlowElement::class,
-            DDC144Operand::class
+            DDC144Operand::class,
         );
     }
 
-    /**
-     * @group DDC-144
-     */
+    /** @group DDC-144 */
     public function testIssue(): void
     {
         $operand                  = new DDC144Operand();

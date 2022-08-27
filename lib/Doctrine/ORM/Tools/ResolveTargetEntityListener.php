@@ -47,16 +47,14 @@ class ResolveTargetEntityListener implements EventSubscriber
         $this->resolveTargetEntities[ltrim($originalEntity, '\\')] = $mapping;
     }
 
-    /**
-     * @internal this is an event callback, and should not be called directly
-     */
+    /** @internal this is an event callback, and should not be called directly */
     public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args): void
     {
         if (array_key_exists($args->getClassName(), $this->resolveTargetEntities)) {
             $args->setFoundMetadata(
                 $args
                     ->getObjectManager()
-                    ->getClassMetadata($this->resolveTargetEntities[$args->getClassName()]['targetEntity'])
+                    ->getClassMetadata($this->resolveTargetEntities[$args->getClassName()]['targetEntity']),
             );
         }
     }
@@ -89,9 +87,7 @@ class ResolveTargetEntityListener implements EventSubscriber
         }
     }
 
-    /**
-     * @param mixed[] $mapping
-     */
+    /** @param mixed[] $mapping */
     private function remapAssociation(ClassMetadata $classMetadata, array $mapping): void
     {
         $newMapping              = $this->resolveTargetEntities[$mapping['targetEntity']];

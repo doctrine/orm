@@ -18,12 +18,8 @@ final class Embedded implements Annotation
     /** @var string|null */
     public $class;
 
-    /** @var string|bool|null */
-    public $columnPrefix;
-
-    public function __construct(?string $class = null, $columnPrefix = null)
+    public function __construct(string|null $class = null, public $columnPrefix = null)
     {
-        $this->class        = $class;
-        $this->columnPrefix = $columnPrefix;
+        $this->class = $class;
     }
 }

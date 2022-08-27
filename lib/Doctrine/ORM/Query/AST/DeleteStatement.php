@@ -13,18 +13,12 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class DeleteStatement extends Node
 {
-    /** @var DeleteClause */
-    public $deleteClause;
-
     /** @var WhereClause|null */
     public $whereClause;
 
-    /**
-     * @param DeleteClause $deleteClause
-     */
-    public function __construct($deleteClause)
+    /** @param DeleteClause $deleteClause */
+    public function __construct(public $deleteClause)
     {
-        $this->deleteClause = $deleteClause;
     }
 
     public function dispatch(SqlWalker $walker): string

@@ -20,9 +20,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use function array_unique;
 use function count;
 
-/**
- * @group GH-5762
- */
+/** @group GH-5762 */
 class GH5762Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -32,7 +30,7 @@ class GH5762Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             GH5762Driver::class,
             GH5762DriverRide::class,
-            GH5762Car::class
+            GH5762Car::class,
         );
     }
 
@@ -127,10 +125,8 @@ class GH5762Driver
          * @GeneratedValue(strategy="NONE")
          */
         public int $id,
-        /**
-         * @Column(type="string", length=255)
-         */
-        public string $name
+        /** @Column(type="string", length=255) */
+        public string $name,
     ) {
         $this->driverRides = new ArrayCollection();
     }
@@ -154,7 +150,7 @@ class GH5762DriverRide
          * @ManyToOne(targetEntity="GH5762Car", inversedBy="carRides")
          * @JoinColumn(name="car", referencedColumnName="brand")
          */
-        public GH5762Car $car
+        public GH5762Car $car,
     ) {
         $this->driver->driverRides->add($this);
         $this->car->carRides->add($this);
@@ -180,10 +176,8 @@ class GH5762Car
          * @GeneratedValue(strategy="NONE")
          */
         public string $brand,
-        /**
-         * @Column(type="string", length=255)
-         */
-        public string $model
+        /** @Column(type="string", length=255) */
+        public string $model,
     ) {
         $this->carRides = new ArrayCollection();
     }

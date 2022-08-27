@@ -37,7 +37,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
             PhraseType::class,
             Definition::class,
             Lemma::class,
-            Type::class
+            Type::class,
         );
     }
 
@@ -164,7 +164,7 @@ class Lemma
     private int $id;
 
     /** @Column(type="string", name="lemma_name", unique=true, length=255) */
-    private ?string $lemma = null;
+    private string|null $lemma = null;
 
     /** @ManyToMany(targetEntity="Type", mappedBy="lemmas", cascade={"persist"}) */
     private Collection $types;
@@ -227,10 +227,10 @@ class Type
     private int $id;
 
     /** @Column(type="string", name="type_name", unique=true) */
-    private ?string $type = null;
+    private string|null $type = null;
 
     /** @Column(type="string", name="type_abbreviation", unique=true) */
-    private ?string $abbreviation = null;
+    private string|null $abbreviation = null;
 
     /**
      * @ManyToMany(targetEntity="Lemma")
@@ -310,13 +310,13 @@ class Phrase
     private int $id;
 
     /** @Column(type="string", name="phrase_name", unique=true, length=255) */
-    private ?string $phrase = null;
+    private string|null $phrase = null;
 
     /**
      * @ManyToOne(targetEntity="PhraseType")
      * @JoinColumn(name="phrase_type_id", referencedColumnName="phrase_type_id")
      */
-    private ?PhraseType $type = null;
+    private PhraseType|null $type = null;
 
     /**
      * @psalm-var Collection<int, Definition>
@@ -382,10 +382,10 @@ class PhraseType
     private int $id;
 
     /** @Column(type="string", name="phrase_type_name", unique=true) */
-    private ?string $type = null;
+    private string|null $type = null;
 
     /** @Column(type="string", name="phrase_type_abbreviation", unique=true) */
-    private ?string $abbreviation = null;
+    private string|null $abbreviation = null;
 
     /**
      * @psalm-var Collection<int, Phrase>
@@ -453,10 +453,10 @@ class Definition
      * @ManyToOne(targetEntity="Phrase")
      * @JoinColumn(name="definition_phrase_id", referencedColumnName="phrase_id")
      */
-    private ?Phrase $phrase = null;
+    private Phrase|null $phrase = null;
 
     /** @Column(type="text", name="definition_text") */
-    private ?string $definition = null;
+    private string|null $definition = null;
 
     public function getId(): int
     {

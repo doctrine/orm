@@ -139,9 +139,7 @@ class QueryTest extends OrmTestCase
         $q->setFirstResult(null);
     }
 
-    /**
-     * @group DDC-968
-     */
+    /** @group DDC-968 */
     public function testHints(): void
     {
         $q = $this->entityManager->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
@@ -188,9 +186,7 @@ class QueryTest extends OrmTestCase
         self::assertTrue(true);
     }
 
-    /**
-     * @group DDC-1697
-     */
+    /** @group DDC-1697 */
     public function testCollectionParameters(): void
     {
         $cities = [
@@ -210,9 +206,7 @@ class QueryTest extends OrmTestCase
         self::assertEquals($cities, $parameter->getValue());
     }
 
-    /**
-     * @psalm-return Generator<string, array{iterable}>
-     */
+    /** @psalm-return Generator<string, array{iterable}> */
     public function provideProcessParameterValueIterable(): Generator
     {
         $baseArray = [
@@ -231,9 +225,7 @@ class QueryTest extends OrmTestCase
         yield 'array_of_enum' => [array_map([City::class, 'from'], $baseArray)];
     }
 
-    /**
-     * @dataProvider provideProcessParameterValueIterable
-     */
+    /** @dataProvider provideProcessParameterValueIterable */
     public function testProcessParameterValueIterable(iterable $cities): void
     {
         $query = $this->entityManager->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)');
@@ -243,7 +235,7 @@ class QueryTest extends OrmTestCase
                 3 => 'Cannes',
                 9 => 'St Julien',
             ],
-            $query->processParameterValue($cities)
+            $query->processParameterValue($cities),
         );
     }
 
@@ -256,15 +248,13 @@ class QueryTest extends OrmTestCase
         self::assertEquals(1, $query->processParameterValue($group));
     }
 
-    /**
-     * @group DDC-2224
-     */
+    /** @group DDC-2224 */
     public function testProcessParameterValueClassMetadata(): void
     {
         $query = $this->entityManager->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)');
         self::assertEquals(
             CmsAddress::class,
-            $query->processParameterValue($this->entityManager->getClassMetadata(CmsAddress::class))
+            $query->processParameterValue($this->entityManager->getClassMetadata(CmsAddress::class)),
         );
     }
 
@@ -276,7 +266,7 @@ class QueryTest extends OrmTestCase
 
         self::assertSame(
             12345,
-            $query->processParameterValue($user)
+            $query->processParameterValue($user),
         );
     }
 
@@ -300,9 +290,7 @@ class QueryTest extends OrmTestCase
         self::assertNull($query->processParameterValue(null));
     }
 
-    /**
-     * @requires PHP 8.1
-     */
+    /** @requires PHP 8.1 */
     public function testProcessParameterValueBackedEnum(): void
     {
         $query = $this->entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status = :status');
@@ -311,9 +299,7 @@ class QueryTest extends OrmTestCase
         self::assertSame([2], $query->processParameterValue([AccessLevel::User]));
     }
 
-    /**
-     * @requires PHP 8.1
-     */
+    /** @requires PHP 8.1 */
     public function testProcessParameterValueBackedEnumArray(): void
     {
         $query = $this->entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status IN (:status)');
@@ -340,9 +326,7 @@ class QueryTest extends OrmTestCase
         self::assertSame($config->getDefaultQueryHints(), $q2->getHints());
     }
 
-    /**
-     * @group DDC-3714
-     */
+    /** @group DDC-3714 */
     public function testResultCacheCaching(): void
     {
         $entityManager = $this->createTestEntityManagerWithConnection(
@@ -350,8 +334,8 @@ class QueryTest extends OrmTestCase
                 new ArrayResult([
                     ['id_0' => 1],
                 ]),
-                new ArrayResult([])
-            )
+                new ArrayResult([]),
+            ),
         );
 
         $entityManager->getConfiguration()->setResultCache(new ArrayAdapter());
@@ -372,9 +356,7 @@ class QueryTest extends OrmTestCase
         self::assertCount(0, $res);
     }
 
-    /**
-     * @group DDC-3741
-     */
+    /** @group DDC-3741 */
     public function testSetHydrationCacheProfileNull(): void
     {
         $query = $this->entityManager->createQuery();
@@ -382,9 +364,7 @@ class QueryTest extends OrmTestCase
         self::assertNull($query->getHydrationCacheProfile());
     }
 
-    /**
-     * @group 2947
-     */
+    /** @group 2947 */
     public function testResultCacheEviction(): void
     {
         $entityManager = $this->createTestEntityManagerWithConnection(
@@ -398,8 +378,8 @@ class QueryTest extends OrmTestCase
                 ]),
                 new ArrayResult([
                     ['id_0' => 1],
-                ])
-            )
+                ]),
+            ),
         );
 
         $entityManager->getConfiguration()->setResultCache(new ArrayAdapter());
@@ -420,9 +400,7 @@ class QueryTest extends OrmTestCase
         self::assertCount(2, $query->expireResultCache(false)->getResult());
     }
 
-    /**
-     * @group #6162
-     */
+    /** @group #6162 */
     public function testSelectJoinSubquery(): void
     {
         $query = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u JOIN (SELECT )');
@@ -432,9 +410,7 @@ class QueryTest extends OrmTestCase
         $query->getSQL();
     }
 
-    /**
-     * @group #6162
-     */
+    /** @group #6162 */
     public function testSelectFromSubquery(): void
     {
         $query = $this->entityManager->createQuery('select u from (select Doctrine\Tests\Models\CMS\CmsUser c) as u');
@@ -444,9 +420,7 @@ class QueryTest extends OrmTestCase
         $query->getSQL();
     }
 
-    /**
-     * @group 6699
-     */
+    /** @group 6699 */
     public function testGetParameterTypeJuggling(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id = ?0');
@@ -458,9 +432,7 @@ class QueryTest extends OrmTestCase
         self::assertSame(0, $query->getParameter('0')->getValue());
     }
 
-    /**
-     * @group 6699
-     */
+    /** @group 6699 */
     public function testSetParameterWithNameZeroIsNotOverridden(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
@@ -473,9 +445,7 @@ class QueryTest extends OrmTestCase
         self::assertSame('Doctrine', $query->getParameter('name')->getValue());
     }
 
-    /**
-     * @group 6699
-     */
+    /** @group 6699 */
     public function testSetParameterWithNameZeroDoesNotOverrideAnotherParameter(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
@@ -488,9 +458,7 @@ class QueryTest extends OrmTestCase
         self::assertSame('Doctrine', $query->getParameter('name')->getValue());
     }
 
-    /**
-     * @group 6699
-     */
+    /** @group 6699 */
     public function testSetParameterWithTypeJugglingWorks(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
@@ -506,9 +474,7 @@ class QueryTest extends OrmTestCase
         self::assertSame('Doctrine', $query->getParameter('name')->getValue());
     }
 
-    /**
-     * @group 6748
-     */
+    /** @group 6748 */
     public function testResultCacheProfileCanBeRemovedViaSetter(): void
     {
         $this->entityManager->getConfiguration()->setResultCache(new ArrayAdapter());
@@ -547,9 +513,7 @@ class QueryTest extends OrmTestCase
         $this->entityManager->createQuery('0')->execute();
     }
 
-    /**
-     * @group 8106
-     */
+    /** @group 8106 */
     public function testGetParameterColonNormalize(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.name = :name');

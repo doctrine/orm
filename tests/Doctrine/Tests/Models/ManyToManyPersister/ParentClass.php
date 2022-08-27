@@ -30,7 +30,7 @@ class ParentClass
          * @Id
          * @Column(name="id", type="integer")
          */
-        public int $id
+        public int $id,
     ) {
         $this->children = new ArrayCollection();
     }

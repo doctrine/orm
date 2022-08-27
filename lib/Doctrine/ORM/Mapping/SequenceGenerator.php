@@ -25,9 +25,9 @@ final class SequenceGenerator implements Annotation
     public $initialValue = 1;
 
     public function __construct(
-        ?string $sequenceName = null,
+        string|null $sequenceName = null,
         int $allocationSize = 1,
-        int $initialValue = 1
+        int $initialValue = 1,
     ) {
         $this->sequenceName   = $sequenceName;
         $this->allocationSize = $allocationSize;

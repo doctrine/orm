@@ -98,9 +98,7 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertTrue($this->collection->isInitialized());
     }
 
-    /**
-     * @group DDC-3382
-     */
+    /** @group DDC-3382 */
     public function testNonObjects(): void
     {
         self::assertEmpty($this->collection);
@@ -120,9 +118,7 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertNull($this->collection->get(3));
     }
 
-    /**
-     * @group 6110
-     */
+    /** @group 6110 */
     public function testRemovingElementsAlsoRemovesKeys(): void
     {
         $dummy = new stdClass();
@@ -134,9 +130,7 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertEquals([], array_keys($this->collection->toArray()));
     }
 
-    /**
-     * @group 6110
-     */
+    /** @group 6110 */
     public function testClearWillAlsoClearKeys(): void
     {
         $this->collection->add(new stdClass());
@@ -144,9 +138,7 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertEquals([], array_keys($this->collection->toArray()));
     }
 
-    /**
-     * @group 6110
-     */
+    /** @group 6110 */
     public function testClearWillAlsoResetKeyPositions(): void
     {
         $dummy = new stdClass();
@@ -221,7 +213,7 @@ class PersistentCollectionTest extends OrmTestCase
             ->with($this->collection)
             ->willReturnCallback(static function (PersistentCollection $persistentCollection) use (
                 $persistedElement,
-                $newElementThatIsAlsoPersisted
+                $newElementThatIsAlsoPersisted,
             ): void {
                 $persistentCollection->unwrap()->add($newElementThatIsAlsoPersisted);
                 $persistentCollection->unwrap()->add($persistedElement);
@@ -231,7 +223,7 @@ class PersistentCollectionTest extends OrmTestCase
 
         self::assertSame(
             [$newElementThatIsAlsoPersisted, $persistedElement, $newElement],
-            $this->collection->toArray()
+            $this->collection->toArray(),
         );
         self::assertTrue($this->collection->isInitialized());
         self::assertTrue($this->collection->isDirty());
@@ -263,7 +255,7 @@ class PersistentCollectionTest extends OrmTestCase
             ->with($this->collection)
             ->willReturnCallback(static function (PersistentCollection $persistentCollection) use (
                 $persistedElement,
-                $newElementThatIsAlsoPersisted
+                $newElementThatIsAlsoPersisted,
             ): void {
                 $persistentCollection->unwrap()->add($newElementThatIsAlsoPersisted);
                 $persistentCollection->unwrap()->add($persistedElement);
@@ -273,7 +265,7 @@ class PersistentCollectionTest extends OrmTestCase
 
         self::assertSame(
             [$newElementThatIsAlsoPersisted, $persistedElement],
-            $this->collection->toArray()
+            $this->collection->toArray(),
         );
         self::assertTrue($this->collection->isInitialized());
         self::assertFalse($this->collection->isDirty());

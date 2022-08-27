@@ -15,17 +15,13 @@ use Throwable;
  */
 class OptimisticLockException extends Exception implements ORMException
 {
-    /** @var object|null */
-    private $entity;
-
     /**
      * @param string      $msg
      * @param object|null $entity
      */
-    public function __construct($msg, $entity, ?Throwable $previous = null)
+    public function __construct($msg, private $entity, Throwable|null $previous = null)
     {
         parent::__construct($msg, 0, $previous);
-        $this->entity = $entity;
     }
 
     /**

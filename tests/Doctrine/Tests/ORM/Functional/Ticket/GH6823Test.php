@@ -27,7 +27,7 @@ class GH6823Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             GH6823User::class,
             GH6823Group::class,
-            GH6823Status::class
+            GH6823Status::class,
         );
 
         $schemaManager = $this->createSchemaManager();

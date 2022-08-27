@@ -17,17 +17,15 @@ use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
-/**
- * @BeforeMethods({"init"})
- */
+/** @BeforeMethods({"init"}) */
 final class SimpleInsertPerformanceBench
 {
-    private ?EntityManagerInterface $entityManager = null;
+    private EntityManagerInterface|null $entityManager = null;
 
     /** @var CMS\CmsUser[] */
-    private ?array $users = null;
+    private array|null $users = null;
 
-    private ?string $tableName = null;
+    private string|null $tableName = null;
 
     public function init(): void
     {

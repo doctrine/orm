@@ -18,9 +18,7 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\OrmTestCase;
 
-/**
- * @group GH7869
- */
+/** @group GH7869 */
 class GH7869Test extends OrmTestCase
 {
     public function testDQLDeferredEagerLoad(): void
@@ -61,9 +59,7 @@ class GH7869Test extends OrmTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7869Appointment
 {
     /**
@@ -81,9 +77,7 @@ class GH7869Appointment
     public $patient;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7869Patient
 {
     /**

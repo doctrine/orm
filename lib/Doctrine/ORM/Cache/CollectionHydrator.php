@@ -13,13 +13,9 @@ use Doctrine\ORM\PersistentCollection;
  */
 interface CollectionHydrator
 {
-    /**
-     * @param mixed[]|Collection $collection The collection.
-     */
+    /** @param mixed[]|Collection $collection The collection. */
     public function buildCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, array|Collection $collection): CollectionCacheEntry;
 
-    /**
-     * @return mixed[]|null
-     */
-    public function loadCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, CollectionCacheEntry $entry, PersistentCollection $collection): ?array;
+    /** @return mixed[]|null */
+    public function loadCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, CollectionCacheEntry $entry, PersistentCollection $collection): array|null;
 }

@@ -52,7 +52,7 @@ class XmlDriver extends FileDriver
         if (! extension_loaded('simplexml')) {
             throw new LogicException(sprintf(
                 'The XML metadata driver cannot be enabled because the SimpleXML PHP extension is missing.'
-                . ' Please configure PHP with SimpleXML or choose a different metadata driver.'
+                . ' Please configure PHP with SimpleXML or choose a different metadata driver.',
             ));
         }
 
@@ -62,14 +62,14 @@ class XmlDriver extends FileDriver
                 'https://github.com/doctrine/orm/pull/6728',
                 sprintf(
                     'Using XML mapping driver with XSD validation disabled is deprecated'
-                    . ' and will not be supported in Doctrine ORM 3.0.'
-                )
+                    . ' and will not be supported in Doctrine ORM 3.0.',
+                ),
             );
         }
 
         if ($isXsdValidationEnabled && ! extension_loaded('dom')) {
             throw new LogicException(sprintf(
-                'XSD validation cannot be enabled because the DOM extension is missing.'
+                'XSD validation cannot be enabled because the DOM extension is missing.',
             ));
         }
 
@@ -101,7 +101,7 @@ class XmlDriver extends FileDriver
             }
         } elseif ($xmlRoot->getName() === 'mapped-superclass') {
             $metadata->setCustomRepositoryClass(
-                isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null
+                isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null,
             );
             $metadata->isMappedSuperclass = true;
         } elseif ($xmlRoot->getName() === 'embeddable') {
@@ -165,7 +165,7 @@ class XmlDriver extends FileDriver
                         'name'          => (string) $rsmElement['name'],
                         'entities'      => $entities,
                         'columns'       => $columns,
-                    ]
+                    ],
                 );
             }
         }
@@ -184,7 +184,7 @@ class XmlDriver extends FileDriver
                             'type' => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
                             'length' => isset($discrColumn['length']) ? (int) $discrColumn['length'] : 255,
                             'columnDefinition' => isset($discrColumn['column-definition']) ? (string) $discrColumn['column-definition'] : null,
-                        ]
+                        ],
                     );
                 } else {
                     $metadata->setDiscriminatorColumn(['name' => 'dtype', 'type' => 'string', 'length' => 255]);
@@ -231,7 +231,7 @@ class XmlDriver extends FileDriver
                 ) {
                     throw MappingException::invalidIndexConfiguration(
                         $className,
-                        (string) ($indexXml['name'] ?? count($metadata->table['indexes']))
+                        (string) ($indexXml['name'] ?? count($metadata->table['indexes'])),
                     );
                 }
 
@@ -274,7 +274,7 @@ class XmlDriver extends FileDriver
                 ) {
                     throw MappingException::invalidUniqueConstraintConfiguration(
                         $className,
-                        (string) ($uniqueXml['name'] ?? count($metadata->table['uniqueConstraints']))
+                        (string) ($uniqueXml['name'] ?? count($metadata->table['uniqueConstraints'])),
                     );
                 }
 
@@ -389,14 +389,14 @@ class XmlDriver extends FileDriver
                         'sequenceName' => (string) $seqGenerator['sequence-name'],
                         'allocationSize' => (string) $seqGenerator['allocation-size'],
                         'initialValue' => (string) $seqGenerator['initial-value'],
-                    ]
+                    ],
                 );
             } elseif (isset($idElement->{'custom-id-generator'})) {
                 $customGenerator = $idElement->{'custom-id-generator'};
                 $metadata->setCustomGeneratorDefinition(
                     [
                         'class' => (string) $customGenerator['class'],
-                    ]
+                    ],
                 );
             }
         }

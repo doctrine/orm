@@ -32,10 +32,8 @@ class NavCountry
     private $pois;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
-        private string $name
+        /** @Column(type="string", length=255) */
+        private string $name,
     ) {
     }
 

@@ -12,9 +12,7 @@ use Generator;
 
 class SingleScalarHydratorTest extends HydrationTestCase
 {
-    /**
-     * @return Generator<int, array{list<array<string,mixed>>,mixed}>
-     */
+    /** @return Generator<int, array{list<array<string,mixed>>,mixed}> */
     public static function validResultSetProvider(): Generator
     {
         // SELECT u.name FROM CmsUser u WHERE u.id = 1
@@ -86,9 +84,7 @@ class SingleScalarHydratorTest extends HydrationTestCase
         $this->assertEquals($expectedResult, $result);
     }
 
-    /**
-     * @return Generator<int, array{list<array<string,mixed>>}>
-     */
+    /** @return Generator<int, array{list<array<string,mixed>>}> */
     public static function invalidResultSetProvider(): Generator
     {
         // Single row (OK), multiple columns (NOT OK)

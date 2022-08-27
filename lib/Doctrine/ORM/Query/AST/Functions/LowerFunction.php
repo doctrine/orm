@@ -21,20 +21,16 @@ class LowerFunction extends FunctionNode
     /** @var Node */
     public $stringPrimary;
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function getSql(SqlWalker $sqlWalker)
     {
         return sprintf(
             'LOWER(%s)',
-            $sqlWalker->walkSimpleArithmeticExpression($this->stringPrimary)
+            $sqlWalker->walkSimpleArithmeticExpression($this->stringPrimary),
         );
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function parse(Parser $parser)
     {
         $parser->match(Lexer::T_IDENTIFIER);

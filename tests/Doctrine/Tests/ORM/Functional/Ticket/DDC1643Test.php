@@ -8,14 +8,12 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1643
- */
+/** @group DDC-1643 */
 class DDC1643Test extends OrmFunctionalTestCase
 {
-    private ?CmsUser $user1;
+    private CmsUser|null $user1;
 
-    private ?CmsUser $user2;
+    private CmsUser|null $user2;
 
     protected function setUp(): void
     {

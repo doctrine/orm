@@ -16,9 +16,7 @@ class ArithmeticTerm extends Node
     /** @var mixed[] */
     public $arithmeticFactors;
 
-    /**
-     * @param mixed[] $arithmeticFactors
-     */
+    /** @param mixed[] $arithmeticFactors */
     public function __construct(array $arithmeticFactors)
     {
         $this->arithmeticFactors = $arithmeticFactors;

@@ -16,9 +16,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\Mocks\CompatibilityType;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH9335
- */
+/** @group GH9335 */
 final class GH9335Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -104,9 +102,7 @@ class GH9335IntObject
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH9335Book
 {
     /**
@@ -129,14 +125,14 @@ class GH9335Book
      */
     private $author;
 
-    public function __construct(GH9335IntObject $id, string $title, ?GH9335Author $author = null)
+    public function __construct(GH9335IntObject $id, string $title, GH9335Author|null $author = null)
     {
         $this->setId($id);
         $this->setTitle($title);
         $this->setAuthor($author);
     }
 
-    public function getId(): ?GH9335IntObject
+    public function getId(): GH9335IntObject|null
     {
         return $this->id;
     }
@@ -146,7 +142,7 @@ class GH9335Book
         $this->id = $id;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): string|null
     {
         return $this->title;
     }
@@ -156,12 +152,12 @@ class GH9335Book
         $this->title = $title;
     }
 
-    public function getAuthor(): ?GH9335Author
+    public function getAuthor(): GH9335Author|null
     {
         return $this->author;
     }
 
-    public function setAuthor(?GH9335Author $author): self
+    public function setAuthor(GH9335Author|null $author): self
     {
         $this->author = $author;
 
@@ -174,9 +170,7 @@ class GH9335Book
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH9335Author
 {
     /**
@@ -193,12 +187,12 @@ class GH9335Author
      */
     private $name;
 
-    public function __construct(?string $name)
+    public function __construct(string|null $name)
     {
         $this->setName($name);
     }
 
-    public function getBook(): ?GH9335Book
+    public function getBook(): GH9335Book|null
     {
         return $this->book;
     }

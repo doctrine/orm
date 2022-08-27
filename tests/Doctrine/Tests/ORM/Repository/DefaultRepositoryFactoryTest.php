@@ -47,7 +47,7 @@ class DefaultRepositoryFactoryTest extends TestCase
 
         self::assertInstanceOf(
             DDC869PaymentRepository::class,
-            $this->repositoryFactory->getRepository($this->entityManager, self::class)
+            $this->repositoryFactory->getRepository($this->entityManager, self::class),
         );
     }
 
@@ -60,7 +60,7 @@ class DefaultRepositoryFactoryTest extends TestCase
 
         self::assertSame(
             $this->repositoryFactory->getRepository($this->entityManager, self::class),
-            $this->repositoryFactory->getRepository($this->entityManager, self::class)
+            $this->repositoryFactory->getRepository($this->entityManager, self::class),
         );
     }
 
@@ -76,7 +76,7 @@ class DefaultRepositoryFactoryTest extends TestCase
 
         self::assertInstanceOf(
             DDC753DefaultRepository::class,
-            $this->repositoryFactory->getRepository($this->entityManager, self::class)
+            $this->repositoryFactory->getRepository($this->entityManager, self::class),
         );
     }
 

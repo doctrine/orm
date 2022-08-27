@@ -176,9 +176,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         self::assertTrue($exceptionThrown);
     }
 
-    /**
-     * @group DDC-2203
-     */
+    /** @group DDC-2203 */
     public function testEntityManagerIsFilterEnabled(): void
     {
         $em = $this->getEntityManager();
@@ -432,14 +430,14 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $this->loadFixtureData();
 
         self::assertCount(1, $this->_em->getRepository(CmsGroup::class)->findBy(
-            ['id' => $this->groupId2]
+            ['id' => $this->groupId2],
         ));
 
         $this->useCMSGroupPrefixFilter();
         $this->_em->clear();
 
         self::assertCount(0, $this->_em->getRepository(CmsGroup::class)->findBy(
-            ['id' => $this->groupId2]
+            ['id' => $this->groupId2],
         ));
     }
 
@@ -460,14 +458,14 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $this->loadFixtureData();
 
         self::assertNotNull($this->_em->getRepository(CmsGroup::class)->findOneBy(
-            ['id' => $this->groupId2]
+            ['id' => $this->groupId2],
         ));
 
         $this->useCMSGroupPrefixFilter();
         $this->_em->clear();
 
         self::assertNull($this->_em->getRepository(CmsGroup::class)->findOneBy(
-            ['id' => $this->groupId2]
+            ['id' => $this->groupId2],
         ));
     }
 

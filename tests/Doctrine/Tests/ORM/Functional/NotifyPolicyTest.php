@@ -128,7 +128,7 @@ class NotifyUser extends NotifyBaseEntity
     private int $id;
 
     /** @Column */
-    private ?string $name = null;
+    private string|null $name = null;
 
     /**
      * @psalm-var Collection<int, NotifyGroup>
@@ -157,9 +157,7 @@ class NotifyUser extends NotifyBaseEntity
         $this->name = $name;
     }
 
-    /**
-     * @psalm-return Collection<int, NotifyGroup>
-     */
+    /** @psalm-return Collection<int, NotifyGroup> */
     public function getGroups(): Collection
     {
         return $this->groups;
@@ -177,7 +175,7 @@ class NotifyGroup extends NotifyBaseEntity
     private int $id;
 
     /** @Column */
-    private ?string $name = null;
+    private string|null $name = null;
 
     /**
      * @psalm-var Collection<int, NotifyUser>
@@ -206,9 +204,7 @@ class NotifyGroup extends NotifyBaseEntity
         $this->name = $name;
     }
 
-    /**
-     * @psalm-return Collection<int, NotifyUser>
-     */
+    /** @psalm-return Collection<int, NotifyUser> */
     public function getUsers(): Collection
     {
         return $this->users;

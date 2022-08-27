@@ -31,7 +31,7 @@ class Action
          * @Column(type="string", length=255)
          * @GeneratedValue(strategy="NONE")
          */
-        public string $name
+        public string $name,
     ) {
         $this->tokens = new ArrayCollection();
     }

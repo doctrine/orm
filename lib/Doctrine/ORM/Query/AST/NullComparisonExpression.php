@@ -16,15 +16,9 @@ class NullComparisonExpression extends Node
     /** @var bool */
     public $not;
 
-    /** @var Node */
-    public $expression;
-
-    /**
-     * @param Node $expression
-     */
-    public function __construct($expression)
+    /** @param Node $expression */
+    public function __construct(public $expression)
     {
-        $this->expression = $expression;
     }
 
     public function dispatch(SqlWalker $walker): string

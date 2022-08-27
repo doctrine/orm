@@ -13,16 +13,14 @@ use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
-/**
- * @BeforeMethods({"init"})
- */
+/** @BeforeMethods({"init"}) */
 final class SimpleQueryPartialObjectHydrationPerformanceBench
 {
-    private ?ObjectHydrator $hydrator = null;
+    private ObjectHydrator|null $hydrator = null;
 
-    private ?ResultSetMapping $rsm = null;
+    private ResultSetMapping|null $rsm = null;
 
-    private ?Result $result = null;
+    private Result|null $result = null;
 
     public function init(): void
     {

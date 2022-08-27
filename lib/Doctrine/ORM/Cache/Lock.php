@@ -13,7 +13,7 @@ class Lock
 
     public function __construct(
         public string $value,
-        ?int $time = null
+        int|null $time = null,
     ) {
         $this->time = $time ?? time();
     }

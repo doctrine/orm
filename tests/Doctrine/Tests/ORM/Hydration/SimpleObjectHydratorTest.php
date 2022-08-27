@@ -21,9 +21,7 @@ use Doctrine\Tests\Models\Issue5989\Issue5989Person;
 
 class SimpleObjectHydratorTest extends HydrationTestCase
 {
-    /**
-     * @group DDC-1470
-     */
+    /** @group DDC-1470 */
     public function testMissingDiscriminatorColumnException(): void
     {
         $this->expectException(HydrationException::class);
@@ -70,9 +68,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         self::assertEquals($result[0], $expectedEntity);
     }
 
-    /**
-     * @group DDC-3076
-     */
+    /** @group DDC-3076 */
     public function testInvalidDiscriminatorValueException(): void
     {
         $this->expectException(HydrationException::class);
@@ -99,9 +95,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
-    /**
-     * @group issue-5989
-     */
+    /** @group issue-5989 */
     public function testNullValueShouldNotOverwriteFieldWithSameNameInJoinedInheritance(): void
     {
         $rsm = new ResultSetMapping();

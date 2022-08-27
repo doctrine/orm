@@ -13,16 +13,14 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\PreFlush;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2996
- */
+/** @group DDC-2996 */
 class DDC2996Test extends OrmFunctionalTestCase
 {
     public function testIssue(): void
     {
         $this->createSchemaForModels(
             DDC2996User::class,
-            DDC2996UserPreference::class
+            DDC2996UserPreference::class,
         );
 
         $pref        = new DDC2996UserPreference();
@@ -45,9 +43,7 @@ class DDC2996Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2996User
 {
     /**
@@ -89,9 +85,7 @@ class DDC2996UserPreference
      */
     public $user;
 
-    /**
-     * @PreFlush
-     */
+    /** @PreFlush */
     public function preFlush($event): void
     {
         $em  = $event->getEntityManager();
@@ -101,7 +95,7 @@ class DDC2996UserPreference
             $this->user->counter++;
             $uow->recomputeSingleEntityChangeSet(
                 $em->getClassMetadata($this->user::class),
-                $this->user
+                $this->user,
             );
         }
     }

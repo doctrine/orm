@@ -11,9 +11,7 @@ use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\Cache\State;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class StatisticsCacheLoggerTest extends DoctrineTestCase
 {
     private StatisticsCacheLogger $logger;

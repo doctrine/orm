@@ -22,7 +22,7 @@ class AttributeReaderTest extends TestCase
         $property = new ReflectionProperty(TestEntity::class, 'id');
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage(
-            'The attribute "Doctrine\ORM\Mapping\Index" is repeatable. Call getPropertyAnnotationCollection() instead.'
+            'The attribute "Doctrine\ORM\Mapping\Index" is repeatable. Call getPropertyAnnotationCollection() instead.',
         );
         $reader->getPropertyAnnotation($property, ORM\Index::class);
     }
@@ -33,7 +33,7 @@ class AttributeReaderTest extends TestCase
         $property = new ReflectionProperty(TestEntity::class, 'id');
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage(
-            'The attribute "Doctrine\ORM\Mapping\Id" is not repeatable. Call getPropertyAnnotation() instead.'
+            'The attribute "Doctrine\ORM\Mapping\Id" is not repeatable. Call getPropertyAnnotation() instead.',
         );
         $reader->getPropertyAnnotationCollection($property, ORM\Id::class);
     }

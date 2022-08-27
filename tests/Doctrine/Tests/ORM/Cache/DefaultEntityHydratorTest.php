@@ -16,9 +16,7 @@ use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmTestCase;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class DefaultEntityHydratorTest extends OrmTestCase
 {
     private DefaultEntityHydrator $structure;
@@ -90,7 +88,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
                 'id'   => 1,
                 'name' => 'Foo',
             ],
-            $cache->data
+            $cache->data,
         );
     }
 
@@ -124,7 +122,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
                 'name'      => 'Bar',
                 'country'   => new AssociationCacheEntry(Country::class, ['id' => 11]),
             ],
-            $cache->data
+            $cache->data,
         );
     }
 
@@ -155,7 +153,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
                 'name'      => 'Bar',
                 'country'   => new AssociationCacheEntry(Country::class, ['id' => 11]),
             ],
-            $cache->data
+            $cache->data,
         );
     }
 
@@ -187,7 +185,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
                 'name'      => 'Bar',
                 'country'   => new AssociationCacheEntry(Country::class, ['id' => 11]),
             ],
-            $cache->data
+            $cache->data,
         );
     }
 }

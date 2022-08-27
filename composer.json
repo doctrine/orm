@@ -37,7 +37,7 @@
     },
     "require-dev": {
         "doctrine/annotations": "^1.13",
-        "doctrine/coding-standard": "^9.0.2",
+        "doctrine/coding-standard": "^10.0",
         "phpbench/phpbench": "^1.0",
         "phpstan/phpstan": "1.8.2",
         "phpunit/phpunit": "^9.5",

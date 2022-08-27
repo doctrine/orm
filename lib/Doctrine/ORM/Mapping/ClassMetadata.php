@@ -21,7 +21,7 @@ class ClassMetadata extends ClassMetadataInfo
      * @param string $entityName The name of the entity class the new instance is used for.
      * @psalm-param class-string<T> $entityName
      */
-    public function __construct($entityName, ?NamingStrategy $namingStrategy = null)
+    public function __construct($entityName, NamingStrategy|null $namingStrategy = null)
     {
         parent::__construct($entityName, $namingStrategy);
     }

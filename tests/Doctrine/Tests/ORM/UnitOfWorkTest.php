@@ -292,8 +292,8 @@ class UnitOfWorkTest extends OrmTestCase
             ForumUser::class,
             new EntityPersisterMock(
                 $this->_emMock,
-                $this->_emMock->getClassMetadata(ForumUser::class)
-            )
+                $this->_emMock->getClassMetadata(ForumUser::class),
+            ),
         );
 
         $user           = new ForumUser();
@@ -315,7 +315,7 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->_unitOfWork->setEntityPersister(
             ForumUser::class,
-            new EntityPersisterMock($this->_emMock, $metadata)
+            new EntityPersisterMock($this->_emMock, $metadata),
         );
 
         $user = new ForumUser();
@@ -366,9 +366,7 @@ class UnitOfWorkTest extends OrmTestCase
         ];
     }
 
-    /**
-     * @dataProvider entitiesWithValidIdentifiersProvider
-     */
+    /** @dataProvider entitiesWithValidIdentifiersProvider */
     public function testAddToIdentityMapValidIdentifiers(object $entity, string $idHash): void
     {
         $this->_unitOfWork->persist($entity);
@@ -377,9 +375,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertSame($entity, $this->_unitOfWork->getByIdHash($idHash, $entity::class));
     }
 
-    /**
-     * @psalm-return array<string, array{object, string}>
-     */
+    /** @psalm-return array<string, array{object, string}> */
     public function entitiesWithValidIdentifiersProvider()
     {
         $emptyString = new EntityWithStringIdentifier();
@@ -437,9 +433,7 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->registerManaged($entity, $identifier, []);
     }
 
-    /**
-     * @psalm-return array<string, array{object, array<string, mixed>}>
-     */
+    /** @psalm-return array<string, array{object, array<string, mixed>}> */
     public function entitiesWithInvalidIdentifiersProvider(): array
     {
         $firstNullString = new EntityWithCompositeStringIdentifier();
@@ -586,9 +580,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertCount(0, $persister2->getInserts());
     }
 
-    /**
-     * @group #7946 Throw OptimisticLockException when connection::commit() returns false.
-     */
+    /** @group #7946 Throw OptimisticLockException when connection::commit() returns false. */
     public function testCommitThrowOptimisticLockExceptionWhenConnectionCommitFails(): void
     {
         $platform = $this->getMockBuilder(AbstractPlatform::class)
@@ -636,9 +628,7 @@ class UnitOfWorkTest extends OrmTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class NotifyChangedEntity implements NotifyPropertyChanged
 {
     /** @psalm-var list<PropertyChangedListener> */
@@ -727,19 +717,19 @@ class NotifyChangedRelatedItem
     private int $id;
 
     /** @ManyToOne(targetEntity="NotifyChangedEntity", inversedBy="items") */
-    private ?NotifyChangedEntity $owner = null;
+    private NotifyChangedEntity|null $owner = null;
 
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function getOwner(): ?NotifyChangedEntity
+    public function getOwner(): NotifyChangedEntity|null
     {
         return $this->owner;
     }
 
-    public function setOwner(?NotifyChangedEntity $owner): void
+    public function setOwner(NotifyChangedEntity|null $owner): void
     {
         $this->owner = $owner;
     }

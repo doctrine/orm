@@ -12,9 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use function array_intersect_key;
 use function intval;
 
-/**
- * @group DDC-2790
- */
+/** @group DDC-2790 */
 class DDC2790Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

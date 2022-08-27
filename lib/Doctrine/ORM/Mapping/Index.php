@@ -37,11 +37,11 @@ final class Index implements Annotation
      * @param array<string,mixed>|null $options
      */
     public function __construct(
-        ?array $columns = null,
-        ?array $fields = null,
-        ?string $name = null,
-        ?array $flags = null,
-        ?array $options = null
+        array|null $columns = null,
+        array|null $fields = null,
+        string|null $name = null,
+        array|null $flags = null,
+        array|null $options = null,
     ) {
         $this->columns = $columns;
         $this->fields  = $fields;

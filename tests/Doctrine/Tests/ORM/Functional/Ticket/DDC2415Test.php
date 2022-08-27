@@ -12,9 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function md5;
 
-/**
- * @group DDC-2415
- */
+/** @group DDC-2415 */
 class DDC2415Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -25,7 +23,7 @@ class DDC2415Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC2415ParentEntity::class,
-            DDC2415ChildEntity::class
+            DDC2415ChildEntity::class,
         );
     }
 
@@ -68,7 +66,7 @@ class DDC2415ParentEntity
                 'id'        => true,
                 'fieldName' => 'id',
                 'type'      => 'string',
-            ]
+            ],
         );
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
@@ -95,14 +93,14 @@ class DDC2415ChildEntity extends DDC2415ParentEntity
             [
                 'fieldName' => 'name',
                 'type'      => 'string',
-            ]
+            ],
         );
     }
 }
 
 class DDC2415Generator extends AbstractIdGenerator
 {
-    public function generateId(EntityManagerInterface $em, ?object $entity): string
+    public function generateId(EntityManagerInterface $em, object|null $entity): string
     {
         return md5($entity->getName());
     }

@@ -30,7 +30,7 @@ class DefaultQuoteStrategyTest extends OrmTestCase
 
         self::assertSame(
             'readers.author_reader',
-            $strategy->getJoinTableName($metadata->associationMappings['readers'], $metadata, $platform)
+            $strategy->getJoinTableName($metadata->associationMappings['readers'], $metadata, $platform),
         );
     }
 }

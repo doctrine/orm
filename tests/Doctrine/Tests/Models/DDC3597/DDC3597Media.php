@@ -18,13 +18,11 @@ abstract class DDC3597Media extends DDC3597Root
     private int $size = 0;
 
     /** @Column */
-    private ?string $format = null;
+    private string|null $format = null;
 
     public function __construct(
-        /**
-         * @Column
-         */
-        private string $distributionHash
+        /** @Column */
+        private string $distributionHash,
     ) {
     }
 

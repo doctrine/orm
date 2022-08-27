@@ -13,9 +13,7 @@ use Doctrine\Tests\Models\ManyToManyPersister\OtherParentClass;
 use Doctrine\Tests\Models\ManyToManyPersister\ParentClass;
 use Doctrine\Tests\OrmTestCase;
 
-/**
- * @covers \Doctrine\ORM\Persisters\Collection\ManyToManyPersister
- */
+/** @covers \Doctrine\ORM\Persisters\Collection\ManyToManyPersister */
 final class ManyToManyPersisterTest extends OrmTestCase
 {
     /**

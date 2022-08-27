@@ -43,7 +43,7 @@ class DDC964Admin extends DDC964User
                         'referencedColumnName' => 'id',
                     ],
                 ],
-            ]
+            ],
         );
 
         $metadata->setAssociationOverride(
@@ -58,7 +58,7 @@ class DDC964Admin extends DDC964User
                         ['name' => 'admingroup_id'],
                     ],
                 ],
-            ]
+            ],
         );
     }
 }

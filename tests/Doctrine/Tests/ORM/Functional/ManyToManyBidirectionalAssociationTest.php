@@ -100,9 +100,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->_em->clear();
     }
 
-    /**
-     * @psalm-return list<ECommerceProduct>
-     */
+    /** @psalm-return list<ECommerceProduct> */
     protected function findProducts(): array
     {
         $query = $this->_em->createQuery('SELECT p, c FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p LEFT JOIN p.categories c ORDER BY p.id, c.id');
@@ -119,9 +117,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         return $result;
     }
 
-    /**
-     * @psalm-return list<ECommerceCategory>
-     */
+    /** @psalm-return list<ECommerceCategory> */
     protected function findCategories(): array
     {
         $query = $this->_em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\ECommerce\ECommerceCategory c LEFT JOIN c.products p ORDER BY c.id, p.id');
@@ -141,9 +137,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         return $result;
     }
 
-    /**
-     * @psalm-param list<ECommerceProduct>
-     */
+    /** @psalm-param list<ECommerceProduct> */
     public function assertLazyLoadFromInverseSide(array $products): void
     {
         [$firstProduct, $secondProduct] = $products;
@@ -179,9 +173,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->assertCollectionEquals($firstCategoryProducts, $secondCategoryProducts);
     }
 
-    /**
-     * @psalm-param list<ECommerceCategory>
-     */
+    /** @psalm-param list<ECommerceCategory> */
     public function assertLazyLoadFromOwningSide(array $categories): void
     {
         [$firstCategory, $secondCategory] = $categories;

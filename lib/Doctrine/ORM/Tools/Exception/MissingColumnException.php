@@ -17,7 +17,7 @@ final class MissingColumnException extends LogicException implements ORMExceptio
             'Column name "%s" referenced for relation from %s towards %s does not exist.',
             $column,
             $source,
-            $target
+            $target,
         ));
     }
 }

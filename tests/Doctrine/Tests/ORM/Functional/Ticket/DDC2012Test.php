@@ -39,7 +39,7 @@ class DDC2012Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC2012Item::class,
-            DDC2012ItemPerson::class
+            DDC2012ItemPerson::class,
         );
     }
 

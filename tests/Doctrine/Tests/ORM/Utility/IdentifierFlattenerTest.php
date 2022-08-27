@@ -29,20 +29,18 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
 
         $this->identifierFlattener = new IdentifierFlattener(
             $this->_em->getUnitOfWork(),
-            $this->_em->getMetadataFactory()
+            $this->_em->getMetadataFactory(),
         );
 
         $this->createSchemaForModels(
             FirstRelatedEntity::class,
             SecondRelatedEntity::class,
             Flight::class,
-            City::class
+            City::class,
         );
     }
 
-    /**
-     * @group utilities
-     */
+    /** @group utilities */
     public function testFlattenIdentifierWithOneToOneId(): void
     {
         $secondRelatedEntity       = new SecondRelatedEntity();
@@ -72,7 +70,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         self::assertInstanceOf(
             SecondRelatedEntity::class,
             $id['secondEntity'],
-            'The entity should be an instance of SecondRelatedEntity'
+            'The entity should be an instance of SecondRelatedEntity',
         );
 
         $flatIds = $this->identifierFlattener->flattenIdentifier($class, $id);
@@ -84,9 +82,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         self::assertEquals($id['secondEntity']->id, $flatIds['secondEntity']);
     }
 
-    /**
-     * @group utilities
-     */
+    /** @group utilities */
     public function testFlattenIdentifierWithMutlipleIds(): void
     {
         $leeds  = new City('Leeds');

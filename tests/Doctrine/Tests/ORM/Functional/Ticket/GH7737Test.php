@@ -15,9 +15,7 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH7737
- */
+/** @group GH7737 */
 class GH7737Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -37,9 +35,7 @@ class GH7737Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function memberOfCriteriaShouldBeCompatibleWithQueryBuilder(): void
     {
         $query = $this->_em->createQueryBuilder()
@@ -61,9 +57,7 @@ class GH7737Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7737Group
 {
     public function __construct(
@@ -72,17 +66,13 @@ class GH7737Group
          * @Column(type="integer")
          */
         public int $id,
-        /**
-         * @Column
-         */
-        public string $name
+        /** @Column */
+        public string $name,
     ) {
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7737Person
 {
     /**
@@ -97,7 +87,7 @@ class GH7737Person
          * @Id
          * @Column(type="integer")
          */
-        public int $id
+        public int $id,
     ) {
         $this->groups = new ArrayCollection();
     }

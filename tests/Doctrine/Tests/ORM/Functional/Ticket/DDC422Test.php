@@ -28,13 +28,11 @@ class DDC422Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC422Guest::class,
             DDC422Customer::class,
-            DDC422Contact::class
+            DDC422Contact::class,
         );
     }
 
-    /**
-     * @group DDC-422
-     */
+    /** @group DDC-422 */
     public function testIssue(): void
     {
         $customer = new DDC422Customer();

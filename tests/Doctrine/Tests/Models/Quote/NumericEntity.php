@@ -25,10 +25,8 @@ class NumericEntity
     public $id;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255, name="`2:2`")
-         */
-        public string $value
+        /** @Column(type="string", length=255, name="`2:2`") */
+        public string $value,
     ) {
     }
 }

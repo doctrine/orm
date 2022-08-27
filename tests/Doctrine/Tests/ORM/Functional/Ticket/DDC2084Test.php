@@ -9,9 +9,7 @@ use Doctrine\Tests\ORM\Functional\Ticket\DDC2084\MyEntity2;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2084
- */
+/** @group DDC-2084 */
 class DDC2084Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -20,7 +18,7 @@ class DDC2084Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             __NAMESPACE__ . '\DDC2084\MyEntity1',
-            __NAMESPACE__ . '\DDC2084\MyEntity2'
+            __NAMESPACE__ . '\DDC2084\MyEntity2',
         );
     }
 
@@ -58,7 +56,7 @@ class DDC2084Test extends OrmFunctionalTestCase
             <<<'EXCEPTION'
 Binding entities to query parameters only allowed for entities that have an identifier.
 Class "Doctrine\Tests\ORM\Functional\Ticket\DDC2084\MyEntity2" does not have an identifier.
-EXCEPTION
+EXCEPTION,
         );
         $this->_em->find(__NAMESPACE__ . '\DDC2084\MyEntity1', new MyEntity2('Foo'));
     }
@@ -86,7 +84,7 @@ class MyEntity1
          * @OneToOne(targetEntity="MyEntity2")
          * @JoinColumn(name="entity2_id", referencedColumnName="id", nullable=false)
          */
-        private MyEntity2 $entity2
+        private MyEntity2 $entity2,
     ) {
     }
 
@@ -115,10 +113,8 @@ class MyEntity2
     private int $id;
 
     public function __construct(
-        /**
-         * @Column
-         */
-        private string $value
+        /** @Column */
+        private string $value,
     ) {
     }
 

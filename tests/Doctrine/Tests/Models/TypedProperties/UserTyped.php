@@ -37,7 +37,7 @@ class UserTyped
 
     /** @Column(length=50) */
     #[ORM\Column(length: 50)]
-    public ?string $status = null;
+    public string|null $status = null;
 
     /** @Column(length=255, unique=true) */
     #[ORM\Column(length: 255, unique: true)]
@@ -76,24 +76,24 @@ class UserTyped
 
     /** @ManyToOne */
     #[ORM\ManyToOne]
-    public ?CmsEmail $mainEmail = null;
+    public CmsEmail|null $mainEmail = null;
 
     /** @Embedded */
     #[ORM\Embedded]
-    public ?Contact $contact = null;
+    public Contact|null $contact = null;
 
     public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(
-            ['name' => 'cms_users_typed']
+            ['name' => 'cms_users_typed'],
         );
 
         $metadata->mapField(
             [
                 'id' => true,
                 'fieldName' => 'id',
-            ]
+            ],
         );
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
@@ -101,32 +101,32 @@ class UserTyped
             [
                 'fieldName' => 'status',
                 'length' => 50,
-            ]
+            ],
         );
         $metadata->mapField(
             [
                 'fieldName' => 'username',
                 'length' => 255,
                 'unique' => true,
-            ]
+            ],
         );
         $metadata->mapField(
-            ['fieldName' => 'dateInterval']
+            ['fieldName' => 'dateInterval'],
         );
         $metadata->mapField(
-            ['fieldName' => 'dateTime']
+            ['fieldName' => 'dateTime'],
         );
         $metadata->mapField(
-            ['fieldName' => 'dateTimeImmutable']
+            ['fieldName' => 'dateTimeImmutable'],
         );
         $metadata->mapField(
-            ['fieldName' => 'array']
+            ['fieldName' => 'array'],
         );
         $metadata->mapField(
-            ['fieldName' => 'boolean']
+            ['fieldName' => 'boolean'],
         );
         $metadata->mapField(
-            ['fieldName' => 'float']
+            ['fieldName' => 'float'],
         );
 
         $metadata->mapOneToOne(
@@ -140,11 +140,11 @@ class UserTyped
                             [],
                     ],
                 'orphanRemoval' => true,
-            ]
+            ],
         );
 
         $metadata->mapManyToOne(
-            ['fieldName' => 'mainEmail']
+            ['fieldName' => 'mainEmail'],
         );
 
         $metadata->mapEmbedded(['fieldName' => 'contact']);

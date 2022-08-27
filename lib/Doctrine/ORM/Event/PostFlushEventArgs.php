@@ -30,7 +30,7 @@ class PostFlushEventArgs extends ManagerEventArgs
             'doctrine/orm',
             'https://github.com/doctrine/orm/issues/9875',
             'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use getObjectManager() instead.',
-            __METHOD__
+            __METHOD__,
         );
 
         return $this->getObjectManager();

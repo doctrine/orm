@@ -68,7 +68,7 @@ class TestQuery extends AbstractQuery
         return 0;
     }
 
-    public function getResultCache(): ?CacheItemPoolInterface
+    public function getResultCache(): CacheItemPoolInterface|null
     {
         return $this->_queryCacheProfile->getResultCache();
     }

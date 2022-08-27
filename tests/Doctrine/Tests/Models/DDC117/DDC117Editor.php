@@ -16,9 +16,7 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC117Editor
 {
     /**
@@ -55,10 +53,8 @@ class DDC117Editor
     public $lastTranslation;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
-        public ?string $name = ''
+        /** @Column(type="string", length=255) */
+        public string|null $name = '',
     ) {
         $this->reviewingTranslations = new ArrayCollection();
     }

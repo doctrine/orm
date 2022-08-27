@@ -22,20 +22,16 @@ class DateDiffFunction extends FunctionNode
     /** @var Node */
     public $date2;
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function getSql(SqlWalker $sqlWalker)
     {
         return $sqlWalker->getConnection()->getDatabasePlatform()->getDateDiffExpression(
             $this->date1->dispatch($sqlWalker),
-            $this->date2->dispatch($sqlWalker)
+            $this->date2->dispatch($sqlWalker),
         );
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function parse(Parser $parser)
     {
         $parser->match(Lexer::T_IDENTIFIER);

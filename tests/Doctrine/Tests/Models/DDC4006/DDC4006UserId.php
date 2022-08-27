@@ -9,9 +9,7 @@ use Doctrine\ORM\Mapping\Embeddable;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDC4006UserId
 {
     /**

@@ -24,13 +24,11 @@ final class GH8217Test extends OrmFunctionalTestCase
             [
                 GH8217Collection::class,
                 GH8217CollectionItem::class,
-            ]
+            ],
         );
     }
 
-    /**
-     * @group GH-8217
-     */
+    /** @group GH-8217 */
     public function testNoQueriesAfterSecondFlush(): void
     {
         $collection = new GH8217Collection();
@@ -45,9 +43,7 @@ final class GH8217Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH8217Collection
 {
     /**
@@ -76,9 +72,7 @@ class GH8217Collection
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH8217CollectionItem
 {
     public function __construct(
@@ -92,7 +86,7 @@ class GH8217CollectionItem
          * @Id
          * @Column(type="integer", options={"unsigned": true})
          */
-        public int $collectionIndex
+        public int $collectionIndex,
     ) {
     }
 }

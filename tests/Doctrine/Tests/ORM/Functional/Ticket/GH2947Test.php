@@ -14,9 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Stringable;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-/**
- * @group GH-2947
- */
+/** @group GH-2947 */
 class GH2947Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -91,7 +89,7 @@ class GH2947Car implements Stringable
          * @Column(type="string", length=25)
          * @GeneratedValue(strategy="NONE")
          */
-        public string $brand
+        public string $brand,
     ) {
     }
 

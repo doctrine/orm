@@ -50,11 +50,11 @@ interface EntityPersister
      */
     public function getSelectSQL(
         array|Criteria $criteria,
-        ?array $assoc = null,
+        array|null $assoc = null,
         LockMode|int|null $lockMode = null,
-        ?int $limit = null,
-        ?int $offset = null,
-        ?array $orderBy = null
+        int|null $limit = null,
+        int|null $offset = null,
+        array|null $orderBy = null,
     ): string;
 
     /**
@@ -88,8 +88,8 @@ interface EntityPersister
     public function getSelectConditionStatementSQL(
         string $field,
         mixed $value,
-        ?array $assoc = null,
-        ?string $comparison = null
+        array|null $assoc = null,
+        string|null $comparison = null,
     ): string;
 
     /**
@@ -173,13 +173,13 @@ interface EntityPersister
      */
     public function load(
         array $criteria,
-        ?object $entity = null,
-        ?array $assoc = null,
+        object|null $entity = null,
+        array|null $assoc = null,
         array $hints = [],
         LockMode|int|null $lockMode = null,
-        ?int $limit = null,
-        ?array $orderBy = null
-    ): ?object;
+        int|null $limit = null,
+        array|null $orderBy = null,
+    ): object|null;
 
     /**
      * Loads an entity by identifier.
@@ -191,7 +191,7 @@ interface EntityPersister
      *
      * @todo Check parameters
      */
-    public function loadById(array $identifier, ?object $entity = null): ?object;
+    public function loadById(array $identifier, object|null $entity = null): object|null;
 
     /**
      * Loads an entity of this persister's mapped class as part of a single-valued
@@ -207,7 +207,7 @@ interface EntityPersister
      *
      * @throws MappingException
      */
-    public function loadOneToOneEntity(array $assoc, object $sourceEntity, array $identifier = []): ?object;
+    public function loadOneToOneEntity(array $assoc, object $sourceEntity, array $identifier = []): object|null;
 
     /**
      * Refreshes a managed entity.
@@ -239,9 +239,9 @@ interface EntityPersister
      */
     public function loadAll(
         array $criteria = [],
-        ?array $orderBy = null,
-        ?int $limit = null,
-        ?int $offset = null
+        array|null $orderBy = null,
+        int|null $limit = null,
+        int|null $offset = null,
     ): array;
 
     /**
@@ -254,8 +254,8 @@ interface EntityPersister
     public function getManyToManyCollection(
         array $assoc,
         object $sourceEntity,
-        ?int $offset = null,
-        ?int $limit = null
+        int|null $offset = null,
+        int|null $limit = null,
     ): array;
 
     /**
@@ -270,7 +270,7 @@ interface EntityPersister
     public function loadManyToManyCollection(
         array $assoc,
         object $sourceEntity,
-        PersistentCollection $collection
+        PersistentCollection $collection,
     ): array;
 
     /**
@@ -282,7 +282,7 @@ interface EntityPersister
     public function loadOneToManyCollection(
         array $assoc,
         object $sourceEntity,
-        PersistentCollection $collection
+        PersistentCollection $collection,
     ): mixed;
 
     /**
@@ -303,12 +303,12 @@ interface EntityPersister
     public function getOneToManyCollection(
         array $assoc,
         object $sourceEntity,
-        ?int $offset = null,
-        ?int $limit = null
+        int|null $offset = null,
+        int|null $limit = null,
     ): array;
 
     /**
      * Checks whether the given managed entity exists in the database.
      */
-    public function exists(object $entity, ?Criteria $extraConditions = null): bool;
+    public function exists(object $entity, Criteria|null $extraConditions = null): bool;
 }

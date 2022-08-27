@@ -8,16 +8,14 @@ use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1545
- */
+/** @group DDC-1545 */
 class DDC1545Test extends OrmFunctionalTestCase
 {
-    private ?int $articleId = null;
+    private int|null $articleId = null;
 
-    private ?int $userId = null;
+    private int|null $userId = null;
 
-    private ?int $user2Id = null;
+    private int|null $user2Id = null;
 
     protected function setUp(): void
     {

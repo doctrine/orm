@@ -23,7 +23,7 @@ class DDC512Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC512Customer::class,
             DDC512OfferItem::class,
-            DDC512Item::class
+            DDC512Item::class,
         );
     }
 
@@ -57,9 +57,7 @@ class DDC512Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC512Customer
 {
     /**
@@ -81,9 +79,7 @@ class DDC512Customer
     public $item;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC512OfferItem extends DDC512Item
 {
 }

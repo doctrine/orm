@@ -24,7 +24,7 @@ final class GH7286Test extends OrmFunctionalTestCase
         $this->setUpEntitySchema(
             [
                 GH7286Entity::class,
-            ]
+            ],
         );
 
         $this->_em->persist(new GH7286Entity('foo', 1));
@@ -42,7 +42,7 @@ final class GH7286Test extends OrmFunctionalTestCase
             . ' FROM ' . GH7286Entity::class . ' e'
             . ' WHERE e.type IS NOT NULL'
             . ' GROUP BY e.type'
-            . ' ORDER BY e.type'
+            . ' ORDER BY e.type',
         );
 
         self::assertSame(
@@ -50,13 +50,11 @@ final class GH7286Test extends OrmFunctionalTestCase
                 ['pair' => 'bar3'],
                 ['pair' => 'foo1'],
             ],
-            $query->getArrayResult()
+            $query->getArrayResult(),
         );
     }
 
-    /**
-     * @group DDC-1091
-     */
+    /** @group DDC-1091 */
     public function testAggregateFunctionInCustomFunction(): void
     {
         $this->_em->getConfiguration()->addCustomStringFunction('CC', GH7286CustomConcat::class);
@@ -65,20 +63,18 @@ final class GH7286Test extends OrmFunctionalTestCase
             'SELECT CC(e.type, MIN(e.version)) pair'
             . ' FROM ' . GH7286Entity::class . ' e'
             . ' WHERE e.type IS NOT NULL AND e.type != :type'
-            . ' GROUP BY e.type'
+            . ' GROUP BY e.type',
         );
         $query->setParameter('type', 'bar');
 
         self::assertSame(
             ['pair' => 'foo1'],
-            $query->getSingleResult()
+            $query->getSingleResult(),
         );
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7286Entity
 {
     /**
@@ -90,23 +86,19 @@ class GH7286Entity
     public $id;
 
     public function __construct(
-        /**
-         * @Column(nullable=true)
-         */
-        public ?string $type,
-        /**
-         * @Column(type="integer")
-         */
-        public int $version
+        /** @Column(nullable=true) */
+        public string|null $type,
+        /** @Column(type="integer") */
+        public int $version,
     ) {
     }
 }
 
 class GH7286CustomConcat extends FunctionNode
 {
-    private ?Node $first = null;
+    private Node|null $first = null;
 
-    private ?Node $second = null;
+    private Node|null $second = null;
 
     public function parse(Parser $parser): void
     {
@@ -124,7 +116,7 @@ class GH7286CustomConcat extends FunctionNode
     {
         return $walker->getConnection()->getDatabasePlatform()->getConcatExpression(
             $this->first->dispatch($walker),
-            $this->second->dispatch($walker)
+            $this->second->dispatch($walker),
         );
     }
 }

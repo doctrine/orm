@@ -17,7 +17,7 @@ class GenerateSchemaEventArgs extends EventArgs
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly Schema $schema
+        private readonly Schema $schema,
     ) {
     }
 

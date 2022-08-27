@@ -15,9 +15,7 @@ class DDC949Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @group DDC-949
-     */
+    /** @group DDC-949 */
     public function testBooleanThroughRepository(): void
     {
         $true               = new BooleanModel();

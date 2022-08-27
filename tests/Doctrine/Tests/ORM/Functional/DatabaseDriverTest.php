@@ -30,9 +30,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $this->schemaManager = $this->createSchemaManager();
     }
 
-    /**
-     * @group DDC-2059
-     */
+    /** @group DDC-2059 */
     public function testIssue2059(): void
     {
         $user = new Table('ddc2059_user');
@@ -194,13 +192,13 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         self::assertNotEmpty($metadata->table['indexes']['index1']['columns']);
         self::assertEquals(
             ['column_index1', 'column_index2'],
-            $metadata->table['indexes']['index1']['columns']
+            $metadata->table['indexes']['index1']['columns'],
         );
 
         self::assertNotEmpty($metadata->table['uniqueConstraints']['unique_index1']['columns']);
         self::assertEquals(
             ['column_unique_index1', 'column_unique_index2'],
-            $metadata->table['uniqueConstraints']['unique_index1']['columns']
+            $metadata->table['uniqueConstraints']['unique_index1']['columns'],
         );
     }
 

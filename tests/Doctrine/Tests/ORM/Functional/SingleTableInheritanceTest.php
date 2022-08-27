@@ -20,16 +20,16 @@ use function sort;
 
 class SingleTableInheritanceTest extends OrmFunctionalTestCase
 {
-    private ?CompanyEmployee $salesPerson = null;
+    private CompanyEmployee|null $salesPerson = null;
 
     /** @var list<CompanyEmployee> */
     private array $engineers = [];
 
-    private ?CompanyFixContract $fix = null;
+    private CompanyFixContract|null $fix = null;
 
-    private ?CompanyFlexContract $flex = null;
+    private CompanyFlexContract|null $flex = null;
 
-    private ?CompanyFlexUltraContract $ultra = null;
+    private CompanyFlexUltraContract|null $ultra = null;
 
     protected function setUp(): void
     {
@@ -256,9 +256,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals(1000, $contract->getFixPrice());
     }
 
-    /**
-     * @group non-cacheable
-     */
+    /** @group non-cacheable */
     public function testUpdateChildClassWithCondition(): void
     {
         $this->loadFullFixture();
@@ -315,9 +313,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertFalse($contracts[0]->isCompleted(), 'Only non completed contracts should be left.');
     }
 
-    /**
-     * @group DDC-130
-     */
+    /** @group DDC-130 */
     public function testDeleteJoinTableRecords(): void
     {
         $this->loadFullFixture();
@@ -329,9 +325,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertNull($this->_em->find($this->fix::class, $this->fix->getId()), 'Contract should not be present in the database anymore.');
     }
 
-    /**
-     * @group DDC-817
-     */
+    /** @group DDC-817 */
     public function testFindByAssociation(): void
     {
         $this->loadFullFixture();
@@ -353,29 +347,25 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertCount(1, $contracts, 'There should be 1 entities related to ' . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFlexUltraContract'");
     }
 
-    /**
-     * @group DDC-1637
-     */
+    /** @group DDC-1637 */
     public function testInheritanceMatching(): void
     {
         $this->loadFullFixture();
 
         $repository = $this->_em->getRepository(CompanyContract::class);
         $contracts  = $repository->matching(new Criteria(
-            Criteria::expr()->eq('salesPerson', $this->salesPerson)
+            Criteria::expr()->eq('salesPerson', $this->salesPerson),
         ));
         self::assertCount(3, $contracts);
 
         $repository = $this->_em->getRepository(CompanyFixContract::class);
         $contracts  = $repository->matching(new Criteria(
-            Criteria::expr()->eq('salesPerson', $this->salesPerson)
+            Criteria::expr()->eq('salesPerson', $this->salesPerson),
         ));
         self::assertCount(1, $contracts);
     }
 
-    /**
-     * @group DDC-2430
-     */
+    /** @group DDC-2430 */
     public function testMatchingNonObjectOnAssocationThrowsException(): void
     {
         $this->loadFullFixture();
@@ -386,16 +376,14 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->expectExceptionMessage('annot match on Doctrine\Tests\Models\Company\CompanyContract::salesPerson with a non-object value.');
 
         $contracts = $repository->matching(new Criteria(
-            Criteria::expr()->eq('salesPerson', $this->salesPerson->getId())
+            Criteria::expr()->eq('salesPerson', $this->salesPerson->getId()),
         ));
 
         // Load the association because it's wrapped in a lazy collection
         $contracts->toArray();
     }
 
-    /**
-     * @group DDC-834
-     */
+    /** @group DDC-834 */
     public function testGetReferenceEntityWithSubclasses(): void
     {
         $this->loadFullFixture();
@@ -410,9 +398,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertInstanceOf(Proxy::class, $ref, 'A proxy can be generated only if no subclasses exists for the requested reference.');
     }
 
-    /**
-     * @group DDC-952
-     */
+    /** @group DDC-952 */
     public function testEagerLoadInheritanceHierarchy(): void
     {
         $this->loadFullFixture();

@@ -48,9 +48,7 @@ class FilterCollectionTest extends OrmTestCase
         self::assertFalse($filterCollection->has('fakeFilter'));
     }
 
-    /**
-     * @depends testEnable
-     */
+    /** @depends testEnable */
     public function testIsEnabled(): void
     {
         $filterCollection = $this->em->getFilters();

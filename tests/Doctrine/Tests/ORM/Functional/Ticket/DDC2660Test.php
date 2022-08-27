@@ -14,9 +14,7 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-/**
- * @group DDC-2660
- */
+/** @group DDC-2660 */
 class DDC2660Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -29,7 +27,7 @@ class DDC2660Test extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(DDC2660Product::class),
                     $this->_em->getClassMetadata(DDC2660Customer::class),
                     $this->_em->getClassMetadata(DDC2660CustomerOrder::class),
-                ]
+                ],
             );
         } catch (Exception) {
             return;
@@ -134,10 +132,8 @@ class DDC2660CustomerOrder
          * @ManyToOne(targetEntity="DDC2660Customer")
          */
         public DDC2660Customer $customer,
-        /**
-         * @Column(type="string", length=255)
-         */
-        public string $name
+        /** @Column(type="string", length=255) */
+        public string $name,
     ) {
     }
 }

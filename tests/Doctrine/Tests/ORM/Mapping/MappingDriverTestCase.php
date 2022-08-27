@@ -81,9 +81,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
 {
     abstract protected function loadDriver(): MappingDriver;
 
-    /**
-     * @psalm-param class-string<object> $entityClassName
-     */
+    /** @psalm-param class-string<object> $entityClassName */
     public function createClassMetadata(string $entityClassName): ClassMetadata
     {
         $mappingDriver = $this->loadDriver();
@@ -95,7 +93,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    protected function createClassMetadataFactory(?EntityManagerInterface $em = null): ClassMetadataFactory
+    protected function createClassMetadataFactory(EntityManagerInterface|null $em = null): ClassMetadataFactory
     {
         $driver  = $this->loadDriver();
         $em    ??= $this->getTestEntityManager();
@@ -116,9 +114,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testEntityTableNameAndInheritance
-     */
+    /** @depends testEntityTableNameAndInheritance */
     public function testEntityIndexes(ClassMetadata $class): ClassMetadata
     {
         self::assertArrayHasKey('indexes', $class->table, 'ClassMetadata should have indexes key in table property.');
@@ -128,7 +124,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
                 0 => ['columns' => ['user_email']],
                 'fields' => ['fields' => ['name', 'email']],
             ],
-            $class->table['indexes']
+            $class->table['indexes'],
         );
 
         return $class;
@@ -152,19 +148,17 @@ abstract class MappingDriverTestCase extends OrmTestCase
                     'options' => ['where' => 'content IS NOT NULL'],
                 ],
             ],
-            $class->table['indexes']
+            $class->table['indexes'],
         );
     }
 
-    /**
-     * @depends testEntityTableNameAndInheritance
-     */
+    /** @depends testEntityTableNameAndInheritance */
     public function testEntityUniqueConstraints(ClassMetadata $class): ClassMetadata
     {
         self::assertArrayHasKey(
             'uniqueConstraints',
             $class->table,
-            'ClassMetadata should have uniqueConstraints key in table property when Unique Constraints are set.'
+            'ClassMetadata should have uniqueConstraints key in table property when Unique Constraints are set.',
         );
 
         self::assertEquals(
@@ -172,7 +166,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
                 'search_idx' => ['columns' => ['name', 'user_email'], 'options' => ['where' => 'name IS NOT NULL']],
                 'phone_idx' => ['fields' => ['name', 'phone']],
             ],
-            $class->table['uniqueConstraints']
+            $class->table['uniqueConstraints'],
         );
 
         return $class;
@@ -184,9 +178,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         $this->createClassMetadata(UserIncorrectUniqueConstraint::class);
     }
 
-    /**
-     * @depends testEntityTableNameAndInheritance
-     */
+    /** @depends testEntityTableNameAndInheritance */
     public function testEntityOptions(ClassMetadata $class): ClassMetadata
     {
         self::assertArrayHasKey('options', $class->table, 'ClassMetadata should have options key in table property.');
@@ -196,15 +188,13 @@ abstract class MappingDriverTestCase extends OrmTestCase
                 'foo' => 'bar',
                 'baz' => ['key' => 'val'],
             ],
-            $class->table['options']
+            $class->table['options'],
         );
 
         return $class;
     }
 
-    /**
-     * @depends testEntityOptions
-     */
+    /** @depends testEntityOptions */
     public function testEntitySequence(ClassMetadata $class): void
     {
         self::assertIsArray($class->sequenceGeneratorDefinition, 'No Sequence Definition set on this driver.');
@@ -214,7 +204,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
                 'allocationSize' => 100,
                 'initialValue' => 1,
             ],
-            $class->sequenceGeneratorDefinition
+            $class->sequenceGeneratorDefinition,
         );
     }
 
@@ -225,18 +215,16 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals(
             ClassMetadata::GENERATOR_TYPE_CUSTOM,
             $class->generatorType,
-            'Generator Type'
+            'Generator Type',
         );
         self::assertEquals(
             ['class' => stdClass::class],
             $class->customGeneratorDefinition,
-            'Custom Generator Definition'
+            'Custom Generator Definition',
         );
     }
 
-    /**
-     * @depends testEntityTableNameAndInheritance
-     */
+    /** @depends testEntityTableNameAndInheritance */
     public function testFieldMappings(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals(4, count($class->fieldMappings));
@@ -248,9 +236,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testFieldMappings
-     */
+    /** @depends testFieldMappings */
     public function testVersionedField(ClassMetadata $class): void
     {
         self::assertTrue($class->isVersioned);
@@ -259,9 +245,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertFalse(isset($class->fieldMappings['version']['version']));
     }
 
-    /**
-     * @depends testEntityTableNameAndInheritance
-     */
+    /** @depends testEntityTableNameAndInheritance */
     public function testFieldMappingsColumnNames(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('id', $class->fieldMappings['id']['columnName']);
@@ -271,9 +255,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testEntityTableNameAndInheritance
-     */
+    /** @depends testEntityTableNameAndInheritance */
     public function testStringFieldMappings(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('string', $class->fieldMappings['name']['type']);
@@ -302,9 +284,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals(Contact::class, $class->embeddedClasses['contact']['class']);
     }
 
-    /**
-     * @depends testEntityTableNameAndInheritance
-     */
+    /** @depends testEntityTableNameAndInheritance */
     public function testFieldOptions(ClassMetadata $class): ClassMetadata
     {
         $expected = ['foo' => 'bar', 'baz' => ['key' => 'val'], 'fixed' => false];
@@ -313,9 +293,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testEntityTableNameAndInheritance
-     */
+    /** @depends testEntityTableNameAndInheritance */
     public function testIdFieldOptions(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals(['foo' => 'bar', 'unsigned' => false], $class->fieldMappings['id']['options']);
@@ -323,9 +301,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testFieldMappings
-     */
+    /** @depends testFieldMappings */
     public function testIdentifier(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals(['id'], $class->identifier);
@@ -335,9 +311,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @group #6129
-     */
+    /** @group #6129 */
     public function testBooleanValuesForOptionIsSetCorrectly(): ClassMetadata
     {
         $class = $this->createClassMetadata(User::class);
@@ -351,9 +325,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testIdentifier
-     */
+    /** @depends testIdentifier */
     public function testAssociations(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals(3, count($class->associationMappings));
@@ -361,9 +333,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testAssociations
-     */
+    /** @depends testAssociations */
     public function testOwningOneToOneAssociation(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->associationMappings['address']));
@@ -379,9 +349,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testOwningOneToOneAssociation
-     */
+    /** @depends testOwningOneToOneAssociation */
     public function testInverseOneToManyAssociation(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->associationMappings['phonenumbers']));
@@ -399,9 +367,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testInverseOneToManyAssociation
-     */
+    /** @depends testInverseOneToManyAssociation */
     public function testManyToManyAssociationWithCascadeAll(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->associationMappings['groups']));
@@ -418,9 +384,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testManyToManyAssociationWithCascadeAll
-     */
+    /** @depends testManyToManyAssociationWithCascadeAll */
     public function testLifecycleCallbacks(ClassMetadata $class): ClassMetadata
     {
         self::assertCount(2, $class->lifecycleCallbacks);
@@ -430,9 +394,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testManyToManyAssociationWithCascadeAll
-     */
+    /** @depends testManyToManyAssociationWithCascadeAll */
     public function testLifecycleCallbacksSupportMultipleMethodNames(ClassMetadata $class): ClassMetadata
     {
         self::assertCount(2, $class->lifecycleCallbacks['prePersist']);
@@ -441,9 +403,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testLifecycleCallbacksSupportMultipleMethodNames
-     */
+    /** @depends testLifecycleCallbacksSupportMultipleMethodNames */
     public function testJoinColumnUniqueAndNullable(ClassMetadata $class): ClassMetadata
     {
         // Non-Nullability of Join Column
@@ -453,9 +413,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testJoinColumnUniqueAndNullable
-     */
+    /** @depends testJoinColumnUniqueAndNullable */
     public function testColumnDefinition(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('CHAR(32) NOT NULL', $class->fieldMappings['email']['columnDefinition']);
@@ -464,9 +422,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testColumnDefinition
-     */
+    /** @depends testColumnDefinition */
     public function testJoinColumnOnDelete(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
@@ -474,9 +430,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @group DDC-514
-     */
+    /** @group DDC-514 */
     public function testDiscriminatorColumnDefaults(): void
     {
         if (str_contains(static::class, 'PHPMappingDriver')) {
@@ -487,13 +441,11 @@ abstract class MappingDriverTestCase extends OrmTestCase
 
         self::assertEquals(
             ['name' => 'discr', 'type' => 'string', 'length' => '32', 'fieldName' => 'discr', 'columnDefinition' => null],
-            $class->discriminatorColumn
+            $class->discriminatorColumn,
         );
     }
 
-    /**
-     * @group DDC-869
-     */
+    /** @group DDC-869 */
     public function testMappedSuperclassWithRepository(): void
     {
         $em      = $this->getTestEntityManager();
@@ -518,9 +470,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertTrue($em->getRepository(DDC869ChequePayment::class)->isTrue());
     }
 
-    /**
-     * @group DDC-1476
-     */
+    /** @group DDC-1476 */
     public function testDefaultFieldType(): void
     {
         $factory = $this->createClassMetadataFactory();
@@ -550,9 +500,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals(ClassMetadata::GENERATOR_TYPE_NONE, $class->generatorType);
     }
 
-    /**
-     * @group DDC-1170
-     */
+    /** @group DDC-1170 */
     public function testIdentifierColumnDefinition(): void
     {
         $class = $this->createClassMetadata(DDC1170Entity::class);
@@ -567,9 +515,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals('varchar(255) not null', strtolower($class->fieldMappings['value']['columnDefinition']));
     }
 
-    /**
-     * @group DDC-559
-     */
+    /** @group DDC-559 */
     public function testNamingStrategy(): void
     {
         $em      = $this->getTestEntityManager();
@@ -601,9 +547,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals('dtype', $class->discriminatorColumn['name']);
     }
 
-    /**
-     * @group DDC-889
-     */
+    /** @group DDC-889 */
     public function testInvalidEntityOrMappedSuperClassShouldMentionParentClasses(): void
     {
         $this->expectException(MappingException::class);
@@ -612,9 +556,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         $this->createClassMetadata(DDC889Class::class);
     }
 
-    /**
-     * @group DDC-889
-     */
+    /** @group DDC-889 */
     public function testIdentifierRequiredShouldMentionParentClasses(): void
     {
         $factory = $this->createClassMetadataFactory();
@@ -625,9 +567,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         $factory->getMetadataFor(DDC889Entity::class);
     }
 
-    /**
-     * @group DDC-1663
-     */
+    /** @group DDC-1663 */
     public function testSqlResultSetMapping(): void
     {
         $userMetadata   = $this->createClassMetadata(CmsUser::class);
@@ -840,9 +780,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertTrue($guestMetadata->fieldMappings['name']['unique']);
     }
 
-    /**
-     * @group DDC-1955
-     */
+    /** @group DDC-1955 */
     public function testEntityListeners(): void
     {
         $em         = $this->getTestEntityManager();
@@ -871,9 +809,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals($flexClass->entityListeners, $superClass->entityListeners);
     }
 
-    /**
-     * @group DDC-1955
-     */
+    /** @group DDC-1955 */
     public function testEntityListenersOverride(): void
     {
         $em         = $this->getTestEntityManager();
@@ -904,9 +840,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals('prePersistHandler2', $prePersist['method']);
     }
 
-    /**
-     * @group DDC-1955
-     */
+    /** @group DDC-1955 */
     public function testEntityListenersNamingConvention(): void
     {
         $em       = $this->getTestEntityManager();
@@ -959,9 +893,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals(Events::preFlush, $preFlush['method']);
     }
 
-    /**
-     * @group DDC-2183
-     */
+    /** @group DDC-2183 */
     public function testSecondLevelCacheMapping(): void
     {
         $em      = $this->getTestEntityManager();
@@ -1092,9 +1024,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertArrayNotHasKey('notUpdatable', $metadata->getFieldMapping('updatableContent'));
     }
 
-    /**
-     * @requires PHP 8.1
-     */
+    /** @requires PHP 8.1 */
     public function testEnumType(): void
     {
         $metadata = $this->createClassMetadata(Card::class);
@@ -1185,25 +1115,19 @@ class User
     #[ORM\Column(type: 'integer'), ORM\Version]
     public $version;
 
-    /**
-     * @PrePersist
-     */
+    /** @PrePersist */
     #[ORM\PrePersist]
     public function doStuffOnPrePersist(): void
     {
     }
 
-    /**
-     * @PrePersist
-     */
+    /** @PrePersist */
     #[ORM\PrePersist]
     public function doOtherStuffOnPrePersistToo(): void
     {
     }
 
-    /**
-     * @PostPersist
-     */
+    /** @PostPersist */
     #[ORM\PostPersist]
     public function doStuffOnPostPersist(): void
     {
@@ -1216,7 +1140,7 @@ class User
             [
                 'name' => 'cms_users',
                 'options' => ['foo' => 'bar', 'baz' => ['key' => 'val']],
-            ]
+            ],
         );
         $metadata->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT);
         $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
@@ -1229,7 +1153,7 @@ class User
                 'type' => 'integer',
                 'columnName' => 'id',
                 'options' => ['foo' => 'bar', 'unsigned' => false],
-            ]
+            ],
         );
         $metadata->mapField(
             [
@@ -1240,7 +1164,7 @@ class User
                 'nullable' => true,
                 'columnName' => 'name',
                 'options' => ['foo' => 'bar', 'baz' => ['key' => 'val'], 'fixed' => false],
-            ]
+            ],
         );
         $metadata->mapField(
             [
@@ -1248,7 +1172,7 @@ class User
                 'type' => 'string',
                 'columnName' => 'user_email',
                 'columnDefinition' => 'CHAR(32) NOT NULL',
-            ]
+            ],
         );
         $mapping = ['fieldName' => 'version', 'type' => 'integer'];
         $metadata->setVersionMapping($mapping);
@@ -1272,7 +1196,7 @@ class User
                     ],
                 ],
                 'orphanRemoval' => false,
-            ]
+            ],
         );
         $metadata->mapOneToMany(
             [
@@ -1284,7 +1208,7 @@ class User
                 'orphanRemoval' => true,
                 'orderBy' =>
                 ['number' => 'ASC'],
-            ]
+            ],
         );
         $metadata->mapManyToMany(
             [
@@ -1323,7 +1247,7 @@ class User
                     ],
                 ],
                 'orderBy' => null,
-            ]
+            ],
         );
         $metadata->table['uniqueConstraints'] = [
             'search_idx' => ['columns' => ['name', 'user_email'], 'options' => ['where' => 'name IS NOT NULL']],
@@ -1339,7 +1263,7 @@ class User
                 'sequenceName' => 'tablename_seq',
                 'allocationSize' => 100,
                 'initialValue' => 1,
-            ]
+            ],
         );
     }
 }
@@ -1382,20 +1306,20 @@ class UserIncorrectIndex
                 'fieldName' => 'id',
                 'type' => 'integer',
                 'columnName' => 'id',
-            ]
+            ],
         );
         $metadata->mapField(
             [
                 'fieldName' => 'name',
                 'type' => 'string',
-            ]
+            ],
         );
         $metadata->mapField(
             [
                 'fieldName' => 'email',
                 'type' => 'string',
                 'columnName' => 'user_email',
-            ]
+            ],
         );
         $metadata->table['indexes'] = [
             'name_idx' => ['columns' => ['name'], 'fields' => ['email']],
@@ -1441,20 +1365,20 @@ class UserIncorrectUniqueConstraint
                 'fieldName' => 'id',
                 'type' => 'integer',
                 'columnName' => 'id',
-            ]
+            ],
         );
         $metadata->mapField(
             [
                 'fieldName' => 'name',
                 'type' => 'string',
-            ]
+            ],
         );
         $metadata->mapField(
             [
                 'fieldName' => 'email',
                 'type' => 'string',
                 'columnName' => 'user_email',
-            ]
+            ],
         );
         $metadata->table['uniqueConstraints'] = [
             'name_idx' => ['columns' => ['name'], 'fields' => ['email']],
@@ -1508,17 +1432,13 @@ class Dog extends Animal
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 #[ORM\Entity]
 class DDC1170Entity
 {
     public function __construct(
-        /**
-         * @Column(columnDefinition = "VARCHAR(255) NOT NULL")
-         */
-        #[ORM\Column(columnDefinition: 'VARCHAR(255) NOT NULL')] private ?string $value = null
+        /** @Column(columnDefinition = "VARCHAR(255) NOT NULL") */
+        #[ORM\Column(columnDefinition: 'VARCHAR(255) NOT NULL')] private string|null $value = null,
     ) {
     }
 
@@ -1535,7 +1455,7 @@ class DDC1170Entity
         return $this->id;
     }
 
-    public function getValue(): ?string
+    public function getValue(): string|null
     {
         return $this->value;
     }
@@ -1547,14 +1467,14 @@ class DDC1170Entity
                 'id'                 => true,
                 'fieldName'          => 'id',
                 'columnDefinition'   => 'INT unsigned NOT NULL',
-            ]
+            ],
         );
 
         $metadata->mapField(
             [
                 'fieldName'         => 'value',
                 'columnDefinition'  => 'VARCHAR(255) NOT NULL',
-            ]
+            ],
         );
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
@@ -1587,7 +1507,7 @@ class DDC807Entity
              [
                  'id'                 => true,
                  'fieldName'          => 'id',
-             ]
+             ],
          );
 
         $metadata->setDiscriminatorColumn(
@@ -1595,7 +1515,7 @@ class DDC807Entity
                 'name'              => 'dtype',
                 'type'              => 'string',
                 'columnDefinition'  => "ENUM('ONE','TWO')",
-            ]
+            ],
         );
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
@@ -1639,7 +1559,7 @@ class Comment
                 'indexes' => [
                     ['columns' => ['content'], 'flags' => ['fulltext'], 'options' => ['where' => 'content IS NOT NULL']],
                 ],
-            ]
+            ],
         );
 
         $metadata->mapField(
@@ -1652,7 +1572,7 @@ class Comment
                 'nullable' => false,
                 'precision' => 0,
                 'columnName' => 'content',
-            ]
+            ],
         );
     }
 }
@@ -1684,7 +1604,7 @@ class SingleTableEntityNoDiscriminatorColumnMapping
             [
                 'id' => true,
                 'fieldName' => 'id',
-            ]
+            ],
         );
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
@@ -1727,7 +1647,7 @@ class SingleTableEntityIncompleteDiscriminatorColumnMapping
             [
                 'id' => true,
                 'fieldName' => 'id',
-            ]
+            ],
         );
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
@@ -1768,14 +1688,14 @@ class ReservedWordInTableColumn
                 'id' => true,
                 'fieldName' => 'id',
                 'type' => 'integer',
-            ]
+            ],
         );
         $metadata->mapField(
             [
                 'fieldName' => 'count',
                 'type' => 'integer',
                 'columnName' => '`count`',
-            ]
+            ],
         );
     }
 }

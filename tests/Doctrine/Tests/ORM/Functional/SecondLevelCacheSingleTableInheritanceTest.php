@@ -13,9 +13,7 @@ use Doctrine\Tests\Models\Cache\Restaurant;
 
 use function count;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testUseSameRegion(): void
@@ -236,7 +234,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheFunctio
 
         $contact = new Beach(
             'Botafogo',
-            $this->_em->find(City::class, $this->cities[1]->getId())
+            $this->_em->find(City::class, $this->cities[1]->getId()),
         );
 
         $this->_em->persist($contact);

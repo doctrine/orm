@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1695
- */
+/** @group DDC-1695 */
 class DDC1695Test extends OrmFunctionalTestCase
 {
     public function testIssue(): void
@@ -29,7 +27,7 @@ class DDC1695Test extends OrmFunctionalTestCase
 
         self::assertEquals(
             'SELECT d0_."SmallText" AS SmallText_0, d0_."PublishDate" AS PublishDate_1 FROM "DDC1695News" d0_',
-            $sql
+            $sql,
         );
     }
 }

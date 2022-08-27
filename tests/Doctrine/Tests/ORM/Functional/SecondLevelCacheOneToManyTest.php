@@ -14,9 +14,7 @@ use Doctrine\Tests\Models\Cache\Traveler;
 
 use function sprintf;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class SecondLevelCacheOneToManyTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testShouldPutCollectionInverseSideOnPersist(): void
@@ -385,7 +383,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheFunctionalTestCase
 
         $query  = sprintf(
             'SELECT t, tt FROM Doctrine\Tests\Models\Cache\Traveler t JOIN t.travels tt WHERE t.id = %s',
-            $travelerId
+            $travelerId,
         );
         $result = $this->_em->createQuery($query)->getSingleResult();
 

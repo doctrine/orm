@@ -30,7 +30,7 @@ class DDC3223Test extends OrmFunctionalTestCase
                 Participant::class,
                 Status::class,
                 ProfileStatus::class,
-            ]
+            ],
         );
     }
 
@@ -114,9 +114,7 @@ class Status
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class ProfileStatus extends Status
 {
 }

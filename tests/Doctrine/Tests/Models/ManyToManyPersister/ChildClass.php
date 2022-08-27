@@ -47,7 +47,7 @@ class ChildClass
          * @ManyToOne(targetEntity=OtherParentClass::class, cascade={"persist"})
          * @JoinColumn(name="other_parent_id", referencedColumnName="id")
          */
-        public OtherParentClass $otherParent
+        public OtherParentClass $otherParent,
     ) {
         $this->parents = new ArrayCollection();
     }

@@ -73,7 +73,7 @@ class ListenersInvoker
         string $eventName,
         object $entity,
         EventArgs $event,
-        int $invoke
+        int $invoke,
     ): void {
         if ($invoke & self::INVOKE_CALLBACKS) {
             foreach ($metadata->lifecycleCallbacks[$eventName] as $callback) {

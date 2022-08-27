@@ -33,8 +33,7 @@ by the ORM, you can use a DBAL functionality to filter the tables and sequences 
 on a global level:
 
     $config->setFilterSchemaAssetsExpression($regexp);
-EOT
-             );
+EOT);
     }
 
     /**

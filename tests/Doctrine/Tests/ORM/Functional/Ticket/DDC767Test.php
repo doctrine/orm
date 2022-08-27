@@ -19,9 +19,7 @@ class DDC767Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @group DDC-767
-     */
+    /** @group DDC-767 */
     public function testCollectionChangesInsideTransaction(): void
     {
         $user           = new CmsUser();

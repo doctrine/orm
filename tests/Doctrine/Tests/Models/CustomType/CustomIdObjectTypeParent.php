@@ -30,7 +30,7 @@ class CustomIdObjectTypeParent
          * @Id
          * @Column(type="CustomIdObject", length=255)
          */
-        public CustomIdObject $id
+        public CustomIdObject $id,
     ) {
         $this->children = new ArrayCollection();
     }

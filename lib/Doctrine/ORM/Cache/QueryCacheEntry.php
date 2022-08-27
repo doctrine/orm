@@ -26,18 +26,14 @@ class QueryCacheEntry implements CacheEntry
      */
     public float $time;
 
-    /**
-     * @param array<string, mixed> $result
-     */
-    public function __construct(array $result, ?float $time = null)
+    /** @param array<string, mixed> $result */
+    public function __construct(array $result, float|null $time = null)
     {
         $this->result = $result;
         $this->time   = $time ?: microtime(true);
     }
 
-    /**
-     * @param array<string, mixed> $values
-     */
+    /** @param array<string, mixed> $values */
     public static function __set_state(array $values): self
     {
         return new self($values['result'], $values['time']);

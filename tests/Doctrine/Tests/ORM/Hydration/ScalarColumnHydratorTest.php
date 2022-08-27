@@ -113,7 +113,7 @@ class ScalarColumnHydratorTest extends HydrationTestCase
         $this->expectException(MultipleSelectorsFoundException::class);
         $this->expectExceptionMessage(sprintf(
             MultipleSelectorsFoundException::MULTIPLE_SELECTORS_FOUND_EXCEPTION,
-            'id, name'
+            'id, name',
         ));
 
         $hydrator->hydrateAll($stmt, $rsm);

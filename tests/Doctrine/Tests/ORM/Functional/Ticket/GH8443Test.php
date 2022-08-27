@@ -30,9 +30,7 @@ final class GH8443Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(GH8443Foo::class);
     }
 
-    /**
-     * @group GH-8443
-     */
+    /** @group GH-8443 */
     public function testJoinRootEntityWithForcePartialLoad(): void
     {
         $person = new CompanyPerson();
@@ -54,16 +52,14 @@ final class GH8443Test extends OrmFunctionalTestCase
         $manager = $this->_em->createQuery(
             "SELECT m from Doctrine\Tests\Models\Company\CompanyManager m
                JOIN m.spouse s
-               WITH s.name = 'John'"
+               WITH s.name = 'John'",
         )->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true)->getSingleResult();
         $this->_em->refresh($manager);
 
         $this->assertEquals('John', $manager->getSpouse()->getName());
     }
 
-    /**
-     * @group GH-8443
-     */
+    /** @group GH-8443 */
     public function testJoinRootEntityWithOnlyOneEntityInHierarchy(): void
     {
         $bar = new GH8443Foo('bar');
@@ -77,7 +73,7 @@ final class GH8443Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $foo = $this->_em->createQuery(
-            'SELECT f from ' . GH8443Foo::class . " f JOIN f.bar b WITH b.name = 'bar'"
+            'SELECT f from ' . GH8443Foo::class . " f JOIN f.bar b WITH b.name = 'bar'",
         )->getSingleResult();
         assert($foo instanceof GH8443Foo);
 
@@ -102,7 +98,7 @@ class GH8443Foo
      * @Column(type="integer")
      * @GeneratedValue
      */
-    private ?int $id = null;
+    private int|null $id = null;
 
     /**
      * @var GH8443Foo|null
@@ -112,14 +108,12 @@ class GH8443Foo
     private $bar;
 
     public function __construct(
-        /**
-         * @Column
-         */
-        private string $name
+        /** @Column */
+        private string $name,
     ) {
     }
 
-    public function getName(): ?string
+    public function getName(): string|null
     {
         return $this->name;
     }
@@ -132,7 +126,7 @@ class GH8443Foo
         }
     }
 
-    public function getBar(): ?GH8443Foo
+    public function getBar(): GH8443Foo|null
     {
         return $this->bar;
     }

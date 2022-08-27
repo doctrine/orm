@@ -62,13 +62,13 @@ class CompanyPerson
     private int $id;
 
     /** @Column */
-    private ?string $name = null;
+    private string|null $name = null;
 
     /**
      * @OneToOne(targetEntity="CompanyPerson")
      * @JoinColumn(name="spouse_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    private ?CompanyPerson $spouse = null;
+    private CompanyPerson|null $spouse = null;
 
     /**
      * @psalm-var Collection<int, CompanyPerson>
@@ -105,14 +105,12 @@ class CompanyPerson
         $this->name = $name;
     }
 
-    public function getSpouse(): ?CompanyPerson
+    public function getSpouse(): CompanyPerson|null
     {
         return $this->spouse;
     }
 
-    /**
-     * @psalm-return Collection<int, CompanyPerson>
-     */
+    /** @psalm-return Collection<int, CompanyPerson> */
     public function getFriends(): Collection
     {
         return $this->friends;
@@ -137,7 +135,7 @@ class CompanyPerson
     public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->setPrimaryTable(
-            ['name' => 'company_person']
+            ['name' => 'company_person'],
         );
 
         $metadata->addSqlResultSetMapping(
@@ -160,7 +158,7 @@ class CompanyPerson
                         'discriminatorColumn' => 'discriminator',
                     ],
                 ],
-            ]
+            ],
         );
     }
 }

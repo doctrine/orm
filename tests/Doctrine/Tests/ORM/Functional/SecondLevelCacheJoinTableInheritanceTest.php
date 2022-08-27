@@ -12,9 +12,7 @@ use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
 
 use function count;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testUseSameRegion(): void
@@ -215,7 +213,7 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheFunctiona
 
         $contact = new AttractionContactInfo(
             '1234-1234',
-            $this->_em->find(Attraction::class, $this->attractions[5]->getId())
+            $this->_em->find(Attraction::class, $this->attractions[5]->getId()),
         );
 
         $this->_em->persist($contact);

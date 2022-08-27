@@ -17,7 +17,7 @@ final class CannotGenerateIds extends LogicException implements ORMException
     {
         return new self(sprintf(
             'Platform %s does not support generating identifiers',
-            get_debug_type($platform)
+            get_debug_type($platform),
         ));
     }
 }

@@ -54,9 +54,7 @@ class DDC735Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC735Product
 {
     /**
@@ -83,9 +81,7 @@ class DDC735Product
         $this->reviews = new ArrayCollection();
     }
 
-    /**
-     * @psalm-return Collection<int, DDC735Review>
-     */
+    /** @psalm-return Collection<int, DDC735Review> */
     public function getReviews(): Collection
     {
         return $this->reviews;
@@ -102,9 +98,7 @@ class DDC735Product
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC735Review
 {
     /**
@@ -116,10 +110,8 @@ class DDC735Review
     protected $id;
 
     public function __construct(
-        /**
-         * @ManyToOne(targetEntity="DDC735Product", inversedBy="reviews")
-         */
-        protected DDC735Product $product
+        /** @ManyToOne(targetEntity="DDC735Product", inversedBy="reviews") */
+        protected DDC735Product $product,
     ) {
         $product->addReview($this);
     }

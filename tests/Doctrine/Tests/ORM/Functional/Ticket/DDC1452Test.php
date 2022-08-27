@@ -17,9 +17,7 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1452
- */
+/** @group DDC-1452 */
 class DDC1452Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -29,7 +27,7 @@ class DDC1452Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC1452EntityA::class,
-            DDC1452EntityB::class
+            DDC1452EntityB::class,
         );
     }
 
@@ -92,9 +90,7 @@ class DDC1452Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1452EntityA
 {
     /**
@@ -122,18 +118,14 @@ class DDC1452EntityA
         $this->entitiesB = new ArrayCollection();
     }
 
-    /**
-     * @psalm-return Collection<int, DDC1452EntityB>
-     */
+    /** @psalm-return Collection<int, DDC1452EntityB> */
     public function getEntitiesB(): Collection
     {
         return $this->entitiesB;
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1452EntityB
 {
     /**

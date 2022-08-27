@@ -18,18 +18,14 @@ class Literal extends Node
      */
     public $type;
 
-    /** @var mixed */
-    public $value;
-
     /**
      * @param int   $type
      * @param mixed $value
      * @psalm-param self::* $type
      */
-    public function __construct($type, $value)
+    public function __construct($type, public $value)
     {
-        $this->type  = $type;
-        $this->value = $value;
+        $this->type = $type;
     }
 
     public function dispatch(SqlWalker $walker): string

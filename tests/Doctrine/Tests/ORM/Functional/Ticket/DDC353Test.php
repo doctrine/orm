@@ -72,9 +72,7 @@ class DDC353Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC353Picture
 {
     /**
@@ -90,7 +88,7 @@ class DDC353Picture
      *   @JoinColumn(name="file_id", referencedColumnName="file_id")
      * })
      */
-    private ?DDC353File $file = null;
+    private DDC353File|null $file = null;
 
     public function getPictureId(): int
     {
@@ -108,9 +106,7 @@ class DDC353Picture
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC353File
 {
     /**

@@ -22,7 +22,7 @@ interface ConcurrentRegion extends Region
      *
      * @throws LockException Indicates a problem accessing the region.
      */
-    public function lock(CacheKey $key): ?Lock;
+    public function lock(CacheKey $key): Lock|null;
 
     /**
      * Attempts to read unlock the mapping for the given key.

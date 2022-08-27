@@ -36,7 +36,7 @@ class CmsPhonenumber
         $this->user = $user;
     }
 
-    public function getUser(): ?CmsUser
+    public function getUser(): CmsUser|null
     {
         return $this->user;
     }

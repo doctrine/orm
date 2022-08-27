@@ -24,7 +24,7 @@ final class GH7496WithToIterableTest extends OrmFunctionalTestCase
                 GH7496EntityA::class,
                 GH7496EntityB::class,
                 GH7496EntityAinB::class,
-            ]
+            ],
         );
 
         $this->_em->persist($a1 = new GH7496EntityA(1, 'A#1'));
@@ -40,11 +40,11 @@ final class GH7496WithToIterableTest extends OrmFunctionalTestCase
     public function testNonUniqueObjectHydrationDuringIteration(): void
     {
         $q = $this->_em->createQuery(
-            'SELECT b FROM ' . GH7496EntityAinB::class . ' aib JOIN ' . GH7496EntityB::class . ' b WITH aib.eB = b'
+            'SELECT b FROM ' . GH7496EntityAinB::class . ' aib JOIN ' . GH7496EntityB::class . ' b WITH aib.eB = b',
         );
 
         $bs = IterableTester::iterableToArray(
-            $q->toIterable([], AbstractQuery::HYDRATE_OBJECT)
+            $q->toIterable([], AbstractQuery::HYDRATE_OBJECT),
         );
 
         self::assertCount(2, $bs);
@@ -54,7 +54,7 @@ final class GH7496WithToIterableTest extends OrmFunctionalTestCase
         self::assertEquals(1, $bs[1]->id);
 
         $bs = IterableTester::iterableToArray(
-            $q->toIterable([], AbstractQuery::HYDRATE_ARRAY)
+            $q->toIterable([], AbstractQuery::HYDRATE_ARRAY),
         );
 
         self::assertCount(2, $bs);
@@ -63,9 +63,7 @@ final class GH7496WithToIterableTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7496EntityA
 {
     public function __construct(
@@ -74,17 +72,13 @@ class GH7496EntityA
          * @Column(type="integer", name="a_id")
          */
         public int $id,
-        /**
-         * @Column(type="string", length=255)
-         */
-        public string $name
+        /** @Column(type="string", length=255) */
+        public string $name,
     ) {
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7496EntityB
 {
     public function __construct(
@@ -93,17 +87,13 @@ class GH7496EntityB
          * @Column(type="integer", name="b_id")
          */
         public int $id,
-        /**
-         * @Column(type="string", length=255)
-         */
-        public string $name
+        /** @Column(type="string", length=255) */
+        public string $name,
     ) {
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7496EntityAinB
 {
     /**
@@ -125,7 +115,7 @@ class GH7496EntityAinB
          * @ManyToOne(targetEntity=GH7496EntityB::class)
          * @JoinColumn(name="b_id", referencedColumnName="b_id", nullable=false)
          */
-        public $eB
+        public $eB,
     ) {
     }
 }

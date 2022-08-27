@@ -17,9 +17,7 @@ use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 abstract class CollectionPersisterTestCase extends OrmTestCase
 {
     protected Region&MockObject $region;

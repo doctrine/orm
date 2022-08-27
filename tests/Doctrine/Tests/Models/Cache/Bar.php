@@ -6,9 +6,7 @@ namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\ORM\Mapping\Entity;
 
-/**
- * @Entity
- */
+/** @Entity */
 class Bar extends Attraction
 {
 }

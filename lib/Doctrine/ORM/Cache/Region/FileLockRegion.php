@@ -45,7 +45,7 @@ class FileLockRegion implements ConcurrentRegion
     public function __construct(
         private readonly Region $region,
         private readonly string $directory,
-        private readonly string|int $lockLifetime
+        private readonly string|int $lockLifetime,
     ) {
         if (! is_dir($directory) && ! @mkdir($directory, 0775, true)) {
             throw new InvalidArgumentException(sprintf('The directory "%s" does not exist and could not be created.', $directory));
@@ -56,7 +56,7 @@ class FileLockRegion implements ConcurrentRegion
         }
     }
 
-    private function isLocked(CacheKey $key, ?Lock $lock = null): bool
+    private function isLocked(CacheKey $key, Lock|null $lock = null): bool
     {
         $filename = $this->getLockFileName($key);
 
@@ -116,7 +116,7 @@ class FileLockRegion implements ConcurrentRegion
         return $this->region->contains($key);
     }
 
-    public function get(CacheKey $key): ?CacheEntry
+    public function get(CacheKey $key): CacheEntry|null
     {
         if ($this->isLocked($key)) {
             return null;
@@ -125,10 +125,7 @@ class FileLockRegion implements ConcurrentRegion
         return $this->region->get($key);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getMultiple(CollectionCacheEntry $collection): ?array
+    public function getMultiple(CollectionCacheEntry $collection): array|null
     {
         if (array_filter(array_map([$this, 'isLocked'], $collection->identifiers))) {
             return null;
@@ -137,7 +134,7 @@ class FileLockRegion implements ConcurrentRegion
         return $this->region->getMultiple($collection);
     }
 
-    public function put(CacheKey $key, CacheEntry $entry, ?Lock $lock = null): bool
+    public function put(CacheKey $key, CacheEntry $entry, Lock|null $lock = null): bool
     {
         if ($this->isLocked($key, $lock)) {
             return false;
@@ -170,7 +167,7 @@ class FileLockRegion implements ConcurrentRegion
         return $this->region->evictAll();
     }
 
-    public function lock(CacheKey $key): ?Lock
+    public function lock(CacheKey $key): Lock|null
     {
         if ($this->isLocked($key)) {
             return null;

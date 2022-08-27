@@ -8,9 +8,7 @@ use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1041
- */
+/** @group DDC-1041 */
 class DDC1041Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

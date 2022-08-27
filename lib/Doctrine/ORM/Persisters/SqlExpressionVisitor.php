@@ -51,7 +51,7 @@ class SqlExpressionVisitor extends ExpressionVisitor
         ) {
             throw MatchingAssociationFieldRequiresObject::fromClassAndAssociation(
                 $this->classMetadata->name,
-                $field
+                $field,
             );
         }
 

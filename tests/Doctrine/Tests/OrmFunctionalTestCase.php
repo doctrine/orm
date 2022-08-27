@@ -476,9 +476,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         ],
     ];
 
-    /**
-     * @param class-string ...$models
-     */
+    /** @param class-string ...$models */
     final protected function createSchemaForModels(string ...$models): void
     {
         try {
@@ -497,9 +495,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         return $this->_schemaTool->getUpdateSchemaSql($this->getMetadataForModels($models));
     }
 
-    /**
-     * @param class-string ...$models
-     */
+    /** @param class-string ...$models */
     final protected function getSchemaForModels(string ...$models): Schema
     {
         return $this->_schemaTool->getSchemaFromMetadata($this->getMetadataForModels($models));
@@ -516,7 +512,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             function (string $className): ClassMetadata {
                 return $this->_em->getClassMetadata($className);
             },
-            $models
+            $models,
         );
     }
 
@@ -702,8 +698,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
                 sprintf(
                     'UPDATE %s SET %s = NULL',
                     $platform->quoteIdentifier('quote-address'),
-                    $platform->quoteIdentifier('user-id')
-                )
+                    $platform->quoteIdentifier('user-id'),
+                ),
             );
 
             $conn->executeStatement('DELETE FROM ' . $platform->quoteIdentifier('quote-users-groups'));
@@ -887,8 +883,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      * @throws ORMException
      */
     protected function getEntityManager(
-        ?Connection $connection = null,
-        ?MappingDriver $mappingDriver = null
+        Connection|null $connection = null,
+        MappingDriver|null $mappingDriver = null,
     ): EntityManagerInterface {
         // NOTE: Functional tests use their own shared metadata cache, because
         // the actual database platform used during execution has effect on some
@@ -919,7 +915,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $cacheConfig = new CacheConfiguration();
             $factory     = new DefaultCacheFactory(
                 $cacheConfig->getRegionsConfiguration(),
-                $this->getSharedSecondLevelCache()
+                $this->getSharedSecondLevelCache(),
             );
 
             $this->secondLevelCacheFactory = $factory;
@@ -940,7 +936,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $mappingDriver ?? ORMSetup::createDefaultAnnotationDriver([
                 realpath(__DIR__ . '/Models/Cache'),
                 realpath(__DIR__ . '/Models/GeoNames'),
-            ])
+            ]),
         );
 
         $conn = $connection ?: static::$sharedConn;
@@ -978,9 +974,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         return $this->_em->getConnection()->createSchemaManager();
     }
 
-    /**
-     * @throws Throwable
-     */
+    /** @throws Throwable */
     protected function onNotSuccessfulTest(Throwable $e): void
     {
         if ($e instanceof AssertionFailedError || $e instanceof Warning) {
@@ -1021,7 +1015,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         self::assertEquals(
             strtolower($expectedSql),
             strtolower($actualSql),
-            'Lowercase comparison of SQL statements failed.'
+            'Lowercase comparison of SQL statements failed.',
         );
     }
 
@@ -1049,7 +1043,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             throw new RuntimeException(sprintf(
                 'The query log is only available if %s is used as wrapper class. Got %s.',
                 Connection::class,
-                get_debug_type($connection)
+                get_debug_type($connection),
             ));
         }
 
@@ -1061,9 +1055,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         self::assertThat($this->getQueryLog()->queries, new Count($expectedCount), $message);
     }
 
-    /**
-     * @psalm-return array{sql: string, params: array|null, types: array|null}
-     */
+    /** @psalm-return array{sql: string, params: array|null, types: array|null} */
     final protected function getLastLoggedQuery(int $index = 0): array
     {
         $queries   = $this->getQueryLog()->queries;

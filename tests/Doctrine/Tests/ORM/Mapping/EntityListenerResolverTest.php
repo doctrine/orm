@@ -10,9 +10,7 @@ use Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener;
 use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
 
-/**
- * @group DDC-1955
- */
+/** @group DDC-1955 */
 class EntityListenerResolverTest extends OrmTestCase
 {
     private DefaultEntityListenerResolver $resolver;

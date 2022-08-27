@@ -8,14 +8,12 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1778
- */
+/** @group DDC-1778 */
 class DDC1778Test extends OrmFunctionalTestCase
 {
-    private ?CmsUser $user;
+    private CmsUser|null $user;
 
-    private ?CmsPhonenumber $phone;
+    private CmsPhonenumber|null $phone;
 
     protected function setUp(): void
     {

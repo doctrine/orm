@@ -31,13 +31,11 @@ class TravelerProfile
      * @OneToOne(targetEntity="TravelerProfileInfo", mappedBy="profile")
      * @Cache()
      */
-    private ?TravelerProfileInfo $info = null;
+    private TravelerProfileInfo|null $info = null;
 
     public function __construct(
-        /**
-         * @Column(unique=true)
-         */
-        private string $name
+        /** @Column(unique=true) */
+        private string $name,
     ) {
     }
 

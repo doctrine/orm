@@ -11,12 +11,12 @@ use Doctrine\ORM\Cache\Logging\CacheLogger;
  */
 class CacheConfiguration
 {
-    private ?CacheFactory $cacheFactory          = null;
-    private ?RegionsConfiguration $regionsConfig = null;
-    private ?CacheLogger $cacheLogger            = null;
-    private ?QueryCacheValidator $queryValidator = null;
+    private CacheFactory|null $cacheFactory          = null;
+    private RegionsConfiguration|null $regionsConfig = null;
+    private CacheLogger|null $cacheLogger            = null;
+    private QueryCacheValidator|null $queryValidator = null;
 
-    public function getCacheFactory(): ?CacheFactory
+    public function getCacheFactory(): CacheFactory|null
     {
         return $this->cacheFactory;
     }
@@ -26,7 +26,7 @@ class CacheConfiguration
         $this->cacheFactory = $factory;
     }
 
-    public function getCacheLogger(): ?CacheLogger
+    public function getCacheLogger(): CacheLogger|null
     {
          return $this->cacheLogger;
     }
@@ -49,7 +49,7 @@ class CacheConfiguration
     public function getQueryValidator(): QueryCacheValidator
     {
         return $this->queryValidator ??= new TimestampQueryCacheValidator(
-            $this->cacheFactory->getTimestampRegion()
+            $this->cacheFactory->getTimestampRegion(),
         );
     }
 

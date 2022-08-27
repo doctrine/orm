@@ -12,14 +12,12 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
 use function range;
 
-/**
- * @BeforeMethods({"init"})
- */
+/** @BeforeMethods({"init"}) */
 final class QueryBoundParameterProcessingBench
 {
-    private ?Query $parsedQueryWithInferredParameterType = null;
+    private Query|null $parsedQueryWithInferredParameterType = null;
 
-    private ?Query $parsedQueryWithDeclaredParameterType = null;
+    private Query|null $parsedQueryWithDeclaredParameterType = null;
 
     public function init(): void
     {

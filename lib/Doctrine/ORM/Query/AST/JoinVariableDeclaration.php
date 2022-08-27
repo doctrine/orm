@@ -13,20 +13,12 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class JoinVariableDeclaration extends Node
 {
-    /** @var Join */
-    public $join;
-
-    /** @var IndexBy|null */
-    public $indexBy;
-
     /**
      * @param Join         $join
      * @param IndexBy|null $indexBy
      */
-    public function __construct($join, $indexBy)
+    public function __construct(public $join, public $indexBy)
     {
-        $this->join    = $join;
-        $this->indexBy = $indexBy;
     }
 
     public function dispatch(SqlWalker $walker): string

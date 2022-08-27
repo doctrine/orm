@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-3300
- */
+/** @group DDC-3300 */
 class DDC3300Test extends OrmFunctionalTestCase
 {
     public function testResolveTargetEntitiesChangesDiscriminatorMapValues(): void
@@ -26,13 +24,13 @@ class DDC3300Test extends OrmFunctionalTestCase
         $resolveTargetEntity->addResolveTargetEntity(
             DDC3300Boss::class,
             DDC3300HumanBoss::class,
-            []
+            [],
         );
 
         $resolveTargetEntity->addResolveTargetEntity(
             DDC3300Employee::class,
             DDC3300HumanEmployee::class,
-            []
+            [],
         );
 
         $this->_em->getEventManager()->addEventSubscriber($resolveTargetEntity);
@@ -81,10 +79,8 @@ interface DDC3300Boss
 class DDC3300HumanBoss extends DDC3300Person implements DDC3300Boss
 {
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
-        public string $bossCol
+        /** @Column(type="string", length=255) */
+        public string $bossCol,
     ) {
     }
 }
@@ -97,10 +93,8 @@ interface DDC3300Employee
 class DDC3300HumanEmployee extends DDC3300Person implements DDC3300Employee
 {
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
-        public string $employeeCol
+        /** @Column(type="string", length=255) */
+        public string $employeeCol,
     ) {
     }
 }

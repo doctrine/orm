@@ -26,9 +26,7 @@ use function dirname;
 use function sprintf;
 use function uniqid;
 
-/**
- * @requires PHP 8.1
- */
+/** @requires PHP 8.1 */
 class EnumTest extends OrmFunctionalTestCase
 {
     public function setUp(): void
@@ -230,7 +228,7 @@ class EnumTest extends OrmFunctionalTestCase
         $this->_em->getConnection()->update(
             $metadata->table['name'],
             [$metadata->fieldMappings['suit']['columnName'] => 'invalid'],
-            [$metadata->fieldMappings['id']['columnName'] => $card->id]
+            [$metadata->fieldMappings['id']['columnName'] => $card->id],
         );
 
         $this->expectException(MappingException::class);
@@ -241,15 +239,13 @@ Problem: Case "invalid" is not listed in enum "Doctrine\Tests\Models\Enums\Suit"
 Solution: Either add the case to the enum type or migrate the database column to use another case of the enum
 EXCEPTION
             ,
-            $cardClass
+            $cardClass,
         ));
 
         $this->_em->find($cardClass, $card->id);
     }
 
-    /**
-     * @return array<string, array{class-string}>
-     */
+    /** @return array<string, array{class-string}> */
     public function provideCardClasses(): array
     {
         return [

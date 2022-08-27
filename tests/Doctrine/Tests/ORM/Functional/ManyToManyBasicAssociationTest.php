@@ -172,7 +172,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertEquals(
             $expectedGroupCount,
             $this->_em->createQuery($countDql)->getSingleScalarResult(),
-            "Failed to verify that CmsUser with username 'gblanco' has a group count of 10 with a DQL count query."
+            "Failed to verify that CmsUser with username 'gblanco' has a group count of 10 with a DQL count query.",
         );
     }
 
@@ -207,9 +207,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertCount(3, $freshUser->getGroups());
     }
 
-    /**
-     * @group DDC-130
-     */
+    /** @group DDC-130 */
     public function testRemoveUserWithManyGroups(): void
     {
         $user   = $this->addCmsUserGblancoWithGroups(2);
@@ -222,9 +220,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertNull($newUser);
     }
 
-    /**
-     * @group DDC-130
-     */
+    /** @group DDC-130 */
     public function testRemoveGroupWithUser(): void
     {
         $user = $this->addCmsUserGblancoWithGroups(2);
@@ -252,9 +248,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertCount(0, $newUser->getGroups());
     }
 
-    /**
-     * @group DDC-839
-     */
+    /** @group DDC-839 */
     public function testWorkWithDqlHydratedEmptyCollection(): void
     {
         $user        = $this->addCmsUserGblancoWithGroups(0);
@@ -301,9 +295,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         return $user;
     }
 
-    /**
-     * @group DDC-978
-     */
+    /** @group DDC-978 */
     public function testClearAndResetCollection(): void
     {
         $user         = $this->addCmsUserGblancoWithGroups(2);
@@ -325,7 +317,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertInstanceOf(
             PersistentCollection::class,
             $user->groups,
-            'UnitOfWork should have replaced ArrayCollection with PersistentCollection.'
+            'UnitOfWork should have replaced ArrayCollection with PersistentCollection.',
         );
         $this->_em->flush();
 
@@ -337,9 +329,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('Developers_New2', $user->groups[1]->name);
     }
 
-    /**
-     * @group DDC-733
-     */
+    /** @group DDC-733 */
     public function testInitializePersistentCollection(): void
     {
         $user = $this->addCmsUserGblancoWithGroups(2);
@@ -372,9 +362,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertCount(0, $user->groups);
     }
 
-    /**
-     * @group DDC-3952
-     */
+    /** @group DDC-3952 */
     public function testManyToManyOrderByIsNotIgnored(): void
     {
         $user = $this->addCmsUserGblancoWithGroups(1);
@@ -407,13 +395,11 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
                 ->getGroups()
                 ->matching($criteria)
                 ->map(static fn (CmsGroup $group) => $group->getName())
-                ->toArray()
+                ->toArray(),
         );
     }
 
-    /**
-     * @group DDC-3952
-     */
+    /** @group DDC-3952 */
     public function testManyToManyOrderByHonorsFieldNameColumnNameAliases(): void
     {
         $user           = new CmsUser();
@@ -449,7 +435,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
                 ->getTags()
                 ->matching($criteria)
                 ->map(static fn (CmsTag $tag) => $tag->getName())
-                ->toArray()
+                ->toArray(),
         );
     }
 

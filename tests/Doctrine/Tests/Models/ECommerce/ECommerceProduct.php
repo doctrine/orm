@@ -35,13 +35,13 @@ class ECommerceProduct
     private int $id;
 
     /** @Column(type="string", length=50, nullable=true) */
-    private ?string $name = null;
+    private string|null $name = null;
 
     /**
      * @OneToOne(targetEntity="ECommerceShipping", cascade={"persist"})
      * @JoinColumn(name="shipping_id", referencedColumnName="id")
      */
-    private ?ECommerceShipping $shipping = null;
+    private ECommerceShipping|null $shipping = null;
 
     /**
      * @psalm-var Collection<int, ECommerceFeature>
@@ -98,7 +98,7 @@ class ECommerceProduct
         $this->name = $name;
     }
 
-    public function getShipping(): ?ECommerceShipping
+    public function getShipping(): ECommerceShipping|null
     {
         return $this->shipping;
     }
@@ -113,9 +113,7 @@ class ECommerceProduct
         $this->shipping = null;
     }
 
-    /**
-     * @psalm-return Collection<int, ECommerceFeature>
-     */
+    /** @psalm-return Collection<int, ECommerceFeature> */
     public function getFeatures(): Collection
     {
         return $this->features;
@@ -159,25 +157,19 @@ class ECommerceProduct
         }
     }
 
-    /**
-     * @psalm-param Collection<int, ECommerceCategory> $categories
-     */
+    /** @psalm-param Collection<int, ECommerceCategory> $categories */
     public function setCategories(Collection $categories): void
     {
         $this->categories = $categories;
     }
 
-    /**
-     * @psalm-return Collection<int, ECommerceCategory> $categories
-     */
+    /** @psalm-return Collection<int, ECommerceCategory> $categories */
     public function getCategories(): Collection
     {
         return $this->categories;
     }
 
-    /**
-     * @psalm-return Collection<int, ECommerceProduct> $categories
-     */
+    /** @psalm-return Collection<int, ECommerceProduct> $categories */
     public function getRelated(): Collection
     {
         return $this->related;

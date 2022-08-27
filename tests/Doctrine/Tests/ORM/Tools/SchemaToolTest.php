@@ -73,7 +73,7 @@ class SchemaToolTest extends OrmTestCase
         $schemaTool = new SchemaTool($em);
 
         $schema = $schemaTool->getSchemaFromMetadata(
-            [$em->getClassMetadata(TestEntityWithAnnotationOptionsAttribute::class)]
+            [$em->getClassMetadata(TestEntityWithAnnotationOptionsAttribute::class)],
         );
         $table  = $schema->getTable('TestEntityWithAnnotationOptionsAttribute');
 
@@ -85,9 +85,7 @@ class SchemaToolTest extends OrmTestCase
         }
     }
 
-    /**
-     * @group DDC-200
-     */
+    /** @group DDC-200 */
     public function testPassColumnDefinitionToJoinColumn(): void
     {
         $customColumnDef = 'MEDIUMINT(6) UNSIGNED NOT NULL';
@@ -109,9 +107,7 @@ class SchemaToolTest extends OrmTestCase
         self::assertEquals($customColumnDef, $table->getColumn('avatar_id')->getColumnDefinition());
     }
 
-    /**
-     * @group 6830
-     */
+    /** @group 6830 */
     public function testPassColumnOptionsToJoinColumn(): void
     {
         $em       = $this->getTestEntityManager();
@@ -132,24 +128,22 @@ class SchemaToolTest extends OrmTestCase
         self::assertSame(
             $tableCategory->getColumn('id')->getFixed(),
             $tableBoard->getColumn('category_id')->getFixed(),
-            'Foreign key/join column should have the same value of option `fixed` as the referenced column'
+            'Foreign key/join column should have the same value of option `fixed` as the referenced column',
         );
 
         self::assertEquals(
             $tableCategory->getColumn('id')->getPlatformOptions(),
             $tableBoard->getColumn('category_id')->getPlatformOptions(),
-            'Foreign key/join column should have the same custom options as the referenced column'
+            'Foreign key/join column should have the same custom options as the referenced column',
         );
 
         self::assertEquals(
             ['collation' => 'latin1_bin', 'foo' => 'bar'],
-            $tableBoard->getColumn('category_id')->getPlatformOptions()
+            $tableBoard->getColumn('category_id')->getPlatformOptions(),
         );
     }
 
-    /**
-     * @group DDC-283
-     */
+    /** @group DDC-283 */
     public function testPostGenerateEvents(): void
     {
         $listener = new GenerateSchemaEventListener();
@@ -157,7 +151,7 @@ class SchemaToolTest extends OrmTestCase
         $em = $this->getTestEntityManager();
         $em->getEventManager()->addEventListener(
             [ToolEvents::postGenerateSchemaTable, ToolEvents::postGenerateSchema],
-            $listener
+            $listener,
         );
         $schemaTool = new SchemaTool($em);
 
@@ -188,9 +182,7 @@ class SchemaToolTest extends OrmTestCase
             ->getPlatformOptions());
     }
 
-    /**
-     * @requires PHP 8.1
-     */
+    /** @requires PHP 8.1 */
     public function testEnumTypeAddedToCustomSchemaOptions(): void
     {
         $em         = $this->getTestEntityManager();
@@ -205,9 +197,7 @@ class SchemaToolTest extends OrmTestCase
         self::assertSame(Suit::class, $platformOptions['enumType']);
     }
 
-    /**
-     * @group DDC-3671
-     */
+    /** @group DDC-3671 */
     public function testSchemaHasProperIndexesFromUniqueConstraintAnnotation(): void
     {
         $em         = $this->getTestEntityManager();
@@ -275,7 +265,7 @@ class SchemaToolTest extends OrmTestCase
                 $em->getClassMetadata(JoinedDerivedIdentityClass::class),
                 $em->getClassMetadata(JoinedDerivedRootClass::class),
                 $em->getClassMetadata(JoinedDerivedChildClass::class),
-            ]
+            ],
         );
 
         self::assertTrue($schema->hasTable('joined_derived_identity'));
@@ -355,9 +345,7 @@ class SchemaToolTest extends OrmTestCase
         $schemaTool->getSchemaFromMetadata([$class]);
     }
 
-    /**
-     * @group schema-configuration
-     */
+    /** @group schema-configuration */
     public function testConfigurationSchemaIgnoredEntity(): void
     {
         $em         = $this->getTestEntityManager();
@@ -484,9 +472,7 @@ class SecondEntity
     public $name;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6830Board
 {
     /**
@@ -504,9 +490,7 @@ class GH6830Board
     public $category;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6830Category
 {
     /**
@@ -583,7 +567,7 @@ class IncorrectIndexByFieldEntity
             [
                 'id'                 => true,
                 'fieldName'          => 'id',
-            ]
+            ],
         );
 
         $metadata->mapField(['fieldName' => 'index']);
@@ -597,7 +581,7 @@ class IncorrectIndexByFieldEntity
                 'indexes' => [
                     ['columns' => ['index'], 'fields' => ['fieldName']],
                 ],
-            ]
+            ],
         );
     }
 }
@@ -622,7 +606,7 @@ class IncorrectUniqueConstraintByFieldEntity
             [
                 'id'                 => true,
                 'fieldName'          => 'id',
-            ]
+            ],
         );
 
         $metadata->mapField(['fieldName' => 'index']);
@@ -636,7 +620,7 @@ class IncorrectUniqueConstraintByFieldEntity
                 'uniqueConstraints' => [
                     ['columns' => ['index'], 'fields' => ['fieldName']],
                 ],
-            ]
+            ],
         );
     }
 }

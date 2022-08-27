@@ -81,9 +81,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('mappedRelated1', $class->associationMappings);
     }
 
-    /**
-     * @group DDC-869
-     */
+    /** @group DDC-869 */
     public function testGetMetadataForSubclassWithMappedSuperclassWithRepository(): void
     {
         $class = $this->cmf->getMetadataFor(DDC869CreditCardPayment::class);
@@ -108,9 +106,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertEquals($class->customRepositoryClassName, EntityRepository::class);
     }
 
-    /**
-     * @group DDC-388
-     */
+    /** @group DDC-388 */
     public function testSerializationWithPrivateFieldsFromMappedSuperclass(): void
     {
         $class = $this->cmf->getMetadataFor(EntitySubClass2::class);
@@ -123,9 +119,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('mappedRelated1', $class2->reflFields);
     }
 
-    /**
-     * @group DDC-1203
-     */
+    /** @group DDC-1203 */
     public function testUnmappedSuperclassInHierarchy(): void
     {
         $class = $this->cmf->getMetadataFor(HierarchyD::class);
@@ -135,9 +129,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('d', $class->fieldMappings);
     }
 
-    /**
-     * @group DDC-1204
-     */
+    /** @group DDC-1204 */
     public function testUnmappedEntityInHierarchy(): void
     {
         $this->expectException(MappingException::class);
@@ -145,7 +137,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
             'Entity \'Doctrine\Tests\ORM\Mapping\HierarchyBEntity\' has to be part of the discriminator map'
             . ' of \'Doctrine\Tests\ORM\Mapping\HierarchyBase\' to be properly mapped in the inheritance hierarchy.'
             . ' Alternatively you can make \'Doctrine\Tests\ORM\Mapping\HierarchyBEntity\' an abstract class to'
-            . ' avoid this exception from occurring.'
+            . ' avoid this exception from occurring.',
         );
 
         $this->cmf->getMetadataFor(HierarchyE::class);
@@ -174,7 +166,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertInstanceOf(IdSequenceGenerator::class, $class->idGenerator);
         self::assertEquals(
             ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
-            $class->sequenceGeneratorDefinition
+            $class->sequenceGeneratorDefinition,
         );
     }
 
@@ -190,7 +182,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertInstanceOf(IdSequenceGenerator::class, $class->idGenerator);
         self::assertEquals(
             ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
-            $class->sequenceGeneratorDefinition
+            $class->sequenceGeneratorDefinition,
         );
     }
 
@@ -206,7 +198,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertInstanceOf(IdSequenceGenerator::class, $class->idGenerator);
         self::assertEquals(
             ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
-            $class->sequenceGeneratorDefinition
+            $class->sequenceGeneratorDefinition,
         );
     }
 

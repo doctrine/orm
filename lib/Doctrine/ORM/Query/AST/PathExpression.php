@@ -33,23 +33,15 @@ class PathExpression extends Node
      */
     public $expectedType;
 
-    /** @var string */
-    public $identificationVariable;
-
-    /** @var string|null */
-    public $field;
-
     /**
      * @param int         $expectedType
      * @param string      $identificationVariable
      * @param string|null $field
      * @psalm-param int-mask-of<self::TYPE_*> $expectedType
      */
-    public function __construct($expectedType, $identificationVariable, $field = null)
+    public function __construct($expectedType, public $identificationVariable, public $field = null)
     {
-        $this->expectedType           = $expectedType;
-        $this->identificationVariable = $identificationVariable;
-        $this->field                  = $field;
+        $this->expectedType = $expectedType;
     }
 
     public function dispatch(SqlWalker $walker): string

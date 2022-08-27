@@ -25,10 +25,8 @@ class City
     public $id;
 
     public function __construct(
-        /**
-         * @Column(name="`city-name`")
-         */
-        public string $name
+        /** @Column(name="`city-name`") */
+        public string $name,
     ) {
     }
 }

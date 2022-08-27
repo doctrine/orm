@@ -18,7 +18,7 @@ use ReflectionProperty;
  */
 final class ReflectionEmbeddedProperty extends ReflectionProperty
 {
-    private ?Instantiator $instantiator = null;
+    private Instantiator|null $instantiator = null;
 
     /**
      * @param ReflectionProperty $parentProperty reflection property of the class where the embedded object has to be put
@@ -28,12 +28,12 @@ final class ReflectionEmbeddedProperty extends ReflectionProperty
     public function __construct(
         private readonly ReflectionProperty $parentProperty,
         private readonly ReflectionProperty $childProperty,
-        private readonly string $embeddedClass
+        private readonly string $embeddedClass,
     ) {
         parent::__construct($childProperty->getDeclaringClass()->getName(), $childProperty->getName());
     }
 
-    public function getValue(?object $object = null): mixed
+    public function getValue(object|null $object = null): mixed
     {
         $embeddedObject = $this->parentProperty->getValue($object);
 

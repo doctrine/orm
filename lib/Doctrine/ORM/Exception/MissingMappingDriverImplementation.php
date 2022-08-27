@@ -12,7 +12,7 @@ final class MissingMappingDriverImplementation extends LogicException implements
     {
         return new self(
             "It's a requirement to specify a Metadata Driver and pass it " .
-            'to Doctrine\\ORM\\Configuration::setMetadataDriverImpl().'
+            'to Doctrine\\ORM\\Configuration::setMetadataDriverImpl().',
         );
     }
 }

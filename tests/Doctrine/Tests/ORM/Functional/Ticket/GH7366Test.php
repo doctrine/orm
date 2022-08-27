@@ -22,7 +22,7 @@ final class GH7366Test extends OrmFunctionalTestCase
         $this->setUpEntitySchema(
             [
                 GH7366Entity::class,
-            ]
+            ],
         );
 
         $this->_em->persist(new GH7366Entity('baz'));
@@ -42,9 +42,7 @@ final class GH7366Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7366Entity
 {
     /**
@@ -63,10 +61,8 @@ class GH7366Entity
     protected $lockVersion = 1;
 
     public function __construct(
-        /**
-         * @Column(length=32)
-         */
-        protected string $name
+        /** @Column(length=32) */
+        protected string $name,
     ) {
     }
 

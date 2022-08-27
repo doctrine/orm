@@ -43,9 +43,7 @@ class QueryException extends Exception implements ORMException
         return new self('[Semantical Error] ' . $message, 0, $previous);
     }
 
-    /**
-     * @return QueryException
-     */
+    /** @return QueryException */
     public static function invalidLockMode()
     {
         return new self('Invalid lock mode hint provided.');
@@ -114,9 +112,7 @@ class QueryException extends Exception implements ORMException
         return new self('Invalid parameter: token ' . $key . ' is not defined in the query.');
     }
 
-    /**
-     * @return QueryException
-     */
+    /** @return QueryException */
     public static function parameterTypeMismatch()
     {
         return new self('DQL Query parameter and type numbers mismatch, but have to be exactly equal.');
@@ -125,7 +121,7 @@ class QueryException extends Exception implements ORMException
     public static function invalidPathExpression(PathExpression $pathExpr): self
     {
         return new self(
-            "Invalid PathExpression '" . $pathExpr->identificationVariable . '.' . $pathExpr->field . "'."
+            "Invalid PathExpression '" . $pathExpr->identificationVariable . '.' . $pathExpr->field . "'.",
         );
     }
 
@@ -144,19 +140,17 @@ class QueryException extends Exception implements ORMException
     {
         return new self(
             'Invalid query operation: Not allowed to iterate over fetch join collections ' .
-            'in class ' . $assoc['sourceEntity'] . ' association ' . $assoc['fieldName']
+            'in class ' . $assoc['sourceEntity'] . ' association ' . $assoc['fieldName'],
         );
     }
 
-    /**
-     * @return QueryException
-     */
+    /** @return QueryException */
     public static function partialObjectsAreDangerous()
     {
         return new self(
             'Loading partial objects is dangerous. Fetch full objects or consider ' .
             'using a different fetch mode. If you really want partial objects, ' .
-            'set the doctrine.forcePartialLoad query hint to TRUE.'
+            'set the doctrine.forcePartialLoad query hint to TRUE.',
         );
     }
 
@@ -171,18 +165,16 @@ class QueryException extends Exception implements ORMException
         return new self(
             'Unsupported query operation: It is not yet possible to overwrite the join ' .
             'conditions in class ' . $assoc['sourceEntityName'] . ' association ' . $assoc['fieldName'] . '. ' .
-            'Use WITH to append additional join conditions to the association.'
+            'Use WITH to append additional join conditions to the association.',
         );
     }
 
-    /**
-     * @return QueryException
-     */
+    /** @return QueryException */
     public static function associationPathInverseSideNotSupported(PathExpression $pathExpr)
     {
         return new self(
             'A single-valued association path expression to an inverse side is not supported in DQL queries. ' .
-            'Instead of "' . $pathExpr->identificationVariable . '.' . $pathExpr->field . '" use an explicit join.'
+            'Instead of "' . $pathExpr->identificationVariable . '.' . $pathExpr->field . '" use an explicit join.',
         );
     }
 
@@ -196,7 +188,7 @@ class QueryException extends Exception implements ORMException
     {
         return new self(
             'Iterate with fetch join in class ' . $assoc['sourceEntity'] .
-            ' using association ' . $assoc['fieldName'] . ' not allowed.'
+            ' using association ' . $assoc['fieldName'] . ' not allowed.',
         );
     }
 
@@ -205,15 +197,13 @@ class QueryException extends Exception implements ORMException
         return new self('Iterating a query with mixed results (using scalars) is not supported.');
     }
 
-    /**
-     * @return QueryException
-     */
+    /** @return QueryException */
     public static function associationPathCompositeKeyNotSupported()
     {
         return new self(
             'A single-valued association path expression to an entity with a composite primary ' .
             'key is not supported. Explicitly name the components of the composite primary key ' .
-            'in the query.'
+            'in the query.',
         );
     }
 
@@ -238,7 +228,7 @@ class QueryException extends Exception implements ORMException
     {
         return new self(
             "Invalid query component given for DQL alias '" . $dqlAlias . "', " .
-            "requires 'metadata', 'parent', 'relation', 'map', 'nestingLevel' and 'token' keys."
+            "requires 'metadata', 'parent', 'relation', 'map', 'nestingLevel' and 'token' keys.",
         );
     }
 }

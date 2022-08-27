@@ -47,12 +47,12 @@ final class ManyToMany implements Annotation
      */
     public function __construct(
         string $targetEntity,
-        ?string $mappedBy = null,
-        ?string $inversedBy = null,
-        ?array $cascade = null,
+        string|null $mappedBy = null,
+        string|null $inversedBy = null,
+        array|null $cascade = null,
         string $fetch = 'LAZY',
         bool $orphanRemoval = false,
-        ?string $indexBy = null
+        string|null $indexBy = null,
     ) {
         $this->targetEntity  = $targetEntity;
         $this->mappedBy      = $mappedBy;

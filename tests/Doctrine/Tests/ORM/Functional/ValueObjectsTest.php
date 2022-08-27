@@ -25,9 +25,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use function class_exists;
 use function sprintf;
 
-/**
- * @group DDC-93
- */
+/** @group DDC-93 */
 class ValueObjectsTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -40,7 +38,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             DDC93Vehicle::class,
             DDC93Car::class,
             DDC3027Animal::class,
-            DDC3027Dog::class
+            DDC3027Dog::class,
         );
     }
 
@@ -51,12 +49,12 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         if (class_exists(CommonRuntimePublicReflectionProperty::class)) {
             self::assertInstanceOf(
                 CommonRuntimePublicReflectionProperty::class,
-                $classMetadata->getReflectionProperty('address')
+                $classMetadata->getReflectionProperty('address'),
             );
         } else {
             self::assertInstanceOf(
                 RuntimePublicReflectionProperty::class,
-                $classMetadata->getReflectionProperty('address')
+                $classMetadata->getReflectionProperty('address'),
             );
         }
 
@@ -155,9 +153,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         }
     }
 
-    /**
-     * @group dql
-     */
+    /** @group dql */
     public function testDqlOnEmbeddedObjectsField(): void
     {
         if ($this->isSecondLevelCacheEnabled) {
@@ -180,7 +176,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             $this->_em->createQuery($selectDql)
                 ->setParameter('city', 'asdf')
                 ->setParameter('country', 'Germany')
-                ->getOneOrNullResult()
+                ->getOneOrNullResult(),
         );
 
         // UPDATE
@@ -325,28 +321,24 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         self::assertTrue($isFieldMapped);
     }
 
-    /**
-     * @dataProvider getInfiniteEmbeddableNestingData
-     */
+    /** @dataProvider getInfiniteEmbeddableNestingData */
     public function testThrowsExceptionOnInfiniteEmbeddableNesting(
         string $embeddableClassName,
-        string $declaredEmbeddableClassName
+        string $declaredEmbeddableClassName,
     ): void {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             sprintf(
                 'Infinite nesting detected for embedded property %s::nested. ' .
                 'You cannot embed an embeddable from the same type inside an embeddable.',
-                __NAMESPACE__ . '\\' . $declaredEmbeddableClassName
-            )
+                __NAMESPACE__ . '\\' . $declaredEmbeddableClassName,
+            ),
         );
 
         $this->createSchemaForModels(__NAMESPACE__ . '\\' . $embeddableClassName);
     }
 
-    /**
-     * @psalm-return list<array{string, string}>
-     */
+    /** @psalm-return list<array{string, string}> */
     public function getInfiniteEmbeddableNestingData(): array
     {
         return [
@@ -357,9 +349,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
 }
 
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC93Person
 {
     /**
@@ -377,30 +367,21 @@ class DDC93Person
     public $timestamps;
 
     public function __construct(
-        /**
-         * @var string|null
-         * @Column(type="string", length=255)
-         */
-        public $name = null,
-        /**
-         * @Embedded(class="DDC93Address")
-         */
-        public ?DDC93Address $address = null
+        /** @Column(type="string", length=255) */
+        public string|null $name = null,
+        /** @Embedded(class="DDC93Address") */
+        public DDC93Address|null $address = null,
     ) {
         $this->timestamps = new DDC93Timestamps(new DateTime());
     }
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDC93Timestamps
 {
     public function __construct(
-        /**
-         * @Column(type = "datetime")
-         */
-        public DateTime $createdAt
+        /** @Column(type = "datetime") */
+        public DateTime $createdAt,
     ) {
     }
 }
@@ -424,61 +405,39 @@ abstract class DDC93Vehicle
     public $id;
 
     public function __construct(
-        /**
-         * @Embedded(class = "DDC93Address")
-         */
-        public DDC93Address $address
+        /** @Embedded(class = "DDC93Address") */
+        public DDC93Address $address,
     ) {
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC93Car extends DDC93Vehicle
 {
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDC93Country
 {
     public function __construct(
-        /**
-         * @Column(type="string", nullable=true)
-         */
-        public ?string $name = null
+        /** @Column(type="string", nullable=true) */
+        public string|null $name = null,
     ) {
     }
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDC93Address
 {
     public function __construct(
-        /**
-         * @var string|null
-         * @Column(type="string", length=255)
-         */
-        public $street = null,
-        /**
-         * @var string|null
-         * @Column(type="string", length=255)
-         */
-        public $zip = null,
-        /**
-         * @var string|null
-         * @Column(type="string", length=255)
-         */
-        public $city = null,
-        /**
-         * @var DDC93Country
-         * @Embedded(class = "DDC93Country")
-         */
-        public $country = null
+        /** @Column(type="string", length=255) */
+        public string|null $street = null,
+        /** @Column(type="string", length=255) */
+        public string|null $zip = null,
+        /** @Column(type="string", length=255) */
+        public string|null $city = null,
+        /** @Embedded(class = "DDC93Country") */
+        public DDC93Country|null $country = null,
     ) {
     }
 }
@@ -513,59 +472,41 @@ class DDC93ContactInfo
     public $address;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3028PersonWithPrefix
 {
     public function __construct(
-        /**
-         * @Embedded(class="DDC3028Id", columnPrefix = "foobar_")
-         */
-        public ?DDC3028Id $id = null,
-        /**
-         * @Embedded(class="DDC3028NestedEmbeddable", columnPrefix = "bloo_")
-         */
-        public ?DDC3028NestedEmbeddable $nested = null
+        /** @Embedded(class="DDC3028Id", columnPrefix = "foobar_") */
+        public DDC3028Id|null $id = null,
+        /** @Embedded(class="DDC3028NestedEmbeddable", columnPrefix = "bloo_") */
+        public DDC3028NestedEmbeddable|null $nested = null,
     ) {
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3028PersonEmptyPrefix
 {
     public function __construct(
-        /**
-         * @Embedded(class="DDC3028Id", columnPrefix = "")
-         */
-        public ?DDC3028Id $id = null,
-        /**
-         * @Embedded(class="DDC3028NestedEmbeddable", columnPrefix = "")
-         */
-        public ?DDC3028NestedEmbeddable $nested = null
+        /** @Embedded(class="DDC3028Id", columnPrefix = "") */
+        public DDC3028Id|null $id = null,
+        /** @Embedded(class="DDC3028NestedEmbeddable", columnPrefix = "") */
+        public DDC3028NestedEmbeddable|null $nested = null,
     ) {
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3028PersonPrefixFalse
 {
     public function __construct(
-        /**
-         * @Embedded(class="DDC3028Id", columnPrefix = false)
-         */
-        public ?DDC3028Id $id = null
+        /** @Embedded(class="DDC3028Id", columnPrefix = false) */
+        public DDC3028Id|null $id = null,
     ) {
     }
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDC3028Id
 {
     public function __construct(
@@ -573,36 +514,26 @@ class DDC3028Id
          * @Id
          * @Column(type="string", length=255)
          */
-        public ?string $id = null
+        public string|null $id = null,
     ) {
     }
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDC3028NestedEmbeddable
 {
     public function __construct(
-        /**
-         * @Embedded(class="DDC3028Id", columnPrefix = "foo_")
-         */
-        public ?DDC3028Id $nestedWithPrefix = null,
-        /**
-         * @Embedded(class="DDC3028Id", columnPrefix = "")
-         */
-        public ?DDC3028Id $nestedWithEmptyPrefix = null,
-        /**
-         * @Embedded(class="DDC3028Id", columnPrefix = false)
-         */
-        public ?DDC3028Id $nestedWithPrefixFalse = null
+        /** @Embedded(class="DDC3028Id", columnPrefix = "foo_") */
+        public DDC3028Id|null $nestedWithPrefix = null,
+        /** @Embedded(class="DDC3028Id", columnPrefix = "") */
+        public DDC3028Id|null $nestedWithEmptyPrefix = null,
+        /** @Embedded(class="DDC3028Id", columnPrefix = false) */
+        public DDC3028Id|null $nestedWithPrefixFalse = null,
     ) {
     }
 }
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 abstract class DDC3027Animal
 {
     /**
@@ -620,16 +551,12 @@ abstract class DDC3027Animal
     public $address;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3027Dog extends DDC3027Animal
 {
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDCInfiniteNestingEmbeddable
 {
     /**
@@ -639,9 +566,7 @@ class DDCInfiniteNestingEmbeddable
     public $nested;
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDCNestingEmbeddable1
 {
     /**
@@ -663,9 +588,7 @@ class DDCNestingEmbeddable1
     public $nested;
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDCNestingEmbeddable2
 {
     /**
@@ -687,9 +610,7 @@ class DDCNestingEmbeddable2
     public $nested;
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDCNestingEmbeddable3
 {
     /**
@@ -711,9 +632,7 @@ class DDCNestingEmbeddable3
     public $nested;
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDCNestingEmbeddable4
 {
     /**

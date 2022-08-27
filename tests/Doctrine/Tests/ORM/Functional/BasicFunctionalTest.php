@@ -129,7 +129,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         // Check that the foreign key has been set
         $userId = $this->_em->getConnection()->executeQuery(
             'SELECT user_id FROM cms_addresses WHERE id=?',
-            [$address->id]
+            [$address->id],
         )->fetchOne();
         self::assertIsNumeric($userId);
 
@@ -144,9 +144,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertNotInstanceOf(Proxy::class, $user2->address);
     }
 
-    /**
-     * @group DDC-1230
-     */
+    /** @group DDC-1230 */
     public function testRemove(): void
     {
         $user           = new CmsUser();
@@ -335,9 +333,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertEquals('developer', $user->status);
     }
 
-    /**
-     * @group DDC-833
-     */
+    /** @group DDC-833 */
     public function testRefreshResetsCollection(): void
     {
         $user           = new CmsUser();
@@ -367,9 +363,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertCount(1, $user->phonenumbers);
     }
 
-    /**
-     * @group DDC-833
-     */
+    /** @group DDC-833 */
     public function testDqlRefreshResetsCollection(): void
     {
         $user           = new CmsUser();
@@ -403,9 +397,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertCount(1, $user->phonenumbers);
     }
 
-    /**
-     * @group DDC-833
-     */
+    /** @group DDC-833 */
     public function testCreateEntityOfProxy(): void
     {
         $user           = new CmsUser();
@@ -583,12 +575,12 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         self::assertEquals(0, $this->_em->createQuery(
-            'select count(p.phonenumber) from Doctrine\Tests\Models\CMS\CmsPhonenumber p'
+            'select count(p.phonenumber) from Doctrine\Tests\Models\CMS\CmsPhonenumber p',
         )
                 ->getSingleScalarResult());
 
         self::assertEquals(0, $this->_em->createQuery(
-            'select count(u.id) from Doctrine\Tests\Models\CMS\CmsUser u'
+            'select count(u.id) from Doctrine\Tests\Models\CMS\CmsUser u',
         )
                 ->getSingleScalarResult());
     }
@@ -897,9 +889,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertEquals('Benjamin E.', $this->_em->find($user::class, $userId)->name);
     }
 
-    /**
-     * @group DDC-952
-     */
+    /** @group DDC-952 */
     public function testManyToOneFetchModeQuery(): void
     {
         $user           = new CmsUser();
@@ -928,9 +918,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->assertQueryCount(2);
     }
 
-    /**
-     * @group DDC-720
-     */
+    /** @group DDC-720 */
     public function testFlushSingleManagedEntity(): void
     {
         $user           = new CmsUser();
@@ -949,9 +937,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertEquals('administrator', $user->status);
     }
 
-    /**
-     * @group DDC-720
-     */
+    /** @group DDC-720 */
     public function testFlushAndCascadePersist(): void
     {
         $user           = new CmsUser();
@@ -976,9 +962,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertTrue($address->id > 0, 'other user has an id');
     }
 
-    /**
-     * @group DDC-720
-     */
+    /** @group DDC-720 */
     public function testFlushSingleAndNoCascade(): void
     {
         $user           = new CmsUser();
@@ -1025,9 +1009,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertNull($this->_em->find($user::class, $userId));
     }
 
-    /**
-     * @group DDC-1585
-     */
+    /** @group DDC-1585 */
     public function testWrongAssociationInstance(): void
     {
         $user           = new CmsUser();
@@ -1039,7 +1021,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->expectException(ORMInvalidArgumentException::class);
         $this->expectExceptionMessage(
             'Expected value of type "Doctrine\Tests\Models\CMS\CmsAddress" for association field ' .
-            '"Doctrine\Tests\Models\CMS\CmsUser#$address", got "Doctrine\Tests\Models\CMS\CmsUser" instead.'
+            '"Doctrine\Tests\Models\CMS\CmsUser#$address", got "Doctrine\Tests\Models\CMS\CmsUser" instead.',
         );
 
         $this->_em->persist($user);

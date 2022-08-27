@@ -68,7 +68,7 @@ class DDC1925Product
     private int $id;
 
     /** @Column(name="title", type="string", length=255) */
-    private ?string $title = null;
+    private string|null $title = null;
 
     /**
      * @psalm-var Collection<int, DDC1925User>
@@ -132,7 +132,7 @@ class DDC1925User
     private int $id;
 
     /** @Column(name="title", type="string", length=255) */
-    private ?string $title = null;
+    private string|null $title = null;
 
     /**
      * Get id

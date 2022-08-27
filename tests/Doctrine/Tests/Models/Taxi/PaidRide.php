@@ -37,7 +37,7 @@ class PaidRide
          * @ManyToOne(targetEntity="Car", inversedBy="carRides")
          * @JoinColumn(name="car", referencedColumnName="brand")
          */
-        private Car $car
+        private Car $car,
     ) {
     }
 

@@ -43,7 +43,7 @@ class ValidateSchemaCommandTest extends OrmFunctionalTestCase
         $this->tester->execute(
             [
                 'command' => $this->command->getName(),
-            ]
+            ],
         );
 
         $display = $this->tester->getDisplay();
@@ -65,7 +65,7 @@ class ValidateSchemaCommandTest extends OrmFunctionalTestCase
             ],
             [
                 'verbosity' => OutputInterface::VERBOSITY_VERBOSE,
-            ]
+            ],
         );
 
         $display = $this->tester->getDisplay();

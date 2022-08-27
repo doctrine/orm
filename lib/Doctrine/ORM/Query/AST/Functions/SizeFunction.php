@@ -90,7 +90,7 @@ class SizeFunction extends FunctionNode
                 $sourceColumnName = $quoteStrategy->getColumnName(
                     $class->fieldNames[$joinColumn['referencedColumnName']],
                     $class,
-                    $platform
+                    $platform,
                 );
 
                 $sql .= $joinTableAlias . '.' . $joinColumn['name']
@@ -102,9 +102,7 @@ class SizeFunction extends FunctionNode
         return '(' . $sql . ')';
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function parse(Parser $parser)
     {
         $parser->match(Lexer::T_IDENTIFIER);

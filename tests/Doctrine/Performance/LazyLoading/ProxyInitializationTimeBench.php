@@ -10,22 +10,20 @@ use Doctrine\Performance\Mock\NonProxyLoadingEntityManager;
 use Doctrine\Tests\Models\CMS\CmsEmployee;
 use Doctrine\Tests\Models\CMS\CmsUser;
 
-/**
- * @BeforeMethods({"init"})
- */
+/** @BeforeMethods({"init"}) */
 final class ProxyInitializationTimeBench
 {
     /** @var Proxy[] */
-    private ?array $cmsUsers = null;
+    private array|null $cmsUsers = null;
 
     /** @var Proxy[] */
-    private ?array $cmsEmployees = null;
+    private array|null $cmsEmployees = null;
 
     /** @var Proxy[] */
-    private ?array $initializedUsers = null;
+    private array|null $initializedUsers = null;
 
     /** @var Proxy[] */
-    private ?array $initializedEmployees = null;
+    private array|null $initializedEmployees = null;
 
     public function init(): void
     {

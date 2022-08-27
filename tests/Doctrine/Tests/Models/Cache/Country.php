@@ -27,10 +27,8 @@ class Country
     protected $id;
 
     public function __construct(
-        /**
-         * @Column(unique=true)
-         */
-        protected string $name
+        /** @Column(unique=true) */
+        protected string $name,
     ) {
     }
 

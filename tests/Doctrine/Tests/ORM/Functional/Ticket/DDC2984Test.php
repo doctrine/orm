@@ -18,9 +18,7 @@ use Stringable;
 
 use function is_string;
 
-/**
- * @group DDC-2984
- */
+/** @group DDC-2984 */
 class DDC2984Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -30,7 +28,7 @@ class DDC2984Test extends OrmFunctionalTestCase
         if (! Type::hasType('ddc2984_domain_user_id')) {
             Type::addType(
                 'ddc2984_domain_user_id',
-                DDC2984UserIdCustomDbalType::class
+                DDC2984UserIdCustomDbalType::class,
             );
         }
 
@@ -69,7 +67,7 @@ class DDC2984Test extends OrmFunctionalTestCase
 class DDC2984User
 {
     /** @Column(type="string", length=50) */
-    private ?string $name = null;
+    private string|null $name = null;
 
     public function __construct(
         /**
@@ -77,7 +75,7 @@ class DDC2984User
          * @Column(type="ddc2984_domain_user_id", length=255)
          * @GeneratedValue(strategy="NONE")
          */
-        private DDC2984DomainUserId $userId
+        private DDC2984DomainUserId $userId,
     ) {
     }
 
@@ -139,7 +137,7 @@ class DDC2984UserIdCustomDbalType extends StringType
     /**
      * {@inheritDoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform): ?DDC2984DomainUserId
+    public function convertToPHPValue($value, AbstractPlatform $platform): DDC2984DomainUserId|null
     {
         return ! empty($value)
             ? new DDC2984DomainUserId($value)

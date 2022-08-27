@@ -102,9 +102,7 @@ class CompanyFlexContract extends CompanyContract
         $this->pricePerHour = $pricePerHour;
     }
 
-    /**
-     * @psalm-return Collection<int, CompanyManager>
-     */
+    /** @psalm-return Collection<int, CompanyManager> */
     public function getManagers(): Collection
     {
         return $this->managers;
@@ -127,7 +125,7 @@ class CompanyFlexContract extends CompanyContract
                 'type'      => 'integer',
                 'name'      => 'hoursWorked',
                 'fieldName' => 'hoursWorked',
-            ]
+            ],
         );
 
         $metadata->mapField(
@@ -135,7 +133,7 @@ class CompanyFlexContract extends CompanyContract
                 'type'      => 'integer',
                 'name'      => 'pricePerHour',
                 'fieldName' => 'pricePerHour',
-            ]
+            ],
         );
     }
 }

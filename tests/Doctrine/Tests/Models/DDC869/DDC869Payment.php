@@ -11,9 +11,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/**
- * @MappedSuperclass(repositoryClass = "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository")
- */
+/** @MappedSuperclass(repositoryClass = "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository") */
 #[ORM\MappedSuperclass(repositoryClass: DDC869PaymentRepository::class)]
 class DDC869Payment
 {
@@ -41,13 +39,13 @@ class DDC869Payment
                 'fieldName'  => 'id',
                 'type'       => 'integer',
                 'columnName' => 'id',
-            ]
+            ],
         );
         $metadata->mapField(
             [
                 'fieldName'  => 'value',
                 'type'       => 'float',
-            ]
+            ],
         );
         $metadata->isMappedSuperclass = true;
         $metadata->setCustomRepositoryClass(DDC869PaymentRepository::class);

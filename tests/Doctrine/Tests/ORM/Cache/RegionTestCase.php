@@ -43,9 +43,7 @@ abstract class RegionTestCase extends OrmFunctionalTestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProviderCacheValues
-     */
+    /** @dataProvider dataProviderCacheValues */
     public function testPutGetContainsEvict(CacheKey $key, CacheEntry $value): void
     {
         self::assertFalse($this->region->contains($key));

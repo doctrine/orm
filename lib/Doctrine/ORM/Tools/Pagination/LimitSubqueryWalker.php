@@ -50,7 +50,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
         $this->_getQuery()->setHint(
             self::IDENTIFIER_TYPE,
-            Type::getType($rootClass->fieldMappings[$identifier]['type'])
+            Type::getType($rootClass->fieldMappings[$identifier]['type']),
         );
 
         $this->_getQuery()->setHint(self::FORCE_DBAL_TYPE_CONVERSION, true);
@@ -58,7 +58,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $pathExpression = new PathExpression(
             PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
             $rootAlias,
-            $identifier
+            $identifier,
         );
 
         $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
@@ -75,7 +75,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
             if ($item->expression instanceof PathExpression) {
                 $selectStatement->selectClause->selectExpressions[] = new SelectExpression(
                     $this->createSelectExpressionItem($item->expression),
-                    '_dctrn_ord' . $this->aliasCounter++
+                    '_dctrn_ord' . $this->aliasCounter++,
                 );
 
                 continue;
@@ -87,7 +87,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                 if (isset($qComp['resultVariable'])) {
                     $selectStatement->selectClause->selectExpressions[] = new SelectExpression(
                         $qComp['resultVariable'],
-                        $item->expression
+                        $item->expression,
                     );
                 }
             }

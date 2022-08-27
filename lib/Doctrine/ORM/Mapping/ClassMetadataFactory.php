@@ -48,10 +48,10 @@ use function substr;
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
-    private ?EntityManagerInterface $em       = null;
-    private ?AbstractPlatform $targetPlatform = null;
-    private ?MappingDriver $driver            = null;
-    private ?EventManager $evm                = null;
+    private EntityManagerInterface|null $em       = null;
+    private AbstractPlatform|null $targetPlatform = null;
+    private MappingDriver|null $driver            = null;
+    private EventManager|null $evm                = null;
 
     /** @var mixed[] */
     private array $embeddablesActiveNesting = [];
@@ -68,7 +68,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->initialized = true;
     }
 
-    protected function onNotFoundMetadata(string $className): ?ClassMetadata
+    protected function onNotFoundMetadata(string $className): ClassMetadata|null
     {
         if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
             return null;
@@ -88,9 +88,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function doLoadMetadata(
         ClassMetadataInterface $class,
-        ?ClassMetadataInterface $parent,
+        ClassMetadataInterface|null $parent,
         bool $rootEntityFound,
-        array $nonSuperclassParents
+        array $nonSuperclassParents,
     ): void {
         if ($parent) {
             $class->setInheritanceType($parent->inheritanceType);
@@ -209,7 +209,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 'doctrine/orm',
                 'https://github.com/doctrine/orm/issues/8383',
                 'NOTIFY Change Tracking policy used in "%s" is deprecated, use deferred explicit instead.',
-                $class->name
+                $class->name,
             );
         }
 
@@ -221,7 +221,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @throws MappingException
      */
-    protected function validateRuntimeMetadata(ClassMetadata $class, ?ClassMetadataInterface $parent): void
+    protected function validateRuntimeMetadata(ClassMetadata $class, ClassMetadataInterface|null $parent): void
     {
         if (! $class->reflClass) {
             // only validate if there is a reflection class instance
@@ -398,7 +398,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addNestedEmbeddedClasses(
         ClassMetadata $subClass,
         ClassMetadata $parentClass,
-        string $prefix
+        string $prefix,
     ): void {
         foreach ($subClass->embeddedClasses as $property => $embeddableClass) {
             if (isset($embeddableClass['inherited'])) {
@@ -416,7 +416,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                             ? $prefix . '.' . $embeddableClass['declaredField']
                             : $prefix,
                     'originalField' => $embeddableClass['originalField'] ?: $property,
-                ]
+                ],
             );
         }
     }
@@ -465,7 +465,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                         'name'          => $mapping['name'],
                         'columns'       => $mapping['columns'],
                         'entities'      => $entities,
-                    ]
+                    ],
                 );
             }
         }
@@ -522,7 +522,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 $sequenceGenerator = new SequenceGenerator(
                     $this->em->getConfiguration()->getQuoteStrategy()->getSequenceName($definition, $class, $this->getTargetPlatform()),
-                    (int) $definition['allocationSize']
+                    (int) $definition['allocationSize'],
                 );
                 $class->setIdGenerator($sequenceGenerator);
                 break;
@@ -549,9 +549,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
     }
 
-    /**
-     * @psalm-return ClassMetadata::GENERATOR_TYPE_SEQUENCE|ClassMetadata::GENERATOR_TYPE_IDENTITY
-     */
+    /** @psalm-return ClassMetadata::GENERATOR_TYPE_SEQUENCE|ClassMetadata::GENERATOR_TYPE_IDENTITY */
     private function determineIdGeneratorStrategy(AbstractPlatform $platform): int
     {
         if (

@@ -29,9 +29,9 @@ use Doctrine\Tests\OrmTestCase;
 
 class SchemaValidatorTest extends OrmTestCase
 {
-    private ?EntityManagerInterface $em = null;
+    private EntityManagerInterface|null $em = null;
 
-    private ?SchemaValidator $validator = null;
+    private SchemaValidator|null $validator = null;
 
     protected function setUp(): void
     {
@@ -39,9 +39,7 @@ class SchemaValidatorTest extends OrmTestCase
         $this->validator = new SchemaValidator($this->em);
     }
 
-    /**
-     * @dataProvider modelSetProvider
-     */
+    /** @dataProvider modelSetProvider */
     public function testCmsModelSet(string $path): void
     {
         $this->em->getConfiguration()
@@ -63,9 +61,7 @@ class SchemaValidatorTest extends OrmTestCase
         ];
     }
 
-    /**
-     * @group DDC-1439
-     */
+    /** @group DDC-1439 */
     public function testInvalidManyToManyJoinColumnSchema(): void
     {
         $class1 = $this->em->getClassMetadata(InvalidEntity1::class);
@@ -78,13 +74,11 @@ class SchemaValidatorTest extends OrmTestCase
                 "The inverse join columns of the many-to-many table 'Entity1Entity2' have to contain to ALL identifier columns of the target entity 'Doctrine\Tests\ORM\Tools\InvalidEntity2', however 'key4' are missing.",
                 "The join columns of the many-to-many table 'Entity1Entity2' have to contain to ALL identifier columns of the source entity 'Doctrine\Tests\ORM\Tools\InvalidEntity1', however 'key2' are missing.",
             ],
-            $ce
+            $ce,
         );
     }
 
-    /**
-     * @group DDC-1439
-     */
+    /** @group DDC-1439 */
     public function testInvalidToOneJoinColumnSchema(): void
     {
         $class1 = $this->em->getClassMetadata(InvalidEntity1::class);
@@ -97,13 +91,11 @@ class SchemaValidatorTest extends OrmTestCase
                 "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\InvalidEntity1'.",
                 "The join columns of the association 'assoc' have to match to ALL identifier columns of the target entity 'Doctrine\Tests\ORM\Tools\InvalidEntity1', however 'key1, key2' are missing.",
             ],
-            $ce
+            $ce,
         );
     }
 
-    /**
-     * @group DDC-1587
-     */
+    /** @group DDC-1587 */
     public function testValidOneToOneAsIdentifierSchema(): void
     {
         $class1 = $this->em->getClassMetadata(DDC1587ValidEntity2::class);
@@ -114,9 +106,7 @@ class SchemaValidatorTest extends OrmTestCase
         self::assertEquals([], $ce);
     }
 
-    /**
-     * @group DDC-1649
-     */
+    /** @group DDC-1649 */
     public function testInvalidTripleAssociationAsKeyMapping(): void
     {
         $classThree = $this->em->getClassMetadata(DDC1649Three::class);
@@ -127,13 +117,11 @@ class SchemaValidatorTest extends OrmTestCase
                 "Cannot map association 'Doctrine\Tests\ORM\Tools\DDC1649Three#two as identifier, because the target entity 'Doctrine\Tests\ORM\Tools\DDC1649Two' also maps an association as identifier.",
                 "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\DDC1649Two'.",
             ],
-            $ce
+            $ce,
         );
     }
 
-    /**
-     * @group DDC-3274
-     */
+    /** @group DDC-3274 */
     public function testInvalidBiDirectionalRelationMappingMissingInversedByAttribute(): void
     {
         $class = $this->em->getClassMetadata(DDC3274One::class);
@@ -145,13 +133,11 @@ class SchemaValidatorTest extends OrmTestCase
                 'relationship, but the specified mappedBy association on the target-entity ' .
                 "Doctrine\Tests\ORM\Tools\DDC3274Two#one does not contain the required 'inversedBy=\"two\"' attribute.",
             ],
-            $ce
+            $ce,
         );
     }
 
-    /**
-     * @group 9536
-     */
+    /** @group 9536 */
     public function testInvalidBiDirectionalRelationMappingMissingMappedByAttribute(): void
     {
         $class = $this->em->getClassMetadata(Issue9536Owner::class);
@@ -164,13 +150,11 @@ class SchemaValidatorTest extends OrmTestCase
                 "Doctrine\Tests\ORM\Tools\Issue9536Target#two does not contain the required 'mappedBy=\"one\"' " .
                 'attribute.',
             ],
-            $ce
+            $ce,
         );
     }
 
-    /**
-     * @group DDC-3322
-     */
+    /** @group DDC-3322 */
     public function testInvalidOrderByInvalidField(): void
     {
         $class = $this->em->getClassMetadata(DDC3322One::class);
@@ -181,13 +165,11 @@ class SchemaValidatorTest extends OrmTestCase
                 'The association Doctrine\Tests\ORM\Tools\DDC3322One#invalidAssoc is ordered by a foreign field ' .
                 'invalidField that is not a field on the target entity Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1.',
             ],
-            $ce
+            $ce,
         );
     }
 
-    /**
-     * @group DDC-3322
-     */
+    /** @group DDC-3322 */
     public function testInvalidOrderByCollectionValuedAssociation(): void
     {
         $class = $this->em->getClassMetadata(DDC3322Two::class);
@@ -198,13 +180,11 @@ class SchemaValidatorTest extends OrmTestCase
                 'The association Doctrine\Tests\ORM\Tools\DDC3322Two#invalidAssoc is ordered by a field oneToMany ' .
                 'on Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 that is a collection-valued association.',
             ],
-            $ce
+            $ce,
         );
     }
 
-    /**
-     * @group DDC-3322
-     */
+    /** @group DDC-3322 */
     public function testInvalidOrderByAssociationInverseSide(): void
     {
         $class = $this->em->getClassMetadata(DDC3322Three::class);
@@ -215,13 +195,11 @@ class SchemaValidatorTest extends OrmTestCase
                 'The association Doctrine\Tests\ORM\Tools\DDC3322Three#invalidAssoc is ordered by a field oneToOneInverse ' .
                 'on Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 that is the inverse side of an association.',
             ],
-            $ce
+            $ce,
         );
     }
 
-    /**
-     * @group 8052
-     */
+    /** @group 8052 */
     public function testInvalidAssociationInsideEmbeddable(): void
     {
         $class = $this->em->getClassMetadata(EmbeddableWithAssociation::class);
@@ -229,13 +207,11 @@ class SchemaValidatorTest extends OrmTestCase
 
         self::assertEquals(
             ["Embeddable 'Doctrine\Tests\ORM\Tools\EmbeddableWithAssociation' does not support associations"],
-            $ce
+            $ce,
         );
     }
 
-    /**
-     * @group 8771
-     */
+    /** @group 8771 */
     public function testMappedSuperclassNotPresentInDiscriminator(): void
     {
         $class1 = $this->em->getClassMetadata(MappedSuperclassEntity::class);
@@ -245,9 +221,7 @@ class SchemaValidatorTest extends OrmTestCase
     }
 }
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 abstract class MappedSuperclassEntity extends ParentEntity
 {
 }
@@ -267,16 +241,12 @@ abstract class ParentEntity
     protected $key;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class ChildEntity extends MappedSuperclassEntity
 {
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class InvalidEntity1
 {
     /**
@@ -304,9 +274,7 @@ class InvalidEntity1
     protected $entity2;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class InvalidEntity2
 {
     /**
@@ -371,9 +339,7 @@ class DDC1587ValidEntity2
     private string $num;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1649One
 {
     /**
@@ -385,9 +351,7 @@ class DDC1649One
     public $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1649Two
 {
     /**
@@ -397,9 +361,7 @@ class DDC1649Two
     public $one;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1649Three
 {
     /**
@@ -410,9 +372,7 @@ class DDC1649Three
     private DDC1649Two $two;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3274One
 {
     /**
@@ -427,9 +387,7 @@ class DDC3274One
     private ArrayCollection $two;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3274Two
 {
     /**
@@ -439,9 +397,7 @@ class DDC3274Two
     private DDC3274One $one;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class Issue9536Target
 {
     /**
@@ -456,9 +412,7 @@ class Issue9536Target
     private Issue9536Owner $two;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class Issue9536Owner
 {
     /**
@@ -473,9 +427,7 @@ class Issue9536Owner
     private Issue9536Target $one;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3322ValidEntity1
 {
     /**
@@ -517,9 +469,7 @@ class DDC3322ValidEntity1
     private DDC3322ValidEntity2 $oneToOneOwning;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3322ValidEntity2
 {
     /**
@@ -542,9 +492,7 @@ class DDC3322ValidEntity2
     private DDC3322ValidEntity1 $oneToOneInverse;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3322One
 {
     /**
@@ -569,9 +517,7 @@ class DDC3322One
     private $invalidAssoc;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3322Two
 {
     /**
@@ -596,9 +542,7 @@ class DDC3322Two
     private $invalidAssoc;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3322Three
 {
     /**
@@ -622,9 +566,7 @@ class DDC3322Three
     private $invalidAssoc;
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class EmbeddableWithAssociation
 {
     /** @OneToOne(targetEntity="Doctrine\Tests\Models\ECommerce\ECommerceCart") */

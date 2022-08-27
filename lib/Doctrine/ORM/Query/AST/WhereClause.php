@@ -13,15 +13,9 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class WhereClause extends Node
 {
-    /** @var ConditionalExpression|ConditionalTerm */
-    public $conditionalExpression;
-
-    /**
-     * @param ConditionalExpression $conditionalExpression
-     */
-    public function __construct($conditionalExpression)
+    /** @param ConditionalExpression $conditionalExpression */
+    public function __construct(public $conditionalExpression)
     {
-        $this->conditionalExpression = $conditionalExpression;
     }
 
     public function dispatch(SqlWalker $walker): string

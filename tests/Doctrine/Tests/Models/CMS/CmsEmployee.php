@@ -46,7 +46,7 @@ class CmsEmployee
         return $this->name;
     }
 
-    public function getSpouse(): ?CmsEmployee
+    public function getSpouse(): CmsEmployee|null
     {
         return $this->spouse;
     }

@@ -17,9 +17,7 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH7079
- */
+/** @group GH7079 */
 final class GH7079Test extends OrmFunctionalTestCase
 {
     private DefaultQuoteStrategy $strategy;
@@ -61,12 +59,12 @@ final class GH7079Test extends OrmFunctionalTestCase
                 'targetEntity' => 'DDC7079CmsUser',
                 'inversedBy'   => 'users',
                 'joinTable'    => $table,
-            ]
+            ],
         );
 
         self::assertEquals(
             $this->getTableFullName($table),
-            $this->strategy->getJoinTableName($cm->associationMappings['user'], $cm, $this->platform)
+            $this->strategy->getJoinTableName($cm->associationMappings['user'], $cm, $this->platform),
         );
     }
 

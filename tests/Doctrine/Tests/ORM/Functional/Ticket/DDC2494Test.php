@@ -34,7 +34,7 @@ class DDC2494Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC2494Currency::class,
-            DDC2494Campaign::class
+            DDC2494Campaign::class,
         );
     }
 
@@ -99,10 +99,8 @@ class DDC2494Currency
          * @Column(type="ddc2494_tinyint")
          */
         protected int $id,
-        /**
-         * @Column(name="temp", type="ddc2494_tinyint", nullable=false)
-         */
-        protected int $temp
+        /** @Column(name="temp", type="ddc2494_tinyint", nullable=false) */
+        protected int $temp,
     ) {
     }
 
@@ -116,9 +114,7 @@ class DDC2494Currency
         return $this->temp;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC2494Campaign>
-     */
+    /** @psalm-return Collection<int, DDC2494Campaign> */
     public function getCampaigns(): Collection
     {
         return $this->campaigns;
@@ -144,7 +140,7 @@ class DDC2494Campaign
          * @ManyToOne(targetEntity="DDC2494Currency", inversedBy="campaigns")
          * @JoinColumn(name="currency_id", referencedColumnName="id", nullable=false)
          */
-        protected DDC2494Currency $currency
+        protected DDC2494Currency $currency,
     ) {
     }
 

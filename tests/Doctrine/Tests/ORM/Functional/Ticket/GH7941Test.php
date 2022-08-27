@@ -49,7 +49,7 @@ final class GH7941Test extends OrmFunctionalTestCase
                  COUNT(product.id) as count,
                  SUM(product.price) as sales,
                  AVG(product.price) as average
-             FROM ' . GH7941Product::class . ' product'
+             FROM ' . GH7941Product::class . ' product',
         );
 
         $result = $query->getSingleResult();
@@ -69,7 +69,7 @@ final class GH7941Test extends OrmFunctionalTestCase
                  ABS(product.price) as absolute,
                  SQRT(ABS(product.price)) as square_root,
                  LENGTH(product.name) as length
-             FROM ' . GH7941Product::class . ' product'
+             FROM ' . GH7941Product::class . ' product',
         );
 
         foreach ($query->getResult() as $i => $item) {
@@ -107,14 +107,10 @@ class GH7941Product
     public $createdAt;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
+        /** @Column(type="string", length=255) */
         public string $name,
-        /**
-         * @Column(type="decimal")
-         */
-        public string $price
+        /** @Column(type="decimal") */
+        public string $price,
     ) {
         $this->createdAt = new DateTimeImmutable();
     }

@@ -17,9 +17,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2346
- */
+/** @group DDC-2346 */
 class DDC2346Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -29,7 +27,7 @@ class DDC2346Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC2346Foo::class,
             DDC2346Bar::class,
-            DDC2346Baz::class
+            DDC2346Baz::class,
         );
     }
 
@@ -115,9 +113,7 @@ class DDC2346Bar
 }
 
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2346Baz extends DDC2346Bar
 {
 }

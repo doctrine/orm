@@ -26,13 +26,11 @@ class DDC522Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC522Customer::class,
             DDC522Cart::class,
-            DDC522ForeignKeyTest::class
+            DDC522ForeignKeyTest::class,
         );
     }
 
-    /**
-     * @group DDC-522
-     */
+    /** @group DDC-522 */
     public function testJoinColumnWithSameNameAsAssociationField(): void
     {
         $cust           = new DDC522Customer();

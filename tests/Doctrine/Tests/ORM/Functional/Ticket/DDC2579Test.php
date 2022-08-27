@@ -15,9 +15,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Stringable;
 
-/**
- * @group DDC-2579
- */
+/** @group DDC-2579 */
 class DDC2579Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -29,7 +27,7 @@ class DDC2579Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC2579Entity::class,
             DDC2579EntityAssoc::class,
-            DDC2579AssocAssoc::class
+            DDC2579AssocAssoc::class,
         );
     }
 
@@ -69,9 +67,7 @@ class DDC2579Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2579Entity
 {
     /**
@@ -91,36 +87,29 @@ class DDC2579Entity
 
     public function __construct(
         DDC2579EntityAssoc $assoc,
-        /**
-         * @Column(type="integer")
-         */
-        public int $value = 0
+        /** @Column(type="integer") */
+        public int $value = 0,
     ) {
         $this->id    = $assoc->assocAssoc->associationId;
         $this->assoc = $assoc;
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2579EntityAssoc
 {
     public function __construct(
         /**
-         * @var DDC2579AssocAssoc
          * @Id
          * @ManyToOne(targetEntity="DDC2579AssocAssoc")
          * @JoinColumn(name="association_id", referencedColumnName="associationId")
          */
-        public $assocAssoc
+        public DDC2579AssocAssoc $assocAssoc,
     ) {
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2579AssocAssoc
 {
     public function __construct(
@@ -128,7 +117,7 @@ class DDC2579AssocAssoc
          * @Id
          * @Column(type="ddc2579", length=255)
          */
-        public DDC2579Id $associationId
+        public DDC2579Id $associationId,
     ) {
     }
 }

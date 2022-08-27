@@ -20,7 +20,7 @@ class File extends AbstractContentItem
      */
     protected $extension = 'html';
 
-    public function __construct(?Directory $parent = null)
+    public function __construct(Directory|null $parent = null)
     {
         parent::__construct($parent);
     }

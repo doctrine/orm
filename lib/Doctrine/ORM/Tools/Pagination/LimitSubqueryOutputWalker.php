@@ -58,7 +58,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     private AbstractPlatform $platform;
     private ResultSetMapping $rsm;
     private int $firstResult;
-    private ?int $maxResults;
+    private int|null $maxResults;
     private EntityManagerInterface $em;
     private QuoteStrategy $quoteStrategy;
 
@@ -81,7 +81,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     public function __construct(
         Query $query,
         ParserResult $parserResult,
-        array $queryComponents
+        array $queryComponents,
     ) {
         $this->platform = $query->getEntityManager()->getConnection()->getDatabasePlatform();
         $this->rsm      = $parserResult->getResultSetMapping();
@@ -176,7 +176,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $sql = sprintf(
             'SELECT DISTINCT %s FROM (%s) dctrn_result',
             implode(', ', $sqlIdentifier),
-            $innerSql
+            $innerSql,
         );
 
         if ($hasOrderBy) {
@@ -187,7 +187,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $sql = $this->platform->modifyLimitQuery(
             $sql,
             $this->maxResults,
-            $this->firstResult
+            $this->firstResult,
         );
 
         // Add the columns to the ResultSetMapping. It's not really nice but
@@ -230,7 +230,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $sql = sprintf(
             'SELECT DISTINCT %s FROM (%s) dctrn_result',
             implode(', ', $sqlIdentifier),
-            $innerSql
+            $innerSql,
         );
 
         // http://www.doctrine-project.org/jira/browse/DDC-1958
@@ -240,7 +240,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $sql = $this->platform->modifyLimitQuery(
             $sql,
             $this->maxResults,
-            $this->firstResult
+            $this->firstResult,
         );
 
         // Add the columns to the ResultSetMapping. It's not really nice but
@@ -323,7 +323,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         array $sqlIdentifier,
         string $innerSql,
         string $sql,
-        ?OrderByClause $orderByClause
+        OrderByClause|null $orderByClause,
     ): string {
         // If the sql statement has an order by clause, we need to wrap it in a new select distinct statement
         if (! $orderByClause) {
@@ -334,7 +334,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         return sprintf(
             'SELECT DISTINCT %s FROM (%s) dctrn_result',
             implode(', ', $sqlIdentifier),
-            $this->recreateInnerSql($orderByClause, $sqlIdentifier, $innerSql)
+            $this->recreateInnerSql($orderByClause, $sqlIdentifier, $innerSql),
         );
     }
 
@@ -346,7 +346,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     private function recreateInnerSql(
         OrderByClause $orderByClause,
         array $identifiers,
-        string $innerSql
+        string $innerSql,
     ): string {
         [$searchPatterns, $replacements] = $this->generateSqlAliasReplacements();
 
@@ -358,7 +358,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
             $orderByItemString = preg_replace(
                 $searchPatterns,
                 $replacements,
-                $this->walkOrderByItem($orderByItem)
+                $this->walkOrderByItem($orderByItem),
             );
 
             $orderByItems[] = $orderByItemString;
@@ -373,7 +373,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
             'SELECT DISTINCT %s FROM (%s) dctrn_result_inner ORDER BY %s',
             implode(', ', $identifiers),
             $innerSql,
-            implode(', ', $orderByItems)
+            implode(', ', $orderByItems),
         );
     }
 
@@ -407,7 +407,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
             $columnName = $this->quoteStrategy->getColumnName(
                 $fieldName,
                 $metadataList[$dqlAliasForFieldAlias],
-                $this->em->getConnection()->getDatabasePlatform()
+                $this->em->getConnection()->getDatabasePlatform(),
             );
 
             // Get the SQL table alias for the entity and field
@@ -467,9 +467,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         return $innerSql;
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     private function getSQLIdentifier(SelectStatement $AST): array
     {
         // Find out the SQL alias of the identifier column of the root entity.
@@ -517,7 +515,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         if (count($rootIdentifier) !== count($sqlIdentifier)) {
             throw new RuntimeException(sprintf(
                 'Not all identifier properties can be found in the ResultSetMapping: %s',
-                implode(', ', array_diff($rootIdentifier, array_keys($sqlIdentifier)))
+                implode(', ', array_diff($rootIdentifier, array_keys($sqlIdentifier))),
             ));
         }
 

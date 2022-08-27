@@ -9,9 +9,7 @@ use Doctrine\Tests\Models\Cms\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-/**
- * @group DDC-1766
- */
+/** @group DDC-1766 */
 class HydrationCacheTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

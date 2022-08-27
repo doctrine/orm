@@ -16,15 +16,9 @@ class ExistsExpression extends Node
     /** @var bool */
     public $not;
 
-    /** @var Subselect */
-    public $subselect;
-
-    /**
-     * @param Subselect $subselect
-     */
-    public function __construct($subselect)
+    /** @param Subselect $subselect */
+    public function __construct(public $subselect)
     {
-        $this->subselect = $subselect;
     }
 
     public function dispatch(SqlWalker $walker): string

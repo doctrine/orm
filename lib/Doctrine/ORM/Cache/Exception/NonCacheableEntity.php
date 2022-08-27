@@ -12,7 +12,7 @@ class NonCacheableEntity extends CacheException
     {
         return new self(sprintf(
             'Entity "%s" not configured as part of the second-level cache.',
-            $entityName
+            $entityName,
         ));
     }
 }

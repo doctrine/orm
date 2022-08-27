@@ -12,15 +12,13 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
 use function str_replace;
 
-/**
- * @BeforeMethods({"init"})
- */
+/** @BeforeMethods({"init"}) */
 final class UnitOfWorkComputeChangesBench
 {
     /** @var CmsUser[] */
-    private ?array $users = null;
+    private array|null $users = null;
 
-    private ?UnitOfWork $unitOfWork = null;
+    private UnitOfWork|null $unitOfWork = null;
 
     public function init(): void
     {
@@ -44,7 +42,7 @@ final class UnitOfWorkComputeChangesBench
                     'name'     => $user->name,
                     'address'  => $user->address,
                     'email'    => $user->email,
-                ]
+                ],
             );
         }
 

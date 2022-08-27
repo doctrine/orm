@@ -56,8 +56,8 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
                 [
                     'command' => $this->command->getName(),
                     'dql'     => 'SELECT e FROM ' . DateTimeModel::class . ' e',
-                ]
-            )
+                ],
+            ),
         );
 
         self::assertStringContainsString(DateTimeModel::class, $this->tester->getDisplay());
@@ -75,8 +75,8 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
                     'command'    => $this->command->getName(),
                     'dql'        => 'SELECT e FROM ' . DateTimeModel::class . ' e',
                     '--show-sql' => 'true',
-                ]
-            )
+                ],
+            ),
         );
 
         self::assertStringMatchesFormat('SELECT %a', trim($this->tester->getDisplay()));

@@ -39,16 +39,14 @@ class State
     protected $cities;
 
     public function __construct(
-        /**
-         * @Column(unique=true)
-         */
+        /** @Column(unique=true) */
         protected string $name,
         /**
          * @Cache
          * @ManyToOne(targetEntity="Country")
          * @JoinColumn(name="country_id", referencedColumnName="id")
          */
-        protected ?Country $country = null
+        protected Country|null $country = null,
     ) {
         $this->cities = new ArrayCollection();
     }
@@ -73,7 +71,7 @@ class State
         $this->name = $name;
     }
 
-    public function getCountry(): ?Country
+    public function getCountry(): Country|null
     {
         return $this->country;
     }
@@ -83,17 +81,13 @@ class State
         $this->country = $country;
     }
 
-    /**
-     * @psalm-return Collection<int, City>
-     */
+    /** @psalm-return Collection<int, City> */
     public function getCities(): Collection
     {
         return $this->cities;
     }
 
-    /**
-     * @psalm-param Collection<int, City> $cities
-     */
+    /** @psalm-param Collection<int, City> $cities */
     public function setCities(Collection $cities): void
     {
         $this->cities = $cities;

@@ -16,9 +16,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-618
- */
+/** @group DDC-618 */
 class DDC618Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -73,9 +71,7 @@ class DDC618Test extends OrmFunctionalTestCase
         self::assertArrayHasKey('Alice', $result, "INDEX BY A.name should return an index by the name of 'Alice'.");
     }
 
-    /**
-     * @group DDC-1018
-     */
+    /** @group DDC-1018 */
     public function testIndexByJoin(): void
     {
         $dql    = 'SELECT A, B FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A ' .
@@ -97,9 +93,7 @@ class DDC618Test extends OrmFunctionalTestCase
         self::assertTrue(isset($result[0]['books']['Test']), 'Indexing by title should have books by title.');
     }
 
-    /**
-     * @group DDC-1018
-     */
+    /** @group DDC-1018 */
     public function testIndexByToOneJoinSilentlyIgnored(): void
     {
         $dql    = 'SELECT B, A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Book B ' .
@@ -116,9 +110,7 @@ class DDC618Test extends OrmFunctionalTestCase
         self::assertEquals('Alice', $result[0]['author']['name']);
     }
 
-    /**
-     * @group DDC-1018
-     */
+    /** @group DDC-1018 */
     public function testCombineIndexBy(): void
     {
         $dql    = 'SELECT A, B FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A INDEX BY A.id ' .
@@ -135,9 +127,7 @@ class DDC618Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC618Author
 {
     /**
@@ -171,9 +161,7 @@ class DDC618Author
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC618Book
 {
     /**
@@ -185,14 +173,10 @@ class DDC618Book
     public $id;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
+        /** @Column(type="string", length=255) */
         public string $title,
-        /**
-         * @ManyToOne(targetEntity="DDC618Author", inversedBy="books")
-         */
-        public DDC618Author $author
+        /** @ManyToOne(targetEntity="DDC618Author", inversedBy="books") */
+        public DDC618Author $author,
     ) {
     }
 }

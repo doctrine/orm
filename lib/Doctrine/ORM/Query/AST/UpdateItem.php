@@ -15,20 +15,12 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class UpdateItem extends Node
 {
-    /** @var PathExpression */
-    public $pathExpression;
-
-    /** @var InputParameter|ArithmeticExpression|null */
-    public $newValue;
-
     /**
      * @param PathExpression                           $pathExpression
      * @param InputParameter|ArithmeticExpression|null $newValue
      */
-    public function __construct($pathExpression, $newValue)
+    public function __construct(public $pathExpression, public $newValue)
     {
-        $this->pathExpression = $pathExpression;
-        $this->newValue       = $newValue;
     }
 
     public function dispatch(SqlWalker $walker): string

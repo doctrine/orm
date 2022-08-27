@@ -23,7 +23,7 @@ class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             PersonTicket4646MultiLevel::class,
             EmployeeTicket4646MultiLevel::class,
-            EngineerTicket4646MultiLevel::class
+            EngineerTicket4646MultiLevel::class,
         );
     }
 
@@ -64,7 +64,7 @@ class PersonTicket4646MultiLevel
      */
     private int $id;
 
-    public function getId(): ?int
+    public function getId(): int|null
     {
         return $this->id;
     }

@@ -11,9 +11,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC964Group
 {
     /**
@@ -30,10 +28,8 @@ class DDC964Group
     private $users;
 
     public function __construct(
-        /**
-         * @Column
-         */
-        private ?string $name = null
+        /** @Column */
+        private string|null $name = null,
     ) {
         $this->users = new ArrayCollection();
     }
@@ -43,7 +39,7 @@ class DDC964Group
         $this->name = $name;
     }
 
-    public function getName(): ?string
+    public function getName(): string|null
     {
         return $this->name;
     }
@@ -53,9 +49,7 @@ class DDC964Group
         $this->users[] = $user;
     }
 
-    /**
-     * @psalm-return ArrayCollection<int, DDC964User>
-     */
+    /** @psalm-return ArrayCollection<int, DDC964User> */
     public function getUsers(): ArrayCollection
     {
         return $this->users;

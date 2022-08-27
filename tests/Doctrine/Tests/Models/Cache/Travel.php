@@ -60,7 +60,7 @@ class Travel
          * @ManyToOne(targetEntity="Traveler", inversedBy="travels")
          * @JoinColumn(name="traveler_id", referencedColumnName="id")
          */
-        protected Traveler $traveler
+        protected Traveler $traveler,
     ) {
         $this->createdAt     = new DateTime('now');
         $this->visitedCities = new ArrayCollection();
@@ -81,9 +81,7 @@ class Travel
         $this->traveler = $traveler;
     }
 
-    /**
-     * @psalm-return Collection<int, City>
-     */
+    /** @psalm-return Collection<int, City> */
     public function getVisitedCities(): Collection
     {
         return $this->visitedCities;

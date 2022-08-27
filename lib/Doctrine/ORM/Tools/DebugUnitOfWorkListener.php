@@ -33,7 +33,7 @@ class DebugUnitOfWorkListener
      */
     public function __construct(
         private readonly string $file = 'php://output',
-        private readonly string $context = ''
+        private readonly string $context = '',
     ) {
     }
 

@@ -17,9 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
 
-/**
- * @group DDC-2230
- */
+/** @group DDC-2230 */
 class DDC2230Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -28,7 +26,7 @@ class DDC2230Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC2230User::class,
-            DDC2230Address::class
+            DDC2230Address::class,
         );
     }
 

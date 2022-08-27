@@ -25,10 +25,8 @@ class QueryExpressionVisitorTest extends TestCase
         $this->visitor = new QueryExpressionVisitor(['o', 'p']);
     }
 
-    /**
-     * @dataProvider comparisonData
-     */
-    public function testWalkComparison(CriteriaComparison $criteriaExpr, QueryBuilder\Comparison|QueryBuilder\Func|string $queryExpr, ?Parameter $parameter = null): void
+    /** @dataProvider comparisonData */
+    public function testWalkComparison(CriteriaComparison $criteriaExpr, QueryBuilder\Comparison|QueryBuilder\Func|string $queryExpr, Parameter|null $parameter = null): void
     {
         self::assertEquals($queryExpr, $this->visitor->walkComparison($criteriaExpr));
         if ($parameter) {
@@ -84,8 +82,8 @@ class QueryExpressionVisitorTest extends TestCase
         $expr = $this->visitor->walkCompositeExpression(
             $cb->andX(
                 $cb->eq('foo', 1),
-                $cb->eq('bar', 1)
-            )
+                $cb->eq('bar', 1),
+            ),
         );
 
         self::assertInstanceOf(QueryBuilder\Andx::class, $expr);
@@ -98,8 +96,8 @@ class QueryExpressionVisitorTest extends TestCase
         $expr = $this->visitor->walkCompositeExpression(
             $cb->orX(
                 $cb->eq('foo', 1),
-                $cb->eq('bar', 1)
-            )
+                $cb->eq('bar', 1),
+            ),
         );
 
         self::assertInstanceOf(QueryBuilder\Orx::class, $expr);

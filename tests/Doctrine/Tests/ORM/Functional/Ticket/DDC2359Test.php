@@ -17,9 +17,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @group DDC-2359
- */
+/** @group DDC-2359 */
 class DDC2359Test extends TestCase
 {
     /**

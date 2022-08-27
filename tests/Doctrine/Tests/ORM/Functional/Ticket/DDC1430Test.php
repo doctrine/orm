@@ -17,9 +17,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-/**
- * @group DDC-1430
- */
+/** @group DDC-1430 */
 class DDC1430Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -31,7 +29,7 @@ class DDC1430Test extends OrmFunctionalTestCase
                 [
                     $this->_em->getClassMetadata(DDC1430Order::class),
                     $this->_em->getClassMetadata(DDC1430OrderProduct::class),
-                ]
+                ],
             );
             $this->loadFixtures();
         } catch (Exception) {
@@ -141,9 +139,7 @@ class DDC1430Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1430Order
 {
     /**
@@ -166,10 +162,8 @@ class DDC1430Order
     }
 
     public function __construct(
-        /**
-         * @Column(name="order_status", type="string", length=255)
-         */
-        private string $status
+        /** @Column(name="order_status", type="string", length=255) */
+        private string $status,
     ) {
         $this->date     = new DateTime();
         $this->products = new ArrayCollection();
@@ -202,9 +196,7 @@ class DDC1430Order
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1430OrderProduct
 {
     /**
@@ -219,13 +211,11 @@ class DDC1430OrderProduct
      * @ManyToOne(targetEntity="DDC1430Order", inversedBy="products")
      * @JoinColumn(name="order_id", referencedColumnName="order_id", nullable = false)
      */
-    private ?DDC1430Order $order = null;
+    private DDC1430Order|null $order = null;
 
     public function __construct(
-        /**
-         * @Column(type="float")
-         */
-        private float $value
+        /** @Column(type="float") */
+        private float $value,
     ) {
     }
 

@@ -21,9 +21,7 @@ class DDC960Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(DDC960Root::class, DDC960Child::class);
     }
 
-    /**
-     * @group DDC-960
-     */
+    /** @group DDC-960 */
     public function testUpdateRootVersion(): void
     {
         $child = new DDC960Child('Test');
@@ -72,16 +70,12 @@ class DDC960Root
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC960Child extends DDC960Root
 {
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
-        private string $name
+        /** @Column(type="string", length=255) */
+        private string $name,
     ) {
     }
 

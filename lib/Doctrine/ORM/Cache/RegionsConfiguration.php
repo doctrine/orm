@@ -17,7 +17,7 @@ class RegionsConfiguration
 
     public function __construct(
         private int $defaultLifetime = 3600,
-        private int $defaultLockLifetime = 60
+        private int $defaultLockLifetime = 60,
     ) {
     }
 

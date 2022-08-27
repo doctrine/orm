@@ -20,13 +20,11 @@ class DDC1193Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC1193Company::class,
             DDC1193Person::class,
-            DDC1193Account::class
+            DDC1193Account::class,
         );
     }
 
-    /**
-     * @group DDC-1193
-     */
+    /** @group DDC-1193 */
     public function testIssue(): void
     {
         $company = new DDC1193Company();

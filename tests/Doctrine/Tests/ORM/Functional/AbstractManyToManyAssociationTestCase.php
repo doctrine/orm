@@ -47,7 +47,7 @@ SQL
             $this->firstField,
             $this->table,
             $this->firstField,
-            $this->secondField
+            $this->secondField,
         ), [$firstId, $secondId])->fetchAll());
     }
 

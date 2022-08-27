@@ -7,9 +7,7 @@ namespace Doctrine\Tests\Models\DDC4006;
 use Doctrine\ORM\Mapping\Embedded;
 use Doctrine\ORM\Mapping\Entity;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC4006User
 {
     /** @Embedded(class="DDC4006UserId") */

@@ -62,7 +62,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
     {
         return new self(
             "The given entity of type '" . $className . "' (" . self::objToStr($entity) . ') has no identity/no ' .
-            'id values set. It cannot be added to the identity map.'
+            'id values set. It cannot be added to the identity map.',
         );
     }
 
@@ -90,7 +90,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
 
                 return self::newEntityFoundThroughRelationshipMessage($associationMapping, $entity);
             },
-            $newEntitiesWithAssociations
+            $newEntitiesWithAssociations,
         );
 
         if (count($errorMessages) === 1) {
@@ -100,7 +100,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
         return new self(
             'Multiple non-persisted new entities were found through the given association graph:'
             . "\n\n * "
-            . implode("\n * ", $errorMessages)
+            . implode("\n * ", $errorMessages),
         );
     }
 
@@ -185,18 +185,14 @@ class ORMInvalidArgumentException extends InvalidArgumentException
             ' to be an entity object, ' . gettype($given) . ' given.');
     }
 
-    /**
-     * @return ORMInvalidArgumentException
-     */
+    /** @return ORMInvalidArgumentException */
     public static function invalidCompositeIdentifier()
     {
         return new self('Binding an entity with a composite primary key to a query is not supported. ' .
             'You should split the parameter into the explicit fields and bind them separately.');
     }
 
-    /**
-     * @return ORMInvalidArgumentException
-     */
+    /** @return ORMInvalidArgumentException */
     public static function invalidIdentifierBindingEntity(string $class)
     {
         return new self(sprintf(
@@ -205,7 +201,7 @@ Binding entities to query parameters only allowed for entities that have an iden
 Class "%s" does not have an identifier.
 EXCEPTION
             ,
-            $class
+            $class,
         ));
     }
 
@@ -224,7 +220,7 @@ EXCEPTION
             $expectedType,
             $assoc['sourceEntity'],
             $assoc['fieldName'],
-            get_debug_type($actualValue)
+            get_debug_type($actualValue),
         ));
     }
 
@@ -236,9 +232,7 @@ EXCEPTION
         return $obj instanceof Stringable ? (string) $obj : get_debug_type($obj) . '@' . spl_object_id($obj);
     }
 
-    /**
-     * @psalm-param array<string,string> $associationMapping
-     */
+    /** @psalm-param array<string,string> $associationMapping */
     private static function newEntityFoundThroughRelationshipMessage(array $associationMapping, object $entity): string
     {
         return 'A new entity was found through the relationship \''

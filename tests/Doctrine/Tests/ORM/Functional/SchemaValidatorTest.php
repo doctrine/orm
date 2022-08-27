@@ -32,9 +32,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @throws DBALException
-     */
+    /** @throws DBALException */
     private function registerType(string $className): void
     {
         $type = constant($className . '::NAME');
@@ -59,9 +57,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
         return $modelSets;
     }
 
-    /**
-     * @dataProvider dataValidateModelSets
-     */
+    /** @dataProvider dataValidateModelSets */
     public function testValidateModelSets(string $modelSet): void
     {
         $validator = new SchemaValidator($this->_em);

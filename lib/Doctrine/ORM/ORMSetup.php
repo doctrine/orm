@@ -34,8 +34,8 @@ final class ORMSetup
     public static function createAnnotationMetadataConfiguration(
         array $paths,
         bool $isDevMode = false,
-        ?string $proxyDir = null,
-        ?CacheItemPoolInterface $cache = null
+        string|null $proxyDir = null,
+        CacheItemPoolInterface|null $cache = null,
     ): Configuration {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(self::createDefaultAnnotationDriver($paths));
@@ -50,13 +50,13 @@ final class ORMSetup
      */
     public static function createDefaultAnnotationDriver(
         array $paths = [],
-        ?CacheItemPoolInterface $cache = null
+        CacheItemPoolInterface|null $cache = null,
     ): AnnotationDriver {
         if (! class_exists(AnnotationReader::class)) {
             throw new LogicException(sprintf(
                 'The annotation metadata driver cannot be enabled because the "doctrine/annotations" library'
                 . ' is not installed. Please run "composer require doctrine/annotations" or choose a different'
-                . ' metadata driver.'
+                . ' metadata driver.',
             ));
         }
 
@@ -81,8 +81,8 @@ final class ORMSetup
     public static function createAttributeMetadataConfiguration(
         array $paths,
         bool $isDevMode = false,
-        ?string $proxyDir = null,
-        ?CacheItemPoolInterface $cache = null
+        string|null $proxyDir = null,
+        CacheItemPoolInterface|null $cache = null,
     ): Configuration {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(new AttributeDriver($paths));
@@ -98,9 +98,9 @@ final class ORMSetup
     public static function createXMLMetadataConfiguration(
         array $paths,
         bool $isDevMode = false,
-        ?string $proxyDir = null,
-        ?CacheItemPoolInterface $cache = null,
-        bool $isXsdValidationEnabled = false
+        string|null $proxyDir = null,
+        CacheItemPoolInterface|null $cache = null,
+        bool $isXsdValidationEnabled = false,
     ): Configuration {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(new XmlDriver($paths, XmlDriver::DEFAULT_FILE_EXTENSION, $isXsdValidationEnabled));
@@ -113,8 +113,8 @@ final class ORMSetup
      */
     public static function createConfiguration(
         bool $isDevMode = false,
-        ?string $proxyDir = null,
-        ?CacheItemPoolInterface $cache = null
+        string|null $proxyDir = null,
+        CacheItemPoolInterface|null $cache = null,
     ): Configuration {
         $proxyDir = $proxyDir ?: sys_get_temp_dir();
 
@@ -135,7 +135,7 @@ final class ORMSetup
     private static function createCacheInstance(
         bool $isDevMode,
         string $proxyDir,
-        ?CacheItemPoolInterface $cache
+        CacheItemPoolInterface|null $cache,
     ): CacheItemPoolInterface {
         if ($cache !== null) {
             return $cache;
@@ -144,7 +144,7 @@ final class ORMSetup
         if (! class_exists(ArrayAdapter::class)) {
             throw new RuntimeException(
                 'The Doctrine setup tool cannot configure caches without symfony/cache.'
-                . ' Please add symfony/cache as explicit dependency or pass your own cache implementation.'
+                . ' Please add symfony/cache as explicit dependency or pass your own cache implementation.',
             );
         }
 

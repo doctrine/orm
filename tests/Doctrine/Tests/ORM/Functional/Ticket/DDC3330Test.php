@@ -30,7 +30,7 @@ class DDC3330Test extends OrmFunctionalTestCase
             [
                 DDC3330Building::class,
                 DDC3330Hall::class,
-            ]
+            ],
         );
     }
 
@@ -46,7 +46,7 @@ class DDC3330Test extends OrmFunctionalTestCase
             'SELECT b, h' .
             ' FROM Doctrine\Tests\ORM\Functional\Ticket\DDC3330Building b' .
             ' LEFT JOIN b.halls h' .
-            ' ORDER BY b.id ASC, h.name DESC'
+            ' ORDER BY b.id ASC, h.name DESC',
         )
         ->setMaxResults(3);
 

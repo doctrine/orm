@@ -37,7 +37,7 @@ class AttributeDriverTest extends MappingDriverTestCase
                 'uniqueConstraints' => ['foo' => ['columns' => ['id']]],
                 'indexes' => ['bar' => ['columns' => ['id']]],
             ],
-            $metadata->table
+            $metadata->table,
         );
         self::assertEquals(['assoz_id', 'assoz_id'], $metadata->associationMappings['assoc']['joinTableColumns']);
     }

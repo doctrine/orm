@@ -22,7 +22,7 @@ class Ticket4646InstanceOfAbstractTest extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             PersonTicket4646Abstract::class,
-            EmployeeTicket4646Abstract::class
+            EmployeeTicket4646Abstract::class,
         );
     }
 
@@ -59,7 +59,7 @@ abstract class PersonTicket4646Abstract
      */
     private int $id;
 
-    public function getId(): ?int
+    public function getId(): int|null
     {
         return $this->id;
     }

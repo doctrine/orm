@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2575
- */
+/** @group DDC-2575 */
 class DDC2575Test extends OrmFunctionalTestCase
 {
     /** @psalm-var list<DDC2575Root> */
@@ -33,7 +31,7 @@ class DDC2575Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC2575Root::class,
             DDC2575A::class,
-            DDC2575B::class
+            DDC2575B::class,
         );
 
         $entityRoot1 = new DDC2575Root(1);
@@ -97,9 +95,7 @@ class DDC2575Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2575Root
 {
     /**
@@ -114,17 +110,13 @@ class DDC2575Root
          * @Column(type="integer")
          */
         public int $id,
-        /**
-         * @Column(type="integer")
-         */
-        public int $sampleField = 0
+        /** @Column(type="integer") */
+        public int $sampleField = 0,
     ) {
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2575A
 {
     public function __construct(
@@ -138,14 +130,12 @@ class DDC2575A
          * @ManyToOne(targetEntity="DDC2575B")
          * @JoinColumn(name="b_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
          */
-        public DDC2575B $bRelation
+        public DDC2575B $bRelation,
     ) {
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2575B
 {
     public function __construct(
@@ -154,10 +144,8 @@ class DDC2575B
          * @Column(type="integer")
          */
         public int $id,
-        /**
-         * @Column(type="integer")
-         */
-        public int $sampleField = 0
+        /** @Column(type="integer") */
+        public int $sampleField = 0,
     ) {
     }
 }

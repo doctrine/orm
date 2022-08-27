@@ -38,9 +38,7 @@ class ParameterTypeInfererTest extends OrmTestCase
         yield 'array_of_string_backed_enum' => [[UserStatus::Active], Connection::PARAM_STR_ARRAY];
     }
 
-    /**
-     * @dataProvider providerParameterTypeInferer
-     */
+    /** @dataProvider providerParameterTypeInferer */
     public function testParameterTypeInferer(mixed $value, ParameterType|int|string $expected): void
     {
         self::assertEquals($expected, ParameterTypeInferer::inferType($value));

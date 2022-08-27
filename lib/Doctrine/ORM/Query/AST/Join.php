@@ -24,9 +24,6 @@ class Join extends Node
      */
     public $joinType = self::JOIN_TYPE_INNER;
 
-    /** @var Node|null */
-    public $joinAssociationDeclaration = null;
-
     /** @var ConditionalExpression|null */
     public $conditionalExpression = null;
 
@@ -35,10 +32,9 @@ class Join extends Node
      * @param Node $joinAssociationDeclaration
      * @psalm-param self::JOIN_TYPE_* $joinType
      */
-    public function __construct($joinType, $joinAssociationDeclaration)
+    public function __construct($joinType, public $joinAssociationDeclaration = null)
     {
-        $this->joinType                   = $joinType;
-        $this->joinAssociationDeclaration = $joinAssociationDeclaration;
+        $this->joinType = $joinType;
     }
 
     public function dispatch(SqlWalker $walker): string

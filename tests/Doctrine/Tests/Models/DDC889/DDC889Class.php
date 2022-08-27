@@ -27,7 +27,7 @@ class DDC889Class extends DDC889SuperClass
                 'fieldName'  => 'id',
                 'type'       => 'integer',
                 'columnName' => 'id',
-            ]
+            ],
         );
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);

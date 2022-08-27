@@ -14,9 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_keys;
 
-/**
- * @group GH-7661
- */
+/** @group GH-7661 */
 class GH7661Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -53,9 +51,7 @@ class GH7661Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7661User
 {
     /**
@@ -67,9 +63,7 @@ class GH7661User
     public $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7661Event
 {
     /**
@@ -86,9 +80,7 @@ class GH7661Event
     public $participants;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7661Participant
 {
     /**
@@ -100,14 +92,10 @@ class GH7661Participant
     public $id;
 
     public function __construct(
-        /**
-         * @ManyToOne(targetEntity=GH7661User::class)
-         */
+        /** @ManyToOne(targetEntity=GH7661User::class) */
         public GH7661User $user,
-        /**
-         * @ManyToOne(targetEntity=GH7661Event::class)
-         */
-        public GH7661Event $event
+        /** @ManyToOne(targetEntity=GH7661Event::class) */
+        public GH7661Event $event,
     ) {
     }
 }

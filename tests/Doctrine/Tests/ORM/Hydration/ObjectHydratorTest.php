@@ -34,9 +34,7 @@ use function count;
 
 class ObjectHydratorTest extends HydrationTestCase
 {
-    /**
-     * @psalm-return list<array{mixed}>
-     */
+    /** @psalm-return list<array{mixed}> */
     public function provideDataForUserEntityResult(): array
     {
         return [
@@ -45,9 +43,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
     }
 
-    /**
-     * @psalm-return list<array{mixed, mixed}>
-     */
+    /** @psalm-return list<array{mixed, mixed}> */
     public function provideDataForMultipleRootEntityResult(): array
     {
         return [
@@ -58,9 +54,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
     }
 
-    /**
-     * @psalm-return list<array{mixed}>
-     */
+    /** @psalm-return list<array{mixed}> */
     public function provideDataForProductEntityResult(): array
     {
         return [
@@ -452,7 +446,7 @@ class ObjectHydratorTest extends HydrationTestCase
             CmsPhonenumber::class,
             'p',
             'u',
-            'phonenumbers'
+            'phonenumbers',
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -530,7 +524,7 @@ class ObjectHydratorTest extends HydrationTestCase
             CmsPhonenumber::class,
             'p',
             'u',
-            'phonenumbers'
+            'phonenumbers',
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -608,13 +602,13 @@ class ObjectHydratorTest extends HydrationTestCase
             CmsPhonenumber::class,
             'p',
             'u',
-            'phonenumbers'
+            'phonenumbers',
         );
         $rsm->addJoinedEntityResult(
             CmsArticle::class,
             'a',
             'u',
-            'articles'
+            'articles',
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -718,19 +712,19 @@ class ObjectHydratorTest extends HydrationTestCase
             CmsPhonenumber::class,
             'p',
             'u',
-            'phonenumbers'
+            'phonenumbers',
         );
         $rsm->addJoinedEntityResult(
             CmsArticle::class,
             'a',
             'u',
-            'articles'
+            'articles',
         );
         $rsm->addJoinedEntityResult(
             CmsComment::class,
             'c',
             'a',
-            'comments'
+            'comments',
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -875,7 +869,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ForumBoard::class,
             'b',
             'c',
-            'boards'
+            'boards',
         );
         $rsm->addFieldResult('c', 'c__id', 'id');
         $rsm->addFieldResult('c', 'c__position', 'position');
@@ -1124,13 +1118,13 @@ class ObjectHydratorTest extends HydrationTestCase
             CmsArticle::class,
             'a',
             'u',
-            'articles'
+            'articles',
         );
         $rsm->addJoinedEntityResult(
             CmsComment::class,
             'c',
             'a',
-            'comments'
+            'comments',
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -1187,13 +1181,13 @@ class ObjectHydratorTest extends HydrationTestCase
             CmsArticle::class,
             'a',
             'u',
-            'articles'
+            'articles',
         );
         $rsm->addJoinedEntityResult(
             CmsComment::class,
             'c',
             'a',
-            'comments'
+            'comments',
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -1267,7 +1261,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $iterableResult = $hydrator->toIterable(
             $this->createResultMock($resultSet),
             $rsm,
-            [Query::HINT_FORCE_PARTIAL_LOAD => true]
+            [Query::HINT_FORCE_PARTIAL_LOAD => true],
         );
         $rowNum         = 0;
 
@@ -1290,7 +1284,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $iterableResult = $hydrator->toIterable(
             $this->createResultMock($resultSet),
             $rsm,
-            [Query::HINT_FORCE_PARTIAL_LOAD => true]
+            [Query::HINT_FORCE_PARTIAL_LOAD => true],
         );
         $rowNum         = 0;
 
@@ -1341,7 +1335,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $iterableResult = $hydrator->toIterable(
             new Result(new ArrayResult($resultSet), $this->createMock(Connection::class)),
             $rsm,
-            [Query::HINT_FORCE_PARTIAL_LOAD => true]
+            [Query::HINT_FORCE_PARTIAL_LOAD => true],
         );
 
         foreach ($iterableResult as $row) {
@@ -1366,7 +1360,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $iterableResult = $hydrator->toIterable(
             $this->createResultMock($resultSet),
             $rsm,
-            [Query::HINT_FORCE_PARTIAL_LOAD => true]
+            [Query::HINT_FORCE_PARTIAL_LOAD => true],
         );
 
         foreach ($iterableResult as $row) {
@@ -1713,7 +1707,7 @@ class ObjectHydratorTest extends HydrationTestCase
             CmsPhonenumber::class,
             'p',
             'u',
-            'phonenumbers'
+            'phonenumbers',
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -1775,7 +1769,7 @@ class ObjectHydratorTest extends HydrationTestCase
             CmsAddress::class,
             'a',
             'u',
-            'address'
+            'address',
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -1888,13 +1882,11 @@ class ObjectHydratorTest extends HydrationTestCase
                 'ROMANB' => ['nameUpper' => 'ROMANB'],
                 'JWAGE'  => ['nameUpper' => 'JWAGE'],
             ],
-            $result
+            $result,
         );
     }
 
-    /**
-     * @group DDC-1470
-     */
+    /** @group DDC-1470 */
     public function testMissingMetaMappingException(): void
     {
         $this->expectException(HydrationException::class);
@@ -1918,9 +1910,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
-    /**
-     * @group DDC-1470
-     */
+    /** @group DDC-1470 */
     public function testMissingDiscriminatorColumnException(): void
     {
         $this->expectException(HydrationException::class);
@@ -1951,9 +1941,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
-    /**
-     * @group DDC-3076
-     */
+    /** @group DDC-3076 */
     public function testInvalidDiscriminatorValueException(): void
     {
         $this->expectException(HydrationException::class);

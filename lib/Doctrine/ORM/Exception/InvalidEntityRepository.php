@@ -12,7 +12,7 @@ final class InvalidEntityRepository extends LogicException implements Configurat
     public static function fromClassName(string $className): self
     {
         return new self(
-            "Invalid repository class '" . $className . "'. It must be a " . EntityRepository::class . '.'
+            "Invalid repository class '" . $className . "'. It must be a " . EntityRepository::class . '.',
         );
     }
 }
