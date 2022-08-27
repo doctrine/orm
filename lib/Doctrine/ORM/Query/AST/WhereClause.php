@@ -13,7 +13,7 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class WhereClause extends Node
 {
-    /** @param ConditionalExpression $conditionalExpression */
+    /** @param ConditionalExpression|ConditionalTerm $conditionalExpression */
     public function __construct(public $conditionalExpression)
     {
     }
