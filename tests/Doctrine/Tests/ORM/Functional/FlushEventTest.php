@@ -50,9 +50,7 @@ class FlushEventTest extends OrmFunctionalTestCase
         //$this->_em->flush();
     }
 
-    /**
-     * @group DDC-2173
-     */
+    /** @group DDC-2173 */
     public function testPreAndOnFlushCalledAlways(): void
     {
         $listener = new OnFlushCalledListener();

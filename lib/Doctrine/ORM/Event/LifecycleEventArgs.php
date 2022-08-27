@@ -16,9 +16,7 @@ use Doctrine\Persistence\Event\LifecycleEventArgs as BaseLifecycleEventArgs;
  */
 class LifecycleEventArgs extends BaseLifecycleEventArgs
 {
-    /**
-     * @param object $object
-     */
+    /** @param object $object */
     public function __construct($object, EntityManagerInterface $objectManager)
     {
         Deprecation::triggerIfCalledFromOutside(

@@ -9,9 +9,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * @Entity(repositoryClass = "\stdClass")
- */
+/** @Entity(repositoryClass = "\stdClass") */
 class DDC753EntityWithInvalidRepository
 {
     /**

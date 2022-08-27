@@ -30,9 +30,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $this->schemaManager = $this->createSchemaManager();
     }
 
-    /**
-     * @group DDC-2059
-     */
+    /** @group DDC-2059 */
     public function testIssue2059(): void
     {
         if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {

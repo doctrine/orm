@@ -149,9 +149,7 @@ abstract class CompanyContract
         $this->salesPerson = $salesPerson;
     }
 
-    /**
-     * @psalm-return Collection<int, CompanyEmployee>
-     */
+    /** @psalm-return Collection<int, CompanyEmployee> */
     public function getEngineers(): Collection
     {
         return $this->engineers;

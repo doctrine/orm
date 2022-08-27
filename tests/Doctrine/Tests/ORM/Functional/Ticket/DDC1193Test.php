@@ -26,9 +26,7 @@ class DDC1193Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-1193
-     */
+    /** @group DDC-1193 */
     public function testIssue(): void
     {
         $company = new DDC1193Company();

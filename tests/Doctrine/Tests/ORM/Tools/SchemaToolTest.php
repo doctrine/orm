@@ -85,9 +85,7 @@ class SchemaToolTest extends OrmTestCase
         }
     }
 
-    /**
-     * @group DDC-200
-     */
+    /** @group DDC-200 */
     public function testPassColumnDefinitionToJoinColumn(): void
     {
         $customColumnDef = 'MEDIUMINT(6) UNSIGNED NOT NULL';
@@ -109,9 +107,7 @@ class SchemaToolTest extends OrmTestCase
         self::assertEquals($customColumnDef, $table->getColumn('avatar_id')->getColumnDefinition());
     }
 
-    /**
-     * @group 6830
-     */
+    /** @group 6830 */
     public function testPassColumnOptionsToJoinColumn(): void
     {
         $em       = $this->getTestEntityManager();
@@ -147,9 +143,7 @@ class SchemaToolTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group DDC-283
-     */
+    /** @group DDC-283 */
     public function testPostGenerateEvents(): void
     {
         $listener = new GenerateSchemaEventListener();
@@ -207,9 +201,7 @@ class SchemaToolTest extends OrmTestCase
         self::assertSame(Suit::class, $customSchemaOptions['enumType']);
     }
 
-    /**
-     * @group DDC-3671
-     */
+    /** @group DDC-3671 */
     public function testSchemaHasProperIndexesFromUniqueConstraintAnnotation(): void
     {
         $em         = $this->getTestEntityManager();
@@ -357,9 +349,7 @@ class SchemaToolTest extends OrmTestCase
         $schemaTool->getSchemaFromMetadata([$class]);
     }
 
-    /**
-     * @group schema-configuration
-     */
+    /** @group schema-configuration */
     public function testConfigurationSchemaIgnoredEntity(): void
     {
         $em         = $this->getTestEntityManager();
@@ -494,9 +484,7 @@ class SecondEntity
     public $name;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6830Board
 {
     /**
@@ -514,9 +502,7 @@ class GH6830Board
     public $category;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6830Category
 {
     /**

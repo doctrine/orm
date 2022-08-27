@@ -10,9 +10,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
 
-/**
- * @group DDC-3346
- */
+/** @group DDC-3346 */
 class DDC3346Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

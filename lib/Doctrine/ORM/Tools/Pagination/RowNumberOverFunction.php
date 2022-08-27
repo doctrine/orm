@@ -22,9 +22,7 @@ class RowNumberOverFunction extends FunctionNode
     /** @var OrderByClause */
     public $orderByClause;
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function getSql(SqlWalker $sqlWalker)
     {
         return 'ROW_NUMBER() OVER(' . trim($sqlWalker->walkOrderByClause(

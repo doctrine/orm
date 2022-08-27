@@ -11,9 +11,7 @@ final class MultipleSelectorsFoundException extends ORMException
 {
     public const MULTIPLE_SELECTORS_FOUND_EXCEPTION = 'Multiple selectors found: %s. Please select only one.';
 
-    /**
-     * @param string[] $selectors
-     */
+    /** @param string[] $selectors */
     public static function create(array $selectors): self
     {
         return new self(

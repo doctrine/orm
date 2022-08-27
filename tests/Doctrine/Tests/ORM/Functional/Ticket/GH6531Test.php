@@ -34,9 +34,7 @@ final class GH6531Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group GH-6531
-     */
+    /** @group GH-6531 */
     public function testSimpleDerivedIdentity(): void
     {
         $user          = new GH6531User();
@@ -51,9 +49,7 @@ final class GH6531Test extends OrmFunctionalTestCase
         self::assertSame($address, $this->_em->find(GH6531Address::class, $user));
     }
 
-    /**
-     * @group GH-6531
-     */
+    /** @group GH-6531 */
     public function testDynamicAttributes(): void
     {
         $article = new GH6531Article();
@@ -68,9 +64,7 @@ final class GH6531Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group GH-6531
-     */
+    /** @group GH-6531 */
     public function testJoinTableWithMetadata(): void
     {
         $product = new GH6531Product();
@@ -90,9 +84,7 @@ final class GH6531Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6531User
 {
     /**
@@ -104,9 +96,7 @@ class GH6531User
     public $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6531Address
 {
     /**
@@ -117,9 +107,7 @@ class GH6531Address
     public $user;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6531Article
 {
     /**
@@ -142,9 +130,7 @@ class GH6531Article
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6531ArticleAttribute
 {
     /**
@@ -175,9 +161,7 @@ class GH6531ArticleAttribute
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6531Order
 {
     /**
@@ -205,9 +189,7 @@ class GH6531Order
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6531Product
 {
     /**
@@ -219,9 +201,7 @@ class GH6531Product
     public $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6531OrderItem
 {
     /**

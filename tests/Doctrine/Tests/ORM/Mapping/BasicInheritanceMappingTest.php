@@ -82,9 +82,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('mappedRelated1', $class->associationMappings);
     }
 
-    /**
-     * @group DDC-869
-     */
+    /** @group DDC-869 */
     public function testGetMetadataForSubclassWithMappedSuperclassWithRepository(): void
     {
         $class = $this->cmf->getMetadataFor(DDC869CreditCardPayment::class);
@@ -109,9 +107,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertEquals($class->customRepositoryClassName, EntityRepository::class);
     }
 
-    /**
-     * @group DDC-388
-     */
+    /** @group DDC-388 */
     public function testSerializationWithPrivateFieldsFromMappedSuperclass(): void
     {
         $class = $this->cmf->getMetadataFor(EntitySubClass2::class);
@@ -124,9 +120,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('mappedRelated1', $class2->reflFields);
     }
 
-    /**
-     * @group DDC-1203
-     */
+    /** @group DDC-1203 */
     public function testUnmappedSuperclassInHierarchy(): void
     {
         $class = $this->cmf->getMetadataFor(HierarchyD::class);
@@ -136,9 +130,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('d', $class->fieldMappings);
     }
 
-    /**
-     * @group DDC-1204
-     */
+    /** @group DDC-1204 */
     public function testUnmappedEntityInHierarchy(): void
     {
         $this->expectException(MappingException::class);

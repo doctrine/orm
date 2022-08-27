@@ -71,9 +71,7 @@ final class GH9807Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH9807Main
 {
     /**
@@ -91,18 +89,14 @@ class GH9807Main
      */
     private $joins;
 
-    /**
-     * @return Collection<int, GH9807Join>
-     */
+    /** @return Collection<int, GH9807Join> */
     public function getJoins(): Collection
     {
         return $this->joins;
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH9807Join
 {
     /**

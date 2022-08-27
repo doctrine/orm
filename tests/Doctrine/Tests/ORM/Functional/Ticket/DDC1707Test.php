@@ -15,9 +15,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\PostLoad;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1707
- */
+/** @group DDC-1707 */
 class DDC1707Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -60,17 +58,13 @@ abstract class DDC1707Base
     /** @var bool */
     public $postLoad = false;
 
-    /**
-     * @PostLoad
-     */
+    /** @PostLoad */
     public function onPostLoad(): void
     {
         $this->postLoad = true;
     }
 }
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1707Child extends DDC1707Base
 {
 }

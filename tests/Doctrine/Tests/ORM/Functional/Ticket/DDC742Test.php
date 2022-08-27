@@ -22,9 +22,7 @@ use function mkdir;
 use function sys_get_temp_dir;
 use function uniqid;
 
-/**
- * @group non-cacheable
- */
+/** @group non-cacheable */
 class DDC742Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

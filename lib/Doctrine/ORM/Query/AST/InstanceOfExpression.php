@@ -21,9 +21,7 @@ class InstanceOfExpression extends Node
     /** @var mixed[] */
     public $value;
 
-    /**
-     * @param string $identVariable
-     */
+    /** @param string $identVariable */
     public function __construct($identVariable)
     {
         $this->identificationVariable = $identVariable;

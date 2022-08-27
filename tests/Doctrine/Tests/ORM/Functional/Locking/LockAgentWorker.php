@@ -89,9 +89,7 @@ class LockAgentWorker
         });
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     protected function processWorkload($job): array
     {
         echo 'Received job: ' . $job->handle() . ' for function ' . $job->functionName() . "\n";

@@ -42,9 +42,7 @@ use function is_subclass_of;
 
 class AnnotationDriverTest extends MappingDriverTestCase
 {
-    /**
-     * @group DDC-268
-     */
+    /** @group DDC-268 */
     public function testLoadMetadataForNonEntityThrowsException(): void
     {
         $cm = new ClassMetadata('stdClass');
@@ -66,9 +64,7 @@ class AnnotationDriverTest extends MappingDriverTestCase
         $mappingDriver->loadMetadataForClass(AnnotationSLC::class, $class);
     }
 
-    /**
-     * @group DDC-268
-     */
+    /** @group DDC-268 */
     public function testColumnWithMissingTypeDefaultsToString(): void
     {
         $cm = new ClassMetadata(ColumnWithoutType::class);
@@ -79,9 +75,7 @@ class AnnotationDriverTest extends MappingDriverTestCase
         self::assertEquals('string', $cm->fieldMappings['id']['type']);
     }
 
-    /**
-     * @group DDC-318
-     */
+    /** @group DDC-318 */
     public function testGetAllClassNamesIsIdempotent(): void
     {
         $annotationDriver = $this->loadDriverForCMSModels();
@@ -93,9 +87,7 @@ class AnnotationDriverTest extends MappingDriverTestCase
         self::assertEquals($original, $afterTestReset);
     }
 
-    /**
-     * @group DDC-318
-     */
+    /** @group DDC-318 */
     public function testGetAllClassNamesIsIdempotentEvenWithDifferentDriverInstances(): void
     {
         $annotationDriver = $this->loadDriverForCMSModels();
@@ -107,9 +99,7 @@ class AnnotationDriverTest extends MappingDriverTestCase
         self::assertEquals($original, $afterTestReset);
     }
 
-    /**
-     * @group DDC-318
-     */
+    /** @group DDC-318 */
     public function testGetAllClassNamesReturnsAlreadyLoadedClassesIfAppropriate(): void
     {
         $this->ensureIsLoaded(CmsUser::class);
@@ -120,9 +110,7 @@ class AnnotationDriverTest extends MappingDriverTestCase
         self::assertContains(CmsUser::class, $classes);
     }
 
-    /**
-     * @group DDC-318
-     */
+    /** @group DDC-318 */
     public function testGetClassNamesReturnsOnlyTheAppropriateClasses(): void
     {
         $this->ensureIsLoaded(ECommerceCart::class);
@@ -141,17 +129,13 @@ class AnnotationDriverTest extends MappingDriverTestCase
         return $annotationDriver;
     }
 
-    /**
-     * @return AnnotationDriver
-     */
+    /** @return AnnotationDriver */
     protected function loadDriver(): MappingDriver
     {
         return $this->createAnnotationDriver();
     }
 
-    /**
-     * @psalm-var class-string<object> $entityClassName
-     */
+    /** @psalm-var class-string<object> $entityClassName */
     protected function ensureIsLoaded(string $entityClassName): void
     {
         new $entityClassName();
@@ -179,9 +163,7 @@ class AnnotationDriverTest extends MappingDriverTestCase
         self::assertEquals(Directory::class, $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
     }
 
-    /**
-     * @group DDC-945
-     */
+    /** @group DDC-945 */
     public function testInvalidMappedSuperClassWithManyToManyAssociation(): void
     {
         $annotationDriver = $this->loadDriver();
@@ -200,9 +182,7 @@ class AnnotationDriverTest extends MappingDriverTestCase
         $factory->getMetadataFor(UsingInvalidMappedSuperClass::class);
     }
 
-    /**
-     * @group DDC-1050
-     */
+    /** @group DDC-1050 */
     public function testInvalidMappedSuperClassWithInheritanceInformation(): void
     {
         $annotationDriver = $this->loadDriver();
@@ -221,9 +201,7 @@ class AnnotationDriverTest extends MappingDriverTestCase
         $usingInvalidMsc = $factory->getMetadataFor(MappedSuperClassInheritence::class);
     }
 
-    /**
-     * @group DDC-1034
-     */
+    /** @group DDC-1034 */
     public function testInheritanceSkipsParentLifecycleCallbacks(): void
     {
         $annotationDriver = $this->loadDriver();
@@ -240,9 +218,7 @@ class AnnotationDriverTest extends MappingDriverTestCase
         self::assertEquals(['postLoad' => ['postLoad'], 'preUpdate' => ['preUpdate']], $cm->lifecycleCallbacks);
     }
 
-    /**
-     * @group DDC-1156
-     */
+    /** @group DDC-1156 */
     public function testMappedSuperclassInMiddleOfInheritanceHierarchy(): void
     {
         $annotationDriver = $this->loadDriver();
@@ -318,9 +294,7 @@ class AnnotationDriverTest extends MappingDriverTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class ColumnWithoutType
 {
     /**
@@ -331,9 +305,7 @@ class ColumnWithoutType
     public $id;
 }
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 class InvalidMappedSuperClass
 {
     /**
@@ -343,9 +315,7 @@ class InvalidMappedSuperClass
     private $users;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class UsingInvalidMappedSuperClass extends InvalidMappedSuperClass
 {
     /**
@@ -382,16 +352,12 @@ class AnnotationParent
      */
     private $id;
 
-    /**
-     * @PostLoad
-     */
+    /** @PostLoad */
     public function postLoad(): void
     {
     }
 
-    /**
-     * @PreUpdate
-     */
+    /** @PreUpdate */
     public function preUpdate(): void
     {
     }
@@ -420,9 +386,7 @@ class SuperEntity
     private $id;
 }
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 class MiddleMappedSuperclass extends SuperEntity
 {
     /**
@@ -432,9 +396,7 @@ class MiddleMappedSuperclass extends SuperEntity
     private $name;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class ChildEntity extends MiddleMappedSuperclass
 {
     /**
@@ -444,9 +406,7 @@ class ChildEntity extends MiddleMappedSuperclass
     private $text;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class InvalidFetchOption
 {
     /**
@@ -469,9 +429,7 @@ class AnnotationSLC
      */
     public $foo;
 }
-/**
- * @Entity
- */
+/** @Entity */
 class AnnotationSLCFoo
 {
     /**

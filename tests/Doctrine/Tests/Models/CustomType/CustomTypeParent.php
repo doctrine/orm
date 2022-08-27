@@ -71,9 +71,7 @@ class CustomTypeParent
         $friend->addFriendWithMe($this);
     }
 
-    /**
-     * @psalm-return Collection<int, CustomTypeParent>
-     */
+    /** @psalm-return Collection<int, CustomTypeParent> */
     public function getMyFriends(): Collection
     {
         return $this->myFriends;
@@ -84,9 +82,7 @@ class CustomTypeParent
         $this->getFriendsWithMe()->add($friend);
     }
 
-    /**
-     * @psalm-return Collection<int, CustomTypeParent>
-     */
+    /** @psalm-return Collection<int, CustomTypeParent> */
     public function getFriendsWithMe()
     {
         return $this->friendsWithMe;

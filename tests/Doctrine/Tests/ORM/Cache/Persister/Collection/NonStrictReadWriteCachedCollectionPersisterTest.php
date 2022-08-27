@@ -10,9 +10,7 @@ use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class NonStrictReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
 {
     /**

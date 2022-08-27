@@ -13,9 +13,7 @@ use Doctrine\Tests\Models\Cache\Traveler;
 use Doctrine\Tests\Models\Cache\TravelerProfile;
 use Doctrine\Tests\Models\Cache\TravelerProfileInfo;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class SecondLevelCacheOneToOneTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testPutOneToOneOnUnidirectionalPersist(): void

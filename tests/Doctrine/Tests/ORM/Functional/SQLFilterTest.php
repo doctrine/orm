@@ -201,9 +201,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         self::assertTrue($exceptionThrown);
     }
 
-    /**
-     * @group DDC-2203
-     */
+    /** @group DDC-2203 */
     public function testEntityManagerIsFilterEnabled(): void
     {
         $em = $this->getEntityManager();
@@ -229,9 +227,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $config->addFilter('soft_delete', '\Doctrine\Tests\ORM\Functional\MySoftDeleteFilter');
     }
 
-    /**
-     * @return Connection&MockObject
-     */
+    /** @return Connection&MockObject */
     private function getMockConnection(): Connection
     {
         $connection = $this->createMock(Connection::class);
@@ -241,9 +237,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         return $connection;
     }
 
-    /**
-     * @return EntityManagerInterface&MockObject
-     */
+    /** @return EntityManagerInterface&MockObject */
     private function getMockEntityManager(): EntityManagerInterface
     {
         return $this->createMock(EntityManagerInterface::class);

@@ -14,9 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 use InvalidArgumentException;
 
-/**
- * @group locking
- */
+/** @group locking */
 class LockTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -182,9 +180,7 @@ class LockTest extends OrmFunctionalTestCase
         self::assertStringContainsString($writeLockSql, $lastLoggedQuery);
     }
 
-    /**
-     * @group DDC-178
-     */
+    /** @group DDC-178 */
     public function testLockPessimisticRead(): void
     {
         $readLockSql = $this->_em->getConnection()->getDatabasePlatform()->getReadLockSQL();
@@ -218,9 +214,7 @@ class LockTest extends OrmFunctionalTestCase
         self::assertStringContainsString($readLockSql, $lastLoggedQuery);
     }
 
-    /**
-     * @group DDC-1693
-     */
+    /** @group DDC-1693 */
     public function testLockOptimisticNonVersionedThrowsExceptionInDQL(): void
     {
         $dql = 'SELECT u FROM ' . CmsUser::class . " u WHERE u.username = 'gblanco'";

@@ -17,9 +17,7 @@ class UpdateStatement extends Node
     /** @var WhereClause|null */
     public $whereClause;
 
-    /**
-     * @param UpdateClause $updateClause
-     */
+    /** @param UpdateClause $updateClause */
     public function __construct($updateClause)
     {
         $this->updateClause = $updateClause;

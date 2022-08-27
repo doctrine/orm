@@ -13,9 +13,7 @@ use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\Cache\State;
 use PHPUnit\Framework\MockObject\MockObject;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class CacheLoggerChainTest extends DoctrineTestCase
 {
     /** @var CacheLoggerChain */

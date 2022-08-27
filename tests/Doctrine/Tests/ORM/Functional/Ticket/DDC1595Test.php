@@ -110,9 +110,7 @@ class DDC1595InheritedEntity1 extends DDC1595BaseInheritance
      */
     protected $entities;
 
-    /**
-     * @psalm-return Collection<int, DDC1595InheritedEntity2>
-     */
+    /** @psalm-return Collection<int, DDC1595InheritedEntity2> */
     public function getEntities(): Collection
     {
         return $this->entities;

@@ -36,9 +36,7 @@ class GH7629Test extends OrmFunctionalTestCase
         self::assertFalse($this->_em->getUnitOfWork()->isScheduledForDirtyCheck($entity));
     }
 
-    /**
-     * @group GH-8231
-     */
+    /** @group GH-8231 */
     public function testPersistAfterRemoveSchedulesForSynchronization(): void
     {
         $entity = $this->_em->find(GH7629Entity::class, 1);

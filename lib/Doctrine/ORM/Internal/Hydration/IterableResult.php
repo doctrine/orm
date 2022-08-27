@@ -27,9 +27,7 @@ class IterableResult implements Iterator
     /** @var mixed[]|null */
     private $_current = null;
 
-    /**
-     * @param AbstractHydrator $hydrator
-     */
+    /** @param AbstractHydrator $hydrator */
     public function __construct($hydrator)
     {
         $this->_hydrator = $hydrator;
@@ -65,27 +63,21 @@ class IterableResult implements Iterator
         return $this->_current;
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     #[ReturnTypeWillChange]
     public function current()
     {
         return $this->_current;
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     #[ReturnTypeWillChange]
     public function key()
     {
         return $this->_key;
     }
 
-    /**
-     * @return bool
-     */
+    /** @return bool */
     #[ReturnTypeWillChange]
     public function valid()
     {

@@ -247,9 +247,7 @@ EXCEPTION
         $this->_em->find($cardClass, $card->id);
     }
 
-    /**
-     * @return array<string, array{class-string}>
-     */
+    /** @return array<string, array{class-string}> */
     public function provideCardClasses(): array
     {
         return [

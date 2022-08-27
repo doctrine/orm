@@ -9,9 +9,7 @@ use Doctrine\Tests\Models\DDC3597\DDC3597Media;
 use Doctrine\Tests\Models\DDC3597\DDC3597Root;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-117
- */
+/** @group DDC-117 */
 class DDC3597Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -24,9 +22,7 @@ class DDC3597Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-3597
-     */
+    /** @group DDC-3597 */
     public function testSaveImageEntity(): void
     {
         $imageEntity = new DDC3597Image('foobar');

@@ -69,9 +69,7 @@ class DDC345Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC345User
 {
     /**
@@ -100,9 +98,7 @@ class DDC345User
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC345Group
 {
     /**

@@ -108,18 +108,14 @@ class ORMSetupTest extends TestCase
         self::assertSame('dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf:', $namespaceProperty->getValue($cache));
     }
 
-    /**
-     * @group DDC-1350
-     */
+    /** @group DDC-1350 */
     public function testConfigureProxyDir(): void
     {
         $config = ORMSetup::createAnnotationMetadataConfiguration([], true, '/foo');
         self::assertEquals('/foo', $config->getProxyDir());
     }
 
-    /**
-     * @group DDC-1350
-     */
+    /** @group DDC-1350 */
     public function testConfigureCache(): void
     {
         $cache  = new ArrayAdapter();
@@ -133,9 +129,7 @@ class ORMSetupTest extends TestCase
         self::assertSame($cache, $config->getMetadataCacheImpl()->getPool());
     }
 
-    /**
-     * @group DDC-3190
-     */
+    /** @group DDC-3190 */
     public function testConfigureCacheCustomInstance(): void
     {
         $cache  = new ArrayAdapter();

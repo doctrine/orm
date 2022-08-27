@@ -23,9 +23,7 @@ use function debug_backtrace;
 
 use const PHP_INT_MAX;
 
-/**
- * @group DDC-3634
- */
+/** @group DDC-3634 */
 class DDC3634Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -127,18 +125,14 @@ class DDC3634LastInsertIdMockingConnection extends Connection
     /** @var int|string */
     private $identifier;
 
-    /**
-     * @param int|string $identifier
-     */
+    /** @param int|string $identifier */
     public function __construct($identifier, Connection $realConnection)
     {
         $this->realConnection = $realConnection;
         $this->identifier     = $identifier;
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     private function forwardCall()
     {
         $trace = debug_backtrace(0, 2)[1];

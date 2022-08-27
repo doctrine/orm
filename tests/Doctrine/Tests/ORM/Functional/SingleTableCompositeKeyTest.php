@@ -28,9 +28,7 @@ class SingleTableCompositeKeyTest extends OrmFunctionalTestCase
         self::assertEquals($childEntity, $entity);
     }
 
-    /**
-     * @group non-cacheable
-     */
+    /** @group non-cacheable */
     public function testUpdateWithCompositeKey(): void
     {
         $childEntity = new SingleChildClass();

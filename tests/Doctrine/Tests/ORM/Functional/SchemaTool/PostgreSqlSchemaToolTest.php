@@ -38,9 +38,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         self::assertEquals(1, $address->sequenceGeneratorDefinition['allocationSize']);
     }
 
-    /**
-     * @group DDC-1657
-     */
+    /** @group DDC-1657 */
     public function testUpdateSchemaWithPostgreSQLSchema(): void
     {
         $sql = $this->getUpdateSchemaSqlForModels(

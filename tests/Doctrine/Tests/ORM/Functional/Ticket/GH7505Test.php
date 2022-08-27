@@ -16,9 +16,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
 
-/**
- * @group GH7505
- */
+/** @group GH7505 */
 final class GH7505Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -76,9 +74,7 @@ abstract class GH7505AbstractResponse
     public $id;
 }
 
-/**
- * @Entity()
- */
+/** @Entity() */
 class GH7505ArrayResponse extends GH7505AbstractResponse
 {
     /**
@@ -88,9 +84,7 @@ class GH7505ArrayResponse extends GH7505AbstractResponse
     public $value = [];
 }
 
-/**
- * @Entity()
- */
+/** @Entity() */
 class GH7505TextResponse extends GH7505AbstractResponse
 {
     /**

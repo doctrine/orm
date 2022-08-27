@@ -9,9 +9,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 #[ORM\MappedSuperclass]
 class DDC889SuperClass
 {

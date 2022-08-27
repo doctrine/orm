@@ -14,9 +14,7 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
  */
 interface CachedEntityPersister extends CachedPersister, EntityPersister
 {
-    /**
-     * @return EntityHydrator
-     */
+    /** @return EntityHydrator */
     public function getEntityHydrator();
 
     /**

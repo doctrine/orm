@@ -458,9 +458,7 @@ class XmlExporter extends AbstractExporter
         $this->generateEntityListenerXml($metadata, $entityListenersXmlMap, $entityListenersXml);
     }
 
-    /**
-     * @param mixed[] $entityListenersXmlMap
-     */
+    /** @param mixed[] $entityListenersXmlMap */
     private function generateEntityListenerXml(
         ClassMetadataInfo $metadata,
         array $entityListenersXmlMap,

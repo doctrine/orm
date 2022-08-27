@@ -97,9 +97,7 @@ class ResultSetMappingTest extends OrmTestCase
         self::assertTrue($rms->isMixedResult());
     }
 
-    /**
-     * @group DDC-1663
-     */
+    /** @group DDC-1663 */
     public function testAddNamedNativeQueryResultSetMapping(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -186,9 +184,7 @@ class ResultSetMappingTest extends OrmTestCase
         self::assertEquals(CmsEmail::class, $rsm->getDeclaringClass('email_id'));
     }
 
-        /**
-         * @group DDC-1663
-         */
+        /** @group DDC-1663 */
     public function testAddNamedNativeQueryResultSetMappingWithoutFields(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -231,9 +227,7 @@ class ResultSetMappingTest extends OrmTestCase
         self::assertEquals(CmsUser::class, $rsm->getDeclaringClass('username'));
     }
 
-    /**
-     * @group DDC-1663
-     */
+    /** @group DDC-1663 */
     public function testAddNamedNativeQueryResultClass(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -264,9 +258,7 @@ class ResultSetMappingTest extends OrmTestCase
         self::assertEquals(CmsUser::class, $rsm->getDeclaringClass('username'));
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testIndexByMetadataColumn(): void
     {
         $this->_rsm->addEntityResult(LegacyUser::class, 'u');

@@ -15,17 +15,13 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class CurrentTimeFunction extends FunctionNode
 {
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function getSql(SqlWalker $sqlWalker)
     {
         return $sqlWalker->getConnection()->getDatabasePlatform()->getCurrentTimeSQL();
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function parse(Parser $parser)
     {
         $parser->match(Lexer::T_IDENTIFIER);

@@ -14,9 +14,7 @@ use function func_num_args;
 use function is_object;
 use function sprintf;
 
-/**
- * @internal
- */
+/** @internal */
 final class ReflectionReadonlyProperty extends ReflectionProperty
 {
     public function __construct(

@@ -8,9 +8,7 @@ use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
 
 class UpdateCommandTest extends AbstractCommandTest
 {
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testItPrintsTheSql(): void
     {
         $tester = $this->getCommandTester(UpdateCommand::class);

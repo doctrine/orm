@@ -15,9 +15,7 @@ use Doctrine\Tests\OrmTestCase;
 
 class ClassMetadataLoadEventTest extends OrmTestCase
 {
-    /**
-     * @group DDC-1610
-     */
+    /** @group DDC-1610 */
     public function testEvent(): void
     {
         $em              = $this->getTestEntityManager();

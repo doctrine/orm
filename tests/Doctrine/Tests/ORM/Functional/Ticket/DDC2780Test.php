@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2780
- */
+/** @group DDC-2780 */
 class DDC2780Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -52,9 +50,7 @@ class DDC2780Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2780User
 {
     /**

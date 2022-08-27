@@ -22,9 +22,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function class_exists;
 
-/**
- * @group DDC-2256
- */
+/** @group DDC-2256 */
 class DDC2256Test extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;

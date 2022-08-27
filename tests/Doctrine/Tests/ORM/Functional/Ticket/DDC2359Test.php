@@ -18,9 +18,7 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @group DDC-2359
- */
+/** @group DDC-2359 */
 class DDC2359Test extends TestCase
 {
     use MockBuilderCompatibilityTools;

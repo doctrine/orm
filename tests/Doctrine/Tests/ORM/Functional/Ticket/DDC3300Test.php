@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-3300
- */
+/** @group DDC-3300 */
 class DDC3300Test extends OrmFunctionalTestCase
 {
     public function testResolveTargetEntitiesChangesDiscriminatorMapValues(): void

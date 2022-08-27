@@ -28,9 +28,7 @@ class DDC279Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-279
-     */
+    /** @group DDC-279 */
     public function testDDC279(): void
     {
         $x = new DDC279EntityX();
@@ -92,9 +90,7 @@ abstract class DDC279EntityXAbstract
     public $data;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC279EntityX extends DDC279EntityXAbstract
 {
     /**
@@ -105,9 +101,7 @@ class DDC279EntityX extends DDC279EntityXAbstract
     public $y;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC279EntityY
 {
     /**
@@ -132,9 +126,7 @@ class DDC279EntityY
     public $z;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC279EntityZ
 {
     /**

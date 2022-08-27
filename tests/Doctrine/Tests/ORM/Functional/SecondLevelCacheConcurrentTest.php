@@ -18,9 +18,7 @@ use Psr\Cache\CacheItemPoolInterface;
 
 use function assert;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class SecondLevelCacheConcurrentTest extends SecondLevelCacheFunctionalTestCase
 {
     /** @var CacheFactorySecondLevelCacheConcurrentTest */

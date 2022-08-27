@@ -11,9 +11,7 @@ final class DtoWithArrayOfEnums
     /** @var Unit[] */
     public $supportedUnits;
 
-    /**
-     * @param Unit[] $supportedUnits
-     */
+    /** @param Unit[] $supportedUnits */
     public function __construct(array $supportedUnits)
     {
         $this->supportedUnits = $supportedUnits;

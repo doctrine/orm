@@ -15,9 +15,7 @@ use RuntimeException;
 
 use function uniqid;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class SecondLevelCacheTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testPutOnPersist(): void
@@ -342,9 +340,7 @@ class ListenerSecondLevelCacheTest
     /** @var array<string, callable> */
     public $callbacks;
 
-    /**
-     * @psalm-param array<string, callable> $callbacks
-     */
+    /** @psalm-param array<string, callable> $callbacks */
     public function __construct(array $callbacks = [])
     {
         $this->callbacks = $callbacks;

@@ -6,9 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2084
- */
+/** @group DDC-2084 */
 class DDC2084Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

@@ -442,9 +442,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertFalse($this->_unitOfWork->isScheduledForInsert($entity2));
     }
 
-    /**
-     * @group #5579
-     */
+    /** @group #5579 */
     public function testEntityChangeSetIsNotClearedAfterFlushOnSingleEntity(): void
     {
         $entity1 = new NotifyChangedEntity();
@@ -463,9 +461,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
     }
 
-    /**
-     * @group #5579
-     */
+    /** @group #5579 */
     public function testEntityChangeSetIsNotClearedAfterFlushOnArrayOfEntities(): void
     {
         $entity1 = new NotifyChangedEntity();
@@ -519,9 +515,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertSame($entity, $this->_unitOfWork->getByIdHash($idHash, get_class($entity)));
     }
 
-    /**
-     * @psalm-return array<string, array{object, string}>
-     */
+    /** @psalm-return array<string, array{object, string}> */
     public function entitiesWithValidIdentifiersProvider()
     {
         $emptyString = new EntityWithStringIdentifier();
@@ -580,9 +574,7 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->registerManaged($entity, $identifier, []);
     }
 
-    /**
-     * @psalm-return array<string, array{object, array<string, mixed>}>
-     */
+    /** @psalm-return array<string, array{object, array<string, mixed>}> */
     public function entitiesWithInvalidIdentifiersProvider(): array
     {
         $firstNullString = new EntityWithCompositeStringIdentifier();
@@ -838,9 +830,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertCount(0, $persister2->getInserts());
     }
 
-    /**
-     * @group #7946 Throw OptimisticLockException when connection::commit() returns false.
-     */
+    /** @group #7946 Throw OptimisticLockException when connection::commit() returns false. */
     public function testCommitThrowOptimisticLockExceptionWhenConnectionCommitReturnFalse(): void
     {
         $driver = $this->createMock(Driver::class);
@@ -878,9 +868,7 @@ class UnitOfWorkTest extends OrmTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class NotifyChangedEntity implements NotifyPropertyChanged
 {
     /** @psalm-var list<PropertyChangedListener> */
@@ -932,17 +920,13 @@ class NotifyChangedEntity implements NotifyPropertyChanged
         }
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function getData()
     {
         return $this->data;
     }
 
-    /**
-     * @param mixed $data
-     */
+    /** @param mixed $data */
     public function setData($data): void
     {
         if ($data !== $this->data) {

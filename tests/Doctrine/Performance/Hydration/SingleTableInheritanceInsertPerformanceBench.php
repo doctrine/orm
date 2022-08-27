@@ -11,9 +11,7 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
 use function array_map;
 
-/**
- * @BeforeMethods({"init"})
- */
+/** @BeforeMethods({"init"}) */
 final class SingleTableInheritanceInsertPerformanceBench
 {
     /** @var EntityManagerInterface */

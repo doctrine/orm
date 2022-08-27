@@ -116,9 +116,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertEquals($value, $foreignKey);
     }
 
-    /**
-     * @group DDC-762
-     */
+    /** @group DDC-762 */
     public function testNullForeignKey(): void
     {
         $product = new ECommerceProduct();

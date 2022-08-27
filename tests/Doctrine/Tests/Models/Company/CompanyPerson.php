@@ -129,9 +129,7 @@ class CompanyPerson
         return $this->spouse;
     }
 
-    /**
-     * @psalm-return Collection<int, CompanyPerson>
-     */
+    /** @psalm-return Collection<int, CompanyPerson> */
     public function getFriends(): Collection
     {
         return $this->friends;

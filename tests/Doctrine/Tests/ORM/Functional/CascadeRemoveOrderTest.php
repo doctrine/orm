@@ -15,9 +15,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group CascadeRemoveOrderTest
- */
+/** @group CascadeRemoveOrderTest */
 class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -71,9 +69,7 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class CascadeRemoveOrderEntityO
 {
     /**
@@ -126,18 +122,14 @@ class CascadeRemoveOrderEntityO
         $this->oneToManyG->add($eG);
     }
 
-    /**
-     * @psalm-return array<int, CascadeRemoveOrderEntityG>
-     */
+    /** @psalm-return array<int, CascadeRemoveOrderEntityG> */
     public function getOneToManyGs(): array
     {
         return $this->oneToManyG->toArray();
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class CascadeRemoveOrderEntityG
 {
     /**

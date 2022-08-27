@@ -11,9 +11,7 @@ use Doctrine\Tests\Models\Company\CompanyContractListener;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1955
- */
+/** @group DDC-1955 */
 class EntityListenersTest extends OrmFunctionalTestCase
 {
     /** @var CompanyContractListener */

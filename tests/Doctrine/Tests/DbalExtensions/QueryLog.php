@@ -25,9 +25,7 @@ final class QueryLog
         ];
     }
 
-    /**
-     * @return $this
-     */
+    /** @return $this */
     public function reset(): self
     {
         $this->enabled = false;
@@ -36,9 +34,7 @@ final class QueryLog
         return $this;
     }
 
-    /**
-     * @return $this
-     */
+    /** @return $this */
     public function enable(): self
     {
         $this->enabled = true;
@@ -46,9 +42,7 @@ final class QueryLog
         return $this;
     }
 
-    /**
-     * @return $this
-     */
+    /** @return $this */
     public function disable(): self
     {
         $this->enabled = false;

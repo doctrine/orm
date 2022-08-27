@@ -15,9 +15,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function strtolower;
 
-/**
- * @group DDC-1225
- */
+/** @group DDC-1225 */
 class DDC1225Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

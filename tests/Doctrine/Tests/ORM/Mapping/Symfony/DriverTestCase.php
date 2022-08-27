@@ -16,9 +16,7 @@ use function sys_get_temp_dir;
 use function touch;
 use function unlink;
 
-/**
- * @group DDC-1418
- */
+/** @group DDC-1418 */
 abstract class DriverTestCase extends TestCase
 {
     /** @var string */

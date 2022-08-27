@@ -69,16 +69,12 @@ class GH7512EntityA
     public $entityCs;
 }
 
-/**
- * @Entity()
- */
+/** @Entity() */
 class GH7512EntityB extends GH7512EntityA
 {
 }
 
-/**
- * @Entity()
- */
+/** @Entity() */
 class GH7512EntityC
 {
     /**

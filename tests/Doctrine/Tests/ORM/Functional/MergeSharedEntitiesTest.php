@@ -75,9 +75,7 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
         self::assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
 
-    /**
-     * @group DDC-2704
-     */
+    /** @group DDC-2704 */
     public function testMergeInheritedTransientPrivateProperties(): void
     {
         $admin1 = new MSEAdmin();
