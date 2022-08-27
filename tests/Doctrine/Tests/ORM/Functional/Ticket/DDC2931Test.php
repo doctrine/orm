@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2931
- */
+/** @group DDC-2931 */
 class DDC2931Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

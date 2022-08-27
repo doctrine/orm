@@ -19,9 +19,7 @@ class XmlClassMetadataExporterTest extends ClassMetadataExporterTestCase
         return 'xml';
     }
 
-    /**
-     * @group DDC-3428
-     */
+    /** @group DDC-3428 */
     public function testSequenceGenerator(): void
     {
         $exporter = new XmlExporter();

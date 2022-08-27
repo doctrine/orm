@@ -75,9 +75,7 @@ class DDC1228Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1228User
 {
     /**
@@ -106,9 +104,7 @@ class DDC1228User
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1228Profile
 {
     /**

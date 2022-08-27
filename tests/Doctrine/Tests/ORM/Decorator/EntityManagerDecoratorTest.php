@@ -59,9 +59,7 @@ class EntityManagerDecoratorTest extends TestCase
         }
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     private function getParameters(ReflectionMethod $method): array
     {
         /** Special case EntityManager::createNativeQuery() */
@@ -109,9 +107,7 @@ class EntityManagerDecoratorTest extends TestCase
         return [$method->getName(), $parameters];
     }
 
-    /**
-     * @dataProvider getMethodParameters
-     */
+    /** @dataProvider getMethodParameters */
     public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters): void
     {
         $return = ! in_array($method, self::VOID_METHODS, true) ? 'INNER VALUE FROM ' . $method : null;

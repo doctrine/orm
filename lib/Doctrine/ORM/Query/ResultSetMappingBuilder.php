@@ -487,9 +487,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         return $sql;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function __toString()
     {
         return $this->generateSelectClause([]);

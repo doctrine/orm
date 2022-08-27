@@ -17,9 +17,7 @@ class DDC3719Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @group DDC-3719
-     */
+    /** @group DDC-3719 */
     public function testCriteriaOnNotOwningSide(): void
     {
         $manager = new CompanyManager();

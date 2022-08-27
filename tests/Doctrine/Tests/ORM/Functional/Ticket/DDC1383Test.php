@@ -16,9 +16,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function get_debug_type;
 
-/**
- * @group DDC-1383
- */
+/** @group DDC-1383 */
 class DDC1383Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -91,9 +89,7 @@ abstract class DDC1383AbstractEntity
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1383Entity extends DDC1383AbstractEntity
 {
     /**

@@ -14,9 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function uniqid;
 
-/**
- * @group #6217
- */
+/** @group #6217 */
 final class GH6217Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

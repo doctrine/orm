@@ -26,9 +26,7 @@ class DDC144Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-144
-     */
+    /** @group DDC-144 */
     public function testIssue(): void
     {
         $operand                  = new DDC144Operand();

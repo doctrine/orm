@@ -65,9 +65,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @var mixed[] */
     private $embeddablesActiveNesting = [];
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function setEntityManager(EntityManagerInterface $em)
     {
         $this->em = $em;
@@ -659,9 +657,7 @@ DEPRECATION
         }
     }
 
-    /**
-     * @psalm-return ClassMetadata::GENERATOR_TYPE_SEQUENCE|ClassMetadata::GENERATOR_TYPE_IDENTITY
-     */
+    /** @psalm-return ClassMetadata::GENERATOR_TYPE_SEQUENCE|ClassMetadata::GENERATOR_TYPE_IDENTITY */
     private function determineIdGeneratorStrategy(AbstractPlatform $platform): int
     {
         if (

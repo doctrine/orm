@@ -17,9 +17,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
  */
 interface EntityPersister
 {
-    /**
-     * @return ClassMetadata
-     */
+    /** @return ClassMetadata */
     public function getClassMetadata();
 
     /**

@@ -89,17 +89,13 @@ class State
         $this->country = $country;
     }
 
-    /**
-     * @psalm-return Collection<int, City>
-     */
+    /** @psalm-return Collection<int, City> */
     public function getCities(): Collection
     {
         return $this->cities;
     }
 
-    /**
-     * @psalm-param Collection<int, City> $cities
-     */
+    /** @psalm-param Collection<int, City> $cities */
     public function setCities(Collection $cities): void
     {
         $this->cities = $cities;

@@ -15,9 +15,7 @@ use Doctrine\Tests\OrmTestCase;
 use function method_exists;
 use function sprintf;
 
-/**
- * @group GH8061
- */
+/** @group GH8061 */
 final class GH8061Test extends OrmTestCase
 {
     public static function setUpBeforeClass(): void
@@ -35,9 +33,7 @@ final class GH8061Test extends OrmTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 final class GH8061Entity
 {
     /**

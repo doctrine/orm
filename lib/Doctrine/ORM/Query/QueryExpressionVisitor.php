@@ -37,9 +37,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
     /** @var list<mixed> */
     private $parameters = [];
 
-    /**
-     * @param mixed[] $queryAliases
-     */
+    /** @param mixed[] $queryAliases */
     public function __construct($queryAliases)
     {
         $this->queryAliases = $queryAliases;

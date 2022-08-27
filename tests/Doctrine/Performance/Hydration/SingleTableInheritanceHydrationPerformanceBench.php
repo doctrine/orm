@@ -9,9 +9,7 @@ use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Models\Company;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
-/**
- * @BeforeMethods({"init"})
- */
+/** @BeforeMethods({"init"}) */
 final class SingleTableInheritanceHydrationPerformanceBench
 {
     /** @var EntityRepository */

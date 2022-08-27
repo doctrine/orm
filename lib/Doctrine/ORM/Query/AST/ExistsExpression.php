@@ -17,9 +17,7 @@ class ExistsExpression extends Node
     /** @var Subselect */
     public $subselect;
 
-    /**
-     * @param Subselect $subselect
-     */
+    /** @param Subselect $subselect */
     public function __construct($subselect)
     {
         $this->subselect = $subselect;

@@ -17,9 +17,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-/**
- * @group DDC-1430
- */
+/** @group DDC-1430 */
 class DDC1430Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -141,9 +139,7 @@ class DDC1430Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1430Order
 {
     /**
@@ -211,9 +207,7 @@ class DDC1430Order
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1430OrderProduct
 {
     /**

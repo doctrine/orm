@@ -40,9 +40,7 @@ class ConvertDoctrine1SchemaCommand extends Command
     /** @var ClassMetadataExporter|null */
     private $metadataExporter = null;
 
-    /**
-     * @return EntityGenerator
-     */
+    /** @return EntityGenerator */
     public function getEntityGenerator()
     {
         if ($this->entityGenerator === null) {
@@ -52,17 +50,13 @@ class ConvertDoctrine1SchemaCommand extends Command
         return $this->entityGenerator;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function setEntityGenerator(EntityGenerator $entityGenerator)
     {
         $this->entityGenerator = $entityGenerator;
     }
 
-    /**
-     * @return ClassMetadataExporter
-     */
+    /** @return ClassMetadataExporter */
     public function getMetadataExporter()
     {
         if ($this->metadataExporter === null) {
@@ -72,9 +66,7 @@ class ConvertDoctrine1SchemaCommand extends Command
         return $this->metadataExporter;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function setMetadataExporter(ClassMetadataExporter $metadataExporter)
     {
         $this->metadataExporter = $metadataExporter;

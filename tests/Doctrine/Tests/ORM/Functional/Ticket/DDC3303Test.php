@@ -70,9 +70,7 @@ abstract class DDC3303Person
     }
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDC3303Address
 {
     /**

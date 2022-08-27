@@ -484,9 +484,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->postCommitCleanup($entity);
     }
 
-    /**
-     * @param object|object[]|null $entity
-     */
+    /** @param object|object[]|null $entity */
     private function postCommitCleanup($entity): void
     {
         $this->entityInsertions               =
@@ -1011,9 +1009,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->scheduleForInsert($entity);
     }
 
-    /**
-     * @param mixed[] $idValue
-     */
+    /** @param mixed[] $idValue */
     private function hasMissingIdsWhichAreForeignKeys(ClassMetadata $class, array $idValue): bool
     {
         foreach ($idValue as $idField => $idFieldValue) {
@@ -2637,17 +2633,13 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionDeletions[$coid] = $coll;
     }
 
-    /**
-     * @return bool
-     */
+    /** @return bool */
     public function isCollectionScheduledForDeletion(PersistentCollection $coll)
     {
         return isset($this->collectionDeletions[spl_object_id($coll)]);
     }
 
-    /**
-     * @return object
-     */
+    /** @return object */
     private function newInstance(ClassMetadata $class)
     {
         $entity = $class->newInstance();
@@ -2966,9 +2958,7 @@ class UnitOfWork implements PropertyChangedListener
         return $entity;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function triggerEagerLoads()
     {
         if (! $this->eagerLoadingEntities) {
@@ -3516,9 +3506,7 @@ class UnitOfWork implements PropertyChangedListener
         return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
     }
 
-    /**
-     * @throws ORMInvalidArgumentException
-     */
+    /** @throws ORMInvalidArgumentException */
     private function assertThatThereAreNoUnintentionallyNonPersistedAssociations(): void
     {
         $entitiesNeedingCascadePersist = array_diff_key($this->nonCascadedNewDetectedEntities, $this->entityInsertions);

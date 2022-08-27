@@ -492,9 +492,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         return $innerSql;
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     private function getSQLIdentifier(SelectStatement $AST): array
     {
         // Find out the SQL alias of the identifier column of the root entity.

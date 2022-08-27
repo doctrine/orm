@@ -30,9 +30,7 @@ use ReflectionMethod;
 use function microtime;
 use function sprintf;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class DefaultQueryCacheTest extends OrmTestCase
 {
     /** @var DefaultQueryCache */

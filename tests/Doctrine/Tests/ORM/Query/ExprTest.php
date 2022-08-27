@@ -298,33 +298,25 @@ class ExprTest extends OrmTestCase
         yield 'generator' => [$gen()];
     }
 
-    /**
-     * @dataProvider provideIterableValue
-     */
+    /** @dataProvider provideIterableValue */
     public function testInExpr(iterable $value): void
     {
         self::assertEquals('u.id IN(1, 2, 3)', (string) $this->expr->in('u.id', $value));
     }
 
-    /**
-     * @dataProvider provideLiteralIterableValue
-     */
+    /** @dataProvider provideLiteralIterableValue */
     public function testInLiteralExpr(iterable $value): void
     {
         self::assertEquals("u.type IN('foo', 'bar')", (string) $this->expr->in('u.type', $value));
     }
 
-    /**
-     * @dataProvider provideIterableValue
-     */
+    /** @dataProvider provideIterableValue */
     public function testNotInExpr(iterable $value): void
     {
         self::assertEquals('u.id NOT IN(1, 2, 3)', (string) $this->expr->notIn('u.id', $value));
     }
 
-    /**
-     * @dataProvider provideLiteralIterableValue
-     */
+    /** @dataProvider provideLiteralIterableValue */
     public function testNotInLiteralExpr(iterable $value): void
     {
         self::assertEquals("u.type NOT IN('foo', 'bar')", (string) $this->expr->notIn('u.type', $value));
@@ -379,18 +371,14 @@ class ExprTest extends OrmTestCase
         $orExpr->add($this->expr->quot(5, 2));
     }
 
-    /**
-     * @group DDC-1683
-     */
+    /** @group DDC-1683 */
     public function testBooleanLiteral(): void
     {
         self::assertEquals('true', $this->expr->literal(true));
         self::assertEquals('false', $this->expr->literal(false));
     }
 
-    /**
-     * @group DDC-1686
-     */
+    /** @group DDC-1686 */
     public function testExpressionGetter(): void
     {
         // Andx

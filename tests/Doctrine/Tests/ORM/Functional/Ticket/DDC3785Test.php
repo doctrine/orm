@@ -34,9 +34,7 @@ class DDC3785Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-3785
-     */
+    /** @group DDC-3785 */
     public function testOwningValueObjectIdIsCorrectlyTransformedWhenRemovingOrphanedChildEntities(): void
     {
         $id = new DDC3785AssetId('919609ba-57d9-4a13-be1d-d202521e858a');
@@ -86,9 +84,7 @@ class DDC3785Asset
      */
     private $attributes;
 
-    /**
-     * @psalm-param list<DDC3785Attribute> $attributes
-     */
+    /** @psalm-param list<DDC3785Attribute> $attributes */
     public function __construct(DDC3785AssetId $id, $attributes = [])
     {
         $this->id         = $id;
@@ -104,9 +100,7 @@ class DDC3785Asset
         return $this->id;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC3785Attribute>
-     */
+    /** @psalm-return Collection<int, DDC3785Attribute> */
     public function getAttributes()
     {
         return $this->attributes;

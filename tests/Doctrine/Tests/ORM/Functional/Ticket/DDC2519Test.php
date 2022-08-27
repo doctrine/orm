@@ -9,9 +9,7 @@ use Doctrine\Tests\Models\Legacy\LegacyUser;
 use Doctrine\Tests\Models\Legacy\LegacyUserReference;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2519
- */
+/** @group DDC-2519 */
 class DDC2519Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -22,9 +20,7 @@ class DDC2519Test extends OrmFunctionalTestCase
         $this->loadFixture();
     }
 
-    /**
-     * @group DDC-2519
-     */
+    /** @group DDC-2519 */
     public function testIssue(): void
     {
         $dql    = 'SELECT PARTIAL l.{_source, _target} FROM Doctrine\Tests\Models\Legacy\LegacyUserReference l';

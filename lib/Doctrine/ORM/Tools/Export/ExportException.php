@@ -8,9 +8,7 @@ use Doctrine\ORM\Exception\ORMException;
 
 use function sprintf;
 
-/**
- * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
- */
+/** @deprecated 2.7 This class is being removed from the ORM and won't have any replacement */
 class ExportException extends ORMException
 {
     /**

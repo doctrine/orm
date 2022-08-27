@@ -126,9 +126,7 @@ class DefaultRepositoryFactoryTest extends TestCase
         return $metadata;
     }
 
-    /**
-     * @return EntityManagerInterface&MockObject
-     */
+    /** @return EntityManagerInterface&MockObject */
     private function createEntityManager(): EntityManagerInterface
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);

@@ -103,9 +103,7 @@ class DDC309Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC309Country
 {
     /**
@@ -117,9 +115,7 @@ class DDC309Country
     public $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC309User
 {
     /**

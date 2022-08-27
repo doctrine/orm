@@ -17,9 +17,7 @@ use function is_string;
 use function is_subclass_of;
 use function sprintf;
 
-/**
- * @internal
- */
+/** @internal */
 final class AttributeReader
 {
     /** @var array<class-string<Annotation>,bool> */
@@ -134,9 +132,7 @@ final class AttributeReader
         return $instances;
     }
 
-    /**
-     * @param class-string<Annotation> $attributeClassName
-     */
+    /** @param class-string<Annotation> $attributeClassName */
     private function isRepeatable(string $attributeClassName): bool
     {
         if (isset($this->isRepeatableAttribute[$attributeClassName])) {

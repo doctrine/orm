@@ -33,9 +33,7 @@ class DDC168Test extends OrmFunctionalTestCase
         parent::tearDown();
     }
 
-    /**
-     * @group DDC-168
-     */
+    /** @group DDC-168 */
     public function testJoinedSubclassPersisterRequiresSpecificOrderOfMetadataReflFieldsArray(): void
     {
         $spouse = new CompanyEmployee();

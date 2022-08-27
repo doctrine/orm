@@ -14,9 +14,7 @@ class SimpleArithmeticExpression extends Node
     /** @var mixed[] */
     public $arithmeticTerms = [];
 
-    /**
-     * @param mixed[] $arithmeticTerms
-     */
+    /** @param mixed[] $arithmeticTerms */
     public function __construct(array $arithmeticTerms)
     {
         $this->arithmeticTerms = $arithmeticTerms;

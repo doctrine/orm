@@ -61,17 +61,13 @@ class OrderBy
         return count($this->parts);
     }
 
-    /**
-     * @psalm-return list<string>
-     */
+    /** @psalm-return list<string> */
     public function getParts()
     {
         return $this->parts;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function __toString()
     {
         return $this->preSeparator . implode($this->separator, $this->parts) . $this->postSeparator;

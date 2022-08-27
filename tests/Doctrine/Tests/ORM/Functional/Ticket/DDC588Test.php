@@ -32,9 +32,7 @@ class DDC588Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC588Site
 {
     /**

@@ -48,9 +48,7 @@ class EntityPersisterMock extends BasicEntityPersister
         ];
     }
 
-    /**
-     * @psalm-return list<array{generatedId: int, entity: object}>
-     */
+    /** @psalm-return list<array{generatedId: int, entity: object}> */
     public function executeInserts(): array
     {
         return $this->postInsertIds;

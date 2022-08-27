@@ -53,9 +53,7 @@ final class GH7761Test extends OrmFunctionalTestCase
         self::assertCount(1, $entity->children);
     }
 
-    /**
-     * @group GH-7862
-     */
+    /** @group GH-7862 */
     public function testCollectionClearDoesClearIfPersisted(): void
     {
         $entity = $this->_em->find(GH7761Entity::class, 1);

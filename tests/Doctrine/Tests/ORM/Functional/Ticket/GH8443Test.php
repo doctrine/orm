@@ -30,9 +30,7 @@ final class GH8443Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(GH8443Foo::class);
     }
 
-    /**
-     * @group GH-8443
-     */
+    /** @group GH-8443 */
     public function testJoinRootEntityWithForcePartialLoad(): void
     {
         $person = new CompanyPerson();
@@ -61,9 +59,7 @@ final class GH8443Test extends OrmFunctionalTestCase
         $this->assertEquals('John', $manager->getSpouse()->getName());
     }
 
-    /**
-     * @group GH-8443
-     */
+    /** @group GH-8443 */
     public function testJoinRootEntityWithOnlyOneEntityInHierarchy(): void
     {
         $bar = new GH8443Foo('bar');

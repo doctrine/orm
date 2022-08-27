@@ -97,9 +97,7 @@ class ECommerceCart
         return $this->customer;
     }
 
-    /**
-     * @psalm-return Collection<int, ECommerceProduct>
-     */
+    /** @psalm-return Collection<int, ECommerceProduct> */
     public function getProducts(): Collection
     {
         return $this->products;

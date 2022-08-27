@@ -47,9 +47,7 @@ final class GH6740Test extends OrmFunctionalTestCase
         $this->secondCategoryId = $secondCategory->getId();
     }
 
-    /**
-     * @group GH-6740
-     */
+    /** @group GH-6740 */
     public function testCollectionFilteringLteOperator(): void
     {
         $product  = $this->_em->find(ECommerceProduct::class, $this->productId);
@@ -58,9 +56,7 @@ final class GH6740Test extends OrmFunctionalTestCase
         self::assertCount(2, $product->getCategories()->matching($criteria));
     }
 
-    /**
-     * @group GH-6740
-     */
+    /** @group GH-6740 */
     public function testCollectionFilteringLtOperator(): void
     {
         $product  = $this->_em->find(ECommerceProduct::class, $this->productId);
@@ -69,9 +65,7 @@ final class GH6740Test extends OrmFunctionalTestCase
         self::assertCount(1, $product->getCategories()->matching($criteria));
     }
 
-    /**
-     * @group GH-6740
-     */
+    /** @group GH-6740 */
     public function testCollectionFilteringGteOperator(): void
     {
         $product  = $this->_em->find(ECommerceProduct::class, $this->productId);
@@ -80,9 +74,7 @@ final class GH6740Test extends OrmFunctionalTestCase
         self::assertCount(2, $product->getCategories()->matching($criteria));
     }
 
-    /**
-     * @group GH-6740
-     */
+    /** @group GH-6740 */
     public function testCollectionFilteringGtOperator(): void
     {
         $product  = $this->_em->find(ECommerceProduct::class, $this->productId);
@@ -91,9 +83,7 @@ final class GH6740Test extends OrmFunctionalTestCase
         self::assertCount(1, $product->getCategories()->matching($criteria));
     }
 
-    /**
-     * @group GH-6740
-     */
+    /** @group GH-6740 */
     public function testCollectionFilteringEqualsOperator(): void
     {
         $product  = $this->_em->find(ECommerceProduct::class, $this->productId);

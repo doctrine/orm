@@ -8,9 +8,7 @@ use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\Tests\DoctrineTestCase;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class CacheKeyTest extends DoctrineTestCase
 {
     public function testEntityCacheKeyIdentifierCollision(): void

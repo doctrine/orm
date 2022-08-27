@@ -165,9 +165,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         throw new BadMethodCallException('Filtering a collection by Criteria is not supported by this CollectionPersister.');
     }
 
-    /**
-     * @throws DBALException
-     */
+    /** @throws DBALException */
     private function deleteEntityCollection(PersistentCollection $collection): int
     {
         $mapping     = $collection->getMapping();

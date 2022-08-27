@@ -84,9 +84,7 @@ class Travel
         $this->traveler = $traveler;
     }
 
-    /**
-     * @psalm-return Collection<int, City>
-     */
+    /** @psalm-return Collection<int, City> */
     public function getVisitedCities(): Collection
     {
         return $this->visitedCities;

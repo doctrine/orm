@@ -20,9 +20,7 @@ class Literal extends Base
     /** @psalm-var list<string> */
     protected $parts = [];
 
-    /**
-     * @psalm-return list<string>
-     */
+    /** @psalm-return list<string> */
     public function getParts()
     {
         return $this->parts;

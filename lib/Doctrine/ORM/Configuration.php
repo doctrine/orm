@@ -975,9 +975,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
         return $this->_attributes['repositoryFactory'] ?? new DefaultRepositoryFactory();
     }
 
-    /**
-     * @return bool
-     */
+    /** @return bool */
     public function isSecondLevelCacheEnabled()
     {
         return $this->_attributes['isSecondLevelCacheEnabled'] ?? false;
@@ -993,17 +991,13 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $this->_attributes['isSecondLevelCacheEnabled'] = (bool) $flag;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function setSecondLevelCacheConfiguration(CacheConfiguration $cacheConfig)
     {
         $this->_attributes['secondLevelCacheConfiguration'] = $cacheConfig;
     }
 
-    /**
-     * @return CacheConfiguration|null
-     */
+    /** @return CacheConfiguration|null */
     public function getSecondLevelCacheConfiguration()
     {
         if (! isset($this->_attributes['secondLevelCacheConfiguration']) && $this->isSecondLevelCacheEnabled()) {

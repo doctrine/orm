@@ -158,9 +158,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertCount(0, $features);
     }
 
-    /**
-     * @group DDC-1637
-     */
+    /** @group DDC-1637 */
     public function testMatching(): void
     {
         $this->createFixture();
@@ -181,9 +179,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertCount(2, $results);
     }
 
-    /**
-     * @group DDC-2340
-     */
+    /** @group DDC-2340 */
     public function testMatchingOnDirtyCollection(): void
     {
         $this->createFixture();

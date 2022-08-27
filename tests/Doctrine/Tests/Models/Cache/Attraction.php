@@ -97,9 +97,7 @@ abstract class Attraction
         $this->city = $city;
     }
 
-    /**
-     * @psalm-return Collection<int, AttractionInfo>
-     */
+    /** @psalm-return Collection<int, AttractionInfo> */
     public function getInfos(): Collection
     {
         return $this->infos;

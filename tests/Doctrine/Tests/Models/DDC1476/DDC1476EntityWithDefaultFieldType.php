@@ -11,9 +11,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * @Entity()
- */
+/** @Entity() */
 #[ORM\Entity]
 class DDC1476EntityWithDefaultFieldType
 {

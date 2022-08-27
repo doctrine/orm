@@ -42,9 +42,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group utilities
-     */
+    /** @group utilities */
     public function testFlattenIdentifierWithOneToOneId(): void
     {
         $secondRelatedEntity       = new SecondRelatedEntity();
@@ -86,9 +84,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         self::assertEquals($id['secondEntity']->id, $flatIds['secondEntity']);
     }
 
-    /**
-     * @group utilities
-     */
+    /** @group utilities */
     public function testFlattenIdentifierWithMutlipleIds(): void
     {
         $leeds  = new City('Leeds');

@@ -8,9 +8,7 @@ use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1545
- */
+/** @group DDC-1545 */
 class DDC1545Test extends OrmFunctionalTestCase
 {
     /** @var int */

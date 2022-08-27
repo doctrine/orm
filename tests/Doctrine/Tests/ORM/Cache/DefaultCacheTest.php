@@ -20,9 +20,7 @@ use ReflectionProperty;
 
 use function array_merge;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class DefaultCacheTest extends OrmTestCase
 {
     /** @var DefaultCache */

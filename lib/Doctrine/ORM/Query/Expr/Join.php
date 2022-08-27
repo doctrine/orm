@@ -72,17 +72,13 @@ class Join
         return $this->joinType;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function getJoin()
     {
         return $this->join;
     }
 
-    /**
-     * @return string|null
-     */
+    /** @return string|null */
     public function getAlias()
     {
         return $this->alias;
@@ -97,25 +93,19 @@ class Join
         return $this->conditionType;
     }
 
-    /**
-     * @return string|Comparison|Composite|null
-     */
+    /** @return string|Comparison|Composite|null */
     public function getCondition()
     {
         return $this->condition;
     }
 
-    /**
-     * @return string|null
-     */
+    /** @return string|null */
     public function getIndexBy()
     {
         return $this->indexBy;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function __toString()
     {
         return strtoupper($this->joinType) . ' JOIN ' . $this->join

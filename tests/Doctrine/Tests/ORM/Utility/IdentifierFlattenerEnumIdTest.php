@@ -28,9 +28,7 @@ class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group utilities
-     */
+    /** @group utilities */
     public function testFlattenIdentifierWithEnumId(): void
     {
         $typedCardEnumIdEntity       = new TypedCardEnumId();
@@ -57,9 +55,7 @@ class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
         self::assertEquals(Suit::Clubs, $findTypedCardEnumIdEntity->suit);
     }
 
-    /**
-     * @group utilities
-     */
+    /** @group utilities */
     public function testFlattenIdentifierWithCompositeEnumId(): void
     {
         $typedCardEnumCompositeIdEntity       = new TypedCardEnumCompositeId();

@@ -32,9 +32,7 @@ use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Cache\CacheItemPoolInterface;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class DefaultCacheFactoryTest extends OrmTestCase
 {
     use MockBuilderCompatibilityTools;

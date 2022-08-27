@@ -134,9 +134,7 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
         }
     }
 
-    /**
-     * @depends testExportDirectoryAndFilesAreCreated
-     */
+    /** @depends testExportDirectoryAndFilesAreCreated */
     public function testExportedMetadataCanBeReadBackIn(): ClassMetadata
     {
         $type = $this->getType();
@@ -155,9 +153,7 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testExportedMetadataCanBeReadBackIn
-     */
+    /** @depends testExportedMetadataCanBeReadBackIn */
     public function testTableIsExported(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('cms_users', $class->table['name']);
@@ -169,9 +165,7 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testTableIsExported
-     */
+    /** @depends testTableIsExported */
     public function testTypeIsExported(ClassMetadata $class): ClassMetadata
     {
         self::assertFalse($class->isMappedSuperclass);
@@ -179,9 +173,7 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testTypeIsExported
-     */
+    /** @depends testTypeIsExported */
     public function testIdentifierIsExported(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals(ClassMetadata::GENERATOR_TYPE_IDENTITY, $class->generatorType, 'Generator Type wrong');
@@ -191,9 +183,7 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testIdentifierIsExported
-     */
+    /** @depends testIdentifierIsExported */
     public function testFieldsAreExported(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->fieldMappings['id']['id']) && $class->fieldMappings['id']['id'] === true);
@@ -216,9 +206,7 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testExportDirectoryAndFilesAreCreated
-     */
+    /** @depends testExportDirectoryAndFilesAreCreated */
     public function testFieldsAreProperlySerialized(): void
     {
         $type = $this->getType();
@@ -237,9 +225,7 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
         }
     }
 
-    /**
-     * @depends testFieldsAreExported
-     */
+    /** @depends testFieldsAreExported */
     public function testOneToOneAssociationsAreExported(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->associationMappings['address']));
@@ -259,18 +245,14 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testFieldsAreExported
-     */
+    /** @depends testFieldsAreExported */
     public function testManyToOneAssociationsAreExported($class): void
     {
         self::assertTrue(isset($class->associationMappings['mainGroup']));
         self::assertEquals(Group::class, $class->associationMappings['mainGroup']['targetEntity']);
     }
 
-    /**
-     * @depends testOneToOneAssociationsAreExported
-     */
+    /** @depends testOneToOneAssociationsAreExported */
     public function testOneToManyAssociationsAreExported(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->associationMappings['phonenumbers']));
@@ -289,9 +271,7 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testOneToManyAssociationsAreExported
-     */
+    /** @depends testOneToManyAssociationsAreExported */
     public function testManyToManyAssociationsAreExported(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->associationMappings['groups']));
@@ -315,9 +295,7 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testManyToManyAssociationsAreExported
-     */
+    /** @depends testManyToManyAssociationsAreExported */
     public function testLifecycleCallbacksAreExported(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->lifecycleCallbacks['prePersist']));
@@ -332,9 +310,7 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testLifecycleCallbacksAreExported
-     */
+    /** @depends testLifecycleCallbacksAreExported */
     public function testCascadeIsExported(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
@@ -347,17 +323,13 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @depends testCascadeIsExported
-     */
+    /** @depends testCascadeIsExported */
     public function testInversedByIsExported(ClassMetadata $class): void
     {
         self::assertEquals('user', $class->associationMappings['address']['inversedBy']);
     }
 
-    /**
-     * @depends testExportDirectoryAndFilesAreCreated
-     */
+    /** @depends testExportDirectoryAndFilesAreCreated */
     public function testCascadeAllCollapsed(): void
     {
         $type = $this->getType();
@@ -382,9 +354,7 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
         }
     }
 
-    /**
-     * @depends testExportedMetadataCanBeReadBackIn
-     */
+    /** @depends testExportedMetadataCanBeReadBackIn */
     public function testEntityListenersAreExported(ClassMetadata $class): void
     {
         self::assertNotEmpty($class->entityListeners);
@@ -429,34 +399,26 @@ class Group
 }
 class UserListener
 {
-    /**
-     * @\Doctrine\ORM\Mapping\PrePersist
-     */
+    /** @\Doctrine\ORM\Mapping\PrePersist */
     public function customPrePersist(): void
     {
     }
 
-    /**
-     * @\Doctrine\ORM\Mapping\PostPersist
-     */
+    /** @\Doctrine\ORM\Mapping\PostPersist */
     public function customPostPersist(): void
     {
     }
 }
 class GroupListener
 {
-    /**
-     * @\Doctrine\ORM\Mapping\PrePersist
-     */
+    /** @\Doctrine\ORM\Mapping\PrePersist */
     public function prePersist(): void
     {
     }
 }
 class AddressListener
 {
-    /**
-     * @\Doctrine\ORM\Mapping\PostPersist
-     */
+    /** @\Doctrine\ORM\Mapping\PostPersist */
     public function customPostPersist(): void
     {
     }

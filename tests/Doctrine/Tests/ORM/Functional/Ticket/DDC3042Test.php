@@ -10,9 +10,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-3042
- */
+/** @group DDC-3042 */
 class DDC3042Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -36,9 +34,7 @@ class DDC3042Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3042Foo
 {
     /**
@@ -100,9 +96,7 @@ class DDC3042Foo
     public $field10;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3042Bar
 {
     /**

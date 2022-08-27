@@ -234,9 +234,7 @@ class QueryBuilder
         return $this->cacheRegion;
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     public function getLifetime()
     {
         return $this->lifetime;
@@ -1479,9 +1477,7 @@ class QueryBuilder
         return $dql;
     }
 
-    /**
-     * @psalm-param array<string, mixed> $options
-     */
+    /** @psalm-param array<string, mixed> $options */
     private function getReducedDQLQueryPart(string $queryPartName, array $options = []): string
     {
         $queryPart = $this->getDQLPart($queryPartName);

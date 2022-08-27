@@ -97,17 +97,13 @@ class DDC2895 extends AbstractDDC2895
      */
     public $id;
 
-    /**
-     * @param mixed $id
-     */
+    /** @param mixed $id */
     public function setId($id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function getId()
     {
         return $this->id;

@@ -102,9 +102,7 @@ class SizeFunction extends FunctionNode
         return '(' . $sql . ')';
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function parse(Parser $parser)
     {
         $parser->match(Lexer::T_IDENTIFIER);

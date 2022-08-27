@@ -92,9 +92,7 @@ class LegacyUser
         $this->references[] = $reference;
     }
 
-    /**
-     * @psalm-return Collection<int, LegacyUserReference>
-     */
+    /** @psalm-return Collection<int, LegacyUserReference> */
     public function references(): Collection
     {
         return $this->references;
@@ -106,9 +104,7 @@ class LegacyUser
         $car->addUser($this);
     }
 
-    /**
-     * @psalm-return Collection<int, LegacyCar>
-     */
+    /** @psalm-return Collection<int, LegacyCar> */
     public function getCars(): Collection
     {
         return $this->cars;

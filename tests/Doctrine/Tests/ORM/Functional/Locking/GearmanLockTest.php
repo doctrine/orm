@@ -13,9 +13,7 @@ use function class_exists;
 use function max;
 use function serialize;
 
-/**
- * @group locking_functional
- */
+/** @group locking_functional */
 class GearmanLockTest extends OrmFunctionalTestCase
 {
     /** @var GearmanClient */

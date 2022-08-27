@@ -18,9 +18,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function method_exists;
 
-/**
- * @group GH-5804
- */
+/** @group GH-5804 */
 final class GH5804Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -97,9 +95,7 @@ final class GH5804Type extends Type
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH5804Article
 {
     /**

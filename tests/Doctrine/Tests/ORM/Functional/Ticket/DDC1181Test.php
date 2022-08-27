@@ -26,9 +26,7 @@ class DDC1181Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-1181
-     */
+    /** @group DDC-1181 */
     public function testIssue(): void
     {
         $hotel = new DDC1181Hotel();
@@ -60,9 +58,7 @@ class DDC1181Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1181Hotel
 {
     /**
@@ -80,9 +76,7 @@ class DDC1181Hotel
     public $bookings;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1181Booking
 {
     /**
@@ -105,9 +99,7 @@ class DDC1181Booking
     public $room;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1181Room
 {
     /**

@@ -9,9 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH6682Test extends OrmFunctionalTestCase
 {
-    /**
-     * @group GH-6682
-     */
+    /** @group GH-6682 */
     public function testIssue(): void
     {
         $parsedDefinition = [

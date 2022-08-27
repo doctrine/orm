@@ -33,9 +33,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         $query->free();
     }
 
-    /**
-     * @group 6939
-     */
+    /** @group 6939 */
     public function testSupportsDeleteWithoutWhereAndAlias(): void
     {
         $this->assertSqlGeneration(
@@ -262,9 +260,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group DDC-980
-     */
+    /** @group DDC-980 */
     public function testSubselectTableAliasReferencing(): void
     {
         $this->assertSqlGeneration(

@@ -32,33 +32,25 @@ class From
         $this->indexBy = $indexBy;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function getFrom()
     {
         return $this->from;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function getAlias()
     {
         return $this->alias;
     }
 
-    /**
-     * @return string|null
-     */
+    /** @return string|null */
     public function getIndexBy()
     {
         return $this->indexBy;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function __toString()
     {
         return $this->from . ' ' . $this->alias .

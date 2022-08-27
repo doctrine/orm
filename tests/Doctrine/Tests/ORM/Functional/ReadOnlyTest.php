@@ -44,9 +44,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         self::assertEquals(1234, $dbReadOnly->numericValue);
     }
 
-    /**
-     * @group DDC-1659
-     */
+    /** @group DDC-1659 */
     public function testClearReadOnly(): void
     {
         $readOnly = new ReadOnlyEntity('Test1', 1234);
@@ -59,9 +57,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
     }
 
-    /**
-     * @group DDC-1659
-     */
+    /** @group DDC-1659 */
     public function testClearEntitiesReadOnly(): void
     {
         $readOnly = new ReadOnlyEntity('Test1', 1234);
@@ -139,9 +135,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity(readOnly=true)
- */
+/** @Entity(readOnly=true) */
 class ReadOnlyEntity
 {
     /**

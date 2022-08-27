@@ -15,9 +15,7 @@ class DDC163Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @group DDC-163
-     */
+    /** @group DDC-163 */
     public function testQueryWithOrConditionUsingTwoRelationOnSameEntity(): void
     {
         $p1 = new CompanyPerson();

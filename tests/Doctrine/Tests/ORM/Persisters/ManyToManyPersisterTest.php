@@ -14,9 +14,7 @@ use Doctrine\Tests\OrmTestCase;
 use function array_pop;
 use function assert;
 
-/**
- * @covers \Doctrine\ORM\Persisters\Collection\ManyToManyPersister
- */
+/** @covers \Doctrine\ORM\Persisters\Collection\ManyToManyPersister */
 final class ManyToManyPersisterTest extends OrmTestCase
 {
     /**
