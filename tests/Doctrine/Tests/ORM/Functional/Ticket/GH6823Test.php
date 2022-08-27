@@ -16,6 +16,8 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function method_exists;
+
 class GH6823Test extends OrmFunctionalTestCase
 {
     public function testCharsetCollationWhenCreatingForeignRelations(): void
@@ -31,27 +33,28 @@ class GH6823Test extends OrmFunctionalTestCase
         );
 
         $schemaManager = $this->createSchemaManager();
+        $method        = method_exists($schemaManager, 'introspectTable') ? 'introspectTable' : 'listTableDetails';
         /* gh6823_user.group_id should use charset ascii and collation
          * ascii_general_ci, because that is what gh6823_group.id falls back to */
-        $userGroupIdOptions = $schemaManager->listTableDetails('gh6823_user')->getColumn('group_id')->toArray();
+        $userGroupIdOptions = $schemaManager->$method('gh6823_user')->getColumn('group_id')->toArray();
         self::assertSame('ascii', $userGroupIdOptions['charset']);
         self::assertSame('ascii_general_ci', $userGroupIdOptions['collation']);
 
         /* gh6823_user.status_id should use charset latin1 and collation
          * latin1_bin, because that is what gh6823_status.id uses */
-        $userStatusIdOptions = $schemaManager->listTableDetails('gh6823_user')->getColumn('status_id')->toArray();
+        $userStatusIdOptions = $schemaManager->$method('gh6823_user')->getColumn('status_id')->toArray();
         self::assertSame('latin1', $userStatusIdOptions['charset']);
         self::assertSame('latin1_bin', $userStatusIdOptions['collation']);
 
         /* gh6823_user_tags.user_id should use charset utf8mb4 and collation
          * utf8mb4_bin, because that is what gh6823_user.id falls back to */
-        $userTagsUserIdOptions = $schemaManager->listTableDetails('gh6823_user_tags')->getColumn('user_id')->toArray();
+        $userTagsUserIdOptions = $schemaManager->$method('gh6823_user_tags')->getColumn('user_id')->toArray();
         self::assertSame('utf8mb4', $userTagsUserIdOptions['charset']);
         self::assertSame('utf8mb4_bin', $userTagsUserIdOptions['collation']);
 
         /* gh6823_user_tags.tag_id should use charset latin1 and collation
          * latin1_bin, because that is what gh6823_tag.id falls back to */
-        $userTagsTagIdOption = $schemaManager->listTableDetails('gh6823_user_tags')->getColumn('tag_id')->toArray();
+        $userTagsTagIdOption = $schemaManager->$method('gh6823_user_tags')->getColumn('tag_id')->toArray();
         self::assertSame('latin1', $userTagsTagIdOption['charset']);
         self::assertSame('latin1_bin', $userTagsTagIdOption['collation']);
     }

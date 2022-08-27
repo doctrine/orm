@@ -834,8 +834,10 @@ class SchemaTool
      */
     public function getDropDatabaseSQL(): array
     {
+        $method = method_exists(AbstractSchemaManager::class, 'introspectSchema') ? 'introspectSchema' : 'createSchema';
+
         return $this->schemaManager
-            ->createSchema()
+            ->$method()
             ->toDropSql($this->platform);
     }
 
@@ -850,7 +852,10 @@ class SchemaTool
     {
         $schema = $this->getSchemaFromMetadata($classes);
 
-        $deployedSchema = $this->schemaManager->createSchema();
+        $method         = method_exists(AbstractSchemaManager::class, 'introspectSchema') ?
+            'introspectSchema' :
+            'createSchema';
+        $deployedSchema = $this->schemaManager->$method();
 
         foreach ($schema->getTables() as $table) {
             if (! $deployedSchema->hasTable($table->getName())) {
@@ -934,8 +939,12 @@ class SchemaTool
         $config         = $connection->getConfiguration();
         $previousFilter = $config->getSchemaAssetsFilter();
 
+        $method = method_exists(AbstractSchemaManager::class, 'introspectSchema') ?
+            'introspectSchema' :
+            'createSchema';
+
         if ($previousFilter === null) {
-            return $this->schemaManager->createSchema();
+            return $this->schemaManager->$method();
         }
 
         // whitelist assets we already know about in $toSchema, use the existing filter otherwise
@@ -946,7 +955,7 @@ class SchemaTool
         });
 
         try {
-            return $this->schemaManager->createSchema();
+            return $this->schemaManager->$method();
         } finally {
             // restore schema assets filter
             $config->setSchemaAssetsFilter($previousFilter);
