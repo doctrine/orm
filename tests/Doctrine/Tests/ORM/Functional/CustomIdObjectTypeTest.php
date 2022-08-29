@@ -56,7 +56,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
             ->createQuery(
                 'SELECT parent, children FROM '
                 . CustomIdObjectTypeParent::class
-                . ' parent LEFT JOIN parent.children children'
+                . ' parent LEFT JOIN parent.children children',
             )
             ->getResult();
 
@@ -84,7 +84,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
                 'SELECT parent, children FROM '
                 . CustomIdObjectTypeParent::class
                 . ' parent LEFT JOIN parent.children children '
-                . 'WHERE children.id = ?1'
+                . 'WHERE children.id = ?1',
             )
             ->setParameter(1, $parent->children->first()->id)
             ->getResult();

@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2692
- */
+/** @group DDC-2692 */
 class DDC2692Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

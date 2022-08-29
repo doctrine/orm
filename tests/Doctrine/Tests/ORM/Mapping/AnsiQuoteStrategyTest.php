@@ -69,7 +69,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
                 'targetEntity'  => 'CmsUser',
                 'inversedBy'    => 'users',
                 'joinTable'     => ['name' => 'cmsaddress_cmsuser'],
-            ]
+            ],
         );
 
         self::assertEquals('cmsaddress_cmsuser', $this->strategy->getJoinTableName($class->associationMappings['user'], $class, $this->platform));
@@ -84,7 +84,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
                 'id'            => true,
                 'fieldName'     => 'id',
                 'columnName'    => 'id',
-            ]
+            ],
         );
 
         self::assertEquals(['id'], $this->strategy->getIdentifierColumnNames($class, $this->platform));
@@ -107,7 +107,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
                 'joinColumns'    => [
                     ['name' => 'article'],
                 ],
-            ]
+            ],
         );
 
         $joinColumn = $class->associationMappings['article']['joinColumns'][0];
@@ -126,7 +126,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
                 'joinColumns'    => [
                     ['name' => 'article'],
                 ],
-            ]
+            ],
         );
 
         $joinColumn = $cm->associationMappings['article']['joinColumns'][0];

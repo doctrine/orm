@@ -7,9 +7,7 @@ namespace Doctrine\ORM\Utility;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 
-/**
- * @internal This class exists only to avoid code duplication, do not reuse it externally
- */
+/** @internal This class exists only to avoid code duplication, do not reuse it externally */
 final class HierarchyDiscriminatorResolver
 {
     private function __construct()
@@ -25,7 +23,7 @@ final class HierarchyDiscriminatorResolver
      */
     public static function resolveDiscriminatorsForClass(
         ClassMetadata $rootClassMetadata,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): array {
         $hierarchyClasses   = $rootClassMetadata->subClasses;
         $hierarchyClasses[] = $rootClassMetadata->name;

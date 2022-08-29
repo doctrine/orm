@@ -30,7 +30,7 @@ class ReflectionEmbeddedPropertyTest extends TestCase
     public function testCanSetAndGetEmbeddedProperty(
         ReflectionProperty $parentProperty,
         ReflectionProperty $childProperty,
-        string $embeddableClass
+        string $embeddableClass,
     ): void {
         $embeddedPropertyReflection = new ReflectionEmbeddedProperty($parentProperty, $childProperty, $embeddableClass);
 
@@ -57,14 +57,14 @@ class ReflectionEmbeddedPropertyTest extends TestCase
     public function testWillSkipReadingPropertiesFromNullEmbeddable(
         ReflectionProperty $parentProperty,
         ReflectionProperty $childProperty,
-        string $embeddableClass
+        string $embeddableClass,
     ): void {
         $embeddedPropertyReflection = new ReflectionEmbeddedProperty($parentProperty, $childProperty, $embeddableClass);
 
         $instantiator = new Instantiator();
 
         self::assertNull($embeddedPropertyReflection->getValue(
-            $instantiator->instantiate($parentProperty->getDeclaringClass()->getName())
+            $instantiator->instantiate($parentProperty->getDeclaringClass()->getName()),
         ));
     }
 

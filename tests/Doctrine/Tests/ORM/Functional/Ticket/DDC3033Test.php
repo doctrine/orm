@@ -20,16 +20,14 @@ use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-3033
- */
+/** @group DDC-3033 */
 class DDC3033Test extends OrmFunctionalTestCase
 {
     public function testIssue(): void
     {
         $this->createSchemaForModels(
             DDC3033User::class,
-            DDC3033Product::class
+            DDC3033Product::class,
         );
 
         $user       = new DDC3033User();
@@ -107,16 +105,12 @@ class DDC3033Product
         $this->buyers = new ArrayCollection();
     }
 
-    /**
-     * @PreUpdate
-     */
+    /** @PreUpdate */
     public function preUpdate(LifecycleEventArgs $eventArgs): void
     {
     }
 
-    /**
-     * @PostUpdate
-     */
+    /** @PostUpdate */
     public function postUpdate(LifecycleEventArgs $eventArgs): void
     {
         $em            = $eventArgs->getObjectManager();

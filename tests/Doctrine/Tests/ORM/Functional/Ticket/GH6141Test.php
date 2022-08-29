@@ -32,7 +32,7 @@ class GH6141Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             GH6141Person::class,
             GH6141Boss::class,
-            GH6141Employee::class
+            GH6141Employee::class,
         );
     }
 
@@ -65,14 +65,14 @@ class GH6141Test extends OrmFunctionalTestCase
         self::assertEquals($boss, $query->getOneOrNullResult(AbstractQuery::HYDRATE_OBJECT));
         self::assertEquals(
             GH6141People::get(GH6141People::BOSS),
-            $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY)['discr']
+            $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY)['discr'],
         );
 
         $query->setParameter('name', 'Bob');
         self::assertEquals($employee, $query->getOneOrNullResult(AbstractQuery::HYDRATE_OBJECT));
         self::assertEquals(
             GH6141People::get(GH6141People::EMPLOYEE),
-            $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY)['discr']
+            $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY)['discr'],
         );
     }
 }
@@ -112,9 +112,7 @@ class GH6141People implements Stringable
     public const BOSS     = 'boss';
     public const EMPLOYEE = 'employee';
 
-    /**
-     * @throws InvalidArgumentException
-     */
+    /** @throws InvalidArgumentException */
     public static function get(string $value): GH6141People
     {
         if (! self::isValid($value)) {
@@ -164,10 +162,8 @@ abstract class GH6141Person
     public $id;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
-        public string $name
+        /** @Column(type="string", length=255) */
+        public string $name,
     ) {
     }
 }

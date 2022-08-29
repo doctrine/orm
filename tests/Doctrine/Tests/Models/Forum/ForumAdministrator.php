@@ -7,9 +7,7 @@ namespace Doctrine\Tests\Models\Forum;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 
-/**
- * @Entity
- */
+/** @Entity */
 class ForumAdministrator extends ForumUser
 {
     /**

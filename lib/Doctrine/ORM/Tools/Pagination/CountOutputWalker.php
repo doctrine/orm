@@ -63,7 +63,7 @@ class CountOutputWalker extends SqlWalker
         if ($selectStatement->groupByClause) {
             return sprintf(
                 'SELECT COUNT(*) AS dctrn_count FROM (%s) dctrn_table',
-                $sql
+                $sql,
             );
         }
 
@@ -108,7 +108,7 @@ class CountOutputWalker extends SqlWalker
         if (count($rootIdentifier) !== count($sqlIdentifier)) {
             throw new RuntimeException(sprintf(
                 'Not all identifier properties can be found in the ResultSetMapping: %s',
-                implode(', ', array_diff($rootIdentifier, array_keys($sqlIdentifier)))
+                implode(', ', array_diff($rootIdentifier, array_keys($sqlIdentifier))),
             ));
         }
 
@@ -116,7 +116,7 @@ class CountOutputWalker extends SqlWalker
         return sprintf(
             'SELECT COUNT(*) AS dctrn_count FROM (SELECT DISTINCT %s FROM (%s) dctrn_result) dctrn_table',
             implode(', ', $sqlIdentifier),
-            $sql
+            $sql,
         );
     }
 }

@@ -55,9 +55,7 @@ class CmsTag
         $this->users[] = $user;
     }
 
-    /**
-     * @psalm-return Collection<int, CmsUser>
-     */
+    /** @psalm-return Collection<int, CmsUser> */
     public function getUsers(): Collection
     {
         return $this->users;

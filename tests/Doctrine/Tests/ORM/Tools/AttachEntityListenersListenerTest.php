@@ -45,7 +45,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
             AttachEntityListenersListenerTestFooEntity::class,
             AttachEntityListenersListenerTestListener::class,
             Events::postLoad,
-            'postLoadHandler'
+            'postLoadHandler',
         );
 
         $metadata = $this->factory->getMetadataFor(AttachEntityListenersListenerTestFooEntity::class);
@@ -61,14 +61,14 @@ class AttachEntityListenersListenerTest extends OrmTestCase
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestBarEntity::class,
             AttachEntityListenersListenerTestListener2::class,
-            Events::prePersist
+            Events::prePersist,
         );
 
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestBarEntity::class,
             AttachEntityListenersListenerTestListener2::class,
             Events::postPersist,
-            'postPersistHandler'
+            'postPersistHandler',
         );
 
         $metadata = $this->factory->getMetadataFor(AttachEntityListenersListenerTestBarEntity::class);
@@ -99,22 +99,20 @@ class AttachEntityListenersListenerTest extends OrmTestCase
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestFooEntity::class,
             AttachEntityListenersListenerTestListener::class,
-            Events::postPersist
+            Events::postPersist,
         );
 
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestFooEntity::class,
             AttachEntityListenersListenerTestListener::class,
-            Events::postPersist
+            Events::postPersist,
         );
 
         $this->factory->getMetadataFor(AttachEntityListenersListenerTestFooEntity::class);
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class AttachEntityListenersListenerTestFooEntity
 {
     /**

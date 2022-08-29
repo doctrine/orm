@@ -43,12 +43,12 @@ final class OneToOne implements Annotation
      * @param array<string>|null $cascade
      */
     public function __construct(
-        ?string $mappedBy = null,
-        ?string $inversedBy = null,
-        ?string $targetEntity = null,
-        ?array $cascade = null,
+        string|null $mappedBy = null,
+        string|null $inversedBy = null,
+        string|null $targetEntity = null,
+        array|null $cascade = null,
         string $fetch = 'LAZY',
-        bool $orphanRemoval = false
+        bool $orphanRemoval = false,
     ) {
         $this->mappedBy      = $mappedBy;
         $this->inversedBy    = $inversedBy;

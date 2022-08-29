@@ -33,13 +33,13 @@ class ECommerceCart
     private int $id;
 
     /** @Column(length=50, nullable=true) */
-    private ?string $payment = null;
+    private string|null $payment = null;
 
     /**
      * @OneToOne(targetEntity="ECommerceCustomer", inversedBy="cart")
      * @JoinColumn(name="customer_id", referencedColumnName="id")
      */
-    private ?ECommerceCustomer $customer = null;
+    private ECommerceCustomer|null $customer = null;
 
     /**
      * @psalm-var Collection<int, ECommerceProduct>
@@ -87,14 +87,12 @@ class ECommerceCart
         }
     }
 
-    public function getCustomer(): ?ECommerceCustomer
+    public function getCustomer(): ECommerceCustomer|null
     {
         return $this->customer;
     }
 
-    /**
-     * @psalm-return Collection<int, ECommerceProduct>
-     */
+    /** @psalm-return Collection<int, ECommerceProduct> */
     public function getProducts(): Collection
     {
         return $this->products;

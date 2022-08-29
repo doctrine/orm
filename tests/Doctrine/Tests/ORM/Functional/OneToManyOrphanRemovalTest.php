@@ -62,9 +62,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
         self::assertCount(0, $result, 'CmsPhonenumber should be removed by orphanRemoval');
     }
 
-    /**
-     * @group DDC-3382
-     */
+    /** @group DDC-3382 */
     public function testOrphanRemovalRemoveFromCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -80,9 +78,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
         self::assertCount(1, $result, 'CmsPhonenumber should be removed by orphanRemoval');
     }
 
-    /**
-     * @group DDC-3382
-     */
+    /** @group DDC-3382 */
     public function testOrphanRemovalClearCollectionAndReAdd(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -100,9 +96,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
         self::assertCount(1, $result, 'CmsPhonenumber should be removed by orphanRemoval');
     }
 
-    /**
-     * @group DDC-2524
-     */
+    /** @group DDC-2524 */
     public function testOrphanRemovalClearCollectionAndAddNew(): void
     {
         $user     = $this->_em->find(CmsUser::class, $this->userId);
@@ -121,9 +115,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
         self::assertCount(1, $result, 'Old CmsPhonenumbers should be removed by orphanRemoval and new one added');
     }
 
-    /**
-     * @group DDC-1496
-     */
+    /** @group DDC-1496 */
     public function testOrphanRemovalUnitializedCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);

@@ -11,15 +11,13 @@ use function sprintf;
 
 final class UnknownManagerException extends OutOfBoundsException
 {
-    /**
-     * @psalm-param list<string> $knownManagers
-     */
+    /** @psalm-param list<string> $knownManagers */
     public static function unknownManager(string $unknownManager, array $knownManagers = []): self
     {
         return new self(sprintf(
             'Requested unknown entity manager: %s, known managers: %s',
             $unknownManager,
-            implode(', ', $knownManagers)
+            implode(', ', $knownManagers),
         ));
     }
 }

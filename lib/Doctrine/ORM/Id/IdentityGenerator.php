@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class IdentityGenerator extends AbstractIdGenerator
 {
-    public function generateId(EntityManagerInterface $em, ?object $entity): int
+    public function generateId(EntityManagerInterface $em, object|null $entity): int
     {
         return (int) $em->getConnection()->lastInsertId();
     }

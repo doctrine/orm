@@ -22,13 +22,11 @@ class DDC1209Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC1209One::class,
             DDC1209Two::class,
-            DDC1209Three::class
+            DDC1209Three::class,
         );
     }
 
-    /**
-     * @group DDC-1209
-     */
+    /** @group DDC-1209 */
     public function testIdentifierCanHaveCustomType(): void
     {
         $entity = new DDC1209Three();
@@ -39,9 +37,7 @@ class DDC1209Test extends OrmFunctionalTestCase
         self::assertSame($entity, $this->_em->find(DDC1209Three::class, $entity->date));
     }
 
-    /**
-     * @group DDC-1209
-     */
+    /** @group DDC-1209 */
     public function testCompositeIdentifierCanHaveCustomType(): void
     {
         $future1 = new DDC1209One();
@@ -63,15 +59,13 @@ class DDC1209Test extends OrmFunctionalTestCase
                     'startingDatetime' => $future2->startingDatetime,
                     'duringDatetime'   => $future2->duringDatetime,
                     'endingDatetime'   => $future2->endingDatetime,
-                ]
-            )
+                ],
+            ),
         );
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1209One
 {
     /**
@@ -87,9 +81,7 @@ class DDC1209One
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1209Two
 {
     /**
@@ -119,7 +111,7 @@ class DDC1209Two
          * @ManyToOne(targetEntity="DDC1209One")
          * @JoinColumn(referencedColumnName="id", nullable=false)
          */
-        private DDC1209One $future1
+        private DDC1209One $future1,
     ) {
         $this->startingDatetime = new DateTime2();
         $this->duringDatetime   = new DateTime2();
@@ -127,9 +119,7 @@ class DDC1209Two
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1209Three
 {
     /**

@@ -9,9 +9,7 @@ use Doctrine\Tests\OrmTestCase;
 
 class LexerTest extends OrmTestCase
 {
-    /**
-     * @dataProvider provideTokens
-     */
+    /** @dataProvider provideTokens */
     public function testScannerRecognizesTokens($type, $value): void
     {
         $lexer = new Lexer($value);

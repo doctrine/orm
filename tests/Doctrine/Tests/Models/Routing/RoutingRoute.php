@@ -16,9 +16,7 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 
-/**
- * @Entity
- */
+/** @Entity */
 class RoutingRoute
 {
     /**

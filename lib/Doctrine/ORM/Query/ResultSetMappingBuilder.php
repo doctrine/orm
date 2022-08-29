@@ -45,9 +45,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
     private int $sqlCounter = 0;
 
-    /**
-     * @psalm-param self::COLUMN_RENAMING_* $defaultRenameMode
-     */
+    /** @psalm-param self::COLUMN_RENAMING_* $defaultRenameMode */
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly int $defaultRenameMode = self::COLUMN_RENAMING_NONE,
@@ -68,7 +66,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         string $class,
         string $alias,
         array $renamedColumns = [],
-        ?int $renameMode = null
+        int|null $renameMode = null,
     ): void {
         $renameMode     = $renameMode ?: $this->defaultRenameMode;
         $columnAliasMap = $this->getColumnAliasMap($class, $renameMode, $renamedColumns);
@@ -96,7 +94,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         string $parentAlias,
         string $relation,
         array $renamedColumns = [],
-        ?int $renameMode = null
+        int|null $renameMode = null,
     ): void {
         $renameMode     = $renameMode ?: $this->defaultRenameMode;
         $columnAliasMap = $this->getColumnAliasMap($class, $renameMode, $renamedColumns);
@@ -129,7 +127,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
             if (isset($this->fieldMappings[$columnAlias])) {
                 throw new InvalidArgumentException(sprintf(
                     "The column '%s' conflicts with another column in the mapper.",
-                    $columnName
+                    $columnName,
                 ));
             }
 
@@ -149,7 +147,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                     if (isset($this->metaMappings[$columnAlias])) {
                         throw new InvalidArgumentException(sprintf(
                             "The column '%s' conflicts with another column in the mapper.",
-                            $columnAlias
+                            $columnAlias,
                         ));
                     }
 
@@ -203,7 +201,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
     private function getColumnAliasMap(
         string $className,
         int $mode,
-        array $customRenameColumns
+        array $customRenameColumns,
     ): array {
         if ($customRenameColumns) { // for BC with 2.2-2.3 API
             $mode = self::COLUMN_RENAMING_CUSTOM;

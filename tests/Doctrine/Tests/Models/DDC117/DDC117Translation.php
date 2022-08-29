@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC117Translation
 {
     /**
@@ -44,10 +42,8 @@ class DDC117Translation
          * @Column(type="string", length=255)
          */
         private string $language,
-        /**
-         * @Column(type="string", length=255)
-         */
-        private string $title
+        /** @Column(type="string", length=255) */
+        private string $title,
     ) {
         $this->reviewedByEditors = new ArrayCollection();
         $this->lastTranslatedBy  = new ArrayCollection();

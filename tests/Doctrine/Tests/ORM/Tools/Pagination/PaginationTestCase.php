@@ -31,9 +31,7 @@ abstract class PaginationTestCase extends OrmTestCase
 }
 
 
-/**
- * @Entity
- */
+/** @Entity */
 class MyBlogPost
 {
     /**
@@ -63,9 +61,7 @@ class MyBlogPost
     public $title;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class MyAuthor
 {
     /**
@@ -77,9 +73,7 @@ class MyAuthor
     public $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class MyCategory
 {
     /**
@@ -92,9 +86,7 @@ class MyCategory
 }
 
 
-/**
- * @Entity
- */
+/** @Entity */
 class BlogPost
 {
     /**
@@ -118,9 +110,7 @@ class BlogPost
     public $category;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class Author
 {
     /**
@@ -138,9 +128,7 @@ class Author
     public $name;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class Person
 {
     /**
@@ -164,9 +152,7 @@ class Person
     public $biography;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class Category
 {
     /**

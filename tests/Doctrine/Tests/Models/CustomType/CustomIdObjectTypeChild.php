@@ -23,10 +23,8 @@ class CustomIdObjectTypeChild
          * @Column(type="CustomIdObject", length=255)
          */
         public CustomIdObject $id,
-        /**
-         * @ManyToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent", inversedBy="children")
-         */
-        public CustomIdObjectTypeParent $parent
+        /** @ManyToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent", inversedBy="children") */
+        public CustomIdObjectTypeParent $parent,
     ) {
     }
 }

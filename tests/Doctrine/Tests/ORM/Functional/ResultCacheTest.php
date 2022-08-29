@@ -83,9 +83,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertCacheHasItem('testing_result_cache_id', $cache);
     }
 
-    /**
-     * @group DDC-1026
-     */
+    /** @group DDC-1026 */
     public function testUseResultCacheParams(): void
     {
         $cache = new ArrayAdapter();
@@ -153,9 +151,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $this->resetCache();
     }
 
-    /**
-     * @group DDC-1026
-     */
+    /** @group DDC-1026 */
     public function testEnableResultCacheParams(): void
     {
         $cache = new ArrayAdapter();
@@ -219,9 +215,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         return [$query, $cache];
     }
 
-    /**
-     * @depends testNativeQueryResultCaching
-     */
+    /** @depends testNativeQueryResultCaching */
     public function testResultCacheNotDependsOnQueryHints(array $previous): void
     {
         [$query, $cache] = $previous;
@@ -236,9 +230,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertCount($cacheCount, $cache->getValues());
     }
 
-    /**
-     * @depends testNativeQueryResultCaching
-     */
+    /** @depends testNativeQueryResultCaching */
     public function testResultCacheDependsOnParameters(array $previous): void
     {
         [$query, $cache] = $previous;
@@ -253,9 +245,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertCount($cacheCount + 1, $cache->getValues());
     }
 
-    /**
-     * @depends testNativeQueryResultCaching
-     */
+    /** @depends testNativeQueryResultCaching */
     public function testResultCacheNotDependsOnHydrationMode(array $previous): void
     {
         [$query, $cache] = $previous;
@@ -270,9 +260,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertCount($cacheCount, $cache->getValues());
     }
 
-    /**
-     * @group DDC-909
-     */
+    /** @group DDC-909 */
     public function testResultCacheWithObjectParameter(): void
     {
         $user1           = new CmsUser();
@@ -336,7 +324,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
     {
         $query->setResultCacheProfile(
             (new QueryCacheProfile())
-                ->setResultCache($cache)
+                ->setResultCache($cache),
         );
     }
 
@@ -344,7 +332,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
     {
         self::assertTrue(
             $cache->hasItem($key),
-            sprintf('Failed asserting that a given cache contains the key "%s".', $key)
+            sprintf('Failed asserting that a given cache contains the key "%s".', $key),
         );
     }
 
@@ -357,7 +345,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
     {
         self::assertFalse(
             $cache->hasItem($key),
-            sprintf('Failed asserting that a given cache does not contain the key "%s".', $key)
+            sprintf('Failed asserting that a given cache does not contain the key "%s".', $key),
         );
     }
 }

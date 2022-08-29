@@ -57,8 +57,7 @@ The %command.full_name% command describes the metadata for the given full or par
 Or:
 
     <info>%command.full_name%</info> MyEntity
-EOT
-             );
+EOT);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -80,7 +79,7 @@ EOT
     private function displayEntity(
         string $entityName,
         EntityManagerInterface $entityManager,
-        SymfonyStyle $ui
+        SymfonyStyle $ui,
     ): void {
         $metadata = $this->getClassMetadata($entityName, $entityManager);
 
@@ -119,8 +118,8 @@ EOT
                 [$this->formatField('Association mappings:', '')],
                 $this->formatMappings($metadata->associationMappings),
                 [$this->formatField('Field mappings:', '')],
-                $this->formatMappings($metadata->fieldMappings)
-            )
+                $this->formatMappings($metadata->fieldMappings),
+            ),
         );
     }
 
@@ -139,7 +138,7 @@ EOT
         if (! $entityClassNames) {
             throw new InvalidArgumentException(
                 'You do not have any mapped Doctrine ORM entities according to the current configuration. ' .
-                'If you have entities or mapping files you should check your mapping configuration for errors.'
+                'If you have entities or mapping files you should check your mapping configuration for errors.',
             );
         }
 
@@ -154,7 +153,7 @@ EOT
      */
     private function getClassMetadata(
         string $entityName,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): ClassMetadata {
         try {
             return $entityManager->getClassMetadata($entityName);
@@ -169,7 +168,7 @@ EOT
         if (! $matches) {
             throw new InvalidArgumentException(sprintf(
                 'Could not find any mapped Entity classes matching "%s"',
-                $entityName
+                $entityName,
             ));
         }
 
@@ -177,7 +176,7 @@ EOT
             throw new InvalidArgumentException(sprintf(
                 'Entity name "%s" is ambiguous, possible matches: "%s"',
                 $entityName,
-                implode(', ', $matches)
+                implode(', ', $matches),
             ));
         }
 
@@ -208,7 +207,7 @@ EOT
         if (is_array($value)) {
             return json_encode(
                 $value,
-                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR,
             );
         }
 

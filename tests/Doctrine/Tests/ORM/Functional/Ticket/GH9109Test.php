@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH-9109
- */
+/** @group GH-9109 */
 class GH9109Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -88,9 +86,7 @@ class GH9109Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH9109Product
 {
     /**
@@ -101,7 +97,7 @@ class GH9109Product
     private int $id;
 
     /** @Column(name="`title`", type="string", length=255) */
-    private ?string $title = null;
+    private string|null $title = null;
 
     /**
      * @var Collection|GH9109User[]
@@ -130,9 +126,7 @@ class GH9109Product
         return $this->title;
     }
 
-    /**
-     * @psalm-return Collection<int, GH9109User>
-     */
+    /** @psalm-return Collection<int, GH9109User> */
     public function getBuyers(): Collection
     {
         return $this->buyers;
@@ -144,9 +138,7 @@ class GH9109Product
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH9109User
 {
     /**
@@ -157,10 +149,10 @@ class GH9109User
     private int $id;
 
     /** @Column(name="`first_name`", type="string", length=255) */
-    private ?string $firstName = null;
+    private string|null $firstName = null;
 
     /** @Column(name="last_name", type="string", length=255) */
-    private ?string $lastName = null;
+    private string|null $lastName = null;
 
     public function getId(): int
     {

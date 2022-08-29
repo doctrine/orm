@@ -62,65 +62,57 @@ class ManyToManyTest extends OrmFunctionalTestCase
         self::assertEquals('qrs', $conn->fetchOne('SELECT owning_id FROM vct_xref_manytomany LIMIT 1'));
     }
 
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
-     */
+    /** @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase */
     public function testThatEntitiesAreFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
             InversedManyToManyEntity::class,
-            'abc'
+            'abc',
         );
 
         $owning = $this->_em->find(
             OwningManyToManyEntity::class,
-            'def'
+            'def',
         );
 
         self::assertInstanceOf(InversedManyToManyEntity::class, $inversed);
         self::assertInstanceOf(OwningManyToManyEntity::class, $owning);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
             InversedManyToManyEntity::class,
-            'abc'
+            'abc',
         );
 
         $owning = $this->_em->find(
             OwningManyToManyEntity::class,
-            'def'
+            'def',
         );
 
         self::assertEquals('abc', $inversed->id1);
         self::assertEquals('def', $owning->id2);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheCollectionFromOwningToInversedIsLoaded(): void
     {
         $owning = $this->_em->find(
             OwningManyToManyEntity::class,
-            'def'
+            'def',
         );
 
         self::assertCount(1, $owning->associatedEntities);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheCollectionFromInversedToOwningIsLoaded(): void
     {
         $inversed = $this->_em->find(
             InversedManyToManyEntity::class,
-            'abc'
+            'abc',
         );
 
         self::assertCount(1, $inversed->associatedEntities);
@@ -138,7 +130,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
 
         $inversed = $this->_em->find(
             InversedManyToManyEntity::class,
-            'abc'
+            'abc',
         );
 
         foreach ($inversed->associatedEntities as $owning) {

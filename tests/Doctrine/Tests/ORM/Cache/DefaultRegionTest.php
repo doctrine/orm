@@ -85,7 +85,7 @@ class DefaultRegionTest extends RegionTestCase
 
         $actual = array_map(
             'iterator_to_array',
-            $this->region->getMultiple(new CollectionCacheEntry(['one' => $key1, 'two' => $key2]))
+            $this->region->getMultiple(new CollectionCacheEntry(['one' => $key1, 'two' => $key2])),
         );
 
         self::assertSame([
@@ -104,7 +104,7 @@ class DefaultRegionTest extends RegionTestCase
         $this->cacheItemPool->save(
             $this->cacheItemPool
                 ->getItem('DC2_REGION_' . $this->region->getName() . '_' . $key1->hash)
-                ->set('a-very-invalid-value')
+                ->set('a-very-invalid-value'),
         );
 
         self::assertTrue($this->region->contains($key1));
@@ -121,7 +121,7 @@ class DefaultRegionTest extends RegionTestCase
         $this->cacheItemPool->save(
             $this->cacheItemPool
                 ->getItem('DC2_REGION_' . $this->region->getName() . '_' . $key1->hash)
-                ->set('a-very-invalid-value')
+                ->set('a-very-invalid-value'),
         );
 
         self::assertTrue($this->region->contains($key1));

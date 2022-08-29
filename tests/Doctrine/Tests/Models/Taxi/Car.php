@@ -23,10 +23,10 @@ class Car
      * @Column(type="string", length=25)
      * @GeneratedValue(strategy="NONE")
      */
-    private ?string $brand = null;
+    private string|null $brand = null;
 
     /** @Column(type="string", length=255); */
-    private ?string $model = null;
+    private string|null $model = null;
 
     /**
      * @psalm-var Collection<int, Ride>

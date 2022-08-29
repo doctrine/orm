@@ -47,10 +47,8 @@ class City
          * @GeneratedValue(strategy="NONE")
          */
         public int $id,
-        /**
-         * @Column(type="string", length=255);
-         */
-        public string $name
+        /** @Column(type="string", length=255); */
+        public string $name,
     ) {
     }
 }

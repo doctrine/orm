@@ -10,9 +10,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
 {
     private Application $application;
@@ -40,7 +38,7 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
                 'command' => $command->getName(),
                 '--all'   => true,
             ],
-            ['decorated' => false]
+            ['decorated' => false],
         );
 
         self::assertStringContainsString(' // Clearing all second-level cache query regions', $tester->getDisplay());
@@ -56,12 +54,12 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
                 'command'     => $command->getName(),
                 'region-name' => null,
             ],
-            ['decorated' => false]
+            ['decorated' => false],
         );
 
         self::assertStringContainsString(
             ' // Clearing second-level cache query region named "query_cache_region"',
-            $tester->getDisplay()
+            $tester->getDisplay(),
         );
     }
 
@@ -75,12 +73,12 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
                 'command'     => $command->getName(),
                 'region-name' => 'my_region',
             ],
-            ['decorated' => false]
+            ['decorated' => false],
         );
 
         self::assertStringContainsString(
             ' // Clearing second-level cache query region named "my_region"',
-            $tester->getDisplay()
+            $tester->getDisplay(),
         );
     }
 
@@ -95,12 +93,12 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
                 'region-name' => 'my_region',
                 '--flush'     => true,
             ],
-            ['decorated' => false]
+            ['decorated' => false],
         );
 
         self::assertStringContainsString(
             ' // Flushing cache provider configured for second-level cache query region named "my_region"',
-            $tester->getDisplay()
+            $tester->getDisplay(),
         );
     }
 }

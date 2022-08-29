@@ -29,10 +29,10 @@ class DefaultCache implements Cache
      */
     private array $queryCaches = [];
 
-    private ?QueryCache $defaultQueryCache = null;
+    private QueryCache|null $defaultQueryCache = null;
 
     public function __construct(
-        private readonly EntityManagerInterface $em
+        private readonly EntityManagerInterface $em,
     ) {
         $this->uow          = $em->getUnitOfWork();
         $this->cacheFactory = $em->getConfiguration()
@@ -40,7 +40,7 @@ class DefaultCache implements Cache
             ->getCacheFactory();
     }
 
-    public function getEntityCacheRegion(string $className): ?Region
+    public function getEntityCacheRegion(string $className): Region|null
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
@@ -52,7 +52,7 @@ class DefaultCache implements Cache
         return $persister->getCacheRegion();
     }
 
-    public function getCollectionCacheRegion(string $className, string $association): ?Region
+    public function getCollectionCacheRegion(string $className, string $association): Region|null
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
@@ -177,7 +177,7 @@ class DefaultCache implements Cache
         return isset($this->queryCaches[$regionName]);
     }
 
-    public function evictQueryRegion(?string $regionName = null): void
+    public function evictQueryRegion(string|null $regionName = null): void
     {
         if ($regionName === null && $this->defaultQueryCache !== null) {
             $this->defaultQueryCache->clear();
@@ -199,7 +199,7 @@ class DefaultCache implements Cache
         }
     }
 
-    public function getQueryCache(?string $regionName = null): QueryCache
+    public function getQueryCache(string|null $regionName = null): QueryCache
     {
         if ($regionName === null) {
             return $this->defaultQueryCache ??= $this->cacheFactory->buildQueryCache($this->em);
@@ -220,7 +220,7 @@ class DefaultCache implements Cache
     private function buildCollectionCacheKey(
         ClassMetadata $metadata,
         string $association,
-        mixed $ownerIdentifier
+        mixed $ownerIdentifier,
     ): CollectionCacheKey {
         if (! is_array($ownerIdentifier)) {
             $ownerIdentifier = $this->toIdentifierArray($metadata, $ownerIdentifier);
@@ -229,9 +229,7 @@ class DefaultCache implements Cache
         return new CollectionCacheKey($metadata->rootEntityName, $association, $ownerIdentifier);
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     private function toIdentifierArray(ClassMetadata $metadata, mixed $identifier): array
     {
         if (is_object($identifier)) {

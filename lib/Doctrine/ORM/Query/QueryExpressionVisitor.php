@@ -28,22 +28,16 @@ class QueryExpressionVisitor extends ExpressionVisitor
         Comparison::LTE => Expr\Comparison::LTE,
     ];
 
-    /** @var mixed[] */
-    private $queryAliases;
-
     /** @var Expr */
     private $expr;
 
     /** @var list<mixed> */
     private $parameters = [];
 
-    /**
-     * @param mixed[] $queryAliases
-     */
-    public function __construct($queryAliases)
+    /** @param mixed[] $queryAliases */
+    public function __construct(private $queryAliases)
     {
-        $this->queryAliases = $queryAliases;
-        $this->expr         = new Expr();
+        $this->expr = new Expr();
     }
 
     /**
@@ -191,7 +185,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
                     return new Expr\Comparison(
                         $field,
                         $operator,
-                        $placeholder
+                        $placeholder,
                     );
                 }
 

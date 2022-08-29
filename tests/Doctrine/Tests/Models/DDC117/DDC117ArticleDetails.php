@@ -10,9 +10,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC117ArticleDetails
 {
     /** @Column(type="text") */
@@ -26,7 +24,7 @@ class DDC117ArticleDetails
          * @JoinColumn(name="article_id", referencedColumnName="article_id")
          */
         private $article,
-        string $text
+        string $text,
     ) {
         $article->setDetails($this);
 

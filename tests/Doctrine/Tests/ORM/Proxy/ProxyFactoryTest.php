@@ -86,13 +86,11 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertSame(
             0,
             $this->proxyFactory->generateProxyClasses([$cm]),
-            'No proxies generated.'
+            'No proxies generated.',
         );
     }
 
-    /**
-     * @group 6625
-     */
+    /** @group 6625 */
     public function testSkipEmbeddableClassesOnGeneration(): void
     {
         $cm                  = new ClassMetadata(stdClass::class);
@@ -101,13 +99,11 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertSame(
             0,
             $this->proxyFactory->generateProxyClasses([$cm]),
-            'No proxies generated.'
+            'No proxies generated.',
         );
     }
 
-    /**
-     * @group DDC-1771
-     */
+    /** @group DDC-1771 */
     public function testSkipAbstractClassesOnGeneration(): void
     {
         $cm = new ClassMetadata(AbstractClass::class);
@@ -119,9 +115,7 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertEquals(0, $num, 'No proxies generated.');
     }
 
-    /**
-     * @group DDC-2432
-     */
+    /** @group DDC-2432 */
     public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized(): void
     {
         $persister = $this->getMockBuilder(BasicEntityPersister::class)
@@ -149,9 +143,7 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertInstanceOf(Closure::class, $proxy->__getCloner(), 'The cloner wasn\'t removed');
     }
 
-    /**
-     * @group DDC-2432
-     */
+    /** @group DDC-2432 */
     public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized(): void
     {
         $persister = $this->getMockBuilder(BasicEntityPersister::class)

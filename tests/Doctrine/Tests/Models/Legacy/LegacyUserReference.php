@@ -38,10 +38,8 @@ class LegacyUserReference
     public function __construct(
         LegacyUser $source,
         LegacyUser $target,
-        /**
-         * @Column(type="string", length=255, name="description")
-         */
-        private string $_description
+        /** @Column(type="string", length=255, name="description") */
+        private string $_description,
     ) {
         $source->addReference($this);
         $target->addReference($this);

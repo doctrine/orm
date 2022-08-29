@@ -16,14 +16,12 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\CMS\CmsUser;
 
-/**
- * @BeforeMethods({"init"})
- */
+/** @BeforeMethods({"init"}) */
 final class SimpleHydrationBench
 {
-    private ?EntityManagerInterface $entityManager = null;
+    private EntityManagerInterface|null $entityManager = null;
 
-    private ?EntityRepository $repository = null;
+    private EntityRepository|null $repository = null;
 
     public function init(): void
     {

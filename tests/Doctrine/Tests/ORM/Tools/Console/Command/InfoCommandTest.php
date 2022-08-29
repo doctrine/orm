@@ -67,12 +67,12 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
         self::assertStringContainsString(
             ' ! [CAUTION] You do not have any mapped Doctrine ORM entities according to the current configuration',
-            $tester->getDisplay()
+            $tester->getDisplay(),
         );
 
         self::assertStringContainsString(
             ' !           If you have entities or mapping files you should check your mapping configuration for errors.',
-            $tester->getDisplay()
+            $tester->getDisplay(),
         );
     }
 

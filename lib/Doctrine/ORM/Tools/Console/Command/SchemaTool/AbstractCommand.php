@@ -17,9 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 abstract class AbstractCommand extends AbstractEntityManagerCommand
 {
-    /**
-     * @param mixed[] $metadatas
-     */
+    /** @param mixed[] $metadatas */
     abstract protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas, SymfonyStyle $ui): int;
 
     protected function execute(InputInterface $input, OutputInterface $output): int

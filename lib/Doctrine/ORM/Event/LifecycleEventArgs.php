@@ -16,9 +16,7 @@ use Doctrine\Persistence\Event\LifecycleEventArgs as BaseLifecycleEventArgs;
  */
 class LifecycleEventArgs extends BaseLifecycleEventArgs
 {
-    /**
-     * @param object $object
-     */
+    /** @param object $object */
     public function __construct($object, EntityManagerInterface $objectManager)
     {
         Deprecation::triggerIfCalledFromOutside(
@@ -26,7 +24,7 @@ class LifecycleEventArgs extends BaseLifecycleEventArgs
             'https://github.com/doctrine/orm/issues/9875',
             'The %s class is deprecated and will be removed in ORM 3.0. Use %s instead.',
             self::class,
-            BaseLifecycleEventArgs::class
+            BaseLifecycleEventArgs::class,
         );
 
         parent::__construct($object, $objectManager);
@@ -45,7 +43,7 @@ class LifecycleEventArgs extends BaseLifecycleEventArgs
             'doctrine/orm',
             'https://github.com/doctrine/orm/issues/9875',
             'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use getObjectManager() instead.',
-            __METHOD__
+            __METHOD__,
         );
 
         return $this->getObject();
@@ -64,7 +62,7 @@ class LifecycleEventArgs extends BaseLifecycleEventArgs
             'doctrine/orm',
             'https://github.com/doctrine/orm/issues/9875',
             'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use getObjectManager() instead.',
-            __METHOD__
+            __METHOD__,
         );
 
         return $this->getObjectManager();

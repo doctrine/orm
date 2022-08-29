@@ -22,21 +22,16 @@ use const CASE_UPPER;
  */
 class UnderscoreNamingStrategy implements NamingStrategy
 {
-    private int $case;
-
     /**
      * Underscore naming strategy construct.
      *
      * @param int $case CASE_LOWER | CASE_UPPER
      */
-    public function __construct(int $case = CASE_LOWER)
+    public function __construct(private int $case = CASE_LOWER)
     {
-        $this->case = $case;
     }
 
-    /**
-     * @return int CASE_LOWER | CASE_UPPER
-     */
+    /** @return int CASE_LOWER | CASE_UPPER */
     public function getCase(): int
     {
         return $this->case;
@@ -94,7 +89,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
 
     public function joinKeyColumnName(
         string $entityName,
-        ?string $referencedColumnName
+        string|null $referencedColumnName,
     ): string {
         return $this->classToTableName($entityName) . '_' .
                 ($referencedColumnName ?: $this->referenceColumnName());

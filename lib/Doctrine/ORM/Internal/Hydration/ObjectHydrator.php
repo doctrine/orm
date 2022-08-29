@@ -165,7 +165,7 @@ class ObjectHydrator extends AbstractHydrator
         object $entity,
         ClassMetadata $class,
         string $fieldName,
-        string $parentDqlAlias
+        string $parentDqlAlias,
     ): PersistentCollection {
         $oid      = spl_object_id($entity);
         $relation = $class->associationMappings[$fieldName];
@@ -179,7 +179,7 @@ class ObjectHydrator extends AbstractHydrator
             $value = new PersistentCollection(
                 $this->_em,
                 $this->_metadataCache[$relation['targetEntity']],
-                $value
+                $value,
             );
             $value->setOwner($entity, $relation);
 

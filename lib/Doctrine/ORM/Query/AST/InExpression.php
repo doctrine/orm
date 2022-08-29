@@ -16,21 +16,15 @@ class InExpression extends Node
     /** @var bool */
     public $not;
 
-    /** @var ArithmeticExpression */
-    public $expression;
-
     /** @var mixed[] */
     public $literals = [];
 
     /** @var Subselect|null */
     public $subselect;
 
-    /**
-     * @param ArithmeticExpression $expression
-     */
-    public function __construct($expression)
+    /** @param ArithmeticExpression $expression */
+    public function __construct(public $expression)
     {
-        $this->expression = $expression;
     }
 
     public function dispatch(SqlWalker $walker): string

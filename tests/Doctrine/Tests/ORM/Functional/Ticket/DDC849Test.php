@@ -10,7 +10,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC849Test extends OrmFunctionalTestCase
 {
-    private ?CmsUser $user;
+    private CmsUser|null $user;
 
     private CmsGroup $group1;
 

@@ -11,9 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC117Reference
 {
     /**
@@ -38,10 +36,8 @@ class DDC117Reference
     public function __construct(
         DDC117Article $source,
         DDC117Article $target,
-        /**
-         * @Column(type="string", length=255)
-         */
-        private string $description
+        /** @Column(type="string", length=255) */
+        private string $description,
     ) {
         $source->addReference($this);
         $target->addReference($this);

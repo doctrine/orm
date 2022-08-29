@@ -11,14 +11,12 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
 
-/**
- * @group DDC-250
- */
+/** @group DDC-250 */
 class IndexByAssociationTest extends OrmFunctionalTestCase
 {
-    private ?Market $market = null;
+    private Market|null $market = null;
 
-    private ?Bond $bond = null;
+    private Bond|null $bond = null;
 
     protected function setUp(): void
     {

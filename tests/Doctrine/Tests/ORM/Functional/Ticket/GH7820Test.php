@@ -76,7 +76,7 @@ class GH7820Test extends OrmFunctionalTestCase
 
         self::assertSame(
             self::SONG,
-            array_map(static fn (GH7820Line $line): string => $line->toString(), iterator_to_array(new Paginator($query)))
+            array_map(static fn (GH7820Line $line): string => $line->toString(), iterator_to_array(new Paginator($query))),
         );
     }
 
@@ -94,7 +94,7 @@ class GH7820Test extends OrmFunctionalTestCase
         self::assertSame(
             self::SONG,
             array_map(static fn (GH7820Line $line): string => $line->toString(), iterator_to_array(new Paginator($query))),
-            'Expected to return expected data before query cache is populated with DQL -> SQL translation. Were SQL parameters translated?'
+            'Expected to return expected data before query cache is populated with DQL -> SQL translation. Were SQL parameters translated?',
         );
 
         $query = $this->_em->getRepository(GH7820Line::class)
@@ -104,7 +104,7 @@ class GH7820Test extends OrmFunctionalTestCase
         self::assertSame(
             self::SONG,
             array_map(static fn (GH7820Line $line): string => $line->toString(), iterator_to_array(new Paginator($query))),
-            'Expected to return expected data even when DQL -> SQL translation is present in cache. Were SQL parameters translated again?'
+            'Expected to return expected data even when DQL -> SQL translation is present in cache. Were SQL parameters translated again?',
         );
     }
 }
@@ -118,10 +118,8 @@ class GH7820Line
          * @Column(type="Doctrine\Tests\ORM\Functional\Ticket\GH7820LineTextType", length=255)
          */
         private GH7820LineText $text,
-        /**
-         * @Column(type="integer")
-         */
-        private int $lineNumber
+        /** @Column(type="integer") */
+        private int $lineNumber,
     ) {
     }
 

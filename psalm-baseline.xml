@@ -190,11 +190,11 @@
       <code>$this-&gt;metadataFactory-&gt;getMetadataFor($className)</code>
     </InvalidReturnStatement>
     <InvalidReturnType occurrences="5">
-      <code>?object</code>
-      <code>?object</code>
-      <code>?object</code>
       <code>ClassMetadataFactory</code>
       <code>Mapping\ClassMetadata</code>
+      <code>object|null</code>
+      <code>object|null</code>
+      <code>object|null</code>
     </InvalidReturnType>
     <PossiblyNullArgument occurrences="2">
       <code>$config-&gt;getProxyDir()</code>
@@ -664,11 +664,6 @@
       <code>isset($xmlRoot-&gt;{'unique-constraints'})</code>
     </RedundantCondition>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/Embedded.php">
-    <MissingParamType occurrences="1">
-      <code>$columnPrefix</code>
-    </MissingParamType>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/EntityResult.php">
     <MissingConstructor occurrences="2">
       <code>$discriminatorColumn</code>
@@ -682,11 +677,6 @@
     </MissingConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/InverseJoinColumn.php">
-    <MissingParamType occurrences="1">
-      <code>$onDelete</code>
-    </MissingParamType>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/JoinColumn.php">
     <MissingParamType occurrences="1">
       <code>$onDelete</code>
     </MissingParamType>
@@ -1364,11 +1354,6 @@
       <code>$type</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/SimpleCaseExpression.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>null</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/SimpleSelectExpression.php">
     <PropertyNotSetInConstructor occurrences="1">
       <code>$fieldIdentificationVariable</code>
@@ -1385,9 +1370,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/WhenClause.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>null</code>
-    </PossiblyNullPropertyAssignmentValue>
     <UndefinedMethod occurrences="1">
       <code>walkWhenClauseExpression</code>
     </UndefinedMethod>
@@ -1732,11 +1714,14 @@
       <code>$this-&gt;queryComponents[$factor]['token']['value']</code>
       <code>$this-&gt;queryComponents[$term]['token']['value']</code>
     </PossiblyInvalidArgument>
-    <PossiblyNullArgument occurrences="4">
+    <PossiblyNullArgument occurrences="7">
       <code>$arithmeticExpr-&gt;simpleArithmeticExpression</code>
       <code>$arithmeticExpr-&gt;subselect</code>
       <code>$condExpr</code>
+      <code>$generalCaseExpression-&gt;elseScalarExpression</code>
       <code>$identificationVariableDecl-&gt;rangeVariableDeclaration</code>
+      <code>$simpleCaseExpression-&gt;caseOperand</code>
+      <code>$simpleCaseExpression-&gt;elseScalarExpression</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayOffset occurrences="4">
       <code>$targetClass-&gt;associationMappings</code>
@@ -1771,7 +1756,7 @@
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
     </FalsableReturnStatement>
     <InvalidFalsableReturnType occurrences="1">
-      <code>?Parameter</code>
+      <code>Parameter|null</code>
     </InvalidFalsableReturnType>
     <PossiblyFalseArgument occurrences="2">
       <code>$spacePos</code>

@@ -35,12 +35,12 @@ abstract class OrmTestCase extends DoctrineTestCase
     /**
      * The metadata cache that is shared between all ORM tests (except functional tests).
      */
-    private static ?CacheItemPoolInterface $metadataCache = null;
+    private static CacheItemPoolInterface|null $metadataCache = null;
 
     /**
      * The query cache that is shared between all ORM tests (except functional tests).
      */
-    private static ?CacheItemPoolInterface $queryCache = null;
+    private static CacheItemPoolInterface|null $queryCache = null;
 
     /** @var bool */
     protected $isSecondLevelCacheEnabled = false;
@@ -54,13 +54,13 @@ abstract class OrmTestCase extends DoctrineTestCase
     /** @var StatisticsCacheLogger */
     protected $secondLevelCacheLogger;
 
-    private ?CacheItemPoolInterface $secondLevelCache = null;
+    private CacheItemPoolInterface|null $secondLevelCache = null;
 
     protected function createAnnotationDriver(array $paths = []): AnnotationDriver
     {
         return new AnnotationDriver(
             new PsrCachedReader(new AnnotationReader(), new ArrayAdapter()),
-            $paths
+            $paths,
         );
     }
 
@@ -75,7 +75,7 @@ abstract class OrmTestCase extends DoctrineTestCase
     protected function getTestEntityManager(): EntityManagerMock
     {
         return $this->buildTestEntityManagerWithPlatform(
-            $this->createConnectionMock($this->createPlatformMock())
+            $this->createConnectionMock($this->createPlatformMock()),
         );
     }
 
@@ -87,7 +87,7 @@ abstract class OrmTestCase extends DoctrineTestCase
     protected function createTestEntityManagerWithPlatform(AbstractPlatform $platform): EntityManagerMock
     {
         return $this->buildTestEntityManagerWithPlatform(
-            $this->createConnectionMock($platform)
+            $this->createConnectionMock($platform),
         );
     }
 
@@ -109,7 +109,7 @@ abstract class OrmTestCase extends DoctrineTestCase
             $cacheConfig = new CacheConfiguration();
             $factory     = new DefaultCacheFactory(
                 $cacheConfig->getRegionsConfiguration(),
-                $this->getSharedSecondLevelCache()
+                $this->getSharedSecondLevelCache(),
             );
 
             $this->secondLevelCacheFactory = $factory;

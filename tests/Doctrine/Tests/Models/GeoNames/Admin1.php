@@ -35,9 +35,7 @@ class Admin1
          * @GeneratedValue(strategy="NONE")
          */
         public int $id,
-        /**
-         * @Column(type="string", length=255);
-         */
+        /** @Column(type="string", length=255); */
         public string $name,
         /**
          * @Id
@@ -45,7 +43,7 @@ class Admin1
          * @JoinColumn(name="country", referencedColumnName="id")
          * @Cache
          */
-        public Country $country
+        public Country $country,
     ) {
     }
 }

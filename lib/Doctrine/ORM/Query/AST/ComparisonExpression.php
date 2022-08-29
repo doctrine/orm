@@ -24,19 +24,15 @@ class ComparisonExpression extends Node
     /** @var Node|string */
     public $rightExpression;
 
-    /** @var string */
-    public $operator;
-
     /**
      * @param Node|string $leftExpr
      * @param string      $operator
      * @param Node|string $rightExpr
      */
-    public function __construct($leftExpr, $operator, $rightExpr)
+    public function __construct($leftExpr, public $operator, $rightExpr)
     {
         $this->leftExpression  = $leftExpr;
         $this->rightExpression = $rightExpr;
-        $this->operator        = $operator;
     }
 
     public function dispatch(SqlWalker $walker): string

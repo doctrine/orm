@@ -552,7 +552,7 @@ class Parser
      * @return mixed[]
      * @psalm-return array{value: string, type: int|null|string, position: int}|null
      */
-    private function peekBeyondClosingParenthesis(bool $resetPeek = true): ?array
+    private function peekBeyondClosingParenthesis(bool $resetPeek = true): array|null
     {
         $token        = $this->lexer->peek();
         $numUnmatched = 1;
@@ -586,7 +586,7 @@ class Parser
      *
      * @psalm-param Token|null $token
      */
-    private function isMathOperator(?array $token): bool
+    private function isMathOperator(array|null $token): bool
     {
         return $token !== null && in_array($token['type'], [Lexer::T_PLUS, Lexer::T_MINUS, Lexer::T_DIVIDE, Lexer::T_MULTIPLY], true);
     }
@@ -618,7 +618,7 @@ class Parser
         return in_array(
             $tokenType,
             [Lexer::T_AVG, Lexer::T_MIN, Lexer::T_MAX, Lexer::T_SUM, Lexer::T_COUNT],
-            true
+            true,
         );
     }
 
@@ -630,7 +630,7 @@ class Parser
         return in_array(
             $this->lexer->lookahead['type'],
             [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME],
-            true
+            true,
         );
     }
 
@@ -647,7 +647,7 @@ class Parser
             if (! isset($this->queryComponents[$identVariable])) {
                 $this->semanticalError(
                     sprintf("'%s' is not defined.", $identVariable),
-                    $deferredItem['token']
+                    $deferredItem['token'],
                 );
             }
 
@@ -657,7 +657,7 @@ class Parser
             if (! isset($qComp['metadata'])) {
                 $this->semanticalError(
                     sprintf("'%s' does not point to a Class.", $identVariable),
-                    $deferredItem['token']
+                    $deferredItem['token'],
                 );
             }
 
@@ -665,7 +665,7 @@ class Parser
             if ($qComp['nestingLevel'] > $deferredItem['nestingLevel']) {
                 $this->semanticalError(
                     sprintf("'%s' is used outside the scope of its declaration.", $identVariable),
-                    $deferredItem['token']
+                    $deferredItem['token'],
                 );
             }
         }
@@ -740,14 +740,14 @@ class Parser
                 $this->semanticalError(sprintf(
                     "There is no mapped field named '%s' on class %s.",
                     $field,
-                    $class->name
+                    $class->name,
                 ), $deferredItem['token']);
             }
 
             if (array_intersect($class->identifier, $expr->partialFieldSet) !== $class->identifier) {
                 $this->semanticalError(
                     'The partial field selection of class ' . $class->name . ' must contain the identifier.',
-                    $deferredItem['token']
+                    $deferredItem['token'],
                 );
             }
         }
@@ -766,7 +766,7 @@ class Parser
             if (! isset($this->queryComponents[$resultVariable])) {
                 $this->semanticalError(
                     sprintf("'%s' is not defined.", $resultVariable),
-                    $deferredItem['token']
+                    $deferredItem['token'],
                 );
             }
 
@@ -776,7 +776,7 @@ class Parser
             if (! isset($qComp['resultVariable'])) {
                 $this->semanticalError(
                     sprintf("'%s' does not point to a ResultVariable.", $resultVariable),
-                    $deferredItem['token']
+                    $deferredItem['token'],
                 );
             }
 
@@ -784,7 +784,7 @@ class Parser
             if ($qComp['nestingLevel'] > $deferredItem['nestingLevel']) {
                 $this->semanticalError(
                     sprintf("'%s' is used outside the scope of its declaration.", $resultVariable),
-                    $deferredItem['token']
+                    $deferredItem['token'],
                 );
             }
         }
@@ -815,7 +815,7 @@ class Parser
             if (! isset($class->associationMappings[$field]) && ! isset($class->fieldMappings[$field])) {
                 $this->semanticalError(
                     'Class ' . $class->name . ' has no field or association named ' . $field,
-                    $deferredItem['token']
+                    $deferredItem['token'],
                 );
             }
 
@@ -997,7 +997,7 @@ class Parser
         if ($exists) {
             $this->semanticalError(
                 sprintf("'%s' is already defined.", $aliasIdentVariable),
-                $this->lexer->token
+                $this->lexer->token,
             );
         }
 
@@ -1034,7 +1034,7 @@ class Parser
         if (! (class_exists($schemaName, true) || interface_exists($schemaName, true))) {
             $this->semanticalError(
                 sprintf("Class '%s' is not defined.", $schemaName),
-                $this->lexer->token
+                $this->lexer->token,
             );
         }
     }
@@ -1054,7 +1054,7 @@ class Parser
         if ($exists) {
             $this->semanticalError(
                 sprintf("'%s' is already defined.", $resultVariable),
-                $this->lexer->token
+                $this->lexer->token,
             );
         }
 
@@ -1093,7 +1093,7 @@ class Parser
 
         if (! isset($this->queryComponents[$identVariable])) {
             $this->semanticalError(
-                'Identification Variable ' . $identVariable . ' used in join path expression but was not defined before.'
+                'Identification Variable ' . $identVariable . ' used in join path expression but was not defined before.',
             );
         }
 
@@ -1164,7 +1164,7 @@ class Parser
     {
         return $this->PathExpression(
             AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION |
-            AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION
+            AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION,
         );
     }
 
@@ -1177,7 +1177,7 @@ class Parser
     {
         return $this->PathExpression(
             AST\PathExpression::TYPE_STATE_FIELD |
-            AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION
+            AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
         );
     }
 
@@ -1654,7 +1654,7 @@ class Parser
         return new AST\IdentificationVariableDeclaration(
             $rangeVariableDeclaration,
             $indexBy,
-            $joins
+            $joins,
         );
     }
 
@@ -1864,7 +1864,7 @@ class Parser
         Deprecation::trigger(
             'doctrine/orm',
             'https://github.com/doctrine/orm/issues/8471',
-            'PARTIAL syntax in DQL is deprecated.'
+            'PARTIAL syntax in DQL is deprecated.',
         );
 
         $this->match(Lexer::T_PARTIAL);
@@ -2317,7 +2317,7 @@ class Parser
             default:
                 $this->syntaxError(
                     'IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression',
-                    $this->lexer->lookahead
+                    $this->lexer->lookahead,
                 );
         }
 
@@ -2687,7 +2687,7 @@ class Parser
     public function EmptyCollectionComparisonExpression()
     {
         $emptyCollectionCompExpr = new AST\EmptyCollectionComparisonExpression(
-            $this->CollectionValuedPathExpression()
+            $this->CollectionValuedPathExpression(),
         );
         $this->match(Lexer::T_IS);
 
@@ -2728,7 +2728,7 @@ class Parser
 
         $collMemberExpr      = new AST\CollectionMemberExpression(
             $entityExpr,
-            $this->CollectionValuedPathExpression()
+            $this->CollectionValuedPathExpression(),
         );
         $collMemberExpr->not = $not;
 
@@ -2751,7 +2751,7 @@ class Parser
             case Lexer::T_INTEGER:
             case Lexer::T_FLOAT:
                 $this->match(
-                    $this->lexer->isNextToken(Lexer::T_INTEGER) ? Lexer::T_INTEGER : Lexer::T_FLOAT
+                    $this->lexer->isNextToken(Lexer::T_INTEGER) ? Lexer::T_INTEGER : Lexer::T_FLOAT,
                 );
 
                 return new AST\Literal(AST\Literal::NUMERIC, $this->lexer->token['value']);
@@ -2759,7 +2759,7 @@ class Parser
             case Lexer::T_TRUE:
             case Lexer::T_FALSE:
                 $this->match(
-                    $this->lexer->isNextToken(Lexer::T_TRUE) ? Lexer::T_TRUE : Lexer::T_FALSE
+                    $this->lexer->isNextToken(Lexer::T_TRUE) ? Lexer::T_TRUE : Lexer::T_FALSE,
                 );
 
                 return new AST\Literal(AST\Literal::BOOLEAN, $this->lexer->token['value']);
@@ -3030,7 +3030,7 @@ class Parser
         }
 
         $this->syntaxError(
-            'StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression'
+            'StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression',
         );
     }
 
@@ -3485,7 +3485,7 @@ class Parser
     /**
      * Helper function for FunctionDeclaration grammar rule.
      */
-    private function CustomFunctionDeclaration(): ?FunctionNode
+    private function CustomFunctionDeclaration(): FunctionNode|null
     {
         $token    = $this->lexer->lookahead;
         $funcName = strtolower($token['value']);
@@ -3533,9 +3533,7 @@ class Parser
         return $function;
     }
 
-    /**
-     * @return FunctionNode
-     */
+    /** @return FunctionNode */
     public function CustomFunctionsReturningNumerics()
     {
         // getCustomNumericFunction is case-insensitive
@@ -3574,9 +3572,7 @@ class Parser
         return $function;
     }
 
-    /**
-     * @return FunctionNode
-     */
+    /** @return FunctionNode */
     public function CustomFunctionsReturningDatetime()
     {
         // getCustomDatetimeFunction is case-insensitive
@@ -3617,9 +3613,7 @@ class Parser
         return $function;
     }
 
-    /**
-     * @return FunctionNode
-     */
+    /** @return FunctionNode */
     public function CustomFunctionsReturningStrings()
     {
         // getCustomStringFunction is case-insensitive

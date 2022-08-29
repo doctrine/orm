@@ -71,7 +71,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
     public function getReferencedJoinColumnName(
         array $joinColumn,
         ClassMetadata $class,
-        AbstractPlatform $platform
+        AbstractPlatform $platform,
     ): string {
         return isset($joinColumn['quoted'])
             ? $platform->quoteIdentifier($joinColumn['referencedColumnName'])
@@ -120,7 +120,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
                         ? $platform->quoteIdentifier($joinColumn['name'])
                         : $joinColumn['name'];
                 },
-                $joinColumns
+                $joinColumns,
             );
 
             $quotedColumnNames = array_merge($quotedColumnNames, $assocQuotedColumnNames);
@@ -133,7 +133,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
         string $columnName,
         int $counter,
         AbstractPlatform $platform,
-        ?ClassMetadata $class = null
+        ClassMetadata|null $class = null,
     ): string {
         // 1 ) Concatenate column name and counter
         // 2 ) Trim the column alias to the maximum identifier length of the platform.

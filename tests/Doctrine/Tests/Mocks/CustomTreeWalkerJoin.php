@@ -53,7 +53,7 @@ class CustomTreeWalkerJoin extends TreeWalkerAdapter
                 'map'          => null,
                 'nestingLevel' => 0,
                 'token'        => null,
-            ]
+            ],
         );
     }
 }

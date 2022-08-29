@@ -138,13 +138,11 @@ class SqlWalker
      */
     private readonly QuoteStrategy $quoteStrategy;
 
-    /**
-     * @psalm-param array<string, QueryComponent> $queryComponents The query components (symbol table).
-     */
+    /** @psalm-param array<string, QueryComponent> $queryComponents The query components (symbol table). */
     public function __construct(
         private readonly Query $query,
         private readonly ParserResult $parserResult,
-        private array $queryComponents
+        private array $queryComponents,
     ) {
         $this->rsm           = $parserResult->getResultSetMapping();
         $this->em            = $query->getEntityManager();
@@ -283,7 +281,7 @@ class SqlWalker
      */
     private function generateClassTableInheritanceJoins(
         ClassMetadata $class,
-        string $dqlAlias
+        string $dqlAlias,
     ): string {
         $sql = '';
 
@@ -414,7 +412,7 @@ class SqlWalker
      */
     private function generateFilterConditionSQL(
         ClassMetadata $targetEntity,
-        string $targetTableAlias
+        string $targetTableAlias,
     ): string {
         if (! $this->em->hasFilters()) {
             return '';
@@ -552,7 +550,7 @@ class SqlWalker
     /**
      * Walks down an IdentificationVariable (no AST node associated), thereby generating the SQL.
      */
-    public function walkIdentificationVariable(string $identificationVariable, ?string $fieldName = null): string
+    public function walkIdentificationVariable(string $identificationVariable, string|null $fieldName = null): string
     {
         $class = $this->getMetadataForDqlAlias($identificationVariable);
 
@@ -654,7 +652,7 @@ class SqlWalker
                     $class->name,
                     $dqlAlias,
                     $this->queryComponents[$dqlAlias]['parent'],
-                    $this->queryComponents[$dqlAlias]['relation']['fieldName']
+                    $this->queryComponents[$dqlAlias]['relation']['fieldName'],
                 );
             }
 
@@ -834,7 +832,7 @@ class SqlWalker
      */
     private function generateRangeVariableDeclarationSQL(
         AST\RangeVariableDeclaration $rangeVariableDeclaration,
-        bool $buildNestedJoins
+        bool $buildNestedJoins,
     ): string {
         $class    = $this->em->getClassMetadata($rangeVariableDeclaration->abstractSchemaName);
         $dqlAlias = $rangeVariableDeclaration->aliasIdentificationVariable;
@@ -846,7 +844,7 @@ class SqlWalker
         $sql = $this->platform->appendLockHint(
             $this->quoteStrategy->getTableName($class, $this->platform) . ' ' .
             $this->getSQLTableAlias($class->getTableName(), $dqlAlias),
-            $this->query->getHint(Query::HINT_LOCK_MODE) ?: LockMode::NONE
+            $this->query->getHint(Query::HINT_LOCK_MODE) ?: LockMode::NONE,
         );
 
         if (! $class->isInheritanceTypeJoined()) {
@@ -872,7 +870,7 @@ class SqlWalker
     public function walkJoinAssociationDeclaration(
         AST\JoinAssociationDeclaration $joinAssociationDeclaration,
         int $joinType = AST\Join::JOIN_TYPE_INNER,
-        ?AST\ConditionalPrimary $condExpr = null
+        AST\ConditionalPrimary|null $condExpr = null,
     ): string {
         $sql = '';
 
@@ -1453,7 +1451,7 @@ class SqlWalker
         return sprintf('(%s)', $parenthesisExpression->expression->dispatch($this));
     }
 
-    public function walkNewObject(AST\NewObjectExpression $newObjectExpression, ?string $newObjectResultAlias = null): string
+    public function walkNewObject(AST\NewObjectExpression $newObjectExpression, string|null $newObjectResultAlias = null): string
     {
         $sqlSelectExpressions = [];
         $objIndex             = $newObjectResultAlias ?: $this->newObjectCounter++;
@@ -1702,7 +1700,7 @@ class SqlWalker
      *
      * WhereClause or not, the appropriate discriminator sql is added.
      */
-    public function walkWhereClause(?AST\WhereClause $whereClause): string
+    public function walkWhereClause(AST\WhereClause|null $whereClause): string
     {
         $condSql  = $whereClause !== null ? $this->walkConditionalExpression($whereClause->conditionalExpression) : '';
         $discrSql = $this->generateDiscriminatorColumnConditionSQL($this->rootAliases);
@@ -1743,7 +1741,7 @@ class SqlWalker
      * Walk down a ConditionalExpression AST node, thereby generating the appropriate SQL.
      */
     public function walkConditionalExpression(
-        AST\ConditionalExpression|AST\ConditionalPrimary|AST\ConditionalTerm|AST\ConditionalFactor $condExpr
+        AST\ConditionalExpression|AST\ConditionalPrimary|AST\ConditionalTerm|AST\ConditionalFactor $condExpr,
     ): string {
         // Phase 2 AST optimization: Skip processing of ConditionalExpression
         // if only one ConditionalTerm is defined
@@ -1758,7 +1756,7 @@ class SqlWalker
      * Walks down a ConditionalTerm AST node, thereby generating the appropriate SQL.
      */
     public function walkConditionalTerm(
-        AST\ConditionalTerm|AST\ConditionalPrimary|AST\ConditionalFactor $condTerm
+        AST\ConditionalTerm|AST\ConditionalPrimary|AST\ConditionalFactor $condTerm,
     ): string {
         // Phase 2 AST optimization: Skip processing of ConditionalTerm
         // if only one ConditionalFactor is defined
@@ -1773,7 +1771,7 @@ class SqlWalker
      * Walks down a ConditionalFactor AST node, thereby generating the appropriate SQL.
      */
     public function walkConditionalFactor(
-        AST\ConditionalFactor|AST\ConditionalPrimary $factor
+        AST\ConditionalFactor|AST\ConditionalPrimary $factor,
     ): string {
         // Phase 2 AST optimization: Skip processing of ConditionalFactor
         // if only one ConditionalPrimary is defined
@@ -2219,7 +2217,7 @@ class SqlWalker
      */
     private function getChildDiscriminatorsFromClassMetadata(
         ClassMetadata $rootClass,
-        AST\InstanceOfExpression $instanceOfExpr
+        AST\InstanceOfExpression $instanceOfExpr,
     ): string {
         $sqlParameterList = [];
         $discriminators   = [];

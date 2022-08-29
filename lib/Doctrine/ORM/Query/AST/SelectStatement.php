@@ -13,12 +13,6 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class SelectStatement extends Node
 {
-    /** @var SelectClause */
-    public $selectClause;
-
-    /** @var FromClause */
-    public $fromClause;
-
     /** @var WhereClause|null */
     public $whereClause;
 
@@ -35,10 +29,8 @@ class SelectStatement extends Node
      * @param SelectClause $selectClause
      * @param FromClause   $fromClause
      */
-    public function __construct($selectClause, $fromClause)
+    public function __construct(public $selectClause, public $fromClause)
     {
-        $this->selectClause = $selectClause;
-        $this->fromClause   = $fromClause;
     }
 
     public function dispatch(SqlWalker $walker): string

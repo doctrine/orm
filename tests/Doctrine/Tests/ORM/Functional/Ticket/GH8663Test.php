@@ -29,9 +29,7 @@ class GH8663Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH8663VersionedEntity
 {
     /**

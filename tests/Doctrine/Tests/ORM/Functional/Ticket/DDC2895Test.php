@@ -34,7 +34,7 @@ class DDC2895Test extends OrmFunctionalTestCase
                 'prePersist' => ['setLastModifiedPreUpdate'],
                 'preUpdate' => ['setLastModifiedPreUpdate'],
             ],
-            $cm->lifecycleCallbacks
+            $cm->lifecycleCallbacks,
         );
 
         $ddc2895 = new DDC2895();

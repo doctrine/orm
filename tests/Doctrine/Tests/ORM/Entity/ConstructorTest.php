@@ -22,7 +22,7 @@ class ConstructorTestEntity1
     /** @var string|null */
     public $username;
 
-    public function __construct(?string $username = null)
+    public function __construct(string|null $username = null)
     {
         if ($username !== null) {
             $this->username = $username;

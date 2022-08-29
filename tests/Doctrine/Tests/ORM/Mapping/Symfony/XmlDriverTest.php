@@ -9,9 +9,7 @@ use Doctrine\Persistence\Mapping\Driver\FileDriver;
 
 use function array_flip;
 
-/**
- * @group DDC-1418
- */
+/** @group DDC-1418 */
 class XmlDriverTest extends DriverTestCase
 {
     protected function getFileExtension(): string

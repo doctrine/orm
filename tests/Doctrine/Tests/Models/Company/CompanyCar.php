@@ -24,10 +24,8 @@ class CompanyCar
     private int $id;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=50)
-         */
-        private ?string $brand = null
+        /** @Column(type="string", length=50) */
+        private string|null $brand = null,
     ) {
     }
 
@@ -36,7 +34,7 @@ class CompanyCar
         return $this->id;
     }
 
-    public function getBrand(): ?string
+    public function getBrand(): string|null
     {
         return $this->brand;
     }

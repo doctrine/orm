@@ -24,7 +24,7 @@ class Ticket4646InstanceOfWithMultipleParametersTest extends OrmFunctionalTestCa
             PersonTicket4646Multiple::class,
             EmployeeTicket4646Multiple::class,
             ManagerTicket4646Multiple::class,
-            InternTicket4646Multiple::class
+            InternTicket4646Multiple::class,
         );
     }
 

@@ -42,7 +42,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
             [
                 'command'    => $this->command->getName(),
                 'entityName' => 'AttractionInfo',
-            ]
+            ],
         );
 
         $display = $this->tester->getDisplay();
@@ -59,7 +59,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
             [
                 'command'    => $this->command->getName(),
                 'entityName' => 'Attraction',
-            ]
+            ],
         );
     }
 
@@ -71,7 +71,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
             [
                 'command'    => $this->command->getName(),
                 'entityName' => 'AttractionFooBar',
-            ]
+            ],
         );
     }
 }

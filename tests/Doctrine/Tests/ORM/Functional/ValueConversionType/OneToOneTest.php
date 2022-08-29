@@ -60,52 +60,46 @@ class OneToOneTest extends OrmFunctionalTestCase
         self::assertEquals('nop', $conn->fetchOne('SELECT associated_id FROM vct_owning_onetoone LIMIT 1'));
     }
 
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
-     */
+    /** @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase */
     public function testThatEntitiesAreFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
             InversedOneToOneEntity::class,
-            'abc'
+            'abc',
         );
 
         $owning = $this->_em->find(
             OwningOneToOneEntity::class,
-            'def'
+            'def',
         );
 
         self::assertInstanceOf(InversedOneToOneEntity::class, $inversed);
         self::assertInstanceOf(OwningOneToOneEntity::class, $owning);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
             InversedOneToOneEntity::class,
-            'abc'
+            'abc',
         );
 
         $owning = $this->_em->find(
             OwningOneToOneEntity::class,
-            'def'
+            'def',
         );
 
         self::assertEquals('abc', $inversed->id1);
         self::assertEquals('def', $owning->id2);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheProxyFromOwningToInversedIsLoaded(): void
     {
         $owning = $this->_em->find(
             OwningOneToOneEntity::class,
-            'def'
+            'def',
         );
 
         $inversedProxy = $owning->associatedEntity;
@@ -113,14 +107,12 @@ class OneToOneTest extends OrmFunctionalTestCase
         self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheEntityFromInversedToOwningIsEagerLoaded(): void
     {
         $inversed = $this->_em->find(
             InversedOneToOneEntity::class,
-            'abc'
+            'abc',
         );
 
         self::assertInstanceOf(OwningOneToOneEntity::class, $inversed->associatedEntity);

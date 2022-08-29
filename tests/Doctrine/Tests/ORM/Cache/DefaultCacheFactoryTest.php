@@ -31,9 +31,7 @@ use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Cache\CacheItemPoolInterface;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class DefaultCacheFactoryTest extends OrmTestCase
 {
     private CacheFactory&MockObject $factory;
@@ -257,14 +255,14 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->expectExceptionMessage(
             'If you want to use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" '
             . 'is required, The default implementation provided by doctrine is '
-            . '"Doctrine\ORM\Cache\Region\FileLockRegion" if you want to use it please provide a valid directory'
+            . '"Doctrine\ORM\Cache\Region\FileLockRegion" if you want to use it please provide a valid directory',
         );
 
         $factory->getRegion(
             [
                 'usage'   => ClassMetadata::CACHE_USAGE_READ_WRITE,
                 'region'  => 'foo',
-            ]
+            ],
         );
     }
 
@@ -278,14 +276,14 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->expectExceptionMessage(
             'If you want to use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" '
             . 'is required, The default implementation provided by doctrine is '
-            . '"Doctrine\ORM\Cache\Region\FileLockRegion" if you want to use it please provide a valid directory'
+            . '"Doctrine\ORM\Cache\Region\FileLockRegion" if you want to use it please provide a valid directory',
         );
 
         $factory->getRegion(
             [
                 'usage'   => ClassMetadata::CACHE_USAGE_READ_WRITE,
                 'region'  => 'foo',
-            ]
+            ],
         );
     }
 
@@ -299,8 +297,8 @@ class DefaultCacheFactoryTest extends OrmTestCase
                 [
                     'region' => 'bar',
                     'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
-                ]
-            )
+                ],
+            ),
         );
     }
 }

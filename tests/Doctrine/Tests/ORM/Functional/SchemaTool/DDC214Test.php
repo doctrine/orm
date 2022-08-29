@@ -30,9 +30,7 @@ class DDC214Test extends OrmFunctionalTestCase
         }
     }
 
-    /**
-     * @group DDC-214
-     */
+    /** @group DDC-214 */
     public function testCmsAddressModel(): void
     {
         $this->assertCreatedSchemaNeedsNoUpdates(
@@ -41,13 +39,11 @@ class DDC214Test extends OrmFunctionalTestCase
             Models\CMS\CmsAddress::class,
             Models\CMS\CmsGroup::class,
             Models\CMS\CmsArticle::class,
-            Models\CMS\CmsEmail::class
+            Models\CMS\CmsEmail::class,
         );
     }
 
-    /**
-     * @group DDC-214
-     */
+    /** @group DDC-214 */
     public function testCompanyModel(): void
     {
         $this->assertCreatedSchemaNeedsNoUpdates(
@@ -58,13 +54,11 @@ class DDC214Test extends OrmFunctionalTestCase
             Models\Company\CompanyEvent::class,
             Models\Company\CompanyAuction::class,
             Models\Company\CompanyRaffle::class,
-            Models\Company\CompanyCar::class
+            Models\Company\CompanyCar::class,
         );
     }
 
-    /**
-     * @param class-string ...$classes
-     */
+    /** @param class-string ...$classes */
     public function assertCreatedSchemaNeedsNoUpdates(string ...$classes): void
     {
         $this->createSchemaForModels(...$classes);

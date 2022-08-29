@@ -76,7 +76,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
                         $tableAlias,
                         $joinColumn['name'],
                         $this->quoteStrategy->getJoinColumnName($joinColumn, $subClass, $this->platform),
-                        PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em)
+                        PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em),
                     );
                 }
             }
@@ -108,7 +108,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function getSelectConditionSQL(array $criteria, ?array $assoc = null): string
+    protected function getSelectConditionSQL(array $criteria, array|null $assoc = null): string
     {
         $conditionSql = parent::getSelectConditionSQL($criteria, $assoc);
 

@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1461
- */
+/** @group DDC-1461 */
 class DDC1461Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -24,7 +22,7 @@ class DDC1461Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC1461TwitterAccount::class,
-            DDC1461User::class
+            DDC1461User::class,
         );
     }
 

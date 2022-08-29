@@ -30,7 +30,7 @@ class TreeWalkerChain implements TreeWalker
     public function __construct(
         private readonly AbstractQuery $query,
         private readonly ParserResult $parserResult,
-        private array $queryComponents
+        private array $queryComponents,
     ) {
     }
 
@@ -78,9 +78,7 @@ class TreeWalkerChain implements TreeWalker
         }
     }
 
-    /**
-     * @psalm-return Generator<int, TreeWalker>
-     */
+    /** @psalm-return Generator<int, TreeWalker> */
     private function getWalkers(): Generator
     {
         foreach ($this->walkers as $walkerClass) {

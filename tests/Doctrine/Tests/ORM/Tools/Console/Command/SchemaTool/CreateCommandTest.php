@@ -8,9 +8,7 @@ use Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand;
 
 class CreateCommandTest extends AbstractCommandTest
 {
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testItPrintsTheSql(): void
     {
         $tester = $this->getCommandTester(CreateCommand::class);

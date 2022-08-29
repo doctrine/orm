@@ -10,9 +10,7 @@ use Doctrine\Tests\Models\Quote\FullAddress;
 use Doctrine\Tests\Models\Quote\User;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH-6402
- */
+/** @group GH-6402 */
 class GH6402Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

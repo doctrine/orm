@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2306
- */
+/** @group DDC-2306 */
 class DDC3170Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -27,7 +25,7 @@ class DDC3170Test extends OrmFunctionalTestCase
             DDC3170AbstractEntityJoined::class,
             DDC3170ProductJoined::class,
             DDC3170AbstractEntitySingleTable::class,
-            DDC3170ProductSingleTable::class
+            DDC3170ProductSingleTable::class,
         );
     }
 
@@ -87,9 +85,7 @@ abstract class DDC3170AbstractEntityJoined
     public $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3170ProductJoined extends DDC3170AbstractEntityJoined
 {
 }
@@ -111,9 +107,7 @@ abstract class DDC3170AbstractEntitySingleTable
     public $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3170ProductSingleTable extends DDC3170AbstractEntitySingleTable
 {
 }

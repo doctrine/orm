@@ -14,7 +14,7 @@ interface EntityListenerResolver
      *
      * @param string|null $className May be any arbitrary string. Name kept for BC only.
      */
-    public function clear(?string $className = null): void;
+    public function clear(string|null $className = null): void;
 
     /**
      * Returns a entity listener instance for the given identifier.

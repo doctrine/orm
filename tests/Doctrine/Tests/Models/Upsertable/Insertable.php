@@ -45,14 +45,14 @@ class Insertable
     public static function loadMetadata(ClassMetadata $metadata): ClassMetadata
     {
         $metadata->setPrimaryTable(
-            ['name' => 'insertable_column']
+            ['name' => 'insertable_column'],
         );
 
         $metadata->mapField(
             [
                 'id' => true,
                 'fieldName' => 'id',
-            ]
+            ],
         );
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
@@ -62,10 +62,10 @@ class Insertable
                 'notInsertable' => true,
                 'options' => ['default' => '1234'],
                 'generated' => ClassMetadata::GENERATED_INSERT,
-            ]
+            ],
         );
         $metadata->mapField(
-            ['fieldName' => 'insertableContent']
+            ['fieldName' => 'insertableContent'],
         );
 
         return $metadata;

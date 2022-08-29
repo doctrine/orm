@@ -141,7 +141,7 @@ class CmsAddress
     public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->setPrimaryTable(
-            ['name' => 'company_person']
+            ['name' => 'company_person'],
         );
 
         $metadata->mapField(
@@ -149,21 +149,21 @@ class CmsAddress
                 'id'        => true,
                 'fieldName' => 'id',
                 'type'      => 'integer',
-            ]
+            ],
         );
 
         $metadata->mapField(
             [
                 'fieldName' => 'zip',
                 'length'    => 50,
-            ]
+            ],
         );
 
         $metadata->mapField(
             [
                 'fieldName' => 'city',
                 'length'    => 50,
-            ]
+            ],
         );
 
         $metadata->mapOneToOne(
@@ -171,7 +171,7 @@ class CmsAddress
                 'fieldName'     => 'user',
                 'targetEntity'  => 'CmsUser',
                 'joinColumns'   => [['referencedColumnName' => 'id']],
-            ]
+            ],
         );
 
         $metadata->addSqlResultSetMapping(
@@ -197,7 +197,7 @@ class CmsAddress
                         'entityClass' => self::class,
                     ],
                 ],
-            ]
+            ],
         );
 
         $metadata->addSqlResultSetMapping(
@@ -210,7 +210,7 @@ class CmsAddress
                         'fields' => [],
                     ],
                 ],
-            ]
+            ],
         );
 
         $metadata->addSqlResultSetMapping(
@@ -219,7 +219,7 @@ class CmsAddress
                 'columns' => [
                     ['name' => 'count'],
                 ],
-            ]
+            ],
         );
 
         $metadata->addEntityListener(Events::postPersist, 'CmsAddressListener', 'postPersist');

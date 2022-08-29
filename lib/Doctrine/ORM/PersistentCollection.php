@@ -154,13 +154,13 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             // Set back reference to owner
             $this->typeClass->reflFields[$this->backRefFieldName]->setValue(
                 $element,
-                $this->owner
+                $this->owner,
             );
 
             $this->em->getUnitOfWork()->setOriginalEntityProperty(
                 spl_object_id($element),
                 $this->backRefFieldName,
-                $this->owner
+                $this->owner,
             );
         }
     }
@@ -182,7 +182,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             // Set back reference to owner
             $this->typeClass->reflFields[$this->backRefFieldName]->setValue(
                 $element,
-                $this->owner
+                $this->owner,
             );
         }
     }
@@ -235,7 +235,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         return array_values(array_diff_key(
             array_combine(array_map('spl_object_id', $this->snapshot), $this->snapshot),
-            array_combine(array_map('spl_object_id', $collectionItems), $collectionItems)
+            array_combine(array_map('spl_object_id', $collectionItems), $collectionItems),
         ));
     }
 
@@ -251,7 +251,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         return array_values(array_diff_key(
             array_combine(array_map('spl_object_id', $collectionItems), $collectionItems),
-            array_combine(array_map('spl_object_id', $this->snapshot), $this->snapshot)
+            array_combine(array_map('spl_object_id', $this->snapshot), $this->snapshot),
         ));
     }
 
@@ -260,7 +260,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @psalm-return array<string, mixed>|null
      */
-    public function getMapping(): ?array
+    public function getMapping(): array|null
     {
         return $this->association;
     }

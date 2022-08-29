@@ -13,9 +13,6 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class SelectClause extends Node
 {
-    /** @var bool */
-    public $isDistinct;
-
     /** @var mixed[] */
     public $selectExpressions = [];
 
@@ -23,9 +20,8 @@ class SelectClause extends Node
      * @param mixed[] $selectExpressions
      * @param bool    $isDistinct
      */
-    public function __construct(array $selectExpressions, $isDistinct)
+    public function __construct(array $selectExpressions, public $isDistinct)
     {
-        $this->isDistinct        = $isDistinct;
         $this->selectExpressions = $selectExpressions;
     }
 

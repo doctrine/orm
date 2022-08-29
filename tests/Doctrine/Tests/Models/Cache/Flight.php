@@ -40,7 +40,7 @@ class Flight
          * @ManyToOne(targetEntity="City")
          * @JoinColumn(name="going_to_city_id", referencedColumnName="id")
          */
-        protected City $goingTo
+        protected City $goingTo,
     ) {
         $this->departure = new DateTime();
     }

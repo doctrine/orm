@@ -68,7 +68,7 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
         $q = $this->_em->createQuery(
             'SELECT p, f
                FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p
-               JOIN p.features f'
+               JOIN p.features f',
         );
 
         $res = $q->getResult();
@@ -98,7 +98,7 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
         $q = $this->_em->createQuery(
             'SELECT p, f
                FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p
-               JOIN p.features f'
+               JOIN p.features f',
         );
 
         $res = $q->getResult();

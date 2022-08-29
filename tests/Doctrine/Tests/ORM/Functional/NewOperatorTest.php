@@ -16,9 +16,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
 
-/**
- * @group DDC-1574
- */
+/** @group DDC-1574 */
 class NewOperatorTest extends OrmFunctionalTestCase
 {
     /** @var list<CmsUser> */
@@ -32,9 +30,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         $this->loadFixtures();
     }
 
-    /**
-     * @psalm-return list<array{int}>
-     */
+    /** @psalm-return list<array{int}> */
     public function provideDataForHydrationMode(): array
     {
         return [
@@ -104,9 +100,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         $this->fixtures = [$u1, $u2, $u3];
     }
 
-    /**
-     * @dataProvider provideDataForHydrationMode
-     */
+    /** @dataProvider provideDataForHydrationMode */
     public function testShouldSupportsBasicUsage($hydrationMode): void
     {
         $dql = '
@@ -147,9 +141,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[2]->address->city, $result[2]->address);
     }
 
-    /**
-     * @dataProvider provideDataForHydrationMode
-     */
+    /** @dataProvider provideDataForHydrationMode */
     public function testShouldIgnoreAliasesForSingleObject($hydrationMode): void
     {
         $dql = '
@@ -349,17 +341,17 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         self::assertEquals(
             $this->fixtures[0]->address->id + $this->fixtures[0]->id,
-            $result[0]->phonenumbers
+            $result[0]->phonenumbers,
         );
 
         self::assertEquals(
             $this->fixtures[1]->address->id + $this->fixtures[1]->id,
-            $result[1]->phonenumbers
+            $result[1]->phonenumbers,
         );
 
         self::assertEquals(
             $this->fixtures[2]->address->id + $this->fixtures[2]->id,
-            $result[2]->phonenumbers
+            $result[2]->phonenumbers,
         );
     }
 
@@ -409,17 +401,17 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         self::assertEquals(
             count($this->fixtures[0]->phonenumbers),
-            $result[0]->phonenumbers
+            $result[0]->phonenumbers,
         );
 
         self::assertEquals(
             count($this->fixtures[1]->phonenumbers),
-            $result[1]->phonenumbers
+            $result[1]->phonenumbers,
         );
 
         self::assertEquals(
             count($this->fixtures[2]->phonenumbers),
-            $result[2]->phonenumbers
+            $result[2]->phonenumbers,
         );
     }
 
@@ -469,17 +461,17 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         self::assertEquals(
             count($this->fixtures[0]->phonenumbers) + $this->fixtures[0]->id,
-            $result[0]->phonenumbers
+            $result[0]->phonenumbers,
         );
 
         self::assertEquals(
             count($this->fixtures[1]->phonenumbers) + $this->fixtures[1]->id,
-            $result[1]->phonenumbers
+            $result[1]->phonenumbers,
         );
 
         self::assertEquals(
             count($this->fixtures[2]->phonenumbers) + $this->fixtures[2]->id,
-            $result[2]->phonenumbers
+            $result[2]->phonenumbers,
         );
     }
 

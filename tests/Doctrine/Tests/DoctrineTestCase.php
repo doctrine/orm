@@ -23,9 +23,7 @@ abstract class DoctrineTestCase extends TestCase
         'assertFileDoesNotExist' => 'assertFileNotExists', // can be removed PHPUnit 9 is minimum
     ];
 
-    /**
-     * @param array<mixed> $arguments
-     */
+    /** @param array<mixed> $arguments */
     public static function __callStatic(string $method, array $arguments): mixed
     {
         if (isset(self::$phpunitMethodRenames[$method])) {
@@ -37,9 +35,7 @@ abstract class DoctrineTestCase extends TestCase
         throw new BadMethodCallException(sprintf('%s::%s does not exist', static::class, $method));
     }
 
-    /**
-     * @param array<mixed> $arguments
-     */
+    /** @param array<mixed> $arguments */
     public function __call(string $method, array $arguments): mixed
     {
         if ($method === 'createStub') {

@@ -47,7 +47,7 @@ class TrimFunction extends FunctionNode
             return $platform->getTrimExpression(
                 $stringPrimary,
                 $trimMode,
-                $platform->quoteStringLiteral($this->trimChar)
+                $platform->quoteStringLiteral($this->trimChar),
             );
         }
 
@@ -81,9 +81,7 @@ class TrimFunction extends FunctionNode
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 
-    /**
-     * @psalm-return TrimMode::*
-     */
+    /** @psalm-return TrimMode::* */
     private function getTrimMode(): TrimMode|int
     {
         if ($this->leading) {

@@ -11,9 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
 {
     private Application $application;
@@ -41,7 +39,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
                 'command' => $command->getName(),
                 '--all'   => true,
             ],
-            ['decorated' => false]
+            ['decorated' => false],
         );
 
         self::assertStringContainsString(' // Clearing all second-level cache collection regions', $tester->getDisplay());
@@ -58,12 +56,12 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
                 'owner-class' => State::class,
                 'association' => 'cities',
             ],
-            ['decorated' => false]
+            ['decorated' => false],
         );
 
         self::assertStringContainsString(
             ' // Clearing second-level cache for collection "Doctrine\Tests\Models\Cache\State#cities"',
-            $tester->getDisplay()
+            $tester->getDisplay(),
         );
     }
 
@@ -79,12 +77,12 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
                 'association' => 'cities',
                 'owner-id'    => 1,
             ],
-            ['decorated' => false]
+            ['decorated' => false],
         );
 
         self::assertStringContainsString(
             ' // Clearing second-level cache entry for collection "Doctrine\Tests\Models\Cache\State#cities" owner',
-            $tester->getDisplay()
+            $tester->getDisplay(),
         );
 
         self::assertStringContainsString('identified by "1"', $tester->getDisplay());
@@ -102,12 +100,12 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
                 'association' => 'cities',
                 '--flush'     => true,
             ],
-            ['decorated' => false]
+            ['decorated' => false],
         );
 
         self::assertStringContainsString(
             ' // Flushing cache provider configured for "Doctrine\Tests\Models\Cache\State#cities"',
-            $tester->getDisplay()
+            $tester->getDisplay(),
         );
     }
 }

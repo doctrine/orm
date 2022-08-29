@@ -13,12 +13,6 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class Subselect extends Node
 {
-    /** @var SimpleSelectClause */
-    public $simpleSelectClause;
-
-    /** @var SubselectFromClause */
-    public $subselectFromClause;
-
     /** @var WhereClause|null */
     public $whereClause;
 
@@ -35,10 +29,8 @@ class Subselect extends Node
      * @param SimpleSelectClause  $simpleSelectClause
      * @param SubselectFromClause $subselectFromClause
      */
-    public function __construct($simpleSelectClause, $subselectFromClause)
+    public function __construct(public $simpleSelectClause, public $subselectFromClause)
     {
-        $this->simpleSelectClause  = $simpleSelectClause;
-        $this->subselectFromClause = $subselectFromClause;
     }
 
     public function dispatch(SqlWalker $walker): string

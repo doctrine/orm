@@ -16,7 +16,7 @@ use RuntimeException;
 
 class PostLoadEventTest extends OrmFunctionalTestCase
 {
-    private ?int $userId = null;
+    private int|null $userId = null;
 
     protected function setUp(): void
     {
@@ -198,9 +198,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $phonenumbersCol->first();
     }
 
-    /**
-     * @group DDC-3005
-     */
+    /** @group DDC-3005 */
     public function testAssociationsArePopulatedWhenEventIsFired(): void
     {
         $checkerListener = new PostLoadListenerCheckAssociationsArePopulated();
@@ -215,9 +213,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         self::assertTrue($checkerListener->populated, 'Association of email is not populated in postLoad event');
     }
 
-    /**
-     * @group DDC-3005
-     */
+    /** @group DDC-3005 */
     public function testEventRaisedCorrectTimesWhenOtherEntityLoadedInEventHandler(): void
     {
         $eventManager = $this->_em->getEventManager();

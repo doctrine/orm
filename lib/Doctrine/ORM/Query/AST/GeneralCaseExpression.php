@@ -16,17 +16,13 @@ class GeneralCaseExpression extends Node
     /** @var mixed[] */
     public $whenClauses = [];
 
-    /** @var mixed */
-    public $elseScalarExpression = null;
-
     /**
      * @param mixed[] $whenClauses
      * @param mixed   $elseScalarExpression
      */
-    public function __construct(array $whenClauses, $elseScalarExpression)
+    public function __construct(array $whenClauses, public $elseScalarExpression = null)
     {
-        $this->whenClauses          = $whenClauses;
-        $this->elseScalarExpression = $elseScalarExpression;
+        $this->whenClauses = $whenClauses;
     }
 
     public function dispatch(SqlWalker $walker): string

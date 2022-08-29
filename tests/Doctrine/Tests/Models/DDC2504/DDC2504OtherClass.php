@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\PersistentCollection;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2504OtherClass
 {
     /**

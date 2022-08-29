@@ -14,9 +14,7 @@ interface QueryCache
 {
     public function clear(): bool;
 
-    /**
-     * @param mixed[] $hints
-     */
+    /** @param mixed[] $hints */
     public function put(QueryCacheKey $key, ResultSetMapping $rsm, mixed $result, array $hints = []): bool;
 
     /**
@@ -24,7 +22,7 @@ interface QueryCache
      *
      * @return mixed[]|null
      */
-    public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = []): ?array;
+    public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = []): array|null;
 
     public function getRegion(): Region;
 }

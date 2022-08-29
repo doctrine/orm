@@ -35,10 +35,8 @@ class TravelerProfileInfo
          * @OneToOne(targetEntity="TravelerProfile", inversedBy="info")
          */
         private TravelerProfile $profile,
-        /**
-         * @Column(unique=true)
-         */
-        private string $description
+        /** @Column(unique=true) */
+        private string $description,
     ) {
     }
 

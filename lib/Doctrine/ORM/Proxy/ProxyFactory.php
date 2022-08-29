@@ -76,7 +76,7 @@ class ProxyFactory extends AbstractProxyFactory
             $classMetadata->getIdentifierFieldNames(),
             $classMetadata->getReflectionProperties(),
             $this->createInitializer($classMetadata, $entityPersister),
-            $this->createCloner($classMetadata, $entityPersister)
+            $this->createCloner($classMetadata, $entityPersister),
         );
     }
 
@@ -125,7 +125,7 @@ class ProxyFactory extends AbstractProxyFactory
 
                 throw EntityNotFoundException::fromClassNameAndIdentifier(
                     $classMetadata->getName(),
-                    $this->identifierFlattener->flattenIdentifier($classMetadata, $identifier)
+                    $this->identifierFlattener->flattenIdentifier($classMetadata, $identifier),
                 );
             }
         };
@@ -155,7 +155,7 @@ class ProxyFactory extends AbstractProxyFactory
             if ($original === null) {
                 throw EntityNotFoundException::fromClassNameAndIdentifier(
                     $classMetadata->getName(),
-                    $this->identifierFlattener->flattenIdentifier($classMetadata, $identifier)
+                    $this->identifierFlattener->flattenIdentifier($classMetadata, $identifier),
                 );
             }
 

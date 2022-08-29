@@ -18,14 +18,12 @@ class CacheLoggerChain implements CacheLogger
         $this->loggers[$name] = $logger;
     }
 
-    public function getLogger(string $name): ?CacheLogger
+    public function getLogger(string $name): CacheLogger|null
     {
         return $this->loggers[$name] ?? null;
     }
 
-    /**
-     * @return array<string, CacheLogger>
-     */
+    /** @return array<string, CacheLogger> */
     public function getLoggers(): array
     {
         return $this->loggers;

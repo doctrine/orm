@@ -50,7 +50,7 @@ class CountWalker extends TreeWalkerAdapter
         $pathExpression       = new PathExpression(
             PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
             $rootAlias,
-            $identifierFieldName
+            $identifierFieldName,
         );
         $pathExpression->type = $pathType;
 
@@ -58,7 +58,7 @@ class CountWalker extends TreeWalkerAdapter
         $selectStatement->selectClause->selectExpressions = [
             new SelectExpression(
                 new AggregateExpression('count', $pathExpression, $distinct),
-                null
+                null,
             ),
         ];
 

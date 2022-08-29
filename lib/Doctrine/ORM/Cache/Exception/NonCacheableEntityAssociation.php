@@ -13,7 +13,7 @@ class NonCacheableEntityAssociation extends CacheException
         return new self(sprintf(
             'Entity association field "%s#%s" not configured as part of the second-level cache.',
             $entityName,
-            $field
+            $field,
         ));
     }
 }

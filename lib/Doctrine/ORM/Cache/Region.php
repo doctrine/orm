@@ -32,7 +32,7 @@ interface Region
      *
      * @throws CacheException Indicates a problem accessing the item or region.
      */
-    public function get(CacheKey $key): ?CacheEntry;
+    public function get(CacheKey $key): CacheEntry|null;
 
     /**
      * Get all items from the cache identified by $keys.
@@ -42,7 +42,7 @@ interface Region
      *
      * @return CacheEntry[]|null The cached entries or NULL if one or more entries can not be found
      */
-    public function getMultiple(CollectionCacheEntry $collection): ?array;
+    public function getMultiple(CollectionCacheEntry $collection): array|null;
 
     /**
      * Put an item into the cache.
@@ -53,7 +53,7 @@ interface Region
      *
      * @throws CacheException Indicates a problem accessing the region.
      */
-    public function put(CacheKey $key, CacheEntry $entry, ?Lock $lock = null): bool;
+    public function put(CacheKey $key, CacheEntry $entry, Lock|null $lock = null): bool;
 
     /**
      * Remove an item from the cache.

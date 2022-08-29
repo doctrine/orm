@@ -23,7 +23,7 @@ use function unserialize;
 
 class LockAgentWorker
 {
-    private ?EntityManagerInterface $em = null;
+    private EntityManagerInterface|null $em = null;
 
     public static function run(): void
     {
@@ -32,7 +32,7 @@ class LockAgentWorker
         $worker = new GearmanWorker();
         $worker->addServer(
             $_SERVER['GEARMAN_HOST'] ?? null,
-            $_SERVER['GEARMAN_PORT'] ?? 4730
+            $_SERVER['GEARMAN_PORT'] ?? 4730,
         );
         $worker->addFunction('findWithLock', [$lockAgent, 'findWithLock']);
         $worker->addFunction('dqlWithLock', [$lockAgent, 'dqlWithLock']);
@@ -89,9 +89,7 @@ class LockAgentWorker
         });
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     protected function processWorkload($job): array
     {
         echo 'Received job: ' . $job->handle() . ' for function ' . $job->functionName() . "\n";

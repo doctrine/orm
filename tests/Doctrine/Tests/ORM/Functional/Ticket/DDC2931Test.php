@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2931
- */
+/** @group DDC-2931 */
 class DDC2931Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -72,7 +70,7 @@ class DDC2931Test extends OrmFunctionalTestCase
             ->_em
             ->createQuery(
                 'SELECT e, p, c FROM '
-                . __NAMESPACE__ . '\\DDC2931User e LEFT JOIN e.parent p LEFT JOIN e.child c WHERE e = :id'
+                . __NAMESPACE__ . '\\DDC2931User e LEFT JOIN e.parent p LEFT JOIN e.child c WHERE e = :id',
             )
             ->setParameter('id', $second)
             ->setHint(Query::HINT_REFRESH, true)

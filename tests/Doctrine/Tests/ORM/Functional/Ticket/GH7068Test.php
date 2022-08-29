@@ -21,7 +21,7 @@ final class GH7068Test extends OrmFunctionalTestCase
         $this->setUpEntitySchema(
             [
                 SomeEntity::class,
-            ]
+            ],
         );
     }
 

@@ -13,18 +13,12 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class EmptyCollectionComparisonExpression extends Node
 {
-    /** @var PathExpression */
-    public $expression;
-
     /** @var bool */
     public $not;
 
-    /**
-     * @param PathExpression $expression
-     */
-    public function __construct($expression)
+    /** @param PathExpression $expression */
+    public function __construct(public $expression)
     {
-        $this->expression = $expression;
     }
 
     public function dispatch(SqlWalker $walker): string

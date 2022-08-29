@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 #[MappedSuperclass]
 class DDC3579User
 {
@@ -35,10 +33,8 @@ class DDC3579User
     protected $groups;
 
     public function __construct(
-        /**
-         * @Column(name="user_name", nullable=true, unique=false, length=250)
-         */
-        #[Column(name: 'user_name', nullable: true, unique: false, length: 250)] protected ?string $name = null
+        /** @Column(name="user_name", nullable=true, unique=false, length=250) */
+        #[Column(name: 'user_name', nullable: true, unique: false, length: 250)] protected string|null $name = null,
     ) {
         $this->groups = new ArrayCollection();
     }
@@ -80,7 +76,7 @@ class DDC3579User
                 'type'       => 'integer',
                 'columnName' => 'user_id',
                 'length'     => 150,
-            ]
+            ],
         );
 
         $metadata->mapField(
@@ -91,14 +87,14 @@ class DDC3579User
                 'nullable'  => true,
                 'unique'    => false,
                 'length'    => 250,
-            ]
+            ],
         );
 
         $metadata->mapManyToMany(
             [
                 'fieldName'      => 'groups',
                 'targetEntity'   => 'DDC3579Group',
-            ]
+            ],
         );
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);

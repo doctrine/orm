@@ -30,7 +30,7 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             OJTICPet::class,
             OJTICCat::class,
-            OJTICDog::class
+            OJTICDog::class,
         );
 
         $dog       = new OJTICDog();
@@ -64,7 +64,7 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $result = $this->_em->createQuery(
-            "SELECT p, c FROM Doctrine\Tests\ORM\Functional\OJTICPet p JOIN p.children c WHERE p.name = 'Poofy'"
+            "SELECT p, c FROM Doctrine\Tests\ORM\Functional\OJTICPet p JOIN p.children c WHERE p.name = 'Poofy'",
         )
                 ->getResult();
 
@@ -129,16 +129,12 @@ abstract class OJTICPet
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class OJTICCat extends OJTICPet
 {
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class OJTICDog extends OJTICPet
 {
 }

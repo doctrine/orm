@@ -752,7 +752,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @param string $entityName The name of the entity class the new instance is used for.
      * @psalm-param class-string<T> $entityName
      */
-    public function __construct($entityName, ?NamingStrategy $namingStrategy = null)
+    public function __construct($entityName, NamingStrategy|null $namingStrategy = null)
     {
         $this->name           = $entityName;
         $this->rootEntityName = $entityName;
@@ -1029,13 +1029,13 @@ class ClassMetadataInfo implements ClassMetadata
                 $childProperty = $this->getAccessibleProperty(
                     $reflService,
                     $this->embeddedClasses[$embeddedClass['declaredField']]['class'],
-                    $embeddedClass['originalField']
+                    $embeddedClass['originalField'],
                 );
                 assert($childProperty !== null);
                 $parentReflFields[$property] = new ReflectionEmbeddedProperty(
                     $parentReflFields[$embeddedClass['declaredField']],
                     $childProperty,
-                    $this->embeddedClasses[$embeddedClass['declaredField']]['class']
+                    $this->embeddedClasses[$embeddedClass['declaredField']]['class'],
                 );
 
                 continue;
@@ -1044,7 +1044,7 @@ class ClassMetadataInfo implements ClassMetadata
             $fieldRefl = $this->getAccessibleProperty(
                 $reflService,
                 $embeddedClass['declared'] ?? $this->name,
-                $property
+                $property,
             );
 
             $parentReflFields[$property] = $fieldRefl;
@@ -1059,14 +1059,14 @@ class ClassMetadataInfo implements ClassMetadata
                 if (isset($mapping['enumType'])) {
                     $childProperty = new ReflectionEnumProperty(
                         $childProperty,
-                        $mapping['enumType']
+                        $mapping['enumType'],
                     );
                 }
 
                 $this->reflFields[$field] = new ReflectionEmbeddedProperty(
                     $parentReflFields[$mapping['declaredField']],
                     $childProperty,
-                    $mapping['originalClass']
+                    $mapping['originalClass'],
                 );
                 continue;
             }
@@ -1078,7 +1078,7 @@ class ClassMetadataInfo implements ClassMetadata
             if (isset($mapping['enumType']) && $this->reflFields[$field] !== null) {
                 $this->reflFields[$field] = new ReflectionEnumProperty(
                     $this->reflFields[$field],
-                    $mapping['enumType']
+                    $mapping['enumType'],
                 );
             }
         }
@@ -1674,7 +1674,7 @@ class ClassMetadataInfo implements ClassMetadata
                     throw MappingException::cannotMapCompositePrimaryKeyEntitiesAsForeignId(
                         $mapping['targetEntity'],
                         $this->name,
-                        $mapping['fieldName']
+                        $mapping['fieldName'],
                     );
                 }
 
@@ -1690,7 +1690,7 @@ class ClassMetadataInfo implements ClassMetadata
             if ($this->cache && ! isset($mapping['cache'])) {
                 throw NonCacheableEntityAssociation::fromEntityAndField(
                     $this->name,
-                    $mapping['fieldName']
+                    $mapping['fieldName'],
                 );
             }
         }
@@ -1736,7 +1736,7 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::invalidCascadeOption(
                 array_diff($cascades, $allCascades),
                 $this->name,
-                $mapping['fieldName']
+                $mapping['fieldName'],
             );
         }
 
@@ -2117,7 +2117,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @return mixed[]
      * @psalm-return list<string>
      */
-    public function getColumnNames(?array $fieldNames = null)
+    public function getColumnNames(array|null $fieldNames = null)
     {
         if ($fieldNames === null) {
             return array_keys($this->fieldNames);
@@ -2177,9 +2177,7 @@ class ClassMetadataInfo implements ClassMetadata
         return $this->generatorType !== self::GENERATOR_TYPE_NONE;
     }
 
-    /**
-     * @return bool
-     */
+    /** @return bool */
     public function isInheritanceTypeNone()
     {
         return $this->inheritanceType === self::INHERITANCE_TYPE_NONE;
@@ -2254,7 +2252,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @todo 3.0 Remove this. PersisterHelper should fix it somehow
      */
-    public function getTypeOfField(string $fieldName): ?string
+    public function getTypeOfField(string $fieldName): string|null
     {
         return isset($this->fieldMappings[$fieldName])
             ? $this->fieldMappings[$fieldName]['type']
@@ -2849,7 +2847,7 @@ class ClassMetadataInfo implements ClassMetadata
                 'https://github.com/doctrine/orm/pull/8381',
                 'Registering lifecycle callback %s on Embedded class %s is not doing anything and will throw exception in 3.0',
                 $event,
-                $this->name
+                $this->name,
             );
         }
 
@@ -2947,9 +2945,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     final public function getDiscriminatorColumn(): array
     {
         if ($this->discriminatorColumn === null) {
@@ -3369,7 +3365,7 @@ class ClassMetadataInfo implements ClassMetadata
                         $property,
                         $fieldMapping['columnName'],
                         $this->reflClass->name,
-                        $embeddable->reflClass->name
+                        $embeddable->reflClass->name,
                     );
             }
 
@@ -3377,9 +3373,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
     }
 
-    /**
-     * @throws MappingException
-     */
+    /** @throws MappingException */
     private function assertFieldNotMapped(string $fieldName): void
     {
         if (
@@ -3427,9 +3421,7 @@ class ClassMetadataInfo implements ClassMetadata
         return $sequencePrefix;
     }
 
-    /**
-     * @psalm-param array<string, mixed> $mapping
-     */
+    /** @psalm-param array<string, mixed> $mapping */
     private function assertMappingOrderBy(array $mapping): void
     {
         if (isset($mapping['orderBy']) && ! is_array($mapping['orderBy'])) {
@@ -3437,10 +3429,8 @@ class ClassMetadataInfo implements ClassMetadata
         }
     }
 
-    /**
-     * @psalm-param class-string $class
-     */
-    private function getAccessibleProperty(ReflectionService $reflService, string $class, string $field): ?ReflectionProperty
+    /** @psalm-param class-string $class */
+    private function getAccessibleProperty(ReflectionService $reflService, string $class, string $field): ReflectionProperty|null
     {
         $reflectionProperty = $reflService->getAccessibleProperty($class, $field);
         if ($reflectionProperty?->isReadOnly()) {

@@ -129,7 +129,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the cache driver implementation that is used for the mapping metadata.
      */
-    public function getMetadataDriverImpl(): ?MappingDriver
+    public function getMetadataDriverImpl(): MappingDriver|null
     {
         return $this->_attributes['metadataDriverImpl'] ?? null;
     }
@@ -137,7 +137,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the cache driver implementation that is used for the query cache (SQL cache).
      */
-    public function getQueryCache(): ?CacheItemPoolInterface
+    public function getQueryCache(): CacheItemPoolInterface|null
     {
         return $this->_attributes['queryCache'] ?? null;
     }
@@ -150,7 +150,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $this->_attributes['queryCache'] = $cache;
     }
 
-    public function getHydrationCache(): ?CacheItemPoolInterface
+    public function getHydrationCache(): CacheItemPoolInterface|null
     {
         return $this->_attributes['hydrationCache'] ?? null;
     }
@@ -160,7 +160,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $this->_attributes['hydrationCache'] = $cache;
     }
 
-    public function getMetadataCache(): ?CacheItemPoolInterface
+    public function getMetadataCache(): CacheItemPoolInterface|null
     {
         return $this->_attributes['metadataCache'] ?? null;
     }
@@ -324,7 +324,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @psalm-return class-string<AbstractHydrator>|null
      */
-    public function getCustomHydrationMode(string $modeName): ?string
+    public function getCustomHydrationMode(string $modeName): string|null
     {
         return $this->_attributes['customHydrationModes'][$modeName] ?? null;
     }
@@ -349,9 +349,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $this->_attributes['classMetadataFactoryName'] = $cmfName;
     }
 
-    /**
-     * @psalm-return class-string
-     */
+    /** @psalm-return class-string */
     public function getClassMetadataFactoryName(): string
     {
         if (! isset($this->_attributes['classMetadataFactoryName'])) {
@@ -379,7 +377,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *  defined.
      * @psalm-return class-string<SQLFilter>|null
      */
-    public function getFilterClassName(string $name): ?string
+    public function getFilterClassName(string $name): string|null
     {
         return $this->_attributes['filters'][$name] ?? null;
     }
@@ -501,7 +499,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $this->_attributes['secondLevelCacheConfiguration'] = $cacheConfig;
     }
 
-    public function getSecondLevelCacheConfiguration(): ?CacheConfiguration
+    public function getSecondLevelCacheConfiguration(): CacheConfiguration|null
     {
         if (! isset($this->_attributes['secondLevelCacheConfiguration']) && $this->isSecondLevelCacheEnabled()) {
             $this->_attributes['secondLevelCacheConfiguration'] = new CacheConfiguration();

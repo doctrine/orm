@@ -35,7 +35,7 @@ abstract class CompanyEvent
      * @ManyToOne(targetEntity="CompanyOrganization", inversedBy="events", cascade={"persist"})
      * @JoinColumn(name="org_id", referencedColumnName="id")
      */
-    private ?CompanyOrganization $organization = null;
+    private CompanyOrganization|null $organization = null;
 
     public function getId(): int
     {

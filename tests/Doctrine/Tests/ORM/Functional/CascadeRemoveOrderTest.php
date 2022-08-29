@@ -15,9 +15,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group CascadeRemoveOrderTest
- */
+/** @group CascadeRemoveOrderTest */
 class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -26,7 +24,7 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             CascadeRemoveOrderEntityO::class,
-            CascadeRemoveOrderEntityG::class
+            CascadeRemoveOrderEntityG::class,
         );
     }
 
@@ -71,9 +69,7 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class CascadeRemoveOrderEntityO
 {
     /**
@@ -87,7 +83,7 @@ class CascadeRemoveOrderEntityO
      * @OneToOne(targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG")
      * @JoinColumn(nullable=true, onDelete="SET NULL")
      */
-    private ?CascadeRemoveOrderEntityG $oneToOneG = null;
+    private CascadeRemoveOrderEntityG|null $oneToOneG = null;
 
     /**
      * @psalm-var Collection<int, CascadeRemoveOrderEntityG>
@@ -124,18 +120,14 @@ class CascadeRemoveOrderEntityO
         $this->oneToManyG->add($eG);
     }
 
-    /**
-     * @psalm-return array<int, CascadeRemoveOrderEntityG>
-     */
+    /** @psalm-return array<int, CascadeRemoveOrderEntityG> */
     public function getOneToManyGs(): array
     {
         return $this->oneToManyG->toArray();
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class CascadeRemoveOrderEntityG
 {
     /**
@@ -153,7 +145,7 @@ class CascadeRemoveOrderEntityG
          * )
          */
         private CascadeRemoveOrderEntityO $ownerO,
-        private int $position = 1
+        private int $position = 1,
     ) {
         $this->ownerO->addOneToManyG($this);
     }

@@ -34,7 +34,7 @@ abstract class AbstractHydrator
     /**
      * The ResultSetMapping.
      */
-    protected ?ResultSetMapping $_rsm = null;
+    protected ResultSetMapping|null $_rsm = null;
 
     /**
      * The dbms Platform instance.
@@ -63,7 +63,7 @@ abstract class AbstractHydrator
     /**
      * The statement that provides the data to hydrate.
      */
-    protected ?Result $_stmt = null;
+    protected Result|null $_stmt = null;
 
     /**
      * The query hints.
@@ -382,7 +382,7 @@ abstract class AbstractHydrator
      * @return mixed[]|null
      * @psalm-return array<string, mixed>|null
      */
-    protected function hydrateColumnInfo(string $key): ?array
+    protected function hydrateColumnInfo(string $key): array|null
     {
         if (isset($this->_cache[$key])) {
             return $this->_cache[$key];
@@ -411,7 +411,7 @@ abstract class AbstractHydrator
                             'discriminatorColumn' => $this->_rsm->discriminatorColumns[$ownerMap],
                             'discriminatorValue'  => $classMetadata->discriminatorValue,
                             'discriminatorValues' => $this->getDiscriminatorValues($classMetadata),
-                        ]
+                        ],
                     );
                 }
 
@@ -481,7 +481,7 @@ abstract class AbstractHydrator
     {
         $values = array_map(
             fn (string $subClass): string => (string) $this->getClassMetadata($subClass)->discriminatorValue,
-            $classMetadata->subClasses
+            $classMetadata->subClasses,
         );
 
         $values[] = (string) $classMetadata->discriminatorValue;
@@ -541,7 +541,7 @@ abstract class AbstractHydrator
         if (is_array($value)) {
             return array_map(
                 static fn ($value) => $enumType::from($value),
-                $value
+                $value,
             );
         }
 

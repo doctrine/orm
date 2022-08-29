@@ -30,7 +30,7 @@ class DDC345Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC345User::class,
             DDC345Group::class,
-            DDC345Membership::class
+            DDC345Membership::class,
         );
     }
 
@@ -69,9 +69,7 @@ class DDC345Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC345User
 {
     /**
@@ -100,9 +98,7 @@ class DDC345User
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC345Group
 {
     /**

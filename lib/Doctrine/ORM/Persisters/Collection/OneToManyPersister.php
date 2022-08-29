@@ -71,7 +71,7 @@ class OneToManyPersister extends AbstractCollectionPersister
             $mapping,
             [],
             null,
-            1
+            1,
         );
     }
 
@@ -91,7 +91,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function slice(PersistentCollection $collection, int $offset, ?int $length = null): array
+    public function slice(PersistentCollection $collection, int $offset, int|null $length = null): array
     {
         $mapping   = $collection->getMapping();
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
@@ -145,9 +145,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         throw new BadMethodCallException('Filtering a collection by Criteria is not supported by this CollectionPersister.');
     }
 
-    /**
-     * @throws DBALException
-     */
+    /** @throws DBALException */
     private function deleteEntityCollection(PersistentCollection $collection): int
     {
         $mapping     = $collection->getMapping();
@@ -205,7 +203,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         // 2) Build insert table records into temporary table
         $query = $this->em->createQuery(
             ' SELECT t0.' . implode(', t0.', $rootClass->getIdentifierFieldNames())
-            . ' FROM ' . $targetClass->name . ' t0 WHERE t0.' . $mapping['mappedBy'] . ' = :owner'
+            . ' FROM ' . $targetClass->name . ' t0 WHERE t0.' . $mapping['mappedBy'] . ' = :owner',
         )->setParameter('owner', $collection->getOwner());
 
         $sql = $query->getSQL();

@@ -7,9 +7,7 @@ namespace Doctrine\Tests\ORM\Tools\Pagination;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker;
 
-/**
- * @group DDC-1613
- */
+/** @group DDC-1613 */
 class LimitSubqueryWalkerTest extends PaginationTestCase
 {
     public function testLimitSubquery(): void
@@ -22,7 +20,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         self::assertEquals(
             'SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id',
-            $limitQuery->getSQL()
+            $limitQuery->getSQL(),
         );
     }
 
@@ -36,7 +34,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         self::assertEquals(
             'SELECT DISTINCT m0_.id AS id_0, m0_.title AS title_1 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id ORDER BY m0_.title ASC',
-            $limitQuery->getSQL()
+            $limitQuery->getSQL(),
         );
     }
 
@@ -50,7 +48,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         self::assertSame(
             'SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id GROUP BY m0_.id ORDER BY COUNT(c1_.id) ASC',
-            $limitQuery->getSQL()
+            $limitQuery->getSQL(),
         );
     }
 
@@ -64,7 +62,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         self::assertEquals(
             'SELECT DISTINCT a0_.id AS id_0 FROM Author a0_',
-            $limitQuery->getSQL()
+            $limitQuery->getSQL(),
         );
     }
 
@@ -78,7 +76,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         self::assertSame(
             'SELECT DISTINCT a0_.id AS id_0, sum(a0_.name) AS sclr_1 FROM Author a0_ ORDER BY sclr_1 DESC',
-            $limitQuery->getSQL()
+            $limitQuery->getSQL(),
         );
     }
 
@@ -92,13 +90,11 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         self::assertSame(
             'SELECT DISTINCT a0_.id AS id_0, sum(a0_.name) AS sclr_1, (SELECT count(a1_.id) AS sclr_3 FROM Author a1_ WHERE a1_.id = a0_.id) AS sclr_2 FROM Author a0_ ORDER BY sclr_1 DESC, sclr_2 ASC',
-            $limitQuery->getSQL()
+            $limitQuery->getSQL(),
         );
     }
 
-    /**
-     * @group DDC-2890
-     */
+    /** @group DDC-2890 */
     public function testLimitSubqueryWithSortOnAssociation(): void
     {
         $dql        = 'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p ORDER BY p.author';
@@ -109,7 +105,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         self::assertEquals(
             'SELECT DISTINCT m0_.id AS id_0, m0_.author_id AS sclr_1 FROM MyBlogPost m0_ ORDER BY m0_.author_id ASC',
-            $limitQuery->getSQL()
+            $limitQuery->getSQL(),
         );
     }
 
@@ -126,7 +122,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         self::assertEquals(
             'SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON (m0_.category_id = c1_.id)',
-            $limitQuery->getSQL()
+            $limitQuery->getSQL(),
         );
     }
 
@@ -140,7 +136,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         self::assertEquals(
             'SELECT DISTINCT m0_.id AS id_0, m0_.title AS title_1 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON (m0_.category_id = c1_.id) ORDER BY m0_.title ASC',
-            $limitQuery->getSQL()
+            $limitQuery->getSQL(),
         );
     }
 }

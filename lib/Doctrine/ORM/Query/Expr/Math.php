@@ -11,15 +11,6 @@ namespace Doctrine\ORM\Query\Expr;
  */
 class Math
 {
-    /** @var mixed */
-    protected $leftExpr;
-
-    /** @var string */
-    protected $operator;
-
-    /** @var mixed */
-    protected $rightExpr;
-
     /**
      * Creates a mathematical expression with the given arguments.
      *
@@ -27,40 +18,29 @@ class Math
      * @param string $operator
      * @param mixed  $rightExpr
      */
-    public function __construct($leftExpr, $operator, $rightExpr)
+    public function __construct(protected $leftExpr, protected $operator, protected $rightExpr)
     {
-        $this->leftExpr  = $leftExpr;
-        $this->operator  = $operator;
-        $this->rightExpr = $rightExpr;
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function getLeftExpr()
     {
         return $this->leftExpr;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function getOperator()
     {
         return $this->operator;
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function getRightExpr()
     {
         return $this->rightExpr;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function __toString()
     {
         // Adjusting Left Expression

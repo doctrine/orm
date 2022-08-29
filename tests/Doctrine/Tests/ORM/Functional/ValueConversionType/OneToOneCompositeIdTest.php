@@ -62,38 +62,34 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
         self::assertEquals('qrs', $conn->fetchOne('SELECT associated_id2 FROM vct_owning_onetoone_compositeid LIMIT 1'));
     }
 
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
-     */
+    /** @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase */
     public function testThatEntitiesAreFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
             InversedOneToOneCompositeIdEntity::class,
-            ['id1' => 'abc', 'id2' => 'def']
+            ['id1' => 'abc', 'id2' => 'def'],
         );
 
         $owning = $this->_em->find(
             OwningOneToOneCompositeIdEntity::class,
-            'ghi'
+            'ghi',
         );
 
         self::assertInstanceOf(InversedOneToOneCompositeIdEntity::class, $inversed);
         self::assertInstanceOf(OwningOneToOneCompositeIdEntity::class, $owning);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
             InversedOneToOneCompositeIdEntity::class,
-            ['id1' => 'abc', 'id2' => 'def']
+            ['id1' => 'abc', 'id2' => 'def'],
         );
 
         $owning = $this->_em->find(
             OwningOneToOneCompositeIdEntity::class,
-            'ghi'
+            'ghi',
         );
 
         self::assertEquals('abc', $inversed->id1);
@@ -101,14 +97,12 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
         self::assertEquals('ghi', $owning->id3);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheProxyFromOwningToInversedIsLoaded(): void
     {
         $owning = $this->_em->find(
             OwningOneToOneCompositeIdEntity::class,
-            'ghi'
+            'ghi',
         );
 
         $inversedProxy = $owning->associatedEntity;
@@ -116,14 +110,12 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
         self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheEntityFromInversedToOwningIsEagerLoaded(): void
     {
         $inversed = $this->_em->find(
             InversedOneToOneCompositeIdEntity::class,
-            ['id1' => 'abc', 'id2' => 'def']
+            ['id1' => 'abc', 'id2' => 'def'],
         );
 
         self::assertInstanceOf(OwningOneToOneCompositeIdEntity::class, $inversed->associatedEntity);

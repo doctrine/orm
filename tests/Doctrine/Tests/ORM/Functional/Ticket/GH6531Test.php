@@ -30,13 +30,11 @@ final class GH6531Test extends OrmFunctionalTestCase
                 GH6531Order::class,
                 GH6531OrderItem::class,
                 GH6531Product::class,
-            ]
+            ],
         );
     }
 
-    /**
-     * @group GH-6531
-     */
+    /** @group GH-6531 */
     public function testSimpleDerivedIdentity(): void
     {
         $user          = new GH6531User();
@@ -51,9 +49,7 @@ final class GH6531Test extends OrmFunctionalTestCase
         self::assertSame($address, $this->_em->find(GH6531Address::class, $user));
     }
 
-    /**
-     * @group GH-6531
-     */
+    /** @group GH-6531 */
     public function testDynamicAttributes(): void
     {
         $article = new GH6531Article();
@@ -64,13 +60,11 @@ final class GH6531Test extends OrmFunctionalTestCase
 
         self::assertSame(
             $article->attributes['name'],
-            $this->_em->find(GH6531ArticleAttribute::class, ['article' => $article, 'attribute' => 'name'])
+            $this->_em->find(GH6531ArticleAttribute::class, ['article' => $article, 'attribute' => 'name']),
         );
     }
 
-    /**
-     * @group GH-6531
-     */
+    /** @group GH-6531 */
     public function testJoinTableWithMetadata(): void
     {
         $product = new GH6531Product();
@@ -85,14 +79,12 @@ final class GH6531Test extends OrmFunctionalTestCase
 
         self::assertSame(
             $order->items->first(),
-            $this->_em->find(GH6531OrderItem::class, ['product' => $product, 'order' => $order])
+            $this->_em->find(GH6531OrderItem::class, ['product' => $product, 'order' => $order]),
         );
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6531User
 {
     /**
@@ -104,9 +96,7 @@ class GH6531User
     public $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6531Address
 {
     /**
@@ -117,9 +107,7 @@ class GH6531Address
     public $user;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6531Article
 {
     /**
@@ -142,9 +130,7 @@ class GH6531Article
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6531ArticleAttribute
 {
     public function __construct(
@@ -153,22 +139,18 @@ class GH6531ArticleAttribute
          * @Column(type="string", length=255)
          */
         public string $attribute,
-        /**
-         * @Column(type="string", length=255)
-         */
+        /** @Column(type="string", length=255) */
         public string $value,
         /**
          * @Id
          * @ManyToOne(targetEntity=GH6531Article::class, inversedBy="attributes")
          */
-        public GH6531Article $article
+        public GH6531Article $article,
     ) {
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6531Order
 {
     /**
@@ -196,9 +178,7 @@ class GH6531Order
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6531Product
 {
     /**
@@ -210,9 +190,7 @@ class GH6531Product
     public $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6531OrderItem
 {
     public function __construct(
@@ -226,10 +204,8 @@ class GH6531OrderItem
          * @ManyToOne(targetEntity=GH6531Product::class)
          */
         public GH6531Product $product,
-        /**
-         * @Column(type="integer")
-         */
-        public int $amount = 1
+        /** @Column(type="integer") */
+        public int $amount = 1,
     ) {
     }
 }

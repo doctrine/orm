@@ -27,9 +27,7 @@ class JoinedSubclassPersisterTest extends OrmTestCase
         $this->persister = new JoinedSubclassPersister($this->em, $this->em->getClassMetadata(RootClass::class));
     }
 
-    /**
-     * @group DDC-3470
-     */
+    /** @group DDC-3470 */
     public function testExecuteInsertsWillReturnEmptySetWithNoQueuedInserts(): void
     {
         self::assertSame([], $this->persister->executeInserts());

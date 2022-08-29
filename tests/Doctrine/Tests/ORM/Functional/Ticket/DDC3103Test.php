@@ -12,14 +12,10 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use function serialize;
 use function unserialize;
 
-/**
- * @group DDC-3103
- */
+/** @group DDC-3103 */
 class DDC3103Test extends OrmFunctionalTestCase
 {
-    /**
-     * @covers \Doctrine\ORM\Mapping\ClassMetadata::__sleep
-     */
+    /** @covers \Doctrine\ORM\Mapping\ClassMetadata::__sleep */
     public function testIssue(): void
     {
         $classMetadata = new ClassMetadata(DDC3103ArticleId::class);
@@ -28,19 +24,17 @@ class DDC3103Test extends OrmFunctionalTestCase
 
         self::assertTrue(
             $classMetadata->isEmbeddedClass,
-            'The isEmbeddedClass property should be true from the mapping data.'
+            'The isEmbeddedClass property should be true from the mapping data.',
         );
 
         self::assertTrue(
             unserialize(serialize($classMetadata))->isEmbeddedClass,
-            'The isEmbeddedClass property should still be true after serialization and unserialization.'
+            'The isEmbeddedClass property should still be true after serialization and unserialization.',
         );
     }
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDC3103ArticleId
 {
     /**

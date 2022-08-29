@@ -20,14 +20,12 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
 
-/**
- * @group DDC-1163
- */
+/** @group DDC-1163 */
 class DDC1163Test extends OrmFunctionalTestCase
 {
-    private ?int $productId = null;
+    private int|null $productId = null;
 
-    private ?int $proxyHolderId = null;
+    private int|null $proxyHolderId = null;
 
     protected function setUp(): void
     {
@@ -37,7 +35,7 @@ class DDC1163Test extends OrmFunctionalTestCase
             DDC1163Product::class,
             DDC1163SpecialProduct::class,
             DDC1163ProxyHolder::class,
-            DDC1163Tag::class
+            DDC1163Tag::class,
         );
     }
 
@@ -98,7 +96,7 @@ class DDC1163Test extends OrmFunctionalTestCase
         // this screams violation of law of demeter ;)
         self::assertEquals(
             DDC1163SpecialProduct::class,
-            $this->_em->getUnitOfWork()->getEntityPersister($specialProduct::class)->getClassMetadata()->name
+            $this->_em->getUnitOfWork()->getEntityPersister($specialProduct::class)->getClassMetadata()->name,
         );
 
         $tag = new DDC1163Tag('Foo');
@@ -107,9 +105,7 @@ class DDC1163Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1163ProxyHolder
 {
     /**
@@ -120,7 +116,7 @@ class DDC1163ProxyHolder
     private int $id;
 
     /** @OneToOne(targetEntity="DDC1163SpecialProduct") */
-    private ?DDC1163SpecialProduct $specialProduct = null;
+    private DDC1163SpecialProduct|null $specialProduct = null;
 
     public function getId(): int
     {
@@ -160,13 +156,11 @@ abstract class DDC1163Product
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1163SpecialProduct extends DDC1163Product
 {
     /** @Column(name="subclass_property", type="string", nullable=true) */
-    private ?string $subclassProperty = null;
+    private string|null $subclassProperty = null;
 
     public function setSubclassProperty(string $value): void
     {
@@ -174,9 +168,7 @@ class DDC1163SpecialProduct extends DDC1163Product
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1163Tag
 {
     /**
@@ -195,10 +187,8 @@ class DDC1163Tag
     private $product;
 
     public function __construct(
-        /**
-         * @Column(name="name", type="string", length=255)
-         */
-        private string $name
+        /** @Column(name="name", type="string", length=255) */
+        private string $name,
     ) {
     }
 

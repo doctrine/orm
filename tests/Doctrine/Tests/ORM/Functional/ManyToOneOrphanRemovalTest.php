@@ -69,14 +69,14 @@ class ManyToOneOrphanRemovalTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $query  = $this->_em->createQuery(
-            'SELECT u FROM Doctrine\Tests\Models\OrnementalOrphanRemoval\Person u'
+            'SELECT u FROM Doctrine\Tests\Models\OrnementalOrphanRemoval\Person u',
         );
         $result = $query->getResult();
 
         self::assertEquals(0, count($result), 'Person should be removed by EntityManager');
 
         $query  = $this->_em->createQuery(
-            'SELECT p FROM Doctrine\Tests\Models\OrnementalOrphanRemoval\PhoneNumber p'
+            'SELECT p FROM Doctrine\Tests\Models\OrnementalOrphanRemoval\PhoneNumber p',
         );
         $result = $query->getResult();
 
@@ -84,11 +84,11 @@ class ManyToOneOrphanRemovalTest extends OrmFunctionalTestCase
     }
 
     protected function getEntityManager(
-        ?Connection $connection = null,
-        ?MappingDriver $mappingDriver = null
+        Connection|null $connection = null,
+        MappingDriver|null $mappingDriver = null,
     ): EntityManagerInterface {
         return parent::getEntityManager($connection, new XmlDriver(
-            __DIR__ . DIRECTORY_SEPARATOR . 'xml'
+            __DIR__ . DIRECTORY_SEPARATOR . 'xml',
         ));
     }
 }

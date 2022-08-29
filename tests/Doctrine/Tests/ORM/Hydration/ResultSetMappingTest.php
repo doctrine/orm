@@ -34,7 +34,7 @@ class ResultSetMappingTest extends OrmTestCase
     {
         $this->_rsm->addEntityResult(
             CmsUser::class,
-            'u'
+            'u',
         );
         $this->_rsm->addFieldResult('u', 'id', 'id');
         $this->_rsm->addFieldResult('u', 'status', 'status');
@@ -90,9 +90,7 @@ class ResultSetMappingTest extends OrmTestCase
         self::assertTrue($rms->isMixedResult());
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testIndexByMetadataColumn(): void
     {
         $this->_rsm->addEntityResult(LegacyUser::class, 'u');

@@ -64,7 +64,7 @@ class RunDqlCommand extends AbstractEntityManagerCommand
         if (! defined($hydrationMode)) {
             throw new RuntimeException(sprintf(
                 "Hydration mode '%s' does not exist. It should be either: object. array, scalar or single-scalar.",
-                $hydrationModeName
+                $hydrationModeName,
             ));
         }
 

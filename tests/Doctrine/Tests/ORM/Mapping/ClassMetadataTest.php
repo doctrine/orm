@@ -174,9 +174,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals('float', $cm->getTypeOfField('float'));
     }
 
-    /**
-     * @group DDC-115
-     */
+    /** @group DDC-115 */
     public function testMapAssociationInGlobalNamespace(): void
     {
         require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
@@ -192,7 +190,7 @@ class ClassMetadataTest extends OrmTestCase
                     'joinColumns' => [['name' => 'bar_id', 'referencedColumnName' => 'id']],
                     'inverseJoinColumns' => [['name' => 'baz_id', 'referencedColumnName' => 'id']],
                 ],
-            ]
+            ],
         );
 
         self::assertEquals('DoctrineGlobalUser', $cm->associationMappings['author']['targetEntity']);
@@ -206,7 +204,7 @@ class ClassMetadataTest extends OrmTestCase
             [
                 'fieldName' => 'groups',
                 'targetEntity' => 'CmsGroup',
-            ]
+            ],
         );
 
         $assoc = $cm->associationMappings['groups'];
@@ -216,7 +214,7 @@ class ClassMetadataTest extends OrmTestCase
                 'joinColumns' => [['name' => 'cmsuser_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']],
                 'inverseJoinColumns' => [['name' => 'cmsgroup_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']],
             ],
-            $assoc['joinTable']
+            $assoc['joinTable'],
         );
         self::assertTrue($assoc['isOnDeleteCascade']);
     }
@@ -229,7 +227,7 @@ class ClassMetadataTest extends OrmTestCase
             [
                 'fieldName' => 'groups',
                 'targetEntity' => 'CmsGroup',
-            ]
+            ],
         );
 
         $assoc = $cm->associationMappings['groups'];
@@ -238,9 +236,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertTrue($assoc['isOnDeleteCascade']);
     }
 
-    /**
-     * @group DDC-115
-     */
+    /** @group DDC-115 */
     public function testSetDiscriminatorMapInGlobalNamespace(): void
     {
         require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
@@ -253,9 +249,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals('DoctrineGlobalUser', $cm->discriminatorMap['foo']);
     }
 
-    /**
-     * @group DDC-115
-     */
+    /** @group DDC-115 */
     public function testSetSubClassesInGlobalNamespace(): void
     {
         require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
@@ -267,9 +261,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals('DoctrineGlobalArticle', $cm->subClasses[0]);
     }
 
-    /**
-     * @group DDC-268
-     */
+    /** @group DDC-268 */
     public function testSetInvalidVersionMappingThrowsException(): void
     {
         $field              = [];
@@ -370,9 +362,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapField(['fieldName' => 'name', 'columnName' => 'name']);
     }
 
-    /**
-     * @group DDC-1224
-     */
+    /** @group DDC-1224 */
     public function testGetTemporaryTableNameSchema(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -407,7 +397,7 @@ class ClassMetadataTest extends OrmTestCase
                     'joinColumns' => [['referencedColumnName' => 'id']],
                     'inverseJoinColumns' => [['referencedColumnName' => 'id']],
                 ],
-            ]
+            ],
         );
         self::assertEquals('cmsaddress_cmsuser', $cm->associationMappings['user']['joinTable']['name']);
     }
@@ -424,7 +414,7 @@ class ClassMetadataTest extends OrmTestCase
                 'fieldName' => 'user',
                 'targetEntity' => 'CmsUser',
                 'joinColumns' => [['referencedColumnName' => 'id']],
-            ]
+            ],
         );
         self::assertEquals('user_id', $cm->associationMappings['user']['joinColumns'][0]['name']);
 
@@ -440,15 +430,13 @@ class ClassMetadataTest extends OrmTestCase
                     'joinColumns' => [['referencedColumnName' => 'id']],
                     'inverseJoinColumns' => [['referencedColumnName' => 'id']],
                 ],
-            ]
+            ],
         );
         self::assertEquals('cmsaddress_id', $cm->associationMappings['user']['joinTable']['joinColumns'][0]['name']);
         self::assertEquals('cmsuser_id', $cm->associationMappings['user']['joinTable']['inverseJoinColumns'][0]['name']);
     }
 
-    /**
-     * @group DDC-559
-     */
+    /** @group DDC-559 */
     public function testUnderscoreNamingStrategyDefaults(): void
     {
         $namingStrategy     = new UnderscoreNamingStrategy(CASE_UPPER);
@@ -459,14 +447,14 @@ class ClassMetadataTest extends OrmTestCase
             [
                 'fieldName'     => 'user',
                 'targetEntity'  => 'CmsUser',
-            ]
+            ],
         );
 
         $manyToManyMetadata->mapManyToMany(
             [
                 'fieldName'     => 'user',
                 'targetEntity'  => 'CmsUser',
-            ]
+            ],
         );
 
         self::assertEquals(['USER_ID' => 'ID'], $oneToOneMetadata->associationMappings['user']['sourceToTargetKeyColumns']);
@@ -493,9 +481,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals('DOCTRINE_GLOBAL_ARTICLE_CMS_USER', $cm->associationMappings['author']['joinTable']['name']);
     }
 
-    /**
-     * @group DDC-886
-     */
+    /** @group DDC-886 */
     public function testSetMultipleIdentifierSetsComposite(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -508,9 +494,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertTrue($cm->isIdentifierComposite);
     }
 
-    /**
-     * @group DDC-944
-     */
+    /** @group DDC-944 */
     public function testMappingNotFound(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -522,9 +506,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->getFieldMapping('foo');
     }
 
-    /**
-     * @group DDC-961
-     */
+    /** @group DDC-961 */
     public function testJoinTableMappingDefaults(): void
     {
         $cm = new ClassMetadata('DoctrineGlobalArticle');
@@ -535,9 +517,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals('doctrineglobalarticle_cmsuser', $cm->associationMappings['author']['joinTable']['name']);
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testMapIdentifierAssociation(): void
     {
         $cm = new ClassMetadata(DDC117ArticleDetails::class);
@@ -549,16 +529,14 @@ class ClassMetadataTest extends OrmTestCase
                 'id' => true,
                 'targetEntity' => DDC117Article::class,
                 'joinColumns' => [],
-            ]
+            ],
         );
 
         self::assertTrue($cm->containsForeignIdentifier, "Identifier Association should set 'containsForeignIdentifier' boolean flag.");
         self::assertEquals(['article'], $cm->identifier);
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testOrphanRemovalIdentifierAssociation(): void
     {
         $cm = new ClassMetadata(DDC117ArticleDetails::class);
@@ -574,13 +552,11 @@ class ClassMetadataTest extends OrmTestCase
                 'targetEntity' => DDC117Article::class,
                 'orphanRemoval' => true,
                 'joinColumns' => [],
-            ]
+            ],
         );
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testInverseIdentifierAssociation(): void
     {
         $cm = new ClassMetadata(DDC117ArticleDetails::class);
@@ -596,13 +572,11 @@ class ClassMetadataTest extends OrmTestCase
                 'mappedBy' => 'details', // INVERSE!
                 'targetEntity' => DDC117Article::class,
                 'joinColumns' => [],
-            ]
+            ],
         );
     }
 
-    /**
-     * @group DDC-117
-     */
+    /** @group DDC-117 */
     public function testIdentifierAssociationManyToMany(): void
     {
         $cm = new ClassMetadata(DDC117ArticleDetails::class);
@@ -617,13 +591,11 @@ class ClassMetadataTest extends OrmTestCase
                 'id' => true,
                 'targetEntity' => DDC117Article::class,
                 'joinColumns' => [],
-            ]
+            ],
         );
     }
 
-    /**
-     * @group DDC-996
-     */
+    /** @group DDC-996 */
     public function testEmptyFieldNameThrowsException(): void
     {
         $this->expectException(MappingException::class);
@@ -635,9 +607,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapField(['fieldName' => '']);
     }
 
-    /**
-     * @group DDC-1663
-     */
+    /** @group DDC-1663 */
     public function testRetrievalOfResultSetMappings(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -653,15 +623,13 @@ class ClassMetadataTest extends OrmTestCase
                         'entityClass'   => CmsUser::class,
                     ],
                 ],
-            ]
+            ],
         );
 
         self::assertCount(1, $cm->getSqlResultSetMappings());
     }
 
-    /**
-     * @group DDC-1663
-     */
+    /** @group DDC-1663 */
     public function testRetrieveOfSqlResultSetMapping(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -701,7 +669,7 @@ class ClassMetadataTest extends OrmTestCase
                 'columns'   => [
                     ['name' => 'scalarColumn'],
                 ],
-            ]
+            ],
         );
 
         $mapping = $cm->getSqlResultSetMapping('find-all');
@@ -717,9 +685,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals('scalarColumn', $mapping['columns'][0]['name']);
     }
 
-    /**
-     * @group DDC-2451
-     */
+    /** @group DDC-2451 */
     public function testSerializeEntityListeners(): void
     {
         $metadata = new ClassMetadata(CompanyContract::class);
@@ -734,9 +700,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals($metadata->entityListeners, $unserialize->entityListeners);
     }
 
-    /**
-     * @group DDC-1663
-     */
+    /** @group DDC-1663 */
     public function testNamingCollisionSqlResultSetMappingShouldThrowException(): void
     {
         $this->expectException(MappingException::class);
@@ -752,7 +716,7 @@ class ClassMetadataTest extends OrmTestCase
                         'entityClass'   => CmsUser::class,
                     ],
                 ],
-            ]
+            ],
         );
 
         $cm->addSqlResultSetMapping(
@@ -763,13 +727,11 @@ class ClassMetadataTest extends OrmTestCase
                         'entityClass'   => CmsUser::class,
                     ],
                 ],
-            ]
+            ],
         );
     }
 
-    /**
-     * @group DDC-1068
-     */
+    /** @group DDC-1068 */
     public function testClassCaseSensitivity(): void
     {
         $user = new CmsUser();
@@ -779,9 +741,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals(CmsUser::class, $cm->name);
     }
 
-    /**
-     * @group DDC-659
-     */
+    /** @group DDC-659 */
     public function testLifecycleCallbackNotFound(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -794,9 +754,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->validateLifecycleCallbacks(new RuntimeReflectionService());
     }
 
-    /**
-     * @group ImproveErrorMessages
-     */
+    /** @group ImproveErrorMessages */
     public function testTargetEntityNotFound(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -809,9 +767,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->validateAssociations();
     }
 
-    /**
-     * @group DDC-1663
-     */
+    /** @group DDC-1663 */
     public function testNameIsMandatoryForEntityNameSqlResultSetMappingException(): void
     {
         $this->expectException(MappingException::class);
@@ -826,7 +782,7 @@ class ClassMetadataTest extends OrmTestCase
                         'fields' => [],
                     ],
                 ],
-            ]
+            ],
         );
     }
 
@@ -859,14 +815,14 @@ class ClassMetadataTest extends OrmTestCase
             [
                 'fieldName'     => 'user',
                 'targetEntity'  => 'CmsUser',
-            ]
+            ],
         );
 
         $articleMetadata->mapManyToMany(
             [
                 'fieldName'     => 'author',
                 'targetEntity'  => CmsUser::class,
-            ]
+            ],
         );
 
         self::assertEquals('routing_routingleg', $routingMetadata->table['name']);
@@ -894,9 +850,7 @@ class ClassMetadataTest extends OrmTestCase
         ]);
     }
 
-    /**
-     * @group DDC-1746
-     */
+    /** @group DDC-1746 */
     public function testInvalidCascade(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -953,9 +907,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->setAttributeOverride('name', ['type' => 'date']);
     }
 
-    /**
-     * @group DDC-1955
-     */
+    /** @group DDC-1955 */
     public function testInvalidEntityListenerClassException(): void
     {
         $this->expectException(MappingException::class);
@@ -966,9 +918,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->addEntityListener(Events::postLoad, '\InvalidClassName', 'postLoadHandler');
     }
 
-    /**
-     * @group DDC-1955
-     */
+    /** @group DDC-1955 */
     public function testInvalidEntityListenerMethodException(): void
     {
         $this->expectException(MappingException::class);
@@ -987,7 +937,7 @@ class ClassMetadataTest extends OrmTestCase
             [
                 'fieldName' => 'friendsWithMe',
                 'targetEntity' => 'CustomTypeParent',
-            ]
+            ],
         );
 
         self::assertEquals(
@@ -996,16 +946,14 @@ class ClassMetadataTest extends OrmTestCase
                 'joinColumns' => [['name' => 'customtypeparent_source', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']],
                 'inverseJoinColumns' => [['name' => 'customtypeparent_target', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']],
             ],
-            $cm->associationMappings['friendsWithMe']['joinTable']
+            $cm->associationMappings['friendsWithMe']['joinTable'],
         );
         self::assertEquals(['customtypeparent_source', 'customtypeparent_target'], $cm->associationMappings['friendsWithMe']['joinTableColumns']);
         self::assertEquals(['customtypeparent_source' => 'id'], $cm->associationMappings['friendsWithMe']['relationToSourceKeyColumns']);
         self::assertEquals(['customtypeparent_target' => 'id'], $cm->associationMappings['friendsWithMe']['relationToTargetKeyColumns']);
     }
 
-    /**
-     * @group DDC-2608
-     */
+    /** @group DDC-2608 */
     public function testSetSequenceGeneratorThrowsExceptionWhenSequenceNameIsMissing(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -1028,13 +976,11 @@ class ClassMetadataTest extends OrmTestCase
 
         self::assertSame(
             ['sequenceName' => 'foo', 'quoted' => true, 'allocationSize' => '1', 'initialValue' => '1'],
-            $cm->sequenceGeneratorDefinition
+            $cm->sequenceGeneratorDefinition,
         );
     }
 
-    /**
-     * @group DDC-2700
-     */
+    /** @group DDC-2700 */
     public function testIsIdentifierMappedSuperClass(): void
     {
         $class = new ClassMetadata(DDC2700MappedSuperClass::class);
@@ -1042,9 +988,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertFalse($class->isIdentifier('foo'));
     }
 
-    /**
-     * @group DDC-3120
-     */
+    /** @group DDC-3120 */
     public function testCanInstantiateInternalPhpClassSubclass(): void
     {
         $classMetadata = new ClassMetadata(MyArrayObjectEntity::class);
@@ -1052,9 +996,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertInstanceOf(MyArrayObjectEntity::class, $classMetadata->newInstance());
     }
 
-    /**
-     * @group DDC-3120
-     */
+    /** @group DDC-3120 */
     public function testCanInstantiateInternalPhpClassSubclassFromUnserializedMetadata(): void
     {
         $classMetadata = unserialize(serialize(new ClassMetadata(MyArrayObjectEntity::class)));
@@ -1074,7 +1016,7 @@ class ClassMetadataTest extends OrmTestCase
                 'fieldName'    => 'test',
                 'class'        => TestEntity1::class,
                 'columnPrefix' => false,
-            ]
+            ],
         );
 
         $field = [
@@ -1103,9 +1045,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertSame(['foo', 'baz'], $metadata->getColumnNames(['status', 'name']));
     }
 
-    /**
-     * @group DDC-6460
-     */
+    /** @group DDC-6460 */
     public function testInlineEmbeddable(): void
     {
         $classMetadata = new ClassMetadata(TestEntity1::class);
@@ -1115,16 +1055,14 @@ class ClassMetadataTest extends OrmTestCase
                 'fieldName'    => 'test',
                 'class'        => TestEntity1::class,
                 'columnPrefix' => false,
-            ]
+            ],
         );
 
         self::assertTrue($classMetadata->hasField('test'));
     }
 }
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 class DDC2700MappedSuperClass
 {
     /**

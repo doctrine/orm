@@ -45,9 +45,7 @@ class GH6394Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class A
 {
     /**
@@ -62,14 +60,12 @@ class A
          * @Id
          * @Column(type="integer")
          */
-        public int $id
+        public int $id,
     ) {
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class B
 {
     /**
@@ -86,10 +82,8 @@ class B
          * @JoinColumn(name="aid", referencedColumnName="id")
          */
         public A $a,
-        /**
-         * @Column(type="string", length=255)
-         */
-        public string $something
+        /** @Column(type="string", length=255) */
+        public string $something,
     ) {
     }
 }

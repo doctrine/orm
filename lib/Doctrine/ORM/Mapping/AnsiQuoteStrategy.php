@@ -18,7 +18,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
     public function getColumnName(
         string $fieldName,
         ClassMetadata $class,
-        AbstractPlatform $platform
+        AbstractPlatform $platform,
     ): string {
         return $class->fieldMappings[$fieldName]['columnName'];
     }
@@ -50,7 +50,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
     public function getReferencedJoinColumnName(
         array $joinColumn,
         ClassMetadata $class,
-        AbstractPlatform $platform
+        AbstractPlatform $platform,
     ): string {
         return $joinColumn['referencedColumnName'];
     }
@@ -75,7 +75,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
         string $columnName,
         int $counter,
         AbstractPlatform $platform,
-        ?ClassMetadata $class = null
+        ClassMetadata|null $class = null,
     ): string {
         return $this->getSQLResultCasing($platform, $columnName . '_' . $counter);
     }

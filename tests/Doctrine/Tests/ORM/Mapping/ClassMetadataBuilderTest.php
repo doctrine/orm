@@ -15,9 +15,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\OrmTestCase;
 
-/**
- * @group DDC-659
- */
+/** @group DDC-659 */
 class ClassMetadataBuilderTest extends OrmTestCase
 {
     private ClassMetadata $cm;
@@ -57,7 +55,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'originalField' => null,
                 ],
             ],
-            $this->cm->embeddedClasses
+            $this->cm->embeddedClasses,
         );
     }
 
@@ -67,8 +65,8 @@ class ClassMetadataBuilderTest extends OrmTestCase
             $this->builder->addEmbedded(
                 'name',
                 Name::class,
-                'nm_'
-            )
+                'nm_',
+            ),
         );
 
         self::assertEquals(
@@ -80,7 +78,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'originalField' => null,
                 ],
             ],
-            $this->cm->embeddedClasses
+            $this->cm->embeddedClasses,
         );
     }
 
@@ -99,7 +97,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'declaredField' => null,
                 'originalField' => null,
             ],
-            $this->cm->embeddedClasses['name']
+            $this->cm->embeddedClasses['name'],
         );
     }
 
@@ -118,7 +116,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'declaredField' => null,
                 'originalField' => null,
             ],
-            $this->cm->embeddedClasses['name']
+            $this->cm->embeddedClasses['name'],
         );
     }
 
@@ -164,7 +162,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'indexes' => ['users_idx' => ['columns' => ['username', 'name']]],
                 'uniqueConstraints' => ['users_idx' => ['columns' => ['username', 'name']]],
             ],
-            $this->cm->table
+            $this->cm->table,
         );
     }
 
@@ -193,7 +191,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
         self::assertEquals(
             ['test' => CmsUser::class, 'test2' => CmsGroup::class],
-            $this->cm->discriminatorMap
+            $this->cm->discriminatorMap,
         );
         self::assertEquals('test', $this->cm->discriminatorValue);
     }
@@ -240,7 +238,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'nullable' => true,
                 'unique' => true,
             ],
-            $this->cm->fieldMappings['name']
+            $this->cm->fieldMappings['name'],
         );
     }
 
@@ -258,7 +256,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
         self::assertEquals(
             ['fieldName' => 'state', 'type' => 'integer', 'options' => ['unsigned' => true], 'columnName' => 'state'],
-            $this->cm->fieldMappings['state']
+            $this->cm->fieldMappings['state'],
         );
     }
 
@@ -276,7 +274,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                               ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
                               ->cascadeAll()
                               ->fetchExtraLazy()
-                              ->build()
+                              ->build(),
         );
 
         self::assertEquals(
@@ -322,7 +320,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'orphanRemoval' => false,
                 ],
             ],
-            $this->cm->associationMappings
+            $this->cm->associationMappings,
         );
     }
 
@@ -336,7 +334,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 ->cascadeAll()
                 ->fetchExtraLazy()
                 ->makePrimaryKey()
-                ->build()
+                ->build(),
         );
 
         self::assertEquals(
@@ -383,7 +381,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'id' => true,
                 ],
             ],
-            $this->cm->associationMappings
+            $this->cm->associationMappings,
         );
     }
 
@@ -394,7 +392,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                               ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
                               ->cascadeAll()
                               ->fetchExtraLazy()
-                              ->build()
+                              ->build(),
         );
 
         self::assertEquals(
@@ -440,7 +438,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'orphanRemoval' => false,
                 ],
             ],
-            $this->cm->associationMappings
+            $this->cm->associationMappings,
         );
     }
 
@@ -454,7 +452,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 ->cascadeAll()
                 ->fetchExtraLazy()
                 ->makePrimaryKey()
-                ->build()
+                ->build(),
         );
 
         self::assertEquals(
@@ -501,7 +499,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'orphanRemoval' => false,
                 ],
             ],
-            $this->cm->associationMappings
+            $this->cm->associationMappings,
         );
     }
 
@@ -527,7 +525,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                               ->addInverseJoinColumn('user_id', 'id')
                               ->cascadeAll()
                               ->fetchExtraLazy()
-                              ->build()
+                              ->build(),
         );
 
         self::assertEquals(
@@ -596,7 +594,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'orphanRemoval' => false,
                 ],
             ],
-            $this->cm->associationMappings
+            $this->cm->associationMappings,
         );
     }
 
@@ -621,7 +619,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                         ->mappedBy('test')
                         ->setOrderBy(['test'])
                         ->setIndexBy('test')
-                        ->build()
+                        ->build(),
         );
 
         self::assertEquals(
@@ -649,7 +647,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'orphanRemoval' => false,
                 ],
             ],
-            $this->cm->associationMappings
+            $this->cm->associationMappings,
         );
     }
 
@@ -672,7 +670,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 ->createOneToOne('groups', CmsGroup::class)
                 ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
                 ->orphanRemoval()
-                ->build()
+                ->build(),
         );
 
         self::assertEquals(
@@ -712,7 +710,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'orphanRemoval' => true,
                 ],
             ],
-            $this->cm->associationMappings
+            $this->cm->associationMappings,
         );
     }
 
@@ -723,7 +721,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 ->createOneToMany('groups', CmsGroup::class)
                 ->mappedBy('test')
                 ->orphanRemoval()
-                ->build()
+                ->build(),
         );
 
         self::assertEquals(
@@ -747,7 +745,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'orphanRemoval' => true,
                 ],
             ],
-            $this->cm->associationMappings
+            $this->cm->associationMappings,
         );
     }
 
@@ -817,7 +815,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'orphanRemoval' => true,
                 ],
             ],
-            $this->cm->associationMappings
+            $this->cm->associationMappings,
         );
     }
 

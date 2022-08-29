@@ -11,9 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
 {
     private Application $application;
@@ -41,7 +39,7 @@ class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
                 'command' => $command->getName(),
                 '--all'   => true,
             ],
-            ['decorated' => false]
+            ['decorated' => false],
         );
 
         self::assertStringContainsString(' // Clearing all second-level cache entity regions', $tester->getDisplay());
@@ -57,12 +55,12 @@ class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
                 'command'      => $command->getName(),
                 'entity-class' => Country::class,
             ],
-            ['decorated' => false]
+            ['decorated' => false],
         );
 
         self::assertStringContainsString(
             ' // Clearing second-level cache for entity "Doctrine\Tests\Models\Cache\Country"',
-            $tester->getDisplay()
+            $tester->getDisplay(),
         );
     }
 
@@ -77,12 +75,12 @@ class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
                 'entity-class' => Country::class,
                 'entity-id'    => 1,
             ],
-            ['decorated' => false]
+            ['decorated' => false],
         );
 
         self::assertStringContainsString(
             ' // Clearing second-level cache entry for entity "Doctrine\Tests\Models\Cache\Country" identified by',
-            $tester->getDisplay()
+            $tester->getDisplay(),
         );
 
         self::assertStringContainsString(' // "1"', $tester->getDisplay());
@@ -99,12 +97,12 @@ class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
                 'entity-class' => Country::class,
                 '--flush'      => true,
             ],
-            ['decorated' => false]
+            ['decorated' => false],
         );
 
         self::assertStringContainsString(
             ' // Flushing cache provider configured for entity named "Doctrine\Tests\Models\Cache\Country"',
-            $tester->getDisplay()
+            $tester->getDisplay(),
         );
     }
 }

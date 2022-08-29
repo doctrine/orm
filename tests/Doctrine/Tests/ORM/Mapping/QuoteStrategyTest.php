@@ -15,9 +15,7 @@ use Doctrine\Tests\Models\DDC117\DDC117Article;
 use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
 use Doctrine\Tests\OrmTestCase;
 
-/**
- * @group DDC-1845
- */
+/** @group DDC-1845 */
 class QuoteStrategyTest extends OrmTestCase
 {
     private DefaultQuoteStrategy $strategy;
@@ -87,7 +85,7 @@ class QuoteStrategyTest extends OrmTestCase
                 'targetEntity'  => 'CmsUser',
                 'inversedBy'    => 'users',
                 'joinTable'     => ['name' => '`cmsaddress_cmsuser`'],
-            ]
+            ],
         );
 
         $cm2->mapManyToMany(
@@ -96,7 +94,7 @@ class QuoteStrategyTest extends OrmTestCase
                 'targetEntity'  => 'CmsUser',
                 'inversedBy'    => 'users',
                 'joinTable'     => ['name' => 'cmsaddress_cmsuser'],
-            ]
+            ],
         );
 
         self::assertEquals('"cmsaddress_cmsuser"', $this->strategy->getJoinTableName($cm1->associationMappings['user'], $cm1, $this->platform));
@@ -113,7 +111,7 @@ class QuoteStrategyTest extends OrmTestCase
                 'id'            => true,
                 'fieldName'     => 'id',
                 'columnName'    => '`id`',
-            ]
+            ],
         );
 
         $cm2->mapField(
@@ -121,7 +119,7 @@ class QuoteStrategyTest extends OrmTestCase
                 'id'            => true,
                 'fieldName'     => 'id',
                 'columnName'    => 'id',
-            ]
+            ],
         );
 
         self::assertEquals(['"id"'], $this->strategy->getIdentifierColumnNames($cm1, $this->platform));
@@ -149,7 +147,7 @@ class QuoteStrategyTest extends OrmTestCase
                 'joinColumns'    => [
                     ['name' => '`article`'],
                 ],
-            ]
+            ],
         );
 
         self::assertEquals(['"article"'], $this->strategy->getIdentifierColumnNames($cm, $this->platform));
@@ -167,7 +165,7 @@ class QuoteStrategyTest extends OrmTestCase
                 'joinColumns'    => [
                     ['name' => '`article`'],
                 ],
-            ]
+            ],
         );
 
         $joinColumn = $cm->associationMappings['article']['joinColumns'][0];
@@ -186,7 +184,7 @@ class QuoteStrategyTest extends OrmTestCase
                 'joinColumns'    => [
                     ['name' => '`article`'],
                 ],
-            ]
+            ],
         );
 
         $joinColumn = $cm->associationMappings['article']['joinColumns'][0];

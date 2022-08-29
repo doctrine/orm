@@ -46,7 +46,7 @@ class CompanyFlexUltraContract extends CompanyFlexContract
                 'type'      => 'integer',
                 'name'      => 'maxPrice',
                 'fieldName' => 'maxPrice',
-            ]
+            ],
         );
         $metadata->addEntityListener(Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
         $metadata->addEntityListener(Events::prePersist, 'CompanyContractListener', 'prePersistHandler');

@@ -18,9 +18,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 use function iterator_to_array;
 
-/**
- * @covers \Doctrine\ORM\Internal\Hydration\AbstractHydrator
- */
+/** @covers \Doctrine\ORM\Internal\Hydration\AbstractHydrator */
 class AbstractHydratorTest extends OrmFunctionalTestCase
 {
     private EventManager&MockObject $mockEventManager;
@@ -90,9 +88,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
         iterator_to_array($this->hydrator->toIterable($this->mockResult, $this->mockResultMapping));
     }
 
-    /**
-     * @group #6623
-     */
+    /** @group #6623 */
     public function testHydrateAllRegistersAndClearsAllAttachedListeners(): void
     {
         $eventListenerHasBeenRegistered = false;
@@ -119,9 +115,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
         $this->hydrator->hydrateAll($this->mockResult, $this->mockResultMapping);
     }
 
-    /**
-     * @group #8482
-     */
+    /** @group #8482 */
     public function testHydrateAllClearsAllAttachedListenersEvenOnError(): void
     {
         $eventListenerHasBeenRegistered = false;

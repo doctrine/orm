@@ -306,9 +306,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         IterableTester::assertResultsAreTheSame($q);
     }
 
-    /**
-     * @group DDC-368
-     */
+    /** @group DDC-368 */
     public function testBulkUpdateIssueDDC368(): void
     {
         $this->_em->createQuery('UPDATE ' . CompanyEmployee::class . ' AS p SET p.salary = 1')
@@ -324,9 +322,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         IterableTester::assertResultsAreTheSame($query);
     }
 
-    /**
-     * @group DDC-1341
-     */
+    /** @group DDC-1341 */
     public function testBulkUpdateNonScalarParameterDDC1341(): void
     {
         $this->_em->createQuery('UPDATE ' . CompanyEmployee::class . ' AS p SET p.startDate = ?0 WHERE p.department = ?1')
@@ -337,9 +333,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @group DDC-130
-     */
+    /** @group DDC-130 */
     public function testDeleteJoinTableRecords(): void
     {
         $employee1 = new CompanyEmployee();
@@ -366,9 +360,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         self::assertNull($this->_em->find($employee1::class, $employee1Id));
     }
 
-    /**
-     * @group DDC-728
-     */
+    /** @group DDC-728 */
     public function testQueryForInheritedSingleValuedAssociation(): void
     {
         $manager = new CompanyManager();
@@ -395,9 +387,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals($person->getId(), $dqlManager->getSpouse()->getId());
     }
 
-    /**
-     * @group DDC-817
-     */
+    /** @group DDC-817 */
     public function testFindByAssociation(): void
     {
         $manager = new CompanyManager();
@@ -427,9 +417,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals($manager->getId(), $pmanager->getId());
     }
 
-    /**
-     * @group DDC-834
-     */
+    /** @group DDC-834 */
     public function testGetReferenceEntityWithSubclasses(): void
     {
         $manager = new CompanyManager();
@@ -452,9 +440,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         self::assertInstanceOf(Proxy::class, $ref, 'A proxy can be generated only if no subclasses exists for the requested reference.');
     }
 
-    /**
-     * @group DDC-992
-     */
+    /** @group DDC-992 */
     public function testGetSubClassManyToManyCollection(): void
     {
         $manager = new CompanyManager();
@@ -478,9 +464,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         self::assertCount(1, $manager->getFriends());
     }
 
-    /**
-     * @group DDC-1777
-     */
+    /** @group DDC-1777 */
     public function testExistsSubclass(): void
     {
         $manager = new CompanyManager();
@@ -497,9 +481,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         self::assertTrue($this->_em->getUnitOfWork()->getEntityPersister($manager::class)->exists($manager));
     }
 
-    /**
-     * @group DDC-1637
-     */
+    /** @group DDC-1637 */
     public function testMatching(): void
     {
         $manager = new CompanyManager();
@@ -513,13 +495,13 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository(CompanyEmployee::class);
         $users      = $repository->matching(new Criteria(
-            Criteria::expr()->eq('department', 'IT')
+            Criteria::expr()->eq('department', 'IT'),
         ));
         self::assertCount(1, $users);
 
         $repository = $this->_em->getRepository(CompanyManager::class);
         $users      = $repository->matching(new Criteria(
-            Criteria::expr()->eq('department', 'IT')
+            Criteria::expr()->eq('department', 'IT'),
         ));
         self::assertCount(1, $users);
     }

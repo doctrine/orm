@@ -49,14 +49,10 @@ class NavPointOfInterest
     public function __construct(
         int $lat,
         int $long,
-        /**
-         * @Column(type="string", length=255)
-         */
+        /** @Column(type="string", length=255) */
         private string $name,
-        /**
-         * @ManyToOne(targetEntity="NavCountry", inversedBy="pois")
-         */
-        private NavCountry $country
+        /** @ManyToOne(targetEntity="NavCountry", inversedBy="pois") */
+        private NavCountry $country,
     ) {
         $this->lat      = $lat;
         $this->long     = $long;
@@ -88,9 +84,7 @@ class NavPointOfInterest
         $this->visitors[] = $user;
     }
 
-    /**
-     * @psalm-var Collection<int, NavUser>
-     */
+    /** @psalm-var Collection<int, NavUser> */
     public function getVisitors(): Collection
     {
         return $this->visitors;

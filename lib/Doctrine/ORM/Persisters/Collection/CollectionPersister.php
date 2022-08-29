@@ -33,7 +33,7 @@ interface CollectionPersister
      *
      * @return mixed[]
      */
-    public function slice(PersistentCollection $collection, int $offset, ?int $length = null): array;
+    public function slice(PersistentCollection $collection, int $offset, int|null $length = null): array;
 
     /**
      * Checks for existence of an element.

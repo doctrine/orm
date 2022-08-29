@@ -32,7 +32,7 @@ final class GH6362Test extends OrmFunctionalTestCase
             GH6362Start::class,
             GH6362Base::class,
             GH6362Child::class,
-            GH6362Join::class
+            GH6362Join::class,
         );
     }
 
@@ -88,9 +88,7 @@ final class GH6362Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6362Start
 {
     /**
@@ -128,9 +126,7 @@ abstract class GH6362Base
     private $starts;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6362Child extends GH6362Base
 {
     /**
@@ -140,9 +136,7 @@ class GH6362Child extends GH6362Base
     private $joins;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6362Join
 {
     /**

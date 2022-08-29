@@ -19,9 +19,7 @@ final class NativeQuery extends AbstractQuery
 {
     private string $sql;
 
-    /**
-     * @return $this
-     */
+    /** @return $this */
     public function setSQL(string $sql): self
     {
         $this->sql = $sql;
@@ -62,7 +60,7 @@ final class NativeQuery extends AbstractQuery
             $this->sql,
             $parameters,
             $types,
-            $this->_queryCacheProfile
+            $this->_queryCacheProfile,
         );
     }
 }

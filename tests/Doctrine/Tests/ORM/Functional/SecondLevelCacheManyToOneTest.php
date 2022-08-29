@@ -12,9 +12,7 @@ use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Token;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class SecondLevelCacheManyToOneTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testPutOnPersist(): void

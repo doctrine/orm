@@ -191,7 +191,7 @@ class DatabaseDriver implements MappingDriver
                 'Passing an instance of %s to %s is deprecated, please pass a ClassMetadata instance instead.',
                 get_class($metadata),
                 __METHOD__,
-                ClassMetadata::class
+                ClassMetadata::class,
             );
         }
 
@@ -277,9 +277,7 @@ class DatabaseDriver implements MappingDriver
         }
     }
 
-    /**
-     * @throws MappingException
-     */
+    /** @throws MappingException */
     private function reverseEngineerMappingFromDatabase(): void
     {
         if ($this->tables !== null) {
@@ -301,7 +299,7 @@ class DatabaseDriver implements MappingDriver
             if (! $table->hasPrimaryKey()) {
                 throw new MappingException(
                     'Table ' . $tableName . ' has no primary key. Doctrine does not ' .
-                    "support reverse engineering from tables that don't have a primary key."
+                    "support reverse engineering from tables that don't have a primary key.",
                 );
             }
 
@@ -512,7 +510,7 @@ class DatabaseDriver implements MappingDriver
     {
         try {
             return $table->getPrimaryKey()->getColumns();
-        } catch (SchemaException $e) {
+        } catch (SchemaException) {
             // Do nothing
         }
 
@@ -541,7 +539,7 @@ class DatabaseDriver implements MappingDriver
     private function getFieldNameForColumn(
         string $tableName,
         string $columnName,
-        bool $fk = false
+        bool $fk = false,
     ): string {
         if (isset($this->fieldNamesForColumns[$tableName], $this->fieldNamesForColumns[$tableName][$columnName])) {
             return $this->fieldNamesForColumns[$tableName][$columnName];

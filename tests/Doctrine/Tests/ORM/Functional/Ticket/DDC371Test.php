@@ -17,9 +17,7 @@ use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-371
- */
+/** @group DDC-371 */
 class DDC371Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

@@ -17,7 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1301Test extends OrmFunctionalTestCase
 {
-    private ?int $userId = null;
+    private int|null $userId = null;
 
     protected function setUp(): void
     {

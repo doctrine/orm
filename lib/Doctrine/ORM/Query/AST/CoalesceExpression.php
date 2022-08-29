@@ -16,9 +16,7 @@ class CoalesceExpression extends Node
     /** @var mixed[] */
     public $scalarExpressions = [];
 
-    /**
-     * @param mixed[] $scalarExpressions
-     */
+    /** @param mixed[] $scalarExpressions */
     public function __construct(array $scalarExpressions)
     {
         $this->scalarExpressions = $scalarExpressions;

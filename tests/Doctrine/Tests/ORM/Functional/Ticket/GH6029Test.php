@@ -32,7 +32,7 @@ final class GH6029Test extends OrmFunctionalTestCase
                 GH6029Group2::class,
                 GH6029Product::class,
                 GH6029Feature::class,
-            ]
+            ],
         );
     }
 
@@ -53,8 +53,8 @@ final class GH6029Test extends OrmFunctionalTestCase
                 'Expected value of type "%s" for association field "%s#$groups", got "%s" instead.',
                 GH6029Group::class,
                 GH6029User::class,
-                GH6029Group2::class
-            )
+                GH6029Group2::class,
+            ),
         );
 
         $this->_em->persist($user);
@@ -78,8 +78,8 @@ final class GH6029Test extends OrmFunctionalTestCase
                 'Expected value of type "%s" for association field "%s#$features", got "%s" instead.',
                 GH6029Feature::class,
                 GH6029Product::class,
-                GH6029Group2::class
-            )
+                GH6029Group2::class,
+            ),
         );
 
         $this->_em->persist($product);

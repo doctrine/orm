@@ -20,9 +20,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @group DDC-203
-     */
+    /** @group DDC-203 */
     public function testDetachedEntityThrowsExceptionOnFlush(): void
     {
         $ph              = new CmsPhonenumber();
@@ -39,9 +37,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    /**
-     * @group DDC-822
-     */
+    /** @group DDC-822 */
     public function testUseDetachedEntityAsQueryParameter(): void
     {
         $user           = new CmsUser();
@@ -64,9 +60,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         self::assertEquals('gblanco', $newUser->username);
     }
 
-    /**
-     * @group DDC-920
-     */
+    /** @group DDC-920 */
     public function testDetachManagedUnpersistedEntity(): void
     {
         $user           = new CmsUser();

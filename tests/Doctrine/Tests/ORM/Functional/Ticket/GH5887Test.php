@@ -18,9 +18,7 @@ use Stringable;
 
 use function assert;
 
-/**
- * @group GH-5887
- */
+/** @group GH-5887 */
 class GH5887Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -62,9 +60,7 @@ class GH5887Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH5887Cart
 {
     /**
@@ -72,7 +68,7 @@ class GH5887Cart
      * @Column(type="integer")
      * @GeneratedValue(strategy="NONE")
      */
-    private ?int $id = null;
+    private int|null $id = null;
 
     /**
      * One Cart has One Customer.
@@ -80,7 +76,7 @@ class GH5887Cart
      * @OneToOne(targetEntity="GH5887Customer", inversedBy="cart")
      * @JoinColumn(name="customer_id", referencedColumnName="id")
      */
-    private ?GH5887Customer $customer = null;
+    private GH5887Customer|null $customer = null;
 
     public function getId(): int
     {
@@ -106,9 +102,7 @@ class GH5887Cart
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH5887Customer
 {
     /**
@@ -116,14 +110,14 @@ class GH5887Customer
      * @Column(type="GH5887CustomIdObject", length=255)
      * @GeneratedValue(strategy="NONE")
      */
-    private ?GH5887CustomIdObject $id = null;
+    private GH5887CustomIdObject|null $id = null;
 
     /**
      * One Customer has One Cart.
      *
      * @OneToOne(targetEntity="GH5887Cart", mappedBy="customer")
      */
-    private ?GH5887Cart $cart = null;
+    private GH5887Cart|null $cart = null;
 
     public function getId(): GH5887CustomIdObject
     {

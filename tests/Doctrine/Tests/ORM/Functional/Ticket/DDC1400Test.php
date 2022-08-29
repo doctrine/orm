@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1400
- */
+/** @group DDC-1400 */
 class DDC1400Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -25,7 +23,7 @@ class DDC1400Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC1400Article::class,
             DDC1400User::class,
-            DDC1400UserState::class
+            DDC1400UserState::class,
         );
     }
 
@@ -71,9 +69,7 @@ class DDC1400Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1400Article
 {
     /**
@@ -91,9 +87,7 @@ class DDC1400Article
     public $userStates;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1400User
 {
     /**
@@ -111,9 +105,7 @@ class DDC1400User
     public $userStates;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1400UserState
 {
     /**

@@ -18,9 +18,7 @@ final class DiscriminatorMap implements Annotation
     /** @var array<int|string, string> */
     public $value;
 
-    /**
-     * @param array<int|string, string> $value
-     */
+    /** @param array<int|string, string> $value */
     public function __construct(array $value)
     {
         $this->value = $value;

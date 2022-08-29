@@ -17,9 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
 
-/**
- * @group DDC-2306
- */
+/** @group DDC-2306 */
 class DDC2306Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -30,7 +28,7 @@ class DDC2306Test extends OrmFunctionalTestCase
             DDC2306Zone::class,
             DDC2306User::class,
             DDC2306Address::class,
-            DDC2306UserAddress::class
+            DDC2306UserAddress::class,
         );
     }
 
@@ -79,7 +77,7 @@ class DDC2306Test extends OrmFunctionalTestCase
         self::assertEquals(
             $userId,
             $user->id,
-            'As of DDC-1734, the identifier is NULL for un-managed proxies. The identifier should be an integer here'
+            'As of DDC-1734, the identifier is NULL for un-managed proxies. The identifier should be an integer here',
         );
     }
 }
@@ -96,9 +94,7 @@ class DDC2306Zone
     public $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2306User
 {
     /**
@@ -171,14 +167,10 @@ class DDC2306UserAddress
 
     /** Constructor */
     public function __construct(
-        /**
-         * @ManyToOne(targetEntity="DDC2306User")
-         */
+        /** @ManyToOne(targetEntity="DDC2306User") */
         public DDC2306User $user,
-        /**
-         * @ManyToOne(targetEntity="DDC2306Address", fetch="LAZY")
-         */
-        public DDC2306Address $address
+        /** @ManyToOne(targetEntity="DDC2306Address", fetch="LAZY") */
+        public DDC2306Address $address,
     ) {
         $user->addresses->add($this);
         $address->users->add($this);

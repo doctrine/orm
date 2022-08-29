@@ -32,13 +32,11 @@ class DDC2775Test extends OrmFunctionalTestCase
                 Role::class,
                 AdminRole::class,
                 Authorization::class,
-            ]
+            ],
         );
     }
 
-    /**
-     * @group DDC-2775
-     */
+    /** @group DDC-2775 */
     public function testIssueCascadeRemove(): void
     {
         $role = new AdminRole();

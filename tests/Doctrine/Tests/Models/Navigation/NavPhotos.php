@@ -35,10 +35,8 @@ class NavPhotos
          * })
          */
         private NavPointOfInterest $poi,
-        /**
-         * @Column(type="string", length=255, name="file_name")
-         */
-        private string $file
+        /** @Column(type="string", length=255, name="file_name") */
+        private string $file,
     ) {
     }
 

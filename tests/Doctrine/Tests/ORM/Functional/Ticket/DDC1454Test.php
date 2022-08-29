@@ -16,9 +16,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use function mt_getrandmax;
 use function random_int;
 
-/**
- * @group DDC-1454
- */
+/** @group DDC-1454 */
 class DDC1454Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -36,9 +34,7 @@ class DDC1454Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1454Picture extends DDC1454File
 {
 }

@@ -22,9 +22,7 @@ use function json_decode;
 
 use const JSON_THROW_ON_ERROR;
 
-/**
- * @group DDC-2602
- */
+/** @group DDC-2602 */
 class DDC2602Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -35,7 +33,7 @@ class DDC2602Test extends OrmFunctionalTestCase
             DDC2602User::class,
             DDC2602Biography::class,
             DDC2602BiographyField::class,
-            DDC2602BiographyFieldChoice::class
+            DDC2602BiographyFieldChoice::class,
         );
 
         $this->loadFixture();
@@ -160,9 +158,7 @@ class DDC2602PostLoadListener
 }
 
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2602User
 {
     /**
@@ -191,9 +187,7 @@ class DDC2602User
     public $biography;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2602Biography
 {
     /**
@@ -224,9 +218,7 @@ class DDC2602Biography
     public $fieldList = [];
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2602BiographyField
 {
     /**
@@ -265,9 +257,7 @@ class DDC2602BiographyField
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2602BiographyFieldChoice
 {
     /**

@@ -11,7 +11,7 @@ final class MismatchedEventManager extends LogicException implements ManagerExce
     public static function create(): self
     {
         return new self(
-            'Cannot use different EventManager instances for EntityManager and Connection.'
+            'Cannot use different EventManager instances for EntityManager and Connection.',
         );
     }
 }

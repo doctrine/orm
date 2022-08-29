@@ -9,9 +9,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC964Address
 {
     /**
@@ -22,22 +20,14 @@ class DDC964Address
     private int $id;
 
     public function __construct(
-        /**
-         * @Column
-         */
-        private ?string $zip = null,
-        /**
-         * @Column
-         */
-        private ?string $country = null,
-        /**
-         * @Column
-         */
-        private ?string $city = null,
-        /**
-         * @Column
-         */
-        private ?string $street = null
+        /** @Column */
+        private string|null $zip = null,
+        /** @Column */
+        private string|null $country = null,
+        /** @Column */
+        private string|null $city = null,
+        /** @Column */
+        private string|null $street = null,
     ) {
     }
 
@@ -46,7 +36,7 @@ class DDC964Address
         return $this->id;
     }
 
-    public function getCountry(): ?string
+    public function getCountry(): string|null
     {
         return $this->country;
     }
@@ -56,7 +46,7 @@ class DDC964Address
         $this->country = $country;
     }
 
-    public function getZip(): ?string
+    public function getZip(): string|null
     {
         return $this->zip;
     }
@@ -66,7 +56,7 @@ class DDC964Address
         $this->zip = $zip;
     }
 
-    public function getCity(): ?string
+    public function getCity(): string|null
     {
         return $this->city;
     }
@@ -76,7 +66,7 @@ class DDC964Address
         $this->city = $city;
     }
 
-    public function getStreet(): ?string
+    public function getStreet(): string|null
     {
         return $this->street;
     }

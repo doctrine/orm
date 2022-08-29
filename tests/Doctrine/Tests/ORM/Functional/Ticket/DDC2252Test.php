@@ -19,9 +19,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2252
- */
+/** @group DDC-2252 */
 class DDC2252Test extends OrmFunctionalTestCase
 {
     /** @psalm-var DDC2252User */
@@ -44,7 +42,7 @@ class DDC2252Test extends OrmFunctionalTestCase
             DDC2252User::class,
             DDC2252Privilege::class,
             DDC2252Membership::class,
-            DDC2252MerchantAccount::class
+            DDC2252MerchantAccount::class,
         );
 
         $this->loadFixtures();
@@ -190,9 +188,7 @@ class DDC2252User
         return $this->uid;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC2252Membership>
-     */
+    /** @psalm-return Collection<int, DDC2252Membership> */
     public function getMemberships(): Collection
     {
         return $this->memberships;
@@ -238,7 +234,7 @@ class DDC2252Membership
          * @ManyToOne(targetEntity="DDC2252MerchantAccount")
          * @JoinColumn(name="mch_accountid", referencedColumnName="accountid")
          */
-        protected DDC2252MerchantAccount $merchantAccount
+        protected DDC2252MerchantAccount $merchantAccount,
     ) {
         $this->privileges = new ArrayCollection();
     }
@@ -248,9 +244,7 @@ class DDC2252Membership
         $this->privileges[] = $privilege;
     }
 
-    /**
-     * @psalm-var Collection<int, DDC2252Privilege>
-     */
+    /** @psalm-var Collection<int, DDC2252Privilege> */
     public function getPrivileges(): Collection
     {
         return $this->privileges;

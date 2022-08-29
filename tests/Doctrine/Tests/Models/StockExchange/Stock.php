@@ -31,14 +31,10 @@ class Stock
          * @Column(type="string", length=255)
          */
         private string $symbol,
-        /**
-         * @Column(type="decimal")
-         */
+        /** @Column(type="decimal") */
         private float $price,
-        /**
-         * @ManyToOne(targetEntity="Market", inversedBy="stocks")
-         */
-        private Market $market
+        /** @ManyToOne(targetEntity="Market", inversedBy="stocks") */
+        private Market $market,
     ) {
         $market->addStock($this);
     }

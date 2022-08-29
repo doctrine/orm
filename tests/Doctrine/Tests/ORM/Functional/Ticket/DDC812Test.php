@@ -16,9 +16,7 @@ class DDC812Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @group DDC-812
-     */
+    /** @group DDC-812 */
     public function testFetchJoinInitializesPreviouslyUninitializedCollectionOfManagedEntity(): void
     {
         $article        = new CmsArticle();
@@ -38,7 +36,7 @@ class DDC812Test extends OrmFunctionalTestCase
         $article2 = $this->_em->find($article::class, $article->id);
 
         $article2Again = $this->_em->createQuery(
-            'select a, c from Doctrine\Tests\Models\CMS\CmsArticle a join a.comments c where a.id = ?1'
+            'select a, c from Doctrine\Tests\Models\CMS\CmsArticle a join a.comments c where a.id = ?1',
         )
             ->setParameter(1, $article->id)
             ->getSingleResult();

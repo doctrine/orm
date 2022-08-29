@@ -16,9 +16,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1335
- */
+/** @group DDC-1335 */
 class DDC1335Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -154,9 +152,7 @@ class DDC1335Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1335User
 {
     /**
@@ -174,15 +170,11 @@ class DDC1335User
     public $phones;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255, unique=true)
-         */
+        /** @Column(type="string", length=255, unique=true) */
         public string $email,
-        /**
-         * @Column(type="string", length=255)
-         */
+        /** @Column(type="string", length=255) */
         public string $name,
-        array $numbers = []
+        array $numbers = [],
     ) {
         $this->phones = new ArrayCollection();
 
@@ -192,9 +184,7 @@ class DDC1335User
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1335Phone
 {
     /**
@@ -205,19 +195,15 @@ class DDC1335Phone
      */
     public $id;
 
-    /**
-     * @param string $number
-     */
+    /** @param string $number */
     public function __construct(
         /**
          * @ManyToOne(targetEntity="DDC1335User", inversedBy="phones")
          * @JoinColumn(name="user_id", referencedColumnName="id", nullable = false)
          */
         public DDC1335User $user,
-        /**
-         * @Column(name="numericalValue", type="string", nullable = false)
-         */
-        public $numericalValue
+        /** @Column(name="numericalValue", type="string", nullable = false) */
+        public $numericalValue,
     ) {
     }
 }

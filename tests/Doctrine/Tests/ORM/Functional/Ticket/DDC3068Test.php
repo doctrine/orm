@@ -9,9 +9,7 @@ use Doctrine\Tests\Models\Taxi\Driver;
 use Doctrine\Tests\Models\Taxi\Ride;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-3068
- */
+/** @group DDC-3068 */
 class DDC3068Test extends OrmFunctionalTestCase
 {
     private Driver $foo;

@@ -14,20 +14,18 @@ use function is_array;
 
 final class ReflectionEnumProperty extends ReflectionProperty
 {
-    /**
-     * @param class-string<BackedEnum> $enumType
-     */
+    /** @param class-string<BackedEnum> $enumType */
     public function __construct(
         private readonly ReflectionProperty $originalReflectionProperty,
-        private readonly string $enumType
+        private readonly string $enumType,
     ) {
         parent::__construct(
             $originalReflectionProperty->getDeclaringClass()->getName(),
-            $originalReflectionProperty->getName()
+            $originalReflectionProperty->getName(),
         );
     }
 
-    public function getValue(?object $object = null): int|string|array|null
+    public function getValue(object|null $object = null): int|string|array|null
     {
         if ($object === null) {
             return null;
@@ -42,7 +40,7 @@ final class ReflectionEnumProperty extends ReflectionProperty
         if (is_array($enum)) {
             return array_map(
                 static fn (BackedEnum $item): int|string => $item->value,
-                $enum
+                $enum,
             );
         }
 
@@ -80,7 +78,7 @@ final class ReflectionEnumProperty extends ReflectionProperty
                 $this->originalReflectionProperty->getName(),
                 (string) $value,
                 $enumType,
-                $e
+                $e,
             );
         }
     }

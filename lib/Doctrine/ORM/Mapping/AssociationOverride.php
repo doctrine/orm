@@ -64,9 +64,9 @@ final class AssociationOverride implements Annotation
         string $name,
         $joinColumns = null,
         $inverseJoinColumns = null,
-        ?JoinTable $joinTable = null,
-        ?string $inversedBy = null,
-        ?string $fetch = null
+        JoinTable|null $joinTable = null,
+        string|null $inversedBy = null,
+        string|null $fetch = null,
     ) {
         if ($joinColumns instanceof JoinColumn) {
             $joinColumns = [$joinColumns];

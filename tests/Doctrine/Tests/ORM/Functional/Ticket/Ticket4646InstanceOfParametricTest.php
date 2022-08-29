@@ -21,7 +21,7 @@ class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
         parent::setUp();
         $this->createSchemaForModels(
             PersonTicket4646Parametric::class,
-            EmployeeTicket4646Parametric::class
+            EmployeeTicket4646Parametric::class,
         );
     }
 
@@ -35,7 +35,7 @@ class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery($dql);
         $query->setParameter(
             'parameter',
-            $this->_em->getClassMetadata(PersonTicket4646Parametric::class)
+            $this->_em->getClassMetadata(PersonTicket4646Parametric::class),
         );
         $result = $query->getResult();
         self::assertCount(2, $result);
@@ -62,7 +62,7 @@ class PersonTicket4646Parametric
      */
     private int $id;
 
-    public function getId(): ?int
+    public function getId(): int|null
     {
         return $this->id;
     }

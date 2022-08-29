@@ -102,7 +102,7 @@ class EntityManager implements EntityManagerInterface
     /**
      * The expression builder instance used to generate query expressions.
      */
-    private ?Expr $expressionBuilder = null;
+    private Expr|null $expressionBuilder = null;
 
     /**
      * Whether the EntityManager is closed or not.
@@ -112,12 +112,12 @@ class EntityManager implements EntityManagerInterface
     /**
      * Collection of query filters.
      */
-    private ?FilterCollection $filterCollection = null;
+    private FilterCollection|null $filterCollection = null;
 
     /**
      * The second level cache regions API.
      */
-    private ?Cache $cache = null;
+    private Cache|null $cache = null;
 
     /**
      * Creates a new EntityManager that operates on the given database connection
@@ -146,7 +146,7 @@ class EntityManager implements EntityManagerInterface
             $this,
             $config->getProxyDir(),
             $config->getProxyNamespace(),
-            $config->getAutoGenerateProxyClasses()
+            $config->getAutoGenerateProxyClasses(),
         );
 
         if ($config->isSecondLevelCacheEnabled()) {
@@ -176,7 +176,7 @@ class EntityManager implements EntityManagerInterface
         $this->conn->beginTransaction();
     }
 
-    public function getCache(): ?Cache
+    public function getCache(): Cache|null
     {
         return $this->cache;
     }
@@ -276,7 +276,7 @@ class EntityManager implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function find($className, mixed $id, LockMode|int|null $lockMode = null, ?int $lockVersion = null): ?object
+    public function find($className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): object|null
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($className, '\\'));
 
@@ -375,7 +375,7 @@ class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getReference(string $entityName, $id): ?object
+    public function getReference(string $entityName, $id): object|null
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
@@ -419,7 +419,7 @@ class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getPartialReference(string $entityName, $identifier): ?object
+    public function getPartialReference(string $entityName, $identifier): object|null
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
@@ -641,7 +641,7 @@ class EntityManager implements EntityManagerInterface
      * @throws DBALException
      * @throws ManagerException
      */
-    public static function create(array|Connection $connection, Configuration $config, ?EventManager $eventManager = null): EntityManager
+    public static function create(array|Connection $connection, Configuration $config, EventManager|null $eventManager = null): EntityManager
     {
         $connection = static::createConnection($connection, $config, $eventManager);
 
@@ -657,7 +657,7 @@ class EntityManager implements EntityManagerInterface
      * @throws DBALException
      * @throws ManagerException
      */
-    protected static function createConnection(array|Connection $connection, Configuration $config, ?EventManager $eventManager = null): Connection
+    protected static function createConnection(array|Connection $connection, Configuration $config, EventManager|null $eventManager = null): Connection
     {
         if (is_array($connection)) {
             return DriverManager::getConnection($connection, $config, $eventManager ?? new EventManager());

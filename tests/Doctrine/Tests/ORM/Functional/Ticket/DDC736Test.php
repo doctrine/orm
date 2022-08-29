@@ -23,9 +23,7 @@ class DDC736Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @group DDC-736
-     */
+    /** @group DDC-736 */
     public function testReorderEntityFetchJoinForHydration(): void
     {
         $cust = new ECommerceCustomer();

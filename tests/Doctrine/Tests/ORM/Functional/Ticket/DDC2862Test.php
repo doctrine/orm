@@ -129,15 +129,13 @@ class DDC2862Driver
     protected $id;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
+        /** @Column(type="string", length=255) */
         protected string $name,
         /**
          * @Cache()
          * @OneToOne(targetEntity="DDC2862User")
          */
-        protected ?DDC2862User $userProfile = null
+        protected DDC2862User|null $userProfile = null,
     ) {
     }
 
@@ -183,10 +181,8 @@ class DDC2862User
     protected $id;
 
     public function __construct(
-        /**
-         * @Column(type="string", length=255)
-         */
-        protected string $name
+        /** @Column(type="string", length=255) */
+        protected string $name,
     ) {
     }
 

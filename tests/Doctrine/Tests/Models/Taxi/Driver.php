@@ -26,7 +26,7 @@ class Driver
     private int $id;
 
     /** @Column(type="string", length=255); */
-    private ?string $name = null;
+    private string|null $name = null;
 
     /**
      * @psalm-var Collection<int, Ride>

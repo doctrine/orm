@@ -9,9 +9,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 #[ORM\MappedSuperclass]
 class DDC889SuperClass
 {
@@ -25,7 +23,7 @@ class DDC889SuperClass
     public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->mapField(
-            ['fieldName' => 'name']
+            ['fieldName' => 'name'],
         );
 
         $metadata->isMappedSuperclass = true;

@@ -16,8 +16,8 @@ use function unserialize;
  */
 class SequenceGenerator extends AbstractIdGenerator implements Serializable
 {
-    private int $nextValue = 0;
-    private ?int $maxValue = null;
+    private int $nextValue     = 0;
+    private int|null $maxValue = null;
 
     /**
      * Initializes a new sequence generator.
@@ -27,11 +27,11 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
      */
     public function __construct(
         private string $sequenceName,
-        private int $allocationSize
+        private int $allocationSize,
     ) {
     }
 
-    public function generateId(EntityManagerInterface $em, ?object $entity): int
+    public function generateId(EntityManagerInterface $em, object|null $entity): int
     {
         if ($this->maxValue === null || $this->nextValue === $this->maxValue) {
             // Allocate new values
@@ -52,7 +52,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     /**
      * Gets the maximum value of the currently allocated bag of values.
      */
-    public function getCurrentMaxValue(): ?int
+    public function getCurrentMaxValue(): int|null
     {
         return $this->maxValue;
     }
@@ -70,9 +70,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
         return serialize($this->__serialize());
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function __serialize(): array
     {
         return [
@@ -86,9 +84,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
         $this->__unserialize(unserialize($serialized));
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public function __unserialize(array $data): void
     {
         $this->sequenceName   = $data['sequenceName'];

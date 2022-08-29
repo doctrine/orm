@@ -30,7 +30,7 @@ final class IdentifierFlattener
         /**
          * The metadata factory, used to retrieve the ORM metadata of entity classes.
          */
-        private readonly ClassMetadataFactory $metadataFactory
+        private readonly ClassMetadataFactory $metadataFactory,
     ) {
     }
 
@@ -49,7 +49,7 @@ final class IdentifierFlattener
         foreach ($class->identifier as $field) {
             if (isset($class->associationMappings[$field]) && isset($id[$field]) && is_a($id[$field], $class->associationMappings[$field]['targetEntity'])) {
                 $targetClassMetadata = $this->metadataFactory->getMetadataFor(
-                    $class->associationMappings[$field]['targetEntity']
+                    $class->associationMappings[$field]['targetEntity'],
                 );
                 assert($targetClassMetadata instanceof ClassMetadata);
 

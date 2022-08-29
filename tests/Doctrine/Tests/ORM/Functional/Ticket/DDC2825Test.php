@@ -34,9 +34,7 @@ class DDC2825Test extends OrmFunctionalTestCase
         }
     }
 
-    /**
-     * @dataProvider getTestedClasses
-     */
+    /** @dataProvider getTestedClasses */
     public function testClassSchemaMappingsValidity(string $className, string $expectedSchemaName, string $expectedTableName): void
     {
         $classMetadata   = $this->_em->getClassMetadata($className);
@@ -58,13 +56,11 @@ class DDC2825Test extends OrmFunctionalTestCase
         // Checks sequence name validity
         self::assertEquals(
             $fullTableName . '_' . $classMetadata->getSingleIdentifierColumnName() . '_seq',
-            $classMetadata->getSequenceName($platform)
+            $classMetadata->getSequenceName($platform),
         );
     }
 
-    /**
-     * @dataProvider getTestedClasses
-     */
+    /** @dataProvider getTestedClasses */
     public function testPersistenceOfEntityWithSchemaMapping(string $className): void
     {
         $this->createSchemaForModels($className);

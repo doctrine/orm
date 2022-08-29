@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH-6464
- */
+/** @group GH-6464 */
 class GH6464Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -25,7 +23,7 @@ class GH6464Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             GH6464Post::class,
             GH6464User::class,
-            GH6464Author::class
+            GH6464Author::class,
         );
     }
 
@@ -46,7 +44,7 @@ class GH6464Test extends OrmFunctionalTestCase
         self::assertDoesNotMatchRegularExpression(
             '/INNER JOIN \w+ \w+ INNER JOIN/',
             $query->getSQL(),
-            'As of GH-6464, every INNER JOIN should have an ON clause, which is missing here'
+            'As of GH-6464, every INNER JOIN should have an ON clause, which is missing here',
         );
 
         // Query shouldn't yield a result, yet it shouldn't crash (anymore)

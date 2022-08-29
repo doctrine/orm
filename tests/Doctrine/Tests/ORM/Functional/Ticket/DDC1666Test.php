@@ -8,9 +8,7 @@ use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1666
- */
+/** @group DDC-1666 */
 class DDC1666Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

@@ -19,9 +19,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-992
- */
+/** @group DDC-992 */
 class DDC992Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -30,7 +28,7 @@ class DDC992Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC992Role::class,
             DDC992Parent::class,
-            DDC992Child::class
+            DDC992Child::class,
         );
     }
 
@@ -118,9 +116,7 @@ class DDC992Parent
     public $childs;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC992Child extends DDC992Parent
 {
     public function childs(): Collection
@@ -129,9 +125,7 @@ class DDC992Child extends DDC992Parent
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC992Role
 {
     public function getRoleID(): int

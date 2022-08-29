@@ -14,9 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function uniqid;
 
-/**
- * @group #6217
- */
+/** @group #6217 */
 final class GH6217Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -27,7 +25,7 @@ final class GH6217Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             GH6217AssociatedEntity::class,
-            GH6217FetchedEntity::class
+            GH6217FetchedEntity::class,
         );
     }
 
@@ -98,7 +96,7 @@ class GH6217FetchedEntity
          * @Cache("NONSTRICT_READ_WRITE")
          * @ManyToOne(targetEntity=GH6217AssociatedEntity::class, fetch="EAGER")
          */
-        public GH6217AssociatedEntity $eager
+        public GH6217AssociatedEntity $eager,
     ) {
     }
 }

@@ -55,16 +55,14 @@ class City
     public $attractions;
 
     public function __construct(
-        /**
-         * @Column(unique=true)
-         */
+        /** @Column(unique=true) */
         #[ORM\Column(unique: true)] protected string $name,
         /**
          * @Cache
          * @ManyToOne(targetEntity="State", inversedBy="cities")
          * @JoinColumn(name="state_id", referencedColumnName="id")
          */
-        #[ORM\Cache] #[ORM\ManyToOne(targetEntity: 'State', inversedBy: 'citities')] #[ORM\JoinColumn(name: 'state_id', referencedColumnName: 'id')] protected ?State $state = null
+        #[ORM\Cache] #[ORM\ManyToOne(targetEntity: 'State', inversedBy: 'citities')] #[ORM\JoinColumn(name: 'state_id', referencedColumnName: 'id')] protected State|null $state = null,
     ) {
         $this->travels     = new ArrayCollection();
         $this->attractions = new ArrayCollection();
@@ -90,7 +88,7 @@ class City
         $this->name = $name;
     }
 
-    public function getState(): ?State
+    public function getState(): State|null
     {
         return $this->state;
     }
@@ -105,9 +103,7 @@ class City
         $this->travels[] = $travel;
     }
 
-    /**
-     * @psalm-return Collection<int, Travel>
-     */
+    /** @psalm-return Collection<int, Travel> */
     public function getTravels(): Collection
     {
         return $this->travels;
@@ -118,9 +114,7 @@ class City
         $this->attractions[] = $attraction;
     }
 
-    /**
-     * @psalm-return Collection<int, Attraction>
-     */
+    /** @psalm-return Collection<int, Attraction> */
     public function getAttractions(): Collection
     {
         return $this->attractions;
@@ -136,7 +130,7 @@ class City
         $metadata->enableCache(
             [
                 'usage' => ClassMetadata::CACHE_USAGE_READ_ONLY,
-            ]
+            ],
         );
 
         $metadata->mapField(
@@ -144,14 +138,14 @@ class City
                 'fieldName' => 'id',
                 'type' => 'integer',
                 'id' => true,
-            ]
+            ],
         );
 
         $metadata->mapField(
             [
                 'fieldName' => 'name',
                 'type' => 'string',
-            ]
+            ],
         );
 
         $metadata->mapOneToOne(
@@ -166,7 +160,7 @@ class City
                             'referencedColumnName' => 'id',
                         ],
                     ],
-            ]
+            ],
         );
         $metadata->enableAssociationCache('state', [
             'usage' => ClassMetadata::CACHE_USAGE_READ_ONLY,
@@ -177,7 +171,7 @@ class City
                 'fieldName' => 'travels',
                 'targetEntity' => Travel::class,
                 'mappedBy' => 'visitedCities',
-            ]
+            ],
         );
 
         $metadata->mapOneToMany(
@@ -186,7 +180,7 @@ class City
                 'targetEntity' => Attraction::class,
                 'mappedBy' => 'city',
                 'orderBy' => ['name' => 'ASC'],
-            ]
+            ],
         );
         $metadata->enableAssociationCache('attractions', [
             'usage' => ClassMetadata::CACHE_USAGE_READ_ONLY,

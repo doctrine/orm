@@ -15,7 +15,7 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
     /** @psalm-var array<class-string, object> Map to store entity listener instances. */
     private array $instances = [];
 
-    public function clear(?string $className = null): void
+    public function clear(string|null $className = null): void
     {
         if ($className === null) {
             $this->instances = [];

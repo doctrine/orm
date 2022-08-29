@@ -41,10 +41,8 @@ class ComplexAction
          * @JoinColumn(name="action2_name", referencedColumnName="name")
          */
         public $action2,
-        /**
-         * @Column
-         */
-        public string $name
+        /** @Column */
+        public string $name,
     ) {
         $this->tokens = new ArrayCollection();
     }

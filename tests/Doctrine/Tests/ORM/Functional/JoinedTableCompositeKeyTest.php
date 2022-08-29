@@ -28,9 +28,7 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
         self::assertEquals($childEntity, $entity);
     }
 
-    /**
-     * @group non-cacheable
-     */
+    /** @group non-cacheable */
     public function testUpdateWithCompositeKey(): void
     {
         $childEntity = new JoinedChildClass();
@@ -54,7 +52,7 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
     {
         return $this->_em->find(
             JoinedRootClass::class,
-            ['keyPart1' => 'part-1', 'keyPart2' => 'part-2']
+            ['keyPart1' => 'part-1', 'keyPart2' => 'part-2'],
         );
     }
 }

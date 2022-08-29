@@ -45,7 +45,7 @@ class DDC3582Entity
          * @Column
          * @Id
          */
-        private string $id
+        private string $id,
     ) {
         $this->embeddable1 = new DDC3582Embeddable1();
     }

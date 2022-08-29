@@ -20,7 +20,7 @@ class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             Pet::class,
             Cat::class,
-            LitterBox::class
+            LitterBox::class,
         );
     }
 
