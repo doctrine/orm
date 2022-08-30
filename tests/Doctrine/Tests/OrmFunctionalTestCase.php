@@ -901,7 +901,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
     final protected function isQueryLogAvailable(): bool
     {
-        return $this->_em->getConnection() instanceof DbalExtensions\Connection;
+        return $this->_em && $this->_em->getConnection() instanceof DbalExtensions\Connection;
     }
 
     final protected function getQueryLog(): QueryLog
