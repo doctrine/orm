@@ -14,8 +14,8 @@ use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
-use Iterator;
 use IteratorAggregate;
+use Traversable;
 
 use function array_key_exists;
 use function array_map;
@@ -25,7 +25,7 @@ use function count;
 /**
  * The paginator can handle various complex scenarios with DQL.
  *
- * @template T
+ * @template-covariant T
  */
 class Paginator implements Countable, IteratorAggregate
 {
@@ -101,9 +101,9 @@ class Paginator implements Countable, IteratorAggregate
     /**
      * {@inheritdoc}
      *
-     * @psalm-return Iterator<array-key, T>
+     * @psalm-return Traversable<array-key, T>
      */
-    public function getIterator(): Iterator
+    public function getIterator(): Traversable
     {
         $offset = $this->query->getFirstResult();
         $length = $this->query->getMaxResults();
