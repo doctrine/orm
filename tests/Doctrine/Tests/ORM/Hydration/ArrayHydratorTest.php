@@ -11,7 +11,8 @@ use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\Enums\UserStatus;
+use Doctrine\Tests\Models\Enums\Card;
+use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Forum\ForumBoard;
 use Doctrine\Tests\Models\Forum\ForumCategory;
 
@@ -1228,21 +1229,21 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping();
 
-        $rsm->addEntityResult(CmsUser::class, 'u');
-        $rsm->addFieldResult('u', 'u__id', 'id');
-        $rsm->addFieldResult('u', 'u__enum_status', 'enumStatus');
-        $rsm->addIndexBy('u', 'id');
+        $rsm->addEntityResult(Card::class, 'c');
+        $rsm->addFieldResult('c', 'c__id', 'id');
+        $rsm->addFieldResult('c', 'c__suit', 'suit');
+        $rsm->addIndexBy('c', 'id');
 
         // Faked result set
         $resultSet = [
             //row1
             [
-                'u__id' => '1',
-                'u__enum_status' => 'active',
+                'c__id' => '1',
+                'c__suit' => 'H',
             ],
             [
-                'u__id' => '2',
-                'u__enum_status' => 'inactive',
+                'c__id' => '2',
+                'c__suit' => 'D',
             ],
         ];
 
@@ -1251,28 +1252,32 @@ class ArrayHydratorTest extends HydrationTestCase
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertCount(2, $result);
-        self::assertEquals(UserStatus::Active, $result[1]['enumStatus']);
-        self::assertEquals(UserStatus::Inactive, $result[2]['enumStatus']);
+
+        self::assertEquals(1, $result[1]['id']);
+        self::assertEquals(Suit::Hearts, $result[1]['suit']);
+
+        self::assertEquals(2, $result[2]['id']);
+        self::assertEquals(Suit::Diamonds, $result[2]['suit']);
     }
 
     public function testScalarResultWithEnumField(): void
     {
         $rsm = new ResultSetMapping();
 
-        $rsm->addEntityResult(CmsUser::class, 'u');
-        $rsm->addScalarResult('u__enum_status', 'someStatus', 'string');
-        $rsm->addEnumResult('u__enum_status', UserStatus::class);
+        $rsm->addEntityResult(Card::class, 'c');
+        $rsm->addScalarResult('c__suit', 'someAlias', 'string');
+        $rsm->addEnumResult('c__suit', Suit::class);
 
         // Faked result set
         $resultSet = [
             //row1
             [
-                'u__id' => '1',
-                'u__enum_status' => 'active',
+                'c__id' => '1',
+                'c__suit' => 'C',
             ],
             [
-                'u__id' => '2',
-                'u__enum_status' => 'inactive',
+                'c__id' => '2',
+                'c__suit' => 'S',
             ],
         ];
 
@@ -1281,7 +1286,11 @@ class ArrayHydratorTest extends HydrationTestCase
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertCount(2, $result);
-        self::assertEquals(UserStatus::Active, $result[0]['someStatus']);
-        self::assertEquals(UserStatus::Inactive, $result[1]['someStatus']);
+
+        self::assertCount(1, $result[0]); //assert that in each result we have only one "someAlias" field
+        self::assertEquals(Suit::Clubs, $result[0]['someAlias']);
+
+        self::assertCount(1, $result[1]);
+        self::assertEquals(Suit::Spades, $result[1]['someAlias']);
     }
 }
