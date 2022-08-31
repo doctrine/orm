@@ -288,9 +288,7 @@ class ArrayHydrator extends AbstractHydrator
         $this->_resultPointers[$dqlAlias] =& $coll[key($coll)];
     }
 
-    /**
-     * @param mixed[] $data
-     */
+    /** @param mixed[] $data */
     private function processEnums(string $dqlAlias, array &$data): void
     {
         // init cache
