@@ -1225,6 +1225,9 @@ class ArrayHydratorTest extends HydrationTestCase
         self::assertEquals(2, $result[2][$userEntityKey]['id']);
     }
 
+    /**
+     * @requires PHP 8.1
+     */
     public function testArrayResultWithEnumField(): void
     {
         $rsm = new ResultSetMapping();
@@ -1260,6 +1263,9 @@ class ArrayHydratorTest extends HydrationTestCase
         self::assertEquals(Suit::Diamonds, $result[2]['suit']);
     }
 
+    /**
+     * @requires PHP 8.1
+     */
     public function testScalarResultWithEnumField(): void
     {
         $rsm = new ResultSetMapping();
