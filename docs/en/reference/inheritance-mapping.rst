@@ -178,9 +178,9 @@ relationships involving types that employ this mapping strategy are
 very performing.
 
 There is a general performance consideration with Single Table
-Inheritance: If the target-entity of a many-to-one or one-to-one 
-association is an STI entity, it is preferable for performance reasons that it 
-be a leaf entity in the inheritance hierarchy, (ie. have no subclasses). 
+Inheritance: If the target-entity of a many-to-one or one-to-one
+association is an STI entity, it is preferable for performance reasons that it
+be a leaf entity in the inheritance hierarchy, (ie. have no subclasses).
 Otherwise Doctrine *CANNOT* create proxy instances
 of this entity and will *ALWAYS* load the entity eagerly.
 
