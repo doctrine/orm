@@ -45,6 +45,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
     /**
      * {@inheritDoc}
+     *
+     * @throws MappingException
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
@@ -96,6 +98,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 'name'   => $tableAnnot->name,
                 'schema' => $tableAnnot->schema,
             ];
+            if (!is_string($primaryTable['name'])) {
+                throw MappingException::invalidTableName($className, gettype($primaryTable['name']));
+            }
 
             if ($tableAnnot->indexes !== null) {
                 foreach ($tableAnnot->indexes as $indexAnnot) {
