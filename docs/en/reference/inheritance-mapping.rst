@@ -284,9 +284,9 @@ themselves on access of any subtype fields, so accessing fields of
 subtypes after such a query is not safe.
 
 There is a general performance consideration with Class Table
-Inheritance: If the target-entity of a many-to-one or one-to-one 
-association is a CTI entity, it is preferable for performance reasons that it 
-be a leaf entity in the inheritance hierarchy, (ie. have no subclasses). 
+Inheritance: If the target-entity of a many-to-one or one-to-one
+association is a CTI entity, it is preferable for performance reasons that it
+be a leaf entity in the inheritance hierarchy, (ie. have no subclasses).
 Otherwise Doctrine *CANNOT* create proxy instances
 of this entity and will *ALWAYS* load the entity eagerly.
 
