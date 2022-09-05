@@ -17,6 +17,7 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
+use Doctrine\ORM\Event\PostRemoveEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Exception\ORMException;
@@ -1252,12 +1253,13 @@ class UnitOfWork implements PropertyChangedListener
             // Entity with this $oid after deletion treated as NEW, even if the $oid
             // is obtained by a new entity because the old one went out of scope.
             //$this->entityStates[$oid] = self::STATE_NEW;
+            $identifier = $class->reflFields[$class->identifier[0]]->getValue($entity);
             if (! $class->isIdentifierNatural()) {
                 $class->reflFields[$class->identifier[0]]->setValue($entity, null);
             }
 
             if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-                $this->listenersInvoker->invoke($class, Events::postRemove, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
+                $this->listenersInvoker->invoke($class, Events::postRemove, $entity, new PostRemoveEventArgs($entity, $this->em, $identifier), $invoke);
             }
         }
     }

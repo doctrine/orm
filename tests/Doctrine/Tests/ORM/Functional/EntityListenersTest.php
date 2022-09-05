@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Event\PostRemoveEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
@@ -172,6 +173,6 @@ class EntityListenersTest extends OrmFunctionalTestCase
         self::assertCount(1, $this->listener->postRemoveCalls);
         self::assertSame($fix, $this->listener->postRemoveCalls[0][0]);
         self::assertInstanceOf(CompanyFixContract::class, $this->listener->postRemoveCalls[0][0]);
-        self::assertInstanceOf(LifecycleEventArgs::class, $this->listener->postRemoveCalls[0][1]);
+        self::assertInstanceOf(PostRemoveEventArgs::class, $this->listener->postRemoveCalls[0][1]);
     }
 }

@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostRemoveEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping\Column;
@@ -408,7 +409,7 @@ DQL;
         self::assertInstanceOf(PreUpdateEventArgs::class, $e->calls['preUpdateHandler']);
         self::assertInstanceOf(LifecycleEventArgs::class, $e->calls['postUpdateHandler']);
         self::assertInstanceOf(LifecycleEventArgs::class, $e->calls['preRemoveHandler']);
-        self::assertInstanceOf(LifecycleEventArgs::class, $e->calls['postRemoveHandler']);
+        self::assertInstanceOf(PostRemoveEventArgs::class, $e->calls['postRemoveHandler']);
     }
 }
 
@@ -686,7 +687,7 @@ class LifecycleCallbackEventArgEntity
     }
 
     /** @PostRemove */
-    public function postRemoveHandler(LifecycleEventArgs $event): void
+    public function postRemoveHandler(PostRemoveEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
