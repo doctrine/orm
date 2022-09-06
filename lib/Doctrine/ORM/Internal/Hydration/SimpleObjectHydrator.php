@@ -13,7 +13,6 @@ use RuntimeException;
 use function array_keys;
 use function array_search;
 use function count;
-use function in_array;
 use function key;
 use function reset;
 use function sprintf;
@@ -127,7 +126,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             }
 
             // If we have inheritance in resultset, make sure the field belongs to the correct class
-            if (isset($cacheKeyInfo['discriminatorValues']) && ! in_array((string) $discrColumnValue, $cacheKeyInfo['discriminatorValues'], true)) {
+            if (isset($cacheKeyInfo['discriminatorValues']) && ! isset($cacheKeyInfo['discriminatorValues'][$discrColumnValue])) {
                 continue;
             }
 
