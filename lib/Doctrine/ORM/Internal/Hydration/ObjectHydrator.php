@@ -16,6 +16,7 @@ use function array_fill_keys;
 use function array_keys;
 use function assert;
 use function count;
+use function end;
 use function is_array;
 use function is_object;
 use function key;
@@ -357,9 +358,6 @@ class ObjectHydrator extends AbstractHydrator
                 // It's a joined result
 
                 $parentAlias = $resultSetMapping->parentAliasMap[$dqlAlias];
-                // we need the $path to save into the identifier map which entities were already
-                // seen for this parent-child relationship
-                $path = $parentAlias . '.' . $dqlAlias;
 
                 // We have a RIGHT JOIN result here. Doctrine cannot hydrate RIGHT JOIN Object-Graphs
                 if (! isset($nonemptyComponents[$parentAlias])) {
@@ -395,6 +393,10 @@ class ObjectHydrator extends AbstractHydrator
                 $reflField   = $parentClass->reflFields[$relationField];
                 assert($reflField instanceof ReflectionProperty);
 
+                // we need the $path to save into the identifier map which entities were already
+                // seen for this parent-child relationship
+                $path = $reflField->class . '.' . $reflField->name;
+
                 $oid = spl_object_id($parentObject);
 
                 // Check the type of the relation (many or single-valued)
@@ -403,6 +405,7 @@ class ObjectHydrator extends AbstractHydrator
 
                     if (isset($nonemptyComponents[$dqlAlias])) {
                         $collKey = $oid . $relationField;
+
                         if (isset($this->initializedCollections[$collKey])) {
                             $reflFieldValue = $this->initializedCollections[$collKey];
                         } elseif (isset($this->existingCollections[$collKey])) {
@@ -411,42 +414,30 @@ class ObjectHydrator extends AbstractHydrator
                             $reflFieldValue = $this->initRelatedCollection($parentObject, $parentClass, $relationField, $parentAlias);
                         }
 
-                        $indexExists  = isset($this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]]);
-                        $index        = $indexExists ? $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] : false;
-                        $indexIsValid = $index !== false ? isset($reflFieldValue[$index]) : false;
-
-                        if (! $indexExists || ! $indexIsValid) {
-                            if (isset($this->existingCollections[$collKey])) {
-                                // Collection exists, only look for the element in the identity map.
-                                $element = $this->getEntityFromIdentityMap($entityName, $rowData['ids'][$dqlAlias]);
-                                if ($element) {
-                                    $resultPointers[$dqlAlias] = $element;
-                                } else {
-                                    unset($resultPointers[$dqlAlias]);
-                                }
+                        if (isset($this->existingCollections[$collKey])) {
+                            // Collection exists, only look for the element in the identity map.
+                            $element = $this->getEntityFromIdentityMap($entityName, $rowData['ids'][$dqlAlias]);
+                        } else {
+                            if (isset($this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]])) {
+                                $element = $reflFieldValue[$this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]]];
                             } else {
                                 $element = $this->getEntity($row, $rowData, $dqlAlias);
 
                                 if (isset($resultSetMapping->indexByMap[$dqlAlias])) {
                                     $indexValue = $row[$resultSetMapping->indexByMap[$dqlAlias]];
-                                    $reflFieldValue->hydrateSet($indexValue, $element);
-                                    $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $indexValue;
+                                } elseif (isset($this->identifierMap[$path][$id[$parentAlias]])) {
+                                    $indexValue = end($this->identifierMap[$path][$id[$parentAlias]]) + 1;
                                 } else {
-                                    if (! $reflFieldValue->contains($element)) {
-                                        $reflFieldValue->hydrateAdd($element);
-                                        $reflFieldValue->last();
-                                    }
-
-                                    $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $reflFieldValue->key();
+                                    $indexValue = 0;
                                 }
 
-                                // Update result pointer
-                                $resultPointers[$dqlAlias] = $element;
+                                $reflFieldValue->hydrateSet($indexValue, $element);
+                                $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $indexValue;
                             }
-                        } else {
-                            // Update result pointer
-                            $resultPointers[$dqlAlias] = $reflFieldValue[$index];
                         }
+
+                        // Update result pointer
+                        $resultPointers[$dqlAlias] = $element;
                     // phpcs:ignore SlevomatCodingStandard.ControlStructures.AssignmentInCondition.AssignmentInCondition
                     } elseif (! ($reflFieldValue = $reflField->getValue($parentObject))) {
                         $this->initRelatedCollection($parentObject, $parentClass, $relationField, $parentAlias);

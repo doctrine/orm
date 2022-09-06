@@ -414,7 +414,7 @@ abstract class AbstractHydrator
      *                   data: array<array-key, array>,
      *                   newObjects?: array<array-key, array{
      *                       class: mixed,
-     *                       args?: array
+     *                       args: array
      *                   }>,
      *                   scalars?: array
      *               }
@@ -548,8 +548,10 @@ abstract class AbstractHydrator
      *
      * @psalm-return array<array-key, array{
      *                       class: mixed,
-     *                       args?: array
+     *                       args: array
      *                   }>
+     *
+     * @psalm-suppress MoreSpecificReturnType Psalm does not detect that args keys is always defined
      */
     protected function gatherRowDataFromNewObjectsMapping(array $data): array
     {
@@ -569,6 +571,7 @@ abstract class AbstractHydrator
             $newObjectsData[$objIndex]['args'][$argIndex] = $value;
         }
 
+        /** @psalm-suppress LessSpecificReturnStatement Psalm does not detect that args keys is always defined */
         return $newObjectsData;
     }
 
