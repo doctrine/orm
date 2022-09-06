@@ -10,14 +10,19 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\Proxy;
+use ReflectionProperty;
 
 use function array_fill_keys;
 use function array_keys;
+use function assert;
 use function count;
 use function is_array;
+use function is_object;
 use function key;
 use function ltrim;
 use function spl_object_id;
+
+use const PHP_VERSION_ID;
 
 /**
  * The ObjectHydrator constructs an object graph out of an SQL result set.
@@ -362,17 +367,16 @@ class ObjectHydrator extends AbstractHydrator
                     continue;
                 }
 
-                $parentClass   = $this->_metadataCache[$resultSetMapping->aliasMap[$parentAlias]];
                 $relationField = $resultSetMapping->relationMap[$dqlAlias];
-                $relation      = $parentClass->associationMappings[$relationField];
-                $reflField     = $parentClass->reflFields[$relationField];
 
                 // Get a reference to the parent object to which the joined element belongs.
                 if ($resultSetMapping->isMixed && isset($this->rootAliases[$parentAlias])) {
                     $objectClass  = $resultPointers[$parentAlias];
                     $parentObject = $objectClass[key($objectClass)];
+                    assert(is_object($parentObject));
                 } elseif (isset($resultPointers[$parentAlias])) {
                     $parentObject = $resultPointers[$parentAlias];
+                    assert(is_object($parentObject));
                 } else {
                     // Parent object of relation not found, mark as not-fetched again
                     $element = $this->getEntity($row, $rowData, $dqlAlias);
@@ -386,18 +390,24 @@ class ObjectHydrator extends AbstractHydrator
                     continue;
                 }
 
+                $parentClass = $this->_metadataCache[$resultSetMapping->aliasMap[$parentAlias]];
+                $relation    = $parentClass->associationMappings[$relationField];
+                $reflField   = $parentClass->reflFields[$relationField];
+                assert($reflField instanceof ReflectionProperty);
+
                 $oid = spl_object_id($parentObject);
 
                 // Check the type of the relation (many or single-valued)
                 if (! ($relation['type'] & ClassMetadata::TO_ONE)) {
                     // PATH A: Collection-valued association
-                    $reflFieldValue = $reflField->getValue($parentObject);
 
                     if (isset($nonemptyComponents[$dqlAlias])) {
                         $collKey = $oid . $relationField;
                         if (isset($this->initializedCollections[$collKey])) {
                             $reflFieldValue = $this->initializedCollections[$collKey];
-                        } elseif (! isset($this->existingCollections[$collKey])) {
+                        } elseif (isset($this->existingCollections[$collKey])) {
+                            $reflFieldValue = $this->existingCollections[$collKey];
+                        } else {
                             $reflFieldValue = $this->initRelatedCollection($parentObject, $parentClass, $relationField, $parentAlias);
                         }
 
@@ -437,16 +447,18 @@ class ObjectHydrator extends AbstractHydrator
                             // Update result pointer
                             $resultPointers[$dqlAlias] = $reflFieldValue[$index];
                         }
-                    } elseif (! $reflFieldValue) {
+                    // phpcs:ignore SlevomatCodingStandard.ControlStructures.AssignmentInCondition.AssignmentInCondition
+                    } elseif (! ($reflFieldValue = $reflField->getValue($parentObject))) {
                         $this->initRelatedCollection($parentObject, $parentClass, $relationField, $parentAlias);
                     } elseif ($reflFieldValue instanceof PersistentCollection && $reflFieldValue->isInitialized() === false && ! isset($this->uninitializedCollections[$oid . $relationField])) {
                         $this->uninitializedCollections[$oid . $relationField] = $reflFieldValue;
                     }
                 } else {
                     // PATH B: Single-valued association
-                    $reflFieldValue = $reflField->getValue($parentObject);
 
-                    if (! $reflFieldValue || isset($this->_hints[Query::HINT_REFRESH]) || ($reflFieldValue instanceof Proxy && ! $reflFieldValue->__isInitialized())) {
+                    // $reflField->getValue is slow so we first check if the value is isInitialized or not (if possible)
+                    // phpcs:ignore SlevomatCodingStandard.ControlStructures.AssignmentInCondition.AssignmentInCondition
+                    if (isset($this->_hints[Query::HINT_REFRESH]) || (PHP_VERSION_ID >= 70400 && ! $reflField->isInitialized($parentObject)) || ! ($reflFieldValue = $reflField->getValue($parentObject)) || ($reflFieldValue instanceof Proxy && ! $reflFieldValue->__isInitialized())) {
                         // we only need to take action if this value is null,
                         // we refresh the entity or its an uninitialized proxy.
                         if (isset($nonemptyComponents[$dqlAlias])) {
