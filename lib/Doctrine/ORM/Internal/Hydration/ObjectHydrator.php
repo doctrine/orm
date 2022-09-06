@@ -56,25 +56,27 @@ class ObjectHydrator extends AbstractHydrator
             $this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD] = true;
         }
 
-        foreach ($this->resultSetMapping()->aliasMap as $dqlAlias => $className) {
+        $resultSetMapping = $this->resultSetMapping();
+
+        foreach ($resultSetMapping->aliasMap as $dqlAlias => $className) {
             $this->identifierMap[$dqlAlias] = [];
             $this->idTemplate[$dqlAlias]    = '';
 
             // Remember which associations are "fetch joined", so that we know where to inject
             // collection stubs or proxies and where not.
-            if (! isset($this->resultSetMapping()->relationMap[$dqlAlias])) {
+            if (! isset($resultSetMapping->relationMap[$dqlAlias])) {
                 continue;
             }
 
-            $parent = $this->resultSetMapping()->parentAliasMap[$dqlAlias];
+            $parent = $resultSetMapping->parentAliasMap[$dqlAlias];
 
-            if (! isset($this->resultSetMapping()->aliasMap[$parent])) {
+            if (! isset($resultSetMapping->aliasMap[$parent])) {
                 throw HydrationException::parentObjectOfRelationNotFound($dqlAlias, $parent);
             }
 
-            $sourceClassName = $this->resultSetMapping()->aliasMap[$parent];
+            $sourceClassName = $resultSetMapping->aliasMap[$parent];
             $sourceClass     = $this->getClassMetadata($sourceClassName);
-            $assoc           = $sourceClass->associationMappings[$this->resultSetMapping()->relationMap[$dqlAlias]];
+            $assoc           = $sourceClass->associationMappings[$resultSetMapping->relationMap[$dqlAlias]];
 
             $this->_hints['fetched'][$parent][$assoc['fieldName']] = true;
 
@@ -221,16 +223,21 @@ class ObjectHydrator extends AbstractHydrator
      */
     private function getEntity(array $data, string $dqlAlias)
     {
-        $className = $this->resultSetMapping()->aliasMap[$dqlAlias];
+        /**
+         * @psalm-suppress PossiblyNullPropertyFetch
+         * @psalm-suppress PossiblyNullArrayAccess
+         * @psalm-var class-string
+         */
+        $className = $this->_rsm->aliasMap[$dqlAlias];
 
-        if (isset($this->resultSetMapping()->discriminatorColumns[$dqlAlias])) {
-            $fieldName = $this->resultSetMapping()->discriminatorColumns[$dqlAlias];
+        if (isset($this->_rsm->discriminatorColumns[$dqlAlias])) {
+            $fieldName = $this->_rsm->discriminatorColumns[$dqlAlias];
 
-            if (! isset($this->resultSetMapping()->metaMappings[$fieldName])) {
+            if (! isset($this->_rsm->metaMappings[$fieldName])) {
                 throw HydrationException::missingDiscriminatorMetaMappingColumn($className, $fieldName, $dqlAlias);
             }
 
-            $discrColumn = $this->resultSetMapping()->metaMappings[$fieldName];
+            $discrColumn = $this->_rsm->metaMappings[$fieldName];
 
             if (! isset($data[$discrColumn])) {
                 throw HydrationException::missingDiscriminatorColumn($className, $discrColumn, $dqlAlias);
@@ -316,6 +323,8 @@ class ObjectHydrator extends AbstractHydrator
         // Initialize
         $id                 = $this->idTemplate; // initialize the id-memory
         $nonemptyComponents = [];
+        $resultSetMapping   = $this->resultSetMapping();
+
         // Split the row data into chunks of class data.
         $rowData = $this->gatherRowData($row, $id, $nonemptyComponents);
 
@@ -324,12 +333,12 @@ class ObjectHydrator extends AbstractHydrator
 
         // Hydrate the data chunks
         foreach ($rowData['data'] as $dqlAlias => $data) {
-            $entityName = $this->resultSetMapping()->aliasMap[$dqlAlias];
+            $entityName = $resultSetMapping->aliasMap[$dqlAlias];
 
-            if (isset($this->resultSetMapping()->parentAliasMap[$dqlAlias])) {
+            if (isset($resultSetMapping->parentAliasMap[$dqlAlias])) {
                 // It's a joined result
 
-                $parentAlias = $this->resultSetMapping()->parentAliasMap[$dqlAlias];
+                $parentAlias = $resultSetMapping->parentAliasMap[$dqlAlias];
                 // we need the $path to save into the identifier map which entities were already
                 // seen for this parent-child relationship
                 $path = $parentAlias . '.' . $dqlAlias;
@@ -340,13 +349,13 @@ class ObjectHydrator extends AbstractHydrator
                     continue;
                 }
 
-                $parentClass   = $this->_metadataCache[$this->resultSetMapping()->aliasMap[$parentAlias]];
-                $relationField = $this->resultSetMapping()->relationMap[$dqlAlias];
+                $parentClass   = $this->_metadataCache[$resultSetMapping->aliasMap[$parentAlias]];
+                $relationField = $resultSetMapping->relationMap[$dqlAlias];
                 $relation      = $parentClass->associationMappings[$relationField];
                 $reflField     = $parentClass->reflFields[$relationField];
 
                 // Get a reference to the parent object to which the joined element belongs.
-                if ($this->resultSetMapping()->isMixed && isset($this->rootAliases[$parentAlias])) {
+                if ($resultSetMapping->isMixed && isset($this->rootAliases[$parentAlias])) {
                     $objectClass  = $resultPointers[$parentAlias];
                     $parentObject = $objectClass[key($objectClass)];
                 } elseif (isset($resultPointers[$parentAlias])) {
@@ -395,8 +404,8 @@ class ObjectHydrator extends AbstractHydrator
                             } else {
                                 $element = $this->getEntity($data, $dqlAlias);
 
-                                if (isset($this->resultSetMapping()->indexByMap[$dqlAlias])) {
-                                    $indexValue = $row[$this->resultSetMapping()->indexByMap[$dqlAlias]];
+                                if (isset($resultSetMapping->indexByMap[$dqlAlias])) {
+                                    $indexValue = $row[$resultSetMapping->indexByMap[$dqlAlias]];
                                     $reflFieldValue->hydrateSet($indexValue, $element);
                                     $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $indexValue;
                                 } else {
@@ -467,11 +476,11 @@ class ObjectHydrator extends AbstractHydrator
             } else {
                 // PATH C: Its a root result element
                 $this->rootAliases[$dqlAlias] = true; // Mark as root alias
-                $entityKey                    = $this->resultSetMapping()->entityMappings[$dqlAlias] ?: 0;
+                $entityKey                    = $resultSetMapping->entityMappings[$dqlAlias] ?: 0;
 
                 // if this row has a NULL value for the root result id then make it a null result.
                 if (! isset($nonemptyComponents[$dqlAlias])) {
-                    if ($this->resultSetMapping()->isMixed) {
+                    if ($resultSetMapping->isMixed) {
                         $result[] = [$entityKey => null];
                     } else {
                         $result[] = null;
@@ -486,12 +495,12 @@ class ObjectHydrator extends AbstractHydrator
                 if (! isset($this->identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $this->getEntity($data, $dqlAlias);
 
-                    if ($this->resultSetMapping()->isMixed) {
+                    if ($resultSetMapping->isMixed) {
                         $element = [$entityKey => $element];
                     }
 
-                    if (isset($this->resultSetMapping()->indexByMap[$dqlAlias])) {
-                        $resultKey = $row[$this->resultSetMapping()->indexByMap[$dqlAlias]];
+                    if (isset($resultSetMapping->indexByMap[$dqlAlias])) {
+                        $resultKey = $row[$resultSetMapping->indexByMap[$dqlAlias]];
 
                         if (isset($this->_hints['collection'])) {
                             $this->_hints['collection']->hydrateSet($resultKey, $element);
@@ -533,8 +542,8 @@ class ObjectHydrator extends AbstractHydrator
         // Append scalar values to mixed result sets
         if (isset($rowData['scalars'])) {
             if (! isset($resultKey)) {
-                $resultKey = isset($this->resultSetMapping()->indexByMap['scalars'])
-                    ? $row[$this->resultSetMapping()->indexByMap['scalars']]
+                $resultKey = isset($resultSetMapping->indexByMap['scalars'])
+                    ? $row[$resultSetMapping->indexByMap['scalars']]
                     : $this->resultCounter - 1;
             }
 
