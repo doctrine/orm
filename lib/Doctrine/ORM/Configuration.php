@@ -28,6 +28,8 @@ use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\Exception\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Exception\UnknownEntityNamespace;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use Doctrine\ORM\Internal\Hydration\DefaultHydratorFactory;
+use Doctrine\ORM\Internal\Hydration\HydratorFactory;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
@@ -65,6 +67,16 @@ class Configuration extends \Doctrine\DBAL\Configuration
 {
     /** @var mixed[] */
     protected $_attributes = [];
+
+    public function setHydratorFactory(HydratorFactory $factory): void
+    {
+        $this->_attributes['hydratorFactory'] = $factory;
+    }
+
+    public function getHydratorFactory(): HydratorFactory
+    {
+        return $this->_attributes['hydratorFactory'] ?? new DefaultHydratorFactory();
+    }
 
     /**
      * Sets the directory where Doctrine generates any necessary proxy class files.
