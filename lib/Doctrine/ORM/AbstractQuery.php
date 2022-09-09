@@ -429,6 +429,10 @@ abstract class AbstractQuery
             return $value;
         }
 
+		$reflection = new \ReflectionClass($value);
+		if (!$reflection->isUserDefined()) {
+			return $this->potentiallyProcessIterable($value);
+		}
         try {
             $class = ClassUtils::getClass($value);
             $value = $this->_em->getUnitOfWork()->getSingleIdentifierValue($value);
