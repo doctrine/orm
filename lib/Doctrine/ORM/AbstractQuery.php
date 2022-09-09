@@ -26,6 +26,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\Mapping\MappingException;
 use LogicException;
 use Psr\Cache\CacheItemPoolInterface;
+use ReflectionClass;
 use Traversable;
 
 use function array_map;
@@ -429,10 +430,11 @@ abstract class AbstractQuery
             return $value;
         }
 
-		$reflection = new \ReflectionClass($value);
-		if (!$reflection->isUserDefined()) {
-			return $this->potentiallyProcessIterable($value);
-		}
+        $reflection = new ReflectionClass($value);
+        if (! $reflection->isUserDefined()) {
+            return $this->potentiallyProcessIterable($value);
+        }
+        
         try {
             $class = ClassUtils::getClass($value);
             $value = $this->_em->getUnitOfWork()->getSingleIdentifierValue($value);
