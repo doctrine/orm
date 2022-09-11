@@ -2182,17 +2182,18 @@ class UnitOfWork implements PropertyChangedListener
      * Refreshes the state of the given entity from the database, overwriting
      * any local, unpersisted changes.
      *
-     * @param object $entity The entity to refresh.
+     * @param object $entity The entity to refresh
+     * @psalm-param LockMode::*|null $lockMode
      *
      * @return void
      *
      * @throws InvalidArgumentException If the entity is not MANAGED.
      */
-    public function refresh($entity)
+    public function refresh($entity, $lockMode = null)
     {
         $visited = [];
 
-        $this->doRefresh($entity, $visited);
+        $this->doRefresh($entity, $visited, $lockMode);
     }
 
     /**
@@ -2200,10 +2201,11 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity The entity to refresh.
      * @psalm-param array<int, object>  $visited The already visited entities during cascades.
+     * @psalm-param LockMode::*|null $lockMode
      *
      * @throws ORMInvalidArgumentException If the entity is not MANAGED.
      */
-    private function doRefresh($entity, array &$visited): void
+    private function doRefresh($entity, array &$visited, $lockMode = null): void
     {
         $oid = spl_object_id($entity);
 
@@ -2221,10 +2223,11 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->getEntityPersister($class->name)->refresh(
             array_combine($class->getIdentifierFieldNames(), $this->entityIdentifiers[$oid]),
-            $entity
+            $entity,
+            $lockMode
         );
 
-        $this->cascadeRefresh($entity, $visited);
+        $this->cascadeRefresh($entity, $visited, $lockMode);
     }
 
     /**
@@ -2232,8 +2235,9 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      * @psalm-param array<int, object> $visited
+     * @psalm-param LockMode::*|null $lockMode
      */
-    private function cascadeRefresh($entity, array &$visited): void
+    private function cascadeRefresh($entity, array &$visited, $lockMode = null): void
     {
         $class = $this->em->getClassMetadata(get_class($entity));
 
@@ -2256,13 +2260,13 @@ class UnitOfWork implements PropertyChangedListener
                 case $relatedEntities instanceof Collection:
                 case is_array($relatedEntities):
                     foreach ($relatedEntities as $relatedEntity) {
-                        $this->doRefresh($relatedEntity, $visited);
+                        $this->doRefresh($relatedEntity, $visited, $lockMode);
                     }
 
                     break;
 
                 case $relatedEntities !== null:
-                    $this->doRefresh($relatedEntities, $visited);
+                    $this->doRefresh($relatedEntities, $visited, $lockMode);
                     break;
 
                 default:

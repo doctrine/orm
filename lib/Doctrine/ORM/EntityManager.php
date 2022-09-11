@@ -693,14 +693,15 @@ class EntityManager implements EntityManagerInterface
      * Refreshes the persistent state of an entity from the database,
      * overriding any local changes that have not yet been persisted.
      *
-     * @param object $entity The entity to refresh.
+     * @param object $entity The entity to refresh
+     * @psalm-param LockMode::*|null $lockMode
      *
      * @return void
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    public function refresh($entity)
+    public function refresh($entity, $lockMode = null)
     {
         if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#refresh()', $entity);
@@ -708,7 +709,7 @@ class EntityManager implements EntityManagerInterface
 
         $this->errorIfClosed();
 
-        $this->unitOfWork->refresh($entity);
+        $this->unitOfWork->refresh($entity, $lockMode);
     }
 
     /**

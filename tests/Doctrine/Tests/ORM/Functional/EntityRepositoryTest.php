@@ -390,6 +390,23 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $this->_em->find(CmsUser::class, $userId, LockMode::OPTIMISTIC);
     }
 
+    /**
+     * @group locking
+     */
+    public function testRefreshWithLockThrowsException(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'Roman';
+        $user->username = 'romanb';
+        $user->status   = 'freak';
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->expectException(TransactionRequiredException::class);
+
+        $this->_em->refresh($user, LockMode::PESSIMISTIC_WRITE);
+    }
+
     /** @group DDC-819 */
     public function testFindMagicCallByNullValue(): void
     {
