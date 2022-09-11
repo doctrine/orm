@@ -2188,6 +2188,7 @@ class UnitOfWork implements PropertyChangedListener
      * @return void
      *
      * @throws InvalidArgumentException If the entity is not MANAGED.
+     * @throws TransactionRequiredException
      */
     public function refresh($entity, $lockMode = null)
     {
@@ -2204,9 +2205,18 @@ class UnitOfWork implements PropertyChangedListener
      * @psalm-param LockMode::*|null $lockMode
      *
      * @throws ORMInvalidArgumentException If the entity is not MANAGED.
+     * @throws TransactionRequiredException
      */
     private function doRefresh($entity, array &$visited, $lockMode = null): void
     {
+        switch(true) {
+            case $lockMode === LockMode::PESSIMISTIC_READ:
+            case $lockMode === LockMode::PESSIMISTIC_WRITE:
+                if (! $this->em->getConnection()->isTransactionActive()) {
+                    throw TransactionRequiredException::transactionRequired();
+                }
+        }
+
         $oid = spl_object_id($entity);
 
         if (isset($visited[$oid])) {

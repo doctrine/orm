@@ -700,6 +700,7 @@ class EntityManager implements EntityManagerInterface
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
+     * @throws TransactionRequiredException
      */
     public function refresh($entity, $lockMode = null)
     {
