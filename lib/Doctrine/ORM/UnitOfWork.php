@@ -2209,7 +2209,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function doRefresh($entity, array &$visited, $lockMode = null): void
     {
-        switch(true) {
+        switch (true) {
             case $lockMode === LockMode::PESSIMISTIC_READ:
             case $lockMode === LockMode::PESSIMISTIC_WRITE:
                 if (! $this->em->getConnection()->isTransactionActive()) {
