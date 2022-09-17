@@ -10,9 +10,9 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
+use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;

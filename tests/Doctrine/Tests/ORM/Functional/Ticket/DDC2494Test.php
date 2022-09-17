@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
+use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -60,7 +61,7 @@ class DDC2494Test extends OrmFunctionalTestCase
 
         $this->getQueryLog()->reset()->enable();
 
-        self::assertInstanceOf('\Doctrine\Common\Proxy\Proxy', $item->getCurrency());
+        self::assertInstanceOf(Proxy::class, $item->getCurrency());
         self::assertFalse($item->getCurrency()->__isInitialized());
 
         self::assertArrayHasKey('convertToPHPValue', DDC2494TinyIntType::$calls);

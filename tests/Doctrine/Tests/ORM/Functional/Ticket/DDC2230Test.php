@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -13,6 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
+use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;

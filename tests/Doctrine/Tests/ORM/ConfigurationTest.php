@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
-use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\Exception\MetadataCacheNotConfigured;
@@ -24,6 +23,7 @@ use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\PrePersist;
 use Doctrine\ORM\Mapping\QuoteStrategy;
+use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectRepository;
@@ -62,16 +62,16 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testSetGetAutoGenerateProxyClasses(): void
     {
-        self::assertSame(AbstractProxyFactory::AUTOGENERATE_ALWAYS, $this->configuration->getAutoGenerateProxyClasses()); // defaults
+        self::assertSame(ProxyFactory::AUTOGENERATE_ALWAYS, $this->configuration->getAutoGenerateProxyClasses()); // defaults
 
         $this->configuration->setAutoGenerateProxyClasses(false);
-        self::assertSame(AbstractProxyFactory::AUTOGENERATE_NEVER, $this->configuration->getAutoGenerateProxyClasses());
+        self::assertSame(ProxyFactory::AUTOGENERATE_NEVER, $this->configuration->getAutoGenerateProxyClasses());
 
         $this->configuration->setAutoGenerateProxyClasses(true);
-        self::assertSame(AbstractProxyFactory::AUTOGENERATE_ALWAYS, $this->configuration->getAutoGenerateProxyClasses());
+        self::assertSame(ProxyFactory::AUTOGENERATE_ALWAYS, $this->configuration->getAutoGenerateProxyClasses());
 
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
-        self::assertSame(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS, $this->configuration->getAutoGenerateProxyClasses());
+        $this->configuration->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
+        self::assertSame(ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS, $this->configuration->getAutoGenerateProxyClasses());
     }
 
     public function testSetGetProxyNamespace(): void
@@ -211,7 +211,7 @@ class ConfigurationTest extends DoctrineTestCase
      */
     protected function setProductionSettings(?string $skipCache = null): void
     {
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_NEVER);
+        $this->configuration->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_NEVER);
 
         $cache = $this->createMock(Cache::class);
 
@@ -295,7 +295,7 @@ class ConfigurationTest extends DoctrineTestCase
     public function testEnsureProductionSettingsAutoGenerateProxyClassesAlways(): void
     {
         $this->setProductionSettings();
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_ALWAYS);
+        $this->configuration->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_ALWAYS);
 
         $this->expectException(ProxyClassesAlwaysRegenerating::class);
         $this->expectExceptionMessage('Proxy Classes are always regenerating.');
@@ -306,7 +306,7 @@ class ConfigurationTest extends DoctrineTestCase
     public function testEnsureProductionSettingsAutoGenerateProxyClassesFileNotExists(): void
     {
         $this->setProductionSettings();
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
+        $this->configuration->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
 
         $this->expectException(ORMException::class);
         $this->expectExceptionMessage('Proxy Classes are always regenerating.');
@@ -317,7 +317,7 @@ class ConfigurationTest extends DoctrineTestCase
     public function testEnsureProductionSettingsAutoGenerateProxyClassesEval(): void
     {
         $this->setProductionSettings();
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_EVAL);
+        $this->configuration->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
 
         $this->expectException(ORMException::class);
         $this->expectExceptionMessage('Proxy Classes are always regenerating.');

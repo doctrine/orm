@@ -23,7 +23,7 @@ the proxy before use manually as follows:
 
     <?php
 
-    use Doctrine\Common\Proxy\Proxy;
+    use Doctrine\Persistence\Proxy;
     use Doctrine\ORM\Mapping as ORM;
 
     /**
