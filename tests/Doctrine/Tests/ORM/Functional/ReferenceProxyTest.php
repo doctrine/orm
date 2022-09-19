@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Proxy\Proxy as CommonProxy;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\Company\CompanyAuction;
@@ -140,7 +141,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
     }
 
     /** @group DDC-1022 */
-    public function testWakeupCalledOnProxy(): void
+    public function testWakeupOnProxy(): void
     {
         $id = $this->createProduct();
 
@@ -151,7 +152,11 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
 
         $entity->setName('Doctrine 2 Cookbook');
 
-        self::assertTrue($entity->wakeUp, 'Loading the proxy should call __wakeup().');
+        if ($entity instanceof CommonProxy) {
+            self::assertTrue($entity->wakeUp, 'Loading the proxy should call __wakeup().');
+        } else {
+            self::assertFalse($entity->wakeUp, 'Loading the proxy should call __wakeup().');
+        }
     }
 
     public function testDoNotInitializeProxyOnGettingTheIdentifier(): void

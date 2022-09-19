@@ -10,14 +10,18 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
+use Doctrine\Persistence\Reflection\RuntimeReflectionProperty;
 use GearmanWorker;
 use InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\VarExporter\LazyGhostTrait;
 
 use function assert;
+use function class_exists;
 use function is_array;
 use function microtime;
 use function sleep;
+use function trait_exists;
 use function unserialize;
 
 class LockAgentWorker
@@ -113,6 +117,7 @@ class LockAgentWorker
     protected function createEntityManager(Connection $conn): EntityManagerInterface
     {
         $config = new Configuration();
+        $config->setLazyGhostObjectEnabled(trait_exists(LazyGhostTrait::class) && class_exists(RuntimeReflectionProperty::class));
         $config->setProxyDir(__DIR__ . '/../../../Proxies');
         $config->setProxyNamespace('MyProject\Proxies');
         $config->setAutoGenerateProxyClasses(true);

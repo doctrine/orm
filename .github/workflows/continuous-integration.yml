@@ -43,6 +43,8 @@ jobs:
           - "default"
         extension:
           - "pdo_sqlite"
+        proxy:
+          - "common"
         include:
           - php-version: "8.0"
             dbal-version: "2.13"
@@ -53,6 +55,10 @@ jobs:
           - php-version: "8.2"
             dbal-version: "default"
             extension: "sqlite3"
+          - php-version: "8.1"
+            dbal-version: "default"
+            proxy: "lazy-ghost"
+            extension: "pdo_sqlite"
 
     steps:
       - name: "Checkout"
@@ -71,6 +77,10 @@ jobs:
       - name: "Require specific DBAL version"
         run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
         if: "${{ matrix.dbal-version != 'default' }}"
+
+      - name: "Require specific lazy-proxy implementation"
+        run: "composer require symfony/var-exporter ^6.2 doctrine/persistence ^3.1 --no-update"
+        if: "${{ matrix.proxy == 'lazy-ghost' }}"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v2"

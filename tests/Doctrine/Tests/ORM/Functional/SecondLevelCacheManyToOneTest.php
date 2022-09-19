@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Proxy\Proxy as CommonProxy;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\Tests\Models\Cache\Action;
 use Doctrine\Tests\Models\Cache\City;
@@ -251,11 +252,12 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheFunctionalTestCase
 
         self::assertInstanceOf(Action::class, $entity->getComplexAction()->getAction1());
         self::assertInstanceOf(Action::class, $entity->getComplexAction()->getAction2());
-        $this->assertQueryCount(1);
+        $expectedQueryCount = $entity->getAction() instanceof CommonProxy ? 1 : 0;
+        $this->assertQueryCount($expectedQueryCount);
 
         self::assertEquals('login', $entity->getComplexAction()->getAction1()->name);
-        $this->assertQueryCount(1);
+        $this->assertQueryCount($expectedQueryCount);
         self::assertEquals('rememberme', $entity->getComplexAction()->getAction2()->name);
-        $this->assertQueryCount(1);
+        $this->assertQueryCount($expectedQueryCount);
     }
 }

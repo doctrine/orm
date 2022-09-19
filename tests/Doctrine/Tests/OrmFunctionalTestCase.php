@@ -26,6 +26,7 @@ use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\Reflection\RuntimeReflectionProperty;
 use Doctrine\Tests\DbalExtensions\QueryLog;
 use Doctrine\Tests\DbalTypes\Rot13Type;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
@@ -36,6 +37,7 @@ use PHPUnit\Framework\Warning;
 use Psr\Cache\CacheItemPoolInterface;
 use RuntimeException;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\VarExporter\LazyGhostTrait;
 use Throwable;
 
 use function array_map;
@@ -43,6 +45,7 @@ use function array_pop;
 use function array_reverse;
 use function array_slice;
 use function assert;
+use function class_exists;
 use function explode;
 use function get_debug_type;
 use function getenv;
@@ -53,6 +56,7 @@ use function realpath;
 use function sprintf;
 use function str_contains;
 use function strtolower;
+use function trait_exists;
 use function var_export;
 
 use const PHP_EOL;
@@ -764,6 +768,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         //FIXME: two different configs! $conn and the created entity manager have
         // different configs.
         $config = new Configuration();
+        $config->setLazyGhostObjectEnabled(trait_exists(LazyGhostTrait::class) && class_exists(RuntimeReflectionProperty::class));
         $config->setMetadataCache(self::$metadataCache);
         $config->setQueryCache(self::$queryCache);
         $config->setProxyDir(__DIR__ . '/Proxies');
