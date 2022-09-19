@@ -311,18 +311,6 @@
       <code>$class</code>
     </PossiblyNullArgument>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/Builder/FieldBuilder.php">
-    <PropertyNotSetInConstructor occurrences="3">
-      <code>$generatedValue</code>
-      <code>$sequenceDef</code>
-      <code>$version</code>
-    </PropertyNotSetInConstructor>
-    <RedundantCastGivenDocblockType occurrences="3">
-      <code>(bool) $flag</code>
-      <code>(bool) $flag</code>
-      <code>(string) $customIdGenerator</code>
-    </RedundantCastGivenDocblockType>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadata.php">
     <PropertyNotSetInConstructor occurrences="4">
       <code>ClassMetadata</code>
