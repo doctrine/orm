@@ -91,7 +91,10 @@ class TestUtil
         $platform = $privConn->getDatabasePlatform();
 
         if ($platform instanceof SqlitePlatform) {
-            $schema = self::createSchemaManager($testConn)->createSchema();
+            $method = method_exists(AbstractSchemaManager::class, 'introspectSchema') ?
+                'introspectSchema' :
+                'createSchema';
+            $schema = self::createSchemaManager($testConn)->$method();
             $stmts  = $schema->toDropSql($testConn->getDatabasePlatform());
 
             foreach ($stmts as $stmt) {

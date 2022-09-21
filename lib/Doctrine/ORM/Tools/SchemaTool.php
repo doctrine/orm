@@ -857,8 +857,12 @@ class SchemaTool
      */
     public function getDropDatabaseSQL()
     {
+        $method = method_exists(AbstractSchemaManager::class, 'introspectSchema') ?
+            'introspectSchema' :
+            'createSchema';
+
         return $this->schemaManager
-            ->createSchema()
+            ->$method()
             ->toDropSql($this->platform);
     }
 
