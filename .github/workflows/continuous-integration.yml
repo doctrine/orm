@@ -2,7 +2,11 @@ name: "Continuous Integration"
 
 on:
   pull_request:
+    branches:
+      - "*.x"
   push:
+    branches:
+      - "*.x"
 
 env:
   fail-fast: true
@@ -71,29 +75,20 @@ jobs:
 
   phpunit-oci8:
     name: "PHPUnit on OCI8"
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-22.04"
     needs: "phpunit-smoke-check"
 
     strategy:
       matrix:
         php-version:
-          - "7.4"
+          - "8.1"
         oracle-version:
           - "11"
+          - "21"
         dbal-version:
-          - "3@dev"
+          - "default"
         include:
           - php-version: "8.0"
-            dbal-version: "3@dev"
-            oracle-version: "11"
-          - php-version: "8.1"
-            dbal-version: "3@dev"
-            oracle-version: "11"
-          - php-version: "7.4"
-            dbal-version: "3@dev"
-            oracle-version: "21"
-          - php-version: "8.0"
-            dbal-version: "3@dev"
             oracle-version: "21"
           - php-version: "8.1"
             dbal-version: "3@dev"
