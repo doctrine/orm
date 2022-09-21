@@ -344,7 +344,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     final protected function createSchemaForModels(string ...$models): void
     {
         try {
-            $this->_schemaTool->createSchema($this->getMetadataForModels($models));
+            $this->setUpEntitySchema($models);
         } catch (ToolsException $e) {
         }
     }
