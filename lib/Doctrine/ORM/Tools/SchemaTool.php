@@ -834,7 +834,9 @@ class SchemaTool
      */
     public function getDropDatabaseSQL(): array
     {
-        $method = method_exists(AbstractSchemaManager::class, 'introspectSchema') ? 'introspectSchema' : 'createSchema';
+        $method = method_exists(AbstractSchemaManager::class, 'introspectSchema') ?
+            'introspectSchema' :
+            'createSchema';
 
         return $this->schemaManager
             ->$method()
