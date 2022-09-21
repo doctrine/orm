@@ -312,9 +312,7 @@
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadata.php">
-    <PropertyNotSetInConstructor occurrences="4">
-      <code>ClassMetadata</code>
-      <code>ClassMetadata</code>
+    <PropertyNotSetInConstructor occurrences="2">
       <code>ClassMetadata</code>
       <code>ClassMetadata</code>
     </PropertyNotSetInConstructor>
@@ -324,10 +322,6 @@
       <code>$nonSuperclassParents</code>
       <code>new $definition['class']()</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="2">
-      <code>! $definition</code>
-      <code>$definition</code>
-    </DocblockTypeContradiction>
     <InvalidArrayOffset occurrences="1">
       <code>$subClass-&gt;table[$indexType][$indexName]</code>
     </InvalidArrayOffset>
@@ -360,11 +354,13 @@
       <code>hasListeners</code>
       <code>loadMetadataForClass</code>
     </PossiblyNullReference>
-    <RedundantConditionGivenDocblockType occurrences="4">
-      <code>$parent-&gt;generatorType</code>
-      <code>$parent-&gt;generatorType</code>
+    <RedundantCondition occurrences="2">
       <code>$parent-&gt;idGenerator</code>
       <code>$parent-&gt;idGenerator</code>
+    </RedundantCondition>
+    <RedundantConditionGivenDocblockType occurrences="2">
+      <code>$parent-&gt;generatorType</code>
+      <code>$parent-&gt;generatorType</code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php">
@@ -374,31 +370,22 @@
       <code>$this-&gt;columnNames</code>
       <code>$this-&gt;columnNames</code>
     </DeprecatedProperty>
-    <DocblockTypeContradiction occurrences="3">
-      <code>! $this-&gt;table</code>
+    <DocblockTypeContradiction occurrences="1">
       <code>! class_exists($mapping['targetEntity'])</code>
-      <code>$this-&gt;table</code>
     </DocblockTypeContradiction>
     <InvalidDocblock occurrences="3">
       <code>protected function _validateAndCompleteAssociationMapping(array $mapping)</code>
       <code>protected function _validateAndCompleteManyToManyMapping(array $mapping)</code>
       <code>protected function _validateAndCompleteOneToOneMapping(array $mapping)</code>
     </InvalidDocblock>
-    <InvalidNullableReturnType occurrences="3">
-      <code>ReflectionProperty</code>
-      <code>ReflectionProperty</code>
+    <InvalidNullableReturnType occurrences="2">
+      <code>getReflectionClass</code>
       <code>string</code>
     </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue occurrences="2">
       <code>$definition</code>
       <code>$this-&gt;subClasses</code>
     </InvalidPropertyAssignmentValue>
-    <InvalidReturnStatement occurrences="1">
-      <code>$this-&gt;reflClass</code>
-    </InvalidReturnStatement>
-    <InvalidReturnType occurrences="1">
-      <code>getReflectionClass</code>
-    </InvalidReturnType>
     <LessSpecificReturnStatement occurrences="4">
       <code>$cache</code>
       <code>$className</code>
@@ -414,11 +401,9 @@
       <code>array{usage: int, region: string|null}</code>
       <code>class-string|null</code>
     </MoreSpecificReturnType>
-    <NullableReturnStatement occurrences="4">
+    <NullableReturnStatement occurrences="2">
       <code>$this-&gt;associationMappings[$assocName]['mappedBy']</code>
       <code>$this-&gt;reflClass</code>
-      <code>$this-&gt;reflFields[$name]</code>
-      <code>$this-&gt;reflFields[$this-&gt;identifier[0]]</code>
     </NullableReturnStatement>
     <ParamNameMismatch occurrences="1">
       <code>$entity</code>
@@ -452,10 +437,8 @@
       <code>$this-&gt;associationMappings[$fieldName]['joinColumns']</code>
       <code>$this-&gt;associationMappings[$idProperty]['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
-    <PropertyNotSetInConstructor occurrences="4">
+    <PropertyNotSetInConstructor occurrences="2">
       <code>$idGenerator</code>
-      <code>$namespace</code>
-      <code>$sequenceGeneratorDefinition</code>
       <code>$table</code>
     </PropertyNotSetInConstructor>
     <PropertyTypeCoercion occurrences="12">
@@ -472,13 +455,17 @@
       <code>$this-&gt;table</code>
       <code>$this-&gt;table</code>
     </PropertyTypeCoercion>
-    <RedundantConditionGivenDocblockType occurrences="2">
+    <RedundantCondition occurrences="2">
       <code>$mapping !== false</code>
       <code>$mapping !== false</code>
-    </RedundantConditionGivenDocblockType>
+    </RedundantCondition>
     <RedundantFunctionCall occurrences="1">
       <code>array_values</code>
     </RedundantFunctionCall>
+    <TypeDoesNotContainType occurrences="2">
+      <code>! $this-&gt;table</code>
+      <code>$this-&gt;table</code>
+    </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ColumnResult.php">
     <MissingConstructor occurrences="1">
