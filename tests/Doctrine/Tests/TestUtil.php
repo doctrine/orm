@@ -10,12 +10,14 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception\DatabaseObjectNotFoundException;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use UnexpectedValueException;
 
 use function assert;
 use function explode;
 use function fwrite;
 use function get_debug_type;
+use function method_exists;
 use function sprintf;
 use function str_starts_with;
 use function strlen;
@@ -90,7 +92,10 @@ class TestUtil
         $platform = $privConn->getDatabasePlatform();
 
         if ($platform instanceof SQLitePlatform) {
-            $schema = $testConn->createSchemaManager()->createSchema();
+            $method = method_exists(AbstractSchemaManager::class, 'introspectSchema') ?
+                'introspectSchema' :
+                'createSchema';
+            $schema = $testConn->createSchemaManager()->$method();
             $stmts  = $schema->toDropSql($testConn->getDatabasePlatform());
 
             foreach ($stmts as $stmt) {

@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\DBAL\Platforms\SQLitePlatform;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_filter;
 use function implode;
+use function method_exists;
 use function str_contains;
 
 use const PHP_EOL;
@@ -65,7 +67,10 @@ class DDC214Test extends OrmFunctionalTestCase
 
         $sm = $this->createSchemaManager();
 
-        $fromSchema = $sm->createSchema();
+        $method     = method_exists(AbstractSchemaManager::class, 'introspectSchema') ?
+            'introspectSchema' :
+            'createSchema';
+        $fromSchema = $sm->$method();
         $toSchema   = $this->getSchemaForModels(...$classes);
         $comparator = $sm->createComparator();
         $schemaDiff = $comparator->compareSchemas($fromSchema, $toSchema);

@@ -31,7 +31,7 @@ class Stock
          * @Column(type="string", length=255)
          */
         private string $symbol,
-        /** @Column(type="decimal") */
+        /** @Column(type="decimal", precision=10) */
         private float $price,
         /** @ManyToOne(targetEntity="Market", inversedBy="stocks") */
         private Market $market,
