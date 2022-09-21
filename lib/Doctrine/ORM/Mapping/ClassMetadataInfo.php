@@ -574,7 +574,7 @@ class ClassMetadataInfo implements ClassMetadata
      * READ-ONLY: The definition of the discriminator column used in JOINED and SINGLE_TABLE
      * inheritance mappings.
      *
-     * @psalm-var array<string, mixed>|null
+     * @psalm-var array{name: string, fieldName: string, type: string, length?: int, columnDefinition?: string|null}|null
      */
     public $discriminatorColumn;
 
@@ -3213,7 +3213,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @see getDiscriminatorColumn()
      *
      * @param mixed[]|null $columnDef
-     * @psalm-param array<string, mixed>|null $columnDef
+     * @psalm-param array{name: string|null, fieldName?: string, type?: string, length?: int, columnDefinition?: string|null}|null $columnDef
      *
      * @return void
      *

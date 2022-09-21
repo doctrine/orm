@@ -1113,9 +1113,10 @@ public function __construct(<params>)
             return '';
         }
 
-        $columnDefinition = 'name="' . $discrColumn['name']
-            . '", type="' . $discrColumn['type']
-            . '", length=' . $discrColumn['length'];
+        $columnDefinition = sprintf('name="%s", type="%s"', $discrColumn['name'], $discrColumn['type']);
+        if (isset($discrColumn['length'])) {
+            $columnDefinition .= ', length=' . $discrColumn['length'];
+        }
 
         return '@' . $this->annotationsPrefix . 'DiscriminatorColumn(' . $columnDefinition . ')';
     }
