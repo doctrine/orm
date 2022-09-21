@@ -84,23 +84,17 @@ class DDC1113Vehicle
     public $engine;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1113Car extends DDC1113Vehicle
 {
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1113Bus extends DDC1113Vehicle
 {
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1113Engine
 {
     /**

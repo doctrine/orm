@@ -42,9 +42,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         return [$query, $cache];
     }
 
-    /**
-     * @depends testQueryCacheDependsOnHints
-     */
+    /** @depends testQueryCacheDependsOnHints */
     public function testQueryCacheDependsOnFirstResult(array $previous): void
     {
         [$query, $cache] = $previous;
@@ -60,9 +58,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         self::assertCount($cacheCount + 1, $cache->getValues());
     }
 
-    /**
-     * @depends testQueryCacheDependsOnHints
-     */
+    /** @depends testQueryCacheDependsOnHints */
     public function testQueryCacheDependsOnMaxResults(array $previous): void
     {
         [$query, $cache] = $previous;
@@ -77,9 +73,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         self::assertCount($cacheCount + 1, $cache->getValues());
     }
 
-    /**
-     * @depends testQueryCacheDependsOnHints
-     */
+    /** @depends testQueryCacheDependsOnHints */
     public function testQueryCacheDependsOnHydrationMode(array $previous): void
     {
         [$query, $cache] = $previous;
@@ -128,19 +122,14 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $sqlExecMock = $this->getMockBuilder(AbstractSqlExecutor::class)
-                            ->setMethods(['execute'])
-                            ->getMock();
+                            ->getMockForAbstractClass();
 
         $sqlExecMock->expects(self::once())
                     ->method('execute')
                     ->willReturn(10);
 
-        $parserResultMock = $this->getMockBuilder(ParserResult::class)
-                                 ->setMethods(['getSqlExecutor'])
-                                 ->getMock();
-        $parserResultMock->expects(self::once())
-                         ->method('getSqlExecutor')
-                         ->willReturn($sqlExecMock);
+        $parserResultMock = new ParserResult();
+        $parserResultMock->setSqlExecutor($sqlExecMock);
 
         $cache = $this->createMock(CacheItemPoolInterface::class);
 

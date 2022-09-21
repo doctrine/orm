@@ -10,7 +10,7 @@ env:
 jobs:
   phpunit-smoke-check:
     name: "PHPUnit with SQLite"
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-22.04"
 
     strategy:
       matrix:
@@ -144,7 +144,7 @@ jobs:
 
   phpunit-postgres:
     name: "PHPUnit with PostgreSQL"
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-22.04"
     needs: "phpunit-smoke-check"
 
     strategy:
@@ -210,7 +210,7 @@ jobs:
 
   phpunit-mariadb:
     name: "PHPUnit with MariaDB"
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-22.04"
     needs: "phpunit-smoke-check"
 
     strategy:
@@ -286,7 +286,7 @@ jobs:
 
   phpunit-mysql:
     name: "PHPUnit with MySQL"
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-22.04"
     needs: "phpunit-smoke-check"
 
     strategy:
@@ -369,7 +369,7 @@ jobs:
 
   phpunit-lower-php-versions:
     name: "PHPUnit with SQLite"
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-22.04"
 
     strategy:
       matrix:
@@ -402,7 +402,7 @@ jobs:
 
   upload_coverage:
     name: "Upload coverage to Codecov"
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-22.04"
     needs:
       - "phpunit-smoke-check"
       - "phpunit-oci8"

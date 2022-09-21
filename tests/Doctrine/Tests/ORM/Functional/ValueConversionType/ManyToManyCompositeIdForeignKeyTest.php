@@ -73,9 +73,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertEquals('tuv', $conn->fetchOne('SELECT owning_id FROM vct_xref_m2m_compos_fk' . $limit));
     }
 
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
-     */
+    /** @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase */
     public function testThatEntitiesAreFetchedFromTheDatabase(): void
     {
         $auxiliary = $this->_em->find(
@@ -98,9 +96,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertInstanceOf(Models\ValueConversionType\OwningManyToManyCompositeIdForeignKeyEntity::class, $owning);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase(): void
     {
         $auxiliary = $this->_em->find(
@@ -124,9 +120,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertEquals('ghi', $owning->id2);
     }
 
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase
-     */
+    /** @depends testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase */
     public function testThatInversedEntityIsFetchedFromTheDatabaseUsingAuxiliaryEntityAsId(): void
     {
         $auxiliary = $this->_em->find(
@@ -142,9 +136,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertInstanceOf(Models\ValueConversionType\InversedManyToManyCompositeIdForeignKeyEntity::class, $inversed);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheCollectionFromOwningToInversedIsLoaded(): void
     {
         $owning = $this->_em->find(
@@ -155,9 +147,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertCount(1, $owning->associatedEntities);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
+    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
     public function testThatTheCollectionFromInversedToOwningIsLoaded(): void
     {
         $inversed = $this->_em->find(

@@ -21,7 +21,7 @@ use Doctrine\ORM\Mapping\PreUpdate;
  *
  * @Entity
  * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discriminator", type="string")
+ * @DiscriminatorColumn(name="discriminator", type="string", length=255)
  * @DiscriminatorMap({ "image" = "DDC3597Image"})
  * @HasLifecycleCallbacks
  */

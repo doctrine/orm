@@ -25,6 +25,8 @@ use function strtolower;
 /**
  * Class to help with converting Doctrine 1 schema files to Doctrine 2 mapping files
  *
+ * @deprecated This class is being removed from the ORM and won't have any replacement
+ *
  * @link    www.doctrine-project.org
  */
 class ConvertDoctrine1Schema
@@ -106,9 +108,7 @@ class ConvertDoctrine1Schema
         return $metadata;
     }
 
-    /**
-     * @param mixed[] $model
-     */
+    /** @param mixed[] $model */
     private function convertTableName(string $className, array $model, ClassMetadataInfo $metadata): void
     {
         if (isset($model['tableName']) && $model['tableName']) {
@@ -123,9 +123,7 @@ class ConvertDoctrine1Schema
         }
     }
 
-    /**
-     * @param mixed[] $model
-     */
+    /** @param mixed[] $model */
     private function convertColumns(
         string $className,
         array $model,
@@ -249,9 +247,7 @@ class ConvertDoctrine1Schema
         return $fieldMapping;
     }
 
-    /**
-     * @param mixed[] $model
-     */
+    /** @param mixed[] $model */
     private function convertIndexes(
         string $className,
         array $model,
@@ -271,9 +267,7 @@ class ConvertDoctrine1Schema
         }
     }
 
-    /**
-     * @param mixed[] $model
-     */
+    /** @param mixed[] $model */
     private function convertRelations(
         string $className,
         array $model,

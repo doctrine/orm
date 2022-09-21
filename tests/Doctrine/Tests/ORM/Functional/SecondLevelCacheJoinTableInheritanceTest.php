@@ -13,10 +13,8 @@ use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
 use function count;
 use function get_class;
 
-/**
- * @group DDC-2183
- */
-class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractTest
+/** @group DDC-2183 */
+class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testUseSameRegion(): void
     {

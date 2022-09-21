@@ -92,18 +92,14 @@ class DDC531Item
         return $this->parent;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC531Item>
-     */
+    /** @psalm-return Collection<int, DDC531Item> */
     public function getChildren(): Collection
     {
         return $this->children;
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC531SubItem extends DDC531Item
 {
 }

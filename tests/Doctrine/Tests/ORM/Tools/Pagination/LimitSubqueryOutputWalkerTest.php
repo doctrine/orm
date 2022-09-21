@@ -213,9 +213,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         );
     }
 
-    /**
-     * @group DDC-3336
-     */
+    /** @group DDC-3336 */
     public function testCountQueryWithArithmeticOrderByCondition(): void
     {
         $query = $this->entityManager->createQuery(
@@ -291,9 +289,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         );
     }
 
-    /**
-     * @group DDC-3434
-     */
+    /** @group DDC-3434 */
     public function testLimitSubqueryWithHiddenSelectionInOrderBy(): void
     {
         $query = $this->entityManager->createQuery(

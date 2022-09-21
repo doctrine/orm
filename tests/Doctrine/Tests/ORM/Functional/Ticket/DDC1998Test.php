@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1998
- */
+/** @group DDC-1998 */
 class DDC1998Test extends OrmFunctionalTestCase
 {
     public function testSqlConversionAsIdentifier(): void
@@ -47,15 +45,13 @@ class DDC1998Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1998Entity
 {
     /**
      * @var string
      * @Id
-     * @Column(type="ddc1998")
+     * @Column(type="ddc1998", length=255)
      */
     public $id;
 

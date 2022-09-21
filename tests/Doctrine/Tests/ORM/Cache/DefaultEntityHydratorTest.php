@@ -16,9 +16,7 @@ use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmTestCase;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class DefaultEntityHydratorTest extends OrmTestCase
 {
     /** @var EntityHydrator */

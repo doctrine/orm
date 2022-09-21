@@ -28,6 +28,11 @@
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming"/>
     </rule>
 
+    <rule ref="SlevomatCodingStandard.Commenting.RequireOneLineDocComment.MultiLineDocComment">
+        <!-- Remove when dropping PHPUnit 7 -->
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
     <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint">
         <exclude-pattern>*/lib/*</exclude-pattern>
         <!--

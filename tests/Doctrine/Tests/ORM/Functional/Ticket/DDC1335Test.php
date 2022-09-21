@@ -16,9 +16,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1335
- */
+/** @group DDC-1335 */
 class DDC1335Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -154,9 +152,7 @@ class DDC1335Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1335User
 {
     /**
@@ -169,13 +165,13 @@ class DDC1335User
 
     /**
      * @var string
-     * @Column(type="string", unique=true)
+     * @Column(type="string", length=255, unique=true)
      */
     public $email;
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 
@@ -197,9 +193,7 @@ class DDC1335User
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1335Phone
 {
     /**

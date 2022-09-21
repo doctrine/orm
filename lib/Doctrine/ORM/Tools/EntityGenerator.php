@@ -633,9 +633,7 @@ public function __construct(<params>)
         return $type;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function generateEntityNamespace(ClassMetadataInfo $metadata)
     {
         if (! $this->hasNamespace($metadata)) {
@@ -645,9 +643,7 @@ public function __construct(<params>)
         return 'namespace ' . $this->getNamespace($metadata) . ';';
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function generateEntityUse()
     {
         if (! $this->generateAnnotations) {
@@ -657,18 +653,14 @@ public function __construct(<params>)
         return "\n" . 'use Doctrine\ORM\Mapping as ORM;' . "\n";
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function generateEntityClassName(ClassMetadataInfo $metadata)
     {
         return 'class ' . $this->getClassName($metadata) .
             ($this->extendsClass() ? ' extends ' . $this->getClassToExtendName() : null);
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function generateEntityBody(ClassMetadataInfo $metadata)
     {
         $fieldMappingProperties       = $this->generateEntityFieldMappingProperties($metadata);
@@ -704,9 +696,7 @@ public function __construct(<params>)
         return implode("\n", $code);
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function generateEntityConstructor(ClassMetadataInfo $metadata)
     {
         if ($this->hasMethod('__construct', $metadata)) {
@@ -955,33 +945,25 @@ public function __construct(<params>)
         return $traits;
     }
 
-    /**
-     * @return bool
-     */
+    /** @return bool */
     protected function hasNamespace(ClassMetadataInfo $metadata)
     {
         return str_contains($metadata->name, '\\');
     }
 
-    /**
-     * @return bool
-     */
+    /** @return bool */
     protected function extendsClass()
     {
         return (bool) $this->classToExtend;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function getClassToExtend()
     {
         return $this->classToExtend;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function getClassToExtendName()
     {
         $refl = new ReflectionClass($this->getClassToExtend());
@@ -989,26 +971,20 @@ public function __construct(<params>)
         return '\\' . $refl->getName();
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function getClassName(ClassMetadataInfo $metadata)
     {
         return ($pos = strrpos($metadata->name, '\\'))
             ? substr($metadata->name, $pos + 1, strlen($metadata->name)) : $metadata->name;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function getNamespace(ClassMetadataInfo $metadata)
     {
         return substr($metadata->name, 0, strrpos($metadata->name, '\\'));
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function generateEntityDocBlock(ClassMetadataInfo $metadata)
     {
         $lines   = [];
@@ -1044,9 +1020,7 @@ public function __construct(<params>)
         return implode("\n", $lines);
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function generateEntityAnnotation(ClassMetadataInfo $metadata)
     {
         $prefix = '@' . $this->annotationsPrefix;
@@ -1062,9 +1036,7 @@ public function __construct(<params>)
         return $prefix . ($metadata->isMappedSuperclass ? 'MappedSuperclass' : 'Entity') . $customRepository;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function generateTableAnnotation(ClassMetadataInfo $metadata)
     {
         if ($metadata->isEmbeddedClass) {
@@ -1119,9 +1091,7 @@ public function __construct(<params>)
         return implode(', ', $annotations);
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function generateInheritanceAnnotation(ClassMetadataInfo $metadata)
     {
         if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
@@ -1131,9 +1101,7 @@ public function __construct(<params>)
         return '@' . $this->annotationsPrefix . 'InheritanceType("' . $this->getInheritanceTypeString($metadata->inheritanceType) . '")';
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function generateDiscriminatorColumnAnnotation(ClassMetadataInfo $metadata)
     {
         if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
@@ -1152,9 +1120,7 @@ public function __construct(<params>)
         return '@' . $this->annotationsPrefix . 'DiscriminatorColumn(' . $columnDefinition . ')';
     }
 
-    /**
-     * @return string|null
-     */
+    /** @return string|null */
     protected function generateDiscriminatorMapAnnotation(ClassMetadataInfo $metadata)
     {
         if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
@@ -1170,9 +1136,7 @@ public function __construct(<params>)
         return '@' . $this->annotationsPrefix . 'DiscriminatorMap({' . implode(', ', $inheritanceClassMap) . '})';
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function generateEntityStubMethods(ClassMetadataInfo $metadata)
     {
         $methods = [];
@@ -1300,9 +1264,7 @@ public function __construct(<params>)
         return true;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function generateEntityLifecycleCallbackMethods(ClassMetadataInfo $metadata)
     {
         if (empty($metadata->lifecycleCallbacks)) {
@@ -1320,9 +1282,7 @@ public function __construct(<params>)
         return implode("\n\n", array_filter($methods));
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function generateEntityAssociationMappingProperties(ClassMetadataInfo $metadata)
     {
         $lines = [];
@@ -1334,15 +1294,13 @@ public function __construct(<params>)
 
             $lines[] = $this->generateAssociationMappingPropertyDocBlock($associationMapping, $metadata);
             $lines[] = $this->spaces . $this->fieldVisibility . ' $' . $associationMapping['fieldName']
-                     . ($associationMapping['type'] === 'manyToMany' ? ' = array()' : null) . ";\n";
+                     . ($associationMapping['type'] === ClassMetadataInfo::MANY_TO_MANY ? ' = array()' : null) . ";\n";
         }
 
         return implode("\n", $lines);
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function generateEntityFieldMappingProperties(ClassMetadataInfo $metadata)
     {
         $lines = [];
@@ -1374,9 +1332,7 @@ public function __construct(<params>)
         return implode("\n", $lines);
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function generateEntityEmbeddedProperties(ClassMetadataInfo $metadata)
     {
         $lines = [];
@@ -1920,9 +1876,7 @@ public function __construct(<params>)
         return static::$generatorStrategyMap[$type];
     }
 
-    /**
-     * @psalm-param array<string, mixed> $fieldMapping
-     */
+    /** @psalm-param array<string, mixed> $fieldMapping */
     private function nullableFieldExpression(array $fieldMapping): ?string
     {
         if (isset($fieldMapping['nullable']) && $fieldMapping['nullable'] === true) {

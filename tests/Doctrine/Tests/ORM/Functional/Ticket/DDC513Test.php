@@ -39,9 +39,7 @@ class DDC513Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC513OfferItem extends DDC513Item
 {
 }
@@ -70,9 +68,7 @@ class DDC513Item
     public $price;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC513Price
 {
     /**
@@ -85,7 +81,7 @@ class DDC513Price
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $data;
 }

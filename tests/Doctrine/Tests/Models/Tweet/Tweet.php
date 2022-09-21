@@ -27,7 +27,7 @@ class Tweet
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $content;
 

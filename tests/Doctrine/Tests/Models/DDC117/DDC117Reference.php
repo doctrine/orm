@@ -11,9 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC117Reference
 {
     /**
@@ -34,7 +32,7 @@ class DDC117Reference
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $description;
 

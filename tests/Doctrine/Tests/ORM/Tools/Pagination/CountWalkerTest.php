@@ -8,9 +8,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\CountWalker;
 use RuntimeException;
 
-/**
- * @group DDC-1613
- */
+/** @group DDC-1613 */
 class CountWalkerTest extends PaginationTestCase
 {
     public function testCountQuery(): void

@@ -82,9 +82,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('mappedRelated1', $class->associationMappings);
     }
 
-    /**
-     * @group DDC-869
-     */
+    /** @group DDC-869 */
     public function testGetMetadataForSubclassWithMappedSuperclassWithRepository(): void
     {
         $class = $this->cmf->getMetadataFor(DDC869CreditCardPayment::class);
@@ -109,9 +107,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertEquals($class->customRepositoryClassName, EntityRepository::class);
     }
 
-    /**
-     * @group DDC-388
-     */
+    /** @group DDC-388 */
     public function testSerializationWithPrivateFieldsFromMappedSuperclass(): void
     {
         $class = $this->cmf->getMetadataFor(EntitySubClass2::class);
@@ -124,9 +120,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('mappedRelated1', $class2->reflFields);
     }
 
-    /**
-     * @group DDC-1203
-     */
+    /** @group DDC-1203 */
     public function testUnmappedSuperclassInHierarchy(): void
     {
         $class = $this->cmf->getMetadataFor(HierarchyD::class);
@@ -136,9 +130,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('d', $class->fieldMappings);
     }
 
-    /**
-     * @group DDC-1204
-     */
+    /** @group DDC-1204 */
     public function testUnmappedEntityInHierarchy(): void
     {
         $this->expectException(MappingException::class);
@@ -249,7 +241,7 @@ class EntitySubClass extends TransientBaseClass
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $name;
 }
@@ -265,7 +257,7 @@ class MappedSuperclassBase
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $mapped2;
 
@@ -296,7 +288,7 @@ class EntitySubClass2 extends MappedSuperclassBase
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $name;
 }
@@ -312,12 +304,12 @@ class MappedSuperclassBaseIndex
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $mapped1;
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $mapped2;
 }
@@ -337,7 +329,7 @@ class EntityIndexSubClass extends MappedSuperclassBaseIndex
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $name;
 }
@@ -369,7 +361,7 @@ abstract class HierarchyASuperclass extends HierarchyBase
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $a;
 }
@@ -379,7 +371,7 @@ class HierarchyBEntity extends HierarchyBase
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $b;
 }
@@ -389,7 +381,7 @@ class HierarchyC extends HierarchyBase
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $c;
 }
@@ -399,7 +391,7 @@ class HierarchyD extends HierarchyASuperclass
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $d;
 }
@@ -409,7 +401,7 @@ class HierarchyE extends HierarchyBEntity
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $e;
 }

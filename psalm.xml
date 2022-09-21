@@ -24,8 +24,11 @@
                 <referencedClass name="Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper"/>
                 <!-- The exception is thrown by a deprecated method. -->
                 <referencedClass name="Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver"/>
+                <!-- We wire the command as long as DBAL ships it -->
+                <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand" />
                 <!-- Remove on 3.0.x -->
                 <referencedClass name="Doctrine\Common\Persistence\PersistentObject"/>
+                <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
                 <referencedClass name="Doctrine\ORM\Exception\UnknownEntityNamespace"/>
                 <referencedClass name="Doctrine\ORM\Mapping\Driver\YamlDriver"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\Command\ConvertDoctrine1SchemaCommand"/>
@@ -42,6 +45,8 @@
                 <file name="lib/Doctrine/ORM/Configuration.php"/>
                 <file name="lib/Doctrine/ORM/Query/Lexer.php"/>
                 <file name="lib/Doctrine/ORM/Query/Parser.php"/>
+                <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
+                <file name="lib/Doctrine/ORM/Tools/EntityGenerator.php"/>
             </errorLevel>
         </DeprecatedConstant>
         <DeprecatedInterface>
@@ -53,6 +58,8 @@
             <errorLevel type="suppress">
                 <!-- We're calling the deprecated method for BC here. -->
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
+                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getIdentitySequenceName"/>
+                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::usesSequenceEmulatedIdentityColumns"/>
                 <!-- We need to keep the calls for DBAL 2.13 compatibility. -->
                 <referencedMethod name="Doctrine\DBAL\Cache\QueryCacheProfile::getResultCacheDriver"/>
                 <referencedMethod name="Doctrine\DBAL\Cache\QueryCacheProfile::setResultCacheDriver"/>
@@ -60,12 +67,16 @@
                 <referencedMethod name="Doctrine\DBAL\Configuration::setResultCacheImpl"/>
                 <referencedMethod name="Doctrine\DBAL\Connection::getSchemaManager"/>
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
+                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::supportsForeignKeyConstraints"/>
                 <!-- Remove on 3.0.x -->
+                <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
                 <referencedMethod name="Doctrine\ORM\Internal\Hydration\AbstractHydrator::hydrateRow"/>
                 <referencedMethod name="Doctrine\ORM\Configuration::ensureProductionSettings"/>
                 <referencedMethod name="Doctrine\ORM\Configuration::newDefaultAnnotationDriver"/>
                 <referencedMethod name="Doctrine\ORM\Id\AbstractIdGenerator::generate"/>
                 <referencedMethod name="Doctrine\ORM\ORMInvalidArgumentException::invalidEntityName"/>
+                <referencedMethod name="Doctrine\ORM\Query\TreeWalkerAdapter::_getQueryComponents"/>
+                <file name="lib/Doctrine/ORM/Query/TreeWalkerChain.php"/>
             </errorLevel>
         </DeprecatedMethod>
         <DeprecatedProperty>
@@ -159,7 +170,7 @@
                 <!-- DBAL 3.2 forward compatibility -->
                 <referencedClass name="Doctrine\DBAL\Platforms\PostgreSQLPlatform"/>
                 <referencedClass name="Doctrine\DBAL\Platforms\SQLServerPlatform"/>
-                
+
                 <!-- Persistence 2 compatibility -->
                 <referencedClass name="Doctrine\Persistence\ObjectManagerAware"/>
             </errorLevel>
@@ -176,5 +187,11 @@
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
             </errorLevel>
         </UndefinedMethod>
+        <ArgumentTypeCoercion>
+            <errorLevel type="suppress">
+                <!-- See https://github.com/JetBrains/phpstorm-stubs/pull/1383 -->
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php"/>
+            </errorLevel>
+        </ArgumentTypeCoercion>
     </issueHandlers>
 </psalm>

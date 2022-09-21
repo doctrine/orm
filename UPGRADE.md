@@ -1,3 +1,216 @@
+# Upgrade to 2.13
+
+## Deprecated `QueryBuilder` methods and constants.
+
+1. The `QueryBuilder::getState()` method has been deprecated as the builder state is an internal concern.
+2. Relying on the type of the query being built by using `QueryBuilder::getType()` has been deprecated.
+   If necessary, track the type of the query being built outside of the builder.
+
+The following `QueryBuilder` constants related to the above methods have been deprecated:
+
+1. `SELECT`,
+2. `DELETE`,
+3. `UPDATE`,
+4. `STATE_DIRTY`,
+5. `STATE_CLEAN`.
+
+## Deprecated omitting only the alias argument for `QueryBuilder::update` and `QueryBuilder::delete`
+
+When building an UPDATE or DELETE query and when passing a class/type to the function, the alias argument must not be omitted.
+
+### Before
+
+```php
+$qb = $em->createQueryBuilder()
+    ->delete('User u')
+    ->where('u.id = :user_id')
+    ->setParameter('user_id', 1);
+```
+
+### After
+
+```php
+$qb = $em->createQueryBuilder()
+    ->delete('User', 'u')
+    ->where('u.id = :user_id')
+    ->setParameter('user_id', 1);
+```
+
+## Deprecated using the `IDENTITY` identifier strategy on platform that do not support identity columns
+
+If identity columns are emulated with sequences on the platform you are using,
+you should switch to the `SEQUENCE` strategy.
+
+## Deprecated passing `null` to `Doctrine\ORM\Query::setFirstResult()`
+
+`$query->setFirstResult(null);` is equivalent to `$query->setFirstResult(0)`.
+
+## Deprecated calling setters without arguments
+
+The following methods will require an argument in 3.0. Pass `null` instead of
+omitting the argument.
+
+* `Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs::setFoundMetadata()`
+* `Doctrine\ORM\AbstractQuery::setHydrationCacheProfile()`
+* `Doctrine\ORM\AbstractQuery::setResultCache()`
+* `Doctrine\ORM\AbstractQuery::setResultCacheProfile()`
+
+## Deprecated passing invalid fetch modes to `AbstractQuery::setFetchMode()`
+
+Calling `AbstractQuery::setFetchMode()` with anything else than
+`Doctrine\ORM\Mapping::FETCH_EAGER` results in
+`Doctrine\ORM\Mapping::FETCH_LAZY` being used. Relying on that behavior is
+deprecated and will result in an exception in 3.0.
+
+## Deprecated `getEntityManager()` in `Doctrine\ORM\Event\OnClearEventArgs` and `Doctrine\ORM\Event\*FlushEventArgs`
+
+This method has been deprecated in:
+
+* `Doctrine\ORM\Event\OnClearEventArgs`
+* `Doctrine\ORM\Event\OnFlushEventArgs`
+* `Doctrine\ORM\Event\PostFlushEventArgs`
+* `Doctrine\ORM\Event\PreFlushEventArgs`
+
+It will be removed in 3.0. Use `getObjectManager()` instead.
+
+## Prepare split of output walkers and tree walkers
+
+In 3.0, `SqlWalker` and its child classes won't implement the `TreeWalker`
+interface anymore. Relying on that inheritance is deprecated.
+
+The following methods of the `TreeWalker` interface have been deprecated:
+
+* `setQueryComponent()`
+* `walkSelectClause()`
+* `walkFromClause()`
+* `walkFunction()`
+* `walkOrderByClause()`
+* `walkOrderByItem()`
+* `walkHavingClause()`
+* `walkJoin()`
+* `walkSelectExpression()`
+* `walkQuantifiedExpression()`
+* `walkSubselect()`
+* `walkSubselectFromClause()`
+* `walkSimpleSelectClause()`
+* `walkSimpleSelectExpression()`
+* `walkAggregateExpression()`
+* `walkGroupByClause()`
+* `walkGroupByItem()`
+* `walkDeleteClause()`
+* `walkUpdateClause()`
+* `walkUpdateItem()`
+* `walkWhereClause()`
+* `walkConditionalExpression()`
+* `walkConditionalTerm()`
+* `walkConditionalFactor()`
+* `walkConditionalPrimary()`
+* `walkExistsExpression()`
+* `walkCollectionMemberExpression()`
+* `walkEmptyCollectionComparisonExpression()`
+* `walkNullComparisonExpression()`
+* `walkInExpression()`
+* `walkInstanceOfExpression()`
+* `walkLiteral()`
+* `walkBetweenExpression()`
+* `walkLikeExpression()`
+* `walkStateFieldPathExpression()`
+* `walkComparisonExpression()`
+* `walkInputParameter()`
+* `walkArithmeticExpression()`
+* `walkArithmeticTerm()`
+* `walkStringPrimary()`
+* `walkArithmeticFactor()`
+* `walkSimpleArithmeticExpression()`
+* `walkPathExpression()`
+* `walkResultVariable()`
+* `getExecutor()`
+
+The following changes have been made to the abstract `TreeWalkerAdapter` class:
+
+* All implementations of now-deprecated `TreeWalker` methods have been
+  deprecated as well.
+* The method `setQueryComponent()` will become protected in 3.0. Calling it
+  publicly is deprecated.
+* The method `_getQueryComponents()` is deprecated, call `getQueryComponents()`
+  instead.
+
+On the `TreeWalkerChain` class, all implementations of now-deprecated
+`TreeWalker` methods have been deprecated as well.  However, `SqlWalker` is
+unaffected by those deprecations and will continue to implement all of those
+methods.
+
+## Deprecated passing `null` to `Doctrine\ORM\Query::setDQL()`
+
+Doing `$query->setDQL(null);` achieves nothing.
+
+## Deprecated omitting second argument to `NamingStrategy::joinColumnName`
+
+When implementing `NamingStrategy`, it is deprecated to implement
+`joinColumnName()` with only one argument.
+
+### Before
+
+```php
+<?php
+class MyStrategy implements NamingStrategy
+{
+    /**
+     * @param string $propertyName A property name.
+     */
+    public function joinColumnName($propertyName): string
+    {
+        // …
+    }
+}
+```
+
+### After
+
+For backward-compatibility reasons, the parameter has to be optional, but can
+be documented as guaranteed to be a `class-string`.
+
+```php
+<?php
+class MyStrategy implements NamingStrategy
+{
+    /**
+     * @param string       $propertyName A property name.
+     * @param class-string $className
+     */
+    public function joinColumnName($propertyName, $className = null): string
+    {
+        // …
+    }
+}
+```
+
+## Deprecated methods related to named queries
+
+The following methods have been deprecated:
+
+- `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativeQueryMapping()`
+- `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativeQueryResultClassMapping()`
+- `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativQueryResultSetMapping()`
+- `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativQueryEntityResultMapping()`
+
+## Deprecated classes related to Doctrine 1 and reverse engineering
+
+The following classes have been deprecated:
+
+- `Doctrine\ORM\Tools\ConvertDoctrine1Schema`
+- `Doctrine\ORM\Tools\DisconnectedClassMetadataFactory`
+
+## Deprecate `ClassMetadataInfo` usage
+
+It is deprecated to pass `Doctrine\ORM\Mapping\ClassMetadataInfo` instances
+that are not also instances of `Doctrine\ORM\ClassMetadata` to the following
+methods:
+
+- `Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder::__construct()`
+- `Doctrine\ORM\Mapping\Driver\DatabaseDriver::loadMetadataForClass()`
+- `Doctrine\ORM\Tools\SchemaValidator::validateClass()`
+
 # Upgrade to 2.12
 
 ## Deprecated the `doctrine` binary.

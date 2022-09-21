@@ -115,9 +115,7 @@ class City
         $this->travels[] = $travel;
     }
 
-    /**
-     * @psalm-return Collection<int, Travel>
-     */
+    /** @psalm-return Collection<int, Travel> */
     public function getTravels(): Collection
     {
         return $this->travels;
@@ -128,9 +126,7 @@ class City
         $this->attractions[] = $attraction;
     }
 
-    /**
-     * @psalm-return Collection<int, Attraction>
-     */
+    /** @psalm-return Collection<int, Attraction> */
     public function getAttractions(): Collection
     {
         return $this->attractions;

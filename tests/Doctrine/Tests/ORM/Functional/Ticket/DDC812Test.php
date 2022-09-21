@@ -18,9 +18,7 @@ class DDC812Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @group DDC-812
-     */
+    /** @group DDC-812 */
     public function testFetchJoinInitializesPreviouslyUninitializedCollectionOfManagedEntity(): void
     {
         $article        = new CmsArticle();

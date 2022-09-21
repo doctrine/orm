@@ -35,7 +35,6 @@ use InvalidArgumentException;
 use Throwable;
 
 use function array_keys;
-use function call_user_func;
 use function class_exists;
 use function get_debug_type;
 use function gettype;
@@ -71,8 +70,10 @@ use function strpos;
  * is not a valid extension point for the EntityManager. Instead you
  * should take a look at the {@see \Doctrine\ORM\Decorator\EntityManagerDecorator}
  * and wrap your entity manager in a decorator.
+ *
+ * @final
  */
-/* final */class EntityManager implements EntityManagerInterface
+class EntityManager implements EntityManagerInterface
 {
     /**
      * The used Configuration.
@@ -155,11 +156,15 @@ use function strpos;
      * Creates a new EntityManager that operates on the given database connection
      * and uses the given Configuration and EventManager implementations.
      */
-    protected function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
+    public function __construct(Connection $conn, Configuration $config)
     {
+        if (! $config->getMetadataDriverImpl()) {
+            throw MissingMappingDriverImplementation::create();
+        }
+
         $this->conn         = $conn;
         $this->config       = $config;
-        $this->eventManager = $eventManager;
+        $this->eventManager = $conn->getEventManager();
 
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
 
@@ -242,7 +247,7 @@ use function strpos;
         $this->conn->beginTransaction();
 
         try {
-            $return = call_user_func($func, $this);
+            $return = $func($this);
 
             $this->flush();
             $this->conn->commit();
@@ -959,13 +964,9 @@ use function strpos;
      */
     public static function create($connection, Configuration $config, ?EventManager $eventManager = null)
     {
-        if (! $config->getMetadataDriverImpl()) {
-            throw MissingMappingDriverImplementation::create();
-        }
-
         $connection = static::createConnection($connection, $config, $eventManager);
 
-        return new EntityManager($connection, $config, $connection->getEventManager());
+        return new EntityManager($connection, $config);
     }
 
     /**

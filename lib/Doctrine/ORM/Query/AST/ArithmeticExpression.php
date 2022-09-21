@@ -17,17 +17,13 @@ class ArithmeticExpression extends Node
     /** @var Subselect|null */
     public $subselect;
 
-    /**
-     * @return bool
-     */
+    /** @return bool */
     public function isSimpleArithmeticExpression()
     {
         return (bool) $this->simpleArithmeticExpression;
     }
 
-    /**
-     * @return bool
-     */
+    /** @return bool */
     public function isSubselect()
     {
         return (bool) $this->subselect;

@@ -16,9 +16,7 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC117Editor
 {
     /**
@@ -31,7 +29,7 @@ class DDC117Editor
 
     /**
      * @var string|null
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 

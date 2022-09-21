@@ -17,9 +17,7 @@ use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-371
- */
+/** @group DDC-371 */
 class DDC371Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -71,7 +69,7 @@ class DDC371Child
     private $id;
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $data;
     /**
@@ -94,7 +92,7 @@ class DDC371Parent
     private $id;
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $data;
 

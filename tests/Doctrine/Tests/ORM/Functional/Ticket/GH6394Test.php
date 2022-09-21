@@ -45,9 +45,7 @@ class GH6394Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class A
 {
     /**
@@ -70,9 +68,7 @@ class A
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class B
 {
     /**
@@ -84,7 +80,7 @@ class B
     public $a;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string
      */
     public $something;

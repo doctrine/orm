@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH8055
- */
+/** @group GH8055 */
 final class GH8055Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -65,13 +63,11 @@ class GH8055BaseClass
     public $id;
 }
 
-/**
- * @Entity()
- */
+/** @Entity() */
 class GH8055SubClass extends GH8055BaseClass
 {
     /**
-     * @Column(name="test", type="string")
+     * @Column(name="test", type="string", length=255)
      * @var string
      */
     public $value;

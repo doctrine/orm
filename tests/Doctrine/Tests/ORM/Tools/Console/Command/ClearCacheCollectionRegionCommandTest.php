@@ -11,9 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
 {
     /** @var Application */

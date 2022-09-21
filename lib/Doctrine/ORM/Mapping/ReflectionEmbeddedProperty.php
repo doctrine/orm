@@ -31,9 +31,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
     /** @var Instantiator|null */
     private $instantiator;
 
-    /**
-     * @param string $embeddedClass
-     */
+    /** @param string $embeddedClass */
     public function __construct(ReflectionProperty $parentProperty, ReflectionProperty $childProperty, $embeddedClass)
     {
         $this->parentProperty = $parentProperty;

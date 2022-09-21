@@ -12,11 +12,10 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmTestCase;
 
+use function method_exists;
 use function sprintf;
 
-/**
- * @group GH8061
- */
+/** @group GH8061 */
 final class GH8061Test extends OrmTestCase
 {
     public static function setUpBeforeClass(): void
@@ -34,9 +33,7 @@ final class GH8061Test extends OrmTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 final class GH8061Entity
 {
     /**
@@ -49,7 +46,7 @@ final class GH8061Entity
 
     /**
      * @var mixed
-     * @Column(type="GH8061Type")
+     * @Column(type="GH8061Type", length=255)
      */
     public $field;
 }
@@ -58,6 +55,10 @@ final class GH8061Type extends Type
 {
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
+        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
+            return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
+        }
+
         return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 

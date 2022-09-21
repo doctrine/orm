@@ -120,9 +120,7 @@ class GH6141People
     /** @var string */
     private $value;
 
-    /**
-     * @throws InvalidArgumentException
-     */
+    /** @throws InvalidArgumentException */
     public static function get(string $value): GH6141People
     {
         if (! self::isValid($value)) {
@@ -174,7 +172,7 @@ abstract class GH6141Person
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 

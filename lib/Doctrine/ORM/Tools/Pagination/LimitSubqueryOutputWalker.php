@@ -104,7 +104,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         // Reset limit and offset
         $this->firstResult = $query->getFirstResult();
         $this->maxResults  = $query->getMaxResults();
-        $query->setFirstResult(null)->setMaxResults(null);
+        $query->setFirstResult(0)->setMaxResults(null);
 
         $this->em            = $query->getEntityManager();
         $this->quoteStrategy = $this->em->getConfiguration()->getQuoteStrategy();
@@ -155,11 +155,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     }
 
     /**
-     * Walks down a SelectStatement AST node, wrapping it in a SELECT DISTINCT.
-     *
-     * @return string
-     *
-     * @throws RuntimeException
+     * {@inheritdoc}
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
@@ -496,9 +492,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         return $innerSql;
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     private function getSQLIdentifier(SelectStatement $AST): array
     {
         // Find out the SQL alias of the identifier column of the root entity.

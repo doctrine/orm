@@ -10,9 +10,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function get_class;
 
-/**
- * @group DDC-1643
- */
+/** @group DDC-1643 */
 class DDC1643Test extends OrmFunctionalTestCase
 {
     /** @var CmsUser */

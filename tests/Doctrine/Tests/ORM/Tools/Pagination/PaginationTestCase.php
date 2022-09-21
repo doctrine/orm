@@ -31,9 +31,7 @@ abstract class PaginationTestCase extends OrmTestCase
 }
 
 
-/**
- * @Entity
- */
+/** @Entity */
 class MyBlogPost
 {
     /**
@@ -58,14 +56,12 @@ class MyBlogPost
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $title;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class MyAuthor
 {
     /**
@@ -77,9 +73,7 @@ class MyAuthor
     public $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class MyCategory
 {
     /**
@@ -92,9 +86,7 @@ class MyCategory
 }
 
 
-/**
- * @Entity
- */
+/** @Entity */
 class BlogPost
 {
     /**
@@ -118,9 +110,7 @@ class BlogPost
     public $category;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class Author
 {
     /**
@@ -133,14 +123,12 @@ class Author
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class Person
 {
     /**
@@ -153,20 +141,18 @@ class Person
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $biography;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class Category
 {
     /**
@@ -294,7 +280,7 @@ class Banner extends Identified
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 }

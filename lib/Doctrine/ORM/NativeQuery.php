@@ -33,8 +33,6 @@ final class NativeQuery extends AbstractQuery
 
     /**
      * Gets the SQL query.
-     *
-     * @override
      */
     public function getSQL(): string
     {

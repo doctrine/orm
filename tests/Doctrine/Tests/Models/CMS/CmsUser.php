@@ -255,9 +255,7 @@ class CmsUser
         $phone->setUser($this);
     }
 
-    /**
-     * @psalm-return Collection<int, CmsPhonenumber>
-     */
+    /** @psalm-return Collection<int, CmsPhonenumber> */
     public function getPhonenumbers(): Collection
     {
         return $this->phonenumbers;
@@ -275,9 +273,7 @@ class CmsUser
         $group->addUser($this);
     }
 
-    /**
-     * @psalm-return Collection<int, CmsGroup>
-     */
+    /** @psalm-return Collection<int, CmsGroup> */
     public function getGroups(): Collection
     {
         return $this->groups;

@@ -13,10 +13,13 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class PaginatorTest extends OrmTestCase
 {
+    use MockBuilderCompatibilityTools;
+
     /** @var Connection&MockObject */
     private $connection;
     /** @var EntityManagerInterface&MockObject */
@@ -26,14 +29,12 @@ class PaginatorTest extends OrmTestCase
 
     protected function setUp(): void
     {
-        $this->connection = $this->getMockBuilder(ConnectionMock::class)
+        $this->connection = $this->getMockBuilderWithOnlyMethods(ConnectionMock::class, ['executeQuery'])
             ->setConstructorArgs([[], $this->createMock(Driver::class)])
-            ->setMethods(['executeQuery'])
             ->getMock();
 
-        $this->em = $this->getMockBuilder(EntityManagerDecorator::class)
+        $this->em = $this->getMockBuilderWithOnlyMethods(EntityManagerDecorator::class, ['newHydrator'])
             ->setConstructorArgs([$this->getTestEntityManager($this->connection)])
-            ->setMethods(['newHydrator'])
             ->getMock();
 
         $this->hydrator = $this->createMock(AbstractHydrator::class);
@@ -94,9 +95,7 @@ class PaginatorTest extends OrmTestCase
         $this->createPaginatorWithExtraParametersWithoutOutputWalkers([[10]])->getIterator();
     }
 
-    /**
-     * @param int[][] $willReturnRows
-     */
+    /** @param int[][] $willReturnRows */
     private function createPaginatorWithExtraParametersWithoutOutputWalkers(array $willReturnRows): Paginator
     {
         $this->hydrator->method('hydrateAll')->willReturn($willReturnRows);

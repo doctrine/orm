@@ -141,25 +141,19 @@ class StatisticsCacheLogger implements CacheLogger
         return $this->cachePutCountMap[$regionName] ?? 0;
     }
 
-    /**
-     * @return array<string, int>
-     */
+    /** @return array<string, int> */
     public function getRegionsMiss()
     {
         return $this->cacheMissCountMap;
     }
 
-    /**
-     * @return array<string, int>
-     */
+    /** @return array<string, int> */
     public function getRegionsHit()
     {
         return $this->cacheHitCountMap;
     }
 
-    /**
-     * @return array<string, int>
-     */
+    /** @return array<string, int> */
     public function getRegionsPut()
     {
         return $this->cachePutCountMap;

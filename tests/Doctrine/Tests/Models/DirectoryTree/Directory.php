@@ -7,14 +7,12 @@ namespace Doctrine\Tests\Models\DirectoryTree;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 
-/**
- * @Entity
- */
+/** @Entity */
 class Directory extends AbstractContentItem
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     protected $path;
 

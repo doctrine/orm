@@ -122,9 +122,7 @@ class CompanyFlexContract extends CompanyContract
         $this->pricePerHour = $pricePerHour;
     }
 
-    /**
-     * @psalm-return Collection<int, CompanyManager>
-     */
+    /** @psalm-return Collection<int, CompanyManager> */
     public function getManagers(): Collection
     {
         return $this->managers;

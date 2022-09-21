@@ -26,16 +26,17 @@ use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use InvalidArgumentException;
 use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Cache\CacheItemPoolInterface;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class DefaultCacheFactoryTest extends OrmTestCase
 {
+    use MockBuilderCompatibilityTools;
+
     /** @var CacheFactory&MockObject */
     private $factory;
 
@@ -53,8 +54,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->em            = $this->getTestEntityManager();
         $this->regionsConfig = new RegionsConfiguration();
         $arguments           = [$this->regionsConfig, $this->getSharedSecondLevelCache()];
-        $this->factory       = $this->getMockBuilder(DefaultCacheFactory::class)
-                                    ->setMethods(['getRegion'])
+        $this->factory       = $this->getMockBuilderWithOnlyMethods(DefaultCacheFactory::class, ['getRegion'])
                                     ->setConstructorArgs($arguments)
                                     ->getMock();
     }

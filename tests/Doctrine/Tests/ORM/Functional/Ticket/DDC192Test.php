@@ -17,9 +17,7 @@ use function array_map;
 use function strtolower;
 use function trim;
 
-/**
- * @group DDC-192
- */
+/** @group DDC-192 */
 class DDC192Test extends OrmFunctionalTestCase
 {
     public function testSchemaCreation(): void
@@ -60,7 +58,7 @@ class DDC192User
 
     /**
      * @var string
-     * @Column(name="name", type="string")
+     * @Column(name="name", type="string", length=255)
      */
     public $name;
 }

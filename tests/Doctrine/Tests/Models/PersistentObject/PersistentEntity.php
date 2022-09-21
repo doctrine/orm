@@ -11,9 +11,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * @Entity
- */
+/** @Entity */
 class PersistentEntity extends PersistentObject
 {
     /**
@@ -25,7 +23,7 @@ class PersistentEntity extends PersistentObject
     protected $id;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string
      */
     protected $name;

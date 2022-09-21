@@ -63,9 +63,7 @@ final class GH7496WithToIterableTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7496EntityA
 {
     /**
@@ -77,7 +75,7 @@ class GH7496EntityA
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 
@@ -88,9 +86,7 @@ class GH7496EntityA
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7496EntityB
 {
     /**
@@ -102,7 +98,7 @@ class GH7496EntityB
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 
@@ -113,9 +109,7 @@ class GH7496EntityB
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7496EntityAinB
 {
     /**

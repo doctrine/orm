@@ -9,9 +9,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Models\CMS;
 
-/**
- * @BeforeMethods({"init"})
- */
+/** @BeforeMethods({"init"}) */
 final class SimpleHydrationBench
 {
     /** @var EntityManagerInterface */

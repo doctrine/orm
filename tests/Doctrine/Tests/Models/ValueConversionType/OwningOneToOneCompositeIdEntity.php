@@ -20,7 +20,7 @@ class OwningOneToOneCompositeIdEntity
 {
     /**
      * @var string
-     * @Column(type="rot13")
+     * @Column(type="rot13", length=255)
      * @Id
      */
     public $id3;

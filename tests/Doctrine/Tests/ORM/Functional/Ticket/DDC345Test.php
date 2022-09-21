@@ -69,9 +69,7 @@ class DDC345Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC345User
 {
     /**
@@ -84,7 +82,7 @@ class DDC345User
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 
@@ -100,9 +98,7 @@ class DDC345User
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC345Group
 {
     /**
@@ -115,7 +111,7 @@ class DDC345Group
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 
@@ -164,7 +160,7 @@ class DDC345Membership
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $state;
 

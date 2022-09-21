@@ -16,9 +16,9 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH-5804
- */
+use function method_exists;
+
+/** @group GH-5804 */
 final class GH5804Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -75,6 +75,10 @@ final class GH5804Type extends Type
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
+        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
+            return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
+        }
+
         return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
@@ -91,15 +95,13 @@ final class GH5804Type extends Type
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH5804Article
 {
     /**
      * @var string
      * @Id
-     * @Column(type="GH5804Type")
+     * @Column(type="GH5804Type", length=255)
      * @GeneratedValue(strategy="CUSTOM")
      * @CustomIdGenerator(class=\Doctrine\Tests\ORM\Functional\Ticket\GH5804Generator::class)
      */

@@ -29,9 +29,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group non-cacheable
-     */
+    /** @group non-cacheable */
     public function testSimpleDetachMerge(): void
     {
         $user       = new DefaultValueUser();
@@ -65,9 +63,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         self::assertEquals('Poweruser', $a2->getUser()->type);
     }
 
-    /**
-     * @group DDC-1386
-     */
+    /** @group DDC-1386 */
     public function testGetPartialReferenceWithDefaultValueNotEvaluatedInFlush(): void
     {
         $user       = new DefaultValueUser();
@@ -106,12 +102,12 @@ class DefaultValueUser
     public $id;
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name = '';
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $type = 'Poweruser';
     /**

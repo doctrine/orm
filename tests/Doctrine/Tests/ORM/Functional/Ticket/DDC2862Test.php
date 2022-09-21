@@ -129,7 +129,7 @@ class DDC2862Driver
     protected $id;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string
      */
     protected $name;
@@ -189,7 +189,7 @@ class DDC2862User
     protected $id;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string
      */
     protected $name;

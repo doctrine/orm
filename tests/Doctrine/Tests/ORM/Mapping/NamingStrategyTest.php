@@ -13,9 +13,7 @@ use Doctrine\Tests\OrmTestCase;
 use const CASE_LOWER;
 use const CASE_UPPER;
 
-/**
- * @group DDC-559
- */
+/** @group DDC-559 */
 class NamingStrategyTest extends OrmTestCase
 {
     private static function defaultNaming(): DefaultNamingStrategy
@@ -77,9 +75,7 @@ class NamingStrategyTest extends OrmTestCase
         ];
     }
 
-    /**
-     * @dataProvider dataClassToTableName
-     */
+    /** @dataProvider dataClassToTableName */
     public function testClassToTableName(NamingStrategy $strategy, string $expected, string $className): void
     {
         self::assertSame($expected, $strategy->classToTableName($className));
@@ -88,46 +84,48 @@ class NamingStrategyTest extends OrmTestCase
     /**
      * Data Provider for NamingStrategy#propertyToColumnName
      *
-     * @return array<array{NamingStrategy, string, string}>
+     * @return array<array{NamingStrategy, string, string, string}>
      */
     public static function dataPropertyToColumnName(): array
     {
         return [
             // DefaultNamingStrategy
-            [self::defaultNaming(), 'someProperty', 'someProperty'],
-            [self::defaultNaming(), 'SOME_PROPERTY', 'SOME_PROPERTY'],
-            [self::defaultNaming(), 'some_property', 'some_property'],
-            [self::defaultNaming(), 'base64Encoded', 'base64Encoded'],
-            [self::defaultNaming(), 'base64_encoded', 'base64_encoded'],
+            [self::defaultNaming(), 'someProperty', 'someProperty', 'Some\Class'],
+            [self::defaultNaming(), 'SOME_PROPERTY', 'SOME_PROPERTY', 'Some\Class'],
+            [self::defaultNaming(), 'some_property', 'some_property', 'Some\Class'],
+            [self::defaultNaming(), 'base64Encoded', 'base64Encoded', 'Some\Class'],
+            [self::defaultNaming(), 'base64_encoded', 'base64_encoded', 'Some\Class'],
 
             // UnderscoreNamingStrategy
-            [self::underscoreNamingLower(), 'some_property', 'someProperty'],
-            [self::underscoreNamingLower(), 'base64encoded', 'base64Encoded'],
-            [self::underscoreNamingLower(), 'base64encoded', 'base64encoded'],
-            [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'someProperty'],
-            [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'some_property'],
-            [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'SOME_PROPERTY'],
-            [self::underscoreNamingUpper(), 'BASE64ENCODED', 'base64Encoded'],
-            [self::underscoreNamingUpper(), 'BASE64ENCODED', 'base64encoded'],
+            [self::underscoreNamingLower(), 'some_property', 'someProperty', 'Some\Class'],
+            [self::underscoreNamingLower(), 'base64encoded', 'base64Encoded', 'Some\Class'],
+            [self::underscoreNamingLower(), 'base64encoded', 'base64encoded', 'Some\Class'],
+            [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'someProperty', 'Some\Class'],
+            [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'some_property', 'Some\Class'],
+            [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'SOME_PROPERTY', 'Some\Class'],
+            [self::underscoreNamingUpper(), 'BASE64ENCODED', 'base64Encoded', 'Some\Class'],
+            [self::underscoreNamingUpper(), 'BASE64ENCODED', 'base64encoded', 'Some\Class'],
 
             // NumberAwareUnderscoreNamingStrategy
-            [self::numberAwareUnderscoreNamingLower(), 'some_property', 'someProperty'],
-            [self::numberAwareUnderscoreNamingLower(), 'base64_encoded', 'base64Encoded'],
-            [self::numberAwareUnderscoreNamingLower(), 'base64encoded', 'base64encoded'],
-            [self::numberAwareUnderscoreNamingUpper(), 'SOME_PROPERTY', 'someProperty'],
-            [self::numberAwareUnderscoreNamingUpper(), 'SOME_PROPERTY', 'some_property'],
-            [self::numberAwareUnderscoreNamingUpper(), 'SOME_PROPERTY', 'SOME_PROPERTY'],
-            [self::numberAwareUnderscoreNamingUpper(), 'BASE64_ENCODED', 'base64Encoded'],
-            [self::numberAwareUnderscoreNamingUpper(), 'BASE64ENCODED', 'base64encoded'],
+            [self::numberAwareUnderscoreNamingLower(), 'some_property', 'someProperty', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingLower(), 'base64_encoded', 'base64Encoded', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingLower(), 'base64encoded', 'base64encoded', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingUpper(), 'SOME_PROPERTY', 'someProperty', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingUpper(), 'SOME_PROPERTY', 'some_property', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingUpper(), 'SOME_PROPERTY', 'SOME_PROPERTY', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingUpper(), 'BASE64_ENCODED', 'base64Encoded', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingUpper(), 'BASE64ENCODED', 'base64encoded', 'Some\Class'],
         ];
     }
 
-    /**
-     * @dataProvider dataPropertyToColumnName
-     */
-    public function testPropertyToColumnName(NamingStrategy $strategy, string $expected, string $propertyName): void
-    {
-        self::assertSame($expected, $strategy->propertyToColumnName($propertyName));
+    /** @dataProvider dataPropertyToColumnName */
+    public function testPropertyToColumnName(
+        NamingStrategy $strategy,
+        string $expected,
+        string $propertyName,
+        string $className
+    ): void {
+        self::assertSame($expected, $strategy->propertyToColumnName($propertyName, $className));
     }
 
     /**
@@ -151,9 +149,7 @@ class NamingStrategyTest extends OrmTestCase
         ];
     }
 
-    /**
-     * @dataProvider dataReferenceColumnName
-     */
+    /** @dataProvider dataReferenceColumnName */
     public function testReferenceColumnName(NamingStrategy $strategy, string $expected): void
     {
         self::assertSame($expected, $strategy->referenceColumnName());
@@ -168,24 +164,24 @@ class NamingStrategyTest extends OrmTestCase
     {
         return [
             // DefaultNamingStrategy
-            [self::defaultNaming(), 'someColumn_id', 'someColumn', null],
-            [self::defaultNaming(), 'some_column_id', 'some_column', null],
-            [self::defaultNaming(), 'base64Encoded_id', 'base64Encoded', null],
-            [self::defaultNaming(), 'base64_encoded_id', 'base64_encoded', null],
+            [self::defaultNaming(), 'someColumn_id', 'someColumn', 'Some\Class'],
+            [self::defaultNaming(), 'some_column_id', 'some_column', 'Some\Class'],
+            [self::defaultNaming(), 'base64Encoded_id', 'base64Encoded', 'Some\Class'],
+            [self::defaultNaming(), 'base64_encoded_id', 'base64_encoded', 'Some\Class'],
 
             // UnderscoreNamingStrategy
-            [self::underscoreNamingLower(), 'some_column_id', 'someColumn', null],
-            [self::underscoreNamingLower(), 'base64encoded_id', 'base64Encoded', null],
-            [self::underscoreNamingUpper(), 'SOME_COLUMN_ID', 'someColumn', null],
-            [self::underscoreNamingUpper(), 'BASE64ENCODED_ID', 'base64Encoded', null],
+            [self::underscoreNamingLower(), 'some_column_id', 'someColumn', 'Some\Class'],
+            [self::underscoreNamingLower(), 'base64encoded_id', 'base64Encoded', 'Some\Class'],
+            [self::underscoreNamingUpper(), 'SOME_COLUMN_ID', 'someColumn', 'Some\Class'],
+            [self::underscoreNamingUpper(), 'BASE64ENCODED_ID', 'base64Encoded', 'Some\Class'],
 
             // NumberAwareUnderscoreNamingStrategy
-            [self::numberAwareUnderscoreNamingLower(), 'some_column_id', 'someColumn', null],
-            [self::numberAwareUnderscoreNamingLower(), 'base64_encoded_id', 'base64Encoded', null],
-            [self::numberAwareUnderscoreNamingLower(), 'base64encoded_id', 'base64encoded', null],
-            [self::numberAwareUnderscoreNamingUpper(), 'SOME_COLUMN_ID', 'someColumn', null],
-            [self::numberAwareUnderscoreNamingUpper(), 'BASE64_ENCODED_ID', 'base64Encoded', null],
-            [self::numberAwareUnderscoreNamingUpper(), 'BASE64ENCODED_ID', 'base64encoded', null],
+            [self::numberAwareUnderscoreNamingLower(), 'some_column_id', 'someColumn', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingLower(), 'base64_encoded_id', 'base64Encoded', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingLower(), 'base64encoded_id', 'base64encoded', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingUpper(), 'SOME_COLUMN_ID', 'someColumn', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingUpper(), 'BASE64_ENCODED_ID', 'base64Encoded', 'Some\Class'],
+            [self::numberAwareUnderscoreNamingUpper(), 'BASE64ENCODED_ID', 'base64encoded', 'Some\Class'],
 
             // JoinColumnClassNamingStrategy
             [new JoinColumnClassNamingStrategy(), 'classname_someColumn_id', 'someColumn', 'Some\ClassName'],
@@ -216,41 +212,39 @@ class NamingStrategyTest extends OrmTestCase
     {
         return [
             // DefaultNamingStrategy
-            [self::defaultNaming(), 'someclassname_classname', 'SomeClassName', 'Some\ClassName', null],
-            [self::defaultNaming(), 'someclassname_classname', '\SomeClassName', 'ClassName', null],
-            [self::defaultNaming(), 'name_classname', '\Some\Class\Name', 'ClassName', null],
+            [self::defaultNaming(), 'someclassname_classname', 'SomeClassName', 'Some\ClassName', 'some_property'],
+            [self::defaultNaming(), 'someclassname_classname', '\SomeClassName', 'ClassName', 'some_property'],
+            [self::defaultNaming(), 'name_classname', '\Some\Class\Name', 'ClassName', 'some_property'],
 
             // UnderscoreNamingStrategy
-            [self::underscoreNamingLower(), 'some_class_name_class_name', 'SomeClassName', 'Some\ClassName', null],
-            [self::underscoreNamingLower(), 'class1test_class2test', 'Class1Test', 'Some\Class2Test', null],
-            [self::underscoreNamingLower(), 'some_class_name_class_name', '\SomeClassName', 'ClassName', null],
-            [self::underscoreNamingLower(), 'name_class_name', '\Some\Class\Name', 'ClassName', null],
-            [self::underscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME', 'SomeClassName', 'Some\ClassName', null],
-            [self::underscoreNamingUpper(), 'CLASS1TEST_CLASS2TEST', 'Class1Test', 'Some\Class2Test', null],
-            [self::underscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME', '\SomeClassName', 'ClassName', null],
-            [self::underscoreNamingUpper(), 'NAME_CLASS_NAME', '\Some\Class\Name', 'ClassName', null],
+            [self::underscoreNamingLower(), 'some_class_name_class_name', 'SomeClassName', 'Some\ClassName', 'some_property'],
+            [self::underscoreNamingLower(), 'class1test_class2test', 'Class1Test', 'Some\Class2Test', 'some_property'],
+            [self::underscoreNamingLower(), 'some_class_name_class_name', '\SomeClassName', 'ClassName', 'some_property'],
+            [self::underscoreNamingLower(), 'name_class_name', '\Some\Class\Name', 'ClassName', 'some_property'],
+            [self::underscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME', 'SomeClassName', 'Some\ClassName', 'some_property'],
+            [self::underscoreNamingUpper(), 'CLASS1TEST_CLASS2TEST', 'Class1Test', 'Some\Class2Test', 'some_property'],
+            [self::underscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME', '\SomeClassName', 'ClassName', 'some_property'],
+            [self::underscoreNamingUpper(), 'NAME_CLASS_NAME', '\Some\Class\Name', 'ClassName', 'some_property'],
 
             // NumberAwareUnderscoreNamingStrategy
-            [self::numberAwareUnderscoreNamingLower(), 'some_class_name_class_name', 'SomeClassName', 'Some\ClassName', null],
-            [self::numberAwareUnderscoreNamingLower(), 'class1_test_class2_test', 'Class1Test', 'Some\Class2Test', null],
-            [self::numberAwareUnderscoreNamingLower(), 'some_class_name_class_name', '\SomeClassName', 'ClassName', null],
-            [self::numberAwareUnderscoreNamingLower(), 'name_class_name', '\Some\Class\Name', 'ClassName', null],
-            [self::numberAwareUnderscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME', 'SomeClassName', 'Some\ClassName', null],
-            [self::numberAwareUnderscoreNamingUpper(), 'CLASS1_TEST_CLASS2_TEST', 'Class1Test', 'Some\Class2Test', null],
-            [self::numberAwareUnderscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME', '\SomeClassName', 'ClassName', null],
-            [self::numberAwareUnderscoreNamingUpper(), 'NAME_CLASS_NAME', '\Some\Class\Name', 'ClassName', null],
+            [self::numberAwareUnderscoreNamingLower(), 'some_class_name_class_name', 'SomeClassName', 'Some\ClassName', 'some_property'],
+            [self::numberAwareUnderscoreNamingLower(), 'class1_test_class2_test', 'Class1Test', 'Some\Class2Test', 'some_property'],
+            [self::numberAwareUnderscoreNamingLower(), 'some_class_name_class_name', '\SomeClassName', 'ClassName', 'some_property'],
+            [self::numberAwareUnderscoreNamingLower(), 'name_class_name', '\Some\Class\Name', 'ClassName', 'some_property'],
+            [self::numberAwareUnderscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME', 'SomeClassName', 'Some\ClassName', 'some_property'],
+            [self::numberAwareUnderscoreNamingUpper(), 'CLASS1_TEST_CLASS2_TEST', 'Class1Test', 'Some\Class2Test', 'some_property'],
+            [self::numberAwareUnderscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME', '\SomeClassName', 'ClassName', 'some_property'],
+            [self::numberAwareUnderscoreNamingUpper(), 'NAME_CLASS_NAME', '\Some\Class\Name', 'ClassName', 'some_property'],
         ];
     }
 
-    /**
-     * @dataProvider dataJoinTableName
-     */
+    /** @dataProvider dataJoinTableName */
     public function testJoinTableName(
         NamingStrategy $strategy,
         string $expected,
         string $ownerEntity,
         string $associatedEntity,
-        ?string $propertyName = null
+        string $propertyName
     ): void {
         self::assertSame($expected, $strategy->joinTableName($ownerEntity, $associatedEntity, $propertyName));
     }
@@ -289,9 +283,7 @@ class NamingStrategyTest extends OrmTestCase
         ];
     }
 
-    /**
-     * @dataProvider dataJoinKeyColumnName
-     */
+    /** @dataProvider dataJoinKeyColumnName */
     public function testJoinKeyColumnName(
         NamingStrategy $strategy,
         string $expected,

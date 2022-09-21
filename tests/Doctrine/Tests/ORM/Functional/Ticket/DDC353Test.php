@@ -72,9 +72,7 @@ class DDC353Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC353Picture
 {
     /**
@@ -110,9 +108,7 @@ class DDC353Picture
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC353File
 {
     /**

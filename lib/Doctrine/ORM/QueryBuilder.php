@@ -6,6 +6,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
@@ -38,13 +39,19 @@ use function substr;
  */
 class QueryBuilder
 {
-    /* The query types. */
+    /** @deprecated */
     public const SELECT = 0;
+
+    /** @deprecated */
     public const DELETE = 1;
+
+    /** @deprecated */
     public const UPDATE = 2;
 
-    /* The builder states. */
+    /** @deprecated */
     public const STATE_DIRTY = 0;
+
+    /** @deprecated */
     public const STATE_CLEAN = 1;
 
     /**
@@ -105,9 +112,9 @@ class QueryBuilder
     /**
      * The index of the first result to retrieve.
      *
-     * @var int|null
+     * @var int
      */
-    private $_firstResult = null;
+    private $_firstResult = 0;
 
     /**
      * The maximum number of results to retrieve.
@@ -227,9 +234,7 @@ class QueryBuilder
         return $this->cacheRegion;
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     public function getLifetime()
     {
         return $this->lifetime;
@@ -274,11 +279,20 @@ class QueryBuilder
     /**
      * Gets the type of the currently built query.
      *
+     * @deprecated If necessary, track the type of the query being built outside of the builder.
+     *
      * @return int
      * @psalm-return self::SELECT|self::DELETE|self::UPDATE
      */
     public function getType()
     {
+        Deprecation::trigger(
+            'doctrine/dbal',
+            'https://github.com/doctrine/orm/pull/9945',
+            'Relying on the type of the query being built is deprecated.'
+            . ' If necessary, track the type of the query being built outside of the builder.'
+        );
+
         return $this->_type;
     }
 
@@ -295,11 +309,19 @@ class QueryBuilder
     /**
      * Gets the state of this query builder instance.
      *
+     * @deprecated The builder state is an internal concern.
+     *
      * @return int Either QueryBuilder::STATE_DIRTY or QueryBuilder::STATE_CLEAN.
      * @psalm-return self::STATE_*
      */
     public function getState()
     {
+        Deprecation::trigger(
+            'doctrine/dbal',
+            'https://github.com/doctrine/orm/pull/9945',
+            'Relying on the query builder state is deprecated as it is an internal concern.'
+        );
+
         return $this->_state;
     }
 
@@ -637,11 +659,7 @@ class QueryBuilder
      */
     public function setFirstResult($firstResult)
     {
-        if ($firstResult !== null) {
-            $firstResult = (int) $firstResult;
-        }
-
-        $this->_firstResult = $firstResult;
+        $this->_firstResult = (int) $firstResult;
 
         return $this;
     }
@@ -848,6 +866,14 @@ class QueryBuilder
             return $this;
         }
 
+        if (! $alias) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/9733',
+                'Omitting the alias is deprecated and will throw an exception in Doctrine 3.0.'
+            );
+        }
+
         return $this->add('from', new Expr\From($delete, $alias));
     }
 
@@ -873,6 +899,14 @@ class QueryBuilder
 
         if (! $update) {
             return $this;
+        }
+
+        if (! $alias) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/9733',
+                'Omitting the alias is deprecated and will throw an exception in Doctrine 3.0.'
+            );
         }
 
         return $this->add('from', new Expr\From($update, $alias));
@@ -1356,7 +1390,7 @@ class QueryBuilder
 
         // Overwrite limits only if they was set in criteria
         $firstResult = $criteria->getFirstResult();
-        if ($firstResult !== null) {
+        if ($firstResult > 0) {
             $this->setFirstResult($firstResult);
         }
 
@@ -1443,9 +1477,7 @@ class QueryBuilder
         return $dql;
     }
 
-    /**
-     * @psalm-param array<string, mixed> $options
-     */
+    /** @psalm-param array<string, mixed> $options */
     private function getReducedDQLQueryPart(string $queryPartName, array $options = []): string
     {
         $queryPart = $this->getDQLPart($queryPartName);

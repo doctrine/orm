@@ -20,7 +20,7 @@ class InversedOneToManyEntity
 {
     /**
      * @var string
-     * @Column(type="rot13")
+     * @Column(type="rot13", length=255)
      * @Id
      */
     public $id1;
@@ -33,7 +33,7 @@ class InversedOneToManyEntity
 
     /**
      * @var string
-     * @Column(type="string", name="some_property")
+     * @Column(type="string", name="some_property", length=255)
      */
     public $someProperty;
 

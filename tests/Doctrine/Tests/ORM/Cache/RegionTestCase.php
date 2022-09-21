@@ -17,7 +17,7 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
  * @template TRegion of Region
  * @group DDC-2183
  */
-abstract class AbstractRegionTest extends OrmFunctionalTestCase
+abstract class RegionTestCase extends OrmFunctionalTestCase
 {
     /**
      * @var Region
@@ -48,9 +48,7 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProviderCacheValues
-     */
+    /** @dataProvider dataProviderCacheValues */
     public function testPutGetContainsEvict(CacheKey $key, CacheEntry $value): void
     {
         self::assertFalse($this->region->contains($key));

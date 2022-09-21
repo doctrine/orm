@@ -14,9 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function uniqid;
 
-/**
- * @group #6217
- */
+/** @group #6217 */
 final class GH6217Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -69,7 +67,7 @@ class GH6217AssociatedEntity
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @GeneratedValue(strategy="NONE")
      */
     public $id;

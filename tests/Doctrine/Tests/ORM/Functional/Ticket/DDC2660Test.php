@@ -14,9 +14,7 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-/**
- * @group DDC-2660
- */
+/** @group DDC-2660 */
 class DDC2660Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -139,7 +137,7 @@ class DDC2660CustomerOrder
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 

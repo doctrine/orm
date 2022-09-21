@@ -132,7 +132,7 @@ class CTIChild extends CTIParent
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $data;
 
@@ -213,9 +213,7 @@ class CTIRelated2
         $this->ctiChildren->add($child);
     }
 
-    /**
-     * @psalm-return Collection<int, CTIChild>
-     */
+    /** @psalm-return Collection<int, CTIChild> */
     public function getCTIChildren(): Collection
     {
         return $this->ctiChildren;

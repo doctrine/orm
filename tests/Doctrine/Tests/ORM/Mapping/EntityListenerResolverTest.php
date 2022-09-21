@@ -7,9 +7,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\Tests\OrmTestCase;
 
-/**
- * @group DDC-1955
- */
+/** @group DDC-1955 */
 class EntityListenerResolverTest extends OrmTestCase
 {
     /** @var DefaultEntityListenerResolver */

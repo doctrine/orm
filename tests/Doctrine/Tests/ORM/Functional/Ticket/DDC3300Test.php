@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-3300
- */
+/** @group DDC-3300 */
 class DDC3300Test extends OrmFunctionalTestCase
 {
     public function testResolveTargetEntitiesChangesDiscriminatorMapValues(): void
@@ -82,7 +80,7 @@ class DDC3300HumanBoss extends DDC3300Person implements DDC3300Boss
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $bossCol;
 
@@ -101,7 +99,7 @@ class DDC3300HumanEmployee extends DDC3300Person implements DDC3300Employee
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $employeeCol;
 

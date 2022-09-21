@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
@@ -48,6 +49,8 @@ class PersistentCollectionTest extends OrmTestCase
         $connection = $this->createMock(Connection::class);
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);
+        $connection->method('getEventManager')
+            ->willReturn(new EventManager());
         $connection->method('executeQuery')
             ->willReturn($this->createMock(Result::class));
 
@@ -102,9 +105,7 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertTrue($this->collection->isInitialized());
     }
 
-    /**
-     * @group DDC-3382
-     */
+    /** @group DDC-3382 */
     public function testNonObjects(): void
     {
         self::assertEmpty($this->collection);
@@ -124,9 +125,7 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertNull($this->collection->get(3));
     }
 
-    /**
-     * @group 6110
-     */
+    /** @group 6110 */
     public function testRemovingElementsAlsoRemovesKeys(): void
     {
         $dummy = new stdClass();
@@ -138,9 +137,7 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertEquals([], array_keys($this->collection->toArray()));
     }
 
-    /**
-     * @group 6110
-     */
+    /** @group 6110 */
     public function testClearWillAlsoClearKeys(): void
     {
         $this->collection->add(new stdClass());
@@ -148,9 +145,7 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertEquals([], array_keys($this->collection->toArray()));
     }
 
-    /**
-     * @group 6110
-     */
+    /** @group 6110 */
     public function testClearWillAlsoResetKeyPositions(): void
     {
         $dummy = new stdClass();

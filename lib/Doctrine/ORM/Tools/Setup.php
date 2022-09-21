@@ -28,7 +28,9 @@ use Symfony\Component\Cache\Adapter\MemcachedAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 
 use function class_exists;
+use function dirname;
 use function extension_loaded;
+use function file_exists;
 use function md5;
 use function sys_get_temp_dir;
 
@@ -52,7 +54,11 @@ class Setup
     public static function registerAutoloadDirectory($directory)
     {
         if (! class_exists('Doctrine\Common\ClassLoader', false)) {
-            require_once $directory . '/Doctrine/Common/ClassLoader.php';
+            if (file_exists($directory . '/Doctrine/Common/ClassLoader.php')) {
+                require_once $directory . '/Doctrine/Common/ClassLoader.php';
+            } elseif (file_exists(dirname($directory) . '/src/ClassLoader.php')) {
+                require_once dirname($directory) . '/src/ClassLoader.php';
+            }
         }
 
         $loader = new ClassLoader('Doctrine', $directory);

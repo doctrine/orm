@@ -15,9 +15,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\OrmTestCase;
 
-/**
- * @group DDC-659
- */
+/** @group DDC-659 */
 class ClassMetadataBuilderTest extends OrmTestCase
 {
     /** @var ClassMetadata */

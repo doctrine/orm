@@ -79,7 +79,7 @@ class DDC444User
 
     /**
      * @var string
-     * @Column(name="name", type="string")
+     * @Column(name="name", type="string", length=255)
      */
     public $name;
 }

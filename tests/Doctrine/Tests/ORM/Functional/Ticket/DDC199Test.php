@@ -82,7 +82,7 @@ class DDC199ParentClass
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $parentData;
 

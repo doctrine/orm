@@ -25,9 +25,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use function class_exists;
 use function sprintf;
 
-/**
- * @group DDC-93
- */
+/** @group DDC-93 */
 class ValueObjectsTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -155,9 +153,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         }
     }
 
-    /**
-     * @group dql
-     */
+    /** @group dql */
     public function testDqlOnEmbeddedObjectsField(): void
     {
         if ($this->isSecondLevelCacheEnabled) {
@@ -325,9 +321,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         self::assertTrue($isFieldMapped);
     }
 
-    /**
-     * @dataProvider getInfiniteEmbeddableNestingData
-     */
+    /** @dataProvider getInfiniteEmbeddableNestingData */
     public function testThrowsExceptionOnInfiniteEmbeddableNesting(
         string $embeddableClassName,
         string $declaredEmbeddableClassName
@@ -344,9 +338,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $this->createSchemaForModels(__NAMESPACE__ . '\\' . $embeddableClassName);
     }
 
-    /**
-     * @psalm-return list<array{string, string}>
-     */
+    /** @psalm-return list<array{string, string}> */
     public function getInfiniteEmbeddableNestingData(): array
     {
         return [
@@ -357,9 +349,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
 }
 
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC93Person
 {
     /**
@@ -372,7 +362,7 @@ class DDC93Person
 
     /**
      * @var string|null
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 
@@ -396,9 +386,7 @@ class DDC93Person
     }
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDC93Timestamps
 {
     /**
@@ -443,16 +431,12 @@ abstract class DDC93Vehicle
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC93Car extends DDC93Vehicle
 {
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDC93Country
 {
     /**
@@ -467,26 +451,24 @@ class DDC93Country
     }
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDC93Address
 {
     /**
      * @var string|null
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $street;
 
     /**
      * @var string|null
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $zip;
 
     /**
      * @var string|null
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $city;
 
@@ -532,7 +514,7 @@ class DDC93ContactInfo
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $email;
 
@@ -543,9 +525,7 @@ class DDC93ContactInfo
     public $address;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3028PersonWithPrefix
 {
     /**
@@ -567,9 +547,7 @@ class DDC3028PersonWithPrefix
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3028PersonEmptyPrefix
 {
     /**
@@ -591,9 +569,7 @@ class DDC3028PersonEmptyPrefix
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3028PersonPrefixFalse
 {
     /**
@@ -608,15 +584,13 @@ class DDC3028PersonPrefixFalse
     }
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDC3028Id
 {
     /**
      * @var string|null
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $id;
 
@@ -626,9 +600,7 @@ class DDC3028Id
     }
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDC3028NestedEmbeddable
 {
     /**
@@ -660,9 +632,7 @@ class DDC3028NestedEmbeddable
     }
 }
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 abstract class DDC3027Animal
 {
     /**
@@ -680,16 +650,12 @@ abstract class DDC3027Animal
     public $address;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC3027Dog extends DDC3027Animal
 {
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDCInfiniteNestingEmbeddable
 {
     /**
@@ -699,9 +665,7 @@ class DDCInfiniteNestingEmbeddable
     public $nested;
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDCNestingEmbeddable1
 {
     /**
@@ -723,9 +687,7 @@ class DDCNestingEmbeddable1
     public $nested;
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDCNestingEmbeddable2
 {
     /**
@@ -747,9 +709,7 @@ class DDCNestingEmbeddable2
     public $nested;
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDCNestingEmbeddable3
 {
     /**
@@ -771,9 +731,7 @@ class DDCNestingEmbeddable3
     public $nested;
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDCNestingEmbeddable4
 {
     /**

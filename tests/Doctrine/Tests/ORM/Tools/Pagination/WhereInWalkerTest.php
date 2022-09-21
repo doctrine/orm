@@ -11,9 +11,7 @@ use Doctrine\Tests\DbalTypes\Rot13Type;
 use Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity;
 use Doctrine\Tests\Models\ValueConversionType\OwningManyToOneIdForeignKeyEntity;
 
-/**
- * @group DDC-1613
- */
+/** @group DDC-1613 */
 class WhereInWalkerTest extends PaginationTestCase
 {
     protected function setUp(): void

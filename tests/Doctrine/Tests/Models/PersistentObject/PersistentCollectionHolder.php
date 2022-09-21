@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 
-/**
- * @Entity
- */
+/** @Entity */
 class PersistentCollectionHolder extends PersistentObject
 {
     /**
@@ -42,17 +40,13 @@ class PersistentCollectionHolder extends PersistentObject
         $this->collection->add($element);
     }
 
-    /**
-     * @return Collection
-     */
+    /** @return Collection */
     public function getCollection(): Collection
     {
         return clone $this->collection;
     }
 
-    /**
-     * @return Collection
-     */
+    /** @return Collection */
     public function getRawCollection(): Collection
     {
         return $this->collection;

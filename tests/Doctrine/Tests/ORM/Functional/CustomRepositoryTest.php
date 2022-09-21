@@ -50,9 +50,7 @@ class CustomRepositoryTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @ORM\Entity(repositoryClass="MinimalRepository")
- */
+/** @ORM\Entity(repositoryClass="MinimalRepository") */
 class MinimalEntity
 {
     /**
@@ -69,9 +67,7 @@ class MinimalEntity
     }
 }
 
-/**
- * @ORM\Entity
- */
+/** @ORM\Entity */
 class OtherMinimalEntity
 {
     /**
@@ -99,9 +95,7 @@ class MinimalRepository implements ObjectRepository
     /** @var ClassMetadata<TEntity> */
     private $class;
 
-    /**
-     * @psalm-param ClassMetadata<TEntity> $class
-     */
+    /** @psalm-param ClassMetadata<TEntity> $class */
     public function __construct(EntityManagerInterface $em, ClassMetadata $class)
     {
         $this->em    = $em;

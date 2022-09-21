@@ -8,10 +8,8 @@ use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 
-/**
- * @group DDC-2183
- */
-class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
+/** @group DDC-2183 */
+class SecondLevelCacheRepositoryTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testRepositoryCacheFind(): void
     {

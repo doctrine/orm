@@ -50,9 +50,7 @@ class FlushEventTest extends OrmFunctionalTestCase
         //$this->_em->flush();
     }
 
-    /**
-     * @group DDC-2173
-     */
+    /** @group DDC-2173 */
     public function testPreAndOnFlushCalledAlways(): void
     {
         $listener = new OnFlushCalledListener();
@@ -78,7 +76,7 @@ class OnFlushListener
     {
         //echo "---preFlush".PHP_EOL;
 
-        $em  = $args->getEntityManager();
+        $em  = $args->getObjectManager();
         $uow = $em->getUnitOfWork();
 
         foreach ($uow->getScheduledEntityInsertions() as $entity) {

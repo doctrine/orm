@@ -102,9 +102,7 @@ class DDC881Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC881User
 {
     /**
@@ -117,7 +115,7 @@ class DDC881User
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $name;
 
@@ -138,9 +136,7 @@ class DDC881User
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC881PhoneNumber
 {
     /**
@@ -159,7 +155,7 @@ class DDC881PhoneNumber
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $phonenumber;
 
@@ -189,18 +185,14 @@ class DDC881PhoneNumber
         $this->phonenumber = $phoneNumber;
     }
 
-    /**
-     * @psalm-var Collection<int, DDC881PhoneCall>
-     */
+    /** @psalm-var Collection<int, DDC881PhoneCall> */
     public function getCalls(): Collection
     {
         return $this->calls;
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC881PhoneCall
 {
     /**

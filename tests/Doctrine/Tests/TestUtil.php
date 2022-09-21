@@ -7,8 +7,8 @@ namespace Doctrine\Tests;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Exception\DatabaseObjectNotFoundException;
-use Doctrine\DBAL\Platforms\OraclePlatform;
+use Doctrine\DBAL\Exception\DriverException;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use UnexpectedValueException;
 
@@ -90,32 +90,29 @@ class TestUtil
 
         $platform = $privConn->getDatabasePlatform();
 
-        if ($platform->supportsCreateDropDatabase()) {
-            $sm = self::createSchemaManager($privConn);
-            if ($platform instanceof OraclePlatform) {
-                $dbname = $testConnParams['user'];
-                try {
-                    $sm->dropDatabase($dbname);
-                } catch (DatabaseObjectNotFoundException $e) {
-                }
-
-                $sm->createDatabase($dbname);
-            } else {
-                $dbname = $testConnParams['dbname'] ?? $testConn->getDatabase();
-                $testConn->close();
-                $sm->dropAndCreateDatabase($dbname);
-            }
-
-            $privConn->close();
-        } else {
+        if ($platform instanceof SqlitePlatform) {
             $schema = self::createSchemaManager($testConn)->createSchema();
             $stmts  = $schema->toDropSql($testConn->getDatabasePlatform());
 
             foreach ($stmts as $stmt) {
                 $testConn->executeStatement($stmt);
             }
-
+        } else {
+            $dbname = $testConnParams['dbname'] ?? $testConn->getDatabase();
             $testConn->close();
+
+            if ($dbname !== null) {
+                $schemaManager = self::createSchemaManager($privConn);
+
+                try {
+                    $schemaManager->dropDatabase($dbname);
+                } catch (DriverException $e) {
+                }
+
+                $schemaManager->createDatabase($dbname);
+
+                $privConn->close();
+            }
         }
     }
 
@@ -140,9 +137,7 @@ class TestUtil
         }
     }
 
-    /**
-     * @psalm-return array<string, mixed>
-     */
+    /** @psalm-return array<string, mixed> */
     private static function getPrivilegedConnectionParameters(): array
     {
         if (isset($GLOBALS['privileged_db_driver'])) {
@@ -155,9 +150,7 @@ class TestUtil
         return $parameters;
     }
 
-    /**
-     * @psalm-return array<string, mixed>
-     */
+    /** @psalm-return array<string, mixed> */
     private static function getTestConnectionParameters(): array
     {
         if (! isset($GLOBALS['db_driver'])) {

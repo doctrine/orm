@@ -39,9 +39,7 @@ class DDC1757Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1757A
 {
     /**
@@ -53,9 +51,7 @@ class DDC1757A
     private $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1757B
 {
     /**
@@ -73,9 +69,7 @@ class DDC1757B
     private $c;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1757C
 {
     /**
@@ -93,9 +87,7 @@ class DDC1757C
     private $d;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1757D
 {
     /**

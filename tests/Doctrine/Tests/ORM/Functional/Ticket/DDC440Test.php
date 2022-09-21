@@ -26,9 +26,7 @@ class DDC440Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(DDC440Phone::class, DDC440Client::class);
     }
 
-    /**
-     * @group DDC-440
-     */
+    /** @group DDC-440 */
     public function testOriginalEntityDataEmptyWhenProxyLoadedFromTwoAssociations(): void
     {
         /* The key of the problem is that the first phone is fetched via two association, mainPhone and phones.
@@ -107,7 +105,7 @@ class DDC440Phone
 
     /**
      * @var string
-     * @Column(name="phonenumber", type="string")
+     * @Column(name="phonenumber", type="string", length=255)
      */
     protected $number;
 
@@ -177,7 +175,7 @@ class DDC440Client
 
     /**
      * @var string
-     * @Column(name="name", type="string")
+     * @Column(name="name", type="string", length=255)
      */
     protected $name;
 
@@ -201,9 +199,7 @@ class DDC440Client
         $value->setClient($this, false);
     }
 
-    /**
-     * @psalm-return Collection<int, DDC440Phone>
-     */
+    /** @psalm-return Collection<int, DDC440Phone> */
     public function getPhones(): Collection
     {
         return $this->phones;

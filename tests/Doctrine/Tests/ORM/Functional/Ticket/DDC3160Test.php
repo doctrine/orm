@@ -22,9 +22,7 @@ class DDC3160Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @group DDC-3160
-     */
+    /** @group DDC-3160 */
     public function testNoUpdateOnInsert(): void
     {
         $listener = new DDC3160OnFlushListener();
@@ -56,7 +54,7 @@ class DDC3160OnFlushListener
 
     public function onFlush(OnFlushEventArgs $args): void
     {
-        $em  = $args->getEntityManager();
+        $em  = $args->getObjectManager();
         $uow = $em->getUnitOfWork();
 
         foreach ($uow->getScheduledEntityInsertions() as $entity) {

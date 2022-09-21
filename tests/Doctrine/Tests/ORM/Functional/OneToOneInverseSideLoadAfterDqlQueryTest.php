@@ -19,9 +19,7 @@ class OneToOneInverseSideLoadAfterDqlQueryTest extends OrmFunctionalTestCase
         $this->createSchemaForModels(OwningSide::class, InverseSide::class);
     }
 
-    /**
-     * @group GH-6759
-     */
+    /** @group GH-6759 */
     public function testInverseSideOneToOneLoadedAfterDqlQuery(): void
     {
         $owner   = new OwningSide();

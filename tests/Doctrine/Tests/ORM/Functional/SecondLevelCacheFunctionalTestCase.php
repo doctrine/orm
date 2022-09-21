@@ -23,10 +23,8 @@ use Doctrine\Tests\Models\Cache\TravelerProfile;
 use Doctrine\Tests\Models\Cache\TravelerProfileInfo;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2183
- */
-abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
+/** @group DDC-2183 */
+abstract class SecondLevelCacheFunctionalTestCase extends OrmFunctionalTestCase
 {
     /** @psalm-var list<Person> */
     protected $people = [];

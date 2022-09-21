@@ -26,7 +26,7 @@ class NavUser
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $name;
 

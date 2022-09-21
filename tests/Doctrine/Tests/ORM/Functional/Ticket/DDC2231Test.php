@@ -18,9 +18,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use function get_class;
 use function interface_exists;
 
-/**
- * @group DDC-2231
- */
+/** @group DDC-2231 */
 class DDC2231Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

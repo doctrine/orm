@@ -23,9 +23,7 @@ class InExpression extends Node
     /** @var Subselect|null */
     public $subselect;
 
-    /**
-     * @param ArithmeticExpression $expression
-     */
+    /** @param ArithmeticExpression $expression */
     public function __construct($expression)
     {
         $this->expression = $expression;

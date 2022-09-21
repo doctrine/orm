@@ -37,7 +37,7 @@ class NavPointOfInterest
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $name;
 
@@ -94,9 +94,7 @@ class NavPointOfInterest
         $this->visitors[] = $user;
     }
 
-    /**
-     * @psalm-var Collection<int, NavUser>
-     */
+    /** @psalm-var Collection<int, NavUser> */
     public function getVisitors(): Collection
     {
         return $this->visitors;

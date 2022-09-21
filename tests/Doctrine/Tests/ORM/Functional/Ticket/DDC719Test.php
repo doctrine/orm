@@ -40,9 +40,7 @@ class DDC719Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 class MyEntity
 {
     /**
@@ -143,25 +141,19 @@ class DDC719Group extends MyEntity
         $this->description = $description;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC719Group>
-     */
+    /** @psalm-return Collection<int, DDC719Group> */
     public function getChildren(): Collection
     {
         return $this->children;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC719Group>
-     */
+    /** @psalm-return Collection<int, DDC719Group> */
     public function getParents(): Collection
     {
         return $this->parents;
     }
 
-    /**
-     * @psalm-return Collection<int, Channel>
-     */
+    /** @psalm-return Collection<int, Channel> */
     public function getChannels(): Collection
     {
         return $this->channels;

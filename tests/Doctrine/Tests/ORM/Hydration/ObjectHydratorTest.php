@@ -26,14 +26,15 @@ use Doctrine\Tests\Models\Forum\ForumBoard;
 use Doctrine\Tests\Models\Forum\ForumCategory;
 use Doctrine\Tests\Models\Hydration\EntityWithArrayDefaultArrayValueM2M;
 use Doctrine\Tests\Models\Hydration\SimpleEntity;
+use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 
 use function count;
 
 class ObjectHydratorTest extends HydrationTestCase
 {
-    /**
-     * @psalm-return list<array{mixed}>
-     */
+    use MockBuilderCompatibilityTools;
+
+    /** @psalm-return list<array{mixed}> */
     public function provideDataForUserEntityResult(): array
     {
         return [
@@ -42,9 +43,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
     }
 
-    /**
-     * @psalm-return list<array{mixed, mixed}>
-     */
+    /** @psalm-return list<array{mixed, mixed}> */
     public function provideDataForMultipleRootEntityResult(): array
     {
         return [
@@ -55,9 +54,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
     }
 
-    /**
-     * @psalm-return list<array{mixed}>
-     */
+    /** @psalm-return list<array{mixed}> */
     public function provideDataForProductEntityResult(): array
     {
         return [
@@ -1032,8 +1029,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $proxyInstance = new ECommerceShipping();
 
         // mocking the proxy factory
-        $proxyFactory = $this->getMockBuilder(ProxyFactory::class)
-                             ->setMethods(['getProxy'])
+        $proxyFactory = $this->getMockBuilderWithOnlyMethods(ProxyFactory::class, ['getProxy'])
                              ->disableOriginalConstructor()
                              ->getMock();
 
@@ -1081,8 +1077,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $proxyInstance = new ECommerceShipping();
 
         // mocking the proxy factory
-        $proxyFactory = $this->getMockBuilder(ProxyFactory::class)
-                             ->setMethods(['getProxy'])
+        $proxyFactory = $this->getMockBuilderWithOnlyMethods(ProxyFactory::class, ['getProxy'])
                              ->disableOriginalConstructor()
                              ->getMock();
 
@@ -1891,9 +1886,7 @@ class ObjectHydratorTest extends HydrationTestCase
         );
     }
 
-    /**
-     * @group DDC-1470
-     */
+    /** @group DDC-1470 */
     public function testMissingMetaMappingException(): void
     {
         $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
@@ -1917,9 +1910,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
-    /**
-     * @group DDC-1470
-     */
+    /** @group DDC-1470 */
     public function testMissingDiscriminatorColumnException(): void
     {
         $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
@@ -1950,9 +1941,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
-    /**
-     * @group DDC-3076
-     */
+    /** @group DDC-3076 */
     public function testInvalidDiscriminatorValueException(): void
     {
         $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');

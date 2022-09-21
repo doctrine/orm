@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping\Table;
  * @Entity
  * @Table(name="company_events")
  * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="event_type", type="string")
+ * @DiscriminatorColumn(name="event_type", type="string", length=255)
  * @DiscriminatorMap({"auction"="CompanyAuction", "raffle"="CompanyRaffle"})
  */
 abstract class CompanyEvent

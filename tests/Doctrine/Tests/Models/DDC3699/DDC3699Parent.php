@@ -12,7 +12,7 @@ abstract class DDC3699Parent
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $parentField;
 }

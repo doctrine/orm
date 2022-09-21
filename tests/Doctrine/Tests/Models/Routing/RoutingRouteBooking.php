@@ -11,9 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * @Entity
- */
+/** @Entity */
 class RoutingRouteBooking
 {
     /**
@@ -33,7 +31,7 @@ class RoutingRouteBooking
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $passengerName = null;
 

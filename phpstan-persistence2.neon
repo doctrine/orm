@@ -33,9 +33,6 @@ parameters:
 
         # False positive
         -
-            message: '/^Variable \$offset in isset\(\) always exists and is not nullable\.$/'
-            path: lib/Doctrine/ORM/PersistentCollection.php
-        -
             message: '/^Call to an undefined method Doctrine\\Common\\Cache\\Cache::deleteAll\(\)\.$/'
             count: 1
             path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php
@@ -45,5 +42,5 @@ parameters:
 
         # https://github.com/phpstan/phpstan/issues/7292
         -
-            message: '#^Offset class\-string on array\<class\-string, array\<string, mixed\>\> in isset\(\) always exists and is not nullable\.$#'
+            message: '#^Offset class\-string on non\-empty\-array\<class\-string, array\<string, mixed\>\> in isset\(\) always exists and is not nullable\.$#'
             path: lib/Doctrine/ORM/UnitOfWork.php

@@ -22,9 +22,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function get_class;
 
-/**
- * @group DDC-3033
- */
+/** @group DDC-3033 */
 class DDC3033Test extends OrmFunctionalTestCase
 {
     public function testIssue(): void
@@ -109,21 +107,17 @@ class DDC3033Product
         $this->buyers = new ArrayCollection();
     }
 
-    /**
-     * @PreUpdate
-     */
+    /** @PreUpdate */
     public function preUpdate(LifecycleEventArgs $eventArgs): void
     {
     }
 
-    /**
-     * @PostUpdate
-     */
+    /** @PostUpdate */
     public function postUpdate(LifecycleEventArgs $eventArgs): void
     {
-        $em            = $eventArgs->getEntityManager();
+        $em            = $eventArgs->getObjectManager();
         $uow           = $em->getUnitOfWork();
-        $entity        = $eventArgs->getEntity();
+        $entity        = $eventArgs->getObject();
         $classMetadata = $em->getClassMetadata(get_class($entity));
 
         $uow->computeChangeSet($classMetadata, $entity);

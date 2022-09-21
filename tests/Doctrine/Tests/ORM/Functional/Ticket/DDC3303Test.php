@@ -53,7 +53,7 @@ abstract class DDC3303Person
      * @var string
      * @Id
      * @GeneratedValue(strategy="NONE")
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $name;
 
@@ -70,14 +70,12 @@ abstract class DDC3303Person
     }
 }
 
-/**
- * @Embeddable
- */
+/** @Embeddable */
 class DDC3303Address
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $street;
 
@@ -89,7 +87,7 @@ class DDC3303Address
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $city;
 
@@ -109,7 +107,7 @@ class DDC3303Employee extends DDC3303Person
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $company;
 

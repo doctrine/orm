@@ -57,9 +57,7 @@ class DDC1458Test extends OrmFunctionalTestCase
 }
 
 
-/**
- * @Entity
- */
+/** @Entity */
 class TestEntity
 {
     /**
@@ -102,9 +100,7 @@ class TestEntity
         $this->additional = $additional;
     }
 }
-/**
- * @Entity
- */
+/** @Entity */
 class TestAdditionalEntity
 {
     /**

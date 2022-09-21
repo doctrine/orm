@@ -14,7 +14,7 @@ interface NamingStrategy
     /**
      * Returns a table name for an entity class.
      *
-     * @param string $className The fully-qualified class name.
+     * @param class-string $className
      *
      * @return string A table name.
      */
@@ -23,8 +23,8 @@ interface NamingStrategy
     /**
      * Returns a column name for a property.
      *
-     * @param string      $propertyName A property name.
-     * @param string|null $className    The fully-qualified class name.
+     * @param string       $propertyName A property name.
+     * @param class-string $className    The fully-qualified class name.
      *
      * @return string A column name.
      */
@@ -33,14 +33,19 @@ interface NamingStrategy
     /**
      * Returns a column name for an embedded property.
      *
-     * @param string $propertyName
-     * @param string $embeddedColumnName
-     * @param string $className
-     * @param string $embeddedClassName
+     * @param string       $propertyName
+     * @param string       $embeddedColumnName
+     * @param class-string $className
+     * @param class-string $embeddedClassName
      *
      * @return string
      */
-    public function embeddedFieldToColumnName($propertyName, $embeddedColumnName, $className = null, $embeddedClassName = null);
+    public function embeddedFieldToColumnName(
+        $propertyName,
+        $embeddedColumnName,
+        $className = null,
+        $embeddedClassName = null
+    );
 
     /**
      * Returns the default reference column name.
@@ -56,14 +61,14 @@ interface NamingStrategy
      *
      * @return string A join column name.
      */
-    public function joinColumnName($propertyName);
+    public function joinColumnName($propertyName/*, string $className */);
 
     /**
      * Returns a join table name.
      *
-     * @param string      $sourceEntity The source entity.
-     * @param string      $targetEntity The target entity.
-     * @param string|null $propertyName A property name.
+     * @param class-string $sourceEntity The source entity.
+     * @param class-string $targetEntity The target entity.
+     * @param string       $propertyName A property name.
      *
      * @return string A join table name.
      */
@@ -72,8 +77,11 @@ interface NamingStrategy
     /**
      * Returns the foreign key column name for the given parameters.
      *
-     * @param string      $entityName           An entity.
-     * @param string|null $referencedColumnName A property.
+     * @param class-string $entityName           An entity.
+     * @param string|null  $referencedColumnName A property name or null in
+     *                                           case of a self-referencing
+     *                                           entity with join columns
+     *                                           defined in the mapping
      *
      * @return string A join column name.
      */

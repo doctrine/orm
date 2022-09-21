@@ -38,6 +38,7 @@ use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\GeoNames\City;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
@@ -54,6 +55,7 @@ use function uniqid;
  */
 class UnitOfWorkTest extends OrmTestCase
 {
+    use MockBuilderCompatibilityTools;
     use VerifyDeprecations;
 
     /**
@@ -112,11 +114,9 @@ class UnitOfWorkTest extends OrmTestCase
         $driver->method('connect')
             ->willReturn($driverConnection);
 
-        $connection = new Connection([], $driver);
-
-        $this->_connectionMock = $connection;
         $this->eventManager    = $this->getMockBuilder(EventManager::class)->getMock();
-        $this->_emMock         = EntityManagerMock::create($connection, null, $this->eventManager);
+        $this->_connectionMock = new Connection([], $driver, null, $this->eventManager);
+        $this->_emMock         = EntityManagerMock::create($this->_connectionMock);
         // SUT
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
@@ -442,9 +442,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertFalse($this->_unitOfWork->isScheduledForInsert($entity2));
     }
 
-    /**
-     * @group #5579
-     */
+    /** @group #5579 */
     public function testEntityChangeSetIsNotClearedAfterFlushOnSingleEntity(): void
     {
         $entity1 = new NotifyChangedEntity();
@@ -463,9 +461,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
     }
 
-    /**
-     * @group #5579
-     */
+    /** @group #5579 */
     public function testEntityChangeSetIsNotClearedAfterFlushOnArrayOfEntities(): void
     {
         $entity1 = new NotifyChangedEntity();
@@ -519,9 +515,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertSame($entity, $this->_unitOfWork->getByIdHash($idHash, get_class($entity)));
     }
 
-    /**
-     * @psalm-return array<string, array{object, string}>
-     */
+    /** @psalm-return array<string, array{object, string}> */
     public function entitiesWithValidIdentifiersProvider()
     {
         $emptyString = new EntityWithStringIdentifier();
@@ -580,9 +574,7 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->registerManaged($entity, $identifier, []);
     }
 
-    /**
-     * @psalm-return array<string, array{object, array<string, mixed>}>
-     */
+    /** @psalm-return array<string, array{object, array<string, mixed>}> */
     public function entitiesWithInvalidIdentifiersProvider(): array
     {
         $firstNullString = new EntityWithCompositeStringIdentifier();
@@ -838,9 +830,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertCount(0, $persister2->getInserts());
     }
 
-    /**
-     * @group #7946 Throw OptimisticLockException when connection::commit() returns false.
-     */
+    /** @group #7946 Throw OptimisticLockException when connection::commit() returns false. */
     public function testCommitThrowOptimisticLockExceptionWhenConnectionCommitReturnFalse(): void
     {
         $driver = $this->createMock(Driver::class);
@@ -848,11 +838,10 @@ class UnitOfWorkTest extends OrmTestCase
             ->willReturn($this->createMock(Driver\Connection::class));
 
         // Set another connection mock that fail on commit
-        $this->_connectionMock = $this->getMockBuilder(ConnectionMock::class)
+        $this->_connectionMock = $this->getMockBuilderWithOnlyMethods(ConnectionMock::class, ['commit'])
             ->setConstructorArgs([[], $driver])
-            ->setMethods(['commit'])
             ->getMock();
-        $this->_emMock         = EntityManagerMock::create($this->_connectionMock, null, $this->eventManager);
+        $this->_emMock         = EntityManagerMock::create($this->_connectionMock);
         $this->_unitOfWork     = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
 
@@ -879,9 +868,7 @@ class UnitOfWorkTest extends OrmTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class NotifyChangedEntity implements NotifyPropertyChanged
 {
     /** @psalm-var list<PropertyChangedListener> */
@@ -897,7 +884,7 @@ class NotifyChangedEntity implements NotifyPropertyChanged
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $data;
 
@@ -933,17 +920,13 @@ class NotifyChangedEntity implements NotifyPropertyChanged
         }
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function getData()
     {
         return $this->data;
     }
 
-    /**
-     * @param mixed $data
-     */
+    /** @param mixed $data */
     public function setData($data): void
     {
         if ($data !== $this->data) {
@@ -1028,7 +1011,7 @@ class EntityWithStringIdentifier
 {
     /**
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string|null
      */
     public $id;
@@ -1050,14 +1033,14 @@ class EntityWithCompositeStringIdentifier
 {
     /**
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string|null
      */
     public $id1;
 
     /**
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string|null
      */
     public $id2;
@@ -1069,7 +1052,7 @@ class EntityWithRandomlyGeneratedField
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $id;
 
@@ -1092,7 +1075,7 @@ class CascadePersistedEntity
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @GeneratedValue(strategy="NONE")
      */
     private $id;
@@ -1109,7 +1092,7 @@ class EntityWithCascadingAssociation
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @GeneratedValue(strategy="NONE")
      */
     private $id;
@@ -1132,7 +1115,7 @@ class EntityWithNonCascadingAssociation
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @GeneratedValue(strategy="NONE")
      */
     private $id;

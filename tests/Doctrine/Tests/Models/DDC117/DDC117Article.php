@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC117Article
 {
     /**

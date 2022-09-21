@@ -34,9 +34,7 @@ class DDC422Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-422
-     */
+    /** @group DDC-422 */
     public function testIssue(): void
     {
         $customer = new DDC422Customer();

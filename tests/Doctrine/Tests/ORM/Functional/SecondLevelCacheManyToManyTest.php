@@ -10,10 +10,8 @@ use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Travel;
 use Doctrine\Tests\Models\Cache\Traveler;
 
-/**
- * @group DDC-2183
- */
-class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
+/** @group DDC-2183 */
+class SecondLevelCacheManyToManyTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testShouldPutManyToManyCollectionOwningSideOnPersist(): void
     {

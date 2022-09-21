@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2175
- */
+/** @group DDC-2175 */
 class DDC2175Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -63,7 +61,7 @@ class DDC2175Entity
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $field;
 

@@ -17,9 +17,7 @@ class CollectionCacheEntry implements CacheEntry
      */
     public $identifiers;
 
-    /**
-     * @param CacheKey[] $identifiers List of entity identifiers hold by the collection
-     */
+    /** @param CacheKey[] $identifiers List of entity identifiers hold by the collection */
     public function __construct(array $identifiers)
     {
         $this->identifiers = $identifiers;

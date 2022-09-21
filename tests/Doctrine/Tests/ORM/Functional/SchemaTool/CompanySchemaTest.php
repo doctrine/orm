@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
-use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -20,9 +18,7 @@ class CompanySchemaTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @group DDC-966
-     */
+    /** @group DDC-966 */
     public function testGeneratedSchema(): Schema
     {
         $schema = $this->createSchemaManager()->createSchema();
@@ -49,22 +45,5 @@ class CompanySchemaTest extends OrmFunctionalTestCase
         self::assertFalse($table->getColumn('hoursWorked')->getNotnull());
         self::assertFalse($table->getColumn('pricePerHour')->getNotnull());
         self::assertFalse($table->getColumn('maxPrice')->getNotnull());
-    }
-
-    /**
-     * @group DBAL-115
-     */
-    public function testDropPartSchemaWithForeignKeys(): void
-    {
-        if ($this->_em->getConnection()->getDatabasePlatform() instanceof SqlitePlatform) {
-            self::markTestSkipped('SQLite does not support dropping foreign keys.');
-        }
-
-        $sql = $this->_schemaTool->getDropSchemaSQL(
-            [
-                $this->_em->getClassMetadata(CompanyManager::class),
-            ]
-        );
-        self::assertCount(4, $sql);
     }
 }

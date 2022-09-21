@@ -89,7 +89,7 @@ class DDC2494Currency
     /**
      * @var int
      * @Id
-     * @Column(type="integer", type="ddc2494_tinyint")
+     * @Column(type="ddc2494_tinyint")
      */
     protected $id;
 
@@ -121,9 +121,7 @@ class DDC2494Currency
         return $this->temp;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC2494Campaign>
-     */
+    /** @psalm-return Collection<int, DDC2494Campaign> */
     public function getCampaigns(): Collection
     {
         return $this->campaigns;

@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH-6937
- */
+/** @group GH-6937 */
 final class GH6937Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -109,31 +107,27 @@ abstract class GH6937Person
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 abstract class GH6937Employee extends GH6937Person
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $phoneNumber;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6937Manager extends GH6937Employee
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $department;
 }

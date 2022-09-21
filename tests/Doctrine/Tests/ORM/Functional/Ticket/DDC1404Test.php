@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\NamedQueries;
 use Doctrine\ORM\Mapping\NamedQuery;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1404
- */
+/** @group DDC-1404 */
 class DDC1404Test extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;

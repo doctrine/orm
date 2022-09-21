@@ -11,7 +11,7 @@ use function class_exists;
  *
  * @link        http://www.phpdoctrine.org
  */
-class YamlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
+class YamlClassMetadataExporterTest extends ClassMetadataExporterTestCase
 {
     protected function getType(): string
     {

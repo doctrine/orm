@@ -73,8 +73,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      * @param string $fieldName
      *
      * @return string
-     *
-     * @override
      */
     public function getOwningTable($fieldName)
     {

@@ -21,9 +21,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use function assert;
 use function get_class;
 
-/**
- * @group DDC-1163
- */
+/** @group DDC-1163 */
 class DDC1163Test extends OrmFunctionalTestCase
 {
     /** @var int|null */
@@ -110,9 +108,7 @@ class DDC1163Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1163ProxyHolder
 {
     /**
@@ -167,9 +163,7 @@ abstract class DDC1163Product
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1163SpecialProduct extends DDC1163Product
 {
     /**
@@ -184,9 +178,7 @@ class DDC1163SpecialProduct extends DDC1163Product
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1163Tag
 {
     /**
@@ -198,7 +190,7 @@ class DDC1163Tag
     private $id;
     /**
      * @var string
-     * @Column(name="name", type="string")
+     * @Column(name="name", type="string", length=255)
      */
     private $name;
     /**

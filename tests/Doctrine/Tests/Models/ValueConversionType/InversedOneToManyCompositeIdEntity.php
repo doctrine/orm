@@ -20,21 +20,21 @@ class InversedOneToManyCompositeIdEntity
 {
     /**
      * @var string
-     * @Column(type="rot13")
+     * @Column(type="rot13", length=255)
      * @Id
      */
     public $id1;
 
     /**
      * @var string
-     * @Column(type="rot13")
+     * @Column(type="rot13", length=255)
      * @Id
      */
     public $id2;
 
     /**
      * @var string
-     * @Column(type="string", name="some_property")
+     * @Column(type="string", length=255, name="some_property")
      */
     public $someProperty;
 

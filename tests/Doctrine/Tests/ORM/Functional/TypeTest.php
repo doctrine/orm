@@ -45,9 +45,7 @@ class TypeTest extends OrmFunctionalTestCase
         self::assertSame('0.1515', $decimal->highScale);
     }
 
-    /**
-     * @group DDC-1394
-     */
+    /** @group DDC-1394 */
     public function testBoolean(): void
     {
         $bool               = new BooleanModel();
@@ -79,6 +77,8 @@ class TypeTest extends OrmFunctionalTestCase
         $serialize->array['foo'] = 'bar';
         $serialize->array['bar'] = 'baz';
 
+        $this->createSchemaForModels(SerializationModel::class);
+        static::$sharedConn->executeStatement('DELETE FROM serialize_model');
         $this->_em->persist($serialize);
         $this->_em->flush();
         $this->_em->clear();
@@ -94,6 +94,8 @@ class TypeTest extends OrmFunctionalTestCase
         $serialize         = new SerializationModel();
         $serialize->object = new stdClass();
 
+        $this->createSchemaForModels(SerializationModel::class);
+        static::$sharedConn->executeStatement('DELETE FROM serialize_model');
         $this->_em->persist($serialize);
         $this->_em->flush();
         $this->_em->clear();

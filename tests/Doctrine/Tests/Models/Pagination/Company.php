@@ -31,13 +31,13 @@ class Company
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 
     /**
      * @var string
-     * @Column(type="string", name="jurisdiction_code", nullable=true)
+     * @Column(type="string", length=255, name="jurisdiction_code", nullable=true)
      */
     public $jurisdiction;
 

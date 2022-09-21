@@ -13,13 +13,10 @@ use Doctrine\Tests\Models\Cache\State;
 use Exception;
 use RuntimeException;
 
-use function call_user_func;
 use function uniqid;
 
-/**
- * @group DDC-2183
- */
-class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
+/** @group DDC-2183 */
+class SecondLevelCacheTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testPutOnPersist(): void
     {
@@ -343,9 +340,7 @@ class ListenerSecondLevelCacheTest
     /** @var array<string, callable> */
     public $callbacks;
 
-    /**
-     * @psalm-param array<string, callable> $callbacks
-     */
+    /** @psalm-param array<string, callable> $callbacks */
     public function __construct(array $callbacks = [])
     {
         $this->callbacks = $callbacks;
@@ -354,7 +349,7 @@ class ListenerSecondLevelCacheTest
     private function dispatch(string $eventName, EventArgs $args): void
     {
         if (isset($this->callbacks[$eventName])) {
-            call_user_func($this->callbacks[$eventName], $args);
+            ($this->callbacks[$eventName])($args);
         }
     }
 

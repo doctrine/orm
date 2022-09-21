@@ -80,9 +80,7 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
         }
     }
 
-    /**
-     * @group DDC-3231
-     */
+    /** @group DDC-3231 */
     public function testGeneratedEntityRepositoryClass(): void
     {
         $em = $this->getTestEntityManager();
@@ -121,9 +119,7 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
         self::assertSame(EntityRepository::class, $repo2->getParentClass()->getName());
     }
 
-    /**
-     * @group DDC-3231
-     */
+    /** @group DDC-3231 */
     public function testGeneratedEntityRepositoryClassCustomDefaultRepository(): void
     {
         $em = $this->getTestEntityManager();

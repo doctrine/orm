@@ -214,7 +214,7 @@ specific to a particular entity class's lifecycle.
 
         <?php
         use Doctrine\DBAL\Types\Types;
-        use Doctrine\Persistence\Event\LifecycleEventArgs;
+        use Doctrine\ORM\Event\LifecycleEventArgs;
 
         #[Entity]
         #[HasLifecycleCallbacks]
@@ -541,7 +541,7 @@ mentioned sets. See this example:
     {
         public function onFlush(OnFlushEventArgs $eventArgs)
         {
-            $em = $eventArgs->getEntityManager();
+            $em = $eventArgs->getObjectManager();
             $uow = $em->getUnitOfWork();
 
             foreach ($uow->getScheduledEntityInsertions() as $entity) {
@@ -756,7 +756,7 @@ An entity listener is a lifecycle listener class used for an entity.
 .. configuration-block::
 
     .. code-block:: attribute
-    
+
         <?php
         namespace MyProject\Entity;
         use App\EventListener\UserListener;
@@ -830,9 +830,9 @@ you need to map the listener method using the event type mapping:
     .. code-block:: php
 
         <?php
-        use Doctrine\ORM\Event\LifecycleEventArgs;
         use Doctrine\ORM\Event\PreUpdateEventArgs;
         use Doctrine\ORM\Event\PreFlushEventArgs;
+        use Doctrine\Persistence\Event\LifecycleEventArgs;
 
         class UserListener
         {

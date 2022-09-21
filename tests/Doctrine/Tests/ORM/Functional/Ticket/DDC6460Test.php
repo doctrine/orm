@@ -32,9 +32,7 @@ class DDC6460Test extends OrmFunctionalTestCase
         }
     }
 
-    /**
-     * @group DDC-6460
-     */
+    /** @group DDC-6460 */
     public function testInlineEmbeddable(): void
     {
         $isFieldMapped = $this->_em
@@ -44,9 +42,7 @@ class DDC6460Test extends OrmFunctionalTestCase
         self::assertTrue($isFieldMapped);
     }
 
-    /**
-     * @group DDC-6460
-     */
+    /** @group DDC-6460 */
     public function testInlineEmbeddableProxyInitialization(): void
     {
         $entity                  = new DDC6460Entity();
@@ -73,21 +69,17 @@ class DDC6460Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Embeddable()
- */
+/** @Embeddable() */
 class DDC6460Embeddable
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $field;
 }
 
-/**
- * @Entity()
- */
+/** @Entity() */
 class DDC6460Entity
 {
     /**
@@ -105,9 +97,7 @@ class DDC6460Entity
     public $embedded;
 }
 
-/**
- * @Entity()
- */
+/** @Entity() */
 class DDC6460ParentEntity
 {
     /**

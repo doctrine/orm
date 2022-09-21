@@ -208,9 +208,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertCount(3, $freshUser->getGroups());
     }
 
-    /**
-     * @group DDC-130
-     */
+    /** @group DDC-130 */
     public function testRemoveUserWithManyGroups(): void
     {
         $user   = $this->addCmsUserGblancoWithGroups(2);
@@ -223,9 +221,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertNull($newUser);
     }
 
-    /**
-     * @group DDC-130
-     */
+    /** @group DDC-130 */
     public function testRemoveGroupWithUser(): void
     {
         $user = $this->addCmsUserGblancoWithGroups(2);
@@ -253,9 +249,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertCount(0, $newUser->getGroups());
     }
 
-    /**
-     * @group DDC-839
-     */
+    /** @group DDC-839 */
     public function testWorkWithDqlHydratedEmptyCollection(): void
     {
         $user        = $this->addCmsUserGblancoWithGroups(0);
@@ -302,9 +296,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         return $user;
     }
 
-    /**
-     * @group DDC-978
-     */
+    /** @group DDC-978 */
     public function testClearAndResetCollection(): void
     {
         $user         = $this->addCmsUserGblancoWithGroups(2);
@@ -338,9 +330,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('Developers_New2', $user->groups[1]->name);
     }
 
-    /**
-     * @group DDC-733
-     */
+    /** @group DDC-733 */
     public function testInitializePersistentCollection(): void
     {
         $user = $this->addCmsUserGblancoWithGroups(2);
@@ -373,9 +363,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertCount(0, $user->groups);
     }
 
-    /**
-     * @group DDC-3952
-     */
+    /** @group DDC-3952 */
     public function testManyToManyOrderByIsNotIgnored(): void
     {
         $user = $this->addCmsUserGblancoWithGroups(1);
@@ -414,9 +402,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-3952
-     */
+    /** @group DDC-3952 */
     public function testManyToManyOrderByHonorsFieldNameColumnNameAliases(): void
     {
         $user           = new CmsUser();

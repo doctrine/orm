@@ -9,9 +9,7 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1306
- */
+/** @group DDC-1306 */
 class DDC1306Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Query;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\SQLResultCasing;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -156,7 +157,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         }
 
         foreach ($classMetadata->associationMappings as $associationMapping) {
-            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
+            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE) {
                 $targetClass  = $this->em->getClassMetadata($associationMapping['targetEntity']);
                 $isIdentifier = isset($associationMapping['id']) && $associationMapping['id'] === true;
 
@@ -178,7 +179,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         }
     }
 
-    private function isInheritanceSupported(ClassMetadataInfo $classMetadata): bool
+    private function isInheritanceSupported(ClassMetadata $classMetadata): bool
     {
         if (
             $classMetadata->isInheritanceTypeSingleTable()
@@ -246,7 +247,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         }
 
         foreach ($class->associationMappings as $associationMapping) {
-            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
+            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE) {
                 foreach ($associationMapping['joinColumns'] as $joinColumn) {
                     $columnName               = $joinColumn['name'];
                     $columnAlias[$columnName] = $this->getColumnAlias($columnName, $mode, $customRenameColumns);
@@ -259,6 +260,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
     /**
      * Adds the mappings of the results of native SQL queries to the result set.
+     *
+     * @deprecated This method is deprecated and will be removed in Doctrine ORM 3.0.
      *
      * @param mixed[] $queryMapping
      *
@@ -275,6 +278,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
     /**
      * Adds the class mapping of the results of native SQL queries to the result set.
+     *
+     * @deprecated This method is deprecated and will be removed in Doctrine ORM 3.0.
      *
      * @param string $resultClassName
      *
@@ -307,7 +312,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         }
 
         foreach ($classMetadata->associationMappings as $associationMapping) {
-            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
+            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE) {
                 $targetClass = $this->em->getClassMetadata($associationMapping['targetEntity']);
 
                 foreach ($associationMapping['joinColumns'] as $joinColumn) {
@@ -325,6 +330,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
     /**
      * Adds the result set mapping of the results of native SQL queries to the result set.
+     *
+     * @deprecated This method is deprecated and will be removed in Doctrine ORM 3.0.
      *
      * @param string $resultSetMappingName
      *
@@ -381,6 +388,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
     /**
      * Adds the entity result mapping of the results of native SQL queries to the result set.
+     *
+     * @deprecated This method is deprecated and will be removed in Doctrine ORM 3.0.
      *
      * @param mixed[] $entityMapping
      * @param string  $alias
@@ -493,9 +502,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         return $sql;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function __toString()
     {
         return $this->generateSelectClause([]);

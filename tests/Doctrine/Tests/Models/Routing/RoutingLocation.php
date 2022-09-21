@@ -9,9 +9,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * @Entity
- */
+/** @Entity */
 class RoutingLocation
 {
     /**
@@ -24,7 +22,7 @@ class RoutingLocation
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $name;
 

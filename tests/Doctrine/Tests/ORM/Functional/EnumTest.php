@@ -7,7 +7,10 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Query\Expr\Func;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Tests\Models\DataTransferObjects\DtoWithArrayOfEnums;
+use Doctrine\Tests\Models\DataTransferObjects\DtoWithEnum;
 use Doctrine\Tests\Models\Enums\Card;
 use Doctrine\Tests\Models\Enums\CardWithDefault;
 use Doctrine\Tests\Models\Enums\CardWithNullable;
@@ -69,11 +72,7 @@ class EnumTest extends OrmFunctionalTestCase
         $card       = new Card();
         $card->suit = Suit::Clubs;
 
-        $cardWithNullable       = new CardWithNullable();
-        $cardWithNullable->suit = null;
-
         $this->_em->persist($card);
-        $this->_em->persist($cardWithNullable);
         $this->_em->flush();
         $this->_em->clear();
 
@@ -85,6 +84,18 @@ class EnumTest extends OrmFunctionalTestCase
 
         $this->assertInstanceOf(Suit::class, $result[0]['suit']);
         $this->assertEquals(Suit::Clubs, $result[0]['suit']);
+    }
+
+    public function testNullableEnumHydration(): void
+    {
+        $this->setUpEntitySchema([Card::class, CardWithNullable::class]);
+
+        $cardWithNullable       = new CardWithNullable();
+        $cardWithNullable->suit = null;
+
+        $this->_em->persist($cardWithNullable);
+        $this->_em->flush();
+        $this->_em->clear();
 
         $result = $this->_em->createQueryBuilder()
             ->from(CardWithNullable::class, 'c')
@@ -113,6 +124,66 @@ class EnumTest extends OrmFunctionalTestCase
             ->getResult();
 
         self::assertEqualsCanonicalizing([Unit::Gram, Unit::Meter], $result[0]['supportedUnits']);
+    }
+
+    public function testEnumInDtoHydration(): void
+    {
+        $this->setUpEntitySchema([Card::class, CardWithNullable::class]);
+
+        $card       = new Card();
+        $card->suit = Suit::Clubs;
+
+        $this->_em->persist($card);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(CardWithNullable::class, 'c')
+            ->select('NEW ' . DtoWithEnum::class . '(c.suit)')
+            ->getQuery()
+            ->getResult();
+
+        $this->assertNull($result[0]->suit);
+    }
+
+    public function testNullableEnumInDtoHydration(): void
+    {
+        $this->setUpEntitySchema([Card::class, CardWithNullable::class]);
+
+        $cardWithNullable       = new CardWithNullable();
+        $cardWithNullable->suit = null;
+
+        $this->_em->persist($cardWithNullable);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(CardWithNullable::class, 'c')
+            ->select('NEW ' . DtoWithEnum::class . '(c.suit)')
+            ->getQuery()
+            ->getResult();
+
+        $this->assertNull($result[0]->suit);
+    }
+
+    public function testEnumArrayInDtoHydration(): void
+    {
+        $this->setUpEntitySchema([Scale::class]);
+
+        $scale                 = new Scale();
+        $scale->supportedUnits = [Unit::Gram, Unit::Meter];
+
+        $this->_em->persist($scale);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(Scale::class, 's')
+            ->select(new Func('NEW ' . DtoWithArrayOfEnums::class, ['s.supportedUnits']))
+            ->getQuery()
+            ->getResult();
+
+        self::assertEqualsCanonicalizing([Unit::Gram, Unit::Meter], $result[0]->supportedUnits);
     }
 
     public function testFindByEnum(): void
@@ -176,9 +247,7 @@ EXCEPTION
         $this->_em->find($cardClass, $card->id);
     }
 
-    /**
-     * @return array<string, array{class-string}>
-     */
+    /** @return array<string, array{class-string}> */
     public function provideCardClasses(): array
     {
         return [

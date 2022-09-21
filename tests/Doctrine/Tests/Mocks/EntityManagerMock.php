@@ -64,10 +64,6 @@ class EntityManagerMock extends EntityManager
             $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver());
         }
 
-        if ($eventManager === null) {
-            $eventManager = new EventManager();
-        }
-
-        return new EntityManagerMock($conn, $config, $eventManager);
+        return new EntityManagerMock($conn, $config);
     }
 }

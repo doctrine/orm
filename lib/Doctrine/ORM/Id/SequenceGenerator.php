@@ -99,9 +99,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
         return serialize($this->__serialize());
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function __serialize(): array
     {
         return [
@@ -122,9 +120,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
         $this->__unserialize(unserialize($serialized));
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public function __unserialize(array $data): void
     {
         $this->_sequenceName   = $data['sequenceName'];

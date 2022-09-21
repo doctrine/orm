@@ -59,7 +59,7 @@ class DDC5684Test extends OrmFunctionalTestCase
     }
 }
 
-class DDC5684ObjectIdType extends DBALTypes\IntegerType
+class DDC5684ObjectIdType extends DBALTypes\Type
 {
     /**
      * {@inheritDoc}
@@ -91,6 +91,11 @@ class DDC5684ObjectIdType extends DBALTypes\IntegerType
     public function requiresSQLCommentHint(AbstractPlatform $platform)
     {
         return true;
+    }
+
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
+    {
+        return $platform->getIntegerTypeDeclarationSQL($column);
     }
 }
 

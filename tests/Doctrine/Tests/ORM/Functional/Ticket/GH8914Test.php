@@ -27,9 +27,7 @@ final class GH8914Test extends OrmTestCase
     }
 }
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 abstract class GH8914BaseEntity
 {
 }
@@ -51,9 +49,7 @@ class GH8914Person extends GH8914BaseEntity
     public $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH8914Employee extends GH8914Person
 {
 }

@@ -14,10 +14,8 @@ use Doctrine\Tests\Models\Cache\Traveler;
 
 use function sprintf;
 
-/**
- * @group DDC-2183
- */
-class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
+/** @group DDC-2183 */
+class SecondLevelCacheOneToManyTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testShouldPutCollectionInverseSideOnPersist(): void
     {

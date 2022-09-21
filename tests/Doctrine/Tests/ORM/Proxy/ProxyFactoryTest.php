@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Proxy;
 
 use Closure;
+use Doctrine\Common\EventManager;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Common\Proxy\Proxy;
 use Doctrine\DBAL\Connection;
@@ -20,6 +21,7 @@ use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use ReflectionProperty;
 use stdClass;
 
@@ -31,6 +33,8 @@ use function sys_get_temp_dir;
  */
 class ProxyFactoryTest extends OrmTestCase
 {
+    use MockBuilderCompatibilityTools;
+
     /** @var UnitOfWorkMock */
     private $uowMock;
 
@@ -49,6 +53,8 @@ class ProxyFactoryTest extends OrmTestCase
         $connection = $this->createMock(Connection::class);
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);
+        $connection->method('getEventManager')
+            ->willReturn(new EventManager());
 
         $this->emMock  = EntityManagerMock::create($connection);
         $this->uowMock = new UnitOfWorkMock($this->emMock);
@@ -60,7 +66,9 @@ class ProxyFactoryTest extends OrmTestCase
     {
         $identifier = ['id' => 42];
         $proxyClass = 'Proxies\__CG__\Doctrine\Tests\Models\ECommerce\ECommerceFeature';
-        $persister  = $this->getMockBuilder(BasicEntityPersister::class)->setMethods(['load'])->disableOriginalConstructor()->getMock();
+        $persister  = $this->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['load'])
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
@@ -87,9 +95,7 @@ class ProxyFactoryTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group 6625
-     */
+    /** @group 6625 */
     public function testSkipEmbeddableClassesOnGeneration(): void
     {
         $cm                  = new ClassMetadata(stdClass::class);
@@ -102,9 +108,7 @@ class ProxyFactoryTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group DDC-1771
-     */
+    /** @group DDC-1771 */
     public function testSkipAbstractClassesOnGeneration(): void
     {
         $cm = new ClassMetadata(AbstractClass::class);
@@ -116,14 +120,11 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertEquals(0, $num, 'No proxies generated.');
     }
 
-    /**
-     * @group DDC-2432
-     */
+    /** @group DDC-2432 */
     public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized(): void
     {
         $persister = $this
-            ->getMockBuilder(BasicEntityPersister::class)
-            ->setMethods(['load', 'getClassMetadata'])
+            ->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['load', 'getClassMetadata'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
@@ -147,14 +148,11 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertInstanceOf(Closure::class, $proxy->__getCloner(), 'The cloner wasn\'t removed');
     }
 
-    /**
-     * @group DDC-2432
-     */
+    /** @group DDC-2432 */
     public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized(): void
     {
         $persister = $this
-            ->getMockBuilder(BasicEntityPersister::class)
-            ->setMethods(['load', 'getClassMetadata'])
+            ->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['load', 'getClassMetadata'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
@@ -193,8 +191,7 @@ class ProxyFactoryTest extends OrmTestCase
         $classMetaData = $this->emMock->getClassMetadata(CompanyEmployee::class);
 
         $persister = $this
-            ->getMockBuilder(BasicEntityPersister::class)
-            ->setMethods(['load', 'getClassMetadata'])
+            ->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['load', 'getClassMetadata'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->uowMock->setEntityPersister(CompanyEmployee::class, $persister);

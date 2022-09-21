@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2579
- */
+/** @group DDC-2579 */
 class DDC2579Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -68,15 +66,13 @@ class DDC2579Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2579Entity
 {
     /**
      * @var DDC2579Id
      * @Id
-     * @Column(type="ddc2579")
+     * @Column(type="ddc2579", length=255)
      */
     public $id;
 
@@ -102,9 +98,7 @@ class DDC2579Entity
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2579EntityAssoc
 {
     /**
@@ -121,15 +115,13 @@ class DDC2579EntityAssoc
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2579AssocAssoc
 {
     /**
      * @var DDC2579Id
      * @Id
-     * @Column(type="ddc2579")
+     * @Column(type="ddc2579", length=255)
      */
     public $associationId;
 

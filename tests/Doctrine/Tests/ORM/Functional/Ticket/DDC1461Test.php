@@ -15,9 +15,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function get_class;
 
-/**
- * @group DDC-1461
- */
+/** @group DDC-1461 */
 class DDC1461Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

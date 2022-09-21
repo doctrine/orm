@@ -15,10 +15,10 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use function array_map;
 
 /**
- * @extends AbstractRegionTest<DefaultRegion>
+ * @extends RegionTestCase<DefaultRegion>
  * @group DDC-2183
  */
-class DefaultRegionTest extends AbstractRegionTest
+class DefaultRegionTest extends RegionTestCase
 {
     protected function createRegion(): Region
     {

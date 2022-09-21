@@ -9,10 +9,8 @@ use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Travel;
 
-/**
- * @group DDC-2183
- */
-class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTest
+/** @group DDC-2183 */
+class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheFunctionalTestCase
 {
     protected function setUp(): void
     {

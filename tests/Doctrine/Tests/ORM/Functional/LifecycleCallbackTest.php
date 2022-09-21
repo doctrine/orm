@@ -114,9 +114,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         self::assertEquals('Hello World', $user2->getValue());
     }
 
-    /**
-     * @group DDC-194
-     */
+    /** @group DDC-194 */
     public function testGetReferenceWithPostLoadEventIsDelayedUntilProxyTrigger(): void
     {
         $entity        = new LifecycleCallbackTestEntity();
@@ -134,9 +132,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         self::assertTrue($reference->postLoadCallbackInvoked);
     }
 
-    /**
-     * @group DDC-958
-     */
+    /** @group DDC-958 */
     public function testPostLoadTriggeredOnRefresh(): void
     {
         $entity        = new LifecycleCallbackTestEntity();
@@ -155,9 +151,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         self::assertTrue($reference->postLoadCallbackInvoked, 'postLoad should be invoked when refresh() is called.');
     }
 
-    /**
-     * @group DDC-113
-     */
+    /** @group DDC-113 */
     public function testCascadedEntitiesCallsPrePersist(): void
     {
         $e1 = new LifecycleCallbackTestEntity();
@@ -380,9 +374,7 @@ DQL;
         self::assertEquals('Bob', $bob->getName());
     }
 
-    /**
-     * @group DDC-1955
-     */
+    /** @group DDC-1955 */
     public function testLifecycleCallbackEventArgs(): void
     {
         $e = new LifecycleCallbackEventArgEntity();
@@ -437,13 +429,13 @@ class LifecycleCallbackTestUser
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $value;
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $name;
 
@@ -671,65 +663,49 @@ class LifecycleCallbackEventArgEntity
     /** @var array<string, BaseLifecycleEventArgs> */
     public $calls = [];
 
-    /**
-     * @PostPersist
-     */
+    /** @PostPersist */
     public function postPersistHandler(LifecycleEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
-    /**
-     * @PrePersist
-     */
+    /** @PrePersist */
     public function prePersistHandler(LifecycleEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
-    /**
-     * @PostUpdate
-     */
+    /** @PostUpdate */
     public function postUpdateHandler(LifecycleEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
-    /**
-     * @PreUpdate
-     */
+    /** @PreUpdate */
     public function preUpdateHandler(PreUpdateEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
-    /**
-     * @PostRemove
-     */
+    /** @PostRemove */
     public function postRemoveHandler(LifecycleEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
-    /**
-     * @PreRemove
-     */
+    /** @PreRemove */
     public function preRemoveHandler(LifecycleEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
-    /**
-     * @PreFlush
-     */
+    /** @PreFlush */
     public function preFlushHandler(PreFlushEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
-    /**
-     * @PostLoad
-     */
+    /** @PostLoad */
     public function postLoadHandler(LifecycleEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;

@@ -17,9 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function is_string;
 
-/**
- * @group DDC-2984
- */
+/** @group DDC-2984 */
 class DDC2984Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -69,7 +67,7 @@ class DDC2984User
 {
     /**
      * @Id
-     * @Column(type="ddc2984_domain_user_id")
+     * @Column(type="ddc2984_domain_user_id", length=255)
      * @GeneratedValue(strategy="NONE")
      * @var DDC2984DomainUserId
      */
@@ -138,9 +136,11 @@ class DDC2984DomainUserId
 
 class DDC2984UserIdCustomDbalType extends StringType
 {
+    private const TYPE_NAME = 'ddc2984_domain_user_id';
+
     public function getName(): string
     {
-        return 'ddc2984_domain_user_id';
+        return self::TYPE_NAME;
     }
 
     /**
@@ -167,7 +167,7 @@ class DDC2984UserIdCustomDbalType extends StringType
         }
 
         if (! $value instanceof DDC2984DomainUserId) {
-            throw ConversionException::conversionFailed($value, $this->getName());
+            throw ConversionException::conversionFailed($value, self::TYPE_NAME);
         }
 
         return $value->toString();

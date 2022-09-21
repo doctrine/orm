@@ -67,7 +67,7 @@ class DDC211User
 
     /**
      * @var string
-     * @Column(name="name", type="string")
+     * @Column(name="name", type="string", length=255)
      */
     protected $name;
 
@@ -91,9 +91,7 @@ class DDC211User
         $this->name = $name;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC211Group>
-     */
+    /** @psalm-return Collection<int, DDC211Group> */
     public function getGroups(): Collection
     {
         return $this->groups;
@@ -116,7 +114,7 @@ class DDC211Group
 
     /**
      * @var string
-     * @Column(name="name", type="string")
+     * @Column(name="name", type="string", length=255)
      */
     protected $name;
 
@@ -136,9 +134,7 @@ class DDC211Group
         $this->name = $name;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC211User>
-     */
+    /** @psalm-return Collection<int, DDC211User> */
     public function getUsers(): Collection
     {
         return $this->users;

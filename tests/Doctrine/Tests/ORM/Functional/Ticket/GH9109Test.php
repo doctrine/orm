@@ -16,9 +16,7 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH-9109
- */
+/** @group GH-9109 */
 class GH9109Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -90,9 +88,7 @@ class GH9109Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH9109Product
 {
     /**
@@ -140,9 +136,7 @@ class GH9109Product
         return $this->title;
     }
 
-    /**
-     * @psalm-return Collection<int, GH9109User>
-     */
+    /** @psalm-return Collection<int, GH9109User> */
     public function getBuyers(): Collection
     {
         return $this->buyers;
@@ -154,9 +148,7 @@ class GH9109Product
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH9109User
 {
     /**
@@ -169,13 +161,13 @@ class GH9109User
 
     /**
      * @var string
-     * @Column(name="`first_name`", type="string")
+     * @Column(name="`first_name`", type="string", length=255)
      */
     private $firstName;
 
     /**
      * @var string
-     * @Column(name="last_name", type="string")
+     * @Column(name="last_name", type="string", length=255)
      */
     private $lastName;
 

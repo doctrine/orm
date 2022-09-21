@@ -9,9 +9,7 @@ use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Models\CMS;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
-/**
- * @BeforeMethods({"init"})
- */
+/** @BeforeMethods({"init"}) */
 final class SimpleInsertPerformanceBench
 {
     /** @var EntityManagerInterface */

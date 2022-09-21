@@ -75,9 +75,7 @@ class DDC1228Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1228User
 {
     /**
@@ -89,7 +87,7 @@ class DDC1228User
     public $id;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string
      */
     public $name = 'Bar';
@@ -106,9 +104,7 @@ class DDC1228User
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1228Profile
 {
     /**
@@ -120,7 +116,7 @@ class DDC1228Profile
     public $id;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string
      */
     public $name;

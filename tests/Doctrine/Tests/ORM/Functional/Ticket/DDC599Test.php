@@ -109,30 +109,24 @@ class DDC599Item
         $this->children = new ArrayCollection();
     }
 
-    /**
-     * @psalm-return Collection<int, DDC599Child>
-     */
+    /** @psalm-return Collection<int, DDC599Child> */
     public function getChildren(): Collection
     {
         return $this->children;
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC599Subitem extends DDC599Item
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $elem;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC599Child
 {
     /**

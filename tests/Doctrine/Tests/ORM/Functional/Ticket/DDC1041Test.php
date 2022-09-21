@@ -7,9 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1041
- */
+/** @group DDC-1041 */
 class DDC1041Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

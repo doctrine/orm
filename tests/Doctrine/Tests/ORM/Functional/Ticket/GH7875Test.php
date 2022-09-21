@@ -74,9 +74,7 @@ final class GH7875Test extends OrmFunctionalTestCase
         self::assertCount(1, $this->filterCreateTable($sqls, 'gh7875_my_other_entity'));
     }
 
-    /**
-     * @return array<array<string|callable|null>>
-     */
+    /** @return array<array<string|callable|null>> */
     public function provideUpdateSchemaSqlWithSchemaAssetFilter(): array
     {
         return [

@@ -16,9 +16,7 @@ use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
 {
     /** @var DefaultCollectionHydrator */

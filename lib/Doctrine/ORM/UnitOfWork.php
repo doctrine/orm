@@ -25,6 +25,7 @@ use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
@@ -54,6 +55,7 @@ use function array_merge;
 use function array_pop;
 use function array_sum;
 use function array_values;
+use function assert;
 use function count;
 use function current;
 use function get_class;
@@ -73,6 +75,8 @@ use function sprintf;
  * in the correct order.
  *
  * Internal note: This class contains highly performance-sensitive code.
+ *
+ * @psalm-import-type AssociationMapping from ClassMetadataInfo
  */
 class UnitOfWork implements PropertyChangedListener
 {
@@ -480,9 +484,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->postCommitCleanup($entity);
     }
 
-    /**
-     * @param object|object[]|null $entity
-     */
+    /** @param object|object[]|null $entity */
     private function postCommitCleanup($entity): void
     {
         $this->entityInsertions               =
@@ -1007,9 +1009,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->scheduleForInsert($entity);
     }
 
-    /**
-     * @param mixed[] $idValue
-     */
+    /** @param mixed[] $idValue */
     private function hasMissingIdsWhichAreForeignKeys(ClassMetadata $class, array $idValue): bool
     {
         foreach ($idValue as $idField => $idFieldValue) {
@@ -1612,6 +1612,8 @@ class UnitOfWork implements PropertyChangedListener
             case $class->isIdentifierNatural():
                 // Check for a version field, if available, to avoid a db lookup.
                 if ($class->isVersioned) {
+                    assert($class->versionField !== null);
+
                     return $class->getFieldValue($entity, $class->versionField)
                         ? self::STATE_DETACHED
                         : self::STATE_NEW;
@@ -1937,8 +1939,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes a merge operation on an entity.
      *
-     * @param object   $entity
-     * @param string[] $assoc
+     * @param object $entity
+     * @psalm-param AssociationMapping|null $assoc
      * @psalm-param array<int, object> $visited
      *
      * @return object The managed copy of the entity.
@@ -1952,7 +1954,7 @@ class UnitOfWork implements PropertyChangedListener
         $entity,
         array &$visited,
         $prevManagedCopy = null,
-        array $assoc = []
+        ?array $assoc = null
     ) {
         $oid = spl_object_id($entity);
 
@@ -2061,6 +2063,7 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
+        assert($class->versionField !== null);
         $reflField          = $class->reflFields[$class->versionField];
         $managedCopyVersion = $reflField->getValue($managedCopy);
         $entityVersion      = $reflField->getValue($entity);
@@ -2087,8 +2090,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Sets/adds associated managed copies into the previous entity's association field
      *
-     * @param object   $entity
-     * @param string[] $association
+     * @param object $entity
+     * @psalm-param AssociationMapping $association
      */
     private function updateAssociationWithMergedEntity(
         $entity,
@@ -2495,6 +2498,7 @@ class UnitOfWork implements PropertyChangedListener
                     $entity->__load();
                 }
 
+                assert($class->versionField !== null);
                 $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
 
                 // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedNotEqualOperator
@@ -2629,17 +2633,13 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionDeletions[$coid] = $coll;
     }
 
-    /**
-     * @return bool
-     */
+    /** @return bool */
     public function isCollectionScheduledForDeletion(PersistentCollection $coll)
     {
         return isset($this->collectionDeletions[spl_object_id($coll)]);
     }
 
-    /**
-     * @return object
-     */
+    /** @return object */
     private function newInstance(ClassMetadata $class)
     {
         $entity = $class->newInstance();
@@ -2958,9 +2958,7 @@ class UnitOfWork implements PropertyChangedListener
         return $entity;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function triggerEagerLoads()
     {
         if (! $this->eagerLoadingEntities) {
@@ -3508,9 +3506,7 @@ class UnitOfWork implements PropertyChangedListener
         return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
     }
 
-    /**
-     * @throws ORMInvalidArgumentException
-     */
+    /** @throws ORMInvalidArgumentException */
     private function assertThatThereAreNoUnintentionallyNonPersistedAssociations(): void
     {
         $entitiesNeedingCascadePersist = array_diff_key($this->nonCascadedNewDetectedEntities, $this->entityInsertions);

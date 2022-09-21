@@ -29,9 +29,7 @@ class DDC837Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-837
-     */
+    /** @group DDC-837 */
     public function testIssue(): void
     {
         $c1              = new DDC837Class1();
@@ -117,9 +115,7 @@ abstract class DDC837Super
     public $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC837Class1 extends DDC837Super
 {
     /**
@@ -141,9 +137,7 @@ class DDC837Class1 extends DDC837Super
     public $aggregate;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC837Class2 extends DDC837Super
 {
     /**
@@ -191,9 +185,7 @@ class DDC837Class3 extends DDC837Super
     public $bananas;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC837Aggregate
 {
     /**
@@ -206,7 +198,7 @@ class DDC837Aggregate
 
     /**
      * @var string
-     * @Column(name="sysname", type="string")
+     * @Column(name="sysname", type="string", length=255)
      */
     protected $sysname;
 

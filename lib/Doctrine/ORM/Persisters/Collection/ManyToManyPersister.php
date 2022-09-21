@@ -367,9 +367,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         return $conditions;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     protected function getDeleteSQL(PersistentCollection $collection)
     {
         $columns   = [];
@@ -757,13 +755,12 @@ class ManyToManyPersister extends AbstractCollectionPersister
         return '';
     }
 
-    /**
-     * @throws DBALException
-     */
+    /** @throws DBALException */
     private function getLimitSql(string $sql, Criteria $criteria): string
     {
         $limit  = $criteria->getMaxResults();
         $offset = $criteria->getFirstResult();
+
         if ($limit !== null || $offset !== null) {
             return $this->platform->modifyLimitQuery($sql, $limit, $offset ?? 0);
         }

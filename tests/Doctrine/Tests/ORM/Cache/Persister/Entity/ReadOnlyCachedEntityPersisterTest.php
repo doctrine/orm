@@ -13,10 +13,8 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\Tests\Models\Cache\Country;
 
-/**
- * @group DDC-2183
- */
-class ReadOnlyCachedEntityPersisterTest extends AbstractEntityPersisterTest
+/** @group DDC-2183 */
+class ReadOnlyCachedEntityPersisterTest extends EntityPersisterTestCase
 {
     protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata): AbstractEntityPersister
     {

@@ -539,9 +539,7 @@ class ResultSetMapping
         return $this->fieldMappings[$columnName];
     }
 
-    /**
-     * @psalm-return array<string, class-string>
-     */
+    /** @psalm-return array<string, class-string> */
     public function getAliasMap()
     {
         return $this->aliasMap;

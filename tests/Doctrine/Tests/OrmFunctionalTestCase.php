@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception\DatabaseObjectNotFoundException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\DB2Platform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
@@ -12,6 +13,7 @@ use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -157,7 +159,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Generic\BooleanModel::class,
             Models\Generic\DateTimeModel::class,
             Models\Generic\DecimalModel::class,
-            Models\Generic\SerializationModel::class,
         ],
         'routing' => [
             Models\Routing\RoutingLeg::class,
@@ -342,9 +343,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         ],
     ];
 
-    /**
-     * @param class-string ...$models
-     */
+    /** @param class-string ...$models */
     final protected function createSchemaForModels(string ...$models): void
     {
         try {
@@ -363,9 +362,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         return $this->_schemaTool->getUpdateSchemaSql($this->getMetadataForModels($models));
     }
 
-    /**
-     * @param class-string ...$models
-     */
+    /** @param class-string ...$models */
     final protected function getSchemaForModels(string ...$models): Schema
     {
         return $this->_schemaTool->getSchemaFromMetadata($this->getMetadataForModels($models));
@@ -455,7 +452,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeStatement('DELETE FROM boolean_model');
             $conn->executeStatement('DELETE FROM date_time_model');
             $conn->executeStatement('DELETE FROM decimal_model');
-            $conn->executeStatement('DELETE FROM serialize_model');
         }
 
         if (isset($this->_usedModelSets['routing'])) {
@@ -848,9 +844,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             : $this->_em->getConnection()->getSchemaManager();
     }
 
-    /**
-     * @throws Throwable
-     */
+    /** @throws Throwable */
     protected function onNotSuccessfulTest(Throwable $e): void
     {
         if ($e instanceof AssertionFailedError || $e instanceof Warning) {
@@ -911,7 +905,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
     final protected function isQueryLogAvailable(): bool
     {
-        return $this->_em->getConnection() instanceof DbalExtensions\Connection;
+        return $this->_em && $this->_em->getConnection() instanceof DbalExtensions\Connection;
     }
 
     final protected function getQueryLog(): QueryLog
@@ -933,9 +927,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         self::assertThat($this->getQueryLog()->queries, new Count($expectedCount), $message);
     }
 
-    /**
-     * @psalm-return array{sql: string, params: array|null, types: array|null}
-     */
+    /** @psalm-return array{sql: string, params: array|null, types: array|null} */
     final protected function getLastLoggedQuery(int $index = 0): array
     {
         $queries   = $this->getQueryLog()->queries;
@@ -949,6 +941,36 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         return $lastQuery;
+    }
+
+    /**
+     * Drops the table with the specified name, if it exists.
+     *
+     * @throws Exception
+     */
+    protected function dropTableIfExists(string $name): void
+    {
+        $schemaManager = $this->createSchemaManager();
+
+        try {
+            $schemaManager->dropTable($name);
+        } catch (DatabaseObjectNotFoundException $e) {
+        }
+    }
+
+    /**
+     * Drops and creates a new table.
+     *
+     * @throws Exception
+     */
+    protected function dropAndCreateTable(Table $table): void
+    {
+        $schemaManager = $this->createSchemaManager();
+        $platform      = $this->_em->getConnection()->getDatabasePlatform();
+        $tableName     = $table->getQuotedName($platform);
+
+        $this->dropTableIfExists($tableName);
+        $schemaManager->createTable($table);
     }
 
     public function getLimitSQLByPlatform($limit, AbstractPlatform $platform): string

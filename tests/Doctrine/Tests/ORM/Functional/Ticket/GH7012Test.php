@@ -13,8 +13,6 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\Models\Quote\User as QuotedUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function sprintf;
-
 final class GH7012Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -26,9 +24,7 @@ final class GH7012Test extends OrmFunctionalTestCase
         $this->setUpEntitySchema([GH7012UserData::class]);
     }
 
-    /**
-     * @group GH-7012
-     */
+    /** @group GH-7012 */
     public function testUpdateEntityWithIdentifierAssociationWithQuotedJoinColumn(): void
     {
         $user       = new QuotedUser();
@@ -45,24 +41,9 @@ final class GH7012Test extends OrmFunctionalTestCase
         $userData->name = '4321';
         $this->_em->flush();
 
-        $platform         = $this->_em->getConnection()->getDatabasePlatform();
-        $quotedTableName  = $platform->quoteIdentifier('quote-user-data');
-        $quotedColumn     = $platform->quoteIdentifier('name');
-        $quotedIdentifier = $platform->quoteIdentifier('user-id');
-
-        self::assertNotEquals('quote-user-data', $quotedTableName);
-        self::assertNotEquals('name', $quotedColumn);
-        self::assertNotEquals('user-id', $quotedIdentifier);
-
-        $lastLoggedQuery = $this->getLastLoggedQuery()['sql'];
-        // DBAL 2 logs a commit as last query.
-        if ($lastLoggedQuery === '"COMMIT"') {
-            $lastLoggedQuery = $this->getLastLoggedQuery(1)['sql'];
-        }
-
-        $this->assertSQLEquals(
-            sprintf('UPDATE %s SET %s = ? WHERE %s = ?', $quotedTableName, $quotedColumn, $quotedIdentifier),
-            $lastLoggedQuery
+        self::assertSame(
+            '4321',
+            $this->_em->getRepository(GH7012UserData::class)->findOneBy(['user' => $user])->name
         );
     }
 }

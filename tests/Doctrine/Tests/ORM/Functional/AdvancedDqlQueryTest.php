@@ -175,7 +175,7 @@ DQL;
 
     public function testInSubselect(): void
     {
-        $dql    = <<<DQL
+        $dql    = <<<'DQL'
 SELECT p.name FROM Doctrine\Tests\Models\Company\CompanyPerson p
 WHERE p.name IN (SELECT n.name FROM Doctrine\Tests\Models\Company\CompanyPerson n WHERE n.name = 'Roman B.')
 DQL;

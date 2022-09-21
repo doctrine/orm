@@ -27,7 +27,7 @@ class Market
     private $id;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string
      */
     private $name;

@@ -20,9 +20,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use function in_array;
 use function json_decode;
 
-/**
- * @group DDC-2602
- */
+/** @group DDC-2602 */
 class DDC2602Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -125,13 +123,13 @@ class DDC2602PostLoadListener
 {
     public function postLoad(LifecycleEventArgs $event): void
     {
-        $entity = $event->getEntity();
+        $entity = $event->getObject();
 
         if (! ($entity instanceof DDC2602Biography)) {
             return;
         }
 
-        $entityManager = $event->getEntityManager();
+        $entityManager = $event->getObjectManager();
         $query         = $entityManager->createQuery('
             SELECT f, fc
               FROM Doctrine\Tests\ORM\Functional\Ticket\DDC2602BiographyField f INDEX BY f.id
@@ -160,9 +158,7 @@ class DDC2602PostLoadListener
 }
 
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2602User
 {
     /**
@@ -191,9 +187,7 @@ class DDC2602User
     public $biography;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2602Biography
 {
     /**
@@ -224,9 +218,7 @@ class DDC2602Biography
     public $fieldList = [];
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2602BiographyField
 {
     /**
@@ -265,9 +257,7 @@ class DDC2602BiographyField
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2602BiographyFieldChoice
 {
     /**

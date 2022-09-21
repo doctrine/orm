@@ -9,9 +9,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * @Entity()
- */
+/** @Entity() */
 class DDC753EntityWithDefaultCustomRepository
 {
     /**
@@ -24,7 +22,7 @@ class DDC753EntityWithDefaultCustomRepository
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     protected $name;
 }

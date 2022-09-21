@@ -11,7 +11,7 @@ use Doctrine\Persistence\Mapping\ClassMetadataFactory;
 
 use function assert;
 use function implode;
-use function is_object;
+use function is_a;
 
 /**
  * The IdentifierFlattener utility now houses some of the identifier manipulation logic from unit of work, so that it
@@ -55,7 +55,7 @@ final class IdentifierFlattener
         $flatId = [];
 
         foreach ($class->identifier as $field) {
-            if (isset($class->associationMappings[$field]) && isset($id[$field]) && is_object($id[$field])) {
+            if (isset($class->associationMappings[$field]) && isset($id[$field]) && is_a($id[$field], $class->associationMappings[$field]['targetEntity'])) {
                 $targetClassMetadata = $this->metadataFactory->getMetadataFor(
                     $class->associationMappings[$field]['targetEntity']
                 );

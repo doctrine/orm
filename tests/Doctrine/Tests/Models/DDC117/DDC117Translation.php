@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC117Translation
 {
     /**
@@ -30,13 +28,13 @@ class DDC117Translation
     /**
      * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $language;
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     private $title;
 

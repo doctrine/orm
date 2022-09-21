@@ -20,10 +20,8 @@ use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use ReflectionMethod;
 
-/**
- * @group DDC-2183
- */
-class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
+/** @group DDC-2183 */
+class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
 {
     use SQLResultCasing;
 
@@ -292,9 +290,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
     }
 
-    /**
-     * @group 5854
-     */
+    /** @group 5854 */
     public function testMultipleNestedDQLAliases(): void
     {
         $this->loadFixturesCountries();

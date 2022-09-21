@@ -23,7 +23,6 @@ class SizeFunction extends FunctionNode
     public $collectionPathExpression;
 
     /**
-     * @override
      * @inheritdoc
      * @todo If the collection being counted is already joined, the SQL can be simpler (more efficient).
      */
@@ -103,10 +102,7 @@ class SizeFunction extends FunctionNode
         return '(' . $sql . ')';
     }
 
-    /**
-     * @override
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function parse(Parser $parser)
     {
         $parser->match(Lexer::T_IDENTIFIER);

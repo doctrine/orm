@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
@@ -17,9 +18,7 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\OrmTestCase;
 
-/**
- * @group GH7869
- */
+/** @group GH7869 */
 class GH7869Test extends OrmTestCase
 {
     public function testDQLDeferredEagerLoad(): void
@@ -31,17 +30,20 @@ class GH7869Test extends OrmTestCase
         $connection = $this->createMock(Connection::class);
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);
+        $connection->method('getEventManager')
+            ->willReturn(new EventManager());
 
-        $decoratedEm = EntityManagerMock::create($connection);
+        $em = new class (EntityManagerMock::create($connection)) extends EntityManagerDecorator {
+            /** @var int */
+            public $getClassMetadataCalls = 0;
 
-        $em = $this->getMockBuilder(EntityManagerDecorator::class)
-            ->setConstructorArgs([$decoratedEm])
-            ->setMethods(['getClassMetadata'])
-            ->getMock();
+            public function getClassMetadata($className): ClassMetadata
+            {
+                ++$this->getClassMetadataCalls;
 
-        $em->expects(self::exactly(2))
-            ->method('getClassMetadata')
-            ->willReturnCallback([$decoratedEm, 'getClassMetadata']);
+                return parent::getClassMetadata($className);
+            }
+        };
 
         $hints = [
             UnitOfWork::HINT_DEFEREAGERLOAD => true,
@@ -52,12 +54,12 @@ class GH7869Test extends OrmTestCase
         $uow->createEntity(GH7869Appointment::class, ['id' => 1, 'patient_id' => 1], $hints);
         $uow->clear();
         $uow->triggerEagerLoads();
+
+        self::assertSame(2, $em->getClassMetadataCalls);
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7869Appointment
 {
     /**
@@ -75,9 +77,7 @@ class GH7869Appointment
     public $patient;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7869Patient
 {
     /**

@@ -14,11 +14,10 @@ use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
+use function method_exists;
 use function sprintf;
 
-/**
- * @group DDC-2224
- */
+/** @group DDC-2224 */
 class DDC2224Test extends OrmFunctionalTestCase
 {
     public static function setUpBeforeClass(): void
@@ -38,9 +37,7 @@ class DDC2224Test extends OrmFunctionalTestCase
         return $query;
     }
 
-    /**
-     * @depends testIssue
-     */
+    /** @depends testIssue */
     public function testCacheMissWhenTypeChanges(Query $query): void
     {
         $query->setParameter('field', 'test', 'string');
@@ -55,6 +52,10 @@ class DDC2224Type extends Type
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
+        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
+            return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
+        }
+
         return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
@@ -80,9 +81,7 @@ class DDC2224Type extends Type
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2224Entity
 {
     /**
@@ -95,7 +94,7 @@ class DDC2224Entity
 
     /**
      * @var mixed
-     * @Column(type="DDC2224Type")
+     * @Column(type="DDC2224Type", length=255)
      */
     public $field;
 }

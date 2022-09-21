@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions\IdentityFunction;
 use Doctrine\ORM\Query\AST\Node;
@@ -35,22 +35,13 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
      */
     private $_aliasCounter = 0;
 
-    /**
-     * Walks down a SelectStatement AST node, modifying it to retrieve DISTINCT ids
-     * of the root Entity.
-     *
-     * @return void
-     *
-     * @throws RuntimeException
-     */
     public function walkSelectStatement(SelectStatement $AST)
     {
-        $queryComponents = $this->_getQueryComponents();
         // Get the root entity and alias from the AST fromClause
         $from      = $AST->fromClause->identificationVariableDeclarations;
         $fromRoot  = reset($from);
         $rootAlias = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
-        $rootClass = $queryComponents[$rootAlias]['metadata'];
+        $rootClass = $this->getMetadataForDqlAlias($rootAlias);
 
         $this->validate($AST);
         $identifier = $rootClass->getSingleIdentifierFieldName();
@@ -81,6 +72,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
             return;
         }
 
+        $queryComponents = $this->_getQueryComponents();
         foreach ($AST->orderByClause->orderByItems as $item) {
             if ($item->expression instanceof PathExpression) {
                 $AST->selectClause->selectExpressions[] = new SelectExpression(
@@ -135,7 +127,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                     if (
                         isset($queryComponent['parent'])
                         && isset($queryComponent['relation'])
-                        && $queryComponent['relation']['type'] & ClassMetadataInfo::TO_MANY
+                        && $queryComponent['relation']['type'] & ClassMetadata::TO_MANY
                     ) {
                         throw new RuntimeException('Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.');
                     }

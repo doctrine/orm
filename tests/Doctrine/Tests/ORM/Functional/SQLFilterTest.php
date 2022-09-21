@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Configuration;
@@ -200,9 +201,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         self::assertTrue($exceptionThrown);
     }
 
-    /**
-     * @group DDC-2203
-     */
+    /** @group DDC-2203 */
     public function testEntityManagerIsFilterEnabled(): void
     {
         $em = $this->getEntityManager();
@@ -228,17 +227,17 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $config->addFilter('soft_delete', '\Doctrine\Tests\ORM\Functional\MySoftDeleteFilter');
     }
 
-    /**
-     * @return Connection&MockObject
-     */
+    /** @return Connection&MockObject */
     private function getMockConnection(): Connection
     {
-        return $this->createMock(Connection::class);
+        $connection = $this->createMock(Connection::class);
+        $connection->method('getEventManager')
+            ->willReturn(new EventManager());
+
+        return $connection;
     }
 
-    /**
-     * @return EntityManagerInterface&MockObject
-     */
+    /** @return EntityManagerInterface&MockObject */
     private function getMockEntityManager(): EntityManagerInterface
     {
         return $this->createMock(EntityManagerInterface::class);

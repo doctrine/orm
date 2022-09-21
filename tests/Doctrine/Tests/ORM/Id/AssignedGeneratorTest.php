@@ -29,9 +29,7 @@ class AssignedGeneratorTest extends OrmTestCase
         $this->assignedGen   = new AssignedGenerator();
     }
 
-    /**
-     * @dataProvider entitiesWithoutId
-     */
+    /** @dataProvider entitiesWithoutId */
     public function testThrowsExceptionIfIdNotAssigned($entity): void
     {
         $this->expectException(ORMException::class);

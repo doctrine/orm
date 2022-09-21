@@ -37,6 +37,7 @@ use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
@@ -103,6 +104,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Sets the strategy for automatically generating proxy classes.
      *
      * @param bool|int $autoGenerate Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     * @psalm-param bool|AutogenerateMode $autoGenerate
      * True is converted to AUTOGENERATE_ALWAYS, false to AUTOGENERATE_NEVER.
      *
      * @return void
@@ -592,8 +594,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * DQL function names are case-insensitive.
      *
-     * @param string          $name      Function name.
-     * @param string|callable $className Class name or a callable that returns the function.
+     * @param string                $name      Function name.
+     * @param class-string|callable $className Class name or a callable that returns the function.
+     * @psalm-param class-string<FunctionNode>|callable(string):FunctionNode $className
      *
      * @return void
      */
@@ -608,7 +611,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string $name
      *
      * @return string|callable|null
-     * @psalm-return class-string|callable|null
+     * @psalm-return class-string<FunctionNode>|callable(string):FunctionNode|null
      */
     public function getCustomStringFunction($name)
     {
@@ -625,7 +628,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * Any previously added string functions are discarded.
      *
-     * @psalm-param array<string, class-string|callable> $functions The map of custom DQL string functions.
+     * @psalm-param array<string, class-string<FunctionNode>|callable(string):FunctionNode> $functions The map of custom
+     *                                                     DQL string functions.
      *
      * @return void
      */
@@ -643,8 +647,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * DQL function names are case-insensitive.
      *
-     * @param string          $name      Function name.
-     * @param string|callable $className Class name or a callable that returns the function.
+     * @param string                $name      Function name.
+     * @param class-string|callable $className Class name or a callable that returns the function.
+     * @psalm-param class-string<FunctionNode>|callable(string):FunctionNode $className
      *
      * @return void
      */
@@ -697,7 +702,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string          $name      Function name.
      * @param string|callable $className Class name or a callable that returns the function.
-     * @psalm-param class-string|callable $className
+     * @psalm-param class-string<FunctionNode>|callable(string):FunctionNode $className
      *
      * @return void
      */
@@ -730,7 +735,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Any previously added date/time functions are discarded.
      *
      * @param array $functions The map of custom DQL date/time functions.
-     * @psalm-param array<string, string> $functions
+     * @psalm-param array<string, class-string<FunctionNode>|callable(string):FunctionNode> $functions
      *
      * @return void
      */
@@ -970,9 +975,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
         return $this->_attributes['repositoryFactory'] ?? new DefaultRepositoryFactory();
     }
 
-    /**
-     * @return bool
-     */
+    /** @return bool */
     public function isSecondLevelCacheEnabled()
     {
         return $this->_attributes['isSecondLevelCacheEnabled'] ?? false;
@@ -988,17 +991,13 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $this->_attributes['isSecondLevelCacheEnabled'] = (bool) $flag;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function setSecondLevelCacheConfiguration(CacheConfiguration $cacheConfig)
     {
         $this->_attributes['secondLevelCacheConfiguration'] = $cacheConfig;
     }
 
-    /**
-     * @return CacheConfiguration|null
-     */
+    /** @return CacheConfiguration|null */
     public function getSecondLevelCacheConfiguration()
     {
         if (! isset($this->_attributes['secondLevelCacheConfiguration']) && $this->isSecondLevelCacheEnabled()) {

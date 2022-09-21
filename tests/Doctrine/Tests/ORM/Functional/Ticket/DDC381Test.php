@@ -43,9 +43,7 @@ class DDC381Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC381Entity
 {
     /**

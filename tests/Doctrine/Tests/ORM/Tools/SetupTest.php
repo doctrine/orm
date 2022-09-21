@@ -111,9 +111,7 @@ class SetupTest extends TestCase
         self::assertInstanceOf(YamlDriver::class, $config->getMetadataDriverImpl());
     }
 
-    /**
-     * @group 5904
-     */
+    /** @group 5904 */
     public function testCacheNamespaceShouldBeGeneratedWhenCacheIsGivenButHasNoNamespace(): void
     {
         $config = Setup::createConfiguration(false, '/foo', DoctrineProvider::wrap(new ArrayAdapter()));
@@ -122,9 +120,7 @@ class SetupTest extends TestCase
         self::assertSame('dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $cache->getNamespace());
     }
 
-    /**
-     * @group 5904
-     */
+    /** @group 5904 */
     public function testConfiguredCacheNamespaceShouldBeUsedAsPrefixOfGeneratedNamespace(): void
     {
         $originalCache = DoctrineProvider::wrap(new ArrayAdapter());
@@ -136,18 +132,14 @@ class SetupTest extends TestCase
         self::assertSame('foo:dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $cache->getNamespace());
     }
 
-    /**
-     * @group DDC-1350
-     */
+    /** @group DDC-1350 */
     public function testConfigureProxyDir(): void
     {
         $config = Setup::createAnnotationMetadataConfiguration([], true, '/foo');
         self::assertEquals('/foo', $config->getProxyDir());
     }
 
-    /**
-     * @group DDC-1350
-     */
+    /** @group DDC-1350 */
     public function testConfigureCache(): void
     {
         $adapter = new ArrayAdapter();
@@ -162,9 +154,7 @@ class SetupTest extends TestCase
         self::assertSame($adapter, $config->getMetadataCache()->getCache()->getPool());
     }
 
-    /**
-     * @group DDC-3190
-     */
+    /** @group DDC-3190 */
     public function testConfigureCacheCustomInstance(): void
     {
         $adapter = new ArrayAdapter();
