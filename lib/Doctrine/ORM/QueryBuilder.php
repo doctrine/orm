@@ -12,9 +12,9 @@ use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
 use InvalidArgumentException;
 use RuntimeException;
+use Stringable;
 
 use function array_keys;
-use function array_merge;
 use function array_unshift;
 use function assert;
 use function count;
@@ -36,7 +36,7 @@ use function substr;
  * This class is responsible for building DQL query strings via an object oriented
  * PHP interface.
  */
-class QueryBuilder
+class QueryBuilder implements Stringable
 {
     /**
      * The array of DQL parts collected.
@@ -378,7 +378,7 @@ class QueryBuilder
      */
     public function getAllAliases(): array
     {
-        return array_merge($this->getRootAliases(), array_keys($this->joinRootAliases));
+        return [...$this->getRootAliases(), ...array_keys($this->joinRootAliases)];
     }
 
     /**
@@ -511,9 +511,8 @@ class QueryBuilder
 
     /**
      * Gets the position of the first result the query object was set to retrieve (the "offset").
-     * Returns NULL if {@link setFirstResult} was not applied to this QueryBuilder.
      */
-    public function getFirstResult(): int|null
+    public function getFirstResult(): int
     {
         return $this->firstResult;
     }
