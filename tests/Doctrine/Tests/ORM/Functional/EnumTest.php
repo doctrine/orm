@@ -102,7 +102,6 @@ class EnumTest extends OrmFunctionalTestCase
             ->from(Card::class, 'c')
             ->select('c')
             ->getQuery()
-            //->getResult();
             ->getResult(AbstractQuery::HYDRATE_ARRAY);
 
         $this->assertInstanceOf(Suit::class, $result[0]['suit']);
