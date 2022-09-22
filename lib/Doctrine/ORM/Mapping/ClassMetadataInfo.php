@@ -671,8 +671,8 @@ class ClassMetadataInfo implements ClassMetadata
      * )
      * </code>
      *
-     * @var array<string, mixed>
-     * @psalm-var array{sequenceName: string, allocationSize: string, initialValue: string, quoted?: mixed}
+     * @var array<string, mixed>|null
+     * @psalm-var array{sequenceName: string, allocationSize: string, initialValue: string, quoted?: mixed}|null
      * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
      */
     public $sequenceGeneratorDefinition;
@@ -2230,6 +2230,8 @@ class ClassMetadataInfo implements ClassMetadata
      * Checks whether the class uses a sequence for id generation.
      *
      * @return bool TRUE if the class uses the SEQUENCE generator, FALSE otherwise.
+     *
+     * @psalm-assert-if-true !null $this->sequenceGeneratorDefinition
      */
     public function isIdGeneratorSequence()
     {

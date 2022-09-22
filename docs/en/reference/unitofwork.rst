@@ -38,7 +38,7 @@ will still end up with the same reference:
     {
         $objectA = $this->entityManager->getReference('EntityName', 1);
         // check for proxyinterface
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $objectA);
+        $this->assertInstanceOf('Doctrine\Persistence\Proxy', $objectA);
 
         $objectB = $this->entityManager->find('EntityName', 1);
 

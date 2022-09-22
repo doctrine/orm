@@ -465,7 +465,7 @@ The following methods were using `func_get_args()` to simulate a variadic argume
 - `Doctrine\ORM\QueryBuilder#andGroupBy()`
 - `Doctrine\ORM\QueryBuilder#having()`
 - `Doctrine\ORM\QueryBuilder#andHaving()`
-- `Doctrine\ORM\QueryBuilder#orHaving()` 
+- `Doctrine\ORM\QueryBuilder#orHaving()`
 A variadic argument is now actually used in their signatures signature (`...$x`).
 Signatures of overridden methods should be changed accordingly
 
@@ -491,6 +491,12 @@ following classes and methods:
 - `IterableResult`
 
 Use `toIterable()` instead.
+
+# Upgrade to 2.14
+
+## Deprecated `Doctrine\ORM\Proxy\Proxy` interface.
+
+Use `Doctrine\Persistence\Proxy` instead to check whether proxies are initialized.
 
 # Upgrade to 2.13
 
@@ -888,7 +894,7 @@ function foo(EntityManagerInterface $entityManager, callable $func) {
     if (method_exists($entityManager, 'wrapInTransaction')) {
         return $entityManager->wrapInTransaction($func);
     }
-    
+
     return $entityManager->transactional($func);
 }
 ```
@@ -954,7 +960,7 @@ implementation. To work around this:
 * As a quick workaround, you can lock the doctrine/cache dependency to work around this: `composer require doctrine/cache ^1.11`.
   Note that this is only recommended as a bandaid fix, as future versions of ORM will no longer work with doctrine/cache
   1.11.
-  
+
 ## Deprecated: doctrine/cache for metadata caching
 
 The `Doctrine\ORM\Configuration#setMetadataCacheImpl()` method is deprecated and should no longer be used. Please use

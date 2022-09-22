@@ -133,11 +133,6 @@ parameters:
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
-
-		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
 
 		-

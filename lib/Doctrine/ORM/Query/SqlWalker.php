@@ -1353,6 +1353,10 @@ class SqlWalker
                     $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
 
                     $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
+
+                    if (! empty($mapping['enumType'])) {
+                        $this->rsm->addEnumResult($columnAlias, $mapping['enumType']);
+                    }
                 }
 
                 // Add any additional fields of subclasses (excluding inherited fields)

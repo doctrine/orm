@@ -40,7 +40,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         $user2  = $this->_em->getReference($user::class, $userId);
 
         $this->_em->flush();
-        self::assertFalse($user2->__isInitialized__);
+        self::assertFalse($user2->__isInitialized());
 
         $a          = new DefaultValueAddress();
         $a->country = 'de';
@@ -52,7 +52,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         $this->_em->persist($a);
         $this->_em->flush();
 
-        self::assertFalse($user2->__isInitialized__);
+        self::assertFalse($user2->__isInitialized());
         $this->_em->clear();
 
         $a2 = $this->_em->find($a::class, $a->id);

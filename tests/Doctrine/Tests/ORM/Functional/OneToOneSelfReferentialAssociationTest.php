@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\OrmFunctionalTestCase;
 

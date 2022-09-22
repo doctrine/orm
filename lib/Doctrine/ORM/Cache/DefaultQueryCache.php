@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Exception\FeatureNotImplemented;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntity;
@@ -17,6 +16,7 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\Persistence\Proxy;
 
 use function array_map;
 use function array_shift;

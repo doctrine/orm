@@ -6,8 +6,6 @@ namespace Doctrine\Tests\ORM\Proxy;
 
 use Closure;
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Proxy\AbstractProxyFactory;
-use Doctrine\Common\Proxy\Proxy;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityNotFoundException;
@@ -15,6 +13,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
@@ -53,7 +52,7 @@ class ProxyFactoryTest extends OrmTestCase
         $this->emMock  = EntityManagerMock::create($connection);
         $this->uowMock = new UnitOfWorkMock($this->emMock);
         $this->emMock->setUnitOfWork($this->uowMock);
-        $this->proxyFactory = new ProxyFactory($this->emMock, sys_get_temp_dir(), 'Proxies', AbstractProxyFactory::AUTOGENERATE_ALWAYS);
+        $this->proxyFactory = new ProxyFactory($this->emMock, sys_get_temp_dir(), 'Proxies', ProxyFactory::AUTOGENERATE_ALWAYS);
     }
 
     public function testReferenceProxyDelegatesLoadingToThePersister(): void

@@ -8,7 +8,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Proxy\Proxy;
+use Doctrine\Common\Proxy\Proxy as CommonProxy;
 use Doctrine\DBAL;
 use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
 use Doctrine\DBAL\LockMode;
@@ -39,6 +39,7 @@ use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
+use Doctrine\Persistence\Proxy;
 use Exception;
 use InvalidArgumentException;
 use RuntimeException;
@@ -2196,7 +2197,9 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
-                $entity->__setInitialized(true);
+                if ($entity instanceof CommonProxy) {
+                    $entity->__setInitialized(true);
+                }
 
                 if ($entity instanceof NotifyPropertyChanged) {
                     $entity->addPropertyChangedListener($this);

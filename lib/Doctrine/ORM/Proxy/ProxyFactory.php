@@ -20,7 +20,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
 /**
  * This factory is used to create proxy objects for entities at runtime.
  *
- * @psalm-type AutogenerateMode = AbstractProxyFactory::AUTOGENERATE_NEVER|AbstractProxyFactory::AUTOGENERATE_ALWAYS|AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS|AbstractProxyFactory::AUTOGENERATE_EVAL|AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS_OR_CHANGED
+ * @psalm-type AutogenerateMode = ProxyFactory::AUTOGENERATE_NEVER|ProxyFactory::AUTOGENERATE_ALWAYS|ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS|ProxyFactory::AUTOGENERATE_EVAL|ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS_OR_CHANGED
  */
 class ProxyFactory extends AbstractProxyFactory
 {
@@ -38,14 +38,14 @@ class ProxyFactory extends AbstractProxyFactory
      * @param string                 $proxyDir     The directory to use for the proxy classes. It must exist.
      * @param string                 $proxyNs      The namespace to use for the proxy classes.
      * @param bool|int               $autoGenerate The strategy for automatically generating proxy classes. Possible
-     *                                             values are constants of {@see AbstractProxyFactory}.
+     *                                             values are constants of {@see ProxyFactory::AUTOGENERATE_*}.
      * @psalm-param bool|AutogenerateMode $autoGenerate
      */
     public function __construct(
         private readonly EntityManagerInterface $em,
         string $proxyDir,
         private readonly string $proxyNs,
-        bool|int $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER,
+        bool|int $autoGenerate = self::AUTOGENERATE_NEVER,
     ) {
         $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
 

@@ -212,7 +212,7 @@ option that controls this behavior is:
 
 Possible values for ``$mode`` are:
 
--  ``Doctrine\Common\Proxy\AbstractProxyFactory::AUTOGENERATE_NEVER``
+-  ``Doctrine\ORM\Proxy\ProxyFactory::AUTOGENERATE_NEVER``
 
 Never autogenerate a proxy. You will need to generate the proxies
 manually, for this use the Doctrine Console like so:
@@ -228,17 +228,17 @@ methods were added to the entity class that are not yet in the proxy class.
 In such a case, simply use the Doctrine Console to (re)generate the
 proxy classes.
 
--  ``Doctrine\Common\Proxy\AbstractProxyFactory::AUTOGENERATE_ALWAYS``
+-  ``Doctrine\ORM\Proxy\ProxyFactory::AUTOGENERATE_ALWAYS``
 
 Always generates a new proxy in every request and writes it to disk.
 
--  ``Doctrine\Common\Proxy\AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS``
+-  ``Doctrine\ORM\Proxy\ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS``
 
 Generate the proxy class when the proxy file does not exist.
 This strategy causes a file exists call whenever any proxy is
 used the first time in a request.
 
--  ``Doctrine\Common\Proxy\AbstractProxyFactory::AUTOGENERATE_EVAL``
+-  ``Doctrine\ORM\Proxy\ProxyFactory::AUTOGENERATE_EVAL``
 
 Generate the proxy classes and evaluate them on the fly via eval(),
 avoiding writing the proxies to disk.

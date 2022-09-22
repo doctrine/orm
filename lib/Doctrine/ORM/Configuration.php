@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -59,18 +58,18 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the strategy for automatically generating proxy classes.
      *
-     * @return int Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     * @return int Possible values are constants of Doctrine\ORM\Proxy\ProxyFactory.
      * @psalm-return AutogenerateMode
      */
     public function getAutoGenerateProxyClasses(): int
     {
-        return $this->_attributes['autoGenerateProxyClasses'] ?? AbstractProxyFactory::AUTOGENERATE_ALWAYS;
+        return $this->_attributes['autoGenerateProxyClasses'] ?? ProxyFactory::AUTOGENERATE_ALWAYS;
     }
 
     /**
      * Sets the strategy for automatically generating proxy classes.
      *
-     * @param bool|int $autoGenerate Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     * @param bool|int $autoGenerate Possible values are constants of Doctrine\ORM\Proxy\ProxyFactory.
      * @psalm-param bool|AutogenerateMode $autoGenerate
      * True is converted to AUTOGENERATE_ALWAYS, false to AUTOGENERATE_NEVER.
      */

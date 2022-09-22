@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC633Test extends OrmFunctionalTestCase
@@ -70,7 +70,7 @@ class DDC633Test extends OrmFunctionalTestCase
 
         foreach ($appointments as $eagerAppointment) {
             self::assertInstanceOf(Proxy::class, $eagerAppointment->patient);
-            self::assertTrue($eagerAppointment->patient->__isInitialized__, 'Proxy should already be initialized due to eager loading!');
+            self::assertTrue($eagerAppointment->patient->__isInitialized(), 'Proxy should already be initialized due to eager loading!');
         }
     }
 }
