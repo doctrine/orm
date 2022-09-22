@@ -34,6 +34,13 @@ class ArrayHydrator extends AbstractHydrator
 
     private int $_resultCounter = 0;
 
+    /**
+     * The cache used during enum processing.
+     *
+     * @var array<string, mixed>
+     */
+    private array $_enumCache = [];
+
     protected function prepare(): void
     {
         $this->_isSimpleQuery = count($this->resultSetMapping()->aliasMap) <= 1;
@@ -71,6 +78,9 @@ class ArrayHydrator extends AbstractHydrator
 
         // 2) Now hydrate the data found in the current row.
         foreach ($rowData['data'] as $dqlAlias => $data) {
+            // build enums if exists
+            $this->processEnums($dqlAlias, $data);
+
             $index = false;
 
             if (isset($this->resultSetMapping()->parentAliasMap[$dqlAlias])) {
@@ -268,5 +278,29 @@ class ArrayHydrator extends AbstractHydrator
         }
 
         $this->_resultPointers[$dqlAlias] =& $coll[array_key_last($coll)];
+    }
+
+    /** @param mixed[] $data */
+    private function processEnums(string $dqlAlias, array &$data): void
+    {
+        // init cache
+        if (! isset($this->_enumCache[$dqlAlias])) {
+            $this->_enumCache[$dqlAlias] = [];
+
+            $className     = $this->resultSetMapping()->aliasMap[$dqlAlias];
+            $classMetadata = $this->getClassMetadata($className);
+
+            foreach ($classMetadata->fieldMappings as $key => $fieldMapping) {
+                if (isset($fieldMapping['enumType'])) {
+                    $this->_enumCache[$dqlAlias][$key] = $fieldMapping['enumType'];
+                }
+            }
+        }
+
+        foreach ($data as $key => $value) {
+            if (isset($this->_enumCache[$dqlAlias][$key]) && $value !== null) {
+                $data[$key] = $this->buildEnum($value, $this->_enumCache[$dqlAlias][$key]);
+            }
+        }
     }
 }

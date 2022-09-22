@@ -10,6 +10,8 @@ use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\Enums\Card;
+use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Forum\ForumBoard;
 use Doctrine\Tests\Models\Forum\ForumCategory;
 
@@ -1215,5 +1217,76 @@ class ArrayHydratorTest extends HydrationTestCase
 
         self::assertArrayHasKey(2, $result);
         self::assertEquals(2, $result[2][$userEntityKey]['id']);
+    }
+
+    /** @requires PHP 8.1 */
+    public function testArrayResultWithEnumField(): void
+    {
+        $rsm = new ResultSetMapping();
+
+        $rsm->addEntityResult(Card::class, 'c');
+        $rsm->addFieldResult('c', 'c__id', 'id');
+        $rsm->addFieldResult('c', 'c__suit', 'suit');
+        $rsm->addIndexBy('c', 'id');
+
+        // Faked result set
+        $resultSet = [
+            //row1
+            [
+                'c__id' => '1',
+                'c__suit' => 'H',
+            ],
+            [
+                'c__id' => '2',
+                'c__suit' => 'D',
+            ],
+        ];
+
+        $stmt     = $this->createResultMock($resultSet);
+        $hydrator = new ArrayHydrator($this->entityManager);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+
+        self::assertCount(2, $result);
+
+        self::assertEquals(1, $result[1]['id']);
+        self::assertEquals(Suit::Hearts, $result[1]['suit']);
+
+        self::assertEquals(2, $result[2]['id']);
+        self::assertEquals(Suit::Diamonds, $result[2]['suit']);
+    }
+
+    /** @requires PHP 8.1 */
+    public function testScalarResultWithEnumField(): void
+    {
+        $rsm = new ResultSetMapping();
+
+        $rsm->addEntityResult(Card::class, 'c');
+        $rsm->addScalarResult('c__suit', 'someAlias', 'string');
+        $rsm->addEnumResult('c__suit', Suit::class);
+
+        // Faked result set
+        $resultSet = [
+            //row1
+            [
+                'c__id' => '1',
+                'c__suit' => 'C',
+            ],
+            [
+                'c__id' => '2',
+                'c__suit' => 'S',
+            ],
+        ];
+
+        $stmt     = $this->createResultMock($resultSet);
+        $hydrator = new ArrayHydrator($this->entityManager);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+
+        self::assertCount(2, $result);
+
+        self::assertCount(1, $result[0]); //assert that in each result we have only one "someAlias" field
+        self::assertEquals(Suit::Clubs, $result[0]['someAlias']);
+
+        self::assertCount(1, $result[1]);
+        self::assertEquals(Suit::Spades, $result[1]['someAlias']);
     }
 }
