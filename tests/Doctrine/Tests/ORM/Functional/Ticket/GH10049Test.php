@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
+ * @requires PHP 8.1
  * @group GH-10049
  */
 class GH10049Test extends OrmFunctionalTestCase
