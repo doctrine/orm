@@ -20,13 +20,11 @@ use function sprintf;
 class PersisterHelper
 {
     /**
-     * @param string $fieldName
-     *
-     * @return array<int, string>
+     * @return list<string>
      *
      * @throws QueryException
      */
-    public static function getTypeOfField($fieldName, ClassMetadata $class, EntityManagerInterface $em)
+    public static function getTypeOfField(string $fieldName, ClassMetadata $class, EntityManagerInterface $em): array
     {
         if (isset($class->fieldMappings[$fieldName])) {
             return [$class->fieldMappings[$fieldName]['type']];
@@ -58,14 +56,8 @@ class PersisterHelper
         return $types;
     }
 
-    /**
-     * @param string $columnName
-     *
-     * @return string
-     *
-     * @throws RuntimeException
-     */
-    public static function getTypeOfColumn($columnName, ClassMetadata $class, EntityManagerInterface $em)
+    /** @throws RuntimeException */
+    public static function getTypeOfColumn(string $columnName, ClassMetadata $class, EntityManagerInterface $em): string
     {
         if (isset($class->fieldNames[$columnName])) {
             $fieldName = $class->fieldNames[$columnName];
