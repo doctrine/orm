@@ -8,6 +8,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception\DriverException;
+use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use UnexpectedValueException;
@@ -98,7 +99,11 @@ class TestUtil
                 $testConn->executeStatement($stmt);
             }
         } else {
-            $dbname = $testConnParams['dbname'] ?? $testConn->getDatabase();
+            if ($platform instanceof OraclePlatform) {
+                $dbname = $testConnParams['user'];
+            } else {
+                $dbname = $testConnParams['dbname'] ?? $testConn->getDatabase();
+            }
             $testConn->close();
 
             if ($dbname !== null) {
