@@ -76,10 +76,12 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
             $this->parentProperty->setValue($object, $embeddedObject);
         }
 
-        if ($this->childProperty->isReadOnly()) {
+        $declaringClass =  $this->childProperty->getDeclaringClass();
+
+        if ($this->childProperty->isReadOnly() && $declaringClass->getName() !== $this->embeddedClass) {
             // changing a read-only property is not allowed to do so we are changing the scope to the declaring class
-            $class = $this->childProperty->getDeclaringClass();
-            $class->getProperty($this->childProperty->getName())->setValue($embeddedObject, $value);
+            $scopedChildProperty = $declaringClass->getProperty($this->childProperty->getName());
+            $scopedChildProperty->setValue($embeddedObject, $value);
         } else {
             $this->childProperty->setValue($embeddedObject, $value);
         }

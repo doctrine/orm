@@ -40,7 +40,7 @@ class GH10049Test extends OrmFunctionalTestCase
 
     public function testIssue(): void
     {
-        $id = "b";
+        $id = 'b';
 
         $book = new GH10049Book(new GH10049BookId($id));
 
@@ -69,7 +69,7 @@ abstract class GH10049AggregatedRootId
 
     public function __construct(?string $value = null)
     {
-        $this->value = $value ?? "a";
+        $this->value = $value ?? 'a';
     }
 
     public function __toString()
@@ -90,9 +90,7 @@ final class GH10049BookId extends GH10049AggregatedRootId
  */
 class GH10049Book
 {
-    /**
-     * @Embedded(columnPrefix=false)
-     */
+    /** @Embedded(columnPrefix=false) */
     public readonly GH10049BookId $id;
 
     public function __construct(?GH10049BookId $id = null)
