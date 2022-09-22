@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -111,6 +112,63 @@ final class QueryIterableTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery('select a from ' . CmsArticle::class . ' a INDEX BY a.topic');
+        IterableTester::assertResultsAreTheSame($query);
+    }
+
+    public function testIterableWithMultipleSelectElements(): void
+    {
+        $tag       = new CmsTag();
+        $tag->name = 'Symfony 2';
+
+        $article        = new CmsArticle();
+        $article->topic = 'Doctrine 2';
+        $article->text  = 'This is an introduction to Doctrine 2.';
+
+        $this->_em->persist($tag);
+        $this->_em->persist($article);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery('SELECT a, t FROM ' . CmsArticle::class . ' a, ' . CmsTag::class . ' t');
+        IterableTester::assertResultsAreTheSame($query);
+    }
+
+    public function testIterableWithMultipleJoinedSelectElements(): void
+    {
+        $tag1       = new CmsTag();
+        $tag1->name = 'Doctrine 2';
+
+        $tag2       = new CmsTag();
+        $tag2->name = 'Laminas';
+
+        $article1        = new CmsArticle();
+        $article1->topic = 'Doctrine 2';
+        $article1->text  = 'This is an introduction to Doctrine 2.';
+
+        $article2        = new CmsArticle();
+        $article2->topic = 'Doctrine 2';
+        $article2->text  = 'This is an advanced guide to Doctrine 2.';
+
+        $article3        = new CmsArticle();
+        $article3->topic = 'Laminas';
+        $article3->text  = 'This is an introduction to Laminas.';
+
+        $article4        = new CmsArticle();
+        $article4->topic = 'Laminas';
+        $article4->text  = 'This is an advanced guide to Laminas.';
+
+        $this->_em->persist($tag1);
+        $this->_em->persist($tag2);
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+        $this->_em->persist($article3);
+        $this->_em->persist($article4);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery('SELECT a, t FROM ' . CmsArticle::class . ' a JOIN ' . CmsTag::class . ' t WITH a.topic = t.name');
         IterableTester::assertResultsAreTheSame($query);
     }
 }
