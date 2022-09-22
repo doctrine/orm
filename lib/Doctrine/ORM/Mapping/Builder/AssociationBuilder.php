@@ -9,43 +9,27 @@ use InvalidArgumentException;
 
 class AssociationBuilder
 {
-    /** @var ClassMetadataBuilder */
-    protected $builder;
-
-    /** @var mixed[] */
-    protected $mapping;
-
     /** @var mixed[]|null */
-    protected $joinColumns;
+    protected array|null $joinColumns = null;
 
-    /**
-     * @param mixed[] $mapping
-     * @param int     $type
-     */
-    public function __construct(ClassMetadataBuilder $builder, array $mapping, protected $type)
-    {
-        $this->builder = $builder;
-        $this->mapping = $mapping;
+    /** @param mixed[] $mapping */
+    public function __construct(
+        protected readonly ClassMetadataBuilder $builder,
+        protected array $mapping,
+        protected readonly int $type,
+    ) {
     }
 
-    /**
-     * @param string $fieldName
-     *
-     * @return $this
-     */
-    public function mappedBy($fieldName)
+    /** @return $this */
+    public function mappedBy(string $fieldName): static
     {
         $this->mapping['mappedBy'] = $fieldName;
 
         return $this;
     }
 
-    /**
-     * @param string $fieldName
-     *
-     * @return $this
-     */
-    public function inversedBy($fieldName)
+    /** @return $this */
+    public function inversedBy(string $fieldName): static
     {
         $this->mapping['inversedBy'] = $fieldName;
 
@@ -53,7 +37,7 @@ class AssociationBuilder
     }
 
     /** @return $this */
-    public function cascadeAll()
+    public function cascadeAll(): static
     {
         $this->mapping['cascade'] = ['ALL'];
 
@@ -61,7 +45,7 @@ class AssociationBuilder
     }
 
     /** @return $this */
-    public function cascadePersist()
+    public function cascadePersist(): static
     {
         $this->mapping['cascade'][] = 'persist';
 
@@ -69,7 +53,7 @@ class AssociationBuilder
     }
 
     /** @return $this */
-    public function cascadeRemove()
+    public function cascadeRemove(): static
     {
         $this->mapping['cascade'][] = 'remove';
 
@@ -77,7 +61,7 @@ class AssociationBuilder
     }
 
     /** @return $this */
-    public function cascadeMerge()
+    public function cascadeMerge(): static
     {
         $this->mapping['cascade'][] = 'merge';
 
@@ -85,7 +69,7 @@ class AssociationBuilder
     }
 
     /** @return $this */
-    public function cascadeDetach()
+    public function cascadeDetach(): static
     {
         $this->mapping['cascade'][] = 'detach';
 
@@ -93,7 +77,7 @@ class AssociationBuilder
     }
 
     /** @return $this */
-    public function cascadeRefresh()
+    public function cascadeRefresh(): static
     {
         $this->mapping['cascade'][] = 'refresh';
 
@@ -101,7 +85,7 @@ class AssociationBuilder
     }
 
     /** @return $this */
-    public function fetchExtraLazy()
+    public function fetchExtraLazy(): static
     {
         $this->mapping['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
 
@@ -109,7 +93,7 @@ class AssociationBuilder
     }
 
     /** @return $this */
-    public function fetchEager()
+    public function fetchEager(): static
     {
         $this->mapping['fetch'] = ClassMetadata::FETCH_EAGER;
 
@@ -117,7 +101,7 @@ class AssociationBuilder
     }
 
     /** @return $this */
-    public function fetchLazy()
+    public function fetchLazy(): static
     {
         $this->mapping['fetch'] = ClassMetadata::FETCH_LAZY;
 
@@ -127,17 +111,16 @@ class AssociationBuilder
     /**
      * Add Join Columns.
      *
-     * @param string      $columnName
-     * @param string      $referencedColumnName
-     * @param bool        $nullable
-     * @param bool        $unique
-     * @param string|null $onDelete
-     * @param string|null $columnDef
-     *
      * @return $this
      */
-    public function addJoinColumn($columnName, $referencedColumnName, $nullable = true, $unique = false, $onDelete = null, $columnDef = null)
-    {
+    public function addJoinColumn(
+        string $columnName,
+        string $referencedColumnName,
+        bool $nullable = true,
+        bool $unique = false,
+        string|null $onDelete = null,
+        string|null $columnDef = null,
+    ): static {
         $this->joinColumns[] = [
             'name' => $columnName,
             'referencedColumnName' => $referencedColumnName,
@@ -155,7 +138,7 @@ class AssociationBuilder
      *
      * @return $this
      */
-    public function makePrimaryKey()
+    public function makePrimaryKey(): static
     {
         $this->mapping['id'] = true;
 
@@ -167,19 +150,15 @@ class AssociationBuilder
      *
      * @return $this
      */
-    public function orphanRemoval()
+    public function orphanRemoval(): static
     {
         $this->mapping['orphanRemoval'] = true;
 
         return $this;
     }
 
-    /**
-     * @return ClassMetadataBuilder
-     *
-     * @throws InvalidArgumentException
-     */
-    public function build()
+    /** @throws InvalidArgumentException */
+    public function build(): ClassMetadataBuilder
     {
         $mapping = $this->mapping;
         if ($this->joinColumns) {
