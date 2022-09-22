@@ -692,7 +692,7 @@ abstract class AbstractHydrator
      *
      * @return BackedEnum|array<BackedEnum>
      */
-    protected function buildEnum($value, string $enumType)
+    private function buildEnum($value, string $enumType)
     {
         if (is_array($value)) {
             return array_map(static function ($value) use ($enumType): BackedEnum {
