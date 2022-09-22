@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -78,7 +78,7 @@ class DDC1734Test extends OrmFunctionalTestCase
     }
 
     /** @param object $object */
-    private function getProxy($object): \Doctrine\Common\Proxy\Proxy
+    private function getProxy($object): Proxy
     {
         $metadataFactory = $this->_em->getMetadataFactory();
         $className       = get_class($object);

@@ -13,7 +13,6 @@ use Doctrine\Common\Cache\Cache as CacheDriver;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Persistence\PersistentObject;
-use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\Exception\CacheException;
@@ -92,18 +91,18 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the strategy for automatically generating proxy classes.
      *
-     * @return int Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     * @return int Possible values are constants of Doctrine\ORM\Proxy\ProxyFactory.
      * @psalm-return AutogenerateMode
      */
     public function getAutoGenerateProxyClasses()
     {
-        return $this->_attributes['autoGenerateProxyClasses'] ?? AbstractProxyFactory::AUTOGENERATE_ALWAYS;
+        return $this->_attributes['autoGenerateProxyClasses'] ?? ProxyFactory::AUTOGENERATE_ALWAYS;
     }
 
     /**
      * Sets the strategy for automatically generating proxy classes.
      *
-     * @param bool|int $autoGenerate Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     * @param bool|int $autoGenerate Possible values are constants of Doctrine\ORM\Proxy\ProxyFactory.
      * @psalm-param bool|AutogenerateMode $autoGenerate
      * True is converted to AUTOGENERATE_ALWAYS, false to AUTOGENERATE_NEVER.
      *
@@ -572,7 +571,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
             throw QueryCacheUsesNonPersistentCache::fromDriver($queryCacheImpl);
         }
 
-        if ($this->getAutoGenerateProxyClasses() !== AbstractProxyFactory::AUTOGENERATE_NEVER) {
+        if ($this->getAutoGenerateProxyClasses() !== ProxyFactory::AUTOGENERATE_NEVER) {
             throw ProxyClassesAlwaysRegenerating::create();
         }
 

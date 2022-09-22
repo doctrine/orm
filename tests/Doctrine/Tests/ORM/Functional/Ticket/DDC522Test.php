@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function get_class;
@@ -65,7 +65,7 @@ class DDC522Test extends OrmFunctionalTestCase
         $fkt2 = $this->_em->find(get_class($fkt), $fkt->id);
         self::assertEquals($fkt->cart->id, $fkt2->cartId);
         self::assertInstanceOf(Proxy::class, $fkt2->cart);
-        self::assertFalse($fkt2->cart->__isInitialized__);
+        self::assertFalse($fkt2->cart->__isInitialized());
     }
 
     /**

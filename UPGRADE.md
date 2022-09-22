@@ -1,3 +1,9 @@
+# Upgrade to 2.14
+
+## Deprecated `Doctrine\ORM\Proxy\Proxy` interface.
+
+Use `Doctrine\Persistence\Proxy` instead to check whether proxies are initialized.
+
 # Upgrade to 2.13
 
 ## Deprecated `QueryBuilder` methods and constants.

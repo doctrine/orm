@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Performance\LazyLoading;
 
-use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Models\CMS\CmsEmployee;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -13,7 +13,7 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 /** @BeforeMethods({"init"}) */
 final class ProxyInstantiationTimeBench
 {
-    /** @var AbstractProxyFactory */
+    /** @var ProxyFactory */
     private $proxyFactory;
 
     public function init(): void

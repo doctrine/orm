@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function get_class;
@@ -50,7 +50,7 @@ class DDC237Test extends OrmFunctionalTestCase
 
         $x2 = $this->_em->find(get_class($x), $x->id); // proxy injected for Y
         self::assertInstanceOf(Proxy::class, $x2->y);
-        self::assertFalse($x2->y->__isInitialized__);
+        self::assertFalse($x2->y->__isInitialized());
 
         // proxy for Y is in identity map
 
@@ -58,7 +58,7 @@ class DDC237Test extends OrmFunctionalTestCase
                 ->setParameter(1, $z->id)
                 ->getSingleResult();
         self::assertInstanceOf(Proxy::class, $z2->y);
-        self::assertTrue($z2->y->__isInitialized__);
+        self::assertTrue($z2->y->__isInitialized());
         self::assertEquals('Y', $z2->y->data);
         self::assertEquals($y->id, $z2->y->id);
 

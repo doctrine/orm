@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\Persistence\Proxy;
 
 use function array_fill_keys;
 use function array_keys;

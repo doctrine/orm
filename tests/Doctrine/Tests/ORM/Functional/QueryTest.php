@@ -8,11 +8,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnexpectedResultException;
+use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
@@ -593,7 +593,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertInstanceOf(CmsArticle::class, $result[0]);
         self::assertEquals('dr. dolittle', $result[0]->topic);
         self::assertInstanceOf(Proxy::class, $result[0]->user);
-        self::assertFalse($result[0]->user->__isInitialized__);
+        self::assertFalse($result[0]->user->__isInitialized());
     }
 
     /** @group DDC-952 */
