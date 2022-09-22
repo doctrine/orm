@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\MappingException;
@@ -81,6 +82,27 @@ class EnumTest extends OrmFunctionalTestCase
             ->select('c.id, c.suit')
             ->getQuery()
             ->getResult();
+
+        $this->assertInstanceOf(Suit::class, $result[0]['suit']);
+        $this->assertEquals(Suit::Clubs, $result[0]['suit']);
+    }
+
+    public function testEnumHydrationArrayHydrator(): void
+    {
+        $this->setUpEntitySchema([Card::class, CardWithNullable::class]);
+
+        $card       = new Card();
+        $card->suit = Suit::Clubs;
+
+        $this->_em->persist($card);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(Card::class, 'c')
+            ->select('c')
+            ->getQuery()
+            ->getResult(AbstractQuery::HYDRATE_ARRAY);
 
         $this->assertInstanceOf(Suit::class, $result[0]['suit']);
         $this->assertEquals(Suit::Clubs, $result[0]['suit']);
