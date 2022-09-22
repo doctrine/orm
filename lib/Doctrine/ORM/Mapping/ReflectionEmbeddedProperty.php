@@ -8,6 +8,9 @@ use Doctrine\Instantiator\Instantiator;
 use ReflectionProperty;
 use ReturnTypeWillChange;
 
+use function method_exists;
+use function var_dump;
+
 /**
  * Acts as a proxy to a nested Property structure, making it look like
  * just a single scalar property.
@@ -76,14 +79,17 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
             $this->parentProperty->setValue($object, $embeddedObject);
         }
 
-        $declaringClass =  $this->childProperty->getDeclaringClass();
+        if (method_exists($this->childProperty, 'isReadOnly')) {
+            $declaringClass =  $this->childProperty->getDeclaringClass();
 
-        if ($this->childProperty->isReadOnly() && $declaringClass->getName() !== $this->embeddedClass) {
-            // changing a read-only property is not allowed to do so we are changing the scope to the declaring class
-            $scopedChildProperty = $declaringClass->getProperty($this->childProperty->getName());
-            $scopedChildProperty->setValue($embeddedObject, $value);
-        } else {
-            $this->childProperty->setValue($embeddedObject, $value);
+            if ($this->childProperty->isReadOnly() && $declaringClass->getName() !== $this->embeddedClass) {
+                $scopedChildProperty = $declaringClass->getProperty($this->childProperty->getName());
+                $scopedChildProperty->setValue($embeddedObject, $value);
+
+                return;
+            }
         }
+
+        $this->childProperty->setValue($embeddedObject, $value);
     }
 }

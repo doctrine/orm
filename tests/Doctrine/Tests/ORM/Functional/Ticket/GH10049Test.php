@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\Embeddable;
-use Doctrine\ORM\Mapping\Embedded;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -19,6 +14,8 @@ class GH10049Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
+        require_once __DIR__ . '/GH10049Mocks.php';
+
         parent::setUp();
 
         $this->_schemaTool->createSchema(
@@ -56,46 +53,7 @@ class GH10049Test extends OrmFunctionalTestCase
 
         // assert Book was persisted and could be hydrated
         self::assertInstanceOf(GH10049Book::class, $persistedBook);
+        self::assertInstanceOf(GH10049BookId::class, $persistedBook->id);
         self::assertEquals($id, $persistedBook->id->value);
-    }
-}
-
-abstract class GH10049AggregatedRootId
-{
-    /**
-     * @Id
-     * @Column(name="id", type="string")
-     */
-    public readonly string $value;
-
-    public function __construct(?string $value = null)
-    {
-        $this->value = $value ?? 'a';
-    }
-
-    public function __toString()
-    {
-        return $this->value;
-    }
-}
-
-/**
- * @Embeddable
- */
-final class GH10049BookId extends GH10049AggregatedRootId
-{
-}
-
-/**
- * @Entity
- */
-class GH10049Book
-{
-    /** @Embedded(columnPrefix=false) */
-    public readonly GH10049BookId $id;
-
-    public function __construct(?GH10049BookId $id = null)
-    {
-        $this->id = $id ?? new GH10049BookId();
     }
 }
