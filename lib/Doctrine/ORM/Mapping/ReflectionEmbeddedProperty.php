@@ -9,7 +9,6 @@ use ReflectionProperty;
 use ReturnTypeWillChange;
 
 use function method_exists;
-use function var_dump;
 
 /**
  * Acts as a proxy to a nested Property structure, making it look like

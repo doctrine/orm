@@ -26,11 +26,6 @@ abstract class GH10049AggregatedRootId
     {
         $this->value = $value ?? 'a';
     }
-
-    public function __toString()
-    {
-        return $this->value;
-    }
 }
 
 /**
