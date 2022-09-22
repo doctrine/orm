@@ -104,6 +104,7 @@ class TestUtil
             } else {
                 $dbname = $testConnParams['dbname'] ?? $testConn->getDatabase();
             }
+
             $testConn->close();
 
             if ($dbname !== null) {

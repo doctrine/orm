@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function strtolower;
+use function array_map;
 
 /** @group DDC-192 */
 class DDC192Test extends OrmFunctionalTestCase
