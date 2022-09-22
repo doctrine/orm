@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 
 /**
- * This file is required to be in a separate file to allow using PHP 8.1 features which will otherwise break tests against PHP 8.0 or lower
+ * This is required to be in a separate file to allow using PHP 8.1 features which will otherwise break tests against PHP 8.0 or lower
  */
 
 abstract class GH10049AggregatedRootId
