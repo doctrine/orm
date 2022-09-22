@@ -464,6 +464,10 @@ abstract class AbstractHydrator
                         break;
                     }
 
+                    if ($value !== null && isset($cacheKeyInfo['enumType'])) {
+                        $value = $this->buildEnum($value, $cacheKeyInfo['enumType']);
+                    }
+
                     $rowData['data'][$dqlAlias][$fieldName] = $type
                         ? $type->convertToPHPValue($value, $this->_platform)
                         : $value;
@@ -547,6 +551,7 @@ abstract class AbstractHydrator
                     'fieldName'    => $fieldName,
                     'type'         => Type::getType($fieldMapping['type']),
                     'dqlAlias'     => $ownerMap,
+                    'enumType'     => $this->_rsm->enumMappings[$key] ?? null,
                 ];
 
                 // the current discriminator value must be saved in order to disambiguate fields hydration,
