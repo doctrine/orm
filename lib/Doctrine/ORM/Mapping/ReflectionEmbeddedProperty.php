@@ -10,6 +10,8 @@ use ReturnTypeWillChange;
 
 use function method_exists;
 
+use const PHP_VERSION_ID;
+
 /**
  * Acts as a proxy to a nested Property structure, making it look like
  * just a single scalar property.
@@ -78,7 +80,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
             $this->parentProperty->setValue($object, $embeddedObject);
         }
 
-        if (method_exists($this->childProperty, 'isReadOnly')) {
+        if (PHP_VERSION_ID >= 80100) {
             $declaringClass =  $this->childProperty->getDeclaringClass();
 
             if ($this->childProperty->isReadOnly() && $declaringClass->getName() !== $this->embeddedClass) {
