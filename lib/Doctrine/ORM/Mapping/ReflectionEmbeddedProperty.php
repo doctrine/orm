@@ -8,8 +8,6 @@ use Doctrine\Instantiator\Instantiator;
 use ReflectionProperty;
 use ReturnTypeWillChange;
 
-use function method_exists;
-
 use const PHP_VERSION_ID;
 
 /**
