@@ -139,6 +139,34 @@ class EnumTest extends OrmFunctionalTestCase
         $this->assertEquals(Suit::Clubs, $result[0]['suit']);
     }
 
+    public function testEnumChangeSets(): void
+    {
+        $this->setUpEntitySchema([Card::class, CardWithNullable::class]);
+
+        $card       = new Card();
+        $card->suit = Suit::Clubs;
+
+        $this->_em->persist($card);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $validResult = $this->_em->find(Card::class, $card->id);
+        $this->_em->getUnitOfWork()->computeChangeSets();
+        $isScheduledForUpdate = $this->_em->getUnitOfWork()->isScheduledForUpdate($validResult);
+        self::assertFalse($isScheduledForUpdate);
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(Card::class, 'c')
+            ->select('c')
+            ->getQuery()
+            ->getResult();
+
+        $this->_em->getUnitOfWork()->computeChangeSets();
+        $isScheduledForUpdate = $this->_em->getUnitOfWork()->isScheduledForUpdate($result[0]);
+        self::assertFalse($isScheduledForUpdate, 'this should be false, but there is enum change sets');
+    }
+
     public function testEnumHydrationArrayHydrator(): void
     {
         $this->setUpEntitySchema([Card::class, CardWithNullable::class]);
