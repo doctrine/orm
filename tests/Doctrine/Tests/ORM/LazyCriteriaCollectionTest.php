@@ -49,6 +49,11 @@ class LazyCriteriaCollectionTest extends TestCase
         self::assertSame(0, $this->lazyCriteriaCollection->count());
     }
 
+    public function testItDoesNotContainIntegers(): void
+    {
+        self::assertFalse($this->lazyCriteriaCollection->contains(42));
+    }
+
     public function testCountUsesWrappedCollectionWhenInitialized(): void
     {
         $this

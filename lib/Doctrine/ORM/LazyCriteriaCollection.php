@@ -12,6 +12,7 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use ReturnTypeWillChange;
 
 use function assert;
+use function is_object;
 
 /**
  * A lazy collection that allows a fast count when using criteria object
@@ -78,13 +79,14 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
     /**
      * Do an optimized search of an element
      *
-     * @param object $element
-     * @psalm-param TValue $element
-     *
-     * @return bool
+     * {@inheritDoc}
      */
     public function contains($element)
     {
+        if (! is_object($element)) {
+            return false;
+        }
+
         if ($this->isInitialized()) {
             return $this->collection->contains($element);
         }
