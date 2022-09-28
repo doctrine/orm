@@ -174,16 +174,18 @@ class OneToManyPersister extends AbstractCollectionPersister
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
         $columns     = [];
         $parameters  = [];
+        $types       = [];
 
         foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] as $joinColumn) {
             $columns[]    = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
             $parameters[] = $identifier[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])];
+            $types[]      = PersisterHelper::getTypeOfField($sourceClass->getFieldForColumn($joinColumn['referencedColumnName']), $sourceClass, $this->em);
         }
 
         $statement = 'DELETE FROM ' . $this->quoteStrategy->getTableName($targetClass, $this->platform)
             . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
 
-        return $this->conn->executeStatement($statement, $parameters);
+        return $this->conn->executeStatement($statement, $parameters, array_merge(...$types));
     }
 
     /**
