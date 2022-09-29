@@ -464,13 +464,13 @@ abstract class AbstractHydrator
                         break;
                     }
 
-                    if ($value !== null && isset($cacheKeyInfo['enumType'])) {
-                        $value = $this->buildEnum($value, $cacheKeyInfo['enumType']);
-                    }
-
                     $rowData['data'][$dqlAlias][$fieldName] = $type
                         ? $type->convertToPHPValue($value, $this->_platform)
                         : $value;
+
+                    if ($rowData['data'][$dqlAlias][$fieldName] !== null && isset($cacheKeyInfo['enumType'])) {
+                        $rowData['data'][$dqlAlias][$fieldName] = $this->buildEnum($rowData['data'][$dqlAlias][$fieldName], $cacheKeyInfo['enumType']);
+                    }
 
                     if ($cacheKeyInfo['isIdentifier'] && $value !== null) {
                         $id[$dqlAlias]                .= '|' . $value;
