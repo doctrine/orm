@@ -92,6 +92,8 @@
                 <!-- DBAL 3.2 forward compatibility -->
                 <file name="lib/Doctrine/ORM/Tools/Pagination/CountOutputWalker.php"/>
                 <file name="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php"/>
+                <!-- https://github.com/vimeo/psalm/issues/8520 -->
+                <file name="lib/Doctrine/ORM/PersistentCollection.php"/>
             </errorLevel>
         </DocblockTypeContradiction>
         <InvalidArgument>
