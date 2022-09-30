@@ -23,7 +23,7 @@ class SqlValueVisitor extends ExpressionVisitor
     /**
      * Converts a comparison expression into the target query language output.
      *
-     * @return void
+     * {@inheritDoc}
      */
     public function walkComparison(Comparison $comparison)
     {
@@ -32,35 +32,39 @@ class SqlValueVisitor extends ExpressionVisitor
         $operator = $comparison->getOperator();
 
         if (($operator === Comparison::EQ || $operator === Comparison::IS) && $value === null) {
-            return;
+            return null;
         } elseif ($operator === Comparison::NEQ && $value === null) {
-            return;
+            return null;
         }
 
         $this->values[] = $value;
         $this->types[]  = [$field, $value, $operator];
+
+        return null;
     }
 
     /**
      * Converts a composite expression into the target query language output.
      *
-     * @return void
+     * {@inheritDoc}
      */
     public function walkCompositeExpression(CompositeExpression $expr)
     {
         foreach ($expr->getExpressionList() as $child) {
             $this->dispatch($child);
         }
+
+        return null;
     }
 
     /**
      * Converts a value expression into the target query language part.
      *
-     * @return void
+     * {@inheritDoc}
      */
     public function walkValue(Value $value)
     {
-        return;
+        return null;
     }
 
     /**

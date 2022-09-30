@@ -48,8 +48,8 @@ final class ReflectionEnumProperty extends ReflectionProperty
     }
 
     /**
-     * @param object                         $object
-     * @param int|string|int[]|string[]|null $value
+     * @param object                                                 $object
+     * @param int|string|int[]|string[]|BackedEnum|BackedEnum[]|null $value
      */
     public function setValue(mixed $object, mixed $value = null): void
     {
@@ -66,8 +66,12 @@ final class ReflectionEnumProperty extends ReflectionProperty
         $this->originalReflectionProperty->setValue($object, $value);
     }
 
-    private function initializeEnumValue(object $object, int|string $value): BackedEnum
+    private function initializeEnumValue(object $object, int|string|BackedEnum $value): BackedEnum
     {
+        if ($value instanceof BackedEnum) {
+            return $value;
+        }
+
         $enumType = $this->enumType;
 
         try {
