@@ -64,6 +64,58 @@ class EnumTest extends OrmFunctionalTestCase
         $this->assertEquals(Suit::Clubs, $fetchedCard->suit);
     }
 
+    public function testEnumHydrationObjectHydrator(): void
+    {
+        $this->setUpEntitySchema([Card::class]);
+
+        $card1       = new Card();
+        $card1->suit = Suit::Clubs;
+        $card2       = new Card();
+        $card2->suit = Suit::Hearts;
+
+        $this->_em->persist($card1);
+        $this->_em->persist($card2);
+        $this->_em->flush();
+
+        unset($card1, $card2);
+        $this->_em->clear();
+
+        /** @var list<Card> $foundCards */
+        $foundCards = $this->_em->createQueryBuilder()
+            ->select('c')
+            ->from(Card::class, 'c')
+            ->where('c.suit = :suit')
+            ->setParameter('suit', Suit::Clubs)
+            ->getQuery()
+            ->getResult();
+
+        self::assertNotEmpty($foundCards);
+        foreach ($foundCards as $card) {
+            self::assertSame(Suit::Clubs, $card->suit);
+        }
+    }
+
+    public function testEnumArrayHydrationObjectHydrator(): void
+    {
+        $this->setUpEntitySchema([Scale::class]);
+
+        $scale                 = new Scale();
+        $scale->supportedUnits = [Unit::Gram, Unit::Meter];
+
+        $this->_em->persist($scale);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(Scale::class, 's')
+            ->select('s')
+            ->getQuery()
+            ->getResult();
+
+        self::assertInstanceOf(Scale::class, $result[0]);
+        self::assertEqualsCanonicalizing([Unit::Gram, Unit::Meter], $result[0]->supportedUnits);
+    }
+
     public function testEnumHydration(): void
     {
         $this->setUpEntitySchema([Card::class, CardWithNullable::class]);

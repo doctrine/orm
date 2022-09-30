@@ -391,6 +391,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
     /**
      * {@inheritdoc}
+     *
+     * @template TMaybeContained
      */
     public function contains($element): bool
     {
