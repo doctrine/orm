@@ -12,6 +12,8 @@ use Doctrine\Persistence\Event\LifecycleEventArgs as BaseLifecycleEventArgs;
  * Lifecycle Events are triggered by the UnitOfWork during lifecycle transitions
  * of entities.
  *
+ * @deprecated This class will be removed in ORM 3.0. Use one of the dedicated classes instead.
+ *
  * @extends BaseLifecycleEventArgs<EntityManagerInterface>
  */
 class LifecycleEventArgs extends BaseLifecycleEventArgs

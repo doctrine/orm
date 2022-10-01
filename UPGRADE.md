@@ -4,6 +4,18 @@
 
 Use `Doctrine\Persistence\Proxy` instead to check whether proxies are initialized.
 
+## Deprecated `Doctrine\ORM\Event\LifecycleEventArgs` class.
+
+It will be removed in 3.0. Use one of the dedicated event classes instead:
+
+* `Doctrine\ORM\Event\PrePersistEventArgs`
+* `Doctrine\ORM\Event\PreUpdateEventArgs`
+* `Doctrine\ORM\Event\PreRemoveEventArgs`
+* `Doctrine\ORM\Event\PostPersistEventArgs`
+* `Doctrine\ORM\Event\PostUpdateEventArgs`
+* `Doctrine\ORM\Event\PostRemoveEventArgs`
+* `Doctrine\ORM\Event\PostLoadEventArgs`
+
 # Upgrade to 2.13
 
 ## Deprecated `QueryBuilder` methods and constants.
