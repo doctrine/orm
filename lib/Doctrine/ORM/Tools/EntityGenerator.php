@@ -527,7 +527,7 @@ public function __construct(<params>)
      * Sets the class fields visibility for the entity (can either be private or protected).
      *
      * @param string $visibility
-     * @psalm-param self::FIELD_VISIBLE_*
+     * @psalm-param self::FIELD_VISIBLE_* $visibility
      *
      * @return void
      *
