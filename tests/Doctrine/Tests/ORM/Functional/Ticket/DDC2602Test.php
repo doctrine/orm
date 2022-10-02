@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostLoadEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -121,7 +121,7 @@ class DDC2602Test extends OrmFunctionalTestCase
 
 class DDC2602PostLoadListener
 {
-    public function postLoad(LifecycleEventArgs $event): void
+    public function postLoad(PostLoadEventArgs $event): void
     {
         $entity = $event->getObject();
 

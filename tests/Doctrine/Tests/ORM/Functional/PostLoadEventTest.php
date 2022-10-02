@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostLoadEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
@@ -265,7 +265,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
 class PostLoadListener
 {
-    public function postLoad(LifecycleEventArgs $event): void
+    public function postLoad(PostLoadEventArgs $event): void
     {
         // Expected to be mocked out
         echo 'Should never be called!';
@@ -280,7 +280,7 @@ class PostLoadListenerCheckAssociationsArePopulated
     /** @var bool */
     public $populated = false;
 
-    public function postLoad(LifecycleEventArgs $event): void
+    public function postLoad(PostLoadEventArgs $event): void
     {
         $object = $event->getObject();
         if ($object instanceof CmsUser) {
@@ -299,7 +299,7 @@ class PostLoadListenerLoadEntityInEventHandler
     /** @psalm-var array<class-string, int> */
     private $firedByClasses = [];
 
-    public function postLoad(LifecycleEventArgs $event): void
+    public function postLoad(PostLoadEventArgs $event): void
     {
         $object = $event->getObject();
         $class  = ClassUtils::getClass($object);

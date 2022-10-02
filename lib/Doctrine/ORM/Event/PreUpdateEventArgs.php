@@ -12,7 +12,7 @@ use function get_debug_type;
 use function sprintf;
 
 /**
- * Class that holds event arguments for a preInsert/preUpdate event.
+ * Class that holds event arguments for a preUpdate event.
  */
 class PreUpdateEventArgs extends LifecycleEventArgs
 {

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Internal;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
+use Doctrine\ORM\Event\PostLoadEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
@@ -67,7 +67,7 @@ final class HydrationCompleteHandler
                 $class,
                 Events::postLoad,
                 $entity,
-                new LifecycleEventArgs($entity, $this->em),
+                new PostLoadEventArgs($entity, $this->em),
                 $invoke
             );
         }
