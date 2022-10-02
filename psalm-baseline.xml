@@ -500,7 +500,7 @@
     </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadata.php">
-    <PropertyNotSetInConstructor occurrences="5">
+    <PropertyNotSetInConstructor occurrences="4">
       <code>ClassMetadata</code>
       <code>ClassMetadata</code>
       <code>ClassMetadata</code>
@@ -525,10 +525,6 @@
       <code>addNamedNativeQuery</code>
       <code>addNamedQuery</code>
     </DeprecatedMethod>
-    <DocblockTypeContradiction occurrences="2">
-      <code>! $definition</code>
-      <code>$definition</code>
-    </DocblockTypeContradiction>
     <InvalidArrayOffset occurrences="1">
       <code>$subClass-&gt;table[$indexType][$indexName]</code>
     </InvalidArrayOffset>
@@ -661,10 +657,9 @@
       <code>$this-&gt;associationMappings[$idProperty]['joinColumns']</code>
       <code>$this-&gt;associationMappings[$idProperty]['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
-    <PropertyNotSetInConstructor occurrences="5">
+    <PropertyNotSetInConstructor occurrences="4">
       <code>$idGenerator</code>
       <code>$namespace</code>
-      <code>$sequenceGeneratorDefinition</code>
       <code>$table</code>
       <code>$tableGeneratorDefinition</code>
     </PropertyNotSetInConstructor>
@@ -2735,9 +2730,7 @@
       <code>(array) $metadata-&gt;table['options']</code>
       <code>(bool) $embeddablesImmutable</code>
     </RedundantCastGivenDocblockType>
-    <RedundantConditionGivenDocblockType occurrences="3">
-      <code>$metadata-&gt;sequenceGeneratorDefinition</code>
-      <code>$metadata-&gt;sequenceGeneratorDefinition</code>
+    <RedundantConditionGivenDocblockType occurrences="1">
       <code>isset($metadata-&gt;lifecycleCallbacks)</code>
     </RedundantConditionGivenDocblockType>
   </file>
@@ -2840,10 +2833,9 @@
       <code>$field['associationKey']</code>
       <code>isset($field['associationKey']) &amp;&amp; $field['associationKey']</code>
     </RedundantCondition>
-    <RedundantConditionGivenDocblockType occurrences="4">
+    <RedundantConditionGivenDocblockType occurrences="3">
       <code>$metadata-&gt;inheritanceType</code>
       <code>$metadata-&gt;inheritanceType</code>
-      <code>$sequenceDefinition</code>
       <code>isset($metadata-&gt;lifecycleCallbacks)</code>
     </RedundantConditionGivenDocblockType>
   </file>
