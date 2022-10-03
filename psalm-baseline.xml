@@ -2713,9 +2713,6 @@
     <DocblockTypeContradiction occurrences="1">
       <code>class_exists($metadata-&gt;name)</code>
     </DocblockTypeContradiction>
-    <InvalidDocblock occurrences="1">
-      <code>public function setFieldVisibility($visibility)</code>
-    </InvalidDocblock>
     <PossiblyFalseArgument occurrences="2">
       <code>$last</code>
       <code>strrpos($metadata-&gt;name, '\\')</code>
