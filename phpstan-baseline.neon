@@ -251,11 +251,6 @@ parameters:
 			path: lib/Doctrine/ORM/PersistentCollection.php
 
 		-
-			message: "#^Right side of && is always true\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/PersistentCollection.php
-
-		-
 			message: "#^Method Doctrine\\\\ORM\\\\Persisters\\\\Collection\\\\OneToManyPersister\\:\\:delete\\(\\) should return int\\|null but empty return statement found\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php

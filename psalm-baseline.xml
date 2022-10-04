@@ -1100,15 +1100,6 @@
       <code>setValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
-    <RedundantConditionGivenDocblockType occurrences="4">
-      <code>$this-&gt;em</code>
-      <code>$this-&gt;em</code>
-      <code>is_object($value) &amp;&amp; $this-&gt;em</code>
-      <code>is_object($value) &amp;&amp; $this-&gt;em</code>
-    </RedundantConditionGivenDocblockType>
-    <TooManyArguments occurrences="1">
-      <code>andX</code>
-    </TooManyArguments>
     <UndefinedInterfaceMethod occurrences="1">
       <code>matching</code>
     </UndefinedInterfaceMethod>
