@@ -1,5 +1,5 @@
 Separating Concerns using Embeddables
--------------------------------------
+=====================================
 
 Embeddables are classes which are not entities themselves, but are embedded
 in entities and can also be queried in DQL. You'll mostly want to use them
