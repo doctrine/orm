@@ -196,11 +196,6 @@ parameters:
 			path: lib/Doctrine/ORM/PersistentCollection.php
 
 		-
-			message: "#^Right side of && is always true\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/PersistentCollection.php
-
-		-
 			message: "#^Parameter \\#3 \\$hints of method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\AbstractHydrator\\:\\:hydrateAll\\(\\) expects array\\<string, string\\>, array\\<string, Doctrine\\\\ORM\\\\PersistentCollection\\|true\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php

@@ -23,6 +23,7 @@
                 <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand" />
                 <!-- Remove on 3.0.x -->
                 <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
+                <referencedClass name="Doctrine\ORM\Event\LifecycleEventArgs"/>
             </errorLevel>
         </DeprecatedClass>
         <DeprecatedMethod>

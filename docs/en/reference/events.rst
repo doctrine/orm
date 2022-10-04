@@ -144,20 +144,20 @@ Events Overview
 | Event                                                           | Dispatched by         | Lifecycle | Passed                              |
 |                                                                 |                       | Callback  | Argument                            |
 +=================================================================+=======================+===========+=====================================+
-| :ref:`preRemove<reference-events-pre-remove>`                   | ``$em->remove()``     | Yes       | `LifecycleEventArgs`_               |
+| :ref:`preRemove<reference-events-pre-remove>`                   | ``$em->remove()``     | Yes       | `PreRemoveEventArgs`_               |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`postRemove<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       | `LifecycleEventArgs`_               |
+| :ref:`postRemove<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       | `PostRemoveEventArgs`_              |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`prePersist<reference-events-pre-persist>`                 | ``$em->persist()``    | Yes       | `LifecycleEventArgs`_               |
+| :ref:`prePersist<reference-events-pre-persist>`                 | ``$em->persist()``    | Yes       | `PrePersistEventArgs`_              |
 |                                                                 | on *initial* persist  |           |                                     |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`postPersist<reference-events-post-update-remove-persist>` | ``$em->flush()``      | Yes       | `LifecycleEventArgs`_               |
+| :ref:`postPersist<reference-events-post-update-remove-persist>` | ``$em->flush()``      | Yes       | `PostPersistEventArgs`_             |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
 | :ref:`preUpdate<reference-events-pre-update>`                   | ``$em->flush()``      | Yes       | `PreUpdateEventArgs`_               |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`postUpdate<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       | `LifecycleEventArgs`_               |
+| :ref:`postUpdate<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       | `PostUpdateEventArgs`_              |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`postLoad<reference-events-post-load>`                     | Loading from database | Yes       | `LifecycleEventArgs`_               |
+| :ref:`postLoad<reference-events-post-load>`                     | Loading from database | Yes       | `PostLoadEventArgs`_                |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
 | :ref:`loadClassMetadata<reference-events-load-class-metadata>`  | Loading of mapping    | No        | `LoadClassMetadataEventArgs`_       |
 |                                                                 | metadata              |           |                                     |
@@ -214,7 +214,7 @@ specific to a particular entity class's lifecycle.
 
         <?php
         use Doctrine\DBAL\Types\Types;
-        use Doctrine\ORM\Event\LifecycleEventArgs;
+        use Doctrine\ORM\Event\PrePersistEventArgs;
 
         #[Entity]
         #[HasLifecycleCallbacks]
@@ -226,7 +226,7 @@ specific to a particular entity class's lifecycle.
             public $value;
 
             #[PrePersist]
-            public function doStuffOnPrePersist(LifecycleEventArgs $eventArgs)
+            public function doStuffOnPrePersist(PrePersistEventArgs $eventArgs)
             {
                 $this->createdAt = date('Y-m-d H:i:s');
             }
@@ -246,7 +246,7 @@ specific to a particular entity class's lifecycle.
     .. code-block:: annotation
 
         <?php
-        use Doctrine\Persistence\Event\LifecycleEventArgs;
+        use Doctrine\ORM\Event\PrePersistEventArgs;
 
         /**
          * @Entity
@@ -260,7 +260,7 @@ specific to a particular entity class's lifecycle.
             public $value;
 
             /** @PrePersist */
-            public function doStuffOnPrePersist(LifecycleEventArgs $eventArgs)
+            public function doStuffOnPrePersist(PrePersistEventArgs $eventArgs)
             {
                 $this->createdAt = date('Y-m-d H:i:s');
             }
@@ -342,11 +342,11 @@ A lifecycle event listener looks like the following:
 .. code-block:: php
 
     <?php
-    use Doctrine\Persistence\Event\LifecycleEventArgs;
+    use Doctrine\ORM\Event\PreUpdateEventArgs;
 
     class MyEventListener
     {
-        public function preUpdate(LifecycleEventArgs $args)
+        public function preUpdate(PreUpdateEventArgs $args)
         {
             $entity = $args->getObject();
             $entityManager = $args->getObjectManager();
@@ -363,9 +363,9 @@ A lifecycle event subscriber may look like this:
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Event\PostUpdateEventArgs;
     use Doctrine\ORM\Events;
     use Doctrine\EventSubscriber;
-    use Doctrine\Persistence\Event\LifecycleEventArgs;
 
     class MyEventSubscriber implements EventSubscriber
     {
@@ -376,7 +376,7 @@ A lifecycle event subscriber may look like this:
             );
         }
 
-        public function postUpdate(LifecycleEventArgs $args)
+        public function postUpdate(PostUpdateEventArgs $args)
         {
             $entity = $args->getObject();
             $entityManager = $args->getObjectManager();
@@ -450,7 +450,7 @@ this association is marked as :ref:`cascade: persist<transitive-persistence>`. A
 during this operation is also persisted and ``prePersist`` called
 on it. This is called :ref:`persistence by reachability<persistence-by-reachability>`.
 
-In both cases you get passed a ``LifecycleEventArgs`` instance
+In both cases you get passed a ``PrePersistEventArgs`` instance
 which has access to the entity and the entity manager.
 
 This event is only triggered on *initial* persist of an entity
@@ -812,35 +812,40 @@ you need to map the listener method using the event type mapping:
     .. code-block:: php
 
         <?php
-        use Doctrine\ORM\Event\PreUpdateEventArgs;
+        use Doctrine\ORM\Event\PostLoadEventArgs;
+        use Doctrine\ORM\Event\PostPersistEventArgs;
+        use Doctrine\ORM\Event\PostRemoveEventArgs;
+        use Doctrine\ORM\Event\PostUpdateEventArgs;
         use Doctrine\ORM\Event\PreFlushEventArgs;
-        use Doctrine\Persistence\Event\LifecycleEventArgs;
+        use Doctrine\ORM\Event\PrePersistEventArgs;
+        use Doctrine\ORM\Event\PreRemoveEventArgs;
+        use Doctrine\ORM\Event\PreUpdateEventArgs;
 
         class UserListener
         {
             /** @PrePersist */
-            public function prePersistHandler(User $user, LifecycleEventArgs $event) { // ... }
+            public function prePersistHandler(User $user, PrePersistEventArgs $event) { // ... }
 
             /** @PostPersist */
-            public function postPersistHandler(User $user, LifecycleEventArgs $event) { // ... }
+            public function postPersistHandler(User $user, PostPersistEventArgs $event) { // ... }
 
             /** @PreUpdate */
             public function preUpdateHandler(User $user, PreUpdateEventArgs $event) { // ... }
 
             /** @PostUpdate */
-            public function postUpdateHandler(User $user, LifecycleEventArgs $event) { // ... }
+            public function postUpdateHandler(User $user, PostUpdateEventArgs $event) { // ... }
 
             /** @PostRemove */
-            public function postRemoveHandler(User $user, LifecycleEventArgs $event) { // ... }
+            public function postRemoveHandler(User $user, PostRemoveEventArgs $event) { // ... }
 
             /** @PreRemove */
-            public function preRemoveHandler(User $user, LifecycleEventArgs $event) { // ... }
+            public function preRemoveHandler(User $user, PreRemoveEventArgs $event) { // ... }
 
             /** @PreFlush */
             public function preFlushHandler(User $user, PreFlushEventArgs $event) { // ... }
 
             /** @PostLoad */
-            public function postLoadHandler(User $user, LifecycleEventArgs $event) { // ... }
+            public function postLoadHandler(User $user, PostLoadEventArgs $event) { // ... }
         }
     .. code-block:: xml
 
@@ -1035,8 +1040,13 @@ and the EntityManager.
         }
     }
 
-.. _LifecycleEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/LifecycleEventArgs.php
+.. _PrePersistEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PrePersistEventArgs.php
+.. _PreRemoveEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PreRemoveEventArgs.php
 .. _PreUpdateEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PreUpdateEventArgs.php
+.. _PostPersistEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PostPersistEventArgs.php
+.. _PostRemoveEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PostRemoveEventArgs.php
+.. _PostUpdateEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PostUpdateEventArgs.php
+.. _PostLoadEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PostLoadEventArgs.php
 .. _PreFlushEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PreFlushEventArgs.php
 .. _PostFlushEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PostFlushEventArgs.php
 .. _OnFlushEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/OnFlushEventArgs.php

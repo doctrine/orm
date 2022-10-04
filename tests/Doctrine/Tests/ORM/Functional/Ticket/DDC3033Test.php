@@ -6,7 +6,8 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostUpdateEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -106,12 +107,12 @@ class DDC3033Product
     }
 
     /** @PreUpdate */
-    public function preUpdate(LifecycleEventArgs $eventArgs): void
+    public function preUpdate(PreUpdateEventArgs $eventArgs): void
     {
     }
 
     /** @PostUpdate */
-    public function postUpdate(LifecycleEventArgs $eventArgs): void
+    public function postUpdate(PostUpdateEventArgs $eventArgs): void
     {
         $em            = $eventArgs->getObjectManager();
         $uow           = $em->getUnitOfWork();
