@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Tools\Pagination;
 use ArrayIterator;
 use Countable;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Cache\NullCacheItemPool;
 use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
@@ -160,7 +161,7 @@ class Paginator implements Countable, IteratorAggregate
             $whereInQuery->setFirstResult(0)->setMaxResults(null);
             $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $ids);
             $whereInQuery->setCacheable($this->query->isCacheable());
-            $whereInQuery->expireQueryCache();
+            $whereInQuery->setQueryCache(new NullCacheItemPool());
 
             $result = $whereInQuery->getResult($this->query->getHydrationMode());
         } else {
