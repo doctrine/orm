@@ -23,18 +23,6 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="company_contracts")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string", length=255)
- * @EntityListeners({"CompanyContractListener"})
- * @DiscriminatorMap({
- *     "fix"       = "CompanyFixContract",
- *     "flexible"  = "CompanyFlexContract",
- *     "flexultra" = "CompanyFlexUltraContract"
- * })
- */
 #[ORM\Entity, ORM\Table(name: 'company_contracts')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
@@ -42,11 +30,6 @@ use Doctrine\ORM\Mapping\Table;
 #[ORM\EntityListeners(['CompanyContractListener'])]
 abstract class CompanyContract
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
     #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue]
     private int $id;
 

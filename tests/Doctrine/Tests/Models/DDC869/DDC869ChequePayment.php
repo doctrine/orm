@@ -9,14 +9,10 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 
-/** @Entity */
 #[ORM\Entity]
 class DDC869ChequePayment extends DDC869Payment
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
     #[ORM\Column(type: 'string')]
     protected $serialNumber;
 

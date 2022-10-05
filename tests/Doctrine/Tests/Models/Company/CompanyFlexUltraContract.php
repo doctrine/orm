@@ -13,10 +13,6 @@ use Doctrine\ORM\Mapping\EntityListeners;
 
 use function max;
 
-/**
- * @Entity
- * @EntityListeners({"CompanyContractListener","CompanyFlexUltraContractListener"})
- */
 #[ORM\Entity]
 #[ORM\EntityListeners(['CompanyContractListener', 'CompanyFlexUltraContractListener'])]
 class CompanyFlexUltraContract extends CompanyFlexContract

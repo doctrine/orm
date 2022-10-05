@@ -87,19 +87,10 @@ class DDC2825Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="myschema.order")
- */
 #[ORM\Entity, ORM\Table(name: 'myschema.order')]
 class DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
     #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
     public $id;
 }

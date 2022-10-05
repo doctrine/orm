@@ -11,33 +11,18 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="updatable_column")
- */
 #[Entity, Table(name: 'updatable_column')]
 class Updatable
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
     #[Id, GeneratedValue, Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255, name="non_updatable_content", updatable=false, generated="ALWAYS")
-     */
+    /** @var string */
     #[Column(name: 'non_updatable_content', type: 'string', length: 255, updatable: false, generated: 'ALWAYS')]
     public $nonUpdatableContent;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255, updatable=true)
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255, updatable: true)]
     public $updatableContent;
 

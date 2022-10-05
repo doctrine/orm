@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 
-/** @Entity */
 #[ORM\Entity]
 class CompanyFlexContract extends CompanyContract
 {

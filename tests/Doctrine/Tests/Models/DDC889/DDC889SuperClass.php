@@ -9,14 +9,10 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/** @MappedSuperclass */
 #[ORM\MappedSuperclass]
 class DDC889SuperClass
 {
-    /**
-     * @var string
-     * @Column()
-     */
+    /** @var string */
     #[ORM\Column]
     protected $name;
 

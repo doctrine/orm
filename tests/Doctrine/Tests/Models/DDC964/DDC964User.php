@@ -17,44 +17,26 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/** @MappedSuperclass */
 #[MappedSuperclass]
 class DDC964User
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="user_id", length=150)
-     */
+    /** @var int */
     #[Id, GeneratedValue, Column(type: 'integer', name: 'user_id', length: 150)]
     protected $id;
 
-    /**
-     * @psalm-var Collection<int, DDC964Group>
-     * @ManyToMany(targetEntity="DDC964Group", inversedBy="users", cascade={"persist", "merge", "detach"})
-     * @JoinTable(name="ddc964_users_groups",
-     *  joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     *  inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
-     * )
-     */
+    /** @psalm-var Collection<int, DDC964Group> */
     #[ManyToMany(targetEntity: DDC964Group::class, inversedBy: 'users', cascade: ['persist', 'merge', 'detach'])]
     #[JoinTable(name: 'ddc964_users_groups')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
     protected $groups;
 
-    /**
-     * @var DDC964Address
-     * @ManyToOne(targetEntity="DDC964Address", cascade={"persist", "merge"})
-     * @JoinColumn(name="address_id", referencedColumnName="id")
-     */
+    /** @var DDC964Address */
     #[ManyToOne(targetEntity: DDC964Address::class, cascade: ['persist', 'merge'])]
     #[JoinColumn(name: 'address_id', referencedColumnName: 'id')]
     protected $address;
 
     public function __construct(
-        /** @Column(name="user_name", nullable=true, unique=false, length=250) */
         #[Column(name: 'user_name', nullable: true, unique: false, length: 250)] protected string|null $name = null,
     ) {
         $this->groups = new ArrayCollection();

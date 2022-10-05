@@ -16,24 +16,12 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * CmsAddress
- *
- * @Entity
- * @Table(name="cms_addresses")
- * @EntityListeners({"CmsAddressListener"})
- */
 #[ORM\Entity]
 #[ORM\Table(name: 'cms_addresses')]
 #[ORM\EntityListeners(['CmsAddressListener'])]
 class CmsAddress
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    /** @var int */
     #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
     public $id;
 

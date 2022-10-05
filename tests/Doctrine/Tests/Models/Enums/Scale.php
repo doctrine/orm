@@ -10,21 +10,14 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/** @Entity */
 #[Entity]
 class Scale
 {
-    /**
-     * @Id @GeneratedValue @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
     #[Id, GeneratedValue, Column(type: 'integer')]
     public $id;
 
-    /**
-     * @Column(type="simple_array", enumType=Unit::class)
-     * @var Unit[]
-     */
+    /** @var Unit[] */
     #[Column(type: 'simple_array', enumType: Unit::class)]
     public $supportedUnits;
 

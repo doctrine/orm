@@ -20,48 +20,24 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Cache
- * @Entity
- * @Table("cache_city")
- */
 #[ORM\Entity, ORM\Table(name: 'cache_city'), ORM\Cache]
 class City
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
     #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
     protected $id;
 
-    /**
-     * @var Collection<int, Travel>
-     * @ManyToMany(targetEntity="Travel", mappedBy="visitedCities")
-     */
+    /** @var Collection<int, Travel> */
     #[ORM\ManyToMany(targetEntity: 'Travel', mappedBy: 'visitedCities')]
     public $travels;
 
-    /**
-     * @psalm-var Collection<int, Attraction>
-     * @Cache
-     * @OrderBy({"name" = "ASC"})
-     * @OneToMany(targetEntity="Attraction", mappedBy="city")
-     */
+    /** @psalm-var Collection<int, Attraction> */
     #[ORM\Cache, ORM\OrderBy(['name' => 'ASC'])]
     #[ORM\OneToMany(targetEntity: 'Attraction', mappedBy: 'city')]
     public $attractions;
 
     public function __construct(
-        /** @Column(unique=true) */
         #[ORM\Column(unique: true)] protected string $name,
-        /**
-         * @Cache
-         * @ManyToOne(targetEntity="State", inversedBy="cities")
-         * @JoinColumn(name="state_id", referencedColumnName="id")
-         */
         #[ORM\Cache] #[ORM\ManyToOne(targetEntity: 'State', inversedBy: 'cities')] #[ORM\JoinColumn(name: 'state_id', referencedColumnName: 'id')] protected State|null $state = null,
     ) {
         $this->travels     = new ArrayCollection();
