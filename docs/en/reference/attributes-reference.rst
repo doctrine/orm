@@ -10,8 +10,8 @@ annotation metadata supported since the first version 2.0.
 Index
 -----
 
--  :ref:`#[AssociationOverride] <attrref_associationoverride]`
--  :ref:`#[AttributeOverride] <attrref_attributeoverride]`
+-  :ref:`#[AssociationOverride] <attrref_associationoverride>`
+-  :ref:`#[AttributeOverride] <attrref_attributeoverride>`
 -  :ref:`#[Column] <attrref_column>`
 -  :ref:`#[Cache] <attrref_cache>`
 -  :ref:`#[ChangeTrackingPolicy <attrref_changetrackingpolicy>`
