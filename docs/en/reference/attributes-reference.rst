@@ -178,7 +178,7 @@ Optional parameters:
     If not specified, default value is ``false``.
 
 -  **insertable**: Boolean value to determine if the column should be
-   included when inserting a new row into the underlying entities table. 
+   included when inserting a new row into the underlying entities table.
    If not specified, default value is true.
 
 -  **updatable**: Boolean value to determine if the column should be
