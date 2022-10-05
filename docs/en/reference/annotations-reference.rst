@@ -1,6 +1,11 @@
 Annotations Reference
 =====================
 
+.. warning::
+    The annotation driver is deprecated and will be removed in version
+    3.0. It is strongly recommended to switch to one of the other
+    mapping drivers.
+
 .. note::
 
     To be able to use annotations, you will have to install an extra

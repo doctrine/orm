@@ -1,5 +1,10 @@
 # Upgrade to 2.14
 
+## Deprecated annotation mapping driver.
+
+Please switch to one of the other mapping drivers. Native attributes which PHP
+supports since version 8.0 are probably your best option.
+
 ## Deprecated `Doctrine\ORM\Proxy\Proxy` interface.
 
 Use `Doctrine\Persistence\Proxy` instead to check whether proxies are initialized.
