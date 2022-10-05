@@ -48,8 +48,8 @@ class GH7512Test extends OrmFunctionalTestCase
  * @Entity()
  * @InheritanceType("JOINED")
  * @DiscriminatorMap({
- *     "entitya"=Doctrine\Tests\ORM\Functional\Ticket\GH7512EntityA::class,
- *     "entityB"=Doctrine\Tests\ORM\Functional\Ticket\GH7512EntityB::class
+ *     "entitya"=GH7512EntityA::class,
+ *     "entityB"=GH7512EntityB::class
  * })
  */
 class GH7512EntityA
@@ -63,7 +63,7 @@ class GH7512EntityA
     public $id;
 
     /**
-     * @OneToMany(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\GH7512EntityC", mappedBy="entityA")
+     * @OneToMany(targetEntity="GH7512EntityC", mappedBy="entityA")
      * @var Collection<int, GH7512EntityC>
      */
     public $entityCs;
@@ -86,7 +86,7 @@ class GH7512EntityC
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\GH7512EntityA", inversedBy="entityCs")
+     * @ManyToOne(targetEntity="GH7512EntityA", inversedBy="entityCs")
      * @var GH7512EntityA
      */
     public $entityA;
