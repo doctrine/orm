@@ -1,6 +1,11 @@
 Annotations Reference
 =====================
 
+.. warning::
+    The annotation driver is deprecated and will be removed in version
+    3.0. It is strongly recommended to switch to one of the other
+    mapping drivers.
+
 .. note::
 
     To be able to use annotations, you will have to install an extra
@@ -124,7 +129,7 @@ Optional attributes:
 -  **nullable**: Determines if NULL values allowed for this column. If not specified, default value is false.
 
 -  **insertable**: Boolean value to determine if the column should be
-   included when inserting a new row into the underlying entities table. 
+   included when inserting a new row into the underlying entities table.
    If not specified, default value is true.
 
 -  **updatable**: Boolean value to determine if the column should be
@@ -1382,4 +1387,3 @@ Example:
      * @Version
      */
     protected $version;
-

@@ -1,7 +1,7 @@
 YAML Mapping
 ============
 
-.. note::
+.. warning::
     The YAML driver is deprecated and will be removed in version 3.0.
     It is strongly recommended to switch to one of the other mappings.
 
