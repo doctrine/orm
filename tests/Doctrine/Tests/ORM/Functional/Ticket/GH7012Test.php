@@ -58,7 +58,7 @@ class GH7012UserData
     /**
      * @var QuotedUser
      * @Id
-     * @OneToOne(targetEntity=Doctrine\Tests\Models\Quote\User::class)
+     * @OneToOne(targetEntity=QuotedUser::class)
      * @JoinColumn(name="`user-id`", referencedColumnName="`user-id`", onDelete="CASCADE")
      */
     public $user;
