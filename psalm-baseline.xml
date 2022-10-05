@@ -482,36 +482,6 @@
       <code>$class-&gt;associationMappings[$fieldName]['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php">
-    <DocblockTypeContradiction occurrences="1">
-      <code>new ReflectionClass($metadata-&gt;name)</code>
-    </DocblockTypeContradiction>
-    <InvalidArgument occurrences="1"/>
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$mapping</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificImplementedParamType occurrences="1">
-      <code>$metadata</code>
-    </MoreSpecificImplementedParamType>
-    <MoreSpecificReturnType occurrences="1"/>
-    <PossiblyNullArgument occurrences="1">
-      <code>$listenerClassName</code>
-    </PossiblyNullArgument>
-    <PossiblyUndefinedArrayOffset occurrences="2">
-      <code>$primaryTable['indexes']</code>
-      <code>$primaryTable['uniqueConstraints']</code>
-    </PossiblyUndefinedArrayOffset>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>$metadata-&gt;getReflectionClass()</code>
-    </RedundantConditionGivenDocblockType>
-    <UndefinedInterfaceMethod occurrences="5">
-      <code>mapEmbedded</code>
-      <code>mapManyToMany</code>
-      <code>mapManyToOne</code>
-      <code>mapOneToMany</code>
-      <code>mapOneToOne</code>
-    </UndefinedInterfaceMethod>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php">
     <DocblockTypeContradiction occurrences="1">
       <code>new ReflectionClass($metadata-&gt;name)</code>

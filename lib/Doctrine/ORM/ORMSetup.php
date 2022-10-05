@@ -4,13 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\PsrCachedReader;
-use Doctrine\Deprecations\Deprecation;
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
-use LogicException;
 use Psr\Cache\CacheItemPoolInterface;
 use Redis;
 use RuntimeException;
@@ -22,74 +17,10 @@ use Symfony\Component\Cache\Adapter\RedisAdapter;
 use function class_exists;
 use function extension_loaded;
 use function md5;
-use function sprintf;
 use function sys_get_temp_dir;
 
 final class ORMSetup
 {
-    /**
-     * Creates a configuration with an annotation metadata driver.
-     *
-     * @deprecated Use another mapping driver.
-     *
-     * @param string[] $paths
-     */
-    public static function createAnnotationMetadataConfiguration(
-        array $paths,
-        bool $isDevMode = false,
-        string|null $proxyDir = null,
-        CacheItemPoolInterface|null $cache = null,
-    ): Configuration {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/10098',
-            '%s is deprecated and will be removed in Doctrine ORM 3.0',
-            __METHOD__,
-        );
-        $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
-        $config->setMetadataDriverImpl(self::createDefaultAnnotationDriver($paths));
-
-        return $config;
-    }
-
-    /**
-     * Adds a new default annotation driver with a correctly configured annotation reader.
-     *
-     * @deprecated Use another mapping driver.
-     *
-     * @param string[] $paths
-     */
-    public static function createDefaultAnnotationDriver(
-        array $paths = [],
-        CacheItemPoolInterface|null $cache = null,
-    ): AnnotationDriver {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/10098',
-            '%s is deprecated and will be removed in Doctrine ORM 3.0',
-            __METHOD__,
-        );
-        if (! class_exists(AnnotationReader::class)) {
-            throw new LogicException(sprintf(
-                'The annotation metadata driver cannot be enabled because the "doctrine/annotations" library'
-                . ' is not installed. Please run "composer require doctrine/annotations" or choose a different'
-                . ' metadata driver.',
-            ));
-        }
-
-        $reader = new AnnotationReader();
-
-        if ($cache === null && class_exists(ArrayAdapter::class)) {
-            $cache = new ArrayAdapter();
-        }
-
-        if ($cache !== null) {
-            $reader = new PsrCachedReader($reader, $cache);
-        }
-
-        return new AnnotationDriver($reader, $paths);
-    }
-
     /**
      * Creates a configuration with an attribute metadata driver.
      *
