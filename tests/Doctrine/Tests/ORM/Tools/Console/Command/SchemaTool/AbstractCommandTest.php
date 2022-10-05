@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools\Console\Command\SchemaTool;
 
 use Doctrine\DBAL\Platforms\SQLitePlatform;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\AbstractCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
@@ -16,7 +17,7 @@ abstract class AbstractCommandTest extends OrmFunctionalTestCase
     /** @param class-string<AbstractCommand> $commandClass */
     protected function getCommandTester(string $commandClass): CommandTester
     {
-        $entityManager = $this->getEntityManager(null, ORMSetup::createDefaultAnnotationDriver([
+        $entityManager = $this->getEntityManager(null, new AttributeDriver([
             __DIR__ . '/Models',
         ]));
 

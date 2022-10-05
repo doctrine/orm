@@ -132,7 +132,7 @@ The attribute driver can be injected in the ``Doctrine\ORM\Configuration``:
 .. code-block:: php
 
     <?php
-    use Doctrine\ORM\ORMSetup;
+    use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 
     $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities']);
     $config->setMetadataDriverImpl($driverImpl);

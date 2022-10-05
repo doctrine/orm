@@ -117,7 +117,7 @@ class LockAgentWorker
         $config->setProxyNamespace('MyProject\Proxies');
         $config->setAutoGenerateProxyClasses(true);
 
-        $annotDriver = ORMSetup::createDefaultAnnotationDriver([__DIR__ . '/../../../Models/']);
+        $annotDriver = new AttributeDriver([__DIR__ . '/../../../Models/']);
         $config->setMetadataDriverImpl($annotDriver);
         $config->setMetadataCache(new ArrayAdapter());
 
