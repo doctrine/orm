@@ -21,6 +21,8 @@ use stdClass;
 use function array_keys;
 use function assert;
 use function method_exists;
+use function serialize;
+use function unserialize;
 
 /**
  * Tests the lazy-loading capabilities of the PersistentCollection and the initialization of collections.
@@ -285,5 +287,14 @@ class PersistentCollectionTest extends OrmTestCase
         $this->_emMock->setUnitOfWork($unitOfWork);
 
         $this->collection->clear();
+    }
+
+    public function testItCanBeSerializedAndUnserializedBack(): void
+    {
+        $this->collection->add(new stdClass());
+        $collection = unserialize(serialize($this->collection));
+        $collection->add(new stdClass());
+        $collection[3] = new stdClass();
+        self::assertCount(3, $collection);
     }
 }
