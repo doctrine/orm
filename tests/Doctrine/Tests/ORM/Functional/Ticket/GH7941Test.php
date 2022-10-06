@@ -108,7 +108,7 @@ class GH7941Product
 
     /**
      * @var string
-     * @Column(type="decimal")
+     * @Column(type="decimal", precision=10)
      */
     public $price;
 

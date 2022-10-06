@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -67,7 +68,10 @@ class DDC214Test extends OrmFunctionalTestCase
 
         $sm = $this->createSchemaManager();
 
-        $fromSchema = $sm->createSchema();
+        $method     = method_exists(AbstractSchemaManager::class, 'introspectSchema') ?
+            'introspectSchema' :
+            'createSchema';
+        $fromSchema = $sm->$method();
         $toSchema   = $this->getSchemaForModels(...$classes);
 
         if (method_exists($sm, 'createComparator')) {

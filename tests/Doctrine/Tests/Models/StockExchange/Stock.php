@@ -34,7 +34,7 @@ class Stock
 
     /**
      * @var float
-     * @Column(type="decimal")
+     * @Column(type="decimal", precision=10)
      */
     private $price;
 
