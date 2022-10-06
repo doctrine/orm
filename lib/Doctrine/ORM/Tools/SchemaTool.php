@@ -360,7 +360,8 @@ class SchemaTool
                     $uniqIndex = new Index($indexName, $this->getIndexColumns($class, $indexData), true, false, [], $indexData['options'] ?? []);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
-                        if ($tableIndex->isFullfilledBy($uniqIndex)) {
+                        $method = method_exists($tableIndex, 'isFulfilledBy') ? 'isFulfilledBy' : 'isFullfilledBy';
+                        if ($tableIndex->$method($uniqIndex)) {
                             $table->dropIndex($tableIndexName);
                             break;
                         }
