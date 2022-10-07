@@ -605,7 +605,7 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
 
         $this->connection->method('commit')
-            ->willThrowException(new Exception());
+            ->willThrowException($this->createStub(Exception::class));
 
         // Setup fake persister and id generator
         $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
