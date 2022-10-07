@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 

@@ -10,8 +10,8 @@ annotation metadata supported since the first version 2.0.
 Index
 -----
 
--  :ref:`#[AssociationOverride] <attrref_associationoverride]`
--  :ref:`#[AttributeOverride] <attrref_attributeoverride]`
+-  :ref:`#[AssociationOverride] <attrref_associationoverride>`
+-  :ref:`#[AttributeOverride] <attrref_attributeoverride>`
 -  :ref:`#[Column] <attrref_column>`
 -  :ref:`#[Cache] <attrref_cache>`
 -  :ref:`#[ChangeTrackingPolicy <attrref_changetrackingpolicy>`
@@ -27,7 +27,6 @@ Index
 -  :ref:`#[Id] <attrref_id>`
 -  :ref:`#[InheritanceType] <attrref_inheritancetype>`
 -  :ref:`#[JoinColumn] <attrref_joincolumn>`
--  :ref:`#[JoinColumns] <attrref_joincolumns>`
 -  :ref:`#[JoinTable] <attrref_jointable>`
 -  :ref:`#[ManyToOne] <attrref_manytoone>`
 -  :ref:`#[ManyToMany] <attrref_manytomany>`
@@ -179,7 +178,7 @@ Optional parameters:
     If not specified, default value is ``false``.
 
 -  **insertable**: Boolean value to determine if the column should be
-   included when inserting a new row into the underlying entities table. 
+   included when inserting a new row into the underlying entities table.
    If not specified, default value is true.
 
 -  **updatable**: Boolean value to determine if the column should be

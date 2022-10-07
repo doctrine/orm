@@ -62,7 +62,7 @@ class City
          * @ManyToOne(targetEntity="State", inversedBy="cities")
          * @JoinColumn(name="state_id", referencedColumnName="id")
          */
-        #[ORM\Cache] #[ORM\ManyToOne(targetEntity: 'State', inversedBy: 'citities')] #[ORM\JoinColumn(name: 'state_id', referencedColumnName: 'id')] protected State|null $state = null,
+        #[ORM\Cache] #[ORM\ManyToOne(targetEntity: 'State', inversedBy: 'cities')] #[ORM\JoinColumn(name: 'state_id', referencedColumnName: 'id')] protected State|null $state = null,
     ) {
         $this->travels     = new ArrayCollection();
         $this->attractions = new ArrayCollection();
