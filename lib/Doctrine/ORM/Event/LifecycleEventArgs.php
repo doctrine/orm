@@ -42,7 +42,7 @@ class LifecycleEventArgs extends BaseLifecycleEventArgs
         Deprecation::trigger(
             'doctrine/orm',
             'https://github.com/doctrine/orm/issues/9875',
-            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use getObjectManager() instead.',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use getObject() instead.',
             __METHOD__
         );
 
