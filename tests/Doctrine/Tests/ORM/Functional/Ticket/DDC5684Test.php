@@ -125,7 +125,7 @@ class DDC5684Object
     /**
      * @var DDC5684ObjectIdType
      * @Id
-     * @Column(type=Doctrine\Tests\ORM\Functional\Ticket\DDC5684ObjectIdType::class)
+     * @Column(type=DDC5684ObjectIdType::class)
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;

@@ -51,7 +51,7 @@ class City
      * @JoinColumn(name="state_id", referencedColumnName="id")
      */
     #[ORM\Cache]
-    #[ORM\ManyToOne(targetEntity: 'State', inversedBy: 'citities')]
+    #[ORM\ManyToOne(targetEntity: 'State', inversedBy: 'cities')]
     #[ORM\JoinColumn(name: 'state_id', referencedColumnName: 'id')]
     protected $state;
 

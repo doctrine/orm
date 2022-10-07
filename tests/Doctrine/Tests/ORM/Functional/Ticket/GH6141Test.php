@@ -153,8 +153,8 @@ class GH6141People
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="gh6141people")
  * @DiscriminatorMap({
- *      Doctrine\Tests\ORM\Functional\Ticket\GH6141People::BOSS     = GH6141Boss::class,
- *      Doctrine\Tests\ORM\Functional\Ticket\GH6141People::EMPLOYEE = GH6141Employee::class
+ *      GH6141People::BOSS     = GH6141Boss::class,
+ *      GH6141People::EMPLOYEE = GH6141Employee::class
  * })
  */
 abstract class GH6141Person
