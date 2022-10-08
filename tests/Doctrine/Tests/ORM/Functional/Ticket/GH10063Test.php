@@ -27,7 +27,7 @@ final class GH10063Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $entity = $this->_em->find(GH10063Entity::class, $entity->id);
-        assert($entity instanceof GH10063Entity);
+        self::assertInstanceOf(GH10063Entity::class, $entity);
         self::assertEquals([GH10063Enum::Red, GH10063Enum::Green], $entity->getColors());
     }
 }
