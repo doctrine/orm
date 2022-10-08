@@ -9,47 +9,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\EntityResult;
-use Doctrine\ORM\Mapping\FieldResult;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
-use Doctrine\ORM\Mapping\SqlResultSetMapping;
-use Doctrine\ORM\Mapping\SqlResultSetMappings;
 
-/**
- * @Entity
- * @SqlResultSetMappings({
- *      @SqlResultSetMapping(
- *          name    = "mapping-all-flex",
- *          entities= {
- *              @EntityResult(
- *                  entityClass         = "__CLASS__",
- *                  discriminatorColumn = "discr",
- *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("hoursWorked"),
- *                  }
- *              )
- *          }
- *      ),
- *      @SqlResultSetMapping(
- *          name    = "mapping-all",
- *          entities= {
- *              @EntityResult(
- *                  entityClass         = "CompanyFlexContract",
- *                  discriminatorColumn = "discr",
- *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("hoursWorked"),
- *                  }
- *              )
- *          }
- *      ),
- * })
- */
+/** @Entity */
 #[ORM\Entity]
 class CompanyFlexContract extends CompanyContract
 {

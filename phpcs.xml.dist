@@ -85,7 +85,6 @@
         <exclude-pattern>lib/Doctrine/ORM/Mapping/Cache.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/ChangeTrackingPolicy.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/Column.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/ColumnResult.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/CustomIdGenerator.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/DiscriminatorColumn.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/DiscriminatorMap.php</exclude-pattern>
@@ -93,8 +92,6 @@
         <exclude-pattern>lib/Doctrine/ORM/Mapping/Embedded.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/Entity.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/EntityListeners.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/EntityResult.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/FieldResult.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/GeneratedValue.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/HasLifecycleCallbacks.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/Id.php</exclude-pattern>
@@ -118,8 +115,6 @@
         <exclude-pattern>lib/Doctrine/ORM/Mapping/PreRemove.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/PreUpdate.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/SequenceGenerator.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/SqlResultSetMapping.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/SqlResultSetMappings.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/Table.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/UniqueConstraint.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/Version.php</exclude-pattern>

@@ -113,24 +113,6 @@
     <xs:attribute name="discriminator-column" type="xs:string" use="optional" />
   </xs:complexType>
 
-  <xs:complexType name="sql-result-set-mapping">
-    <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:choice minOccurs="0" maxOccurs="unbounded">
-            <xs:element name="entity-result" type="orm:entity-result"/>
-            <xs:element name="column-result" type="orm:column-result"/>
-            <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
-        </xs:choice>
-        <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
-    </xs:choice>
-    <xs:attribute name="name" type="xs:string" use="required" />
-  </xs:complexType>
-
-  <xs:complexType name="sql-result-set-mappings">
-    <xs:choice minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="sql-result-set-mapping" type="orm:sql-result-set-mapping" minOccurs="1" maxOccurs="unbounded" />
-    </xs:choice>
-  </xs:complexType>
-
   <xs:complexType name="cache">
     <xs:attribute name="usage" type="orm:cache-usage-type" />
     <xs:attribute name="region" type="xs:string" />
@@ -146,7 +128,6 @@
       <xs:element name="discriminator-map" type="orm:discriminator-map" minOccurs="0"/>
       <xs:element name="lifecycle-callbacks" type="orm:lifecycle-callbacks" minOccurs="0" maxOccurs="1" />
       <xs:element name="entity-listeners" type="orm:entity-listeners" minOccurs="0" maxOccurs="1" />
-      <xs:element name="sql-result-set-mappings" type="orm:sql-result-set-mappings" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="id" type="orm:id" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="field" type="orm:field" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="embedded" type="orm:embedded" minOccurs="0" maxOccurs="unbounded"/>

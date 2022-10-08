@@ -441,13 +441,12 @@
       <code>$idGenerator</code>
       <code>$table</code>
     </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="12">
+    <PropertyTypeCoercion occurrences="11">
       <code>$this-&gt;associationMappings</code>
       <code>$this-&gt;associationMappings</code>
       <code>$this-&gt;entityListeners</code>
       <code>$this-&gt;fieldMappings</code>
       <code>$this-&gt;fullyQualifiedClassName($repositoryClassName)</code>
-      <code>$this-&gt;sqlResultSetMappings</code>
       <code>$this-&gt;table</code>
       <code>$this-&gt;table</code>
       <code>$this-&gt;table</code>
@@ -466,11 +465,6 @@
       <code>! $this-&gt;table</code>
       <code>$this-&gt;table</code>
     </TypeDoesNotContainType>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/ColumnResult.php">
-    <MissingConstructor occurrences="1">
-      <code>$name</code>
-    </MissingConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DefaultEntityListenerResolver.php">
     <InvalidStringClass occurrences="1">
@@ -619,7 +613,7 @@
       <code>$indexXml-&gt;options</code>
       <code>$uniqueXml-&gt;options</code>
     </PossiblyInvalidPropertyFetch>
-    <RedundantCondition occurrences="17">
+    <RedundantCondition occurrences="16">
       <code>isset($xmlRoot-&gt;cache)</code>
       <code>isset($xmlRoot-&gt;embedded)</code>
       <code>isset($xmlRoot-&gt;field)</code>
@@ -635,15 +629,8 @@
       <code>isset($xmlRoot-&gt;{'many-to-one'})</code>
       <code>isset($xmlRoot-&gt;{'one-to-many'})</code>
       <code>isset($xmlRoot-&gt;{'one-to-one'})</code>
-      <code>isset($xmlRoot-&gt;{'sql-result-set-mappings'})</code>
       <code>isset($xmlRoot-&gt;{'unique-constraints'})</code>
     </RedundantCondition>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/EntityResult.php">
-    <MissingConstructor occurrences="2">
-      <code>$discriminatorColumn</code>
-      <code>$entityClass</code>
-    </MissingConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/FieldResult.php">
     <MissingConstructor occurrences="2">
@@ -700,11 +687,6 @@
     <PossiblyNullPropertyAssignmentValue occurrences="1">
       <code>$sequenceName</code>
     </PossiblyNullPropertyAssignmentValue>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/SqlResultSetMapping.php">
-    <MissingConstructor occurrences="1">
-      <code>$name</code>
-    </MissingConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/UnderscoreNamingStrategy.php">
     <PossiblyFalseOperand occurrences="1">

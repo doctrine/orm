@@ -184,10 +184,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $class->containsEnumIdentifier = true;
             }
 
-            if (! empty($parent->sqlResultSetMappings)) {
-                $this->addInheritedSqlResultSetMappings($class, $parent);
-            }
-
             if (! empty($parent->entityListeners) && empty($class->entityListeners)) {
                 $class->entityListeners = $parent->entityListeners;
             }
@@ -439,34 +435,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                     $subClass->table[$indexType][$indexName] = $index;
                 }
-            }
-        }
-    }
-
-    /**
-     * Adds inherited sql result set mappings to the subclass mapping.
-     */
-    private function addInheritedSqlResultSetMappings(ClassMetadata $subClass, ClassMetadata $parentClass): void
-    {
-        foreach ($parentClass->sqlResultSetMappings as $name => $mapping) {
-            if (! isset($subClass->sqlResultSetMappings[$name])) {
-                $entities = [];
-                foreach ($mapping['entities'] as $entity) {
-                    $entities[] = [
-                        'fields'                => $entity['fields'],
-                        'isSelfClass'           => $entity['isSelfClass'],
-                        'discriminatorColumn'   => $entity['discriminatorColumn'],
-                        'entityClass'           => $entity['isSelfClass'] ? $subClass->name : $entity['entityClass'],
-                    ];
-                }
-
-                $subClass->addSqlResultSetMapping(
-                    [
-                        'name'          => $mapping['name'],
-                        'columns'       => $mapping['columns'],
-                        'entities'      => $entities,
-                    ],
-                );
             }
         }
     }

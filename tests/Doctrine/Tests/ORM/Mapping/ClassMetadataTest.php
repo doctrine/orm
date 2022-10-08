@@ -607,84 +607,6 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapField(['fieldName' => '']);
     }
 
-    /** @group DDC-1663 */
-    public function testRetrievalOfResultSetMappings(): void
-    {
-        $cm = new ClassMetadata(CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        self::assertCount(0, $cm->getSqlResultSetMappings());
-
-        $cm->addSqlResultSetMapping(
-            [
-                'name'      => 'find-all',
-                'entities'  => [
-                    [
-                        'entityClass'   => CmsUser::class,
-                    ],
-                ],
-            ],
-        );
-
-        self::assertCount(1, $cm->getSqlResultSetMappings());
-    }
-
-    /** @group DDC-1663 */
-    public function testRetrieveOfSqlResultSetMapping(): void
-    {
-        $cm = new ClassMetadata(CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        $cm->addSqlResultSetMapping(
-            [
-                'name'      => 'find-all',
-                'entities'  => [
-                    [
-                        'entityClass'   => '__CLASS__',
-                        'fields'        => [
-                            [
-                                'name'  => 'id',
-                                'column' => 'id',
-                            ],
-                            [
-                                'name'  => 'name',
-                                'column' => 'name',
-                            ],
-                        ],
-                    ],
-                    [
-                        'entityClass'   => CmsEmail::class,
-                        'fields'        => [
-                            [
-                                'name'  => 'id',
-                                'column' => 'id',
-                            ],
-                            [
-                                'name'  => 'email',
-                                'column' => 'email',
-                            ],
-                        ],
-                    ],
-                ],
-                'columns'   => [
-                    ['name' => 'scalarColumn'],
-                ],
-            ],
-        );
-
-        $mapping = $cm->getSqlResultSetMapping('find-all');
-
-        self::assertEquals(CmsUser::class, $mapping['entities'][0]['entityClass']);
-        self::assertEquals(['name' => 'id', 'column' => 'id'], $mapping['entities'][0]['fields'][0]);
-        self::assertEquals(['name' => 'name', 'column' => 'name'], $mapping['entities'][0]['fields'][1]);
-
-        self::assertEquals(CmsEmail::class, $mapping['entities'][1]['entityClass']);
-        self::assertEquals(['name' => 'id', 'column' => 'id'], $mapping['entities'][1]['fields'][0]);
-        self::assertEquals(['name' => 'email', 'column' => 'email'], $mapping['entities'][1]['fields'][1]);
-
-        self::assertEquals('scalarColumn', $mapping['columns'][0]['name']);
-    }
-
     /** @group DDC-2451 */
     public function testSerializeEntityListeners(): void
     {
@@ -698,37 +620,6 @@ class ClassMetadataTest extends OrmTestCase
         $unserialize = unserialize($serialize);
 
         self::assertEquals($metadata->entityListeners, $unserialize->entityListeners);
-    }
-
-    /** @group DDC-1663 */
-    public function testNamingCollisionSqlResultSetMappingShouldThrowException(): void
-    {
-        $this->expectException(MappingException::class);
-        $this->expectExceptionMessage('Result set mapping named "find-all" in "Doctrine\Tests\Models\CMS\CmsUser" was already declared, but it must be declared only once');
-        $cm = new ClassMetadata(CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        $cm->addSqlResultSetMapping(
-            [
-                'name'      => 'find-all',
-                'entities'  => [
-                    [
-                        'entityClass'   => CmsUser::class,
-                    ],
-                ],
-            ],
-        );
-
-        $cm->addSqlResultSetMapping(
-            [
-                'name'      => 'find-all',
-                'entities'  => [
-                    [
-                        'entityClass'   => CmsUser::class,
-                    ],
-                ],
-            ],
-        );
     }
 
     /** @group DDC-1068 */
@@ -765,25 +656,6 @@ class ClassMetadataTest extends OrmTestCase
         $this->expectExceptionMessage("The target-entity Doctrine\\Tests\\Models\\CMS\\UnknownClass cannot be found in '" . CmsUser::class . "#address'.");
 
         $cm->validateAssociations();
-    }
-
-    /** @group DDC-1663 */
-    public function testNameIsMandatoryForEntityNameSqlResultSetMappingException(): void
-    {
-        $this->expectException(MappingException::class);
-        $this->expectExceptionMessage('Result set mapping named "find-all" in "Doctrine\Tests\Models\CMS\CmsUser requires a entity class name.');
-        $cm = new ClassMetadata(CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->addSqlResultSetMapping(
-            [
-                'name'      => 'find-all',
-                'entities'  => [
-                    [
-                        'fields' => [],
-                    ],
-                ],
-            ],
-        );
     }
 
     public function testNameIsMandatoryForDiscriminatorColumnsMappingException(): void

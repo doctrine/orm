@@ -255,16 +255,6 @@ class MappingException extends Exception implements ORMException
         ));
     }
 
-    /**
-     * @param string $className
-     *
-     * @return MappingException
-     */
-    public static function nameIsMandatoryForSqlResultSetMapping($className)
-    {
-        return new self(sprintf("Result set mapping name on entity class '%s' is not defined.", $className));
-    }
-
     public static function oneToManyRequiresMappedBy(string $entityName, string $fieldName): MappingException
     {
         return new self(sprintf(

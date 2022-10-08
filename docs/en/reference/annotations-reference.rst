@@ -47,7 +47,6 @@ Index
 -----
 
 -  :ref:`@Column <annref_column>`
--  :ref:`@ColumnResult <annref_column_result>`
 -  :ref:`@Cache <annref_cache>`
 -  :ref:`@ChangeTrackingPolicy <annref_changetrackingpolicy>`
 -  :ref:`@CustomIdGenerator <annref_customidgenerator>`
@@ -56,8 +55,6 @@ Index
 -  :ref:`@Embeddable <annref_embeddable>`
 -  :ref:`@Embedded <annref_embedded>`
 -  :ref:`@Entity <annref_entity>`
--  :ref:`@EntityResult <annref_entity_result>`
--  :ref:`@FieldResult <annref_field_result>`
 -  :ref:`@GeneratedValue <annref_generatedvalue>`
 -  :ref:`@HasLifecycleCallbacks <annref_haslifecyclecallbacks>`
 -  :ref:`@Index <annref_index>`
@@ -80,7 +77,6 @@ Index
 -  :ref:`@PreRemove <annref_preremove>`
 -  :ref:`@PreUpdate <annref_preupdate>`
 -  :ref:`@SequenceGenerator <annref_sequencegenerator>`
--  :ref:`@SqlResultSetMapping <annref_sql_resultset_mapping>`
 -  :ref:`@Table <annref_table>`
 -  :ref:`@UniqueConstraint <annref_uniqueconstraint>`
 -  :ref:`@Version <annref_version>`
@@ -215,17 +211,6 @@ Examples:
      * MySQL example: full_name char(41) GENERATED ALWAYS AS (concat(firstname,' ',lastname)),
      */
     protected $fullname;
-
-.. _annref_column_result:
-
-@ColumnResult
-~~~~~~~~~~~~~~
-References name of a column in the SELECT clause of a SQL query.
-Scalar result types can be included in the query result by specifying this annotation in the metadata.
-
-Required attributes:
-
--  **name**: The name of a column in the SELECT clause of a SQL query
 
 .. _annref_cache:
 
@@ -435,39 +420,6 @@ Example:
     {
         // ...
     }
-
-.. _annref_entity_result:
-
-@EntityResult
-~~~~~~~~~~~~~~
-References an entity in the SELECT clause of a SQL query.
-If this annotation is used, the SQL statement should select all of the columns that are mapped to the entity object.
-This should include foreign key columns to related entities.
-The results obtained when insufficient data is available are undefined.
-
-Required attributes:
-
--  **entityClass**: The class of the result.
-
-Optional attributes:
-
--  **fields**: Array of @FieldResult, Maps the columns specified in the SELECT list of the query to the properties or fields of the entity class.
--  **discriminatorColumn**: Specifies the column name of the column in the SELECT list that is used to determine the type of the entity instance.
-
-.. _annref_field_result:
-
-@FieldResult
-~~~~~~~~~~~~~
-Is used to map the columns specified in the SELECT list of the query to the properties or fields of the entity class.
-
-Required attributes:
-
--  **name**: Name of the persistent field or property of the class.
-
-
-Optional attributes:
-
--  **column**: Name of the column in the SELECT clause.
 
 .. _annref_generatedvalue:
 
@@ -1088,94 +1040,6 @@ Example:
      */
     protected $id = null;
 
-.. _annref_sql_resultset_mapping:
-
-@SqlResultSetMapping
-~~~~~~~~~~~~~~~~~~~~
-The SqlResultSetMapping annotation is used to specify the mapping of the result of a native SQL query.
-The SqlResultSetMapping annotation can be applied to an entity or mapped superclass.
-
-Required attributes:
-
--  **name**: The name given to the result set mapping, and used to refer to it in the methods of the Query API.
-
-
-Optional attributes:
-
--  **entities**: Array of @EntityResult, Specifies the result set mapping to entities.
--  **columns**: Array of @ColumnResult, Specifies the result set mapping to scalar values.
-
-Example:
-
-.. code-block:: php
-
-    <?php
-    /**
-     * @SqlResultSetMappings({
-     *      @SqlResultSetMapping(
-     *          name    = "mappingUserPhonenumberCount",
-     *          entities= {
-     *              @EntityResult(
-     *                  entityClass = "User",
-     *                  fields      = {
-     *                      @FieldResult(name = "id"),
-     *                      @FieldResult(name = "name"),
-     *                      @FieldResult(name = "status"),
-     *                  }
-     *              )
-     *          },
-     *          columns = {
-     *              @ColumnResult("numphones")
-     *          }
-     *      ),
-     *      @SqlResultSetMapping(
-     *          name    = "mappingMultipleJoinsEntityResults",
-     *          entities= {
-     *              @EntityResult(
-     *                  entityClass = "__CLASS__",
-     *                  fields      = {
-     *                      @FieldResult(name = "id",       column="u_id"),
-     *                      @FieldResult(name = "name",     column="u_name"),
-     *                      @FieldResult(name = "status",   column="u_status"),
-     *                  }
-     *              ),
-     *              @EntityResult(
-     *                  entityClass = "Address",
-     *                  fields      = {
-     *                      @FieldResult(name = "id",       column="a_id"),
-     *                      @FieldResult(name = "zip",      column="a_zip"),
-     *                      @FieldResult(name = "country",  column="a_country"),
-     *                  }
-     *              )
-     *          },
-     *          columns = {
-     *              @ColumnResult("numphones")
-     *          }
-     *      )
-     *})
-     */
-     class User
-    {
-        /** @Id @Column(type="integer") @GeneratedValue */
-        public $id;
-
-        /** @Column(type="string", length=50, nullable=true) */
-        public $status;
-
-        /** @Column(type="string", length=255, unique=true) */
-        public $username;
-
-        /** @Column(type="string", length=255) */
-        public $name;
-
-        /** @OneToMany(targetEntity="Phonenumber") */
-        public $phonenumbers;
-
-        /** @OneToOne(targetEntity="Address") */
-        public $address;
-
-        // ....
-    }
 .. _annref_table:
 
 @Table

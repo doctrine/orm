@@ -14,8 +14,6 @@ use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\EntityListeners;
-use Doctrine\ORM\Mapping\EntityResult;
-use Doctrine\ORM\Mapping\FieldResult;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
@@ -23,8 +21,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\ORM\Mapping\SqlResultSetMapping;
-use Doctrine\ORM\Mapping\SqlResultSetMappings;
 use Doctrine\ORM\Mapping\Table;
 
 /**
@@ -37,34 +33,6 @@ use Doctrine\ORM\Mapping\Table;
  *     "fix"       = "CompanyFixContract",
  *     "flexible"  = "CompanyFlexContract",
  *     "flexultra" = "CompanyFlexUltraContract"
- * })
- * @SqlResultSetMappings({
- *      @SqlResultSetMapping(
- *          name    = "mapping-all-contracts",
- *          entities= {
- *              @EntityResult(
- *                  entityClass         = "__CLASS__",
- *                  discriminatorColumn = "discr",
- *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("completed"),
- *                  }
- *              )
- *          }
- *      ),
- *      @SqlResultSetMapping(
- *          name    = "mapping-all",
- *          entities= {
- *              @EntityResult(
- *                  entityClass         = "__CLASS__",
- *                  discriminatorColumn = "discr",
- *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("completed"),
- *                  }
- *              )
- *          }
- *      ),
  * })
  */
 #[ORM\Entity, ORM\Table(name: 'company_contracts')]

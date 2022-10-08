@@ -13,25 +13,16 @@
             <discriminator-mapping value="employee" class="CompanyEmployee" />
         </discriminator-map>
 
-        <sql-result-set-mappings>
-            <sql-result-set-mapping name="mappingFetchAll">
-                <entity-result entity-class="__CLASS__" discriminator-column="discriminator">
-                    <field-result name="id"/>
-                    <field-result name="name"/>
-                </entity-result>
-            </sql-result-set-mapping>
-        </sql-result-set-mappings>
-        
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>
-        
+
         <field name="name" column="name"/>
-        
+
         <one-to-one field="spouse" target-entity="CompanyPerson">
             <join-column name="spouse_id" referenced-column-name="id"/>
         </one-to-one>
-        
+
         <many-to-many field="friends" target-entity="CompanyPerson">
             <join-table name="company_persons_friends">
                 <join-columns>

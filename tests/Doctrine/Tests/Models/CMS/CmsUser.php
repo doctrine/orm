@@ -8,10 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\ColumnResult;
 use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\EntityResult;
-use Doctrine\ORM\Mapping\FieldResult;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
@@ -19,86 +16,11 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\ORM\Mapping\SqlResultSetMapping;
-use Doctrine\ORM\Mapping\SqlResultSetMappings;
 use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
  * @Table(name="cms_users")
- * @SqlResultSetMappings({
- *      @SqlResultSetMapping(
- *          name    = "mappingJoinedAddress",
- *          entities= {
- *              @EntityResult(
- *                  entityClass = "__CLASS__",
- *                  fields      = {
- *                      @FieldResult(name = "id"),
- *                      @FieldResult(name = "name"),
- *                      @FieldResult(name = "status"),
- *                      @FieldResult(name = "address.zip"),
- *                      @FieldResult(name = "address.city"),
- *                      @FieldResult(name = "address.country"),
- *                      @FieldResult(name = "address.id", column = "a_id"),
- *                  }
- *              )
- *          }
- *      ),
- *      @SqlResultSetMapping(
- *          name    = "mappingJoinedPhonenumber",
- *          entities= {
- *              @EntityResult(
- *                  entityClass = "CmsUser",
- *                  fields      = {
- *                      @FieldResult("id"),
- *                      @FieldResult("name"),
- *                      @FieldResult("status"),
- *                      @FieldResult("phonenumbers.phonenumber" , column = "number"),
- *                  }
- *              )
- *          }
- *      ),
- *      @SqlResultSetMapping(
- *          name    = "mappingUserPhonenumberCount",
- *          entities= {
- *              @EntityResult(
- *                  entityClass = "CmsUser",
- *                  fields      = {
- *                      @FieldResult(name = "id"),
- *                      @FieldResult(name = "name"),
- *                      @FieldResult(name = "status"),
- *                  }
- *              )
- *          },
- *          columns = {
- *              @ColumnResult("numphones")
- *          }
- *      ),
- *      @SqlResultSetMapping(
- *          name    = "mappingMultipleJoinsEntityResults",
- *          entities= {
- *              @EntityResult(
- *                  entityClass = "__CLASS__",
- *                  fields      = {
- *                      @FieldResult(name = "id",       column="u_id"),
- *                      @FieldResult(name = "name",     column="u_name"),
- *                      @FieldResult(name = "status",   column="u_status"),
- *                  }
- *              ),
- *              @EntityResult(
- *                  entityClass = "CmsAddress",
- *                  fields      = {
- *                      @FieldResult(name = "id",       column="a_id"),
- *                      @FieldResult(name = "zip",      column="a_zip"),
- *                      @FieldResult(name = "country",  column="a_country"),
- *                  }
- *              )
- *          },
- *          columns = {
- *              @ColumnResult("numphones")
- *          }
- *      )
- * })
  */
 class CmsUser
 {
@@ -297,157 +219,6 @@ class CmsUser
     {
         $metadata->setPrimaryTable(
             ['name' => 'cms_users'],
-        );
-
-        $metadata->addSqlResultSetMapping(
-            [
-                'name'      => 'mappingJoinedAddress',
-                'columns'   => [],
-                'entities'  => [
-                    [
-                        'fields' => [
-                            [
-                                'name'      => 'id',
-                                'column'    => 'id',
-                            ],
-                            [
-                                'name'      => 'name',
-                                'column'    => 'name',
-                            ],
-                            [
-                                'name'      => 'status',
-                                'column'    => 'status',
-                            ],
-                            [
-                                'name'      => 'address.zip',
-                                'column'    => 'zip',
-                            ],
-                            [
-                                'name'      => 'address.city',
-                                'column'    => 'city',
-                            ],
-                            [
-                                'name'      => 'address.country',
-                                'column'    => 'country',
-                            ],
-                            [
-                                'name'      => 'address.id',
-                                'column'    => 'a_id',
-                            ],
-                        ],
-                        'entityClass'           => self::class,
-                        'discriminatorColumn'   => null,
-                    ],
-                ],
-            ],
-        );
-
-        $metadata->addSqlResultSetMapping(
-            [
-                'name'      => 'mappingJoinedPhonenumber',
-                'columns'   => [],
-                'entities'  => [
-                    [
-                        'fields' => [
-                            [
-                                'name'      => 'id',
-                                'column'    => 'id',
-                            ],
-                            [
-                                'name'      => 'name',
-                                'column'    => 'name',
-                            ],
-                            [
-                                'name'      => 'status',
-                                'column'    => 'status',
-                            ],
-                            [
-                                'name'      => 'phonenumbers.phonenumber',
-                                'column'    => 'number',
-                            ],
-                        ],
-                        'entityClass'   => self::class,
-                        'discriminatorColumn'   => null,
-                    ],
-                ],
-            ],
-        );
-
-        $metadata->addSqlResultSetMapping(
-            [
-                'name'      => 'mappingUserPhonenumberCount',
-                'columns'   => [],
-                'entities'  => [
-                    [
-                        'fields' => [
-                            [
-                                'name'      => 'id',
-                                'column'    => 'id',
-                            ],
-                            [
-                                'name'      => 'name',
-                                'column'    => 'name',
-                            ],
-                            [
-                                'name'      => 'status',
-                                'column'    => 'status',
-                            ],
-                        ],
-                        'entityClass'   => self::class,
-                        'discriminatorColumn'   => null,
-                    ],
-                ],
-                'columns' => [
-                    ['name' => 'numphones'],
-                ],
-            ],
-        );
-
-        $metadata->addSqlResultSetMapping(
-            [
-                'name'      => 'mappingMultipleJoinsEntityResults',
-                'entities'  => [
-                    [
-                        'fields' => [
-                            [
-                                'name'      => 'id',
-                                'column'    => 'u_id',
-                            ],
-                            [
-                                'name'      => 'name',
-                                'column'    => 'u_name',
-                            ],
-                            [
-                                'name'      => 'status',
-                                'column'    => 'u_status',
-                            ],
-                        ],
-                        'entityClass'           => self::class,
-                        'discriminatorColumn'   => null,
-                    ],
-                    [
-                        'fields' => [
-                            [
-                                'name'      => 'id',
-                                'column'    => 'a_id',
-                            ],
-                            [
-                                'name'      => 'zip',
-                                'column'    => 'a_zip',
-                            ],
-                            [
-                                'name'      => 'country',
-                                'column'    => 'a_country',
-                            ],
-                        ],
-                        'entityClass'           => CmsAddress::class,
-                        'discriminatorColumn'   => null,
-                    ],
-                ],
-                'columns' => [
-                    ['name' => 'numphones'],
-                ],
-            ],
         );
     }
 }
