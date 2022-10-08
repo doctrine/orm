@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 enum GH10063Enum: string
 {
-    case Red = 'red';
+    case Red   = 'red';
     case Green = 'green';
-    case Blue = 'blue';
+    case Blue  = 'blue';
 }
