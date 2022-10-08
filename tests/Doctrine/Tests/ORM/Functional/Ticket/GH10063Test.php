@@ -10,6 +10,9 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+/**
+ * @requires PHP 8.1
+ */
 final class GH10063Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -33,7 +36,10 @@ final class GH10063Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+/**
+ * @Entity
+ * @requires PHP 8.1
+ */
 class GH10063Entity
 {
     /**
@@ -65,6 +71,9 @@ class GH10063Entity
     }
 }
 
+/**
+ * @requires PHP 8.1
+ */
 enum GH10063Enum: string
 {
     case Red = 'red';
