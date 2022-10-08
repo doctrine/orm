@@ -19,9 +19,7 @@ class GH10063Entity
      */
     public int $id;
 
-    /**
-     * @Column(type="simple_array", length=255, nullable=true, enumType=GH10063Enum::class)
-     */
+    /** @Column(type="simple_array", length=255, nullable=true, enumType=GH10063Enum::class) */
     private array $colors = [];
 
     /**
@@ -30,8 +28,10 @@ class GH10063Entity
     public function setColors(array $colors): self
     {
         $this->colors = $colors;
+
         return $this;
     }
+
     /**
      * @return array<int, GH10063Enum>
      */
