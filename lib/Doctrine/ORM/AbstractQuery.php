@@ -1077,7 +1077,8 @@ abstract class AbstractQuery
      *
      * @param ArrayCollection|mixed[]|null $parameters    The query parameters.
      * @param string|int|null              $hydrationMode The hydration mode to use.
-     * @psalm-param string|AbstractQuery::HYDRATE_*|null $hydrationMode The hydration mode to use.
+     * @psalm-param ArrayCollection<int, Parameter>|array<string, mixed>|null $parameters
+     * @psalm-param string|AbstractQuery::HYDRATE_*|null                      $hydrationMode The hydration mode to use.
      *
      * @return IterableResult
      */
