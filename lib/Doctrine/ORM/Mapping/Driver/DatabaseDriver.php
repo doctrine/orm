@@ -304,14 +304,15 @@ class DatabaseDriver implements MappingDriver
                 $allForeignKeyColumns = array_merge($allForeignKeyColumns, $foreignKey->getLocalColumns());
             }
 
-            if (! $table->hasPrimaryKey()) {
+            $primaryKey = $table->getPrimaryKey();
+            if ($primaryKey === null) {
                 throw new MappingException(
                     'Table ' . $tableName . ' has no primary key. Doctrine does not ' .
                     "support reverse engineering from tables that don't have a primary key."
                 );
             }
 
-            $pkColumns = $table->getPrimaryKey()->getColumns();
+            $pkColumns = $primaryKey->getColumns();
 
             sort($pkColumns);
             sort($allForeignKeyColumns);

@@ -893,13 +893,16 @@ class SchemaTool
             }
 
             foreach ($schema->getTables() as $table) {
-                if ($table->hasPrimaryKey()) {
-                    $columns = $table->getPrimaryKey()->getColumns();
-                    if (count($columns) === 1) {
-                        $checkSequence = $table->getName() . '_' . $columns[0] . '_seq';
-                        if ($deployedSchema->hasSequence($checkSequence) && ! $schema->hasSequence($checkSequence)) {
-                            $schema->createSequence($checkSequence);
-                        }
+                $primaryKey = $table->getPrimaryKey();
+                if ($primaryKey === null) {
+                    continue;
+                }
+
+                $columns = $primaryKey->getColumns();
+                if (count($columns) === 1) {
+                    $checkSequence = $table->getName() . '_' . $columns[0] . '_seq';
+                    if ($deployedSchema->hasSequence($checkSequence) && ! $schema->hasSequence($checkSequence)) {
+                        $schema->createSequence($checkSequence);
                     }
                 }
             }
