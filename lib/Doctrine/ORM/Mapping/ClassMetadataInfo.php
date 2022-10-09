@@ -373,26 +373,6 @@ class ClassMetadataInfo implements ClassMetadata, Stringable
     public array $embeddedClasses = [];
 
     /**
-     * READ-ONLY: The mappings of the results of native SQL queries.
-     *
-     * A native result mapping definition has the following structure:
-     * <pre>
-     * array(
-     *     'name'               => <result name>,
-     *     'entities'           => array(<entity result mapping>),
-     *     'columns'            => array(<column result mapping>)
-     * )
-     * </pre>
-     *
-     * @psalm-var array<string, array{
-     *                name: string,
-     *                entities: mixed[],
-     *                columns: mixed[]
-     *            }>
-     */
-    public array $sqlResultSetMappings = [];
-
-    /**
      * READ-ONLY: The field names of all fields that are part of the identifier/primary key
      * of the mapped entity class.
      *
@@ -917,10 +897,6 @@ class ClassMetadataInfo implements ClassMetadata, Stringable
             $serialized[] = 'entityListeners';
         }
 
-        if ($this->sqlResultSetMappings) {
-            $serialized[] = 'sqlResultSetMappings';
-        }
-
         if ($this->isReadOnly) {
             $serialized[] = 'isReadOnly';
         }
@@ -1278,36 +1254,6 @@ class ClassMetadataInfo implements ClassMetadata, Stringable
     public function getFieldName(string $columnName): string
     {
         return $this->fieldNames[$columnName] ?? $columnName;
-    }
-
-    /**
-     * Gets the result set mapping.
-     *
-     * @see ClassMetadataInfo::$sqlResultSetMappings
-     *
-     * @return mixed[]
-     * @psalm-return array{name: string, entities: array, columns: array}
-     *
-     * @throws MappingException
-     */
-    public function getSqlResultSetMapping(string $name): array
-    {
-        if (! isset($this->sqlResultSetMappings[$name])) {
-            throw MappingException::resultMappingNotFound($this->name, $name);
-        }
-
-        return $this->sqlResultSetMappings[$name];
-    }
-
-    /**
-     * Gets all sql result set mappings of the class.
-     *
-     * @return mixed[]
-     * @psalm-return array<string, array{name: string, entities: array, columns: array}>
-     */
-    public function getSqlResultSetMappings(): array
-    {
-        return $this->sqlResultSetMappings;
     }
 
     /**
@@ -2445,63 +2391,6 @@ class ClassMetadataInfo implements ClassMetadata, Stringable
         $this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
         $this->columnNames[$fieldMapping['fieldName']]   = $fieldMapping['columnName'];
         $this->fieldNames[$fieldMapping['columnName']]   = $fieldMapping['fieldName'];
-    }
-
-    /**
-     * INTERNAL:
-     * Adds a sql result set mapping to this class.
-     *
-     * @psalm-param array<string, mixed> $resultMapping
-     *
-     * @throws MappingException
-     */
-    public function addSqlResultSetMapping(array $resultMapping): void
-    {
-        if (! isset($resultMapping['name'])) {
-            throw MappingException::nameIsMandatoryForSqlResultSetMapping($this->name);
-        }
-
-        if (isset($this->sqlResultSetMappings[$resultMapping['name']])) {
-            throw MappingException::duplicateResultSetMapping($this->name, $resultMapping['name']);
-        }
-
-        if (isset($resultMapping['entities'])) {
-            foreach ($resultMapping['entities'] as $key => $entityResult) {
-                if (! isset($entityResult['entityClass'])) {
-                    throw MappingException::missingResultSetMappingEntity($this->name, $resultMapping['name']);
-                }
-
-                $entityResult['isSelfClass'] = false;
-                if ($entityResult['entityClass'] === '__CLASS__') {
-                    $entityResult['isSelfClass'] = true;
-                    $entityResult['entityClass'] = $this->name;
-                }
-
-                $entityResult['entityClass'] = $this->fullyQualifiedClassName($entityResult['entityClass']);
-
-                $resultMapping['entities'][$key]['entityClass'] = ltrim($entityResult['entityClass'], '\\');
-                $resultMapping['entities'][$key]['isSelfClass'] = $entityResult['isSelfClass'];
-
-                if (isset($entityResult['fields'])) {
-                    foreach ($entityResult['fields'] as $k => $field) {
-                        if (! isset($field['name'])) {
-                            throw MappingException::missingResultSetMappingFieldName($this->name, $resultMapping['name']);
-                        }
-
-                        if (! isset($field['column'])) {
-                            $fieldName = $field['name'];
-                            if (str_contains($fieldName, '.')) {
-                                [, $fieldName] = explode('.', $fieldName);
-                            }
-
-                            $resultMapping['entities'][$key]['fields'][$k]['column'] = $fieldName;
-                        }
-                    }
-                }
-            }
-        }
-
-        $this->sqlResultSetMappings[$resultMapping['name']] = $resultMapping;
     }
 
     /**

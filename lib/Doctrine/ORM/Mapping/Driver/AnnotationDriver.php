@@ -220,46 +220,6 @@ class AnnotationDriver implements MappingDriver
             $metadata->enableCache($cacheMap);
         }
 
-        // Evaluate SqlResultSetMappings annotation
-        if (isset($classAnnotations[Mapping\SqlResultSetMappings::class])) {
-            $sqlResultSetMappingsAnnot = $classAnnotations[Mapping\SqlResultSetMappings::class];
-
-            foreach ($sqlResultSetMappingsAnnot->value as $resultSetMapping) {
-                $entities = [];
-                $columns  = [];
-                foreach ($resultSetMapping->entities as $entityResultAnnot) {
-                    $entityResult = [
-                        'fields'                => [],
-                        'entityClass'           => $entityResultAnnot->entityClass,
-                        'discriminatorColumn'   => $entityResultAnnot->discriminatorColumn,
-                    ];
-
-                    foreach ($entityResultAnnot->fields as $fieldResultAnnot) {
-                        $entityResult['fields'][] = [
-                            'name'      => $fieldResultAnnot->name,
-                            'column'    => $fieldResultAnnot->column,
-                        ];
-                    }
-
-                    $entities[] = $entityResult;
-                }
-
-                foreach ($resultSetMapping->columns as $columnResultAnnot) {
-                    $columns[] = [
-                        'name' => $columnResultAnnot->name,
-                    ];
-                }
-
-                $metadata->addSqlResultSetMapping(
-                    [
-                        'name'          => $resultSetMapping->name,
-                        'entities'      => $entities,
-                        'columns'       => $columns,
-                    ],
-                );
-            }
-        }
-
         // Evaluate InheritanceType annotation
         if (isset($classAnnotations[Mapping\InheritanceType::class])) {
             $inheritanceTypeAnnot = $classAnnotations[Mapping\InheritanceType::class];

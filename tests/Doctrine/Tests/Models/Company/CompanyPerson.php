@@ -11,8 +11,6 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\EntityResult;
-use Doctrine\ORM\Mapping\FieldResult;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
@@ -20,8 +18,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\ORM\Mapping\SqlResultSetMapping;
-use Doctrine\ORM\Mapping\SqlResultSetMappings;
 use Doctrine\ORM\Mapping\Table;
 
 /**
@@ -35,21 +31,6 @@ use Doctrine\ORM\Mapping\Table;
  *      "person"    = "CompanyPerson",
  *      "manager"   = "CompanyManager",
  *      "employee"  = "CompanyEmployee"
- * })
- * @SqlResultSetMappings({
- *      @SqlResultSetMapping(
- *          name    = "mappingFetchAll",
- *          entities= {
- *              @EntityResult(
- *                  entityClass         = "__CLASS__",
- *                  discriminatorColumn = "discriminator",
- *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("name"),
- *                  }
- *              )
- *          }
- *      )
  * })
  */
 class CompanyPerson
@@ -136,29 +117,6 @@ class CompanyPerson
     {
         $metadata->setPrimaryTable(
             ['name' => 'company_person'],
-        );
-
-        $metadata->addSqlResultSetMapping(
-            [
-                'name'      => 'mappingFetchAll',
-                'columns'   => [],
-                'entities'  => [
-                    [
-                        'fields' => [
-                            [
-                                'name'      => 'id',
-                                'column'    => 'id',
-                            ],
-                            [
-                                'name'      => 'name',
-                                'column'    => 'name',
-                            ],
-                        ],
-                        'entityClass' => self::class,
-                        'discriminatorColumn' => 'discriminator',
-                    ],
-                ],
-            ],
         );
     }
 }

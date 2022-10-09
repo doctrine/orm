@@ -128,48 +128,6 @@ class XmlDriver extends FileDriver
             $metadata->enableCache($this->cacheToArray($xmlRoot->cache));
         }
 
-        // Evaluate sql result set mapping
-        if (isset($xmlRoot->{'sql-result-set-mappings'})) {
-            foreach ($xmlRoot->{'sql-result-set-mappings'}->{'sql-result-set-mapping'} as $rsmElement) {
-                $entities = [];
-                $columns  = [];
-                foreach ($rsmElement as $entityElement) {
-                    //<entity-result/>
-                    if (isset($entityElement['entity-class'])) {
-                        $entityResult = [
-                            'fields'                => [],
-                            'entityClass'           => (string) $entityElement['entity-class'],
-                            'discriminatorColumn'   => isset($entityElement['discriminator-column']) ? (string) $entityElement['discriminator-column'] : null,
-                        ];
-
-                        foreach ($entityElement as $fieldElement) {
-                            $entityResult['fields'][] = [
-                                'name'      => isset($fieldElement['name']) ? (string) $fieldElement['name'] : null,
-                                'column'    => isset($fieldElement['column']) ? (string) $fieldElement['column'] : null,
-                            ];
-                        }
-
-                        $entities[] = $entityResult;
-                    }
-
-                    //<column-result/>
-                    if (isset($entityElement['name'])) {
-                        $columns[] = [
-                            'name' => (string) $entityElement['name'],
-                        ];
-                    }
-                }
-
-                $metadata->addSqlResultSetMapping(
-                    [
-                        'name'          => (string) $rsmElement['name'],
-                        'entities'      => $entities,
-                        'columns'       => $columns,
-                    ],
-                );
-            }
-        }
-
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
             $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType));

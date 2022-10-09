@@ -20,11 +20,6 @@ class AttributeDriverTest extends MappingDriverTestCase
         return new AttributeDriver($paths);
     }
 
-    public function testSqlResultSetMapping(): void
-    {
-        self::markTestSkipped('AttributeDriver does not support named sql resultset mapping.');
-    }
-
     public function testOriginallyNestedAttributesDeclaredWithoutOriginalParent(): void
     {
         $factory = $this->createClassMetadataFactory();

@@ -8,17 +8,12 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\ColumnResult;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\EntityListeners;
-use Doctrine\ORM\Mapping\EntityResult;
-use Doctrine\ORM\Mapping\FieldResult;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\ORM\Mapping\SqlResultSetMapping;
-use Doctrine\ORM\Mapping\SqlResultSetMappings;
 use Doctrine\ORM\Mapping\Table;
 
 /**
@@ -26,37 +21,6 @@ use Doctrine\ORM\Mapping\Table;
  *
  * @Entity
  * @Table(name="cms_addresses")
- * @SqlResultSetMappings({
- *      @SqlResultSetMapping(
- *          name    = "mapping-find-all",
- *          entities= {
- *              @EntityResult(
- *                  entityClass = "CmsAddress",
- *                  fields      = {
- *                      @FieldResult(name = "id",       column="id"),
- *                      @FieldResult(name = "city",     column="city"),
- *                      @FieldResult(name = "country",  column="country")
- *                  }
- *              )
- *          }
- *      ),
- *      @SqlResultSetMapping(
- *          name    = "mapping-without-fields",
- *          entities= {
- *              @EntityResult(
- *                  entityClass = "__CLASS__"
- *              )
- *          }
- *      ),
- *      @SqlResultSetMapping(
- *          name    = "mapping-count",
- *          columns = {
- *              @ColumnResult(
- *                  name = "count"
- *              )
- *          }
- *      )
- * })
  * @EntityListeners({"CmsAddressListener"})
  */
 #[ORM\Entity]
@@ -171,54 +135,6 @@ class CmsAddress
                 'fieldName'     => 'user',
                 'targetEntity'  => 'CmsUser',
                 'joinColumns'   => [['referencedColumnName' => 'id']],
-            ],
-        );
-
-        $metadata->addSqlResultSetMapping(
-            [
-                'name'      => 'mapping-find-all',
-                'columns'   => [],
-                'entities'  => [
-                    [
-                        'fields' => [
-                            [
-                                'name'      => 'id',
-                                'column'    => 'id',
-                            ],
-                            [
-                                'name'      => 'city',
-                                'column'    => 'city',
-                            ],
-                            [
-                                'name'      => 'country',
-                                'column'    => 'country',
-                            ],
-                        ],
-                        'entityClass' => self::class,
-                    ],
-                ],
-            ],
-        );
-
-        $metadata->addSqlResultSetMapping(
-            [
-                'name'      => 'mapping-without-fields',
-                'columns'   => [],
-                'entities'  => [
-                    [
-                        'entityClass' => self::class,
-                        'fields' => [],
-                    ],
-                ],
-            ],
-        );
-
-        $metadata->addSqlResultSetMapping(
-            [
-                'name' => 'mapping-count',
-                'columns' => [
-                    ['name' => 'count'],
-                ],
             ],
         );
 
