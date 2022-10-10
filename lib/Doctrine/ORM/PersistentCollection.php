@@ -18,7 +18,6 @@ use function array_map;
 use function array_values;
 use function array_walk;
 use function assert;
-use function get_class;
 use function is_object;
 use function spl_object_id;
 
@@ -44,14 +43,12 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @psalm-var array<string|int, mixed>
      */
-    private $snapshot = [];
+    private array $snapshot = [];
 
     /**
      * The entity that owns this collection.
-     *
-     * @var object|null
      */
-    private $owner;
+    private object|null $owner = null;
 
     /**
      * The association mapping the collection belongs to.
@@ -59,37 +56,29 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @psalm-var array<string, mixed>|null
      */
-    private $association;
+    private array|null $association = null;
 
     /**
      * The EntityManager that manages the persistence of the collection.
-     *
-     * @var EntityManagerInterface|null
      */
-    private $em;
+    private EntityManagerInterface|null $em = null;
 
     /**
      * The name of the field on the target entities that points to the owner
      * of the collection. This is only set if the association is bi-directional.
-     *
-     * @var string|null
      */
-    private $backRefFieldName;
+    private string|null $backRefFieldName = null;
 
     /**
      * The class descriptor of the collection's entity type.
-     *
-     * @var ClassMetadata|null
      */
-    private $typeClass;
+    private ClassMetadata|null $typeClass = null;
 
     /**
      * Whether the collection is dirty and needs to be synchronized with the database
      * when the UnitOfWork that manages its persistent state commits.
-     *
-     * @var bool
      */
-    private $isDirty = false;
+    private bool $isDirty = false;
 
     /**
      * Creates a new persistent collection.
@@ -98,8 +87,11 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * @param ClassMetadata          $class The class descriptor of the entity type of this collection.
      * @psalm-param Collection<TKey, T> $collection The collection elements.
      */
-    public function __construct(EntityManagerInterface $em, $class, Collection $collection)
-    {
+    public function __construct(
+        EntityManagerInterface $em,
+        ClassMetadata $class,
+        Collection $collection,
+    ) {
         $this->collection  = $collection;
         $this->em          = $em;
         $this->typeClass   = $class;
@@ -111,10 +103,9 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * Sets the collection's owning entity together with the AssociationMapping that
      * describes the association between the owner and the elements of the collection.
      *
-     * @param object $entity
      * @psalm-param array<string, mixed> $assoc
      */
-    public function setOwner($entity, array $assoc): void
+    public function setOwner(object $entity, array $assoc): void
     {
         $this->owner            = $entity;
         $this->association      = $assoc;
@@ -124,15 +115,13 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * INTERNAL:
      * Gets the collection owner.
-     *
-     * @return object|null
      */
-    public function getOwner()
+    public function getOwner(): object|null
     {
         return $this->owner;
     }
 
-    public function getTypeClass(): Mapping\ClassMetadata
+    public function getTypeClass(): ClassMetadata
     {
         assert($this->typeClass !== null);
 
@@ -150,10 +139,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * INTERNAL:
      * Adds an element to a collection during hydration. This will automatically
      * complete bidirectional associations in the case of a one-to-many association.
-     *
-     * @param mixed $element The element to add.
      */
-    public function hydrateAdd($element): void
+    public function hydrateAdd(mixed $element): void
     {
         $this->unwrap()->add($element);
 
@@ -178,11 +165,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * INTERNAL:
      * Sets a keyed element in the collection during hydration.
-     *
-     * @param mixed $key     The key to set.
-     * @param mixed $element The element to set.
      */
-    public function hydrateSet($key, $element): void
+    public function hydrateSet(mixed $key, mixed $element): void
     {
         $this->unwrap()->set($key, $element);
 
@@ -293,7 +277,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $this->association['type'] === ClassMetadata::MANY_TO_MANY &&
             $this->owner &&
             $this->em !== null &&
-            $this->em->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()
+            $this->em->getClassMetadata($this->owner::class)->isChangeTrackingNotify()
         ) {
             $this->getUnitOfWork()->scheduleForDirtyCheck($this->owner);
         }
@@ -302,8 +286,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * Gets a boolean flag indicating whether this collection is dirty which means
      * its state needs to be synchronized with the database.
-     *
-     * @return bool TRUE if the collection is dirty, FALSE otherwise.
      */
     public function isDirty(): bool
     {
@@ -312,28 +294,21 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
     /**
      * Sets a boolean flag, indicating whether this collection is dirty.
-     *
-     * @param bool $dirty Whether the collection should be marked dirty or not.
      */
-    public function setDirty($dirty): void
+    public function setDirty(bool $dirty): void
     {
         $this->isDirty = $dirty;
     }
 
     /**
      * Sets the initialized flag of the collection, forcing it into that state.
-     *
-     * @param bool $bool
      */
-    public function setInitialized($bool): void
+    public function setInitialized(bool $bool): void
     {
         $this->initialized = $bool;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function remove($key)
+    public function remove(string|int $key): mixed
     {
         // TODO: If the keys are persistent as well (not yet implemented)
         //       and the collection is not initialized and orphanRemoval is
@@ -359,10 +334,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         return $removed;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function removeElement($element): bool
+    public function removeElement(mixed $element): bool
     {
         $removed = parent::removeElement($element);
 
@@ -384,10 +356,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         return $removed;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function containsKey($key): bool
+    public function containsKey(mixed $key): bool
     {
         if (
             ! $this->initialized && $this->association['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY
@@ -406,7 +375,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @template TMaybeContained
      */
-    public function contains($element): bool
+    public function contains(mixed $element): bool
     {
         if (! $this->initialized && $this->association['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY) {
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->association);
@@ -417,10 +386,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         return parent::contains($element);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function get($key)
+    public function get(string|int $key): mixed
     {
         if (
             ! $this->initialized
@@ -450,10 +416,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         return parent::count();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function set($key, $value): void
+    public function set(string|int $key, mixed $value): void
     {
         parent::set($key, $value);
 
@@ -464,10 +427,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function add($value): bool
+    public function add(mixed $value): bool
     {
         $this->unwrap()->add($value);
 
@@ -480,28 +440,17 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         return true;
     }
 
-    /* ArrayAccess implementation */
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return $this->containsKey($offset);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetGet($offset): mixed
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->get($offset);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if (! isset($offset)) {
             $this->add($value);
@@ -512,10 +461,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         $this->set($offset, $value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         $this->remove($offset);
     }
@@ -584,13 +530,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * Keys have to be preserved by this method. Calling this method will only return the
      * selected slice and NOT change the elements contained in the collection slice is called on.
      *
-     * @param int      $offset
-     * @param int|null $length
-     *
      * @return mixed[]
      * @psalm-return array<TKey,T>
      */
-    public function slice($offset, $length = null): array
+    public function slice(int $offset, int|null $length = null): array
     {
         if (! $this->initialized && ! $this->isDirty && $this->association['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY) {
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->association);
