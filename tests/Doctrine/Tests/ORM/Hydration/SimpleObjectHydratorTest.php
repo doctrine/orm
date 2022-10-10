@@ -13,14 +13,14 @@ use Doctrine\Tests\DbalTypes\GH8565ManagerPayloadType;
 use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\Models\Enums\Card;
+use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\GH8565\GH8565Employee;
 use Doctrine\Tests\Models\GH8565\GH8565Manager;
 use Doctrine\Tests\Models\GH8565\GH8565Person;
 use Doctrine\Tests\Models\Issue5989\Issue5989Employee;
 use Doctrine\Tests\Models\Issue5989\Issue5989Manager;
 use Doctrine\Tests\Models\Issue5989\Issue5989Person;
-use Doctrine\Tests\Models\Enums\Card;
-use Doctrine\Tests\Models\Enums\Suit;
 
 class SimpleObjectHydratorTest extends HydrationTestCase
 {
@@ -157,7 +157,6 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $result   = $hydrator->hydrateAll($stmt, $rsm);
         self::assertEquals($result[0], $expectedEntity);
     }
-
 
     /**
      * @requires PHP 8.1
