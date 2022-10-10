@@ -140,6 +140,10 @@ class SimpleObjectHydrator extends AbstractHydrator
                 $value = $type->convertToPHPValue($value, $this->_platform);
             }
 
+            if ($value !== null && isset($cacheKeyInfo['enumType'])) {
+                $value = $this->buildEnum($value, $cacheKeyInfo['enumType']);
+            }
+
             $fieldName = $cacheKeyInfo['fieldName'];
 
             // Prevent overwrite in case of inherit classes using same property name (See AbstractHydrator)

@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
-use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Query\Expr\Func;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\DataTransferObjects\DtoWithArrayOfEnums;
@@ -22,10 +21,13 @@ use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Enums\TypedCard;
 use Doctrine\Tests\Models\Enums\Unit;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ValueError;
 
 use function dirname;
 use function sprintf;
 use function uniqid;
+
+use const PHP_VERSION_ID;
 
 /**
  * @requires PHP 8.1
@@ -347,15 +349,10 @@ class EnumTest extends OrmFunctionalTestCase
             [$metadata->fieldMappings['id']['columnName'] => $card->id]
         );
 
-        $this->expectException(MappingException::class);
+        $this->expectException(ValueError::class);
         $this->expectExceptionMessage(sprintf(
-            <<<'EXCEPTION'
-Context: Trying to hydrate enum property "%s::$suit"
-Problem: Case "invalid" is not listed in enum "Doctrine\Tests\Models\Enums\Suit"
-Solution: Either add the case to the enum type or migrate the database column to use another case of the enum
-EXCEPTION
-            ,
-            $cardClass
+            '"invalid" is not a valid backing value for enum ' . (PHP_VERSION_ID < 80200 ? '"%s"' : '%s'),
+            Suit::class
         ));
 
         $this->_em->find($cardClass, $card->id);
