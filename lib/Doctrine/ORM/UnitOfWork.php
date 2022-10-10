@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use BackedEnum;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -742,6 +743,10 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 $orgValue = $originalData[$propName];
+
+                if ($orgValue instanceof BackedEnum) {
+                    $orgValue = $orgValue->value;
+                }
 
                 // skip if value haven't changed
                 if ($orgValue === $actualValue) {
