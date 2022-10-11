@@ -79,13 +79,15 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
         }
 
         if (PHP_VERSION_ID >= 80100) {
-            $declaringClass =  $this->childProperty->getDeclaringClass();
+            if ($this->childProperty->isReadOnly()) {
+                $declaringClass = $this->childProperty->getDeclaringClass();
 
-            if ($this->childProperty->isReadOnly() && $declaringClass->getName() !== $this->embeddedClass) {
-                $scopedChildProperty = $declaringClass->getProperty($this->childProperty->getName());
-                $scopedChildProperty->setValue($embeddedObject, $value);
+                if ($declaringClass->getName() !== $this->embeddedClass) {
+                    $scopedChildProperty = $declaringClass->getProperty($this->childProperty->getName());
+                    $scopedChildProperty->setValue($embeddedObject, $value);
 
-                return;
+                    return;
+                }
             }
         }
 
