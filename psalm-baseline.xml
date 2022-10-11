@@ -2989,7 +2989,7 @@
       <code>$class</code>
       <code>$collectionToDelete</code>
       <code>$collectionToUpdate</code>
-      <code>$commitOrder[$i]</code>
+      <code>$commitOrderForDeletions[$i]</code>
     </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="2">
       <code>! is_object($object)</code>
@@ -3073,7 +3073,8 @@
       <code>setValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
-    <PossiblyUndefinedArrayOffset occurrences="3">
+    <PossiblyUndefinedArrayOffset occurrences="4">
+      <code>$assoc['joinColumns']</code>
       <code>$assoc['joinColumns']</code>
       <code>$assoc['orphanRemoval']</code>
       <code>$assoc['targetToSourceKeyColumns']</code>

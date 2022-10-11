@@ -450,8 +450,9 @@ class UnitOfWork implements PropertyChangedListener
 
             // Entity deletions come last and need to be in reverse commit order
             if ($this->entityDeletions) {
-                for ($count = count($commitOrder), $i = $count - 1; $i >= 0 && $this->entityDeletions; --$i) {
-                    $this->executeDeletions($commitOrder[$i]);
+                $commitOrderForDeletions = $this->getCommitOrderForDeletions();
+                for ($count = count($commitOrderForDeletions), $i = $count - 1; $i >= 0 && $this->entityDeletions; --$i) {
+                    $this->executeDeletions($commitOrderForDeletions[$i]);
                 }
             }
 
@@ -1283,7 +1284,7 @@ class UnitOfWork implements PropertyChangedListener
         // are not yet available.
         $newNodes = [];
 
-        foreach (array_merge($this->entityInsertions, $this->entityUpdates, $this->entityDeletions) as $entity) {
+        foreach (array_merge($this->entityInsertions, $this->entityUpdates) as $entity) {
             $class = $this->em->getClassMetadata(get_class($entity));
 
             if ($calc->hasNode($class->name)) {
@@ -1329,6 +1330,49 @@ class UnitOfWork implements PropertyChangedListener
                     }
 
                     $calc->addDependency($targetSubClass->name, $class->name, 1);
+                }
+            }
+        }
+
+        return $calc->sort();
+    }
+
+    /**
+     * Gets the commit order for deletions.
+     *
+     * @return list<object>
+     */
+    private function getCommitOrderForDeletions(): array
+    {
+        $calc = $this->getCommitOrderCalculator();
+
+        $newNodes = [];
+
+        foreach ($this->entityDeletions as $entity) {
+            $class = $this->em->getClassMetadata(get_class($entity));
+
+            if ($calc->hasNode($class->name)) {
+                continue;
+            }
+
+            $calc->addNode($class->name, $class);
+
+            $newNodes[] = $class;
+        }
+
+        // Calculate dependencies for new nodes
+        while ($class = array_pop($newNodes)) {
+            foreach ($class->associationMappings as $assoc) {
+                if (! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
+                    continue;
+                }
+
+                $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+
+                $joinColumns = reset($assoc['joinColumns']);
+
+                if ($calc->hasNode($targetClass->name)) {
+                    $calc->addDependency($targetClass->name, $class->name, (int) empty($joinColumns['nullable']));
                 }
             }
         }
