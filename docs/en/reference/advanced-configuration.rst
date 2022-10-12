@@ -119,10 +119,10 @@ There are currently 5 available implementations:
 -  ``Doctrine\ORM\Mapping\Driver\YamlDriver``
 -  ``Doctrine\ORM\Mapping\Driver\DriverChain``
 
-Throughout the most part of this manual the AnnotationDriver is
-used in the examples. For information on the usage of the XmlDriver
-or YamlDriver please refer to the dedicated chapters
-``XML Mapping`` and ``YAML Mapping``.
+Throughout the most part of this manual the AttributeDriver is
+used in the examples. For information on the usage of the
+AnnotationDriver, XmlDriver or YamlDriver please refer to the dedicated
+chapters ``Annotation Reference``, ``XML Mapping`` and ``YAML Mapping``.
 
 The annotation driver can be configured with a factory method on
 the ``Doctrine\ORM\Configuration``:

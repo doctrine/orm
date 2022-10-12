@@ -256,14 +256,8 @@ entity definition:
     // src/Product.php
     class Product
     {
-        /**
-         * @var int
-         */
-        private $id;
-        /**
-         * @var string
-         */
-        private $name;
+        private int|null $id = null;
+        private string $name;
     }
 
 When creating entity classes, all of the fields should be ``private``.
@@ -514,22 +508,16 @@ but you only need to choose one.
 
         use Doctrine\ORM\Mapping as ORM;
 
-        /**
-         * @ORM\Entity
-         * @ORM\Table(name="products")
-         */
+        #[ORM\Entity]
+        #[ORM\Table(name: 'products')]
         class Product
         {
-            /**
-             * @ORM\Id
-             * @ORM\Column(type="integer")
-             * @ORM\GeneratedValue
-             */
-            private $id;
-            /**
-             * @ORM\Column(type="string")
-             */
-            private $name;
+            #[ORM\Id]
+            #[ORM\Column(type: 'integer')]
+            #[ORM\GeneratedValue]
+            private int|null $id = null;
+            #[ORM\Column(type: 'string')]
+            private string $name;
 
             // .. (other code)
         }
@@ -708,49 +696,35 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
 
     use Doctrine\ORM\Mapping as ORM;
 
-    /**
-     * @ORM\Entity
-     * @ORM\Table(name="bugs")
-     */
+    #[ORM\Entity]
+    #[ORM\Table(name: 'bugs')]
     class Bug
     {
-        /**
-         * @ORM\Id
-         * @ORM\Column(type="integer")
-         * @ORM\GeneratedValue
-         * @var int
-         */
-        private $id;
+        #[ORM\Id]
+        #[ORM\Column(type: 'integer')]
+        #[ORM\GeneratedValue]
+        private int $id;
 
-        /**
-         * @ORM\Column(type="string")
-         * @var string
-         */
-        private $description;
+        #[ORM\Column(type: 'string')]
+        private string $description;
 
-        /**
-         * @ORM\Column(type="datetime")
-         * @var DateTime
-         */
-        private $created;
+        #[ORM\Column(type: 'datetime')]
+        private DateTime $created;
 
-        /**
-         * @ORM\Column(type="string")
-         * @var string
-         */
-        private $status;
+        #[ORM\Column(type: 'string')]
+        private string $status;
 
-        public function getId()
+        public function getId(): int|null
         {
             return $this->id;
         }
 
-        public function getDescription()
+        public function getDescription(): string
         {
             return $this->description;
         }
 
-        public function setDescription($description)
+        public function setDescription(string $description): void
         {
             $this->description = $description;
         }
@@ -760,17 +734,17 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
             $this->created = $created;
         }
 
-        public function getCreated()
+        public function getCreated(): DateTime
         {
             return $this->created;
         }
 
-        public function setStatus($status)
+        public function setStatus($status): void
         {
             $this->status = $status;
         }
 
-        public function getStatus()
+        public function getStatus():string
         {
             return $this->status;
         }
@@ -783,37 +757,31 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
 
     use Doctrine\ORM\Mapping as ORM;
 
-    /**
-     * @ORM\Entity
-     * @ORM\Table(name="users")
-     */
+    #[ORM\Entity]
+    #[ORM\Table(name: 'users')]
     class User
     {
-        /**
-         * @ORM\Id
-         * @ORM\GeneratedValue
-         * @ORM\Column(type="integer")
-         * @var int
-         */
-        private $id;
+        /** @var int */
+        #[ORM\Id]
+        #[ORM\GeneratedValue]
+        #[ORM\Column(type: 'integer')]
+        private int|null $id = null;
 
-        /**
-         * @ORM\Column(type="string")
-         * @var string
-         */
-        private $name;
+        /** @var string */
+        #[ORM\Column(type: 'string')]
+        private string $name;
 
-        public function getId()
+        public function getId(): int|null
         {
             return $this->id;
         }
 
-        public function getName()
+        public function getName(): string
         {
             return $this->name;
         }
 
-        public function setName($name)
+        public function setName(string $name): void
         {
             $this->name = $name;
         }
@@ -842,13 +810,16 @@ domain model to match the requirements:
 
     <?php
     // src/Bug.php
+
     use Doctrine\Common\Collections\ArrayCollection;
+    use Doctrine\Common\Collections\Collection;
 
     class Bug
     {
         // ... (previous code)
 
-        private $products;
+        /** @var Collection<int, Product> */
+        private Collection $products;
 
         public function __construct()
         {
@@ -866,8 +837,10 @@ domain model to match the requirements:
     {
         // ... (previous code)
 
-        private $reportedBugs;
-        private $assignedBugs;
+        /** @var Collection<int, Bug> */
+        private Collection $reportedBugs;
+        /** @var Collection<int, Bug> */
+        private Collection $assignedBugs;
 
         public function __construct()
         {
@@ -942,27 +915,27 @@ the bi-directional reference:
     {
         // ... (previous code)
 
-        private $engineer;
-        private $reporter;
+        private User $engineer;
+        private User $reporter;
 
-        public function setEngineer(User $engineer)
+        public function setEngineer(User $engineer): void
         {
             $engineer->assignedToBug($this);
             $this->engineer = $engineer;
         }
 
-        public function setReporter(User $reporter)
+        public function setReporter(User $reporter): void
         {
             $reporter->addReportedBug($this);
             $this->reporter = $reporter;
         }
 
-        public function getEngineer()
+        public function getEngineer(): User
         {
             return $this->engineer;
         }
 
-        public function getReporter()
+        public function getReporter(): User
         {
             return $this->reporter;
         }
@@ -976,15 +949,17 @@ the bi-directional reference:
     {
         // ... (previous code)
 
-        private $reportedBugs;
-        private $assignedBugs;
+        /** @var Collection<int, Bug> */
+        private Collection $reportedBugs;
+        /** @var Collection<int, Bug> */
+        private Collection $assignedBugs;
 
-        public function addReportedBug(Bug $bug)
+        public function addReportedBug(Bug $bug): void
         {
             $this->reportedBugs[] = $bug;
         }
 
-        public function assignedToBug(Bug $bug)
+        public function assignedToBug(Bug $bug): void
         {
             $this->assignedBugs[] = $bug;
         }
@@ -1028,14 +1003,16 @@ the database that points from Bugs to Products.
     {
         // ... (previous code)
 
-        private $products;
+        /** @var Collection<int, Product> */
+        private Collection $products;
 
-        public function assignToProduct(Product $product)
+        public function assignToProduct(Product $product): void
         {
             $this->products[] = $product;
         }
 
-        public function getProducts()
+        /** @return Collection<int, Product> */
+        public function getProducts(): Collection
         {
             return $this->products;
         }
@@ -1051,50 +1028,36 @@ the ``Product`` before:
         <?php
         // src/Bug.php
 
+        use DateTime;
         use Doctrine\ORM\Mapping as ORM;
 
-        /**
-         * @ORM\Entity
-         * @ORM\Table(name="bugs")
-         */
+        #[ORM\Entity]
+        #[ORM\Table(name: 'bugs')]
         class Bug
         {
-            /**
-             * @ORM\Id
-             * @ORM\Column(type="integer")
-             * @ORM\GeneratedValue
-             */
-            private $id;
+            #[ORM\Id]
+            #[ORM\Column(type: 'integer')]
+            #[ORM\GeneratedValue]
+            private int|null $id = null;
 
-            /**
-             * @ORM\Column(type="string")
-             */
-            private $description;
+            #[ORM\Column(type: 'string')]
+            private string $description;
 
-            /**
-             * @ORM\Column(type="datetime")
-             */
-            private $created;
+            #[ORM\Column(type: 'datetime')]
+            private DateTime $created;
 
-            /**
-             * @ORM\Column(type="string")
-             */
-            private $status;
+            #[ORM\Column(type: 'string')]
+            private string $status;
 
-            /**
-             * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedBugs")
-             */
-            private $engineer;
+            #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'assignedBugs')]
+            private User|null $engineer = null;
 
-            /**
-             * @ORM\ManyToOne(targetEntity="User", inversedBy="reportedBugs")
-             */
-            private $reporter;
+            #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'reportedBugs')]
+            private User|null $reporter;
 
-            /**
-             * @ORM\ManyToMany(targetEntity="Product")
-             */
-            private $products;
+            /** @var Collection<int, Product> */
+            #[ORM\ManyToMany(targetEntity: Product::class)]
+            private Collection $products;
 
             // ... (other code)
         }
@@ -1190,36 +1153,24 @@ Finally, we'll add metadata mappings for the ``User`` entity.
 
         use Doctrine\ORM\Mapping as ORM;
 
-        /**
-         * @ORM\Entity
-         * @ORM\Table(name="users")
-         */
+        #[ORM\Entity]
+        #[ORM\Table(name: 'users')]
         class User
         {
-            /**
-             * @ORM\Id
-             * @ORM\GeneratedValue
-             * @ORM\Column(type="integer")
-             * @var int
-             */
-            private $id;
+            #[ORM\Id]
+            #[ORM\GeneratedValue]
+            #[ORM\Column(type: 'integer')]
+            private int|null $id = null;
 
-            /**
-             * @ORM\Column(type="string")
-             * @var string
-             */
-            private $name;
+            #[ORM\Column(type: 'string')]
+            private string $name;
 
-            /**
-             * @ORM\OneToMany(targetEntity="Bug", mappedBy="reporter")
-             * @var Bug[] An ArrayCollection of Bug objects.
-             */
-            private $reportedBugs;
+            /** @var Collection<int, Bug> An ArrayCollection of Bug objects. */
+            #[ORM\OneToMany(targetEntity: Bug::class, mappedBy: 'reporter')]
+            private Collection $reportedBugs;
 
-            /**
-             * @ORM\OneToMany(targetEntity="Bug", mappedBy="engineer")
-             * @var Bug[] An ArrayCollection of Bug objects.
-             */
+            /** @var Collection<int,Bug> An ArrayCollection of Bug objects. */
+            #[ORM\OneToMany(targetEntity: Bug::class, mappedBy: 'engineer')]
             private $assignedBugs;
 
             // .. (other code)
