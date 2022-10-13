@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Id;
 
+use BackedEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\EntityMissingAssignedId;
 
@@ -37,6 +38,10 @@ class AssignedGenerator extends AbstractIdGenerator
             if (isset($class->associationMappings[$idField])) {
                 // NOTE: Single Columns as associated identifiers only allowed - this constraint it is enforced.
                 $value = $em->getUnitOfWork()->getSingleIdentifierValue($value);
+            }
+
+            if ($value instanceof BackedEnum) {
+                $value = $value->value;
             }
 
             $identifier[$idField] = $value;

@@ -647,6 +647,9 @@ class BasicEntityPersister implements EntityPersister
             }
 
             $newVal = $change[1];
+            if ($newVal instanceof BackedEnum) {
+                $newVal = $newVal->value;
+            }
 
             if (! isset($this->class->associationMappings[$field])) {
                 $fieldMapping = $this->class->fieldMappings[$field];

@@ -38,7 +38,7 @@ class ReflectionEnumProperty extends ReflectionProperty
      *
      * @param object|null $object
      *
-     * @return int|string|int[]|string[]|null
+     * @return BackedEnum|null
      */
     #[ReturnTypeWillChange]
     public function getValue($object = null)
@@ -53,13 +53,7 @@ class ReflectionEnumProperty extends ReflectionProperty
             return null;
         }
 
-        if (is_array($enum)) {
-            return array_map(static function (BackedEnum $item): mixed {
-                return $item->value;
-            }, $enum);
-        }
-
-        return $enum->value;
+        return $enum;
     }
 
     /**
