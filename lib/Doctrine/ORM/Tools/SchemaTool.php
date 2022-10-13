@@ -500,8 +500,9 @@ class SchemaTool
         }
 
         if ($table->hasColumn($columnName)) {
+            $method = method_exists($table, 'modifyColumn') ? 'modifyColumn' : 'changeColumn';
             // required in some inheritance scenarios
-            $table->changeColumn($columnName, $options);
+            $table->$method($columnName, $options);
         } else {
             $table->addColumn($columnName, $columnType, $options);
         }

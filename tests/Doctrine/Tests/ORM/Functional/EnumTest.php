@@ -258,6 +258,46 @@ class EnumTest extends OrmFunctionalTestCase
         self::assertEqualsCanonicalizing([Unit::Gram, Unit::Meter], $result[0]->supportedUnits);
     }
 
+    public function testEnumChangeSetsSimpleObjectHydrator(): void
+    {
+        $this->setUpEntitySchema([Card::class]);
+
+        $card       = new Card();
+        $card->suit = Suit::Clubs;
+
+        $this->_em->persist($card);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->find(Card::class, $card->id);
+
+        $this->_em->getUnitOfWork()->computeChangeSets();
+
+        self::assertFalse($this->_em->getUnitOfWork()->isScheduledForUpdate($result));
+    }
+
+    public function testEnumChangeSetsObjectHydrator(): void
+    {
+        $this->setUpEntitySchema([Card::class]);
+
+        $card       = new Card();
+        $card->suit = Suit::Clubs;
+
+        $this->_em->persist($card);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(Card::class, 'c')
+            ->select('c')
+            ->getQuery()
+            ->getResult();
+
+        $this->_em->getUnitOfWork()->computeChangeSets();
+
+        self::assertFalse($this->_em->getUnitOfWork()->isScheduledForUpdate($result[0]));
+    }
+
     public function testFindByEnum(): void
     {
         $this->setUpEntitySchema([Card::class]);
