@@ -809,7 +809,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         // get rid of more global state
         $evm = $conn->getEventManager();
-        foreach ($evm->getListeners() as $event => $listeners) {
+        foreach ($evm->getAllListeners() as $event => $listeners) {
             foreach ($listeners as $listener) {
                 $evm->removeEventListener([$event], $listener);
             }
