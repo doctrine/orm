@@ -176,6 +176,11 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
+			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\:\\:fullyQualifiedClassName\\(\\) should return class\\-string\\|null but returns string\\|null\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
+
+		-
 			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\NamingStrategy\\:\\:joinColumnName\\(\\) invoked with 2 parameters, 1 required\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
@@ -496,7 +501,7 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
-			message: "#^Offset 'columns' on array\\{name\\: string, entities\\: array\\{\\}, columns\\: array\\}\\|array\\{name\\: string, entities\\: non\\-empty\\-array, columns\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"
+			message: "#^Offset 'columns' on array\\{name\\: string, entities\\: array, columns\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php
 
