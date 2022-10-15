@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\ChangeDetector;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Exception;
 use InvalidArgumentException;
+use Throwable;
 
 use function class_exists;
-use function gettype;
+use function get_class;
+use function sprintf;
 
 class ChangeDetectorRegistry
 {
@@ -39,7 +42,11 @@ class ChangeDetectorRegistry
     public function getChangeDetectorFromMetadata(ClassMetadata $class, string $propertyName): ChangeDetector
     {
         if (isset($class->fieldMappings[$propertyName]['changeDetector'])) {
-            return $this->getChangeDetector($class->fieldMappings[$propertyName]['changeDetector']);
+            try {
+                return $this->getChangeDetector($class->fieldMappings[$propertyName]['changeDetector']);
+            } catch (Throwable $e) {
+                throw new Exception(sprintf("Failed to determine the change detector for class '%s' and property '%s'", $class->name, $propertyName), 0, $e);
+            }
         }
 
         return $this->getChangeDetector(ByReferenceChangeDetector::class);
@@ -51,8 +58,10 @@ class ChangeDetectorRegistry
             if (class_exists($key)) {
                 $this->changeDetectors[$key] = new $key();
                 if (! $this->changeDetectors[$key] instanceof ChangeDetector) {
-                    throw new InvalidArgumentException('Expected ChangeDetector, got ' . gettype($this->changeDetectors[$key]));
+                    throw new InvalidArgumentException('Expected ChangeDetector, got ' . get_class($this->changeDetectors[$key]));
                 }
+            } else {
+                throw new InvalidArgumentException('Invalid ChangeDetector provided, it should be the name of a class implementing ChangeDetector interface ');
             }
         }
 
