@@ -5,9 +5,21 @@ on:
   pull_request:
     branches:
       - "*.x"
+    paths:
+      - .github/workflows/phpbench.yml
+      - composer.*
+      - lib/**
+      - phpbench.json
+      - tests/**
   push:
     branches:
       - "*.x"
+    paths:
+      - .github/workflows/phpbench.yml
+      - composer.*
+      - lib/**
+      - phpbench.json
+      - tests/**
 
 env:
   fail-fast: true
