@@ -3913,4 +3913,9 @@ class ClassMetadataInfo implements ClassMetadata
 
         return $reflectionProperty;
     }
+
+    public function getNamingStrategy() : NamingStrategy
+    {
+        return $this->namingStrategy;
+    }
 }
