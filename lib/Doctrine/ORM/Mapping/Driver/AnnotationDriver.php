@@ -782,7 +782,8 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
      *                   enumType?: class-string,
      *                   options?: mixed[],
      *                   columnName?: string,
-     *                   columnDefinition?: string
+     *                   columnDefinition?: string,
+     *                   changeDetector?:string
      *               }
      */
     private function columnToArray(string $fieldName, Mapping\Column $column): array
@@ -796,6 +797,10 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
             'nullable'      => $column->nullable,
             'precision'     => $column->precision,
         ];
+
+        if ($column->changeDetector) {
+            $mapping['changeDetector'] = $column->changeDetector;
+        }
 
         if (! $column->insertable) {
             $mapping['notInsertable'] = true;

@@ -36,6 +36,7 @@ use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
+use Doctrine\ORM\Tools\ChangeDetector\ChangeDetectorRegistry;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\NotifyPropertyChanged;
@@ -311,6 +312,8 @@ class UnitOfWork implements PropertyChangedListener
     /** @var ReflectionPropertiesGetter */
     private $reflectionPropertiesGetter;
 
+    private ChangeDetectorRegistry $changeDetectorRegistry;
+
     /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      */
@@ -323,6 +326,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->identifierFlattener        = new IdentifierFlattener($this, $em->getMetadataFactory());
         $this->hydrationCompleteHandler   = new HydrationCompleteHandler($this->listenersInvoker, $em);
         $this->reflectionPropertiesGetter = new ReflectionPropertiesGetter(new RuntimeReflectionService());
+        $this->changeDetectorRegistry     = new ChangeDetectorRegistry();
     }
 
     /**
@@ -749,7 +753,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // skip if value haven't changed
-                if ($orgValue === $actualValue) {
+                if (! $this->changeDetectorRegistry->isChanged($class, $propName, $actualValue, $orgValue)) {
                     continue;
                 }
 
@@ -1190,6 +1194,8 @@ class UnitOfWork implements PropertyChangedListener
 
             $identifier[$idField]                     = $value ?? $origValue;
             $this->originalEntityData[$oid][$idField] = $origValue;
+            // would the line below be usefull in some case?
+            // $this->originalEntityData[$oid][$idField] = $this->changeDetectorRegistry->copyOriginalValue($class, $idField, $origValue);
         }
 
         $this->entityStates[$oid]      = self::STATE_MANAGED;
@@ -2747,6 +2753,7 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($data as $field => $value) {
             if (isset($class->fieldMappings[$field])) {
+                $value = $this->changeDetectorRegistry->copyOriginalValue($class, $field, $value);
                 $class->reflFields[$field]->setValue($entity, $value);
             }
         }
