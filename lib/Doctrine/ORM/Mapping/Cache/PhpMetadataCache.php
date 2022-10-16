@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Mapping\Cache;
 
 use Composer\InstalledVersions;
 use Doctrine\Common\Cache\Psr6\CacheItem;
+use Doctrine\Common\Cache\Psr6\TypedCacheItem;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
@@ -36,10 +37,16 @@ class PhpMetadataCache implements CacheItemPoolInterface
     /** @var bool */
     private $debug;
 
+    /** @var class-string */
+    private $itemClass;
+
     public function __construct(string $cacheDir, bool $debug = false)
     {
-        $this->cacheDir = $cacheDir;
-        $this->debug    = $debug;
+        $this->cacheDir  = $cacheDir;
+        $this->debug     = $debug;
+        $this->itemClass = (PHP_VERSION_ID >= 80000)
+            ? TypedCacheItem::class
+            : CacheItem::class;
     }
 
     public function save(CacheItemInterface $item): bool
@@ -129,10 +136,10 @@ class PhpMetadataCache implements CacheItemPoolInterface
         $value = $this->fetch($key);
 
         if ($value instanceof ClassMetadataInfo) {
-            return new CacheItem($key, $value, true);
+            return new $this->itemClass($key, $value, true);
         }
 
-        return new CacheItem($key, null, false);
+        return new $this->itemClass($key, null, false);
     }
 
     /** @param string[] $keys */

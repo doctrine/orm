@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping\Cache;
 
 use Doctrine\Common\Cache\Psr6\CacheItem;
+use Doctrine\Common\Cache\Psr6\TypedCacheItem;
 use Doctrine\ORM\Mapping\Cache\PhpMetadataCache;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -14,13 +15,16 @@ class PhpMetadataCacheTest extends OrmFunctionalTestCase
     public function testLoadedMetadataEqualUncached()
     {
         $cache = new PhpMetadataCache(sys_get_temp_dir() . '/dcmetatest');
+        $itemClass = (PHP_VERSION_ID >= 80000)
+            ? TypedCacheItem::class
+            : CacheItem::class;
 
         foreach (self::$modelSets as $classes) {
             foreach ($classes as $class) {
                 $metadata = $this->_em->getMetadataFactory()->getMetadataFor($class);
 
                 $key = str_replace("\\", ".", $metadata->name);
-                $cache->save(new CacheItem($key, $metadata, false));
+                $cache->save(new $itemClass($key, $metadata, false));
 
                 $cached = $cache->getItem($key)->get();
                 $cached->reflClass = $metadata->reflClass;
