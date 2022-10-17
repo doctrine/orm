@@ -74,11 +74,13 @@ collections in entities in the constructor. Example:
     <?php
     namespace MyProject\Model;
     use Doctrine\Common\Collections\ArrayCollection;
-    
+
     class User {
-        private $addresses;
-        private $articles;
-    
+        /** @var Collection<int, Address> */
+        private Collection $addresses;
+        /** @var Collection<int, Article> */
+        private Collection $articles;
+
         public function __construct() {
             $this->addresses = new ArrayCollection;
             $this->articles = new ArrayCollection;

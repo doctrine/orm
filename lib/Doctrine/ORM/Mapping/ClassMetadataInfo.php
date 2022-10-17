@@ -82,7 +82,7 @@ use const PHP_VERSION_ID;
  *      nullable?: bool,
  *      notInsertable?: bool,
  *      notUpdatable?: bool,
- *      generated?: string,
+ *      generated?: int,
  *      enumType?: class-string<BackedEnum>,
  *      columnDefinition?: string,
  *      precision?: int,
