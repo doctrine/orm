@@ -49,10 +49,9 @@ This policy can be configured as follows:
 .. code-block:: php
 
     <?php
-    /**
-     * @Entity
-     * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
-     */
+
+    #[Entity]
+    #[ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
     class User
     {
         // ...
@@ -78,18 +77,16 @@ follows:
     <?php
     use Doctrine\Persistence\NotifyPropertyChanged,
         Doctrine\Persistence\PropertyChangedListener;
-    
-    /**
-     * @Entity
-     * @ChangeTrackingPolicy("NOTIFY")
-     */
+
+    #[Entity]
+    #[ChangeTrackingPolicy('NOTIFY')]
     class MyEntity implements NotifyPropertyChanged
     {
         // ...
-    
-        private $_listeners = array();
-    
-        public function addPropertyChangedListener(PropertyChangedListener $listener)
+
+        private array $_listeners = array();
+
+        public function addPropertyChangedListener(PropertyChangedListener $listener): void
         {
             $this->_listeners[] = $listener;
         }
@@ -104,12 +101,12 @@ behaviour:
 
     <?php
     // ...
-    
+
     class MyEntity implements NotifyPropertyChanged
     {
         // ...
-    
-        protected function _onPropertyChanged($propName, $oldValue, $newValue)
+
+        protected function _onPropertyChanged($propName, $oldValue, $newValue): void
         {
             if ($this->_listeners) {
                 foreach ($this->_listeners as $listener) {
@@ -117,8 +114,8 @@ behaviour:
                 }
             }
         }
-    
-        public function setData($data)
+
+        public function setData($data): void
         {
             if ($data != $this->data) {
                 $this->_onPropertyChanged('data', $this->data, $data);
@@ -134,18 +131,18 @@ The check whether the new value is different from the old one is
 not mandatory but recommended. That way you also have full control
 over when you consider a property changed.
 
-If your entity contains an embeddable, you will need to notify 
-separately for each property in the embeddable when it changes 
+If your entity contains an embeddable, you will need to notify
+separately for each property in the embeddable when it changes
 for example:
 
 .. code-block:: php
 
     <?php
     // ...
-    
+
     class MyEntity implements NotifyPropertyChanged
     {
-        public function setEmbeddable(MyValueObject $embeddable)
+        public function setEmbeddable(MyValueObject $embeddable): void
         {
             if (!$embeddable->equals($this->embeddable)) {
                 // notice the entityField.embeddableField notation for referencing the property
@@ -178,5 +175,3 @@ The positive point and main advantage of this policy is its
 effectiveness. It has the best performance characteristics of the 3
 policies with larger units of work and a flush() operation is very
 cheap when nothing has changed.
-
-

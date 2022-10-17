@@ -32,11 +32,12 @@ upon insert:
 
     class User
     {
-        const STATUS_DISABLED = 0;
-        const STATUS_ENABLED = 1;
+        private const STATUS_DISABLED = 0;
+        private const STATUS_ENABLED = 1;
 
-        private $algorithm = "sha1";
-        private $status = self:STATUS_DISABLED;
+        private string $algorithm = "sha1";
+        /** @var self::STATUS_* */
+        private int $status = self:STATUS_DISABLED;
     }
 
 .

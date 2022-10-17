@@ -23,48 +23,32 @@ concrete subclasses, ``ConcreteComponent`` and ``ConcreteDecorator``.
 
     namespace Test;
 
-    /**
-     * @Entity
-     * @InheritanceType("SINGLE_TABLE")
-     * @DiscriminatorColumn(name="discr", type="string")
-     * @DiscriminatorMap({"cc" = "Test\Component\ConcreteComponent",
-        "cd" = "Test\Decorator\ConcreteDecorator"})
-     */
+    #[Entity]
+    #[InheritanceType('SINGLE_TABLE')]
+    #[DiscriminatorColumn(name: 'discr', type: 'string')]
+    #[DiscriminatorMap(['cc' => Component\ConcreteComponent::class,
+        'cd' => Decorator\ConcreteDecorator::class])]
     abstract class Component
     {
 
-        /**
-         * @Id @Column(type="integer")
-         * @GeneratedValue(strategy="AUTO")
-         */
-        protected $id;
+        #[Id, Column]
+        #[GeneratedValue(strategy: 'AUTO')]
+        protected int|null $id = null;
 
-        /** @Column(type="string", nullable=true) */
+        #[Column(type: 'string', nullable: true)]
         protected $name;
 
-        /**
-         * Get id
-         * @return integer $id
-         */
-        public function getId()
+        public function getId(): int|null
         {
             return $this->id;
         }
 
-        /**
-         * Set name
-         * @param string $name
-         */
-        public function setName($name)
+        public function setName(string $name): void
         {
             $this->name = $name;
         }
 
-        /**
-         * Get name
-         * @return string $name
-         */
-        public function getName()
+        public function getName(): string
         {
             return $this->name;
         }
@@ -86,7 +70,7 @@ purpose of keeping this example simple).
 
     use Test\Component;
 
-    /** @Entity */
+    #[Entity]
     class ConcreteComponent extends Component
     {}
 
@@ -103,14 +87,11 @@ use a ``MappedSuperclass`` for this.
 
     namespace Test;
 
-    /** @MappedSuperclass */
+    #[MappedSuperclass]
     abstract class Decorator extends Component
     {
-
-        /**
-         * @OneToOne(targetEntity="Test\Component", cascade={"all"})
-         * @JoinColumn(name="decorates", referencedColumnName="id")
-         */
+        #[OneToOne(targetEntity: Component::class, cascade: ['all'])]
+        #[JoinColumn(name: 'decorates', referencedColumnName: 'id')]
         protected $decorates;
 
         /**
@@ -126,25 +107,19 @@ use a ``MappedSuperclass`` for this.
          * (non-PHPdoc)
          * @see Test.Component::getName()
          */
-        public function getName()
+        public function getName(): string
         {
     	    return 'Decorated ' . $this->getDecorates()->getName();
         }
 
-        /**
-         * the component being decorated
-         * @return Component
-         */
-        protected function getDecorates()
+        /** the component being decorated */
+        protected function getDecorates(): Component
         {
     	    return $this->decorates;
         }
 
-        /**
-         * sets the component being decorated
-         * @param Component $c
-         */
-        protected function setDecorates(Component $c)
+        /** sets the component being decorated */
+        protected function setDecorates(Component $c): void
         {
     	    $this->decorates = $c;
         }
@@ -187,27 +162,19 @@ of the getSpecial() method to its return value.
 
     use Test\Decorator;
 
-    /** @Entity */
+    #[Entity]
     class ConcreteDecorator extends Decorator
     {
 
-        /** @Column(type="string", nullable=true) */
-        protected $special;
+        #[Column(type: 'string', nullable: true)]
+        protected string|null $special = null;
 
-        /**
-         * Set special
-         * @param string $special
-         */
-        public function setSpecial($special)
+        public function setSpecial(string|null $special): void
         {
             $this->special = $special;
         }
 
-        /**
-         * Get special
-         * @return string $special
-         */
-        public function getSpecial()
+        public function getSpecial(): string|null
         {
             return $this->special;
         }
@@ -216,7 +183,7 @@ of the getSpecial() method to its return value.
          * (non-PHPdoc)
          * @see Test.Component::getName()
          */
-        public function getName()
+        public function getName(): string
         {
             return '[' . $this->getSpecial()
                 . '] ' . parent::getName();
@@ -270,4 +237,3 @@ objects
 
     echo $d->getName();
     // prints: [Really] Decorated Test Component 2
-

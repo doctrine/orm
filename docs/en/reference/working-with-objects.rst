@@ -95,28 +95,29 @@ from newly opened EntityManager.
 .. code-block:: php
 
     <?php
-    /** @Entity */
+    #[Entity]
     class Article
     {
-        /** @Id @Column(type="integer") @GeneratedValue */
-        private $id;
+        #[Id, Column(type: 'integer'), GeneratedValue]
+        private int|null $id = null;
 
-        /** @Column(type="string") */
-        private $headline;
+        #[Column(type: 'string')]
+        private string $headline;
 
-        /** @ManyToOne(targetEntity="User") */
-        private $author;
+        #[ManyToOne(targetEntity: User::class)]
+        private User|null $author = null;
 
-        /** @OneToMany(targetEntity="Comment", mappedBy="article") */
-        private $comments;
+        /** @var Collection<int, Comment> */
+        #[OneToMany(targetEntity: Comment::class, mappedBy: 'article')]
+        private Collection $comments;
 
         public function __construct()
         {
             $this->comments = new ArrayCollection();
         }
 
-        public function getAuthor() { return $this->author; }
-        public function getComments() { return $this->comments; }
+        public function getAuthor(): User|null { return $this->author; }
+        public function getComments(): Collection { return $this->comments; }
     }
 
     $article = $em->find('Article', 1);
@@ -170,12 +171,12 @@ methods along the lines of the ``getName()`` method shown below:
     <?php
     class UserProxy extends User implements Proxy
     {
-        private function _load()
+        private function _load(): void
         {
             // lazy loading code
         }
 
-        public function getName()
+        public function getName(): string
         {
             $this->_load();
             return parent::getName();
@@ -339,8 +340,8 @@ in multiple ways with very different performance impacts.
 .. note::
 
     Calling ``remove`` on an entity will remove the object from the identity
-    map and therefore detach it. Querying the same entity again, for example 
-    via a lazy loaded relation, will return a new object. 
+    map and therefore detach it. Querying the same entity again, for example
+    via a lazy loaded relation, will return a new object.
 
 
 Detaching entities
@@ -843,12 +844,11 @@ in a central location.
     <?php
     namespace MyDomain\Model;
 
+    use MyDomain\Model\UserRepository;
     use Doctrine\ORM\EntityRepository;
     use Doctrine\ORM\Mapping as ORM;
 
-    /**
-     * @ORM\Entity(repositoryClass="MyDomain\Model\UserRepository")
-     */
+    #[ORM\Entity(repositoryClass: UserRepository::class)]
     class User
     {
 
@@ -856,7 +856,8 @@ in a central location.
 
     class UserRepository extends EntityRepository
     {
-        public function getAllAdminUsers()
+        /** @return Collection<User> */
+        public function getAllAdminUsers(): Collection
         {
             return $this->_em->createQuery('SELECT u FROM MyDomain\Model\User u WHERE u.status = "admin"')
                              ->getResult();
@@ -871,5 +872,3 @@ You can access your repository now by calling:
     // $em instanceof EntityManager
 
     $admins = $em->getRepository('MyDomain\Model\User')->getAllAdminUsers();
-
-
