@@ -339,17 +339,15 @@ annotation.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         class Message
         {
-            /**
-             * @Id
-             * @Column(type="integer")
-             * @GeneratedValue
-             */
-            private $id;
+            #[Id]
+            #[Column(type: 'integer')]
+            #[GeneratedValue]
+            private int|null $id = null;
             // ...
         }
 
@@ -411,17 +409,15 @@ besides specifying the sequence's name:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         class Message
         {
-            /**
-             * @Id
-             * @GeneratedValue(strategy="SEQUENCE")
-             * @SequenceGenerator(sequenceName="message_seq", initialValue=1, allocationSize=100)
-             */
-            protected $id = null;
+            #[Id]
+            #[GeneratedValue(strategy: 'SEQUENCE')]
+            #[SequenceGenerator(sequenceName: 'message_seq', initialValue: 1, allocationSize: 100)]
+            protected int|null $id = null;
             // ...
         }
 
@@ -492,7 +488,8 @@ needs to be done explicitly using ticks in the definition.
 .. code-block:: php
 
     <?php
-    /** @Column(name="`number`", type="integer") */
+
+    #[Column(name: '`number`', type: 'integer')]
     private $number;
 
 Doctrine will then quote this column name in all SQL statements

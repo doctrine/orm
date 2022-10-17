@@ -17,41 +17,48 @@ final class AssociationOverride implements Annotation
      * The name of the relationship property whose mapping is being overridden.
      *
      * @var string
+     * @readonly
      */
     public $name;
 
     /**
      * The join column that is being mapped to the persistent attribute.
      *
-     * @var array<\Doctrine\ORM\Mapping\JoinColumn>|null
+     * @var array<JoinColumn>|null
+     * @readonly
      */
     public $joinColumns;
 
     /**
      * The join column that is being mapped to the persistent attribute.
      *
-     * @var array<\Doctrine\ORM\Mapping\JoinColumn>|null
+     * @var array<JoinColumn>|null
+     * @readonly
      */
     public $inverseJoinColumns;
 
     /**
      * The join table that maps the relationship.
      *
-     * @var \Doctrine\ORM\Mapping\JoinTable|null
+     * @var JoinTable|null
+     * @readonly
      */
     public $joinTable;
 
     /**
      * The name of the association-field on the inverse-side.
      *
-     * @var ?string
+     * @var string|null
+     * @readonly
      */
     public $inversedBy;
 
     /**
      * The fetching strategy to use for the association.
      *
-     * @var ?string
+     * @var string|null
+     * @psalm-var 'LAZY'|'EAGER'|'EXTRA_LAZY'|null
+     * @readonly
      * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
      */
     public $fetch;
@@ -59,6 +66,7 @@ final class AssociationOverride implements Annotation
     /**
      * @param JoinColumn|array<JoinColumn> $joinColumns
      * @param JoinColumn|array<JoinColumn> $inverseJoinColumns
+     * @psalm-param 'LAZY'|'EAGER'|'EXTRA_LAZY'|null $fetch
      */
     public function __construct(
         string $name,

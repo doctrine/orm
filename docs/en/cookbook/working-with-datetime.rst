@@ -15,13 +15,16 @@ these comparisons are always made **BY REFERENCE**. That means the following cha
 .. code-block:: php
 
     <?php
-    /** @Entity */
+
+    use DateTime;
+
+    #[Entity]
     class Article
     {
-        /** @Column(type="datetime") */
-        private $updated;
+        #[Column(type='datetime')]
+        private DateTime $updated;
 
-        public function setUpdated()
+        public function setUpdated(): void
         {
             // will NOT be saved in the database
             $this->updated->modify("now");
@@ -33,12 +36,14 @@ The way to go would be:
 .. code-block:: php
 
     <?php
+    use DateTime;
+
     class Article
     {
-        public function setUpdated()
+        public function setUpdated(): void
         {
             // WILL be saved in the database
-            $this->updated = new \DateTime("now");
+            $this->updated = new DateTime("now");
         }
     }
 
@@ -84,16 +89,14 @@ the UTC time at the time of the booking and the timezone the event happened in.
 
     namespace DoctrineExtensions\DBAL\Types;
 
+    use DateTimeZone;
     use Doctrine\DBAL\Platforms\AbstractPlatform;
     use Doctrine\DBAL\Types\ConversionException;
     use Doctrine\DBAL\Types\DateTimeType;
 
     class UTCDateTimeType extends DateTimeType
     {
-        /**
-         * @var \DateTimeZone
-         */
-        private static $utc;
+        private static DateTimeZone $utc;
 
         public function convertToDatabaseValue($value, AbstractPlatform $platform)
         {
@@ -126,10 +129,10 @@ the UTC time at the time of the booking and the timezone the event happened in.
 
             return $converted;
         }
-        
-        private static function getUtc(): \DateTimeZone
+
+        private static function getUtc(): DateTimeZone
         {
-            return self::$utc ?: self::$utc = new \DateTimeZone('UTC');
+            return self::$utc ??= new DateTimeZone('UTC');
         }
     }
 

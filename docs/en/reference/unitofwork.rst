@@ -17,7 +17,7 @@ ask for an entity with a specific ID twice, it will return the same instance:
 
 .. code-block:: php
 
-    public function testIdentityMap()
+    public function testIdentityMap(): void
     {
         $objectA = $this->entityManager->find('EntityName', 1);
         $objectB = $this->entityManager->find('EntityName', 1);
@@ -34,7 +34,7 @@ will still end up with the same reference:
 
 .. code-block:: php
 
-    public function testIdentityMapReference()
+    public function testIdentityMapReference(): void
     {
         $objectA = $this->entityManager->getReference('EntityName', 1);
         // check for proxyinterface
@@ -104,7 +104,7 @@ How Doctrine Detects Changes
 Doctrine is a data-mapper that tries to achieve persistence-ignorance (PI).
 This means you map php objects into a relational database that don't
 necessarily know about the database at all. A natural question would now be,
-"how does Doctrine even detect objects have changed?". 
+"how does Doctrine even detect objects have changed?".
 
 For this Doctrine keeps a second map inside the UnitOfWork. Whenever you fetch
 an object from the database Doctrine will keep a copy of all the properties and

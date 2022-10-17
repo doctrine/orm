@@ -14,19 +14,17 @@ can specify the ``@OrderBy`` in the following way:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
-        /** @Entity **/
+        #[Entity]
         class User
         {
             // ...
-        
-            /**
-             * @ManyToMany(targetEntity="Group")
-             * @OrderBy({"name" = "ASC"})
-             **/
-            private $groups;
+
+            #[ManyToMany(targetEntity: Group::class)]
+            #[OrderBy(["name" => "ASC"])]
+            private Collection $groups;
         }
 
     .. code-block:: xml

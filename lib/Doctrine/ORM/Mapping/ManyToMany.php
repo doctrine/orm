@@ -15,35 +15,56 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class ManyToMany implements Annotation
 {
-    /** @var class-string|null */
+    /**
+     * @var class-string|null
+     * @readonly
+     */
     public $targetEntity;
 
-    /** @var string|null */
+    /**
+     * @var string|null
+     * @readonly
+     */
     public $mappedBy;
 
-    /** @var string|null */
+    /**
+     * @var string|null
+     * @readonly
+     */
     public $inversedBy;
 
-    /** @var string[]|null */
+    /**
+     * @var string[]|null
+     * @readonly
+     */
     public $cascade;
 
     /**
      * The fetching strategy to use for the association.
      *
      * @var string
+     * @psalm-var 'LAZY'|'EAGER'|'EXTRA_LAZY'
+     * @readonly
      * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
      */
     public $fetch = 'LAZY';
 
-    /** @var bool */
+    /**
+     * @var bool
+     * @readonly
+     */
     public $orphanRemoval = false;
 
-    /** @var string|null */
+    /**
+     * @var string|null
+     * @readonly
+     */
     public $indexBy;
 
     /**
      * @param class-string  $targetEntity
      * @param string[]|null $cascade
+     * @psalm-param 'LAZY'|'EAGER'|'EXTRA_LAZY' $fetch
      */
     public function __construct(
         string $targetEntity,

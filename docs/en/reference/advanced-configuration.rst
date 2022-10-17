@@ -118,9 +118,10 @@ There are currently 4 available implementations:
 -  ``Doctrine\ORM\Mapping\Driver\XmlDriver``
 -  ``Doctrine\ORM\Mapping\Driver\DriverChain``
 
-Throughout the most part of this manual the AnnotationDriver is
-used in the examples. For information on the usage of the XmlDriver
-please refer to the dedicated chapter ``XML Mapping``.
+Throughout the most part of this manual the AttributeDriver is
+used in the examples. For information on the usage of the
+AnnotationDriver or XmlDriver please refer to the dedicated
+chapters ``Annotation Reference`` and ``XML Mapping``.
 
 The annotation driver can be configured with a factory method on
 the ``Doctrine\ORM\Configuration``:

@@ -314,7 +314,6 @@
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadata.php">
     <PropertyNotSetInConstructor occurrences="2">
       <code>ClassMetadata</code>
-      <code>ClassMetadata</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php">
@@ -483,15 +482,11 @@
       <code>$class-&gt;associationMappings[$fieldName]['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/DiscriminatorColumn.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$columnDefinition</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php">
     <DocblockTypeContradiction occurrences="1">
       <code>new ReflectionClass($metadata-&gt;name)</code>
     </DocblockTypeContradiction>
+    <InvalidArgument occurrences="1"/>
     <LessSpecificReturnStatement occurrences="1">
       <code>$mapping</code>
     </LessSpecificReturnStatement>
@@ -521,6 +516,7 @@
     <DocblockTypeContradiction occurrences="1">
       <code>new ReflectionClass($metadata-&gt;name)</code>
     </DocblockTypeContradiction>
+    <InvalidArgument occurrences="1"/>
     <InvalidArrayAccess occurrences="4">
       <code>$value[0]</code>
       <code>$value[0]</code>
@@ -630,11 +626,6 @@
       <code>isset($xmlRoot-&gt;{'unique-constraints'})</code>
     </RedundantCondition>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/InverseJoinColumn.php">
-    <MissingParamType occurrences="1">
-      <code>$onDelete</code>
-    </MissingParamType>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/JoinColumns.php">
     <MissingConstructor occurrences="1">
       <code>$value</code>
@@ -658,13 +649,6 @@
       <code>$indexName</code>
     </MissingParamType>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/OneToMany.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="3">
-      <code>$cascade</code>
-      <code>$indexBy</code>
-      <code>$mappedBy</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/ReflectionEmbeddedProperty.php">
     <MethodSignatureMismatch occurrences="1">
       <code>$object</code>
@@ -674,11 +658,6 @@
     <MethodSignatureMismatch occurrences="1">
       <code>$object</code>
     </MethodSignatureMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/SequenceGenerator.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$sequenceName</code>
-    </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/UnderscoreNamingStrategy.php">
     <PossiblyFalseOperand occurrences="1">

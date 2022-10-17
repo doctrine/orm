@@ -32,62 +32,62 @@ information about its type and if it's the owning or inverse side.
 .. code-block:: php
 
     <?php
-    /** @Entity */
+    #[Entity]
     class User
     {
-        /** @Id @GeneratedValue @Column(type="string") */
-        private $id;
+        #[Id, GeneratedValue, Column]
+        private int|null $id = null;
 
         /**
          * Bidirectional - Many users have Many favorite comments (OWNING SIDE)
          *
-         * @ManyToMany(targetEntity="Comment", inversedBy="userFavorites")
-         * @JoinTable(name="user_favorite_comments")
+         * @var Collection<int, Comment>
          */
-        private $favorites;
+        #[ManyToMany(targetEntity: Comment::class, inversedBy: 'userFavorites')]
+        #[JoinTable(name: 'user_favorite_comments')]
+        private Collection $favorites;
 
         /**
          * Unidirectional - Many users have marked many comments as read
          *
-         * @ManyToMany(targetEntity="Comment")
-         * @JoinTable(name="user_read_comments")
+         * @var Collection<int, Comment>
          */
-        private $commentsRead;
+        #[ManyToMany(targetEntity: Comment::class)]
+        #[JoinTable(name: 'user_read_comments')]
+        private Collection $commentsRead;
 
         /**
          * Bidirectional - One-To-Many (INVERSE SIDE)
          *
-         * @OneToMany(targetEntity="Comment", mappedBy="author")
+         * @var Collection<int, Comment>
          */
-        private $commentsAuthored;
+        #[OneToMany(targetEntity: Comment::class, mappedBy: 'author')]
+        private Collection $commentsAuthored;
 
-        /**
-         * Unidirectional - Many-To-One
-         *
-         * @ManyToOne(targetEntity="Comment")
-         */
-        private $firstComment;
+        /** Unidirectional - Many-To-One */
+        #[ManyToOne(targetEntity: Comment::class)]
+        private Comment|null $firstComment = null;
     }
 
-    /** @Entity */
+    #[Entity]
     class Comment
     {
-        /** @Id @GeneratedValue @Column(type="string") */
-        private $id;
+        #[Id, GeneratedValue, Column]
+        private string $id;
 
         /**
          * Bidirectional - Many comments are favorited by many users (INVERSE SIDE)
          *
-         * @ManyToMany(targetEntity="User", mappedBy="favorites")
+         * @var Collection<int, User>
          */
-        private $userFavorites;
+        #[ManyToMany(targetEntity: User::class, mappedBy: 'favorites')]
+        private Collection $userFavorites;
 
         /**
          * Bidirectional - Many Comments are authored by one user (OWNING SIDE)
-         *
-         * @ManyToOne(targetEntity="User", inversedBy="commentsAuthored")
          */
-         private $author;
+        #[ManyToOne(targetEntity: User::class, inversedBy: 'commentsAuthored')]
+        private User|null $author = null;
     }
 
 This two entities generate the following MySQL Schema (Foreign Key
@@ -132,11 +132,13 @@ relations of the ``User``:
     class User
     {
         // ...
-        public function getReadComments() {
+        /** @return Collection<int, Comment> */
+        public function getReadComments(): Collection {
              return $this->commentsRead;
         }
 
-        public function setFirstComment(Comment $c) {
+        /** @param Collection<int, Comment> $c */
+        public function setFirstComment(Comment $c): void {
             $this->firstComment = $c;
         }
     }
@@ -172,11 +174,13 @@ fields on both sides:
     {
         // ..
 
-        public function getAuthoredComments() {
+        /** @return Collection<int, Comment> */
+        public function getAuthoredComments(): Collection {
             return $this->commentsAuthored;
         }
 
-        public function getFavoriteComments() {
+        /** @return Collection<int, Comment> */
+        public function getFavoriteComments(): Collection {
             return $this->favorites;
         }
     }
@@ -185,11 +189,12 @@ fields on both sides:
     {
         // ...
 
-        public function getUserFavorites() {
+        /** @return Collection<int, User> */
+        public function getUserFavorites(): Collection {
             return $this->userFavorites;
         }
 
-        public function setAuthor(User $author = null) {
+        public function setAuthor(User|null $author = null): void {
             $this->author = $author;
         }
     }
@@ -292,12 +297,12 @@ example that encapsulate much of the association management code:
     class User
     {
         // ...
-        public function markCommentRead(Comment $comment) {
+        public function markCommentRead(Comment $comment): void {
             // Collections implement ArrayAccess
             $this->commentsRead[] = $comment;
         }
 
-        public function addComment(Comment $comment) {
+        public function addComment(Comment $comment): void {
             if (count($this->commentsAuthored) == 0) {
                 $this->setFirstComment($comment);
             }
@@ -305,16 +310,16 @@ example that encapsulate much of the association management code:
             $comment->setAuthor($this);
         }
 
-        private function setFirstComment(Comment $c) {
+        private function setFirstComment(Comment $c): void {
             $this->firstComment = $c;
         }
 
-        public function addFavorite(Comment $comment) {
+        public function addFavorite(Comment $comment): void {
             $this->favorites->add($comment);
             $comment->addUserFavorite($this);
         }
 
-        public function removeFavorite(Comment $comment) {
+        public function removeFavorite(Comment $comment): void {
             $this->favorites->removeElement($comment);
             $comment->removeUserFavorite($this);
         }
@@ -324,11 +329,11 @@ example that encapsulate much of the association management code:
     {
         // ..
 
-        public function addUserFavorite(User $user) {
+        public function addUserFavorite(User $user): void {
             $this->userFavorites[] = $user;
         }
 
-        public function removeUserFavorite(User $user) {
+        public function removeUserFavorite(User $user): void {
             $this->userFavorites->removeElement($user);
         }
     }
@@ -356,7 +361,8 @@ the details inside the classes can be challenging.
 
     <?php
     class User {
-        public function getReadComments() {
+        /** @return array<int, Comment> */
+        public function getReadComments(): array {
             return $this->commentsRead->toArray();
         }
     }
@@ -437,8 +443,10 @@ only accessing it through the User entity:
     // User entity
     class User
     {
-        private $id;
-        private $comments;
+        private int $id;
+
+        /** @var Collection<int, Comment> */
+        private Collection $comments;
 
         public function __construct()
         {
@@ -464,11 +472,8 @@ If you then set up the cascading to the ``User#commentsAuthored`` property...
     class User
     {
         // ...
-        /**
-         * Bidirectional - One-To-Many (INVERSE SIDE)
-         *
-         * @OneToMany(targetEntity="Comment", mappedBy="author", cascade={"persist", "remove"})
-         */
+        /** Bidirectional - One-To-Many (INVERSE SIDE) */
+        #[OneToMany(targetEntity: Comment::class, mappedBy: 'author', cascade: ['persist', 'remove'])]
         private $commentsAuthored;
         // ...
     }
@@ -577,31 +582,30 @@ and StandingData:
 
     use Doctrine\Common\Collections\ArrayCollection;
 
-    /**
-     * @Entity
-     */
+    #[Entity]
     class Contact
     {
-        /** @Id @Column(type="integer") @GeneratedValue */
-        private $id;
+        #[Id, Column(type: 'integer'), GeneratedValue]
+        private int|null $id = null;
 
-        /** @OneToOne(targetEntity="StandingData", cascade={"persist"}, orphanRemoval=true) */
-        private $standingData;
+        #[OneToOne(targetEntity: StandingData::class, cascade: ['persist'], orphanRemoval: true)]
+        private StandingData|null $standingData = null;
 
-        /** @OneToMany(targetEntity="Address", mappedBy="contact",  cascade={"persist"}, orphanRemoval=true) */
-        private $addresses;
+        /** @var Collection<int, Address> */
+        #[OneToMany(targetEntity: Address::class, mappedBy: 'contact', cascade: ['persist'], orphanRemoval: true)]
+        private Collection $addresses;
 
         public function __construct()
         {
             $this->addresses = new ArrayCollection();
         }
 
-        public function newStandingData(StandingData $sd)
+        public function newStandingData(StandingData $sd): void
         {
             $this->standingData = $sd;
         }
 
-        public function removeAddress($pos)
+        public function removeAddress(int $pos): void
         {
             unset($this->addresses[$pos]);
         }

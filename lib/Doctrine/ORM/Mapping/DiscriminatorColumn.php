@@ -15,23 +15,28 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class DiscriminatorColumn implements Annotation
 {
-    /** @var string|null */
+    /**
+     * @var string|null
+     * @readonly
+     */
     public $name;
 
-    /** @var string|null */
+    /**
+     * @var string|null
+     * @readonly
+     */
     public $type;
 
-    /** @var int|null */
+    /**
+     * @var int|null
+     * @readonly
+     */
     public $length;
 
     /**
-     * Field name used in non-object hydration (array/scalar).
-     *
-     * @var mixed
+     * @var string|null
+     * @readonly
      */
-    public $fieldName;
-
-    /** @var string */
     public $columnDefinition;
 
     public function __construct(

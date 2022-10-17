@@ -23,33 +23,28 @@ and year of production as primary keys:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         namespace VehicleCatalogue\Model;
 
-        /**
-         * @Entity
-         */
+        #[Entity]
         class Car
         {
-            /** @Id @Column(type="string") */
-            private $name;
-            /** @Id @Column(type="integer") */
-            private $year;
-
-            public function __construct($name, $year)
-            {
-                $this->name = $name;
-                $this->year = $year;
+            public function __construct(
+                #[Id, Column(type: 'string')]
+                private string $name,
+                #[Id, Column(type: 'integer')]
+                private int $year,
+            ) {
             }
 
-            public function getModelName()
+            public function getModelName(): string
             {
                 return $this->name;
             }
 
-            public function getYearOfProduction()
+            public function getYearOfProduction(): int
             {
                 return $this->year;
             }
@@ -138,42 +133,37 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
 
         use Doctrine\Common\Collections\ArrayCollection;
 
-        /**
-         * @Entity
-         */
+        #[Entity]
         class Article
         {
-            /** @Id @Column(type="integer") @GeneratedValue */
-            private $id;
-            /** @Column(type="string") */
-            private $title;
+            #[Id, Column(type: 'integer'), GeneratedValue]
+            private int|null $id = null;
+            #[Column(type: 'string')]
+            private string $title;
 
-            /**
-             * @OneToMany(targetEntity="ArticleAttribute", mappedBy="article", cascade={"ALL"}, indexBy="attribute")
-             */
-            private $attributes;
+            /** @var ArrayCollection<string, ArticleAttribute> */
+            #[OneToMany(targetEntity: ArticleAttribute::class, mappedBy: 'article', cascade: ['ALL'], indexBy: 'attribute')]
+            private Collection $attributes;
 
-            public function addAttribute($name, $value)
+            public function addAttribute(string $name, ArticleAttribute $value): void
             {
                 $this->attributes[$name] = new ArticleAttribute($name, $value, $this);
             }
         }
 
-        /**
-         * @Entity
-         */
+        #[Entity]
         class ArticleAttribute
         {
-            /** @Id @ManyToOne(targetEntity="Article", inversedBy="attributes") */
-            private $article;
+            #[Id, ManyToOne(targetEntity: Article::class, inversedBy: 'attributes')]
+            private Article $article;
 
-            /** @Id @Column(type="string") */
-            private $attribute;
+            #[Id, Column(type: 'string')]
+            private string $attribute;
 
-            /** @Column(type="string") */
-            private $value;
+            #[Column(type: 'string')]
+            private string $value;
 
-            public function __construct($name, $value, $article)
+            public function __construct(string $name, string $value, Article $article)
             {
                 $this->attribute = $name;
                 $this->value = $value;
@@ -191,7 +181,7 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
              <entity name="Application\Model\ArticleAttribute">
                 <id name="article" association-key="true" />
                 <id name="attribute" type="string" />
-                
+
                 <field name="value" type="string" />
 
                 <many-to-one field="article" target-entity="Article" inversed-by="attributes" />
@@ -211,22 +201,19 @@ One good example for this is a user-address relationship:
     .. code-block:: php
 
         <?php
-        /**
-         * @Entity
-         */
+
+        #[Entity]
         class User
         {
-            /** @Id @Column(type="integer") @GeneratedValue */
-            private $id;
+            #[Id, Column(type: 'integer'), GeneratedValue]
+            private int|null $id = null;
         }
 
-        /**
-         * @Entity
-         */
+        #[Entity]
         class Address
         {
-            /** @Id @OneToOne(targetEntity="User") */
-            private $user;
+            #[Id, OneToOne(targetEntity: User::class)]
+            private User|null $user = null;
         }
 
 Use-Case 3: Join-Table with Metadata
@@ -239,68 +226,70 @@ of products purchased and maybe even the current price.
 .. code-block:: php
 
     <?php
+
+    use DateTime;
     use Doctrine\Common\Collections\ArrayCollection;
 
-    /** @Entity */
+    #[Entity]
     class Order
     {
-        /** @Id @Column(type="integer") @GeneratedValue */
-        private $id;
+        #[Id, Column(type: 'integer'), GeneratedValue]
+        private int|null $id = null;
 
-        /** @ManyToOne(targetEntity="Customer") */
-        private $customer;
-        /** @OneToMany(targetEntity="OrderItem", mappedBy="order") */
-        private $items;
+        /** @var ArrayCollection<int, OrderItem> */
+        #[OneToMany(targetEntity: OrderItem::class, mappedBy: 'order')]
+        private Collection $items;
 
-        /** @Column(type="boolean") */
-        private $paid = false;
-        /** @Column(type="boolean") */
-        private $shipped = false;
-        /** @Column(type="datetime") */
-        private $created;
+        #[Column(type: 'boolean')]
+        private bool $paid = false;
+        #[Column(type: 'boolean')]
+        private bool $shipped = false;
+        #[Column(type: 'datetime')]
+        private DateTime $created;
 
-        public function __construct(Customer $customer)
-        {
-            $this->customer = $customer;
+        public function __construct(
+            #[ManyToOne(targetEntity: Customer::class)]
+            private Customer $customer,
+        ) {
             $this->items = new ArrayCollection();
-            $this->created = new \DateTime("now");
+            $this->created = new DateTime("now");
         }
     }
 
-    /** @Entity */
+    #[Entity]
     class Product
     {
-        /** @Id @Column(type="integer") @GeneratedValue */
-        private $id;
+        #[Id, Column(type: 'integer'), GeneratedValue]
+        private int|null $id = null;
 
-        /** @Column(type="string") */
-        private $name;
+        #[Column(type: 'string')]
+        private string $name;
 
-        /** @Column(type="decimal") */
-        private $currentPrice;
+        #[Column(type: 'decimal')]
+        private float $currentPrice;
 
-        public function getCurrentPrice()
+        public function getCurrentPrice(): float
         {
             return $this->currentPrice;
         }
     }
 
-    /** @Entity */
+    #[Entity]
     class OrderItem
     {
-        /** @Id @ManyToOne(targetEntity="Order") */
-        private $order;
+        #[Id, ManyToOne(targetEntity: Order::class)]
+        private Order|null $order = null;
 
-        /** @Id @ManyToOne(targetEntity="Product") */
-        private $product;
+        #[Id, ManyToOne(targetEntity: Product::class)]
+        private Product|null $product = null;
 
-        /** @Column(type="integer") */
-        private $amount = 1;
+        #[Column(type: 'integer')]
+        private int $amount = 1;
 
-        /** @Column(type="decimal") */
-        private $offeredPrice;
+        #[Column(type: 'decimal')]
+        private float $offeredPrice;
 
-        public function __construct(Order $order, Product $product, $amount = 1)
+        public function __construct(Order $order, Product $product, int $amount = 1)
         {
             $this->order = $order;
             $this->product = $product;

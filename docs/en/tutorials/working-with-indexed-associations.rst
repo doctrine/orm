@@ -35,53 +35,44 @@ The code and mappings for the Market entity looks like this:
         namespace Doctrine\Tests\Models\StockExchange;
 
         use Doctrine\Common\Collections\ArrayCollection;
+        use Doctrine\Common\Collections\Collection;
 
-        /**
-         * @Entity
-         * @Table(name="exchange_markets")
-         */
+        #[Entity]
+        #[Table(name: 'exchange_markets')]
         class Market
         {
-            /**
-             * @Id @Column(type="integer") @GeneratedValue
-             * @var int
-             */
-            private $id;
+            #[Id, Column(type: 'integer'), GeneratedValue]
+            private int|null $id = null;
 
-            /**
-             * @Column(type="string")
-             * @var string
-             */
-            private $name;
+            #[Column(type: 'string')]
+            private string $name;
 
-            /**
-             * @OneToMany(targetEntity="Stock", mappedBy="market", indexBy="symbol")
-             * @var Stock[]
-             */
-            private $stocks;
+            /** @var Collection<string, Stock> */
+            #[OneToMany(targetEntity: Stock::class, mappedBy: 'market', indexBy: 'symbol')]
+            private Collection $stocks;
 
-            public function __construct($name)
+            public function __construct(string $name)
             {
                 $this->name = $name;
                 $this->stocks = new ArrayCollection();
             }
 
-            public function getId()
+            public function getId(): int|null
             {
                 return $this->id;
             }
 
-            public function getName()
+            public function getName(): string
             {
                 return $this->name;
             }
 
-            public function addStock(Stock $stock)
+            public function addStock(Stock $stock): void
             {
                 $this->stocks[$stock->getSymbol()] = $stock;
             }
 
-            public function getStock($symbol)
+            public function getStock(string $symbol): Stock
             {
                 if (!isset($this->stocks[$symbol])) {
                     throw new \InvalidArgumentException("Symbol is not traded on this market.");
@@ -90,7 +81,8 @@ The code and mappings for the Market entity looks like this:
                 return $this->stocks[$symbol];
             }
 
-            public function getStocks()
+            /** @return array<string, Stock> */
+            public function getStocks(): array
             {
                 return $this->stocks->toArray();
             }
@@ -128,37 +120,27 @@ here are the code and mappings for it:
         <?php
         namespace Doctrine\Tests\Models\StockExchange;
 
-        /**
-         * @Entity
-         * @Table(name="exchange_stocks")
-         */
+        #[Entity]
+        #[Table(name: 'exchange_stocks')]
         class Stock
         {
-            /**
-             * @Id @GeneratedValue @Column(type="integer")
-             * @var int
-             */
-            private $id;
+            #[Id, Column(type: 'integer'), GeneratedValue]
+            private int|null $id = null;
 
-            /**
-             * @Column(type="string", unique=true)
-             */
-            private $symbol;
+            #[Column(type: 'string', unique: true)]
+            private string $symbol;
 
-            /**
-             * @ManyToOne(targetEntity="Market", inversedBy="stocks")
-             * @var Market
-             */
-            private $market;
+            #[ManyToOne(targetEntity: Market::class, inversedBy: 'stocks')]
+            private Market|null $market;
 
-            public function __construct($symbol, Market $market)
+            public function __construct(string $symbol, Market $market)
             {
                 $this->symbol = $symbol;
                 $this->market = $market;
                 $market->addStock($this);
             }
 
-            public function getSymbol()
+            public function getSymbol(): string
             {
                 return $this->symbol;
             }
@@ -213,7 +195,7 @@ now query for the market:
     // $em is the EntityManager
     $marketId = 1;
     $symbol = "AAPL";
-    
+
     $market = $em->find("Doctrine\Tests\Models\StockExchange\Market", $marketId);
 
     // Access the stocks by symbol now:
