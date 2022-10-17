@@ -4,9 +4,23 @@ on:
   pull_request:
     branches:
       - "*.x"
+    paths:
+      - .github/workflows/continuous-integration.yml
+      - ci/**
+      - composer.*
+      - lib/**
+      - phpunit.xml.dist
+      - tests/**
   push:
     branches:
       - "*.x"
+    paths:
+      - .github/workflows/continuous-integration.yml
+      - ci/**
+      - composer.*
+      - lib/**
+      - phpunit.xml.dist
+      - tests/**
 
 env:
   fail-fast: true
