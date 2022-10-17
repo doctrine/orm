@@ -15,7 +15,10 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class OrderBy implements Annotation
 {
-    /** @var array<string> */
+    /**
+     * @var array<string>
+     * @readonly
+     */
     public $value;
 
     /** @param array<string> $value */

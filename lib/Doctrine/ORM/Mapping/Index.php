@@ -15,19 +15,34 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 final class Index implements Annotation
 {
-    /** @var string|null */
+    /**
+     * @var string|null
+     * @readonly
+     */
     public $name;
 
-    /** @var array<string>|null */
+    /**
+     * @var array<string>|null
+     * @readonly
+     */
     public $columns;
 
-    /** @var array<string>|null */
+    /**
+     * @var array<string>|null
+     * @readonly
+     */
     public $fields;
 
-    /** @var array<string>|null */
+    /**
+     * @var array<string>|null
+     * @readonly
+     */
     public $flags;
 
-    /** @var array<string,mixed>|null */
+    /**
+     * @var array<string,mixed>|null
+     * @readonly
+     */
     public $options;
 
     /**

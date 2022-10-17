@@ -505,7 +505,6 @@
       <code>ClassMetadata</code>
       <code>ClassMetadata</code>
       <code>ClassMetadata</code>
-      <code>ClassMetadata</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php">
@@ -719,11 +718,6 @@
       <code>$class-&gt;associationMappings[$fieldName]['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/DiscriminatorColumn.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$columnDefinition</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php">
     <DeprecatedMethod occurrences="2">
       <code>addNamedNativeQuery</code>
@@ -732,6 +726,7 @@
     <DocblockTypeContradiction occurrences="1">
       <code>new ReflectionClass($metadata-&gt;name)</code>
     </DocblockTypeContradiction>
+    <InvalidArgument occurrences="1"/>
     <LessSpecificReturnStatement occurrences="1">
       <code>$mapping</code>
     </LessSpecificReturnStatement>
@@ -761,6 +756,7 @@
     <DocblockTypeContradiction occurrences="1">
       <code>new ReflectionClass($metadata-&gt;name)</code>
     </DocblockTypeContradiction>
+    <InvalidArgument occurrences="1"/>
     <InvalidArrayAccess occurrences="4">
       <code>$value[0]</code>
       <code>$value[0]</code>
@@ -805,8 +801,7 @@
       <code>$this-&gt;tables[$tableName]</code>
       <code>$this-&gt;tables[$tableName]</code>
     </PossiblyNullArrayAccess>
-    <PossiblyNullReference occurrences="4">
-      <code>getColumns</code>
+    <PossiblyNullReference occurrences="3">
       <code>getColumns</code>
       <code>getColumns</code>
       <code>getIndexes</code>
@@ -964,16 +959,6 @@
       <code>$name</code>
     </MissingConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/InverseJoinColumn.php">
-    <MissingParamType occurrences="1">
-      <code>$onDelete</code>
-    </MissingParamType>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/JoinColumn.php">
-    <MissingParamType occurrences="1">
-      <code>$onDelete</code>
-    </MissingParamType>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/JoinColumns.php">
     <MissingConstructor occurrences="1">
       <code>$value</code>
@@ -1016,13 +1001,6 @@
       <code>$query</code>
     </MissingConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/OneToMany.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="3">
-      <code>$cascade</code>
-      <code>$indexBy</code>
-      <code>$mappedBy</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/ReflectionEmbeddedProperty.php">
     <ArgumentTypeCoercion occurrences="1">
       <code>$this-&gt;embeddedClass</code>
@@ -1035,11 +1013,6 @@
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(string) $embeddedClass</code>
     </RedundantCastGivenDocblockType>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/SequenceGenerator.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$sequenceName</code>
-    </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/SqlResultSetMapping.php">
     <MissingConstructor occurrences="1">
@@ -2926,9 +2899,6 @@
     <PossiblyNullArgument occurrences="1">
       <code>$referencedFieldName</code>
     </PossiblyNullArgument>
-    <PossiblyNullReference occurrences="1">
-      <code>getColumns</code>
-    </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset occurrences="7">
       <code>$assoc['joinColumns']</code>
       <code>$class-&gt;getAssociationMapping($fieldName)['joinColumns']</code>

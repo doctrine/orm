@@ -15,7 +15,10 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class CustomIdGenerator implements Annotation
 {
-    /** @var string|null */
+    /**
+     * @var string|null
+     * @readonly
+     */
     public $class;
 
     public function __construct(?string $class = null)

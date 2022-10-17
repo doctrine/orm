@@ -20,10 +20,14 @@ final class Entity implements Annotation
     /**
      * @var string|null
      * @psalm-var class-string<EntityRepository<T>>|null
+     * @readonly
      */
     public $repositoryClass;
 
-    /** @var bool */
+    /**
+     * @var bool
+     * @readonly
+     */
     public $readOnly = false;
 
     /** @psalm-param class-string<EntityRepository<T>>|null $repositoryClass */

@@ -19,6 +19,7 @@ final class MappedSuperclass implements Annotation
     /**
      * @var string|null
      * @psalm-var class-string<EntityRepository>|null
+     * @readonly
      */
     public $repositoryClass;
 
