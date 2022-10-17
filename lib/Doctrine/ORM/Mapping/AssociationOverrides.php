@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Mapping;
 
 use Attribute;
 
+use function array_values;
 use function is_array;
 
 /**
@@ -21,7 +22,8 @@ final class AssociationOverrides implements Annotation
     /**
      * Mapping overrides of relationship properties.
      *
-     * @var array<AssociationOverride>
+     * @var list<AssociationOverride>
+     * @readonly
      */
     public $overrides = [];
 
@@ -36,8 +38,8 @@ final class AssociationOverrides implements Annotation
             if (! ($override instanceof AssociationOverride)) {
                 throw MappingException::invalidOverrideType('AssociationOverride', $override);
             }
-
-            $this->overrides[] = $override;
         }
+
+        $this->overrides = array_values($overrides);
     }
 }

@@ -22,6 +22,7 @@ final class EntityListeners implements Annotation
      * Specifies the names of the entity listeners.
      *
      * @var array<string>
+     * @readonly
      */
     public $value = [];
 
