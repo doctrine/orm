@@ -15,50 +15,27 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class JoinTable implements Annotation
 {
-    /**
-     * @var string|null
-     * @readonly
-     */
-    public $name;
+    /** @var array<JoinColumn> */
+    public readonly array $joinColumns;
+
+    /** @var array<JoinColumn> */
+    public readonly array $inverseJoinColumns;
 
     /**
-     * @var string|null
-     * @readonly
+     * @param array<JoinColumn>|JoinColumn $joinColumns
+     * @param array<JoinColumn>|JoinColumn $inverseJoinColumns
+     * @param array<string, mixed>         $options
      */
-    public $schema;
-
-    /**
-     * @var array<JoinColumn>
-     * @readonly
-     */
-    public $joinColumns = [];
-
-    /**
-     * @var array<JoinColumn>
-     * @readonly
-     */
-    public $inverseJoinColumns = [];
-
-    /**
-     * @var array<string, mixed>
-     * @readonly
-     */
-    public $options = [];
-
-    /** @param array<string, mixed> $options */
     public function __construct(
-        string|null $name = null,
-        string|null $schema = null,
-        $joinColumns = [],
-        $inverseJoinColumns = [],
-        array $options = [],
+        public readonly string|null $name = null,
+        public readonly string|null $schema = null,
+        array|JoinColumn $joinColumns = [],
+        array|JoinColumn $inverseJoinColumns = [],
+        public readonly array $options = [],
     ) {
-        $this->name               = $name;
-        $this->schema             = $schema;
         $this->joinColumns        = $joinColumns instanceof JoinColumn ? [$joinColumns] : $joinColumns;
         $this->inverseJoinColumns = $inverseJoinColumns instanceof JoinColumn
             ? [$inverseJoinColumns]
             : $inverseJoinColumns;
-        $this->options            = $options;
     }
 }

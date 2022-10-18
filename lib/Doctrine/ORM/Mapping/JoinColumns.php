@@ -6,10 +6,14 @@ namespace Doctrine\ORM\Mapping;
 
 /**
  * @Annotation
+ * @NamedArgumentConstructor
  * @Target("PROPERTY")
  */
 final class JoinColumns implements Annotation
 {
-    /** @var array<\Doctrine\ORM\Mapping\JoinColumn> */
-    public $value;
+    /** @param array<JoinColumn> $value */
+    public function __construct(
+        public readonly array $value,
+    ) {
+    }
 }

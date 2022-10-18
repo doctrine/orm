@@ -25,10 +25,10 @@ final class AttributeOverrides implements Annotation
      * @var list<AttributeOverride>
      * @readonly
      */
-    public $overrides = [];
+    public array $overrides = [];
 
     /** @param array<AttributeOverride>|AttributeOverride $overrides */
-    public function __construct($overrides)
+    public function __construct(array|AttributeOverride $overrides)
     {
         if (! is_array($overrides)) {
             $overrides = [$overrides];

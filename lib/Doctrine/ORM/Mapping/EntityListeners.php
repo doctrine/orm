@@ -18,17 +18,9 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class EntityListeners implements Annotation
 {
-    /**
-     * Specifies the names of the entity listeners.
-     *
-     * @var array<string>
-     * @readonly
-     */
-    public $value = [];
-
     /** @param array<string> $value */
-    public function __construct(array $value = [])
-    {
-        $this->value = $value;
+    public function __construct(
+        public readonly array $value = [],
+    ) {
     }
 }
