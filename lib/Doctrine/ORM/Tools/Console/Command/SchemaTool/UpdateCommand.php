@@ -57,7 +57,7 @@ Finally, be aware that if the <info>--complete</info> option is passed, this
 task will drop all database assets (e.g. tables, etc) that are *not* described
 by the current metadata. In other words, without this option, this task leaves
 untouched any "extra" tables that exist in the database, but which aren't
-described by any metadata.
+described by any metadata. Not passing that option is deprecated.
 
 <comment>Hint:</comment> If you have a database with tables that should not be managed
 by the ORM, you can use a DBAL functionality to filter the tables and sequences down
@@ -73,12 +73,16 @@ EOT
      */
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas, SymfonyStyle $ui)
     {
+        $notificationUi = $ui->getErrorStyle();
+
         // Defining if update is complete or not (--complete not defined means $saveMode = true)
         $saveMode = ! $input->getOption('complete');
 
-        $sqls = $schemaTool->getUpdateSchemaSql($metadatas, $saveMode);
+        if ($saveMode) {
+            $notificationUi->warning('Not passing the "--complete" option to "orm:schema-tool:update" is deprecated and will not be supported when using doctrine/dbal 4');
+        }
 
-        $notificationUi = $ui->getErrorStyle();
+        $sqls = $schemaTool->getUpdateSchemaSql($metadatas, $saveMode);
 
         if (empty($sqls)) {
             $notificationUi->success('Nothing to update - your database is already in sync with the current entity metadata.');

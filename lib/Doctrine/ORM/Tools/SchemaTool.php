@@ -14,6 +14,7 @@ use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -32,6 +33,7 @@ use function array_intersect_key;
 use function assert;
 use function count;
 use function current;
+use function func_num_args;
 use function implode;
 use function in_array;
 use function is_array;
@@ -924,6 +926,15 @@ class SchemaTool
      */
     public function updateSchema(array $classes, $saveMode = false)
     {
+        if (func_num_args() > 1) {
+            Deprecation::triggerIfCalledFromOutside(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/10153',
+                'Passing $saveMode to %s() is deprecated and will not be possible in Doctrine ORM 3.0.',
+                __METHOD__
+            );
+        }
+
         $updateSchemaSql = $this->getUpdateSchemaSql($classes, $saveMode);
         $conn            = $this->em->getConnection();
 
@@ -944,6 +955,15 @@ class SchemaTool
      */
     public function getUpdateSchemaSql(array $classes, $saveMode = false)
     {
+        if (func_num_args() > 1) {
+            Deprecation::triggerIfCalledFromOutside(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/10153',
+                'Passing $saveMode to %s() is deprecated and will not be possible in Doctrine ORM 3.0.',
+                __METHOD__
+            );
+        }
+
         $toSchema   = $this->getSchemaFromMetadata($classes);
         $fromSchema = $this->createSchemaForComparison($toSchema);
 

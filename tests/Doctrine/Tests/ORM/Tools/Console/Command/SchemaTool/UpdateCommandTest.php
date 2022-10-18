@@ -12,7 +12,10 @@ class UpdateCommandTest extends AbstractCommandTest
     public function testItPrintsTheSql(): void
     {
         $tester = $this->getCommandTester(UpdateCommand::class);
-        $tester->execute(['--dump-sql' => true]);
+        $tester->execute(
+            ['--dump-sql' => true],
+            ['capture_stderr_separately' => true]
+        );
 
         self::$sharedConn->executeStatement($tester->getDisplay());
     }
