@@ -23,12 +23,11 @@ final class AssociationOverrides implements Annotation
      * Mapping overrides of relationship properties.
      *
      * @var list<AssociationOverride>
-     * @readonly
      */
-    public $overrides = [];
+    public readonly array $overrides;
 
     /** @param array<AssociationOverride>|AssociationOverride $overrides */
-    public function __construct($overrides)
+    public function __construct(array|AssociationOverride $overrides)
     {
         if (! is_array($overrides)) {
             $overrides = [$overrides];

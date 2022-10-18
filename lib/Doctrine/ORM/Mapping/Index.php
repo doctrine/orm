@@ -16,52 +16,17 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 final class Index implements Annotation
 {
     /**
-     * @var string|null
-     * @readonly
-     */
-    public $name;
-
-    /**
-     * @var array<string>|null
-     * @readonly
-     */
-    public $columns;
-
-    /**
-     * @var array<string>|null
-     * @readonly
-     */
-    public $fields;
-
-    /**
-     * @var array<string>|null
-     * @readonly
-     */
-    public $flags;
-
-    /**
-     * @var array<string,mixed>|null
-     * @readonly
-     */
-    public $options;
-
-    /**
      * @param array<string>|null       $columns
      * @param array<string>|null       $fields
      * @param array<string>|null       $flags
      * @param array<string,mixed>|null $options
      */
     public function __construct(
-        array|null $columns = null,
-        array|null $fields = null,
-        string|null $name = null,
-        array|null $flags = null,
-        array|null $options = null,
+        public readonly array|null $columns = null,
+        public readonly array|null $fields = null,
+        public readonly string|null $name = null,
+        public readonly array|null $flags = null,
+        public readonly array|null $options = null,
     ) {
-        $this->columns = $columns;
-        $this->fields  = $fields;
-        $this->name    = $name;
-        $this->flags   = $flags;
-        $this->options = $options;
     }
 }

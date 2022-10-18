@@ -626,17 +626,6 @@
       <code>isset($xmlRoot-&gt;{'unique-constraints'})</code>
     </RedundantCondition>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/JoinColumns.php">
-    <MissingConstructor occurrences="1">
-      <code>$value</code>
-    </MissingConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/JoinTable.php">
-    <MissingParamType occurrences="2">
-      <code>$inverseJoinColumns</code>
-      <code>$joinColumns</code>
-    </MissingParamType>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/MappingException.php">
     <ArgumentTypeCoercion occurrences="2">
       <code>$className</code>

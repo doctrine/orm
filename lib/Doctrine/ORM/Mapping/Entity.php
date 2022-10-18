@@ -17,23 +17,10 @@ use Doctrine\ORM\EntityRepository;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class Entity implements Annotation
 {
-    /**
-     * @var string|null
-     * @psalm-var class-string<EntityRepository<T>>|null
-     * @readonly
-     */
-    public $repositoryClass;
-
-    /**
-     * @var bool
-     * @readonly
-     */
-    public $readOnly = false;
-
     /** @psalm-param class-string<EntityRepository<T>>|null $repositoryClass */
-    public function __construct(string|null $repositoryClass = null, bool $readOnly = false)
-    {
-        $this->repositoryClass = $repositoryClass;
-        $this->readOnly        = $readOnly;
+    public function __construct(
+        public readonly string|null $repositoryClass = null,
+        public readonly bool $readOnly = false,
+    ) {
     }
 }

@@ -15,15 +15,9 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class DiscriminatorMap implements Annotation
 {
-    /**
-     * @var array<int|string, string>
-     * @readonly
-     */
-    public $value;
-
     /** @param array<int|string, string> $value */
-    public function __construct(array $value)
-    {
-        $this->value = $value;
+    public function __construct(
+        public readonly array $value,
+    ) {
     }
 }

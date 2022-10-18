@@ -16,10 +16,8 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 final class Embedded implements Annotation
 {
     public function __construct(
-        /** @readonly */
-        public string|null $class = null,
-        /** @readonly */
-        public string|bool|null $columnPrefix = null,
+        public readonly string|null $class = null,
+        public readonly string|bool|null $columnPrefix = null,
     ) {
     }
 }

@@ -13,25 +13,9 @@ namespace Doctrine\ORM\Mapping;
  */
 final class AttributeOverride implements Annotation
 {
-    /**
-     * The name of the property whose mapping is being overridden.
-     *
-     * @var string
-     * @readonly
-     */
-    public $name;
-
-    /**
-     * The column definition.
-     *
-     * @var Column
-     * @readonly
-     */
-    public $column;
-
-    public function __construct(string $name, Column $column)
-    {
-        $this->name   = $name;
-        $this->column = $column;
+    public function __construct(
+        public string $name,
+        public Column $column,
+    ) {
     }
 }

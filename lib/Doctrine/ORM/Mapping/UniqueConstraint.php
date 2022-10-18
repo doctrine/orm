@@ -16,43 +16,15 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 final class UniqueConstraint implements Annotation
 {
     /**
-     * @var string|null
-     * @readonly
-     */
-    public $name;
-
-    /**
-     * @var array<string>|null
-     * @readonly
-     */
-    public $columns;
-
-    /**
-     * @var array<string>|null
-     * @readonly
-     */
-    public $fields;
-
-    /**
-     * @var array<string,mixed>|null
-     * @readonly
-     */
-    public $options;
-
-    /**
-     * @param array<string>       $columns
-     * @param array<string>       $fields
-     * @param array<string,mixed> $options
+     * @param array<string>|null       $columns
+     * @param array<string>|null       $fields
+     * @param array<string,mixed>|null $options
      */
     public function __construct(
-        string|null $name = null,
-        array|null $columns = null,
-        array|null $fields = null,
-        array|null $options = null,
+        public readonly string|null $name = null,
+        public readonly array|null $columns = null,
+        public readonly array|null $fields = null,
+        public readonly array|null $options = null,
     ) {
-        $this->name    = $name;
-        $this->columns = $columns;
-        $this->fields  = $fields;
-        $this->options = $options;
     }
 }

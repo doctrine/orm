@@ -16,51 +16,16 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 final class Table implements Annotation
 {
     /**
-     * @var string|null
-     * @readonly
-     */
-    public $name;
-
-    /**
-     * @var string|null
-     * @readonly
-     */
-    public $schema;
-
-    /**
-     * @var array<Index>|null
-     * @readonly
-     */
-    public $indexes;
-
-    /**
-     * @var array<UniqueConstraint>|null
-     * @readonly
-     */
-    public $uniqueConstraints;
-
-    /**
-     * @var array<string,mixed>
-     * @readonly
-     */
-    public $options = [];
-
-    /**
      * @param array<Index>            $indexes
      * @param array<UniqueConstraint> $uniqueConstraints
      * @param array<string,mixed>     $options
      */
     public function __construct(
-        string|null $name = null,
-        string|null $schema = null,
-        array|null $indexes = null,
-        array|null $uniqueConstraints = null,
-        array $options = [],
+        public readonly string|null $name = null,
+        public readonly string|null $schema = null,
+        public readonly array|null $indexes = null,
+        public readonly array|null $uniqueConstraints = null,
+        public readonly array $options = [],
     ) {
-        $this->name              = $name;
-        $this->schema            = $schema;
-        $this->indexes           = $indexes;
-        $this->uniqueConstraints = $uniqueConstraints;
-        $this->options           = $options;
     }
 }
