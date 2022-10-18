@@ -959,7 +959,11 @@ class SchemaTool
             return $schemaDiff->toSaveSql($this->platform);
         }
 
-        return $schemaDiff->toSql($this->platform);
+        if (! method_exists(AbstractPlatform::class, 'getAlterSchemaSQL')) {
+            return $schemaDiff->toSql($this->platform);
+        }
+
+        return $this->platform->getAlterSchemaSQL($schemaDiff);
     }
 
     /**
