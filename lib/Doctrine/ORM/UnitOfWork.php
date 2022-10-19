@@ -58,6 +58,8 @@ use function array_values;
 use function assert;
 use function count;
 use function current;
+use function func_get_arg;
+use function func_num_args;
 use function get_class;
 use function get_debug_type;
 use function implode;
@@ -2183,16 +2185,21 @@ class UnitOfWork implements PropertyChangedListener
      * any local, unpersisted changes.
      *
      * @param object $entity The entity to refresh
-     * @psalm-param LockMode::*|null $lockMode
      *
      * @return void
      *
      * @throws InvalidArgumentException If the entity is not MANAGED.
      * @throws TransactionRequiredException
      */
-    public function refresh($entity, $lockMode = null)
+    public function refresh($entity)
     {
         $visited = [];
+
+        $lockMode = null;
+
+        if (func_num_args() === 2) {
+            $lockMode = func_get_arg(1);
+        }
 
         $this->doRefresh($entity, $visited, $lockMode);
     }
