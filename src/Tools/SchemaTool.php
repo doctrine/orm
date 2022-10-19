@@ -536,6 +536,7 @@ class SchemaTool
                 $this->gatherRelationJoinColumns(
                     $mapping->joinColumns,
                     $table,
+                    $class,
                     $foreignClass,
                     $mapping,
                     $primaryKeyColumns,
@@ -561,6 +562,7 @@ class SchemaTool
                     $joinTable->joinColumns,
                     $theJoinTable,
                     $class,
+                    $class,
                     $mapping,
                     $primaryKeyColumns,
                     $addedFks,
@@ -571,6 +573,7 @@ class SchemaTool
                 $this->gatherRelationJoinColumns(
                     $joinTable->inverseJoinColumns,
                     $theJoinTable,
+                    $class,
                     $foreignClass,
                     $mapping,
                     $primaryKeyColumns,
@@ -637,6 +640,7 @@ class SchemaTool
         array $joinColumns,
         Table $theJoinTable,
         ClassMetadata $class,
+        ClassMetadata $foreignClass,
         AssociationMapping $mapping,
         array &$primaryKeyColumns,
         array &$addedFks,
@@ -645,12 +649,12 @@ class SchemaTool
         $localColumns      = [];
         $foreignColumns    = [];
         $fkOptions         = [];
-        $foreignTableName  = $this->quoteStrategy->getTableName($class, $this->platform);
+        $foreignTableName  = $this->quoteStrategy->getTableName($foreignClass, $this->platform);
         $uniqueConstraints = [];
 
         foreach ($joinColumns as $joinColumn) {
             [$definingClass, $referencedFieldName] = $this->getDefiningClass(
-                $class,
+                $foreignClass,
                 $joinColumn->referencedColumnName,
             );
 
@@ -662,10 +666,10 @@ class SchemaTool
                 );
             }
 
-            $quotedColumnName    = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+            $quotedColumnName    = $this->quoteStrategy->getJoinColumnName($joinColumn, $foreignClass, $this->platform);
             $quotedRefColumnName = $this->quoteStrategy->getReferencedJoinColumnName(
                 $joinColumn,
-                $class,
+                $foreignClass,
                 $this->platform,
             );
 
@@ -688,7 +692,10 @@ class SchemaTool
                     $columnOptions['columnDefinition'] = $fieldMapping->columnDefinition;
                 }
 
-                if (isset($joinColumn->nullable)) {
+                if (
+                    isset($joinColumn->nullable)
+                    && ! ($class->isInheritanceTypeSingleTable() && $class->parentClasses)
+                ) {
                     $columnOptions['notnull'] = ! $joinColumn->nullable;
                 }
 
