@@ -38,7 +38,8 @@ use Doctrine\ORM\Mapping\Table;
  * @DiscriminatorMap({
  *     "fix"       = "CompanyFixContract",
  *     "flexible"  = "CompanyFlexContract",
- *     "flexultra" = "CompanyFlexUltraContract"
+ *     "flexultra" = "CompanyFlexUltraContract",
+ *     "car"       = "CompanyCarContract"
  * })
  * @NamedNativeQueries({
  *      @NamedNativeQuery(
@@ -85,7 +86,7 @@ use Doctrine\ORM\Mapping\Table;
 #[ORM\Table(name: 'company_contracts')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
-#[ORM\DiscriminatorMap(['fix' => 'CompanyFixContract', 'flexible' => 'CompanyFlexContract', 'flexultra' => 'CompanyFlexUltraContract'])]
+#[ORM\DiscriminatorMap(['fix' => 'CompanyFixContract', 'flexible' => 'CompanyFlexContract', 'flexultra' => 'CompanyFlexUltraContract', 'car' => 'CompanyCarContract'])]
 #[ORM\EntityListeners(['CompanyContractListener'])]
 abstract class CompanyContract
 {
