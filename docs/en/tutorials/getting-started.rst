@@ -83,7 +83,6 @@ that directory with the following contents:
         "require": {
             "doctrine/orm": "^2.11.0",
             "doctrine/dbal": "^3.2",
-            "doctrine/annotations": "1.13.2",
             "symfony/yaml": "^5.4",
             "symfony/cache": "^5.4"
         },
@@ -143,14 +142,23 @@ step:
     require_once "vendor/autoload.php";
 
     // Create a simple "default" Doctrine ORM configuration for Annotations
-    $isDevMode = true;
-    $proxyDir = null;
-    $cache = null;
-    $useSimpleAnnotationReader = false;
-    $config = ORMSetup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
-    // or if you prefer YAML or XML
-    // $config = ORMSetup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
-    // $config = ORMSetup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
+    $config = ORMSetup::createAttributeMetadataConfiguration(
+        paths: array(__DIR__."/src"),
+        isDevMode: true,
+    );
+    // or if you prefer annotation, YAML or XML
+    // $config = ORMSetup::createAnnotationMetadataConfiguration(
+    //    paths: array(__DIR__."/src"),
+    //    isDevMode: true,
+    // );
+    // $config = ORMSetup::createXMLMetadataConfiguration(
+    //    paths: array(__DIR__."/config/xml"),
+    //    isDevMode: true,
+    //);
+    // $config = ORMSetup::createYAMLMetadataConfiguration(
+    //    paths: array(__DIR__."/config/yaml"),
+    //    isDevMode: true,
+    // );
 
     // database configuration parameters
     $conn = array(
@@ -164,10 +172,6 @@ step:
 .. note::
     The YAML driver is deprecated and will be removed in version 3.0.
     It is strongly recommended to switch to one of the other mappings.
-
-.. note::
-    It is recommended not to use the SimpleAnnotationReader because its
-    usage will be removed for version 3.0.
 
 The ``require_once`` statement sets up the class autoloading for Doctrine and
 its dependencies using Composer's autoloader.
@@ -494,14 +498,14 @@ the ``Product`` entity to Doctrine using a metadata language. The metadata
 language describes how entities, their properties and references should be
 persisted and what constraints should be applied to them.
 
-Metadata for an Entity can be configured using DocBlock annotations directly
-in the Entity class itself, or in an external XML or YAML file. This Getting
-Started guide will demonstrate metadata mappings using all three methods,
-but you only need to choose one.
+Metadata for an Entity can be configured using attributes directly in
+the Entity class itself, or in an external XML or YAML file. This
+Getting Started guide will demonstrate metadata mappings using all three
+methods, but you only need to choose one.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         // src/Product.php
@@ -517,6 +521,33 @@ but you only need to choose one.
             #[ORM\GeneratedValue]
             private int|null $id = null;
             #[ORM\Column(type: 'string')]
+            private string $name;
+
+            // .. (other code)
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        // src/Product.php
+
+        use Doctrine\ORM\Mapping as ORM;
+
+        /**
+         * @ORM\Entity
+         * @ORM\Table(name="products")
+         */
+        class Product
+        {
+            /**
+             * @ORM\Id
+             * @ORM\Column(type="integer")
+             * @ORM\GeneratedValue
+             */
+            private int|null $id = null;
+            /**
+             * @ORM\Column(type="string")
+             */
             private string $name;
 
             // .. (other code)
@@ -1023,7 +1054,7 @@ Lets add metadata mappings for the ``Bug`` entity, as we did for
 the ``Product`` before:
 
 .. configuration-block::
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         // src/Bug.php
@@ -1057,6 +1088,59 @@ the ``Product`` before:
 
             /** @var Collection<int, Product> */
             #[ORM\ManyToMany(targetEntity: Product::class)]
+            private Collection $products;
+
+            // ... (other code)
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        // src/Bug.php
+
+        use Doctrine\ORM\Mapping as ORM;
+
+        /**
+         * @ORM\Entity
+         * @ORM\Table(name="bugs")
+         */
+        class Bug
+        {
+            /**
+             * @ORM\Id
+             * @ORM\Column(type="integer")
+             * @ORM\GeneratedValue
+             */
+            private int|null $id = null;
+
+            /**
+             * @ORM\Column(type="string")
+             */
+            private string $description;
+
+            /**
+             * @ORM\Column(type="datetime")
+             */
+            private DateTime $created;
+
+            /**
+             * @ORM\Column(type="string")
+             */
+            private string $status;
+
+            /**
+             * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedBugs")
+             */
+            private User|null $engineer;
+
+            /**
+             * @ORM\ManyToOne(targetEntity="User", inversedBy="reportedBugs")
+             */
+            private User|null $reporter;
+
+            /**
+             * @ORM\ManyToMany(targetEntity="Product")
+             */
             private Collection $products;
 
             // ... (other code)
@@ -1146,7 +1230,7 @@ Finally, we'll add metadata mappings for the ``User`` entity.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         // src/User.php
@@ -1176,6 +1260,47 @@ Finally, we'll add metadata mappings for the ``User`` entity.
             // .. (other code)
         }
 
+    .. code-block:: annotation
+
+        <?php
+        // src/User.php
+
+        use Doctrine\ORM\Mapping as ORM;
+
+        /**
+         * @ORM\Entity
+         * @ORM\Table(name="users")
+         */
+        class User
+        {
+            /**
+             * @ORM\Id
+             * @ORM\GeneratedValue
+             * @ORM\Column(type="integer")
+             * @var int
+             */
+            private int|null $id = null;
+
+            /**
+             * @ORM\Column(type="string")
+             * @var string
+             */
+            private string $name;
+
+            /**
+             * @ORM\OneToMany(targetEntity="Bug", mappedBy="reporter")
+             * @var Collection<int, Bug> An ArrayCollection of Bug objects.
+             */
+            private Collection $reportedBugs;
+
+            /**
+             * @ORM\OneToMany(targetEntity="Bug", mappedBy="engineer")
+             * @var Collection<int, Bug> An ArrayCollection of Bug objects.
+             */
+            private Collection $assignedBugs;
+
+            // .. (other code)
+        }
     .. code-block:: xml
 
         <!-- config/xml/User.dcm.xml -->
@@ -1705,7 +1830,20 @@ we have to adjust the metadata slightly.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+
+        use Doctrine\ORM\Mapping as ORM;
+
+        #[ORM\Entity(repositoryClass: BugRepository::class)]
+        #[ORM\Table(name: 'bugs')]
+        class Bug
+        {
+            // ...
+        }
+
+    .. code-block:: annotation
 
         <?php
 
@@ -1714,7 +1852,7 @@ we have to adjust the metadata slightly.
         /**
          * @ORM\Entity(repositoryClass="BugRepository")
          * @ORM\Table(name="bugs")
-         **/
+         */
         class Bug
         {
             // ...

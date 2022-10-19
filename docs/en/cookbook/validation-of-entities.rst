@@ -36,12 +36,12 @@ are allowed to:
         public function assertCustomerAllowedBuying()
         {
             $orderLimit = $this->customer->getOrderLimit();
-    
+
             $amount = 0;
             foreach ($this->orderLines as $line) {
                 $amount += $line->getAmount();
             }
-    
+
             if ($amount > $orderLimit) {
                 throw new CustomerOrderLimitExceededException();
             }
@@ -53,7 +53,21 @@ code, enforcing it at any time is important so that customers with
 a unknown reputation don't owe your business too much money.
 
 We can enforce this constraint in any of the metadata drivers.
-First Annotations:
+First Attributes:
+
+.. code-block:: php
+
+    <?php
+
+    #[Entity]
+    #[HasLifecycleCallbacks]
+    class Order
+    {
+        #[PrePersist, PreUpdate]
+        public function assertCustomerAllowedBuying() {}
+    }
+
+As Annotations:
 
 .. code-block:: php
 
@@ -98,19 +112,17 @@ validation callbacks.
     <?php
     class Order
     {
-        /**
-         * @PrePersist @PreUpdate
-         */
+        #[PrePersist, PreUpdate]
         public function validate()
         {
             if (!($this->plannedShipDate instanceof DateTime)) {
                 throw new ValidateException();
             }
-    
+
             if ($this->plannedShipDate->format('U') < time()) {
                 throw new ValidateException();
             }
-    
+
             if ($this->customer == null) {
                 throw new OrderRequiresCustomerException();
             }

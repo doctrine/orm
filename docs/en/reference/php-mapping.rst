@@ -90,8 +90,8 @@ Static Function
 In addition to the PHP files you can also specify your mapping
 information inside of a static function defined on the entity class
 itself. This is useful for cases where you want to keep your entity
-and mapping information together but don't want to use annotations.
-For this you just need to use the ``StaticPHPDriver``:
+and mapping information together but don't want to use attributes or
+annotations. For this you just need to use the ``StaticPHPDriver``:
 
 .. code-block:: php
 
@@ -325,5 +325,3 @@ entities themselves.
 -  ``setIdentifierValues($entity, $id)``
 -  ``setFieldValue($entity, $field, $value)``
 -  ``getFieldValue($entity, $field)``
-
-

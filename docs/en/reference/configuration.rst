@@ -55,7 +55,7 @@ access point to ORM functionality provided by Doctrine.
         'dbname'   => 'foo',
     );
 
-    $config = ORMSetup::createAnnotationMetadataConfiguration($paths, $isDevMode);
+    $config = ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode);
     $entityManager = EntityManager::create($dbParams, $config);
 
 .. note::
@@ -83,9 +83,9 @@ Or if you prefer YAML:
 
 .. note::
     If you want to use yml mapping you should add yaml dependency to your `composer.json`:
-    
+
     ::
-    
+
         "symfony/yaml": "*"
 
 Inside the ``ORMSetup`` methods several assumptions are made:

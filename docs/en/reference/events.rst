@@ -827,7 +827,41 @@ you need to map the listener method using the event type mapping:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        use Doctrine\ORM\Event\PreUpdateEventArgs;
+        use Doctrine\ORM\Event\PreFlushEventArgs;
+        use Doctrine\Persistence\Event\LifecycleEventArgs;
+
+        class UserListener
+        {
+            #[PrePersist]
+            public function prePersistHandler(User $user, LifecycleEventArgs $event): void { // ... }
+
+            #[PostPersist]
+            public function postPersistHandler(User $user, LifecycleEventArgs $event): void { // ... }
+
+            #[PreUpdate]
+            public function preUpdateHandler(User $user, PreUpdateEventArgs $event): void { // ... }
+
+            #[PostUpdate]
+            public function postUpdateHandler(User $user, LifecycleEventArgs $event): void { // ... }
+
+            #[PostRemove]
+            public function postRemoveHandler(User $user, LifecycleEventArgs $event): void { // ... }
+
+            #[PreRemove]
+            public function preRemoveHandler(User $user, LifecycleEventArgs $event): void { // ... }
+
+            #[PreFlush]
+            public function preFlushHandler(User $user, PreFlushEventArgs $event): void { // ... }
+
+            #[PostLoad]
+            public function postLoadHandler(User $user, LifecycleEventArgs $event): void { // ... }
+        }
+
+    .. code-block:: annotation
 
         <?php
         use Doctrine\ORM\Event\PreUpdateEventArgs;
@@ -837,29 +871,30 @@ you need to map the listener method using the event type mapping:
         class UserListener
         {
             /** @PrePersist */
-            public function prePersistHandler(User $user, LifecycleEventArgs $event) { // ... }
+            public function prePersistHandler(User $user, LifecycleEventArgs $event): void { // ... }
 
             /** @PostPersist */
-            public function postPersistHandler(User $user, LifecycleEventArgs $event) { // ... }
+            public function postPersistHandler(User $user, LifecycleEventArgs $event): void { // ... }
 
             /** @PreUpdate */
-            public function preUpdateHandler(User $user, PreUpdateEventArgs $event) { // ... }
+            public function preUpdateHandler(User $user, PreUpdateEventArgs $event): void { // ... }
 
             /** @PostUpdate */
-            public function postUpdateHandler(User $user, LifecycleEventArgs $event) { // ... }
+            public function postUpdateHandler(User $user, LifecycleEventArgs $event): void { // ... }
 
             /** @PostRemove */
-            public function postRemoveHandler(User $user, LifecycleEventArgs $event) { // ... }
+            public function postRemoveHandler(User $user, LifecycleEventArgs $event): void { // ... }
 
             /** @PreRemove */
-            public function preRemoveHandler(User $user, LifecycleEventArgs $event) { // ... }
+            public function preRemoveHandler(User $user, LifecycleEventArgs $event): void { // ... }
 
             /** @PreFlush */
-            public function preFlushHandler(User $user, PreFlushEventArgs $event) { // ... }
+            public function preFlushHandler(User $user, PreFlushEventArgs $event): void { // ... }
 
             /** @PostLoad */
-            public function postLoadHandler(User $user, LifecycleEventArgs $event) { // ... }
+            public function postLoadHandler(User $user, LifecycleEventArgs $event): void { // ... }
         }
+
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -980,7 +1015,7 @@ Load ClassMetadata Event
 
 ``loadClassMetadata`` - The ``loadClassMetadata`` event occurs after the
 mapping metadata for a class has been loaded from a mapping source
-(annotations/xml/yaml) in to a ``Doctrine\ORM\Mapping\ClassMetadata`` instance.
+(attributes/annotations/xml/yaml) in to a ``Doctrine\ORM\Mapping\ClassMetadata`` instance.
 You can hook in to this process and manipulate the instance.
 This event is not a lifecycle callback.
 

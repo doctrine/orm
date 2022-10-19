@@ -189,13 +189,24 @@ example we'll use an integer.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         class User
         {
             // ...
             #[Version, Column(type: 'integer')]
+            private int $version;
+            // ...
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        class User
+        {
+            // ...
+            /** @Version @Column(type="integer") */
             private int $version;
             // ...
         }
@@ -222,13 +233,24 @@ timestamp or datetime):
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         class User
         {
             // ...
             #[Version, Column(type: 'datetime')]
+            private DateTime $version;
+            // ...
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        class User
+        {
+            // ...
+            /** @Version @Column(type="datetime") */
             private DateTime $version;
             // ...
         }
