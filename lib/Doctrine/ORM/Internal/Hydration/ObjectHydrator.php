@@ -281,9 +281,13 @@ class ObjectHydrator extends AbstractHydrator
             $idHash = '';
 
             foreach ($class->identifier as $fieldName) {
-                $idHash .= ' ' . (isset($class->associationMappings[$fieldName])
-                    ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
-                    : $data[$fieldName]);
+                if (isset($class->associationMappings[$fieldName])) {
+                    $idHash .= ' ' . $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']];
+                } elseif (class_exists('\BackedEnum') && is_a($data[$fieldName], '\BackedEnum')) {
+                    $idHash .= ' ' . $data[$fieldName]->value;
+                } else {
+                    $idHash .= ' ' . $data[$fieldName];
+                }
             }
 
             return $this->_uow->tryGetByIdHash(ltrim($idHash), $class->rootEntityName);
