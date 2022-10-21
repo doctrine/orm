@@ -32,59 +32,39 @@ The entity class:
 
     namespace Geo\Entity;
 
-    /**
-     * @Entity
-     */
+    use Geo\ValueObject\Point;
+
+    #[Entity]
     class Location
     {
-        /**
-         * @Column(type="point")
-         *
-         * @var \Geo\ValueObject\Point
-         */
-        private $point;
+        #[Column(type: 'point')]
+        private Point $point;
 
-        /**
-         * @Column(type="string")
-         *
-         * @var string
-         */
-        private $address;
+        #[Column]
+        private string $address;
 
-        /**
-         * @param \Geo\ValueObject\Point $point
-         */
-        public function setPoint(\Geo\ValueObject\Point $point)
+        public function setPoint(Point $point): void
         {
             $this->point = $point;
         }
 
-        /**
-         * @return \Geo\ValueObject\Point
-         */
-        public function getPoint()
+        public function getPoint(): Point
         {
             return $this->point;
         }
 
-        /**
-         * @param string $address
-         */
-        public function setAddress($address)
+        public function setAddress(string $address): void
         {
             $this->address = $address;
         }
 
-        /**
-         * @return string
-         */
-        public function getAddress()
+        public function getAddress(): string
         {
             return $this->address;
         }
     }
 
-We use the custom type ``point`` in the ``@Column``  docblock annotation of the
+We use the custom type ``point`` in the ``#[Column]``  attribute of the
 ``$point`` field. We will create this custom mapping type in the next chapter.
 
 The point class:
@@ -97,29 +77,18 @@ The point class:
 
     class Point
     {
-
-        /**
-         * @param float $latitude
-         * @param float $longitude
-         */
-        public function __construct($latitude, $longitude)
-        {
-            $this->latitude  = $latitude;
-            $this->longitude = $longitude;
+        public function __construct(
+            private float $latitude,
+            private float $longitude,
+        ) {
         }
 
-        /**
-         * @return float
-         */
-        public function getLatitude()
+        public function getLatitude(): float
         {
             return $this->latitude;
         }
 
-        /**
-         * @return float
-         */
-        public function getLongitude()
+        public function getLongitude(): float
         {
             return $this->longitude;
         }

@@ -97,7 +97,7 @@ Example:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         namespace MyProject\Model;
@@ -112,6 +112,30 @@ Example:
         }
 
         #[Entity]
+        class Employee extends Person
+        {
+            // ...
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        namespace MyProject\Model;
+
+        /**
+         * @Entity
+         * @InheritanceType("SINGLE_TABLE")
+         * @DiscriminatorColumn(name="discr", type="string")
+         * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
+         */
+        class Person
+        {
+            // ...
+        }
+
+        /**
+         * @Entity
+         */
         class Employee extends Person
         {
             // ...
@@ -323,7 +347,7 @@ Example:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         // user mapping
@@ -364,6 +388,58 @@ Example:
                 joinColumns: [new JoinColumn(name: 'adminaddress_id', referencedColumnName: 'id')]
             )
         ])]
+        class Admin extends User
+        {
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        // user mapping
+        namespace MyProject\Model;
+        /**
+         * @MappedSuperclass
+         */
+        class User
+        {
+            // other fields mapping
+
+            /**
+             * @ManyToMany(targetEntity="Group", inversedBy="users")
+             * @JoinTable(name="users_groups",
+             *  joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+             *  inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
+             * )
+             * @var Collection<int, Group>
+             */
+            protected Collection $groups;
+
+            /**
+             * @ManyToOne(targetEntity="Address")
+             * @JoinColumn(name="address_id", referencedColumnName="id")
+             */
+            protected Address|null $address = null;
+        }
+
+        // admin mapping
+        namespace MyProject\Model;
+        /**
+         * @Entity
+         * @AssociationOverrides({
+         *      @AssociationOverride(name="groups",
+         *          joinTable=@JoinTable(
+         *              name="users_admingroups",
+         *              joinColumns=@JoinColumn(name="adminuser_id"),
+         *              inverseJoinColumns=@JoinColumn(name="admingroup_id")
+         *          )
+         *      ),
+         *      @AssociationOverride(name="address",
+         *          joinColumns=@JoinColumn(
+         *              name="adminaddress_id", referencedColumnName="id"
+         *          )
+         *      )
+         * })
+         */
         class Admin extends User
         {
         }
@@ -477,7 +553,7 @@ Could be used by an entity that extends a mapped superclass to override a field 
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         // user mapping
@@ -517,6 +593,51 @@ Could be used by an entity that extends a mapped superclass to override a field 
                 )
             )
         ])]
+        class Guest extends User
+        {
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        // user mapping
+        namespace MyProject\Model;
+        /**
+         * @MappedSuperclass
+         */
+        class User
+        {
+            /** @Id @GeneratedValue @Column(type="integer", name="user_id", length=150) */
+            protected int|null $id = null;
+
+            /** @Column(name="user_name", nullable=true, unique=false, length=250) */
+            protected string $name;
+
+            // other fields mapping
+        }
+
+        // guest mapping
+        namespace MyProject\Model;
+        /**
+         * @Entity
+         * @AttributeOverrides({
+         *      @AttributeOverride(name="id",
+         *          column=@Column(
+         *              name     = "guest_id",
+         *              type     = "integer",
+         *              length   = 140
+         *          )
+         *      ),
+         *      @AttributeOverride(name="name",
+         *          column=@Column(
+         *              name     = "guest_name",
+         *              nullable = false,
+         *              unique   = true,
+         *              length   = 240
+         *          )
+         *      )
+         * })
+         */
         class Guest extends User
         {
         }
