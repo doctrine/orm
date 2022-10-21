@@ -5,12 +5,12 @@ There are use-cases when you'll want to sort collections when they are
 retrieved from the database. In userland you do this as long as you
 haven't initially saved an entity with its associations into the
 database. To retrieve a sorted collection from the database you can
-use the ``@OrderBy`` annotation with a collection that specifies
+use the ``#[OrderBy]`` attribute with a collection that specifies
 a DQL snippet that is appended to all queries with this
 collection.
 
-Additional to any ``@OneToMany`` or ``@ManyToMany`` annotation you
-can specify the ``@OrderBy`` in the following way:
+Additional to any ``#[OneToMany]`` or ``#[ManyToMany]`` attribute you
+can specify the ``#[OrderBy]`` in the following way:
 
 .. configuration-block::
 
@@ -24,6 +24,22 @@ can specify the ``@OrderBy`` in the following way:
 
             #[ManyToMany(targetEntity: Group::class)]
             #[OrderBy(["name" => "ASC"])]
+            private Collection $groups;
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        /** @Entity **/
+        class User
+        {
+            // ...
+
+            /**
+             * @ManyToMany(targetEntity="Group")
+             * @OrderBy({"name" = "ASC"})
+             * @var Collection<int, Group>
+             */
             private Collection $groups;
         }
 
@@ -60,7 +76,7 @@ The DQL Snippet in OrderBy is only allowed to consist of
 unqualified, unquoted field names and of an optional ASC/DESC
 positional statement. Multiple Fields are separated by a comma (,).
 The referenced field names have to exist on the ``targetEntity``
-class of the ``@ManyToMany`` or ``@OneToMany`` annotation.
+class of the ``#[ManyToMany]`` or ``#[OneToMany]`` annotation.
 
 The semantics of this feature can be described as follows:
 

@@ -17,7 +17,7 @@ instead of simply adding the respective columns to the ``User`` class.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
 
@@ -41,6 +41,33 @@ instead of simply adding the respective columns to the ``User`` class.
             private string $city;
 
             #[Column(type: "string")]
+            private string $country;
+        }
+
+    .. code-block:: annotation
+
+        <?php
+
+        /** @Entity */
+        class User
+        {
+            /** @Embedded(class = "Address") */
+            private Address $address;
+        }
+
+        /** @Embeddable */
+        class Address
+        {
+            /** @Column(type = "string") */
+            private string $street;
+
+            /** @Column(type = "string") */
+            private string $postalCode;
+
+            /** @Column(type = "string") */
+            private string $city;
+
+            /** @Column(type = "string") */
             private string $country;
         }
 
@@ -109,7 +136,7 @@ The following example shows you how to set your prefix to ``myPrefix_``:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
 
@@ -118,6 +145,17 @@ The following example shows you how to set your prefix to ``myPrefix_``:
         {
             #[Embedded(class: Address::class, columnPrefix: "myPrefix_")]
             private Address $address;
+        }
+
+    .. code-block:: annotation
+
+        <?php
+
+        /** @Entity */
+        class User
+        {
+            /** @Embedded(class = "Address", columnPrefix = "myPrefix_") */
+            private $address;
         }
 
     .. code-block:: xml
@@ -140,7 +178,7 @@ directly, set ``columnPrefix=false`` (``use-column-prefix="false"`` for XML):
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
 
@@ -148,7 +186,18 @@ directly, set ``columnPrefix=false`` (``use-column-prefix="false"`` for XML):
         class User
         {
             #[Embedded(class: Address::class, columnPrefix: false)]
-            private $address;
+            private Address $address;
+        }
+
+    .. code-block:: annotation
+
+        <?php
+
+        /** @Entity */
+        class User
+        {
+            /** @Embedded(class = "Address", columnPrefix = false) */
+            private Address $address;
         }
 
     .. code-block:: xml

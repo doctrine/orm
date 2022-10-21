@@ -137,7 +137,6 @@ relations of the ``User``:
              return $this->commentsRead;
         }
 
-        /** @param Collection<int, Comment> $c */
         public function setFirstComment(Comment $c): void {
             $this->firstComment = $c;
         }

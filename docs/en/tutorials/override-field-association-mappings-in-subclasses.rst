@@ -50,7 +50,7 @@ Suppose we have a class ExampleEntityWithOverride. This class uses trait Example
 The docblock is showing metadata override of the attribute and association type. It
 basically changes the names of the columns mapped for a property ``foo`` and for
 the association ``bar`` which relates to Bar class shown above. Here is the trait
-which has mapping metadata that is overridden by the annotation above:
+which has mapping metadata that is overridden by the attribute above:
 
 .. code-block:: php
 

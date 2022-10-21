@@ -12,6 +12,7 @@ steps of configuration.
 
     use Doctrine\ORM\Configuration;
     use Doctrine\ORM\EntityManager;
+    use Doctrine\ORM\Mapping\Driver\AttributeDriver;
     use Doctrine\ORM\ORMSetup;
     use Symfony\Component\Cache\Adapter\ArrayAdapter;
     use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
@@ -28,7 +29,7 @@ steps of configuration.
 
     $config = new Configuration;
     $config->setMetadataCache($metadataCache);
-    $driverImpl = ORMSetup::createDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
+    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities']);
     $config->setMetadataDriverImpl($driverImpl);
     $config->setQueryCache($queryCache);
     $config->setProxyDir('/path/to/myproject/lib/MyProject/Proxies');
@@ -124,18 +125,17 @@ used in the examples. For information on the usage of the
 AnnotationDriver, XmlDriver or YamlDriver please refer to the dedicated
 chapters ``Annotation Reference``, ``XML Mapping`` and ``YAML Mapping``.
 
-The annotation driver can be configured with a factory method on
-the ``Doctrine\ORM\Configuration``:
+The attribute driver can be injected in the ``Doctrine\ORM\Configuration``:
 
 .. code-block:: php
 
     <?php
     use Doctrine\ORM\ORMSetup;
 
-    $driverImpl = ORMSetup::createDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
+    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities']);
     $config->setMetadataDriverImpl($driverImpl);
 
-The path information to the entities is required for the annotation
+The path information to the entities is required for the attribute
 driver, because otherwise mass-operations on all entities through
 the console could not work correctly. All of metadata drivers
 accept either a single directory as a string or an array of
@@ -152,7 +152,7 @@ Metadata Cache (***RECOMMENDED***)
     $config->getMetadataCache();
 
 Gets or sets the cache adapter to use for caching metadata
-information, that is, all the information you supply via
+information, that is, all the information you supply via attributes,
 annotations, xml or yaml, so that they do not need to be parsed and
 loaded from scratch on every single request which is a waste of
 resources. The cache implementation must implement the PSR-6
