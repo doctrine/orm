@@ -66,7 +66,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $ui = new SymfonyStyle($input, $output);
+        $ui = (new SymfonyStyle($input, $output))->getErrorStyle();
 
         $em          = $this->getEntityManager($input);
         $entityClass = $input->getArgument('entity-class');

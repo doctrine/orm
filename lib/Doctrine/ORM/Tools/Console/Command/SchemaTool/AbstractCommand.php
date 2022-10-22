@@ -38,7 +38,7 @@ abstract class AbstractCommand extends AbstractEntityManagerCommand
         $metadatas = $em->getMetadataFactory()->getAllMetadata();
 
         if (empty($metadatas)) {
-            $ui->success('No Metadata Classes to process.');
+            $ui->getErrorStyle()->success('No Metadata Classes to process.');
 
             return 0;
         }

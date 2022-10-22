@@ -78,8 +78,10 @@ EOT
 
         $sqls = $schemaTool->getUpdateSchemaSql($metadatas, $saveMode);
 
+        $notificationUi = $ui->getErrorStyle();
+
         if (empty($sqls)) {
-            $ui->success('Nothing to update - your database is already in sync with the current entity metadata.');
+            $notificationUi->success('Nothing to update - your database is already in sync with the current entity metadata.');
 
             return 0;
         }
@@ -95,25 +97,25 @@ EOT
 
         if ($force) {
             if ($dumpSql) {
-                $ui->newLine();
+                $notificationUi->newLine();
             }
 
-            $ui->text('Updating database schema...');
-            $ui->newLine();
+            $notificationUi->text('Updating database schema...');
+            $notificationUi->newLine();
 
             $schemaTool->updateSchema($metadatas, $saveMode);
 
             $pluralization = count($sqls) === 1 ? 'query was' : 'queries were';
 
-            $ui->text(sprintf('    <info>%s</info> %s executed', count($sqls), $pluralization));
-            $ui->success('Database schema updated successfully!');
+            $notificationUi->text(sprintf('    <info>%s</info> %s executed', count($sqls), $pluralization));
+            $notificationUi->success('Database schema updated successfully!');
         }
 
         if ($dumpSql || $force) {
             return 0;
         }
 
-        $ui->caution(
+        $notificationUi->caution(
             [
                 'This operation should not be executed in a production environment!',
                 '',
@@ -122,7 +124,7 @@ EOT
             ]
         );
 
-        $ui->text(
+        $notificationUi->text(
             [
                 sprintf('The Schema-Tool would execute <info>"%s"</info> queries to update the database.', count($sqls)),
                 '',
