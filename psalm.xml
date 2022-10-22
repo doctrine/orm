@@ -68,8 +68,16 @@
                 <referencedMethod name="Doctrine\DBAL\Connection::getSchemaManager"/>
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::supportsForeignKeyConstraints"/>
+                <!-- Remove on 2.14.x -->
+                <referencedMethod name="Doctrine\DBAL\Schema\AbstractSchemaManager::createSchema"/>
+                <referencedMethod name="Doctrine\DBAL\Schema\Index::isFullfilledBy"/>
+                <referencedMethod name="Doctrine\DBAL\Schema\Table::changeColumn"/>
+                <referencedMethod name="Doctrine\DBAL\Schema\Table::hasPrimaryKey"/>
                 <!-- Remove on 3.0.x -->
+                <referencedMethod name="Doctrine\DBAL\Connection::getEventManager"/>
                 <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
+                <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSaveSql"/>
+                <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSql"/>
                 <referencedMethod name="Doctrine\ORM\Internal\Hydration\AbstractHydrator::hydrateRow"/>
                 <referencedMethod name="Doctrine\ORM\Configuration::ensureProductionSettings"/>
                 <referencedMethod name="Doctrine\ORM\Configuration::newDefaultAnnotationDriver"/>
