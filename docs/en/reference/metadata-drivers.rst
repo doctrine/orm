@@ -120,17 +120,17 @@ the ``FileDriver`` implementation for you to extend from:
          * {@inheritdoc}
          */
         protected $_fileExtension = '.dcm.ext';
-    
+
         /**
          * {@inheritdoc}
          */
         public function loadMetadataForClass($className, ClassMetadata $metadata)
         {
             $data = $this->_loadMappingFile($file);
-    
+
             // populate ClassMetadata instance from $data
         }
-    
+
         /**
          * {@inheritdoc}
          */
@@ -198,5 +198,3 @@ iterate over them:
     foreach ($class->fieldMappings as $fieldMapping) {
         echo $fieldMapping['fieldName'] . "\n";
     }
-
-
