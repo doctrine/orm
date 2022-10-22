@@ -69,11 +69,6 @@
                 <referencedMethod name="Doctrine\DBAL\Connection::getSchemaManager"/>
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::supportsForeignKeyConstraints"/>
-                <!-- Remove on 2.14.x -->
-                <referencedMethod name="Doctrine\DBAL\Schema\AbstractSchemaManager::createSchema"/>
-                <referencedMethod name="Doctrine\DBAL\Schema\Index::isFullfilledBy"/>
-                <referencedMethod name="Doctrine\DBAL\Schema\Table::changeColumn"/>
-                <referencedMethod name="Doctrine\DBAL\Schema\Table::hasPrimaryKey"/>
                 <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\DBAL\Connection::getEventManager"/>
                 <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
