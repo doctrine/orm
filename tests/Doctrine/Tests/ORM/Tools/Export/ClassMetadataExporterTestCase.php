@@ -66,7 +66,7 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setMetadataDriverImpl($metadataDriver);
 
-        return EntityManagerMock::create($connection, $config);
+        return new EntityManagerMock($connection, $config);
     }
 
     protected function createMetadataDriver(string $type, string $path): MappingDriver

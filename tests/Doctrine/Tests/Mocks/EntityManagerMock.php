@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
+use BadMethodCallException;
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\UnitOfWork;
+
+use function sprintf;
 
 /**
  * Special EntityManager mock used for testing purposes.
@@ -22,10 +26,19 @@ class EntityManagerMock extends EntityManager
     /** @var ProxyFactory|null */
     private $_proxyFactoryMock;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getUnitOfWork()
+    public function __construct(Connection $conn, ?Configuration $config = null, ?EventManager $eventManager = null)
+    {
+        if ($config === null) {
+            $config = new Configuration();
+            $config->setProxyDir(__DIR__ . '/../Proxies');
+            $config->setProxyNamespace('Doctrine\Tests\Proxies');
+            $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver());
+        }
+
+        parent::__construct($conn, $config, $eventManager);
+    }
+
+    public function getUnitOfWork(): UnitOfWork
     {
         return $this->_uowMock ?? parent::getUnitOfWork();
     }
@@ -51,19 +64,10 @@ class EntityManagerMock extends EntityManager
     }
 
     /**
-     * Mock factory method to create an EntityManager.
-     *
      * {@inheritdoc}
      */
-    public static function create($conn, ?Configuration $config = null, ?EventManager $eventManager = null)
+    public static function create($connection, Configuration $config, ?EventManager $eventManager = null): self
     {
-        if ($config === null) {
-            $config = new Configuration();
-            $config->setProxyDir(__DIR__ . '/../Proxies');
-            $config->setProxyNamespace('Doctrine\Tests\Proxies');
-            $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver());
-        }
-
-        return new EntityManagerMock($conn, $config);
+        throw new BadMethodCallException(sprintf('Call to deprecated method %s().', __METHOD__));
     }
 }

@@ -123,7 +123,7 @@ class LockAgentWorker
 
         $config->setQueryCache(new ArrayAdapter());
 
-        return EntityManager::create($conn, $config);
+        return new EntityManager($conn, $config);
     }
 }
 

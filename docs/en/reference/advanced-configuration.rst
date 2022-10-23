@@ -41,12 +41,12 @@ steps of configuration.
         $config->setAutoGenerateProxyClasses(false);
     }
 
-    $connectionOptions = array(
+    $connection = DriverManager::getConnection([
         'driver' => 'pdo_sqlite',
-        'path' => 'database.sqlite'
-    );
+        'path' => 'database.sqlite',
+    ], $config);
 
-    $em = EntityManager::create($connectionOptions, $config);
+    $em = new EntityManager($connection, $config);
 
 Doctrine and Caching
 --------------------
@@ -276,15 +276,13 @@ proxy sets an exclusive file lock which can cause serious
 performance bottlenecks in systems with regular concurrent
 requests.
 
-Connection Options
-------------------
+Connection
+----------
 
-The ``$connectionOptions`` passed as the first argument to
-``EntityManager::create()`` has to be either an array or an
-instance of ``Doctrine\DBAL\Connection``. If an array is passed it
-is directly passed along to the DBAL Factory
-``Doctrine\DBAL\DriverManager::getConnection()``. The DBAL
-configuration is explained in the
+The ``$connection`` passed as the first argument to he constructor of
+``EntityManager`` has to be an instance of ``Doctrine\DBAL\Connection``.
+You can use the factory ``Doctrine\DBAL\DriverManager::getConnection()``
+to create such a connection. The DBAL configuration is explained in the
 `DBAL section <https://www.doctrine-project.org/projects/doctrine-dbal/en/current/reference/configuration.html>`_.
 
 Proxy Objects

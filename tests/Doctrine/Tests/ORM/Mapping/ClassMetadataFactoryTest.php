@@ -300,7 +300,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $config->setMetadataDriverImpl($metadataDriver);
 
-        return EntityManagerMock::create($conn, $config);
+        return new EntityManagerMock($conn, $config);
     }
 
     protected function createTestFactory(): ClassMetadataFactoryTestSubject

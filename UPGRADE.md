@@ -27,6 +27,13 @@ It will be removed in 3.0. Use one of the dedicated event classes instead:
 
 # Upgrade to 2.13
 
+## Deprecated `EntityManager::create()`
+
+The constructor of `EntityManager` is now public and should be used instead of the `create()` method.
+However, the constructor expects a `Connection` while `create()` accepted an array with connection parameters.
+You can pass that array to DBAL's `Doctrine\DBAL\DriverManager::getConnection()` method to bootstrap the
+connection.
+
 ## Deprecated `QueryBuilder` methods and constants.
 
 1. The `QueryBuilder::getState()` method has been deprecated as the builder state is an internal concern.

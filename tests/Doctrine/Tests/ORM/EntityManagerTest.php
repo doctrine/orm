@@ -31,6 +31,7 @@ use TypeError;
 
 use function get_class;
 use function random_int;
+use function sys_get_temp_dir;
 use function uniqid;
 
 class EntityManagerTest extends OrmTestCase
@@ -258,12 +259,26 @@ class EntityManagerTest extends OrmTestCase
 
     public function testCreateInvalidConnection(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid $connection argument of type int given: "1".');
-
         $config = new Configuration();
         $config->setMetadataDriverImpl($this->createMock(MappingDriver::class));
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid $connection argument of type int given: "1".');
         EntityManager::create(1, $config);
+    }
+
+    public function testNamedConstructorDeprecation(): void
+    {
+        $config = new Configuration();
+        $config->setMetadataDriverImpl($this->createMock(MappingDriver::class));
+        $config->setProxyDir(sys_get_temp_dir());
+        $config->setProxyNamespace(__NAMESPACE__ . '\\MyProxies');
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9961');
+
+        $em = EntityManager::create(['driver' => 'pdo_sqlite', 'memory' => true], $config);
+
+        self::assertInstanceOf(Connection::class, $em->getConnection());
     }
 
     /** @group #5796 */

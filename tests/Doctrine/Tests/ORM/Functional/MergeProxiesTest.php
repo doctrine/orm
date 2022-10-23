@@ -257,7 +257,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
             $config
         );
 
-        $entityManager = EntityManager::create($connection, $config);
+        $entityManager = new EntityManager($connection, $config);
 
         (new SchemaTool($entityManager))->createSchema([$entityManager->getClassMetadata(DateTimeModel::class)]);
 

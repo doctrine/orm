@@ -41,22 +41,24 @@ access point to ORM functionality provided by Doctrine.
     // bootstrap.php
     require_once "vendor/autoload.php";
 
+    use Doctrine\DBAL\DriverManager;
     use Doctrine\ORM\EntityManager;
     use Doctrine\ORM\ORMSetup;
 
-    $paths = array("/path/to/entity-files");
+    $paths = ['/path/to/entity-files'];
     $isDevMode = false;
 
     // the connection configuration
-    $dbParams = array(
+    $dbParams = [
         'driver'   => 'pdo_mysql',
         'user'     => 'root',
         'password' => '',
         'dbname'   => 'foo',
-    );
+    ];
 
     $config = ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode);
-    $entityManager = EntityManager::create($dbParams, $config);
+    $connection = DriverManager::getConnection($dbParams, $config);
+    $entityManager = new EntityManager($connection, $config);
 
 .. note::
 
@@ -68,18 +70,20 @@ Or if you prefer XML:
 .. code-block:: php
 
     <?php
-    $paths = array("/path/to/xml-mappings");
+    $paths = ['/path/to/xml-mappings'];
     $config = ORMSetup::createXMLMetadataConfiguration($paths, $isDevMode);
-    $entityManager = EntityManager::create($dbParams, $config);
+    $connection = DriverManager::getConnection($dbParams, $config);
+    $entityManager = new EntityManager($connection, $config);
 
 Or if you prefer YAML:
 
 .. code-block:: php
 
     <?php
-    $paths = array("/path/to/yml-mappings");
+    $paths = ['/path/to/yml-mappings'];
     $config = ORMSetup::createYAMLMetadataConfiguration($paths, $isDevMode);
-    $entityManager = EntityManager::create($dbParams, $config);
+    $connection = DriverManager::getConnection($dbParams, $config);
+    $entityManager = new EntityManager($connection, $config);
 
 .. note::
     If you want to use yml mapping you should add yaml dependency to your `composer.json`:
