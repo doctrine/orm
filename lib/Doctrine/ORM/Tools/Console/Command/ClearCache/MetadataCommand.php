@@ -40,7 +40,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $ui = new SymfonyStyle($input, $output);
+        $ui = (new SymfonyStyle($input, $output))->getErrorStyle();
 
         $em          = $this->getEntityManager($input);
         $cacheDriver = $em->getConfiguration()->getMetadataCache();

@@ -97,7 +97,7 @@ class ConvertDoctrine1SchemaCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $ui = new SymfonyStyle($input, $output);
-        $ui->warning('Command ' . $this->getName() . ' is deprecated and will be removed in Doctrine ORM 3.0.');
+        $ui->getErrorStyle()->warning('Command ' . $this->getName() . ' is deprecated and will be removed in Doctrine ORM 3.0.');
 
         // Process source directories
         $fromPaths = array_merge([$input->getArgument('from-path')], $input->getOption('from'));
