@@ -878,7 +878,7 @@ class SchemaTool
     {
         $schema = $this->getSchemaFromMetadata($classes);
 
-        $deployedSchema = $this->schemaManager->createSchema();
+        $deployedSchema = $this->introspectSchema();
 
         foreach ($schema->getTables() as $table) {
             if (! $deployedSchema->hasTable($table->getName())) {
@@ -974,7 +974,7 @@ class SchemaTool
         $previousFilter = $config->getSchemaAssetsFilter();
 
         if ($previousFilter === null) {
-            return $this->schemaManager->createSchema();
+            return $this->introspectSchema();
         }
 
         // whitelist assets we already know about in $toSchema, use the existing filter otherwise
@@ -985,10 +985,19 @@ class SchemaTool
         });
 
         try {
-            return $this->schemaManager->createSchema();
+            return $this->introspectSchema();
         } finally {
             // restore schema assets filter
             $config->setSchemaAssetsFilter($previousFilter);
         }
+    }
+
+    private function introspectSchema(): Schema
+    {
+        $method = method_exists($this->schemaManager, 'introspectSchema')
+            ? 'introspectSchema'
+            : 'createSchema';
+
+        return $this->schemaManager->$method();
     }
 }
