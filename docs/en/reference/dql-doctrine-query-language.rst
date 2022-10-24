@@ -319,11 +319,11 @@ With Nested Conditions in WHERE Clause:
 
     <?php
     $query = $em->createQuery('SELECT u FROM ForumUser u WHERE (u.username = :name OR u.username = :name2) AND u.id = :id');
-    $query->setParameters(array(
+    $query->setParameters([
         'name' => 'Bob',
         'name2' => 'Alice',
         'id' => 321,
-    ));
+    ]);
     $users = $query->getResult(); // array of ForumUser objects
 
 With COUNT DISTINCT:
@@ -794,7 +794,7 @@ You can register custom DQL functions in your ORM Configuration:
     $config->addCustomNumericFunction($name, $class);
     $config->addCustomDatetimeFunction($name, $class);
 
-    $em = EntityManager::create($dbParams, $config);
+    $em = new EntityManager($connection, $config);
 
 The functions have to return either a string, numeric or datetime
 value depending on the registered function type. As an example we
@@ -806,8 +806,8 @@ classes have to implement the base class :
     <?php
     namespace MyProject\Query\AST;
 
-    use \Doctrine\ORM\Query\AST\Functions\FunctionNode;
-    use \Doctrine\ORM\Query\Lexer;
+    use Doctrine\ORM\Query\AST\Functions\FunctionNode;
+    use Doctrine\ORM\Query\Lexer;
 
     class MysqlFloor extends FunctionNode
     {
@@ -1057,7 +1057,7 @@ the Query class. Here they are:
 
 Instead of using these methods, you can alternatively use the
 general-purpose method
-``Query#execute(array $params = array(), $hydrationMode = Query::HYDRATE_OBJECT)``.
+``Query#execute(array $params = [], $hydrationMode = Query::HYDRATE_OBJECT)``.
 Using this method you can directly supply the hydration mode as the
 second parameter via one of the Query constants. In fact, the
 methods mentioned earlier are just convenient shortcuts for the

@@ -63,7 +63,7 @@ class AnnotationDriver implements MappingDriver
     {
         Deprecation::trigger(
             'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/10096',
+            'https://github.com/doctrine/orm/issues/10098',
             'The annotation mapping driver is deprecated and will be removed in Doctrine ORM 3.0, please migrate to the attribute or XML driver.',
         );
         $this->reader = $reader;

@@ -9,6 +9,7 @@ use Doctrine\DBAL\Cache\ArrayResult;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\PDO\SQLite\Driver;
+use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Result;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
@@ -34,11 +35,11 @@ final class EntityManagerFactory
             realpath(__DIR__ . '/Models/GeoNames'),
         ]));
 
-        $entityManager = EntityManager::create(
-            [
+        $entityManager = new EntityManager(
+            DriverManager::getConnection([
                 'driverClass' => Driver::class,
                 'memory'      => true,
-            ],
+            ], $config),
             $config,
         );
 
@@ -71,6 +72,6 @@ final class EntityManagerFactory
             }
         };
 
-        return EntityManager::create($connection, $config, $connection->getEventManager());
+        return new EntityManager($connection, $config);
     }
 }

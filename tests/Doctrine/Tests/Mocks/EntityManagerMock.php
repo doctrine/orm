@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
+use BadMethodCallException;
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\UnitOfWork;
+
+use function sprintf;
 
 /**
  * Special EntityManager mock used for testing purposes.
@@ -18,6 +22,18 @@ class EntityManagerMock extends EntityManager
 {
     private UnitOfWork|null $_uowMock            = null;
     private ProxyFactory|null $_proxyFactoryMock = null;
+
+    public function __construct(Connection $conn, Configuration|null $config = null, EventManager|null $eventManager = null)
+    {
+        if ($config === null) {
+            $config = new Configuration();
+            $config->setProxyDir(__DIR__ . '/../Proxies');
+            $config->setProxyNamespace('Doctrine\Tests\Proxies');
+            $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver());
+        }
+
+        parent::__construct($conn, $config, $eventManager);
+    }
 
     public function getUnitOfWork(): UnitOfWork
     {
@@ -45,19 +61,10 @@ class EntityManagerMock extends EntityManager
     }
 
     /**
-     * Mock factory method to create an EntityManager.
-     *
      * {@inheritdoc}
      */
-    public static function create($conn, Configuration|null $config = null, EventManager|null $eventManager = null): self
+    public static function create($connection, Configuration|null $config, EventManager|null $eventManager = null): self
     {
-        if ($config === null) {
-            $config = new Configuration();
-            $config->setProxyDir(__DIR__ . '/../Proxies');
-            $config->setProxyNamespace('Doctrine\Tests\Proxies');
-            $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver());
-        }
-
-        return new EntityManagerMock($conn, $config);
+        throw new BadMethodCallException(sprintf('Call to deprecated method %s().', __METHOD__));
     }
 }

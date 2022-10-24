@@ -13,9 +13,15 @@ metadata:
 
 
 -  **XML files** (XmlDriver)
--  **Class DocBlock Annotations** (AnnotationDriver)
 -  **Attributes** (AttributeDriver)
 -  **PHP Code in files or static functions** (PhpDriver)
+
+There are also two deprecated ways to do this:
+
+-  **Class DocBlock Annotations** (AnnotationDriver)
+-  **YAML files** (YamlDriver)
+
+They will be removed in 3.0, make sure to avoid them.
 
 Something important to note about the above drivers is they are all
 an intermediate step to the same end result. The mapping
@@ -39,8 +45,9 @@ an entity.
 
 
 If you want to use one of the included core metadata drivers you need to
-configure it. If you pick the annotation driver, you will additionally
-need to install ``doctrine/annotations``. All the drivers are in the
+configure it. If you pick the annotation driver despite it being
+deprecated, you will additionally need to install
+``doctrine/annotations``. All the drivers are in the
 ``Doctrine\ORM\Mapping\Driver`` namespace:
 
 .. code-block:: php
@@ -119,17 +126,17 @@ the ``FileDriver`` implementation for you to extend from:
          * {@inheritdoc}
          */
         protected $_fileExtension = '.dcm.ext';
-    
+
         /**
          * {@inheritdoc}
          */
         public function loadMetadataForClass($className, ClassMetadata $metadata)
         {
             $data = $this->_loadMappingFile($file);
-    
+
             // populate ClassMetadata instance from $data
         }
-    
+
         /**
          * {@inheritdoc}
          */

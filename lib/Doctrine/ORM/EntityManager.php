@@ -11,6 +11,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\LockMode;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Exception\InvalidHydrationMode;
 use Doctrine\ORM\Exception\ManagerException;
@@ -43,14 +44,14 @@ use function ltrim;
  * the static create() method. The quickest way to obtain a fully
  * configured EntityManager is:
  *
- *     use Doctrine\ORM\Tools\Setup;
+ *     use Doctrine\ORM\Tools\ORMSetup;
  *     use Doctrine\ORM\EntityManager;
  *
- *     $paths = array('/path/to/entity/mapping/files');
+ *     $paths = ['/path/to/entity/mapping/files'];
  *
- *     $config = Setup::createAnnotationMetadataConfiguration($paths);
- *     $dbParams = array('driver' => 'pdo_sqlite', 'memory' => true);
- *     $entityManager = EntityManager::create($dbParams, $config);
+ *     $config = ORMSetup::createAttributeMetadataConfiguration($paths);
+ *     $connection = DriverManager::getConnection(['driver' => 'pdo_sqlite', 'memory' => true], $config);
+ *     $entityManager = new EntityManager($connection, $config);
  *
  * For more information see
  * {@link http://docs.doctrine-project.org/projects/doctrine-orm/en/stable/reference/configuration.html}
@@ -123,7 +124,7 @@ class EntityManager implements EntityManagerInterface
      * Creates a new EntityManager that operates on the given database connection
      * and uses the given Configuration and EventManager implementations.
      */
-    public function __construct(Connection $conn, Configuration $config)
+    public function __construct(Connection $conn, Configuration $config, EventManager|null $eventManager = null)
     {
         if (! $config->getMetadataDriverImpl()) {
             throw MissingMappingDriverImplementation::create();
@@ -131,7 +132,7 @@ class EntityManager implements EntityManagerInterface
 
         $this->conn         = $conn;
         $this->config       = $config;
-        $this->eventManager = $conn->getEventManager();
+        $this->eventManager = $eventManager ?? $conn->getEventManager();
 
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
 
@@ -635,6 +636,8 @@ class EntityManager implements EntityManagerInterface
     /**
      * Factory method to create EntityManager instances.
      *
+     * @deprecated Use {@see DriverManager::getConnection()} to bootstrap the connection and call the constructor.
+     *
      * @param mixed[]|Connection $connection An array with the connection parameters or an existing Connection instance.
      * @psalm-param array<string, mixed>|Connection $connection
      *
@@ -643,6 +646,15 @@ class EntityManager implements EntityManagerInterface
      */
     public static function create(array|Connection $connection, Configuration $config, EventManager|null $eventManager = null): EntityManager
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9961',
+            '%s() is deprecated. To boostrap a DBAL connection, call %s::getConnection() instead. Use the constructor to create an instance of %s.',
+            __METHOD__,
+            DriverManager::class,
+            self::class,
+        );
+
         $connection = static::createConnection($connection, $config, $eventManager);
 
         return new EntityManager($connection, $config);
@@ -650,6 +662,8 @@ class EntityManager implements EntityManagerInterface
 
     /**
      * Factory method to create Connection instances.
+     *
+     * @deprecated Use {@see DriverManager::getConnection()} to bootstrap the connection.
      *
      * @param mixed[]|Connection $connection An array with the connection parameters or an existing Connection instance.
      * @psalm-param array<string, mixed>|Connection $connection
@@ -659,6 +673,14 @@ class EntityManager implements EntityManagerInterface
      */
     protected static function createConnection(array|Connection $connection, Configuration $config, EventManager|null $eventManager = null): Connection
     {
+        Deprecation::triggerIfCalledFromOutside(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9961',
+            '%s() is deprecated, call %s::getConnection() instead.',
+            __METHOD__,
+            DriverManager::class,
+        );
+
         if (is_array($connection)) {
             return DriverManager::getConnection($connection, $config, $eventManager ?? new EventManager());
         }

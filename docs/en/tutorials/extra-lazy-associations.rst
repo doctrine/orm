@@ -52,7 +52,7 @@ switch to extra lazy as shown in these examples:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         namespace Doctrine\Tests\Models\CMS;
@@ -62,6 +62,23 @@ switch to extra lazy as shown in these examples:
         {
             /** @var Collection<int, CmsUser> */
             #[ManyToMany(targetEntity: CmsUser::class, mappedBy: 'groups', fetch: 'EXTRA_LAZY')]
+            public Collection $users;
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        namespace Doctrine\Tests\Models\CMS;
+
+        /**
+         * @Entity
+         */
+        class CmsGroup
+        {
+            /**
+             * @ManyToMany(targetEntity="CmsUser", mappedBy="groups", fetch="EXTRA_LAZY")
+             * @var Collection<int, CmsUser>
+             */
             public Collection $users;
         }
 

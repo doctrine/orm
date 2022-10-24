@@ -494,10 +494,23 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.14
 
+## Deprecated incomplete schema updates
+
+Using `orm:schema-tool:update` without passing the `--complete` flag is
+deprecated. Use schema asset filtering if you need to preserve assets not
+managed by DBAL.
+
+Likewise, calling `SchemaTool::updateSchema()` or
+`SchemaTool::getUpdateSchemaSql()` with a second argument is deprecated.
+
 ## Deprecated annotation mapping driver.
 
 Please switch to one of the other mapping drivers. Native attributes which PHP
 supports since version 8.0 are probably your best option.
+
+As a consequence, the following methods are deprecated:
+- `ORMSetup::createAnnotationMetadataConfiguration`
+- `ORMSetup::createDefaultAnnotationDriver`
 
 ## Deprecated `Doctrine\ORM\Proxy\Proxy` interface.
 
@@ -516,6 +529,13 @@ It will be removed in 3.0. Use one of the dedicated event classes instead:
 * `Doctrine\ORM\Event\PostLoadEventArgs`
 
 # Upgrade to 2.13
+
+## Deprecated `EntityManager::create()`
+
+The constructor of `EntityManager` is now public and should be used instead of the `create()` method.
+However, the constructor expects a `Connection` while `create()` accepted an array with connection parameters.
+You can pass that array to DBAL's `Doctrine\DBAL\DriverManager::getConnection()` method to bootstrap the
+connection.
 
 ## Deprecated `QueryBuilder` methods and constants.
 

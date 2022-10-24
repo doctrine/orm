@@ -12,6 +12,7 @@ use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -31,6 +32,7 @@ use function assert;
 use function class_exists;
 use function count;
 use function current;
+use function func_num_args;
 use function implode;
 use function in_array;
 use function is_array;
@@ -856,10 +858,7 @@ class SchemaTool
     {
         $schema = $this->getSchemaFromMetadata($classes);
 
-        $method         = method_exists(AbstractSchemaManager::class, 'introspectSchema') ?
-            'introspectSchema' :
-            'createSchema';
-        $deployedSchema = $this->schemaManager->$method();
+        $deployedSchema = $this->introspectSchema();
 
         foreach ($schema->getTables() as $table) {
             if (! $deployedSchema->hasTable($table->getName())) {
@@ -903,6 +902,15 @@ class SchemaTool
      */
     public function updateSchema(array $classes, bool $saveMode = false): void
     {
+        if (func_num_args() > 1) {
+            Deprecation::triggerIfCalledFromOutside(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/10153',
+                'Passing $saveMode to %s() is deprecated and will not be possible in Doctrine ORM 3.0.',
+                __METHOD__,
+            );
+        }
+
         $updateSchemaSql = $this->getUpdateSchemaSql($classes, $saveMode);
         $conn            = $this->em->getConnection();
 
@@ -923,6 +931,15 @@ class SchemaTool
      */
     public function getUpdateSchemaSql(array $classes, bool $saveMode = false): array
     {
+        if (func_num_args() > 1) {
+            Deprecation::triggerIfCalledFromOutside(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/10153',
+                'Passing $saveMode to %s() is deprecated and will not be possible in Doctrine ORM 3.0.',
+                __METHOD__,
+            );
+        }
+
         $toSchema   = $this->getSchemaFromMetadata($classes);
         $fromSchema = $this->createSchemaForComparison($toSchema);
         $comparator = $this->schemaManager->createComparator();
@@ -932,7 +949,11 @@ class SchemaTool
             return $schemaDiff->toSaveSql($this->platform);
         }
 
-        return $schemaDiff->toSql($this->platform);
+        if (! method_exists(AbstractPlatform::class, 'getAlterSchemaSQL')) {
+            return $schemaDiff->toSql($this->platform);
+        }
+
+        return $this->platform->getAlterSchemaSQL($schemaDiff);
     }
 
     /**
@@ -951,7 +972,7 @@ class SchemaTool
             'createSchema';
 
         if ($previousFilter === null) {
-            return $this->schemaManager->$method();
+            return $this->introspectSchema();
         }
 
         // whitelist assets we already know about in $toSchema, use the existing filter otherwise
@@ -962,10 +983,19 @@ class SchemaTool
         });
 
         try {
-            return $this->schemaManager->$method();
+            return $this->introspectSchema();
         } finally {
             // restore schema assets filter
             $config->setSchemaAssetsFilter($previousFilter);
         }
+    }
+
+    private function introspectSchema(): Schema
+    {
+        $method = method_exists($this->schemaManager, 'introspectSchema')
+            ? 'introspectSchema'
+            : 'createSchema';
+
+        return $this->schemaManager->$method();
     }
 }

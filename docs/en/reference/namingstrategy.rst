@@ -7,7 +7,7 @@ reduce the verbosity of the mapping document, eliminating repetitive noise (eg: 
 
 .. warning
 
-    The naming strategy is always overridden by entity mapping such as the `Table` annotation.
+    The naming strategy is always overridden by entity mapping such as the `Table` attribute.
 
 Configuring a naming strategy
 -----------------------------

@@ -119,7 +119,7 @@ abstract class OrmTestCase extends DoctrineTestCase
             $config->setSecondLevelCacheConfiguration($cacheConfig);
         }
 
-        return EntityManagerMock::create($connection, $config);
+        return new EntityManagerMock($connection, $config);
     }
 
     protected function enableSecondLevelCache(bool $log = true): void

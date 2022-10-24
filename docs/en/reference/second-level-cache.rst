@@ -277,7 +277,7 @@ level cache region.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         #[Entity]
@@ -290,6 +290,30 @@ level cache region.
             protected int|null $id = null;
 
             #[Column(unique: true)]
+            protected string $name;
+
+            // other properties and methods
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        /**
+         * @Entity
+         * @Cache("NONSTRICT_READ_WRITE")
+         */
+        class State
+        {
+            /**
+             * @Id
+             * @GeneratedValue
+             * @Column(type="integer")
+             */
+            protected int|null $id = null;
+
+            /**
+             * @Column(unique=true)
+             */
             protected string $name;
 
             // other properties and methods
@@ -316,7 +340,7 @@ It caches the primary keys of association and cache each element will be cached 
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         #[Entity]
@@ -339,6 +363,44 @@ It caches the primary keys of association and cache each element will be cached 
             /** @var Collection<int, City> */
             #[Cache(usage: 'NONSTRICT_READ_WRITE')]
             #[OneToMany(targetEntity: City::class, mappedBy: 'state')]
+            protected Collection $cities;
+
+            // other properties and methods
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        /**
+         * @Entity
+         * @Cache("NONSTRICT_READ_WRITE")
+         */
+        class State
+        {
+            /**
+             * @Id
+             * @GeneratedValue
+             * @Column(type="integer")
+             */
+            protected int|null $id = null;
+
+            /**
+             * @Column(unique=true)
+             */
+            protected string $name;
+
+            /**
+             * @Cache("NONSTRICT_READ_WRITE")
+             * @ManyToOne(targetEntity="Country")
+             * @JoinColumn(name="country_id", referencedColumnName="id")
+             */
+            protected Country|null $country;
+
+            /**
+             * @Cache("NONSTRICT_READ_WRITE")
+             * @OneToMany(targetEntity="City", mappedBy="state")
+             * @var Collection<int, City>
+             */
             protected Collection $cities;
 
             // other properties and methods

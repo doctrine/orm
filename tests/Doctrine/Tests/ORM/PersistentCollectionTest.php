@@ -50,7 +50,7 @@ class PersistentCollectionTest extends OrmTestCase
         $connection->method('executeQuery')
             ->willReturn($this->createMock(Result::class));
 
-        $this->_emMock = EntityManagerMock::create($connection);
+        $this->_emMock = new EntityManagerMock($connection);
 
         $this->setUpPersistentCollection();
     }

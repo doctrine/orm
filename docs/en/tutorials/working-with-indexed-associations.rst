@@ -23,13 +23,14 @@ Mapping Indexed Associations
 
 You can map indexed associations by adding:
 
+    * ``indexBy`` argument to any ``#[OneToMany]`` or ``#[ManyToMany]`` attribute.
     * ``indexBy`` attribute to any ``@OneToMany`` or ``@ManyToMany`` annotation.
     * ``index-by`` attribute to any ``<one-to-many />`` or ``<many-to-many />`` xml element.
 
 The code and mappings for the Market entity looks like this:
 
 .. configuration-block::
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         namespace Doctrine\Tests\Models\StockExchange;
@@ -88,6 +89,74 @@ The code and mappings for the Market entity looks like this:
             }
         }
 
+    .. code-block:: annotation
+
+        <?php
+        namespace Doctrine\Tests\Models\StockExchange;
+
+        use Doctrine\Common\Collections\ArrayCollection;
+
+        /**
+         * @Entity
+         * @Table(name="exchange_markets")
+         */
+        class Market
+        {
+            /**
+             * @Id @Column(type="integer") @GeneratedValue
+             * @var int
+             */
+            private int|null $id = null;
+
+            /**
+             * @Column(type="string")
+             * @var string
+             */
+            private string $name;
+
+            /**
+             * @OneToMany(targetEntity="Stock", mappedBy="market", indexBy="symbol")
+             * @var Collection<int, Stock>
+             */
+            private Collection $stocks;
+
+            public function __construct($name)
+            {
+                $this->name = $name;
+                $this->stocks = new ArrayCollection();
+            }
+
+            public function getId(): int|null
+            {
+                return $this->id;
+            }
+
+            public function getName(): string
+            {
+                return $this->name;
+            }
+
+            public function addStock(Stock $stock): void
+            {
+                $this->stocks[$stock->getSymbol()] = $stock;
+            }
+
+            public function getStock($symbol): Stock
+            {
+                if (!isset($this->stocks[$symbol])) {
+                    throw new \InvalidArgumentException("Symbol is not traded on this market.");
+                }
+
+                return $this->stocks[$symbol];
+            }
+
+            /** @return array<string, Stock> */
+            public function getStocks(): array
+            {
+                return $this->stocks->toArray();
+            }
+        }
+
     .. code-block:: xml
 
         <?xml version="1.0" encoding="UTF-8"?>
@@ -115,7 +184,7 @@ The ``Stock`` entity doesn't contain any special instructions that are new, but 
 here are the code and mappings for it:
 
 .. configuration-block::
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         namespace Doctrine\Tests\Models\StockExchange;
@@ -134,6 +203,47 @@ here are the code and mappings for it:
             private Market|null $market;
 
             public function __construct(string $symbol, Market $market)
+            {
+                $this->symbol = $symbol;
+                $this->market = $market;
+                $market->addStock($this);
+            }
+
+            public function getSymbol(): string
+            {
+                return $this->symbol;
+            }
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        namespace Doctrine\Tests\Models\StockExchange;
+
+        /**
+         * @Entity
+         * @Table(name="exchange_stocks")
+         */
+        class Stock
+        {
+            /**
+             * @Id @GeneratedValue @Column(type="integer")
+             * @var int
+             */
+            private int|null $id = null;
+
+            /**
+             * @Column(type="string", unique=true)
+             */
+            private string $symbol;
+
+            /**
+             * @ManyToOne(targetEntity="Market", inversedBy="stocks")
+             * @var Market
+             */
+            private Market|null $market = null;
+
+            public function __construct($symbol, Market $market)
             {
                 $this->symbol = $symbol;
                 $this->market = $market;

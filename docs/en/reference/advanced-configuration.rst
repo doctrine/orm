@@ -12,6 +12,7 @@ steps of configuration.
 
     use Doctrine\ORM\Configuration;
     use Doctrine\ORM\EntityManager;
+    use Doctrine\ORM\Mapping\Driver\AttributeDriver;
     use Doctrine\ORM\ORMSetup;
     use Symfony\Component\Cache\Adapter\ArrayAdapter;
     use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
@@ -28,7 +29,7 @@ steps of configuration.
 
     $config = new Configuration;
     $config->setMetadataCache($metadataCache);
-    $driverImpl = ORMSetup::createDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
+    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities']);
     $config->setMetadataDriverImpl($driverImpl);
     $config->setQueryCache($queryCache);
     $config->setProxyDir('/path/to/myproject/lib/MyProject/Proxies');
@@ -40,12 +41,12 @@ steps of configuration.
         $config->setAutoGenerateProxyClasses(false);
     }
 
-    $connectionOptions = array(
+    $connection = DriverManager::getConnection([
         'driver' => 'pdo_sqlite',
-        'path' => 'database.sqlite'
-    );
+        'path' => 'database.sqlite',
+    ], $config);
 
-    $em = EntityManager::create($connectionOptions, $config);
+    $em = new EntityManager($connection, $config);
 
 Doctrine and Caching
 --------------------
@@ -113,28 +114,30 @@ classes.
 There are currently 4 available implementations:
 
 
--  ``Doctrine\ORM\Mapping\Driver\AnnotationDriver``
 -  ``Doctrine\ORM\Mapping\Driver\AttributeDriver``
 -  ``Doctrine\ORM\Mapping\Driver\XmlDriver``
 -  ``Doctrine\ORM\Mapping\Driver\DriverChain``
+-  ``Doctrine\ORM\Mapping\Driver\AnnotationDriver`` (deprecated and will
+  be removed in ``doctrine/orm`` 3.0)
+-  ``Doctrine\ORM\Mapping\Driver\YamlDriver`` (deprecated and will be
+   removed in ``doctrine/orm`` 3.0)
 
 Throughout the most part of this manual the AttributeDriver is
 used in the examples. For information on the usage of the
 AnnotationDriver or XmlDriver please refer to the dedicated
 chapters ``Annotation Reference`` and ``XML Mapping``.
 
-The annotation driver can be configured with a factory method on
-the ``Doctrine\ORM\Configuration``:
+The attribute driver can be injected in the ``Doctrine\ORM\Configuration``:
 
 .. code-block:: php
 
     <?php
     use Doctrine\ORM\ORMSetup;
 
-    $driverImpl = ORMSetup::createDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
+    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities']);
     $config->setMetadataDriverImpl($driverImpl);
 
-The path information to the entities is required for the annotation
+The path information to the entities is required for the attribute
 driver, because otherwise mass-operations on all entities through
 the console could not work correctly. All of metadata drivers
 accept either a single directory as a string or an array of
@@ -151,7 +154,7 @@ Metadata Cache (***RECOMMENDED***)
     $config->getMetadataCache();
 
 Gets or sets the cache adapter to use for caching metadata
-information, that is, all the information you supply via
+information, that is, all the information you supply via attributes,
 annotations or xml, so that they do not need to be parsed and
 loaded from scratch on every single request which is a waste of
 resources. The cache implementation must implement the PSR-6
@@ -273,15 +276,13 @@ proxy sets an exclusive file lock which can cause serious
 performance bottlenecks in systems with regular concurrent
 requests.
 
-Connection Options
-------------------
+Connection
+----------
 
-The ``$connectionOptions`` passed as the first argument to
-``EntityManager::create()`` has to be either an array or an
-instance of ``Doctrine\DBAL\Connection``. If an array is passed it
-is directly passed along to the DBAL Factory
-``Doctrine\DBAL\DriverManager::getConnection()``. The DBAL
-configuration is explained in the
+The ``$connection`` passed as the first argument to he constructor of
+``EntityManager`` has to be an instance of ``Doctrine\DBAL\Connection``.
+You can use the factory ``Doctrine\DBAL\DriverManager::getConnection()``
+to create such a connection. The DBAL configuration is explained in the
 `DBAL section <https://www.doctrine-project.org/projects/doctrine-dbal/en/current/reference/configuration.html>`_.
 
 Proxy Objects

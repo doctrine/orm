@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Comparator;
@@ -76,7 +77,10 @@ class DDC214Test extends OrmFunctionalTestCase
         $comparator = $sm->createComparator();
         $schemaDiff = $comparator->compareSchemas($fromSchema, $toSchema);
 
-        $sql = $schemaDiff->toSql($this->_em->getConnection()->getDatabasePlatform());
+        $sql = method_exists(AbstractPlatform::class, 'getAlterSchemaSQL') ?
+            $this->_em->getConnection()->getDatabasePlatform()->getAlterSchemaSQL($schemaDiff) :
+            $schemaDiff->toSql($this->_em->getConnection()->getDatabasePlatform());
+
         $sql = array_filter($sql, static fn ($sql) => ! str_contains($sql, 'DROP'));
 
         self::assertCount(0, $sql, 'SQL: ' . implode(PHP_EOL, $sql));

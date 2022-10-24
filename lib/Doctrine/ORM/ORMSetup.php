@@ -6,6 +6,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\PsrCachedReader;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
@@ -29,6 +30,8 @@ final class ORMSetup
     /**
      * Creates a configuration with an annotation metadata driver.
      *
+     * @deprecated Use another mapping driver.
+     *
      * @param string[] $paths
      */
     public static function createAnnotationMetadataConfiguration(
@@ -37,6 +40,12 @@ final class ORMSetup
         string|null $proxyDir = null,
         CacheItemPoolInterface|null $cache = null,
     ): Configuration {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/10098',
+            '%s is deprecated and will be removed in Doctrine ORM 3.0',
+            __METHOD__,
+        );
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(self::createDefaultAnnotationDriver($paths));
 
@@ -46,12 +55,20 @@ final class ORMSetup
     /**
      * Adds a new default annotation driver with a correctly configured annotation reader.
      *
+     * @deprecated Use another mapping driver.
+     *
      * @param string[] $paths
      */
     public static function createDefaultAnnotationDriver(
         array $paths = [],
         CacheItemPoolInterface|null $cache = null,
     ): AnnotationDriver {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/10098',
+            '%s is deprecated and will be removed in Doctrine ORM 3.0',
+            __METHOD__,
+        );
         if (! class_exists(AnnotationReader::class)) {
             throw new LogicException(sprintf(
                 'The annotation metadata driver cannot be enabled because the "doctrine/annotations" library'

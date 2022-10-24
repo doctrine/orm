@@ -30,7 +30,7 @@ class QueryCommand extends AbstractEntityManagerCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $ui = new SymfonyStyle($input, $output);
+        $ui = (new SymfonyStyle($input, $output))->getErrorStyle();
 
         $em    = $this->getEntityManager($input);
         $cache = $em->getConfiguration()->getQueryCache();

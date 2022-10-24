@@ -50,6 +50,59 @@ and year of production as primary keys:
             }
         }
 
+    .. code-block:: annotation
+
+        <?php
+        namespace VehicleCatalogue\Model;
+
+        /**
+         * @Entity
+         */
+        class Car
+        {
+            /** @Id @Column(type="string") */
+            private string $name;
+            /** @Id @Column(type="integer") */
+            private int $year;
+
+            public function __construct($name, $year)
+            {
+                $this->name = $name;
+                $this->year = $year;
+            }
+
+            public function getModelName(): string
+            {
+                return $this->name;
+            }
+
+            public function getYearOfProduction(): int
+            {
+                return $this->year;
+            }
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        /**
+         * @Entity
+         */
+        class User
+        {
+            /** @Id @Column(type="integer") @GeneratedValue */
+            private int|null $id = null;
+        }
+
+        /**
+         * @Entity
+         */
+        class Address
+        {
+            /** @Id @OneToOne(targetEntity="User") */
+            private User|null $user = null;
+        }
+
     .. code-block:: xml
 
         <?xml version="1.0" encoding="UTF-8"?>
@@ -116,7 +169,7 @@ of one or many parent entities.
 The semantics of mapping identity through foreign entities are easy:
 
 -   Only allowed on Many-To-One or One-To-One associations.
--   Plug an ``@Id`` annotation onto every association.
+-   Plug an ``#[Id]`` attribute onto every association.
 -   Set an attribute ``association-key`` with the field name of the association in XML.
 
 Use-Case 1: Dynamic Attributes
@@ -127,6 +180,57 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
 .. configuration-block::
 
     .. code-block:: php
+
+        <?php
+        namespace Application\Model;
+
+        use Doctrine\Common\Collections\ArrayCollection;
+
+        /**
+         * @Entity
+         */
+        class Article
+        {
+            /** @Id @Column(type="integer") @GeneratedValue */
+            private int|null $id = null;
+            /** @Column(type="string") */
+            private string $title;
+
+            /**
+             * @OneToMany(targetEntity="ArticleAttribute", mappedBy="article", cascade={"ALL"}, indexBy="attribute")
+             * @var Collection<int, ArticleAttribute>
+             */
+            private Collection $attributes;
+
+            public function addAttribute($name, $value): void
+            {
+                $this->attributes[$name] = new ArticleAttribute($name, $value, $this);
+            }
+        }
+
+        /**
+         * @Entity
+         */
+        class ArticleAttribute
+        {
+            /** @Id @ManyToOne(targetEntity="Article", inversedBy="attributes") */
+            private Article|null $article;
+
+            /** @Id @Column(type="string") */
+            private string $attribute;
+
+            /** @Column(type="string") */
+            private string $value;
+
+            public function __construct($name, $value, $article)
+            {
+                $this->attribute = $name;
+                $this->value = $value;
+                $this->article = $article;
+            }
+        }
+
+    .. code-block:: attribute
 
         <?php
         namespace Application\Model;
@@ -198,7 +302,7 @@ One good example for this is a user-address relationship:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
 

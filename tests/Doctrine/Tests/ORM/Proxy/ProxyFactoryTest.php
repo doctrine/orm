@@ -49,7 +49,7 @@ class ProxyFactoryTest extends OrmTestCase
         $connection->method('getEventManager')
             ->willReturn(new EventManager());
 
-        $this->emMock  = EntityManagerMock::create($connection);
+        $this->emMock  = new EntityManagerMock($connection);
         $this->uowMock = new UnitOfWorkMock($this->emMock);
         $this->emMock->setUnitOfWork($this->uowMock);
         $this->proxyFactory = new ProxyFactory($this->emMock, sys_get_temp_dir(), 'Proxies', ProxyFactory::AUTOGENERATE_ALWAYS);

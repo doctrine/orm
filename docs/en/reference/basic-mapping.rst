@@ -45,13 +45,15 @@ Doctrine provides several different ways to specify object-relational
 mapping metadata:
 
 -  :doc:`Attributes <attributes-reference>`
--  :doc:`Docblock Annotations <annotations-reference>`
 -  :doc:`XML <xml-mapping>`
 -  :doc:`PHP code <php-mapping>`
+-  :doc:`Docblock Annotations <annotations-reference>` (deprecated and
+  will be removed in ``doctrine/orm`` 3.0)
 -  :doc:`YAML <yaml-mapping>` (deprecated and will be removed in ``doctrine/orm`` 3.0.)
 
-This manual will usually show mapping metadata via docblock annotations, though
-many examples also show the equivalent configuration in YAML and XML.
+This manual will usually show mapping metadata via attributes, though
+many examples also show the equivalent configuration in annotations,
+YAML and XML.
 
 .. note::
 
@@ -144,10 +146,10 @@ Property Mapping
 
 The next step is mapping its properties to columns in the table.
 
-To configure a property use the ``Column`` docblock annotation. The ``type``
-attribute specifies the :ref:`Doctrine Mapping Type <reference-mapping-types>`
-to use for the field. If the type is not specified, ``string`` is used as the
-default.
+To configure a property use the ``Column`` attribute. The ``type``
+argument specifies the :ref:`Doctrine Mapping Type
+<reference-mapping-types>` to use for the field. If the type is not
+specified, ``string`` is used as the default.
 
 .. configuration-block::
 
@@ -334,8 +336,7 @@ Identifiers / Primary Keys
 --------------------------
 
 Every entity class must have an identifier/primary key. You can select
-the field that serves as the identifier with the ``@Id``
-annotation.
+the field that serves as the identifier with the ``#[Id]`` attribute.
 
 .. configuration-block::
 
@@ -351,6 +352,20 @@ annotation.
             // ...
         }
 
+    .. code-block:: annotation
+
+        <?php
+        class Message
+        {
+            /**
+             * @Id
+             * @Column(type="integer")
+             * @GeneratedValue
+             */
+            private int|null $id = null;
+            // ...
+        }
+
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -362,7 +377,7 @@ annotation.
           </entity>
         </doctrine-mapping>
 
-In most cases using the automatic generator strategy (``@GeneratedValue``) is
+In most cases using the automatic generator strategy (``#[GeneratedValue]``) is
 what you want. It defaults to the identifier generation mechanism your current
 database vendor prefers: AUTO_INCREMENT with MySQL, sequences with PostgreSQL
 and Oracle and so on.
@@ -396,8 +411,8 @@ Here is the list of possible generation strategies:
 -  ``NONE``: Tells Doctrine that the identifiers are assigned (and
    thus generated) by your code. The assignment must take place before
    a new entity is passed to ``EntityManager#persist``. NONE is the
-   same as leaving off the @GeneratedValue entirely.
--  ``CUSTOM``: With this option, you can use the ``@CustomIdGenerator`` annotation.
+   same as leaving off the ``#[GeneratedValue]`` entirely.
+-  ``CUSTOM``: With this option, you can use the ``#[CustomIdGenerator]`` attribute.
    It will allow you to pass a :doc:`class of your own to generate the identifiers.<_annref_customidgenerator>`
 
 Sequence Generator
@@ -417,6 +432,20 @@ besides specifying the sequence's name:
             #[Id]
             #[GeneratedValue(strategy: 'SEQUENCE')]
             #[SequenceGenerator(sequenceName: 'message_seq', initialValue: 1, allocationSize: 100)]
+            protected int|null $id = null;
+            // ...
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        class Message
+        {
+            /**
+             * @Id
+             * @GeneratedValue(strategy="SEQUENCE")
+             * @SequenceGenerator(sequenceName="message_seq", initialValue=1, allocationSize=100)
+             */
             protected int|null $id = null;
             // ...
         }
@@ -468,11 +497,12 @@ need to access the sequence once to generate the identifiers for
 Composite Keys
 ~~~~~~~~~~~~~~
 
-With Doctrine ORM you can use composite primary keys, using ``@Id`` on more then
-one column. Some restrictions exist opposed to using a single identifier in
-this case: The use of the ``@GeneratedValue`` annotation is not supported,
-which means you can only use composite keys if you generate the primary key
-values yourself before calling ``EntityManager#persist()`` on the entity.
+With Doctrine ORM you can use composite primary keys, using ``#[Id]`` on
+more than one column. Some restrictions exist opposed to using a single
+identifier in this case: The use of the ``#[GeneratedValue]`` attribute
+is not supported, which means you can only use composite keys if you
+generate the primary key values yourself before calling
+``EntityManager#persist()`` on the entity.
 
 More details on composite primary keys are discussed in a :doc:`dedicated tutorial
 <../tutorials/composite-primary-keys>`.

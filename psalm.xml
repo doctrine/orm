@@ -29,7 +29,12 @@
         <DeprecatedMethod>
             <errorLevel type="suppress">
                 <!-- Remove on 3.0.x -->
+                <referencedMethod name="Doctrine\DBAL\Connection::getEventManager"/>
                 <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
+                <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSaveSql"/>
+                <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSql"/>
+                <referencedMethod name="Doctrine\ORM\EntityManager::createConnection"/>
+                <referencedMethod name="Doctrine\ORM\ORMSetup::createDefaultAnnotationDriver"/>
             </errorLevel>
         </DeprecatedMethod>
         <DocblockTypeContradiction>

@@ -405,7 +405,7 @@ EventManager that is passed to the EntityManager factory:
     $eventManager->addEventListener([Events::preUpdate], new MyEventListener());
     $eventManager->addEventSubscriber(new MyEventSubscriber());
 
-    $entityManager = EntityManager::create($dbOpts, $config, $eventManager);
+    $entityManager = new EntityManager($connection, $config, $eventManager);
 
 You can also retrieve the event manager instance after the
 EntityManager was created:
@@ -809,7 +809,46 @@ you need to map the listener method using the event type mapping:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        use Doctrine\ORM\Event\PostLoadEventArgs;
+        use Doctrine\ORM\Event\PostPersistEventArgs;
+        use Doctrine\ORM\Event\PostRemoveEventArgs;
+        use Doctrine\ORM\Event\PostUpdateEventArgs;
+        use Doctrine\ORM\Event\PreFlushEventArgs;
+        use Doctrine\ORM\Event\PrePersistEventArgs;
+        use Doctrine\ORM\Event\PreRemoveEventArgs;
+        use Doctrine\ORM\Event\PreUpdateEventArgs;
+
+        class UserListener
+        {
+            #[PrePersist]
+            public function prePersistHandler(User $user, PrePersistEventArgs $event): void { // ... }
+
+            #[PostPersist]
+            public function postPersistHandler(User $user, PostPersistEventArgs $event): void { // ... }
+
+            #[PreUpdate]
+            public function preUpdateHandler(User $user, PreUpdateEventArgs $event): void { // ... }
+
+            #[PostUpdate]
+            public function postUpdateHandler(User $user, PostUpdateEventArgs $event): void { // ... }
+
+            #[PostRemove]
+            public function postRemoveHandler(User $user, PostRemoveEventArgs $event): void { // ... }
+
+            #[PreRemove]
+            public function preRemoveHandler(User $user, PreRemoveEventArgs $event): void { // ... }
+
+            #[PreFlush]
+            public function preFlushHandler(User $user, PreFlushEventArgs $event): void { // ... }
+
+            #[PostLoad]
+            public function postLoadHandler(User $user, PostLoadEventArgs $event): void { // ... }
+        }
+
+    .. code-block:: annotation
 
         <?php
         use Doctrine\ORM\Event\PostLoadEventArgs;
@@ -824,29 +863,30 @@ you need to map the listener method using the event type mapping:
         class UserListener
         {
             /** @PrePersist */
-            public function prePersistHandler(User $user, PrePersistEventArgs $event) { // ... }
+            public function prePersistHandler(User $user, PrePersistEventArgs $event): void { // ... }
 
             /** @PostPersist */
-            public function postPersistHandler(User $user, PostPersistEventArgs $event) { // ... }
+            public function postPersistHandler(User $user, PostPersistEventArgs $event): void { // ... }
 
             /** @PreUpdate */
-            public function preUpdateHandler(User $user, PreUpdateEventArgs $event) { // ... }
+            public function preUpdateHandler(User $user, PreUpdateEventArgs $event): void { // ... }
 
             /** @PostUpdate */
-            public function postUpdateHandler(User $user, PostUpdateEventArgs $event) { // ... }
+            public function postUpdateHandler(User $user, PostUpdateEventArgs $event): void { // ... }
 
             /** @PostRemove */
-            public function postRemoveHandler(User $user, PostRemoveEventArgs $event) { // ... }
+            public function postRemoveHandler(User $user, PostRemoveEventArgs $event): void { // ... }
 
             /** @PreRemove */
-            public function preRemoveHandler(User $user, PreRemoveEventArgs $event) { // ... }
+            public function preRemoveHandler(User $user, PreRemoveEventArgs $event): void { // ... }
 
             /** @PreFlush */
-            public function preFlushHandler(User $user, PreFlushEventArgs $event) { // ... }
+            public function preFlushHandler(User $user, PreFlushEventArgs $event): void { // ... }
 
             /** @PostLoad */
-            public function postLoadHandler(User $user, PostLoadEventArgs $event) { // ... }
+            public function postLoadHandler(User $user, PostLoadEventArgs $event): void { // ... }
         }
+
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -940,7 +980,7 @@ Implementing your own resolver:
 
     // Configure the listener resolver only before instantiating the EntityManager
     $configurations->setEntityListenerResolver(new MyEntityListenerResolver);
-    EntityManager::create(.., $configurations, ..);
+    $entityManager = new EntityManager(.., $configurations, ..);
 
 .. _reference-events-load-class-metadata:
 
@@ -949,7 +989,7 @@ Load ClassMetadata Event
 
 ``loadClassMetadata`` - The ``loadClassMetadata`` event occurs after the
 mapping metadata for a class has been loaded from a mapping source
-(annotations/xml/yaml) in to a ``Doctrine\ORM\Mapping\ClassMetadata`` instance.
+(attributes/annotations/xml/yaml) in to a ``Doctrine\ORM\Mapping\ClassMetadata`` instance.
 You can hook in to this process and manipulate the instance.
 This event is not a lifecycle callback.
 

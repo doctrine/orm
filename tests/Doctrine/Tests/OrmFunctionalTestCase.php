@@ -966,7 +966,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $evm->addEventListener(['onFlush'], new DebugUnitOfWorkListener());
         }
 
-        return EntityManager::create($conn, $config);
+        return new EntityManager($conn, $config);
     }
 
     final protected function createSchemaManager(): AbstractSchemaManager
