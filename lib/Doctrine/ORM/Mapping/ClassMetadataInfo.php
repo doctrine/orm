@@ -3243,6 +3243,13 @@ class ClassMetadataInfo implements ClassMetadata
             if (in_array($columnDef['type'], ['boolean', 'array', 'object', 'datetime', 'time', 'date'], true)) {
                 throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']);
             }
+            if (! isset($columnDef['generated'])) {
+                $columnDef['generated'] = null;
+            }
+
+            if (!in_array($columnDef['generated'], ['NEVER', 'INSERT', 'ALWAYS', null], true)) {
+                throw MappingException::invalidGeneratedMode($columnDef['generated']);
+            }
 
             $this->discriminatorColumn = $columnDef;
         }
@@ -3256,6 +3263,10 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         return $this->discriminatorColumn;
+    }
+
+    final public function isDiscriminatorColumnGenerated(): bool {
+        return null !== $this->discriminatorColumn['generated'];
     }
 
     /**

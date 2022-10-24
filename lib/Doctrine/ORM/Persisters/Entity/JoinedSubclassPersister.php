@@ -535,8 +535,12 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         // Add discriminator column if it is the topmost class.
-        if ($this->class->name === $this->class->rootEntityName) {
-            $columns[] = $this->class->getDiscriminatorColumn()['name'];
+        $discriminatorColumn = $this->class->getDiscriminatorColumn();
+        if (
+            $this->class->name === $this->class->rootEntityName
+            && false === in_array($discriminatorColumn['generated'], ['INSERT', 'ALWAYS'])
+        ) {
+            $columns[] = $discriminatorColumn['name'];
         }
 
         return $columns;
