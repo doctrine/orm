@@ -1,5 +1,14 @@
 # Upgrade to 2.14
 
+## Deprecated incomplete schema updates
+
+Using `orm:schema-tool:update` without passing the `--complete` flag is
+deprecated. Use schema asset filtering if you need to preserve assets not
+managed by DBAL.
+
+Likewise, calling `SchemaTool::updateSchema()` or
+`SchemaTool::getUpdateSchemaSql()` with a second argument is deprecated.
+
 ## Deprecated annotation mapping driver.
 
 Please switch to one of the other mapping drivers. Native attributes which PHP

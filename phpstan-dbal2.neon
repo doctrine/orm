@@ -11,6 +11,9 @@ parameters:
         # Class name will change in DBAL 3.
         - '/^Class Doctrine\\DBAL\\Platforms\\PostgreSQLPlatform not found\.$/'
 
+        # Forward compatibility for DBAL 3.5
+        - '/^Call to an undefined method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getAlterSchemaSQL\(\).$/'
+
         # Forward compatibility for DBAL 3.4
         - '/^Call to an undefined method Doctrine\\DBAL\\Cache\\QueryCacheProfile::[gs]etResultCache\(\)\.$/'
         -
