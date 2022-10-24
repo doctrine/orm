@@ -112,6 +112,9 @@
 
                 <!-- See https://github.com/doctrine/orm/issues/8850 -->
                 <referencedFunction name="Doctrine\DBAL\Connection::lastInsertId"/>
+
+                <!-- FIXME -->
+                <referencedFunction name="Doctrine\DBAL\DriverManager::getConnection"/>
             </errorLevel>
         </TooManyArguments>
         <TypeDoesNotContainNull>
@@ -145,6 +148,13 @@
                 <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
             </errorLevel>
         </UndefinedClass>
+        <UndefinedMethod>
+            <errorLevel type="suppress">
+                <!-- FIXME -->
+                <referencedMethod name="Doctrine\DBAL\Connection::getEventManager"/>
+                <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSaveSql"/>
+            </errorLevel>
+        </UndefinedMethod>
         <UnhandledMatchCondition>
             <errorLevel type="suppress">
                 <!-- We can be certain that those values are not matched. -->

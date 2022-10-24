@@ -33,6 +33,7 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function count;
 use function in_array;
+use function method_exists;
 use function serialize;
 
 /**
@@ -205,8 +206,10 @@ class SQLFilterTest extends OrmFunctionalTestCase
     private function getMockConnection(): Connection&MockObject
     {
         $connection = $this->createMock(Connection::class);
-        $connection->method('getEventManager')
-            ->willReturn(new EventManager());
+        if (method_exists($connection, 'getEventManager')) {
+            $connection->method('getEventManager')
+                ->willReturn(new EventManager());
+        }
 
         return $connection;
     }

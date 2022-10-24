@@ -45,8 +45,12 @@ class PersistentCollectionTest extends OrmTestCase
         $connection = $this->createMock(Connection::class);
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);
-        $connection->method('getEventManager')
-            ->willReturn(new EventManager());
+
+        if (method_exists($connection, 'getEventManager')) {
+            $connection->method('getEventManager')
+                ->willReturn(new EventManager());
+        }
+
         $connection->method('executeQuery')
             ->willReturn($this->createMock(Result::class));
 

@@ -35,6 +35,7 @@ use function array_keys;
 use function is_array;
 use function is_object;
 use function ltrim;
+use function method_exists;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -132,7 +133,11 @@ class EntityManager implements EntityManagerInterface
 
         $this->conn         = $conn;
         $this->config       = $config;
-        $this->eventManager = $eventManager ?? $conn->getEventManager();
+        $this->eventManager = $eventManager
+            ?? (method_exists($conn, 'getEventManager')
+                ? $conn->getEventManager()
+                : new EventManager()
+            );
 
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
 

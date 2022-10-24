@@ -49,6 +49,7 @@ use ReflectionClass;
 use function array_search;
 use function assert;
 use function count;
+use function method_exists;
 use function sprintf;
 
 class ClassMetadataFactoryTest extends OrmTestCase
@@ -211,7 +212,12 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         // DDC-3551
         $conn = $this->createMock(Connection::class);
-        $conn->method('getEventManager')->willReturn($this->createMock(EventManager::class));
+
+        if (method_exists($conn, 'getEventManager')) {
+            $conn->method('getEventManager')
+                ->willReturn(new EventManager());
+        }
+
         $mockDriver = new MetadataDriverMock();
         $em         = $this->createEntityManager($mockDriver, $conn);
 

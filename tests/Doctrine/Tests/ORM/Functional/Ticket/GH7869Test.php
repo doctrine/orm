@@ -18,6 +18,8 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\OrmTestCase;
 
+use function method_exists;
+
 /** @group GH7869 */
 class GH7869Test extends OrmTestCase
 {
@@ -30,8 +32,11 @@ class GH7869Test extends OrmTestCase
         $connection = $this->createMock(Connection::class);
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);
-        $connection->method('getEventManager')
-            ->willReturn(new EventManager());
+
+        if (method_exists($connection, 'getEventManager')) {
+            $connection->method('getEventManager')
+                ->willReturn(new EventManager());
+        }
 
         $em = new class (new EntityManagerMock($connection)) extends EntityManagerDecorator {
             /** @var int */

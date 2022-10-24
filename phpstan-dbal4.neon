@@ -22,3 +22,21 @@ parameters:
         -
             message: '~Strict comparison using \=\=\= between callable\(\)\: mixed and null will always evaluate to false\.~'
             path: lib/Doctrine/ORM/Tools/SchemaTool.php
+
+        # FIXME
+        -
+            message: "#^Call to an undefined method Doctrine\\\\DBAL\\\\Connection\\:\\:getEventManager\\(\\)\\.$#"
+            count: 1
+            path: lib/Doctrine/ORM/EntityManager.php
+        -
+            message: "#^Static method Doctrine\\\\DBAL\\\\DriverManager\\:\\:getConnection\\(\\) invoked with 3 parameters, 1\\-2 required\\.$#"
+            count: 1
+            path: lib/Doctrine/ORM/EntityManager.php
+        -
+            message: "#^Call to an undefined method Doctrine\\\\DBAL\\\\Schema\\\\SchemaDiff\\:\\:toSaveSql\\(\\)\\.$#"
+            count: 1
+            path: lib/Doctrine/ORM/Tools/SchemaTool.php
+        -
+            message: "#^Call to an undefined method Doctrine\\\\DBAL\\\\Schema\\\\SchemaDiff\\:\\:toSql\\(\\)\\.$#"
+            count: 1
+            path: lib/Doctrine/ORM/Tools/SchemaTool.php

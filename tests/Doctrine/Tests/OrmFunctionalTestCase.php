@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests;
 
+use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Exception\DatabaseObjectNotFoundException;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
@@ -185,6 +186,7 @@ use function get_debug_type;
 use function getenv;
 use function implode;
 use function is_object;
+use function method_exists;
 use function realpath;
 use function sprintf;
 use function str_contains;
@@ -944,11 +946,15 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $conn->queryLog->reset();
 
         // get rid of more global state
-        $evm = $conn->getEventManager();
-        foreach ($evm->getAllListeners() as $event => $listeners) {
-            foreach ($listeners as $listener) {
-                $evm->removeEventListener([$event], $listener);
+        if (method_exists($conn, 'getEventManager')) {
+            $evm = $conn->getEventManager();
+            foreach ($evm->getAllListeners() as $event => $listeners) {
+                foreach ($listeners as $listener) {
+                    $evm->removeEventListener([$event], $listener);
+                }
             }
+        } else {
+            $evm = new EventManager();
         }
 
         if ($enableSecondLevelCache) {
@@ -966,7 +972,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $evm->addEventListener(['onFlush'], new DebugUnitOfWorkListener());
         }
 
-        return new EntityManager($conn, $config);
+        return new EntityManager($conn, $config, $evm);
     }
 
     final protected function createSchemaManager(): AbstractSchemaManager

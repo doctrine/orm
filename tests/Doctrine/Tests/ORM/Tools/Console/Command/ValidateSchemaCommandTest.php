@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\DBAL\Platforms\SQLitePlatform;
+use Doctrine\DBAL\Schema\SchemaDiff;
 use Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
+
+use function method_exists;
 
 /**
  * Tests for {@see \Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand}
@@ -29,6 +32,10 @@ class ValidateSchemaCommandTest extends OrmFunctionalTestCase
 
         if (! $this->_em->getConnection()->getDatabasePlatform() instanceof SQLitePlatform) {
             self::markTestSkipped('Only with sqlite');
+        }
+
+        if (! method_exists(SchemaDiff::class, 'toSaveSql')) {
+            self::markTestSkipped('FIXME for DBAL 4.');
         }
 
         $application = new Application();
