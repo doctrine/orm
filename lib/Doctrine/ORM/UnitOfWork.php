@@ -2747,6 +2747,15 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($data as $field => $value) {
             if (isset($class->fieldMappings[$field])) {
+                // Skip readonly properties that have been already set
+                if (
+                    method_exists($class->reflFields[$field], 'isReadonly') &&
+                    $class->reflFields[$field]->isReadOnly() &&
+                    isset($entity->$field)
+                ) {
+                    continue;
+                }
+
                 $class->reflFields[$field]->setValue($entity, $value);
             }
         }
