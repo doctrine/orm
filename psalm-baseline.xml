@@ -173,9 +173,8 @@
     </ArgumentTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/EntityManager.php">
-    <ArgumentTypeCoercion occurrences="2">
+    <ArgumentTypeCoercion occurrences="1">
       <code>$className</code>
-      <code>$connection</code>
     </ArgumentTypeCoercion>
     <InvalidReturnStatement occurrences="10">
       <code>$entity</code>

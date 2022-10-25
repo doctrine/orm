@@ -340,8 +340,7 @@ class SchemaTool
                     $uniqIndex = new Index($indexName, $this->getIndexColumns($class, $indexData), true, false, [], $indexData['options'] ?? []);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
-                        $method = method_exists($tableIndex, 'isFulfilledBy') ? 'isFulfilledBy' : 'isFullfilledBy';
-                        if ($tableIndex->$method($uniqIndex)) {
+                        if ($tableIndex->isFulfilledBy($uniqIndex)) {
                             $table->dropIndex($tableIndexName);
                             break;
                         }
@@ -502,9 +501,8 @@ class SchemaTool
         }
 
         if ($table->hasColumn($columnName)) {
-            $method = method_exists($table, 'modifyColumn') ? 'modifyColumn' : 'changeColumn';
             // required in some inheritance scenarios
-            $table->$method($columnName, $options);
+            $table->modifyColumn($columnName, $options);
         } else {
             $table->addColumn($columnName, $columnType, $options);
         }
@@ -838,12 +836,8 @@ class SchemaTool
      */
     public function getDropDatabaseSQL(): array
     {
-        $method = method_exists(AbstractSchemaManager::class, 'introspectSchema') ?
-            'introspectSchema' :
-            'createSchema';
-
         return $this->schemaManager
-            ->$method()
+            ->introspectSchema()
             ->toDropSql($this->platform);
     }
 
@@ -858,7 +852,7 @@ class SchemaTool
     {
         $schema = $this->getSchemaFromMetadata($classes);
 
-        $deployedSchema = $this->introspectSchema();
+        $deployedSchema = $this->schemaManager->introspectSchema();
 
         foreach ($schema->getTables() as $table) {
             if (! $deployedSchema->hasTable($table->getName())) {
@@ -949,10 +943,6 @@ class SchemaTool
             return $schemaDiff->toSaveSql($this->platform);
         }
 
-        if (! method_exists(AbstractPlatform::class, 'getAlterSchemaSQL')) {
-            return $schemaDiff->toSql($this->platform);
-        }
-
         return $this->platform->getAlterSchemaSQL($schemaDiff);
     }
 
@@ -967,12 +957,8 @@ class SchemaTool
         $config         = $connection->getConfiguration();
         $previousFilter = $config->getSchemaAssetsFilter();
 
-        $method = method_exists(AbstractSchemaManager::class, 'introspectSchema') ?
-            'introspectSchema' :
-            'createSchema';
-
         if ($previousFilter === null) {
-            return $this->introspectSchema();
+            return $this->schemaManager->introspectSchema();
         }
 
         // whitelist assets we already know about in $toSchema, use the existing filter otherwise
@@ -983,19 +969,10 @@ class SchemaTool
         });
 
         try {
-            return $this->introspectSchema();
+            return $this->schemaManager->introspectSchema();
         } finally {
             // restore schema assets filter
             $config->setSchemaAssetsFilter($previousFilter);
         }
-    }
-
-    private function introspectSchema(): Schema
-    {
-        $method = method_exists($this->schemaManager, 'introspectSchema')
-            ? 'introspectSchema'
-            : 'createSchema';
-
-        return $this->schemaManager->$method();
     }
 }

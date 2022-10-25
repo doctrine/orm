@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
-use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
-use function method_exists;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
@@ -24,10 +21,7 @@ class CompanySchemaTest extends OrmFunctionalTestCase
     /** @group DDC-966 */
     public function testGeneratedSchema(): Schema
     {
-        $method = method_exists(AbstractSchemaManager::class, 'introspectSchema') ?
-            'introspectSchema' :
-            'createSchema';
-        $schema = $this->createSchemaManager()->$method();
+        $schema = $this->createSchemaManager()->introspectSchema();
 
         self::assertTrue($schema->hasTable('company_contracts'));
 
