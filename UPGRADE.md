@@ -1,5 +1,12 @@
 # Upgrade to 3.0
 
+## BC BREAK: Removed `EntityManager::create()`
+
+The constructor of `EntityManager` is now public and must be used instead of the `create()` method.
+However, the constructor expects a `Connection` while `create()` accepted an array with connection parameters.
+You can pass that array to DBAL's `Doctrine\DBAL\DriverManager::getConnection()` method to bootstrap the
+connection.
+
 ## BC BREAK: Removed `QueryBuilder` methods and constants.
 
 The following `QueryBuilder` constants and methods have been removed:

@@ -28,12 +28,12 @@
         </DeprecatedClass>
         <DeprecatedMethod>
             <errorLevel type="suppress">
-                <!-- Remove on 3.0.x -->
+                <!-- Compatibility with DBAL 3 -->
                 <referencedMethod name="Doctrine\DBAL\Connection::getEventManager"/>
+                <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
                 <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSaveSql"/>
                 <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSql"/>
-                <referencedMethod name="Doctrine\ORM\EntityManager::createConnection"/>
                 <referencedMethod name="Doctrine\ORM\ORMSetup::createDefaultAnnotationDriver"/>
             </errorLevel>
         </DeprecatedMethod>
@@ -150,8 +150,9 @@
         </UndefinedClass>
         <UndefinedMethod>
             <errorLevel type="suppress">
-                <!-- FIXME -->
+                <!-- Compatibility with DBAL 3 -->
                 <referencedMethod name="Doctrine\DBAL\Connection::getEventManager"/>
+                <!-- FIXME -->
                 <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSaveSql"/>
             </errorLevel>
         </UndefinedMethod>
