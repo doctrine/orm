@@ -348,6 +348,7 @@ class DDC1649Two
      * @var DDC1649One
      */
     #[Id]
+    #[ManyToOne(targetEntity: 'DDC1649One')]
     public $one;
 }
 
