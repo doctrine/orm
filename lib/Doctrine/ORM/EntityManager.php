@@ -8,14 +8,9 @@ use BackedEnum;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\LockMode;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Exception\InvalidHydrationMode;
-use Doctrine\ORM\Exception\ManagerException;
-use Doctrine\ORM\Exception\MismatchedEventManager;
 use Doctrine\ORM\Exception\MissingIdentifierField;
 use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
 use Doctrine\ORM\Exception\ORMException;
@@ -636,65 +631,6 @@ class EntityManager implements EntityManagerInterface
     public function initializeObject(object $obj): void
     {
         $this->unitOfWork->initializeObject($obj);
-    }
-
-    /**
-     * Factory method to create EntityManager instances.
-     *
-     * @deprecated Use {@see DriverManager::getConnection()} to bootstrap the connection and call the constructor.
-     *
-     * @param mixed[]|Connection $connection An array with the connection parameters or an existing Connection instance.
-     * @psalm-param array<string, mixed>|Connection $connection
-     *
-     * @throws DBALException
-     * @throws ManagerException
-     */
-    public static function create(array|Connection $connection, Configuration $config, EventManager|null $eventManager = null): EntityManager
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/9961',
-            '%s() is deprecated. To boostrap a DBAL connection, call %s::getConnection() instead. Use the constructor to create an instance of %s.',
-            __METHOD__,
-            DriverManager::class,
-            self::class,
-        );
-
-        $connection = static::createConnection($connection, $config, $eventManager);
-
-        return new EntityManager($connection, $config);
-    }
-
-    /**
-     * Factory method to create Connection instances.
-     *
-     * @deprecated Use {@see DriverManager::getConnection()} to bootstrap the connection.
-     *
-     * @param mixed[]|Connection $connection An array with the connection parameters or an existing Connection instance.
-     * @psalm-param array<string, mixed>|Connection $connection
-     *
-     * @throws DBALException
-     * @throws ManagerException
-     */
-    protected static function createConnection(array|Connection $connection, Configuration $config, EventManager|null $eventManager = null): Connection
-    {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/9961',
-            '%s() is deprecated, call %s::getConnection() instead.',
-            __METHOD__,
-            DriverManager::class,
-        );
-
-        if (is_array($connection)) {
-            return DriverManager::getConnection($connection, $config, $eventManager ?? new EventManager());
-        }
-
-        if ($eventManager !== null && $connection->getEventManager() !== $eventManager) {
-            throw MismatchedEventManager::create();
-        }
-
-        return $connection;
     }
 
     public function getFilters(): FilterCollection
