@@ -13,34 +13,29 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="dc3899_contracts")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string", length=255)
- * @DiscriminatorMap({
- *     "fix"       = "DDC3899FixContract",
- *     "flexible"  = "DDC3899FlexContract"
- * })
- */
+#[Table(name: 'dc3899_contracts')]
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'discr', type: 'string', length: 255)]
+#[DiscriminatorMap(['fix' => 'DDC3899FixContract', 'flexible' => 'DDC3899FlexContract'])]
 abstract class DDC3899Contract
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
      */
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
      * @var bool
-     * @Column(type="boolean")
      */
+    #[Column(type: 'boolean')]
     public $completed = false;
 
     /**
      * @var DDC3899User
-     * @ManyToOne(targetEntity="DDC3899User", inversedBy="contract")
      */
+    #[ManyToOne(targetEntity: 'DDC3899User', inversedBy: 'contract')]
     public $user;
 }

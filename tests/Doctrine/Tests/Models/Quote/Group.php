@@ -14,33 +14,29 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="`quote-group`")
- */
+#[Table(name: '`quote-group`')]
+#[Entity]
 class Group
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="`group-id`")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer', name: '`group-id`')]
     public $id;
 
     /**
      * @psalm-var Collection<int, User>
-     * @ManyToMany(targetEntity="User", mappedBy="groups")
      */
+    #[ManyToMany(targetEntity: 'User', mappedBy: 'groups')]
     public $users;
 
     public function __construct(
-        /** @Column(name="`group-name`") */
+        #[Column(name: '`group-name`')]
         public string|null $name = null,
-        /**
-         * @ManyToOne(targetEntity="Group", cascade={"persist"})
-         * @JoinColumn(name="`parent-id`", referencedColumnName="`group-id`")
-         */
+        #[ManyToOne(targetEntity: 'Group', cascade: ['persist'])]
+        #[JoinColumn(name: '`parent-id`', referencedColumnName: '`group-id`')]
         public Group|null $parent = null,
     ) {
     }

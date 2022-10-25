@@ -74,21 +74,21 @@ final class GH7286Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7286Entity
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      * @var int
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     public function __construct(
-        /** @Column(nullable=true) */
+        #[Column(nullable: true)]
         public string|null $type,
-        /** @Column(type="integer") */
+        #[Column(type: 'integer')]
         public int $version,
     ) {
     }

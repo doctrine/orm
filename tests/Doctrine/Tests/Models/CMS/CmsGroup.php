@@ -16,30 +16,29 @@ use IteratorAggregate;
 
 /**
  * Description of CmsGroup
- *
- * @Entity
- * @Table(name="cms_groups")
  */
+#[Table(name: 'cms_groups')]
+#[Entity]
 class CmsGroup implements IteratorAggregate
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var string
-     * @Column(length=50)
      */
+    #[Column(length: 50)]
     public $name;
 
     /**
      * @psalm-var Collection<int, CmsUser>
-     * @ManyToMany(targetEntity="CmsUser", mappedBy="groups")
      */
+    #[ManyToMany(targetEntity: 'CmsUser', mappedBy: 'groups')]
     public $users;
 
     public function __construct()

@@ -15,41 +15,40 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * Company
- *
- * @Entity
- * @Table(name="pagination_company")
  */
+#[Table(name: 'pagination_company')]
+#[Entity]
 class Company
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
     /**
      * @var string
-     * @Column(type="string", length=255, name="jurisdiction_code", nullable=true)
      */
+    #[Column(type: 'string', length: 255, name: 'jurisdiction_code', nullable: true)]
     public $jurisdiction;
 
     /**
      * @var Logo
-     * @OneToOne(targetEntity="Logo", mappedBy="company", cascade={"persist"}, orphanRemoval=true)
      */
+    #[OneToOne(targetEntity: 'Logo', mappedBy: 'company', cascade: ['persist'], orphanRemoval: true)]
     public $logo;
 
     /**
      * @psalm-var Collection<int, Department>
-     * @OneToMany(targetEntity="Department", mappedBy="company", cascade={"persist"}, orphanRemoval=true)
      */
+    #[OneToMany(targetEntity: 'Department', mappedBy: 'company', cascade: ['persist'], orphanRemoval: true)]
     public $departments;
 }

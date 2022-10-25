@@ -42,28 +42,28 @@ class DDC1250Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1250ClientHistory
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
      * @var DDC1250ClientHistory
-     * @OneToOne(targetEntity="DDC1250ClientHistory", inversedBy="declinedBy")
-     * @JoinColumn(name="declined_clients_history_id", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'DDC1250ClientHistory', inversedBy: 'declinedBy')]
+    #[JoinColumn(name: 'declined_clients_history_id', referencedColumnName: 'id')]
     public $declinedClientsHistory;
 
     /**
      * @var DDC1250ClientHistory
-     * @OneToOne(targetEntity="DDC1250ClientHistory", mappedBy="declinedClientsHistory")
      */
+    #[OneToOne(targetEntity: 'DDC1250ClientHistory', mappedBy: 'declinedClientsHistory')]
     public $declinedBy;
 }
 

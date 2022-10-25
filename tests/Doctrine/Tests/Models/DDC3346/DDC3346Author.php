@@ -12,29 +12,27 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="ddc3346_users")
- */
+#[Table(name: 'ddc3346_users')]
+#[Entity]
 class DDC3346Author
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var string
-     * @Column(type="string", length=255, unique=true)
      */
+    #[Column(type: 'string', length: 255, unique: true)]
     public $username;
 
     /**
      * @var Collection<int, DDC3346Article>
-     * @OneToMany(targetEntity="DDC3346Article", mappedBy="user", fetch="EAGER", cascade={"detach"})
      */
+    #[OneToMany(targetEntity: 'DDC3346Article', mappedBy: 'user', fetch: 'EAGER', cascade: ['detach'])]
     public $articles = [];
 }

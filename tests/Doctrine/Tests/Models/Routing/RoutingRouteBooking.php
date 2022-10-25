@@ -11,28 +11,28 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/** @Entity */
+#[Entity]
 class RoutingRouteBooking
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var RoutingRoute
-     * @ManyToOne(targetEntity="RoutingRoute", inversedBy="bookings")
-     * @JoinColumn(name="route_id", referencedColumnName="id")
      */
+    #[ManyToOne(targetEntity: 'RoutingRoute', inversedBy: 'bookings')]
+    #[JoinColumn(name: 'route_id', referencedColumnName: 'id')]
     public $route;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $passengerName = null;
 
     public function getPassengerName(): string

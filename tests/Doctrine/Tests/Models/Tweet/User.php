@@ -13,36 +13,34 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="tweet_user")
- */
+#[Table(name: 'tweet_user')]
+#[Entity]
 class User
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
     /**
      * @psalm-var Collection<int, Tweet>
-     * @OneToMany(targetEntity="Tweet", mappedBy="author", cascade={"persist"}, fetch="EXTRA_LAZY")
      */
+    #[OneToMany(targetEntity: 'Tweet', mappedBy: 'author', cascade: ['persist'], fetch: 'EXTRA_LAZY')]
     public $tweets;
 
     /**
      * @psalm-var Collection<int, UserList>
-     * @OneToMany(targetEntity="UserList", mappedBy="owner", fetch="EXTRA_LAZY", orphanRemoval=true)
      */
+    #[OneToMany(targetEntity: 'UserList', mappedBy: 'owner', fetch: 'EXTRA_LAZY', orphanRemoval: true)]
     public $userLists;
 
     public function __construct()

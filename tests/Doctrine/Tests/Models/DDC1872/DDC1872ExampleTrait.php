@@ -13,21 +13,21 @@ trait DDC1872ExampleTrait
 {
     /**
      * @var string
-     * @Id
-     * @Column(type="string", length=255)
      */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
     private $id;
 
     /**
      * @var int
-     * @Column(name="trait_foo", type="integer", length=100, nullable=true, unique=true)
      */
+    #[Column(name: 'trait_foo', type: 'integer', length: 100, nullable: true, unique: true)]
     protected $foo;
 
     /**
      * @var DDC1872Bar
-     * @OneToOne(targetEntity="DDC1872Bar", cascade={"persist", "merge"})
-     * @JoinColumn(name="example_trait_bar_id", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'DDC1872Bar', cascade: ['persist', 'merge'])]
+    #[JoinColumn(name: 'example_trait_bar_id', referencedColumnName: 'id')]
     protected $bar;
 }

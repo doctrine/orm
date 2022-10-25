@@ -75,78 +75,78 @@ final class GH7259Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity() */
+#[Entity]
 class GH7259File
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      * @var int
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
-     * @ManyToOne(targetEntity=GH7259Space::class)
-     * @JoinColumn(nullable=false)
      * @var GH7259Space|null
      */
+    #[ManyToOne(targetEntity: GH7259Space::class)]
+    #[JoinColumn(nullable: false)]
     public $space;
 }
 
-/** @Entity() */
+#[Entity]
 class GH7259FileVersion
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      * @var int
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
-     * @ManyToOne(targetEntity=GH7259File::class)
-     * @JoinColumn(nullable=false)
      * @var GH7259File|null
      */
+    #[ManyToOne(targetEntity: GH7259File::class)]
+    #[JoinColumn(nullable: false)]
     public $file;
 }
 
-/** @Entity() */
+#[Entity]
 class GH7259Space
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      * @var int
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
-     * @ManyToOne(targetEntity=GH7259File::class)
-     * @JoinColumn(nullable=true)
      * @var GH7259File|null
      */
+    #[ManyToOne(targetEntity: GH7259File::class)]
+    #[JoinColumn(nullable: true)]
     public $ruleFile;
 }
 
-/** @Entity() */
+#[Entity]
 class GH7259Feed
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      * @var int
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
-     * @ManyToOne(targetEntity=GH7259Space::class)
-     * @JoinColumn(nullable=false)
      * @var GH7259Space|null
      */
+    #[ManyToOne(targetEntity: GH7259Space::class)]
+    #[JoinColumn(nullable: false)]
     public $space;
 }

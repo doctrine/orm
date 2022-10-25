@@ -61,21 +61,19 @@ class GH7767Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7767ParentEntity
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
     /**
      * @psalm-var Collection<int, GH7767ChildEntity>
-     * @OneToMany(targetEntity=GH7767ChildEntity::class, mappedBy="parent", fetch="EXTRA_LAZY", cascade={"persist"})
-     * @OrderBy({"position" = "ASC"})
      */
+    #[OneToMany(targetEntity: GH7767ChildEntity::class, mappedBy: 'parent', fetch: 'EXTRA_LAZY', cascade: ['persist'])]
+    #[OrderBy(['position' => 'ASC'])]
     private $children;
 
     public function addChild(int $position): void
@@ -90,20 +88,18 @@ class GH7767ParentEntity
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7767ChildEntity
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
     public function __construct(
-        /** @ManyToOne(targetEntity=GH7767ParentEntity::class, inversedBy="children") */
+        #[ManyToOne(targetEntity: GH7767ParentEntity::class, inversedBy: 'children')]
         private GH7767ParentEntity $parent,
-        /** @Column(type="integer") */
+        #[Column(type: 'integer')]
         public int $position,
     ) {
     }

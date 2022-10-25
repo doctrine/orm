@@ -6,7 +6,7 @@ namespace Doctrine\Tests\Models\JoinedInheritanceType;
 
 use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/** @MappedSuperclass */
+#[MappedSuperclass]
 abstract class ChildClass extends RootClass
 {
 }

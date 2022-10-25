@@ -46,20 +46,20 @@ class DDC1998Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1998Entity
 {
     /**
      * @var string
-     * @Id
-     * @Column(type="ddc1998", length=255)
      */
+    #[Id]
+    #[Column(type: 'ddc1998', length: 255)]
     public $id;
 
     /**
      * @var int
-     * @Column(type="integer")
      */
+    #[Column(type: 'integer')]
     public $num = 0;
 }
 

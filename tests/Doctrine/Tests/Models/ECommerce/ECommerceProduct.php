@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\ECommerce;
 
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
@@ -21,41 +22,37 @@ use Doctrine\ORM\Mapping\Table;
 /**
  * ECommerceProduct
  * Represents a type of product of a shopping application.
- *
- * @Entity
- * @Table(name="ecommerce_products",indexes={@Index(name="name_idx", columns={"name"})})
  */
+#[Table(name: 'ecommerce_products')]
+#[Index(name: 'name_idx', columns: ['name'])]
+#[Entity]
 class ECommerceProduct
 {
-    /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     private int $id;
 
-    /** @Column(type="string", length=50, nullable=true) */
+    #[Column(type: 'string', length: 50, nullable: true)]
     private string|null $name = null;
 
-    /**
-     * @OneToOne(targetEntity="ECommerceShipping", cascade={"persist"})
-     * @JoinColumn(name="shipping_id", referencedColumnName="id")
-     */
+    #[OneToOne(targetEntity: 'ECommerceShipping', cascade: ['persist'])]
+    #[JoinColumn(name: 'shipping_id', referencedColumnName: 'id')]
     private ECommerceShipping|null $shipping = null;
 
     /**
      * @psalm-var Collection<int, ECommerceFeature>
-     * @OneToMany(targetEntity="ECommerceFeature", mappedBy="product", cascade={"persist"})
      */
+    #[OneToMany(targetEntity: 'ECommerceFeature', mappedBy: 'product', cascade: ['persist'])]
     private $features;
 
     /**
      * @psalm-var Collection<int, ECommerceCategory>
-     * @ManyToMany(targetEntity="ECommerceCategory", cascade={"persist"}, inversedBy="products")
-     * @JoinTable(name="ecommerce_products_categories",
-     *      joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="category_id", referencedColumnName="id")})
      */
+    #[JoinTable(name: 'ecommerce_products_categories')]
+    #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'category_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'ECommerceCategory', cascade: ['persist'], inversedBy: 'products')]
     private $categories;
 
     /**
@@ -63,11 +60,11 @@ class ECommerceProduct
      * simplicity.
      *
      * @psalm-var Collection<int, ECommerceProduct>
-     * @ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
-     * @JoinTable(name="ecommerce_products_related",
-     *      joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="related_id", referencedColumnName="id")})
      */
+    #[JoinTable(name: 'ecommerce_products_related')]
+    #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'related_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'ECommerceProduct', cascade: ['persist'])]
     private $related;
 
     /** @var bool */

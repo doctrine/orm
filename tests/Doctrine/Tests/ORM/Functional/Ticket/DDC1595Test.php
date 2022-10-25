@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
@@ -73,41 +74,33 @@ class DDC1595Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="base")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({
- *     "Entity1" = "DDC1595InheritedEntity1",
- *     "Entity2" = "DDC1595InheritedEntity2"
- * })
- */
+#[Table(name: 'base')]
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'type', type: 'string')]
+#[DiscriminatorMap(['Entity1' => 'DDC1595InheritedEntity1', 'Entity2' => 'DDC1595InheritedEntity2'])]
 abstract class DDC1595BaseInheritance
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      * @var int
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 }
 
-/**
- * @Entity
- * @Table(name="entity1")
- */
+#[Table(name: 'entity1')]
+#[Entity]
 class DDC1595InheritedEntity1 extends DDC1595BaseInheritance
 {
     /**
      * @psalm-var Collection<int, DDC1595InheritedEntity2>
-     * @ManyToMany(targetEntity="DDC1595InheritedEntity2", fetch="EXTRA_LAZY")
-     * @JoinTable(name="entity1_entity2",
-     *     joinColumns={@JoinColumn(name="parent", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="item", referencedColumnName="id")}
-     * )
      */
+    #[JoinTable(name: 'entity1_entity2')]
+    #[JoinColumn(name: 'parent', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'item', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'DDC1595InheritedEntity2', fetch: 'EXTRA_LAZY')]
     protected $entities;
 
     /** @psalm-return Collection<int, DDC1595InheritedEntity2> */
@@ -117,10 +110,8 @@ class DDC1595InheritedEntity1 extends DDC1595BaseInheritance
     }
 }
 
-/**
- * @Entity
- * @Table(name="entity2")
- */
+#[Table(name: 'entity2')]
+#[Entity]
 class DDC1595InheritedEntity2 extends DDC1595BaseInheritance
 {
 }

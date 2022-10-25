@@ -15,8 +15,8 @@ use Doctrine\ORM\Mapping\ManyToMany;
 #[Entity]
 class DDC3579Group
 {
-    /** @GeneratedValue */
     #[Id, GeneratedValue, Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
     /** @psalm-var Collection<int, DDC3579Admin> */

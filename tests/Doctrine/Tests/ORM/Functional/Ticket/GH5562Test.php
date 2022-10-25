@@ -63,65 +63,59 @@ final class GH5562Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Cache(usage="NONSTRICT_READ_WRITE")
- */
+#[Entity]
+#[Cache(usage: 'NONSTRICT_READ_WRITE')]
 class GH5562Merchant
 {
     /**
      * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="IDENTITY")
      */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue(strategy: 'IDENTITY')]
     public $id;
 
     /**
      * @var GH5562Manager
-     * @OneToOne(targetEntity=GH5562Manager::class, mappedBy="merchant")
-     * @Cache(usage="NONSTRICT_READ_WRITE")
      */
+    #[OneToOne(targetEntity: GH5562Manager::class, mappedBy: 'merchant')]
+    #[Cache(usage: 'NONSTRICT_READ_WRITE')]
     public $manager;
 
     /**
      * @var string
-     * @Column(name="name", type="string", length=255, nullable=false)
      */
+    #[Column(name: 'name', type: 'string', length: 255, nullable: false)]
     public $name;
 }
 
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"MANAGER"  = GH5562Manager::class})
- */
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorMap(['MANAGER' => GH5562Manager::class])]
 abstract class GH5562User
 {
     /**
      * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="IDENTITY")
      */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue(strategy: 'IDENTITY')]
     public $id;
 }
 
-/**
- * @Entity
- * @Cache(usage="NONSTRICT_READ_WRITE")
- */
+#[Entity]
+#[Cache(usage: 'NONSTRICT_READ_WRITE')]
 class GH5562Manager extends GH5562User
 {
     /**
      * @var string
-     * @Column
      */
+    #[Column]
     public $username;
 
     /**
      * @var GH5562Merchant
-     * @OneToOne(targetEntity=GH5562Merchant::class, inversedBy="manager")
      */
+    #[OneToOne(targetEntity: GH5562Merchant::class, inversedBy: 'manager')]
     public $merchant;
 }

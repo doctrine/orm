@@ -85,33 +85,31 @@ class DefaultValuesTest extends OrmFunctionalTestCase
 }
 
 
-/**
- * @Entity
- * @Table(name="defaultvalueuser")
- */
+#[Table(name: 'defaultvalueuser')]
+#[Entity]
 class DefaultValueUser
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $name = '';
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $type = 'Poweruser';
     /**
      * @var DefaultValueAddress
-     * @OneToOne(targetEntity="DefaultValueAddress", mappedBy="user", cascade={"persist"})
      */
+    #[OneToOne(targetEntity: 'DefaultValueAddress', mappedBy: 'user', cascade: ['persist'])]
     public $address;
 
     public function getId(): int
@@ -122,36 +120,35 @@ class DefaultValueUser
 
 /**
  * CmsAddress
- *
- * @Entity
- * @Table(name="defaultvalueaddresses")
  */
+#[Table(name: 'defaultvalueaddresses')]
+#[Entity]
 class DefaultValueAddress
 {
     /**
      * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     /**
      * @var string
-     * @Column(type="string", length=50)
      */
+    #[Column(type: 'string', length: 50)]
     public $country;
 
     /**
      * @var string
-     * @Column(type="string", length=50)
      */
+    #[Column(type: 'string', length: 50)]
     public $zip;
 
     /**
      * @var string
-     * @Column(type="string", length=50)
      */
+    #[Column(type: 'string', length: 50)]
     public $city;
 
     /**
@@ -162,9 +159,9 @@ class DefaultValueAddress
 
     /**
      * @var DefaultValueUser
-     * @OneToOne(targetEntity="DefaultValueUser")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'DefaultValueUser')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     public $user;
 
     public function getUser(): DefaultValueUser

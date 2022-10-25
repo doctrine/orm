@@ -7,10 +7,8 @@ namespace Doctrine\Tests\Models\DDC2372;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="admins")
- */
+#[Table(name: 'admins')]
+#[Entity]
 class DDC2372Admin extends DDC2372User
 {
 }

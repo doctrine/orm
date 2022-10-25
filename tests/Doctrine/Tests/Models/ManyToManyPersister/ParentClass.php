@@ -12,24 +12,20 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="manytomanypersister_parent")
- */
+#[Table(name: 'manytomanypersister_parent')]
+#[Entity]
 class ParentClass
 {
     /**
-     * @ManyToMany(targetEntity=ChildClass::class, mappedBy="parents", orphanRemoval=true, cascade={"persist"})
      * @var Collection|ChildClass[]
      * @psalm-var Collection<ChildClass>
      */
+    #[ManyToMany(targetEntity: ChildClass::class, mappedBy: 'parents', orphanRemoval: true, cascade: ['persist'])]
     public $children;
 
     public function __construct(
-        /**
-         * @Id
-         * @Column(name="id", type="integer")
-         */
+        #[Id]
+        #[Column(name: 'id', type: 'integer')]
         public int $id,
     ) {
         $this->children = new ArrayCollection();

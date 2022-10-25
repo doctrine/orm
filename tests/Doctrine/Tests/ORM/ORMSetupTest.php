@@ -83,7 +83,7 @@ class ORMSetupTest extends TestCase
 
 class AnnotatedDummy
 {
-    /** @AnnotationNamespace\PrePersist */
+    #[AnnotationNamespace\PrePersist]
     public function namespacedAnnotationMethod(): void
     {
     }

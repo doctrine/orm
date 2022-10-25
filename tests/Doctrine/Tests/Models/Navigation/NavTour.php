@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Navigation;
 
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
@@ -15,34 +16,27 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="navigation_tours")
- */
+#[Table(name: 'navigation_tours')]
+#[Entity]
 class NavTour
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
     /**
      * @var Collection<int, NavPointOfInterest>
-     * @ManyToMany(targetEntity="NavPointOfInterest")
-     * @JoinTable(name="navigation_tour_pois",
-     *      joinColumns={@JoinColumn(name="tour_id", referencedColumnName="id")},
-     *      inverseJoinColumns={
-     *          @JoinColumn(name="poi_long", referencedColumnName="nav_long"),
-     *          @JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
-     *      }
-     * )
      */
+    #[JoinTable(name: 'navigation_tour_pois')]
+    #[JoinColumn(name: 'tour_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'poi_long', referencedColumnName: 'nav_long')]
+    #[InverseJoinColumn(name: 'poi_lat', referencedColumnName: 'nav_lat')]
+    #[ManyToMany(targetEntity: 'NavPointOfInterest')]
     private Collection $pois;
 
     public function __construct(
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         private string $name,
     ) {
         $this->pois = new ArrayCollection();

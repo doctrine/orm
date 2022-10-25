@@ -50,36 +50,34 @@ class DDC2230Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2230User
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     /**
      * @var DDC2230Address
-     * @OneToOne(targetEntity="DDC2230Address")
      */
+    #[OneToOne(targetEntity: 'DDC2230Address')]
     public $address;
 }
 
-/**
- * @Entity
- * @ChangeTrackingPolicy("NOTIFY")
- */
+#[Entity]
+#[ChangeTrackingPolicy('NOTIFY')]
 class DDC2230Address implements NotifyPropertyChanged
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     /** @var \Doctrine\Common\PropertyChangedListener */

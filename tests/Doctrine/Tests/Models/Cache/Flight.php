@@ -13,33 +13,27 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table("cache_flight")
- * @Cache("NONSTRICT_READ_WRITE")
- */
+#[Table('cache_flight')]
+#[Entity]
+#[Cache('NONSTRICT_READ_WRITE')]
 class Flight
 {
     /**
      * @var DateTime
-     * @Column(type="date")
      */
+    #[Column(type: 'date')]
     protected $departure;
 
     public function __construct(
-        /**
-         * @Id
-         * @Cache
-         * @ManyToOne(targetEntity="City")
-         * @JoinColumn(name="leaving_from_city_id", referencedColumnName="id")
-         */
+        #[Id]
+        #[Cache]
+        #[ManyToOne(targetEntity: 'City')]
+        #[JoinColumn(name: 'leaving_from_city_id', referencedColumnName: 'id')]
         protected City $leavingFrom,
-        /**
-         * @Id
-         * @Cache
-         * @ManyToOne(targetEntity="City")
-         * @JoinColumn(name="going_to_city_id", referencedColumnName="id")
-         */
+        #[Id]
+        #[Cache]
+        #[ManyToOne(targetEntity: 'City')]
+        #[JoinColumn(name: 'going_to_city_id', referencedColumnName: 'id')]
         protected City $goingTo,
     ) {
         $this->departure = new DateTime();

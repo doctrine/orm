@@ -101,17 +101,15 @@ class DDC5684ObjectId implements Stringable
     }
 }
 
-/**
- * @Entity
- * @Table(name="ticket_5684_objects")
- */
+#[Table(name: 'ticket_5684_objects')]
+#[Entity]
 class DDC5684Object
 {
     /**
      * @var DDC5684ObjectIdType
-     * @Id
-     * @Column(type=DDC5684ObjectIdType::class)
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: DDC5684ObjectIdType::class)]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }

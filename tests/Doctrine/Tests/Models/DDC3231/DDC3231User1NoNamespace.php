@@ -8,23 +8,21 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity(repositoryClass="DDC3231User1NoNamespaceRepository")
- * @Table(name="no_namespace_users")
- */
+#[Table(name: 'no_namespace_users')]
+#[Entity(repositoryClass: 'DDC3231User1NoNamespaceRepository')]
 class DDC3231User1NoNamespace
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     protected $name;
 }

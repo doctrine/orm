@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -41,69 +42,64 @@ class DDC698Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Table(name="Roles")
- * @Entity
- */
+#[Table(name: 'Roles')]
+#[Entity]
 class DDC698Role
 {
     /**
      * @var int
-     * @Id
-     * @Column(name="roleID", type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(name: 'roleID', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $roleID;
 
     /**
      * @var string
-     * @Column(name="name", type="string", length=45)
      */
+    #[Column(name: 'name', type: 'string', length: 45)]
     protected $name;
 
     /**
      * @var string
-     * @Column(name="shortName", type="string", length=45)
      */
+    #[Column(name: 'shortName', type: 'string', length: 45)]
     protected $shortName;
 
 
 
     /**
      * @var Collection<int, DDC698Privilege>
-     * @ManyToMany(targetEntity="DDC698Privilege", inversedBy="roles")
-     * @JoinTable(name="RolePrivileges",
-     *     joinColumns={@JoinColumn(name="roleID", referencedColumnName="roleID")},
-     *     inverseJoinColumns={@JoinColumn(name="privilegeID", referencedColumnName="privilegeID")}
-     * )
      */
+    #[JoinTable(name: 'RolePrivileges')]
+    #[JoinColumn(name: 'roleID', referencedColumnName: 'roleID')]
+    #[InverseJoinColumn(name: 'privilegeID', referencedColumnName: 'privilegeID')]
+    #[ManyToMany(targetEntity: 'DDC698Privilege', inversedBy: 'roles')]
     protected $privilege;
 }
 
 
-/**
- * @Table(name="Privileges")
- * @Entity()
- */
+#[Table(name: 'Privileges')]
+#[Entity]
 class DDC698Privilege
 {
     /**
      * @var int
-     * @Id
-     * @Column(name="privilegeID", type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(name: 'privilegeID', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $privilegeID;
 
     /**
      * @var string
-     * @Column(name="name", type="string", length=45)
      */
+    #[Column(name: 'name', type: 'string', length: 45)]
     protected $name;
 
     /**
      * @psalm-var Collection<int, DDC698Role>
-     * @ManyToMany(targetEntity="DDC698Role", mappedBy="privilege")
      */
+    #[ManyToMany(targetEntity: 'DDC698Role', mappedBy: 'privilege')]
     protected $roles;
 }

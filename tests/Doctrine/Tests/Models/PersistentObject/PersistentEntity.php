@@ -11,26 +11,26 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/** @Entity */
+#[Entity]
 class PersistentEntity extends PersistentObject
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      * @var int
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     protected $id;
 
     /**
-     * @Column(type="string", length=255)
      * @var string
      */
+    #[Column(type: 'string', length: 255)]
     protected $name;
 
     /**
-     * @ManyToOne(targetEntity="PersistentEntity")
      * @var PersistentEntity
      */
+    #[ManyToOne(targetEntity: 'PersistentEntity')]
     protected $parent;
 }

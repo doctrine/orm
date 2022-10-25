@@ -72,18 +72,14 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="DDC2084_ENTITY1")
- */
+#[Table(name: 'DDC2084_ENTITY1')]
+#[Entity]
 class MyEntity1
 {
     public function __construct(
-        /**
-         * @Id
-         * @OneToOne(targetEntity="MyEntity2")
-         * @JoinColumn(name="entity2_id", referencedColumnName="id", nullable=false)
-         */
+        #[Id]
+        #[OneToOne(targetEntity: 'MyEntity2')]
+        #[JoinColumn(name: 'entity2_id', referencedColumnName: 'id', nullable: false)]
         private MyEntity2 $entity2,
     ) {
     }
@@ -99,21 +95,17 @@ class MyEntity1
     }
 }
 
-/**
- * @Entity
- * @Table(name="DDC2084_ENTITY2")
- */
+#[Table(name: 'DDC2084_ENTITY2')]
+#[Entity]
 class MyEntity2
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
     public function __construct(
-        /** @Column */
+        #[Column]
         private string $value,
     ) {
     }

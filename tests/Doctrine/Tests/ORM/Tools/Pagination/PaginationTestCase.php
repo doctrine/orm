@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Column;
@@ -31,241 +32,235 @@ abstract class PaginationTestCase extends OrmTestCase
 }
 
 
-/** @Entity */
+#[Entity]
 class MyBlogPost
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var Author
-     * @ManyToOne(targetEntity="Author")
      */
+    #[ManyToOne(targetEntity: 'Author')]
     public $author;
 
     /**
      * @var Category
-     * @ManyToOne(targetEntity="Category")
      */
+    #[ManyToOne(targetEntity: 'Category')]
     public $category;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $title;
 }
 
-/** @Entity */
+#[Entity]
 class MyAuthor
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class MyCategory
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
 
-/** @Entity */
+#[Entity]
 class BlogPost
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var Author
-     * @ManyToOne(targetEntity="Author")
      */
+    #[ManyToOne(targetEntity: 'Author')]
     public $author;
 
     /**
      * @var Category
-     * @ManyToOne(targetEntity="Category")
      */
+    #[ManyToOne(targetEntity: 'Category')]
     public $category;
 }
 
-/** @Entity */
+#[Entity]
 class Author
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $name;
 }
 
-/** @Entity */
+#[Entity]
 class Person
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $biography;
 }
 
-/** @Entity */
+#[Entity]
 class Category
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
 
-/**
- * @Entity
- * @Table(name="groups")
- */
+#[Table(name: 'groups')]
+#[Entity]
 class Group
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @psalm-var Collection<int, User>
-     * @ManyToMany(targetEntity="User", mappedBy="groups")
      */
+    #[ManyToMany(targetEntity: 'User', mappedBy: 'groups')]
     public $users;
 }
 
-/** @Entity */
+#[Entity]
 class User
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @psalm-var Collection<int, Group>
-     * @ManyToMany(targetEntity="Group", inversedBy="users")
-     * @JoinTable(
-     * name="user_group",
-     * joinColumns = {@JoinColumn(name="user_id", referencedColumnName="id")},
-     * inverseJoinColumns = {@JoinColumn(name="group_id", referencedColumnName="id")}
-     * )
      */
+    #[JoinTable(name: 'user_group')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'Group', inversedBy: 'users')]
     public $groups;
 
     /**
      * @var Avatar
-     * @OneToOne(targetEntity="Avatar", mappedBy="user")
      */
+    #[OneToOne(targetEntity: 'Avatar', mappedBy: 'user')]
     public $avatar;
 }
 
-/** @Entity */
+#[Entity]
 class Avatar
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var User
-     * @OneToOne(targetEntity="User", inversedBy="avatar")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'User', inversedBy: 'avatar')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     public $user;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $image;
 
     /**
      * @var int
-     * @Column(type="integer")
      */
+    #[Column(type: 'integer')]
     public $imageHeight;
 
     /**
      * @var int
-     * @Column(type="integer")
      */
+    #[Column(type: 'integer')]
     public $imageWidth;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $imageAltDesc;
 }
 
-/** @MappedSuperclass */
+#[MappedSuperclass]
 abstract class Identified
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
     public function getId(): int
@@ -274,12 +269,12 @@ abstract class Identified
     }
 }
 
-/** @Entity */
+#[Entity]
 class Banner extends Identified
 {
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $name;
 }

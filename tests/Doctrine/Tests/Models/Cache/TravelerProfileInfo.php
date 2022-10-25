@@ -13,29 +13,25 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table("cache_traveler_profile_info")
- * @Cache("NONSTRICT_READ_WRITE")
- */
+#[Table('cache_traveler_profile_info')]
+#[Entity]
+#[Cache('NONSTRICT_READ_WRITE')]
 class TravelerProfileInfo
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     protected $id;
 
     public function __construct(
-        /**
-         * @Cache()
-         * @JoinColumn(name="profile_id", referencedColumnName="id")
-         * @OneToOne(targetEntity="TravelerProfile", inversedBy="info")
-         */
+        #[Cache]
+        #[JoinColumn(name: 'profile_id', referencedColumnName: 'id')]
+        #[OneToOne(targetEntity: 'TravelerProfile', inversedBy: 'info')]
         private TravelerProfile $profile,
-        /** @Column(unique=true) */
+        #[Column(unique: true)]
         private string $description,
     ) {
     }

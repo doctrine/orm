@@ -44,50 +44,45 @@ class GH7512Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity()
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({
- *     "entitya"=GH7512EntityA::class,
- *     "entityB"=GH7512EntityB::class
- * })
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorMap(['entitya' => GH7512EntityA::class, 'entityB' => GH7512EntityB::class])]
 class GH7512EntityA
 {
     /**
-     * @Column(type="integer")
-     * @Id()
-     * @GeneratedValue(strategy="AUTO")
      * @var int
      */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     /**
-     * @OneToMany(targetEntity="GH7512EntityC", mappedBy="entityA")
      * @var Collection<int, GH7512EntityC>
      */
+    #[OneToMany(targetEntity: 'GH7512EntityC', mappedBy: 'entityA')]
     public $entityCs;
 }
 
-/** @Entity() */
+#[Entity]
 class GH7512EntityB extends GH7512EntityA
 {
 }
 
-/** @Entity() */
+#[Entity]
 class GH7512EntityC
 {
     /**
-     * @Column(type="integer")
-     * @Id()
-     * @GeneratedValue(strategy="AUTO")
      * @var int
      */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="GH7512EntityA", inversedBy="entityCs")
      * @var GH7512EntityA
      */
+    #[ManyToOne(targetEntity: 'GH7512EntityA', inversedBy: 'entityCs')]
     public $entityA;
 }

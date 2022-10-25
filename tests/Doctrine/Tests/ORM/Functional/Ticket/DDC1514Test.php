@@ -67,33 +67,33 @@ class DDC1514Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1514EntityA
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var string
-     * @Column
      */
+    #[Column]
     public $title;
 
     /**
      * @psalm-var Collection<int, DDC1514EntityB>
-     * @ManyToMany(targetEntity="DDC1514EntityB", mappedBy="entityAFrom")
      */
+    #[ManyToMany(targetEntity: 'DDC1514EntityB', mappedBy: 'entityAFrom')]
     public $entitiesB;
 
     /**
      * @var DDC1514EntityC
-     * @ManyToOne(targetEntity="DDC1514EntityC")
      */
+    #[ManyToOne(targetEntity: 'DDC1514EntityC')]
     public $entityC;
 
     public function __construct()
@@ -102,43 +102,43 @@ class DDC1514EntityA
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1514EntityB
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var DDC1514EntityA
-     * @ManyToOne(targetEntity="DDC1514EntityA", inversedBy="entitiesB")
      */
+    #[ManyToOne(targetEntity: 'DDC1514EntityA', inversedBy: 'entitiesB')]
     public $entityAFrom;
     /**
      * @var DDC1514EntityA
-     * @ManyToOne(targetEntity="DDC1514EntityA")
      */
+    #[ManyToOne(targetEntity: 'DDC1514EntityA')]
     public $entityATo;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1514EntityC
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var string
-     * @Column
      */
+    #[Column]
     public $title;
 }

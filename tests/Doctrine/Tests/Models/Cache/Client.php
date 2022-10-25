@@ -10,22 +10,20 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table("cache_client")
- */
+#[Table('cache_client')]
+#[Entity]
 class Client
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     public function __construct(
-        /** @Column(unique=true) */
+        #[Column(unique: true)]
         public string $name,
     ) {
     }

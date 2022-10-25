@@ -10,24 +10,22 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="keyboard")
- */
+#[Table(name: 'keyboard')]
+#[Entity]
 final class Keyboard
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="NONE")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'NONE')]
     private $id;
 
     /**
      * @var string
-     * @Column(type="string", length=255);
      */
+    #[Column(type: 'string', length: 255)]
     private $name;
 
     public function __construct(int $id, string $name)

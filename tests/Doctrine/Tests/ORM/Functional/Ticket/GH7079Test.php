@@ -82,45 +82,41 @@ final class GH7079Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="cms_users", schema="cms")
- */
+#[Table(name: 'cms_users', schema: 'cms')]
+#[Entity]
 class GH7079CmsUser
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var GH7079CmsAddress
-     * @OneToOne(targetEntity=GH7079CmsAddress::class, mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      */
+    #[OneToOne(targetEntity: GH7079CmsAddress::class, mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
     public $address;
 }
 
-/**
- * @Entity
- * @Table(name="cms_addresses", schema="cms")
- */
+#[Table(name: 'cms_addresses', schema: 'cms')]
+#[Entity]
 class GH7079CmsAddress
 {
     /**
      * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
      */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var GH7079CmsUser
-     * @OneToOne(targetEntity=GH7079CmsUser::class, inversedBy="address")
-     * @JoinColumn(referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: GH7079CmsUser::class, inversedBy: 'address')]
+    #[JoinColumn(referencedColumnName: 'id')]
     public $user;
 }

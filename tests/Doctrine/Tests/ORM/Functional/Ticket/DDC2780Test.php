@@ -50,39 +50,39 @@ class DDC2780Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2780User
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC2780Project")
      * @var DDC2780Project
      */
+    #[ManyToOne(targetEntity: 'DDC2780Project')]
     public $project;
 }
 
-/** @Entity */
+#[Entity]
 class DDC2780Project
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
-     * @OneToMany(targetEntity="DDC2780User", mappedBy="project")
      * @var DDC2780User[]
      */
+    #[OneToMany(targetEntity: 'DDC2780User', mappedBy: 'project')]
     public $users;
 
     /** Constructor */

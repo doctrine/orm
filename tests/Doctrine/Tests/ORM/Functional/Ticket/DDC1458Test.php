@@ -57,27 +57,27 @@ class DDC1458Test extends OrmFunctionalTestCase
 }
 
 
-/** @Entity */
+#[Entity]
 class TestEntity
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
     /**
      * @var int
-     * @Column(type="integer")
      */
+    #[Column(type: 'integer')]
     protected $value;
 
     /**
      * @var TestAdditionalEntity
-     * @OneToOne(targetEntity="TestAdditionalEntity", inversedBy="entity", orphanRemoval=true, cascade={"persist", "remove"})
      */
+    #[OneToOne(targetEntity: 'TestAdditionalEntity', inversedBy: 'entity', orphanRemoval: true, cascade: ['persist', 'remove'])]
     protected $additional;
 
     public function getValue(): int
@@ -100,26 +100,26 @@ class TestEntity
         $this->additional = $additional;
     }
 }
-/** @Entity */
+#[Entity]
 class TestAdditionalEntity
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
     /**
      * @var TestEntity
-     * @OneToOne(targetEntity="TestEntity", mappedBy="additional")
      */
+    #[OneToOne(targetEntity: 'TestEntity', mappedBy: 'additional')]
     protected $entity;
 
     /**
      * @var bool
-     * @Column(type="boolean")
      */
+    #[Column(type: 'boolean')]
     protected $bool;
 
     public function __construct()

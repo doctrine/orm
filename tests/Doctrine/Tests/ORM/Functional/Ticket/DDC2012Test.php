@@ -82,37 +82,30 @@ class DDC2012Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Table(name="ddc2010_item")
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type_id", type="smallint")
- * @DiscriminatorMap({
- *      1 = "DDC2012ItemPerson",
- *      2 = "DDC2012Item"
- * })
- */
+#[Table(name: 'ddc2010_item')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'type_id', type: 'smallint')]
+#[DiscriminatorMap([1 => 'DDC2012ItemPerson', 2 => 'DDC2012Item'])]
 class DDC2012Item
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
      * @psalm-var list<string>
-     * @Column(name="tsv", type="tsvector", length=255, nullable=true)
      */
+    #[Column(name: 'tsv', type: 'tsvector', length: 255, nullable: true)]
     public $tsv;
 }
 
-/**
- * @Table(name="ddc2010_item_person")
- * @Entity
- */
+#[Table(name: 'ddc2010_item_person')]
+#[Entity]
 class DDC2012ItemPerson extends DDC2012Item
 {
 }

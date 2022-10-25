@@ -13,27 +13,26 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * Represents a board in a forum.
- *
- * @Entity
- * @Table(name="forum_boards")
  */
+#[Table(name: 'forum_boards')]
+#[Entity]
 class ForumBoard
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
      */
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
     /**
      * @var int
-     * @Column(type="integer")
      */
+    #[Column(type: 'integer')]
     public $position;
     /**
      * @var ForumCategory
-     * @ManyToOne(targetEntity="ForumCategory", inversedBy="boards")
-     * @JoinColumn(name="category_id", referencedColumnName="id")
      */
+    #[ManyToOne(targetEntity: 'ForumCategory', inversedBy: 'boards')]
+    #[JoinColumn(name: 'category_id', referencedColumnName: 'id')]
     public $category;
 }

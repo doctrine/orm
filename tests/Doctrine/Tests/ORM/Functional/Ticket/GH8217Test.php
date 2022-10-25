@@ -43,22 +43,21 @@ final class GH8217Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH8217Collection
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @psalm-var Collection<int, GH8217CollectionItem>
-     * @OneToMany(targetEntity="GH8217CollectionItem", mappedBy="collection",
-     *     cascade={"persist", "remove"}, orphanRemoval=true)
      */
+    #[OneToMany(targetEntity: 'GH8217CollectionItem', mappedBy: 'collection', cascade: ['persist', 'remove'], orphanRemoval: true)]
     public $items;
 
     public function __construct()
@@ -72,20 +71,16 @@ class GH8217Collection
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH8217CollectionItem
 {
     public function __construct(
-        /**
-         * @Id
-         * @ManyToOne(targetEntity="GH8217Collection", inversedBy="items")
-         * @JoinColumn(name="id", referencedColumnName="id")
-         */
+        #[Id]
+        #[ManyToOne(targetEntity: 'GH8217Collection', inversedBy: 'items')]
+        #[JoinColumn(name: 'id', referencedColumnName: 'id')]
         public GH8217Collection $collection,
-        /**
-         * @Id
-         * @Column(type="integer", options={"unsigned": true})
-         */
+        #[Id]
+        #[Column(type: 'integer', options: ['unsigned' => true])]
         public int $collectionIndex,
     ) {
     }

@@ -14,35 +14,33 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 
-/** @Entity */
+#[Entity]
 class DDC117Translation
 {
     /**
      * @var Collection<int, DDC117Editor>
-     * @ManyToMany(targetEntity="DDC117Editor", mappedBy="reviewingTranslations")
      */
+    #[ManyToMany(targetEntity: 'DDC117Editor', mappedBy: 'reviewingTranslations')]
     public $reviewedByEditors;
 
     /**
      * @var Collection<int, DDC117Editor>
-     * @OneToMany(targetEntity="DDC117Editor", mappedBy="lastTranslation")
      */
+    #[OneToMany(targetEntity: 'DDC117Editor', mappedBy: 'lastTranslation')]
     public $lastTranslatedBy;
 
     public function __construct(
         /**
          * @var DDC117Article
-         * @Id
-         * @ManyToOne(targetEntity="DDC117Article", inversedBy="translations")
-         * @JoinColumn(name="article_id", referencedColumnName="article_id")
          */
+        #[Id]
+        #[ManyToOne(targetEntity: 'DDC117Article', inversedBy: 'translations')]
+        #[JoinColumn(name: 'article_id', referencedColumnName: 'article_id')]
         private $article,
-        /**
-         * @Id
-         * @Column(type="string", length=255)
-         */
+        #[Id]
+        #[Column(type: 'string', length: 255)]
         private string $language,
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         private string $title,
     ) {
         $this->reviewedByEditors = new ArrayCollection();

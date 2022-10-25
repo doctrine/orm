@@ -11,23 +11,21 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity()
- * @Table(name="one_to_one_inverse_side_load_inverse")
- */
+#[Table(name: 'one_to_one_inverse_side_load_inverse')]
+#[Entity]
 class InverseSide
 {
     /**
      * @var string
-     * @Id()
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="NONE")
      */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
+    #[GeneratedValue(strategy: 'NONE')]
     public $id;
 
     /**
      * @var OwningSide
-     * @OneToOne(targetEntity=OwningSide::class, mappedBy="inverse")
      */
+    #[OneToOne(targetEntity: OwningSide::class, mappedBy: 'inverse')]
     public $owning;
 }

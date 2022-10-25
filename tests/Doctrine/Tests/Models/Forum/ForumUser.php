@@ -12,31 +12,29 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="forum_users")
- */
+#[Table(name: 'forum_users')]
+#[Entity]
 class ForumUser
 {
     /**
      * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
      */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var string
-     * @Column(type="string", length=50)
      */
+    #[Column(type: 'string', length: 50)]
     public $username;
 
     /**
      * @var ForumAvatar
-     * @OneToOne(targetEntity="ForumAvatar", cascade={"persist"})
-     * @JoinColumn(name="avatar_id", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'ForumAvatar', cascade: ['persist'])]
+    #[JoinColumn(name: 'avatar_id', referencedColumnName: 'id')]
     public $avatar;
 
     public function getId(): int

@@ -63,37 +63,33 @@ final class GH7496WithToIterableTest extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7496EntityA
 {
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="integer", name="a_id")
-         */
+        #[Id]
+        #[Column(type: 'integer', name: 'a_id')]
         public int $id,
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         public string $name,
     ) {
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7496EntityB
 {
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="integer", name="b_id")
-         */
+        #[Id]
+        #[Column(type: 'integer', name: 'b_id')]
         public int $id,
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         public string $name,
     ) {
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7496EntityAinB
 {
     /**
@@ -101,20 +97,14 @@ class GH7496EntityAinB
      * @param GH7496EntityB $b
      */
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="integer")
-         */
+        #[Id]
+        #[Column(type: 'integer')]
         public int $id,
-        /**
-         * @ManyToOne(targetEntity=GH7496EntityA::class)
-         * @JoinColumn(name="a_id", referencedColumnName="a_id", nullable=false)
-         */
+        #[ManyToOne(targetEntity: GH7496EntityA::class)]
+        #[JoinColumn(name: 'a_id', referencedColumnName: 'a_id', nullable: false)]
         public $eA,
-        /**
-         * @ManyToOne(targetEntity=GH7496EntityB::class)
-         * @JoinColumn(name="b_id", referencedColumnName="b_id", nullable=false)
-         */
+        #[ManyToOne(targetEntity: GH7496EntityB::class)]
+        #[JoinColumn(name: 'b_id', referencedColumnName: 'b_id', nullable: false)]
         public $eB,
     ) {
     }

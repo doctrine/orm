@@ -33,21 +33,21 @@ final class GH8061Test extends OrmTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 final class GH8061Entity
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var mixed
-     * @Column(type="GH8061Type", length=255)
      */
+    #[Column(type: 'GH8061Type', length: 255)]
     public $field;
 }
 

@@ -1157,32 +1157,29 @@ class User
     }
 }
 
-/**
- * @Entity
- * @Table(
- *  indexes={@Index(name="name_idx", columns={"name"}, fields={"email"})},
- * )
- */
+#[Table]
+#[Index(name: 'name_idx', columns: ['name'], fields: ['email'])]
+#[Entity]
 class UserIncorrectIndex
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      **/
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     /**
      * @var string
-     * @Column
      */
+    #[Column]
     public $name;
 
     /**
      * @var string
-     * @Column(name="user_email")
      */
+    #[Column(name: 'user_email')]
     public $email;
 
     public static function loadMetadata(ClassMetadata $metadata): void
@@ -1216,32 +1213,29 @@ class UserIncorrectIndex
     }
 }
 
-/**
- * @Entity
- * @Table(
- *  uniqueConstraints={@UniqueConstraint(name="name_idx", columns={"name"}, fields={"email"})},
- * )
- */
+#[Table]
+#[UniqueConstraint(name: 'name_idx', columns: ['name'], fields: ['email'])]
+#[Entity]
 class UserIncorrectUniqueConstraint
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      **/
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     /**
      * @var string
-     * @Column
      */
+    #[Column]
     public $name;
 
     /**
      * @var string
-     * @Column(name="user_email")
      */
+    #[Column(name: 'user_email')]
     public $email;
 
     public static function loadMetadata(ClassMetadata $metadata): void

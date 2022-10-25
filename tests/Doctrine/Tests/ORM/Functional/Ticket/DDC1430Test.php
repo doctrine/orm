@@ -139,21 +139,21 @@ class DDC1430Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1430Order
 {
     /**
      * @var int
-     * @Id
-     * @Column(name="order_id", type="integer")
-     * @GeneratedValue()
      */
+    #[Id]
+    #[Column(name: 'order_id', type: 'integer')]
+    #[GeneratedValue]
     protected $id;
 
-    /** @Column(name="created_at", type="datetime") */
+    #[Column(name: 'created_at', type: 'datetime')]
     private DateTime $date;
 
-    /** @OneToMany(targetEntity="DDC1430OrderProduct", mappedBy="order", cascade={"persist", "remove"}) */
+    #[OneToMany(targetEntity: 'DDC1430OrderProduct', mappedBy: 'order', cascade: ['persist', 'remove'])]
     private Collection $products;
 
     public function getId(): int
@@ -162,7 +162,7 @@ class DDC1430Order
     }
 
     public function __construct(
-        /** @Column(name="order_status", type="string", length=255) */
+        #[Column(name: 'order_status', type: 'string', length: 255)]
         private string $status,
     ) {
         $this->date     = new DateTime();
@@ -196,25 +196,23 @@ class DDC1430Order
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1430OrderProduct
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue()
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     protected $id;
 
-    /**
-     * @ManyToOne(targetEntity="DDC1430Order", inversedBy="products")
-     * @JoinColumn(name="order_id", referencedColumnName="order_id", nullable = false)
-     */
+    #[ManyToOne(targetEntity: 'DDC1430Order', inversedBy: 'products')]
+    #[JoinColumn(name: 'order_id', referencedColumnName: 'order_id', nullable: false)]
     private DDC1430Order|null $order = null;
 
     public function __construct(
-        /** @Column(type="float") */
+        #[Column(type: 'float')]
         private float $value,
     ) {
     }

@@ -39,32 +39,30 @@ class DDC1707Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"c": "DDC1707Child"})
- * @HasLifecycleCallbacks
- */
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorMap(['c' => 'DDC1707Child'])]
+#[HasLifecycleCallbacks]
 abstract class DDC1707Base
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     protected $id;
 
     /** @var bool */
     public $postLoad = false;
 
-    /** @PostLoad */
+    #[PostLoad]
     public function onPostLoad(): void
     {
         $this->postLoad = true;
     }
 }
-/** @Entity */
+#[Entity]
 class DDC1707Child extends DDC1707Base
 {
 }

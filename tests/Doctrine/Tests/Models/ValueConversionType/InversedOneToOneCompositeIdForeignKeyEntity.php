@@ -12,36 +12,34 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="vct_inversed_onetoone_compositeid_foreignkey")
- */
+#[Table(name: 'vct_inversed_onetoone_compositeid_foreignkey')]
+#[Entity]
 class InversedOneToOneCompositeIdForeignKeyEntity
 {
     /**
      * @var string
-     * @Column(type="rot13", length=255)
-     * @Id
      */
+    #[Column(type: 'rot13', length: 255)]
+    #[Id]
     public $id1;
 
     /**
      * @var AuxiliaryEntity
-     * @ManyToOne(targetEntity="AuxiliaryEntity")
-     * @JoinColumn(name="foreign_id", referencedColumnName="id4")
-     * @Id
      */
+    #[ManyToOne(targetEntity: 'AuxiliaryEntity')]
+    #[JoinColumn(name: 'foreign_id', referencedColumnName: 'id4')]
+    #[Id]
     public $foreignEntity;
 
     /**
      * @var string
-     * @Column(type="string", length=255, name="some_property")
      */
+    #[Column(type: 'string', length: 255, name: 'some_property')]
     public $someProperty;
 
     /**
      * @var OwningOneToOneCompositeIdForeignKeyEntity
-     * @OneToOne(targetEntity="OwningOneToOneCompositeIdForeignKeyEntity", mappedBy="associatedEntity")
      */
+    #[OneToOne(targetEntity: 'OwningOneToOneCompositeIdForeignKeyEntity', mappedBy: 'associatedEntity')]
     public $associatedEntity;
 }

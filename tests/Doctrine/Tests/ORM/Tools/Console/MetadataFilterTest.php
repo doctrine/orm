@@ -146,68 +146,68 @@ class MetadataFilterTest extends OrmTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class MetadataFilterTestEntityAaa
 {
     /**
      * @var int
-     * @Id
-     * @Column
      */
+    #[Id]
+    #[Column]
     protected $id;
 }
 
-/** @Entity */
+#[Entity]
 class MetadataFilterTestEntityBbb
 {
     /**
      * @var int
-     * @Id
-     * @Column
      */
+    #[Id]
+    #[Column]
     protected $id;
 }
 
-/** @Entity */
+#[Entity]
 class MetadataFilterTestEntityCcc
 {
     /**
      * @var int
-     * @Id
-     * @Column
      */
+    #[Id]
+    #[Column]
     protected $id;
 }
 
-/** @Entity */
+#[Entity]
 class MetadataFilterTestEntityFoo
 {
     /**
      * @var int
-     * @Id
-     * @Column
      */
+    #[Id]
+    #[Column]
     protected $id;
 }
 
-/** @Entity */
+#[Entity]
 class MetadataFilterTestEntityBar
 {
     /**
      * @var int
-     * @Id
-     * @Column
      */
+    #[Id]
+    #[Column]
     protected $id;
 }
 
-/** @Entity */
+#[Entity]
 class MetadataFilterTestEntityFooBar
 {
     /**
      * @var int
-     * @Id
-     * @Column
      */
+    #[Id]
+    #[Column]
     protected $id;
 }

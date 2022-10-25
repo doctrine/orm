@@ -9,24 +9,22 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/** @Entity */
+#[Entity]
 class DDC964Address
 {
-    /**
-     * @GeneratedValue
-     * @Id
-     * @Column(type="integer")
-     */
+    #[GeneratedValue]
+    #[Id]
+    #[Column(type: 'integer')]
     private int $id;
 
     public function __construct(
-        /** @Column */
+        #[Column]
         private string|null $zip = null,
-        /** @Column */
+        #[Column]
         private string|null $country = null,
-        /** @Column */
+        #[Column]
         private string|null $city = null,
-        /** @Column */
+        #[Column]
         private string|null $street = null,
     ) {
     }

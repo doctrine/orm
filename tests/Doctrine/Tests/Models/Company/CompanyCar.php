@@ -10,21 +10,17 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="company_cars")
- */
+#[Table(name: 'company_cars')]
+#[Entity]
 class CompanyCar
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
     public function __construct(
-        /** @Column(type="string", length=50) */
+        #[Column(type: 'string', length: 50)]
         private string|null $brand = null,
     ) {
     }

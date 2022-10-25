@@ -15,26 +15,20 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="company_events")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="event_type", type="string", length=255)
- * @DiscriminatorMap({"auction"="CompanyAuction", "raffle"="CompanyRaffle"})
- */
+#[Table(name: 'company_events')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'event_type', type: 'string', length: 255)]
+#[DiscriminatorMap(['auction' => 'CompanyAuction', 'raffle' => 'CompanyRaffle'])]
 abstract class CompanyEvent
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
-    /**
-     * @ManyToOne(targetEntity="CompanyOrganization", inversedBy="events", cascade={"persist"})
-     * @JoinColumn(name="org_id", referencedColumnName="id")
-     */
+    #[ManyToOne(targetEntity: 'CompanyOrganization', inversedBy: 'events', cascade: ['persist'])]
+    #[JoinColumn(name: 'org_id', referencedColumnName: 'id')]
     private CompanyOrganization|null $organization = null;
 
     public function getId(): int

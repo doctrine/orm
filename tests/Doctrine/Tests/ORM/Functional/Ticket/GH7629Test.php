@@ -49,17 +49,15 @@ class GH7629Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- */
+#[Entity]
+#[ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class GH7629Entity
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }

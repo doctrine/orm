@@ -36,27 +36,18 @@ class DDC960Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({
- *  "root" = "DDC960Root",
- *  "child" = "DDC960Child"
- * })
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorMap(['root' => 'DDC960Root', 'child' => 'DDC960Child'])]
 class DDC960Root
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @Column(type="integer")
-     * @Version
-     */
+    #[Column(type: 'integer')]
+    #[Version]
     private int $version;
 
     public function getId(): int
@@ -70,11 +61,11 @@ class DDC960Root
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC960Child extends DDC960Root
 {
     public function __construct(
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         private string $name,
     ) {
     }

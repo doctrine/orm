@@ -13,24 +13,18 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="issue5989_persons")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string", length=255)
- * @DiscriminatorMap({
- *      "person"    = "Issue5989Person",
- *      "manager"   = "Issue5989Manager",
- *      "employee"  = "Issue5989Employee"
- * })
- */
+#[Table(name: 'issue5989_persons')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string', length: 255)]
+#[DiscriminatorMap(['person' => 'Issue5989Person', 'manager' => 'Issue5989Manager', 'employee' => 'Issue5989Employee'])]
 class Issue5989Person
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }

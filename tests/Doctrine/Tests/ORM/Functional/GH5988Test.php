@@ -92,28 +92,24 @@ class GH5988CustomIdObjectHashType extends DBALType
     }
 }
 
-/**
- * @Entity
- * @Table
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"child" = GH5988CustomIdObjectTypeChild::class})
- */
+#[Table]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'type', type: 'string')]
+#[DiscriminatorMap(['child' => GH5988CustomIdObjectTypeChild::class])]
 abstract class GH5988CustomIdObjectTypeParent
 {
     /**
-     * @Id
-     * @Column(type="Doctrine\Tests\ORM\Functional\GH5988CustomIdObjectHashType", length=255)
      * @var CustomIdObject
      */
+    #[Id]
+    #[Column(type: 'Doctrine\Tests\ORM\Functional\GH5988CustomIdObjectHashType', length: 255)]
     public $id;
 }
 
 
-/**
- * @Entity
- * @Table
- */
+#[Table]
+#[Entity]
 class GH5988CustomIdObjectTypeChild extends GH5988CustomIdObjectTypeParent
 {
     public function __construct(CustomIdObject $id, public string $name)

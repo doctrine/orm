@@ -11,31 +11,29 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Version;
 
-/**
- * @Entity
- * @Table(name="second_entity")
- */
+#[Table(name: 'second_entity')]
+#[Entity]
 class SecondRelatedEntity
 {
     /**
      * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     /**
      * @var string
-     * @Column(name="name")
      */
+    #[Column(name: 'name')]
     public $name;
 
     /**
      * @var int
      * Version column
-     * @Column(type="integer", name="version")
-     * @Version
      */
+    #[Column(type: 'integer', name: 'version')]
+    #[Version]
     public $version;
 }

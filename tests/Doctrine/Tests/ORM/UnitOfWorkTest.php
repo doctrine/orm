@@ -628,31 +628,28 @@ class UnitOfWorkTest extends OrmTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class NotifyChangedEntity implements NotifyPropertyChanged
 {
     /** @psalm-var list<PropertyChangedListener> */
     private array $_listeners = [];
 
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     private $data;
 
     private mixed $transient = null; // not persisted
-
     /**
      * @psalm-var Collection<int, NotifyChangedRelatedItem>
-     * @OneToMany(targetEntity="NotifyChangedRelatedItem", mappedBy="owner")
      */
+    #[OneToMany(targetEntity: 'NotifyChangedRelatedItem', mappedBy: 'owner')]
     private $items;
 
     public function __construct()
@@ -706,17 +703,15 @@ class NotifyChangedEntity implements NotifyPropertyChanged
     }
 }
 
-/** @Entity */
+#[Entity]
 class NotifyChangedRelatedItem
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
-    /** @ManyToOne(targetEntity="NotifyChangedEntity", inversedBy="items") */
+    #[ManyToOne(targetEntity: 'NotifyChangedEntity', inversedBy: 'items')]
     private NotifyChangedEntity|null $owner = null;
 
     public function getId(): int
@@ -735,78 +730,78 @@ class NotifyChangedRelatedItem
     }
 }
 
-/** @Entity */
+#[Entity]
 class VersionedAssignedIdentifierEntity
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
      */
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
      * @var int
-     * @Version
-     * @Column(type="integer")
      */
+    #[Version]
+    #[Column(type: 'integer')]
     public $version;
 }
 
-/** @Entity */
+#[Entity]
 class EntityWithStringIdentifier
 {
     /**
-     * @Id
-     * @Column(type="string", length=255)
      * @var string|null
      */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class EntityWithBooleanIdentifier
 {
     /**
-     * @Id
-     * @Column(type="boolean")
      * @var bool|null
      */
+    #[Id]
+    #[Column(type: 'boolean')]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class EntityWithCompositeStringIdentifier
 {
     /**
-     * @Id
-     * @Column(type="string", length=255)
      * @var string|null
      */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
     public $id1;
 
     /**
-     * @Id
-     * @Column(type="string", length=255)
      * @var string|null
      */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
     public $id2;
 }
 
-/** @Entity */
+#[Entity]
 class EntityWithRandomlyGeneratedField
 {
     /**
      * @var string
-     * @Id
-     * @Column(type="string", length=255)
      */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
     public $id;
 
     /**
      * @var int
-     * @Column(type="integer")
      */
+    #[Column(type: 'integer')]
     public $generatedField;
 
     public function __construct()
@@ -816,14 +811,12 @@ class EntityWithRandomlyGeneratedField
     }
 }
 
-/** @Entity */
+#[Entity]
 class CascadePersistedEntity
 {
-    /**
-     * @Id
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="NONE")
-     */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
+    #[GeneratedValue(strategy: 'NONE')]
     private string $id;
 
     public function __construct()
@@ -832,20 +825,18 @@ class CascadePersistedEntity
     }
 }
 
-/** @Entity */
+#[Entity]
 class EntityWithCascadingAssociation
 {
-    /**
-     * @Id
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="NONE")
-     */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
+    #[GeneratedValue(strategy: 'NONE')]
     private string $id;
 
     /**
      * @var CascadePersistedEntity|null
-     * @ManyToOne(targetEntity=CascadePersistedEntity::class, cascade={"persist"})
      */
+    #[ManyToOne(targetEntity: CascadePersistedEntity::class, cascade: ['persist'])]
     public $cascaded;
 
     public function __construct()
@@ -854,20 +845,18 @@ class EntityWithCascadingAssociation
     }
 }
 
-/** @Entity */
+#[Entity]
 class EntityWithNonCascadingAssociation
 {
-    /**
-     * @Id
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="NONE")
-     */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
+    #[GeneratedValue(strategy: 'NONE')]
     private string $id;
 
     /**
      * @var CascadePersistedEntity|null
-     * @ManyToOne(targetEntity=CascadePersistedEntity::class)
      */
+    #[ManyToOne(targetEntity: CascadePersistedEntity::class)]
     public $nonCascaded;
 
     public function __construct()

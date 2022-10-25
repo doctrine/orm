@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools;
 
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -221,354 +222,329 @@ class SchemaValidatorTest extends OrmTestCase
     }
 }
 
-/** @MappedSuperclass */
+#[MappedSuperclass]
 abstract class MappedSuperclassEntity extends ParentEntity
 {
 }
 
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"child" = ChildEntity::class})
- */
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorMap(['child' => ChildEntity::class])]
 abstract class ParentEntity
 {
     /**
      * @var mixed
-     * @Id
-     * @Column
      */
+    #[Id]
+    #[Column]
     protected $key;
 }
 
-/** @Entity */
+#[Entity]
 class ChildEntity extends MappedSuperclassEntity
 {
 }
 
-/** @Entity */
+#[Entity]
 class InvalidEntity1
 {
     /**
      * @var mixed
-     * @Id
-     * @Column
      */
+    #[Id]
+    #[Column]
     protected $key1;
 
     /**
      * @var mixed
-     * @Id
-     * @Column
      */
+    #[Id]
+    #[Column]
     protected $key2;
 
     /**
      * @var ArrayCollection
-     * @ManyToMany (targetEntity="InvalidEntity2")
-     * @JoinTable (name="Entity1Entity2",
-     *      joinColumns={@JoinColumn(name="key1", referencedColumnName="key1")},
-     *      inverseJoinColumns={@JoinColumn(name="key3", referencedColumnName="key3")}
-     * )
      */
+    #[JoinTable(name: 'Entity1Entity2')]
+    #[JoinColumn(name: 'key1', referencedColumnName: 'key1')]
+    #[InverseJoinColumn(name: 'key3', referencedColumnName: 'key3')]
+    #[ManyToMany(targetEntity: 'InvalidEntity2')]
     protected $entity2;
 }
 
-/** @Entity */
+#[Entity]
 class InvalidEntity2
 {
     /**
      * @var mixed
-     * @Id
-     * @Column
      */
+    #[Id]
+    #[Column]
     protected $key3;
 
     /**
      * @var mixed
-     * @Id
-     * @Column
      */
+    #[Id]
+    #[Column]
     protected $key4;
 
     /**
      * @var InvalidEntity1
-     * @ManyToOne(targetEntity="InvalidEntity1")
      */
+    #[ManyToOne(targetEntity: 'InvalidEntity1')]
     protected $assoc;
 }
 
-/**
- * @Entity(repositoryClass="Entity\Repository\Agent")
- * @Table(name="agent")
- */
+#[Table(name: 'agent')]
+#[Entity(repositoryClass: 'Entity\Repository\Agent')]
 class DDC1587ValidEntity1
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(name="pk", type="integer")
-     */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(name: 'pk', type: 'integer')]
     private int $pk;
 
-    /** @Column(name="name", type="string", length=32) */
+    #[Column(name: 'name', type: 'string', length: 32)]
     private string $name;
 
     /**
      * @var Identifier
-     * @OneToOne(targetEntity="DDC1587ValidEntity2", cascade={"all"}, mappedBy="agent")
-     * @JoinColumn(name="pk", referencedColumnName="pk_agent")
      */
+    #[OneToOne(targetEntity: 'DDC1587ValidEntity2', cascade: ['all'], mappedBy: 'agent')]
+    #[JoinColumn(name: 'pk', referencedColumnName: 'pk_agent')]
     private $identifier;
 }
 
-/**
- * @Entity
- * @Table
- */
+#[Table]
+#[Entity]
 class DDC1587ValidEntity2
 {
-    /**
-     * @Id
-     * @OneToOne(targetEntity="DDC1587ValidEntity1", inversedBy="identifier")
-     * @JoinColumn(name="pk_agent", referencedColumnName="pk", nullable=false)
-     */
+    #[Id]
+    #[OneToOne(targetEntity: 'DDC1587ValidEntity1', inversedBy: 'identifier')]
+    #[JoinColumn(name: 'pk_agent', referencedColumnName: 'pk', nullable: false)]
     private DDC1587ValidEntity1 $agent;
 
-    /** @Column(name="num", type="string", length=16, nullable=true) */
+    #[Column(name: 'num', type: 'string', length: 16, nullable: true)]
     private string $num;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1649One
 {
     /**
      * @var mixed
-     * @Id
-     * @Column
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column]
+    #[GeneratedValue]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1649Two
 {
     /**
      * @var DDC1649One
-     * @Id @ManyToOne(targetEntity="DDC1649One")
      */
+    #[Id]
     public $one;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1649Three
 {
-    /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC1649Two")
-     * @JoinColumn(name="id", referencedColumnName="id")
-     */
+    #[Id]
+    #[ManyToOne(targetEntity: 'DDC1649Two')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'id')]
     private DDC1649Two $two;
 }
 
-/** @Entity */
+#[Entity]
 class DDC3274One
 {
     /**
      * @var mixed
-     * @Id
-     * @Column
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column]
+    #[GeneratedValue]
     private $id;
 
-    /** @OneToMany(targetEntity="DDC3274Two", mappedBy="one") */
+    #[OneToMany(targetEntity: 'DDC3274Two', mappedBy: 'one')]
     private ArrayCollection $two;
 }
 
-/** @Entity */
+#[Entity]
 class DDC3274Two
 {
-    /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC3274One")
-     */
+    #[Id]
+    #[ManyToOne(targetEntity: 'DDC3274One')]
     private DDC3274One $one;
 }
 
-/** @Entity */
+#[Entity]
 class Issue9536Target
 {
     /**
      * @var mixed
-     * @Id
-     * @Column
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column]
+    #[GeneratedValue]
     private $id;
 
-    /** @OneToOne(targetEntity="Issue9536Owner") */
+    #[OneToOne(targetEntity: 'Issue9536Owner')]
     private Issue9536Owner $two;
 }
 
-/** @Entity */
+#[Entity]
 class Issue9536Owner
 {
     /**
      * @var mixed
-     * @Id
-     * @Column
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column]
+    #[GeneratedValue]
     private $id;
 
-    /** @OneToOne(targetEntity="Issue9536Target", inversedBy="two") */
+    #[OneToOne(targetEntity: 'Issue9536Target', inversedBy: 'two')]
     private Issue9536Target $one;
 }
 
-/** @Entity */
+#[Entity]
 class DDC3322ValidEntity1
 {
     /**
      * @var mixed
-     * @Id
-     * @Column
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column]
+    #[GeneratedValue]
     private $id;
 
-    /** @ManyToOne(targetEntity="DDC3322One", inversedBy="validAssoc") */
+    #[ManyToOne(targetEntity: 'DDC3322One', inversedBy: 'validAssoc')]
     private DDC3322One $oneValid;
 
-    /** @ManyToOne(targetEntity="DDC3322One", inversedBy="invalidAssoc") */
+    #[ManyToOne(targetEntity: 'DDC3322One', inversedBy: 'invalidAssoc')]
     private DDC3322One $oneInvalid;
 
-    /** @ManyToOne(targetEntity="DDC3322Two", inversedBy="validAssoc") */
+    #[ManyToOne(targetEntity: 'DDC3322Two', inversedBy: 'validAssoc')]
     private DDC3322Two $twoValid;
 
-    /** @ManyToOne(targetEntity="DDC3322Two", inversedBy="invalidAssoc") */
+    #[ManyToOne(targetEntity: 'DDC3322Two', inversedBy: 'invalidAssoc')]
     private DDC3322Two $twoInvalid;
 
-    /** @ManyToOne(targetEntity="DDC3322Three", inversedBy="validAssoc") */
+    #[ManyToOne(targetEntity: 'DDC3322Three', inversedBy: 'validAssoc')]
     private DDC3322Three $threeValid;
 
-    /** @ManyToOne(targetEntity="DDC3322Three", inversedBy="invalidAssoc") */
+    #[ManyToOne(targetEntity: 'DDC3322Three', inversedBy: 'invalidAssoc')]
     private DDC3322Three $threeInvalid;
 
-    /** @OneToMany(targetEntity="DDC3322ValidEntity2", mappedBy="manyToOne") */
+    #[OneToMany(targetEntity: 'DDC3322ValidEntity2', mappedBy: 'manyToOne')]
     private DDC3322ValidEntity2 $oneToMany;
 
-    /** @ManyToOne(targetEntity="DDC3322ValidEntity2", inversedBy="oneToMany") */
+    #[ManyToOne(targetEntity: 'DDC3322ValidEntity2', inversedBy: 'oneToMany')]
     private DDC3322ValidEntity2 $manyToOne;
 
-    /** @OneToOne(targetEntity="DDC3322ValidEntity2", mappedBy="oneToOneOwning") */
+    #[OneToOne(targetEntity: 'DDC3322ValidEntity2', mappedBy: 'oneToOneOwning')]
     private DDC3322ValidEntity2 $oneToOneInverse;
 
-    /** @OneToOne(targetEntity="DDC3322ValidEntity2", inversedBy="oneToOneInverse") */
+    #[OneToOne(targetEntity: 'DDC3322ValidEntity2', inversedBy: 'oneToOneInverse')]
     private DDC3322ValidEntity2 $oneToOneOwning;
 }
 
-/** @Entity */
+#[Entity]
 class DDC3322ValidEntity2
 {
-    /**
-     * @Id
-     * @Column
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column]
+    #[GeneratedValue]
     private int $id;
 
-    /** @ManyToOne(targetEntity="DDC3322ValidEntity1", inversedBy="oneToMany") */
+    #[ManyToOne(targetEntity: 'DDC3322ValidEntity1', inversedBy: 'oneToMany')]
     private DDC3322ValidEntity1 $manyToOne;
 
-    /** @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="manyToOne") */
+    #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'manyToOne')]
     private DDC3322ValidEntity1 $oneToMany;
 
-    /** @OneToOne(targetEntity="DDC3322ValidEntity1", inversedBy="oneToOneInverse") */
+    #[OneToOne(targetEntity: 'DDC3322ValidEntity1', inversedBy: 'oneToOneInverse')]
     private DDC3322ValidEntity1 $oneToOneOwning;
 
-    /** @OneToOne(targetEntity="DDC3322ValidEntity1", mappedBy="oneToOneOwning") */
+    #[OneToOne(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'oneToOneOwning')]
     private DDC3322ValidEntity1 $oneToOneInverse;
 }
 
-/** @Entity */
+#[Entity]
 class DDC3322One
 {
-    /**
-     * @Id
-     * @Column
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column]
+    #[GeneratedValue]
     private int $id;
 
     /**
      * @psalm-var Collection<int, DDC3322ValidEntity1>
-     * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="oneValid")
-     * @OrderBy({"id" = "ASC"})
      */
+    #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'oneValid')]
+    #[OrderBy(['id' => 'ASC'])]
     private $validAssoc;
 
     /**
      * @psalm-var Collection<int, DDC3322ValidEntity1>
-     * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="oneInvalid")
-     * @OrderBy({"invalidField" = "ASC"})
      */
+    #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'oneInvalid')]
+    #[OrderBy(['invalidField' => 'ASC'])]
     private $invalidAssoc;
 }
 
-/** @Entity */
+#[Entity]
 class DDC3322Two
 {
-    /**
-     * @Id
-     * @Column
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column]
+    #[GeneratedValue]
     private int $id;
 
     /**
      * @psalm-var Collection<int, DDC3322ValidEntity1>
-     * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="twoValid")
-     * @OrderBy({"manyToOne" = "ASC"})
      */
+    #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'twoValid')]
+    #[OrderBy(['manyToOne' => 'ASC'])]
     private $validAssoc;
 
     /**
      * @psalm-var Collection<int, DDC3322ValidEntity1>
-     * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="twoInvalid")
-     * @OrderBy({"oneToMany" = "ASC"})
      */
+    #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'twoInvalid')]
+    #[OrderBy(['oneToMany' => 'ASC'])]
     private $invalidAssoc;
 }
 
-/** @Entity */
+#[Entity]
 class DDC3322Three
 {
-    /**
-     * @Id
-     * @Column
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column]
+    #[GeneratedValue]
     private int $id;
 
-    /**
-     * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="threeValid")
-     * @OrderBy({"oneToOneOwning" = "ASC"})
-     */
+    #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'threeValid')]
+    #[OrderBy(['oneToOneOwning' => 'ASC'])]
     private DDC3322ValidEntity1 $validAssoc;
 
     /**
      * @psalm-var Collection<int, DDC3322ValidEntity1>
-     * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="threeInvalid")
-     * @OrderBy({"oneToOneInverse" = "ASC"})
      */
+    #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'threeInvalid')]
+    #[OrderBy(['oneToOneInverse' => 'ASC'])]
     private $invalidAssoc;
 }
 
-/** @Embeddable */
+#[Embeddable]
 class EmbeddableWithAssociation
 {
-    /** @OneToOne(targetEntity="Doctrine\Tests\Models\ECommerce\ECommerceCart") */
+    #[OneToOne(targetEntity: 'Doctrine\Tests\Models\ECommerce\ECommerceCart')]
     private ECommerceCart $cart;
 }

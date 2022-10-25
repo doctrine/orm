@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
@@ -51,34 +52,31 @@ class DDC211Test extends OrmFunctionalTestCase
 }
 
 
-/**
- * @Entity
- * @Table(name="ddc211_users")
- */
+#[Table(name: 'ddc211_users')]
+#[Entity]
 class DDC211User
 {
     /**
      * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
     /**
      * @var string
-     * @Column(name="name", type="string", length=255)
      */
+    #[Column(name: 'name', type: 'string', length: 255)]
     protected $name;
 
     /**
      * @psalm-var Collection<int, DDC211Group>
-     * @ManyToMany(targetEntity="DDC211Group", inversedBy="users")
-     *   @JoinTable(name="user_groups",
-     *       joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     *       inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
-     *   )
      */
+    #[JoinTable(name: 'user_groups')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'DDC211Group', inversedBy: 'users')]
     protected $groups;
 
     public function __construct()
@@ -98,30 +96,28 @@ class DDC211User
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc211_groups")
- */
+#[Table(name: 'ddc211_groups')]
+#[Entity]
 class DDC211Group
 {
     /**
      * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
     /**
      * @var string
-     * @Column(name="name", type="string", length=255)
      */
+    #[Column(name: 'name', type: 'string', length: 255)]
     protected $name;
 
     /**
      * @psalm-var Collection<int, DDC211User>
-     * @ManyToMany(targetEntity="DDC211User", mappedBy="groups")
      */
+    #[ManyToMany(targetEntity: 'DDC211User', mappedBy: 'groups')]
     protected $users;
 
     public function __construct()

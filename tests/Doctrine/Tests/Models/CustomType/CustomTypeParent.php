@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\CustomType;
 
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
@@ -16,47 +17,43 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="customtype_parents")
- */
+#[Table(name: 'customtype_parents')]
+#[Entity]
 class CustomTypeParent
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     /**
      * @var int
-     * @Column(type="negative_to_positive", nullable=true)
      */
+    #[Column(type: 'negative_to_positive', nullable: true)]
     public $customInteger;
 
     /**
      * @var CustomTypeChild
-     * @OneToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeChild", cascade={"persist", "remove"})
      */
+    #[OneToOne(targetEntity: 'Doctrine\Tests\Models\CustomType\CustomTypeChild', cascade: ['persist', 'remove'])]
     public $child;
 
     /**
      * @psalm-var Collection<int, CustomTypeParent>
-     * @ManyToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeParent", mappedBy="myFriends")
      */
+    #[ManyToMany(targetEntity: 'Doctrine\Tests\Models\CustomType\CustomTypeParent', mappedBy: 'myFriends')]
     private $friendsWithMe;
 
     /**
      * @psalm-var Collection<int, CustomTypeParent>
-     * @ManyToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeParent", inversedBy="friendsWithMe")
-     * @JoinTable(
-     *     name="customtype_parent_friends",
-     *     joinColumns={@JoinColumn(name="customtypeparent_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="friend_customtypeparent_id", referencedColumnName="id")}
-     * )
      */
+    #[JoinTable(name: 'customtype_parent_friends')]
+    #[JoinColumn(name: 'customtypeparent_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'friend_customtypeparent_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'Doctrine\Tests\Models\CustomType\CustomTypeParent', inversedBy: 'friendsWithMe')]
     private $myFriends;
 
     public function __construct()

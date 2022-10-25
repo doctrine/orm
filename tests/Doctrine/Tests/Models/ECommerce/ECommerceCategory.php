@@ -19,38 +19,33 @@ use Doctrine\ORM\Mapping\Table;
 /**
  * ECommerceCategory
  * Represents a tag applied on particular products.
- *
- * @Entity
- * @Table(name="ecommerce_categories")
  */
+#[Table(name: 'ecommerce_categories')]
+#[Entity]
 class ECommerceCategory
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @Column(type="string", length=50) */
+    #[Column(type: 'string', length: 50)]
     private string|null $name = null;
 
     /**
      * @psalm-var Collection<int, ECommerceProduct>
-     * @ManyToMany(targetEntity="ECommerceProduct", mappedBy="categories")
      */
+    #[ManyToMany(targetEntity: 'ECommerceProduct', mappedBy: 'categories')]
     private $products;
 
     /**
      * @psalm-var Collection<int, ECommerceCategory>
-     * @OneToMany(targetEntity="ECommerceCategory", mappedBy="parent", cascade={"persist"})
      */
+    #[OneToMany(targetEntity: 'ECommerceCategory', mappedBy: 'parent', cascade: ['persist'])]
     private $children;
 
-    /**
-     * @ManyToOne(targetEntity="ECommerceCategory", inversedBy="children")
-     * @JoinColumn(name="parent_id", referencedColumnName="id")
-     */
+    #[ManyToOne(targetEntity: 'ECommerceCategory', inversedBy: 'children')]
+    #[JoinColumn(name: 'parent_id', referencedColumnName: 'id')]
     private ECommerceCategory|null $parent = null;
 
     public function __construct()

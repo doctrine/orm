@@ -73,22 +73,21 @@ final class GH9807Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH9807Main
 {
     /**
      * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
      */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     private $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="GH9807Join", inversedBy="starts")
-     *
      * @var Collection<int, GH9807Join>
      */
+    #[ORM\ManyToMany(targetEntity: 'GH9807Join', inversedBy: 'starts')]
     private $joins;
 
     /** @return Collection<int, GH9807Join> */
@@ -98,28 +97,26 @@ class GH9807Main
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH9807Join
 {
     /**
      * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
      */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     private $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="GH9807Main", mappedBy="bases")
-     *
      * @var Collection<int, GH9807Main>
      */
+    #[ORM\ManyToMany(targetEntity: 'GH9807Main', mappedBy: 'bases')]
     private $mains;
 
     /**
-     * @ORM\Column(type="string", nullable=false)
-     *
      * @var string
      */
+    #[ORM\Column(type: 'string', nullable: false)]
     private $value;
 }

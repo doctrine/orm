@@ -133,33 +133,32 @@ class DDC1654Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1654Post
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @psalm-var Collection<int, DDC1654Comment>
-     * @ManyToMany(targetEntity="DDC1654Comment", orphanRemoval=true,
-     * cascade={"persist"})
      */
+    #[ManyToMany(targetEntity: 'DDC1654Comment', orphanRemoval: true, cascade: ['persist'])]
     public $comments = [];
 }
 
-/** @Entity */
+#[Entity]
 class DDC1654Comment
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }

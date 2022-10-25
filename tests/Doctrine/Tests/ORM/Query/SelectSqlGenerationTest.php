@@ -2194,32 +2194,32 @@ class MyAbsFunction extends FunctionNode
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }
-/** @Entity */
+#[Entity]
 class DDC1384Model
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     protected $aVeryLongIdentifierThatShouldBeShortenedByTheSQLWalkerFooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo;
 }
 
 
-/** @Entity */
+#[Entity]
 class DDC1474Entity
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue()
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     protected $id;
 
     public function __construct(
-        /** @Column(type="float") */
+        #[Column(type: 'float')]
         private string $value,
     ) {
     }

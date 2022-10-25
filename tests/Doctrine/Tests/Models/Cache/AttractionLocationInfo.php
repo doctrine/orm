@@ -8,16 +8,14 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table("cache_attraction_location_info")
- */
+#[Table('cache_attraction_location_info')]
+#[Entity]
 class AttractionLocationInfo extends AttractionInfo
 {
     /**
      * @var string
-     * @Column(unique=true)
      */
+    #[Column(unique: true)]
     protected $address;
 
     public function __construct(string $address, Attraction $attraction)

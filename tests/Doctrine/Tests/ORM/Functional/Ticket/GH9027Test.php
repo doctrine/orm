@@ -39,39 +39,39 @@ class GH9027Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH9027Customer
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var GH9027Cart
-     * @OneToOne(targetEntity="GH9027Cart", mappedBy="customer")
      */
+    #[OneToOne(targetEntity: 'GH9027Cart', mappedBy: 'customer')]
     public $cart;
 }
 
-/** @Entity */
+#[Entity]
 class GH9027Cart
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var GH9027Customer
-     * @OneToOne(targetEntity="GH9027Customer", inversedBy="cart")
-     * @JoinColumn(name="customer", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'GH9027Customer', inversedBy: 'cart')]
+    #[JoinColumn(name: 'customer', referencedColumnName: 'id')]
     public $customer;
 }

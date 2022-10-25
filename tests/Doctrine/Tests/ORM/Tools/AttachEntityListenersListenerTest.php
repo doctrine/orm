@@ -112,30 +112,28 @@ class AttachEntityListenersListenerTest extends OrmTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class AttachEntityListenersListenerTestFooEntity
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }
 
-/**
- * @Entity
- * @EntityListeners({"AttachEntityListenersListenerTestListener"})
- */
+#[Entity]
+#[EntityListeners(['AttachEntityListenersListenerTestListener'])]
 class AttachEntityListenersListenerTestBarEntity
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }
 

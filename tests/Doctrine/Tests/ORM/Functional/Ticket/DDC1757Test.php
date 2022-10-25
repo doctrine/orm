@@ -39,54 +39,50 @@ class DDC1757Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1757A
 {
-    /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1757B
 {
-    /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @OneToOne(targetEntity="DDC1757C") */
+    #[OneToOne(targetEntity: 'DDC1757C')]
     private DDC1757C $c;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1757C
 {
     /**
      * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /** @OneToOne(targetEntity="DDC1757D") */
+    #[OneToOne(targetEntity: 'DDC1757D')]
     private DDC1757D $d;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1757D
 {
     /**
      * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }

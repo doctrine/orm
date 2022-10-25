@@ -11,34 +11,30 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="forum_categories")
- */
+#[Table(name: 'forum_categories')]
+#[Entity]
 class ForumCategory
 {
-    /**
-     * @Column(type="integer")
-     * @Id
-     */
+    #[Column(type: 'integer')]
+    #[Id]
     private int $id;
 
     /**
      * @var int
-     * @Column(type="integer")
      */
+    #[Column(type: 'integer')]
     public $position;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
     /**
      * @psalm-var Collection<int, ForumBoard>
-     * @OneToMany(targetEntity="ForumBoard", mappedBy="category")
      */
+    #[OneToMany(targetEntity: 'ForumBoard', mappedBy: 'category')]
     public $boards;
 
     public function getId(): int

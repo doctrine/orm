@@ -9,20 +9,20 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/** @Entity(repositoryClass = "Doctrine\Tests\Models\DDC753\DDC753CustomRepository") */
+#[Entity(repositoryClass: 'Doctrine\Tests\Models\DDC753\DDC753CustomRepository')]
 class DDC753EntityWithCustomRepository
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     protected $id;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     protected $name;
 }

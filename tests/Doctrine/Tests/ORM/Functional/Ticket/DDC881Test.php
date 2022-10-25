@@ -102,23 +102,21 @@ class DDC881Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC881User
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @Column(type="string", length=255) */
+    #[Column(type: 'string', length: 255)]
     private string|null $name = null;
 
     /**
      * @psalm-var Collection<int, DDC881PhoneNumber>
-     * @OneToMany(targetEntity="DDC881PhoneNumber",mappedBy="id")
      */
+    #[OneToMany(targetEntity: 'DDC881PhoneNumber', mappedBy: 'id')]
     private $phoneNumbers;
 
     public function getName(): string
@@ -132,28 +130,24 @@ class DDC881User
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC881PhoneNumber
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
     private int|null $id = null;
 
-    /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC881User",cascade={"all"})
-     */
+    #[Id]
+    #[ManyToOne(targetEntity: 'DDC881User', cascade: ['all'])]
     private DDC881User|null $user = null;
 
-    /** @Column(type="string", length=255) */
+    #[Column(type: 'string', length: 255)]
     private string|null $phonenumber = null;
 
     /**
      * @psalm-var Collection<int, DDC881PhoneCall>
-     * @OneToMany(targetEntity="DDC881PhoneCall", mappedBy="phonenumber")
      */
+    #[OneToMany(targetEntity: 'DDC881PhoneCall', mappedBy: 'phonenumber')]
     private $calls;
 
     public function __construct()
@@ -183,26 +177,20 @@ class DDC881PhoneNumber
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC881PhoneCall
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /**
-     * @ManyToOne(targetEntity="DDC881PhoneNumber", inversedBy="calls", cascade={"all"})
-     * @JoinColumns({
-     *  @JoinColumn(name="phonenumber_id", referencedColumnName="id"),
-     *  @JoinColumn(name="user_id", referencedColumnName="user_id")
-     * })
-     */
+    #[JoinColumn(name: 'phonenumber_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'user_id')]
+    #[ManyToOne(targetEntity: 'DDC881PhoneNumber', inversedBy: 'calls', cascade: ['all'])]
     private DDC881PhoneNumber|null $phonenumber = null;
 
-    /** @Column(type="string",nullable=true) */
+    #[Column(type: 'string', nullable: true)]
     private string $callDate;
 
     public function setPhoneNumber(DDC881PhoneNumber $phoneNumber): void

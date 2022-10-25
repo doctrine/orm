@@ -96,23 +96,18 @@ class DDC1655Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({
- *    "foo" = "DDC1655Foo",
- *    "bar" = "DDC1655Bar"
- * })
- * @HasLifecycleCallbacks
- */
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorMap(['foo' => 'DDC1655Foo', 'bar' => 'DDC1655Bar'])]
+#[HasLifecycleCallbacks]
 class DDC1655Foo
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /** @var int */
@@ -120,47 +115,45 @@ class DDC1655Foo
 
     /**
      * @var DDC1655Baz
-     * @ManyToOne(targetEntity="DDC1655Baz", inversedBy="foos")
      */
+    #[ManyToOne(targetEntity: 'DDC1655Baz', inversedBy: 'foos')]
     public $baz;
 
-    /** @PostLoad */
+    #[PostLoad]
     public function postLoad(): void
     {
         $this->loaded++;
     }
 }
 
-/**
- * @Entity
- * @HasLifecycleCallbacks
- */
+#[Entity]
+#[HasLifecycleCallbacks]
 class DDC1655Bar extends DDC1655Foo
 {
     /** @var int */
     public $subLoaded;
 
-    /** @PostLoad */
+    #[PostLoad]
     public function postSubLoaded(): void
     {
         $this->subLoaded++;
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1655Baz
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
      * @psalm-var Collection<int, DDC1655Foo>
-     * @OneToMany(targetEntity="DDC1655Foo", mappedBy="baz")
      */
+    #[OneToMany(targetEntity: 'DDC1655Foo', mappedBy: 'baz')]
     public $foos = [];
 }

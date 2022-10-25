@@ -142,38 +142,33 @@ class GH6141People implements Stringable
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="gh6141people")
- * @DiscriminatorMap({
- *      GH6141People::BOSS     = GH6141Boss::class,
- *      GH6141People::EMPLOYEE = GH6141Employee::class
- * })
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'gh6141people')]
+#[DiscriminatorMap([GH6141People::BOSS => GH6141Boss::class, GH6141People::EMPLOYEE => GH6141Employee::class])]
 abstract class GH6141Person
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     public function __construct(
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         public string $name,
     ) {
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH6141Boss extends GH6141Person
 {
 }
 
-/** @Entity */
+#[Entity]
 class GH6141Employee extends GH6141Person
 {
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Events;
@@ -33,20 +34,19 @@ abstract class CompanyContract
     #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue]
     private int $id;
 
-    /** @ManyToOne(targetEntity="CompanyEmployee", inversedBy="soldContracts") */
+    #[ManyToOne(targetEntity: 'CompanyEmployee', inversedBy: 'soldContracts')]
     private CompanyEmployee|null $salesPerson = null;
 
-    /** @Column(type="boolean") */
+    #[Column(type: 'boolean')]
     private bool $completed = false;
 
     /**
      * @psalm-var Collection<int, CompanyEmployee>
-     * @ManyToMany(targetEntity="CompanyEmployee", inversedBy="contracts")
-     * @JoinTable(name="company_contract_employees",
-     *    joinColumns={@JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
-     *    inverseJoinColumns={@JoinColumn(name="employee_id", referencedColumnName="id")}
-     * )
      */
+    #[JoinTable(name: 'company_contract_employees')]
+    #[JoinColumn(name: 'contract_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[InverseJoinColumn(name: 'employee_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'CompanyEmployee', inversedBy: 'contracts')]
     private $engineers;
 
     public function __construct()

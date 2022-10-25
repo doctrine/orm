@@ -49,28 +49,27 @@ class DDC1300Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1300Foo
 {
     /**
      * @var int fooID
-     * @Column(name="fooID", type="integer", nullable=false)
-     * @GeneratedValue(strategy="AUTO")
-     * @Id
      */
+    #[Column(name: 'fooID', type: 'integer', nullable: false)]
+    #[GeneratedValue(strategy: 'AUTO')]
+    #[Id]
     public $fooID = null;
 
     /**
      * @var string fooReference
-     * @Column(name="fooReference", type="string", nullable=true, length=45)
      */
+    #[Column(name: 'fooReference', type: 'string', nullable: true, length: 45)]
     public $fooReference = null;
 
     /**
      * @psalm-var Collection<int, DDC1300FooLocale>
-     * @OneToMany(targetEntity="DDC1300FooLocale", mappedBy="foo",
-     * cascade={"persist"})
      */
+    #[OneToMany(targetEntity: 'DDC1300FooLocale', mappedBy: 'foo', cascade: ['persist'])]
     public $fooLocaleRefFoo = null;
 
     /** @param mixed[]|null $options */
@@ -80,27 +79,27 @@ class DDC1300Foo
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1300FooLocale
 {
     /**
      * @var DDC1300Foo
-     * @ManyToOne(targetEntity="DDC1300Foo")
-     * @JoinColumn(name="fooID", referencedColumnName="fooID")
-     * @Id
      */
+    #[ManyToOne(targetEntity: 'DDC1300Foo')]
+    #[JoinColumn(name: 'fooID', referencedColumnName: 'fooID')]
+    #[Id]
     public $foo = null;
 
     /**
      * @var string locale
-     * @Column(name="locale", type="string", nullable=false, length=5)
-     * @Id
      */
+    #[Column(name: 'locale', type: 'string', nullable: false, length: 5)]
+    #[Id]
     public $locale = null;
 
     /**
      * @var string title
-     * @Column(name="title", type="string", nullable=true, length=150)
      */
+    #[Column(name: 'title', type: 'string', nullable: true, length: 150)]
     public $title = null;
 }

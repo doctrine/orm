@@ -57,46 +57,42 @@ class DDC371Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC371Child
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $data;
     /**
      * @var DDC371Parent
-     * @ManyToOne(targetEntity="DDC371Parent", inversedBy="children")
-     * @JoinColumn(name="parentId")
      */
+    #[ManyToOne(targetEntity: 'DDC371Parent', inversedBy: 'children')]
+    #[JoinColumn(name: 'parentId')]
     public $parent;
 }
 
-/** @Entity */
+#[Entity]
 class DDC371Parent
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $data;
 
     /**
      * @psalm-var Collection<int, DDC371Child>
-     * @OneToMany(targetEntity="DDC371Child", mappedBy="parent")
      */
+    #[OneToMany(targetEntity: 'DDC371Child', mappedBy: 'parent')]
     public $children;
 }

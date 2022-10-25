@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -40,15 +41,15 @@ class DDC719Test extends OrmFunctionalTestCase
     }
 }
 
-/** @MappedSuperclass */
+#[MappedSuperclass]
 class MyEntity
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     protected $id;
 
     public function getId(): int
@@ -57,38 +58,35 @@ class MyEntity
     }
 }
 
-/**
- * @Entity
- * @Table(name="groups")
- */
+#[Table(name: 'groups')]
+#[Entity]
 class DDC719Group extends MyEntity
 {
     /**
      * @var string
-     * @Column(type="string", nullable=false)
      */
+    #[Column(type: 'string', nullable: false)]
     protected $name;
 
     /**
      * @var string
-     * @Column(type="string", nullable=true)
      */
+    #[Column(type: 'string', nullable: true)]
     protected $description;
 
     /**
      * @psalm-var Collection<int, DDC719Group>
-     * @ManyToMany(targetEntity="DDC719Group", inversedBy="parents")
-     * @JoinTable(name="groups_groups",
-     *      joinColumns={@JoinColumn(name="parent_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="child_id", referencedColumnName="id")}
-     * )
      */
+    #[JoinTable(name: 'groups_groups')]
+    #[JoinColumn(name: 'parent_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'child_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'DDC719Group', inversedBy: 'parents')]
     protected $children = null;
 
     /**
      * @psalm-var Collection<int, DDC719Group>
-     * @ManyToMany(targetEntity="DDC719Group", mappedBy="children")
      */
+    #[ManyToMany(targetEntity: 'DDC719Group', mappedBy: 'children')]
     protected $parents = null;
 
     public function __construct()

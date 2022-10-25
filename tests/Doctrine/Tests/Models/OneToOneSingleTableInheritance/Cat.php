@@ -7,12 +7,12 @@ namespace Doctrine\Tests\Models\OneToOneSingleTableInheritance;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\OneToOne;
 
-/** @Entity */
+#[Entity]
 class Cat extends Pet
 {
     /**
      * @var LitterBox
-     * @OneToOne(targetEntity="LitterBox")
      */
+    #[OneToOne(targetEntity: 'LitterBox')]
     public $litterBox;
 }

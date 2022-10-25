@@ -47,30 +47,28 @@ final class GH7067Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity()
- * @Cache(usage="NONSTRICT_READ_WRITE")
- */
+#[Entity]
+#[Cache(usage: 'NONSTRICT_READ_WRITE')]
 class GH7067Entity
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      * @var int
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
-     * @Column(type="datetime")
      * @var DateTime
      */
+    #[Column(type: 'datetime')]
     public $lastUpdate;
 
     /**
-     * @Column(type="datetime")
-     * @Version
      * @var DateTime
      */
+    #[Column(type: 'datetime')]
+    #[Version]
     public $version;
 }

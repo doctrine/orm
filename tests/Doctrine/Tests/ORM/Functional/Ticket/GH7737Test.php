@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
@@ -57,36 +58,33 @@ class GH7737Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7737Group
 {
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="integer")
-         */
+        #[Id]
+        #[Column(type: 'integer')]
         public int $id,
-        /** @Column */
+        #[Column]
         public string $name,
     ) {
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7737Person
 {
     /**
      * @var Collection<int, GH7737Group>
-     * @ManyToMany(targetEntity=GH7737Group::class)
-     * @JoinTable(inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id", unique=true)})
      */
+    #[JoinTable]
+    #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id', unique: true)]
+    #[ManyToMany(targetEntity: GH7737Group::class)]
     public $groups;
 
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="integer")
-         */
+        #[Id]
+        #[Column(type: 'integer')]
         public int $id,
     ) {
         $this->groups = new ArrayCollection();

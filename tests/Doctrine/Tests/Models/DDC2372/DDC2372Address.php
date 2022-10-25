@@ -11,26 +11,22 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="addresses")
- */
+#[Table(name: 'addresses')]
+#[Entity]
 class DDC2372Address
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @Column(type="string", length=255) */
+    #[Column(type: 'string', length: 255)]
     private string|null $street = null;
 
     /**
      * @var User
-     * @OneToOne(targetEntity="User", mappedBy="address")
      */
+    #[OneToOne(targetEntity: 'User', mappedBy: 'address')]
     private $user;
 
     public function getId(): int

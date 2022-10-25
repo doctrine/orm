@@ -77,18 +77,14 @@ class GH2947Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="GH2947_car")
- */
+#[Table(name: 'GH2947_car')]
+#[Entity]
 class GH2947Car implements Stringable
 {
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="string", length=25)
-         * @GeneratedValue(strategy="NONE")
-         */
+        #[Id]
+        #[Column(type: 'string', length: 25)]
+        #[GeneratedValue(strategy: 'NONE')]
         public string $brand,
     ) {
     }

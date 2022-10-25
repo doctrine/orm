@@ -14,34 +14,32 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table("cache_complex_action")
- */
+#[Table('cache_complex_action')]
+#[Entity]
 class ComplexAction
 {
     /**
      * @psalm-var Collection<int, Token>
-     * @OneToMany(targetEntity="Token", cascade={"persist", "remove"}, mappedBy="complexAction")
      */
+    #[OneToMany(targetEntity: 'Token', cascade: ['persist', 'remove'], mappedBy: 'complexAction')]
     public $tokens;
 
     public function __construct(
         /**
          * @var Action
-         * @Id
-         * @OneToOne(targetEntity="Action", cascade={"persist", "remove"})
-         * @JoinColumn(name="action1_name", referencedColumnName="name")
          */
+        #[Id]
+        #[OneToOne(targetEntity: 'Action', cascade: ['persist', 'remove'])]
+        #[JoinColumn(name: 'action1_name', referencedColumnName: 'name')]
         public $action1,
         /**
          * @var Action
-         * @Id
-         * @OneToOne(targetEntity="Action", cascade={"persist", "remove"})
-         * @JoinColumn(name="action2_name", referencedColumnName="name")
          */
+        #[Id]
+        #[OneToOne(targetEntity: 'Action', cascade: ['persist', 'remove'])]
+        #[JoinColumn(name: 'action2_name', referencedColumnName: 'name')]
         public $action2,
-        /** @Column */
+        #[Column]
         public string $name,
     ) {
         $this->tokens = new ArrayCollection();

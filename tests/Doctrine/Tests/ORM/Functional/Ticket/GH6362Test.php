@@ -88,64 +88,60 @@ final class GH6362Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH6362Start
 {
     /**
      * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
      */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     protected $id;
 
-    /** @ManyToOne(targetEntity="GH6362Base", inversedBy="starts") */
+    #[ManyToOne(targetEntity: 'GH6362Base', inversedBy: 'starts')]
     private GH6362Base $bases;
 }
 
-/**
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"child" = "GH6362Child"})
- * @Entity
- */
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'type', type: 'string')]
+#[DiscriminatorMap(['child' => 'GH6362Child'])]
+#[Entity]
 abstract class GH6362Base
 {
     /**
      * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
      */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     protected $id;
 
     /**
      * @psalm-var Collection<int, GH6362Start>
-     * @OneToMany(targetEntity="GH6362Start", mappedBy="bases")
      */
+    #[OneToMany(targetEntity: 'GH6362Start', mappedBy: 'bases')]
     private $starts;
 }
 
-/** @Entity */
+#[Entity]
 class GH6362Child extends GH6362Base
 {
     /**
      * @psalm-var Collection<int, GH6362Join>
-     * @OneToMany(targetEntity="GH6362Join", mappedBy="child")
      */
+    #[OneToMany(targetEntity: 'GH6362Join', mappedBy: 'child')]
     private $joins;
 }
 
-/** @Entity */
+#[Entity]
 class GH6362Join
 {
-    /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     private int $id;
 
-    /** @ManyToOne(targetEntity="GH6362Child", inversedBy="joins") */
+    #[ManyToOne(targetEntity: 'GH6362Child', inversedBy: 'joins')]
     private GH6362Child $child;
 }

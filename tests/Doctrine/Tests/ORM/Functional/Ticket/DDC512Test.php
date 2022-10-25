@@ -57,15 +57,15 @@ class DDC512Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC512Customer
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     /**
@@ -73,30 +73,28 @@ class DDC512Customer
      * (item = item), this currently confuses Doctrine.
      *
      * @var DDC512OfferItem
-     * @OneToOne(targetEntity="DDC512OfferItem", cascade={"remove","persist"})
-     * @JoinColumn(name="item_id", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'DDC512OfferItem', cascade: ['remove', 'persist'])]
+    #[JoinColumn(name: 'item_id', referencedColumnName: 'id')]
     public $item;
 }
 
-/** @Entity */
+#[Entity]
 class DDC512OfferItem extends DDC512Item
 {
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"item" = "DDC512Item", "offerItem" = "DDC512OfferItem"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['item' => 'DDC512Item', 'offerItem' => 'DDC512OfferItem'])]
 class DDC512Item
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }

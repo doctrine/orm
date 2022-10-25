@@ -12,32 +12,28 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="taxi_driver")
- */
+#[Table(name: 'taxi_driver')]
+#[Entity]
 class Driver
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @Column(type="string", length=255); */
+    #[Column(type: 'string', length: 255)]
     private string|null $name = null;
 
     /**
      * @psalm-var Collection<int, Ride>
-     * @OneToMany(targetEntity="Ride", mappedBy="driver")
      */
+    #[OneToMany(targetEntity: 'Ride', mappedBy: 'driver')]
     private $freeDriverRides;
 
     /**
      * @psalm-var Collection<int, PaidRide>
-     * @OneToMany(targetEntity="PaidRide", mappedBy="driver")
      */
+    #[OneToMany(targetEntity: 'PaidRide', mappedBy: 'driver')]
     private $driverRides;
 
     public function getId(): int

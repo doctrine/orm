@@ -12,29 +12,27 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table("cache_person")
- * @Cache("NONSTRICT_READ_WRITE")
- */
+#[Table('cache_person')]
+#[Entity]
+#[Cache('NONSTRICT_READ_WRITE')]
 class Person
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
      * @var Address
-     * @OneToOne(targetEntity="Address", mappedBy="person")
      */
+    #[OneToOne(targetEntity: 'Address', mappedBy: 'person')]
     public $address;
 
     public function __construct(
-        /** @Column(unique=true) */
+        #[Column(unique: true)]
         public string $name,
     ) {
     }

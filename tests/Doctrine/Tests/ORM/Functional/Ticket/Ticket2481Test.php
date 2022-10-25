@@ -30,17 +30,15 @@ class Ticket2481Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="ticket_2481_products")
- */
+#[Table(name: 'ticket_2481_products')]
+#[Entity]
 class Ticket2481Product
 {
   /**
-   * @var int
-   * @Id
-   * @Column(type="integer")
-   * @GeneratedValue(strategy="AUTO")
-   */
+     * @var int
+     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }

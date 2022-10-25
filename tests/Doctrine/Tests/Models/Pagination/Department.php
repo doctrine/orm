@@ -13,29 +13,28 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * Department
- *
- * @Entity
- * @Table(name="pagination_department")
  */
+#[Table(name: 'pagination_department')]
+#[Entity]
 class Department
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
     /**
      * @var Company
-     * @ManyToOne(targetEntity="Company", inversedBy="departments", cascade={"persist"})
      */
+    #[ManyToOne(targetEntity: 'Company', inversedBy: 'departments', cascade: ['persist'])]
     public $company;
 }

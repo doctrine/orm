@@ -85,54 +85,44 @@ class DDC2660Test extends OrmFunctionalTestCase
         }
     }
 }
-/**
- * @Entity
- * @Table(name="ddc_2660_product")
- */
+#[Table(name: 'ddc_2660_product')]
+#[Entity]
 class DDC2660Product
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/**
- * @Entity
- * @Table(name="ddc_2660_customer")
- */
+#[Table(name: 'ddc_2660_customer')]
+#[Entity]
 class DDC2660Customer
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/**
- * @Entity
- * @Table(name="ddc_2660_customer_order")
- */
+#[Table(name: 'ddc_2660_customer_order')]
+#[Entity]
 class DDC2660CustomerOrder
 {
     public function __construct(
-        /**
-         * @Id
-         * @ManyToOne(targetEntity="DDC2660Product")
-         */
+        #[Id]
+        #[ManyToOne(targetEntity: 'DDC2660Product')]
         public DDC2660Product $product,
-        /**
-         * @Id
-         * @ManyToOne(targetEntity="DDC2660Customer")
-         */
+        #[Id]
+        #[ManyToOne(targetEntity: 'DDC2660Customer')]
         public DDC2660Customer $customer,
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         public string $name,
     ) {
     }

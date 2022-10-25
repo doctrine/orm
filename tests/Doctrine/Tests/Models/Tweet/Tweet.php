@@ -11,30 +11,28 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="tweet_tweet")
- */
+#[Table(name: 'tweet_tweet')]
+#[Entity]
 class Tweet
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $content;
 
     /**
      * @var User
-     * @ManyToOne(targetEntity="User", inversedBy="tweets")
      */
+    #[ManyToOne(targetEntity: 'User', inversedBy: 'tweets')]
     public $author;
 
     public function setAuthor(User $user): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
@@ -54,34 +55,31 @@ class DDC422Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"guest" = "DDC422Guest", "customer" = "DDC422Customer"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['guest' => 'DDC422Guest', 'customer' => 'DDC422Customer'])]
 class DDC422Guest
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class DDC422Customer extends DDC422Guest
 {
     /**
      * @var Collection<int, DDC422Contact>
-     * @ManyToMany(targetEntity="DDC422Contact", cascade={"persist","remove"})
-     * @JoinTable(name="ddc422_customers_contacts",
-     *      joinColumns={@JoinColumn(name="customer_id", referencedColumnName="id", onDelete="cascade" )},
-     *      inverseJoinColumns={@JoinColumn(name="contact_id", referencedColumnName="id", onDelete="cascade" )}
-     *  )
      */
+    #[JoinTable(name: 'ddc422_customers_contacts')]
+    #[JoinColumn(name: 'customer_id', referencedColumnName: 'id', onDelete: 'cascade')]
+    #[InverseJoinColumn(name: 'contact_id', referencedColumnName: 'id', onDelete: 'cascade')]
+    #[ManyToMany(targetEntity: 'DDC422Contact', cascade: ['persist', 'remove'])]
     public $contacts;
 
     public function __construct()
@@ -90,14 +88,14 @@ class DDC422Customer extends DDC422Guest
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC422Contact
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }

@@ -65,14 +65,12 @@ class DDC1209Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1209One
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     private int $id;
 
     public function getId(): int
@@ -81,36 +79,34 @@ class DDC1209One
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1209Two
 {
     /**
      * @var DateTime2
-     * @Id
-     * @Column(type="datetime", nullable=false)
      */
+    #[Id]
+    #[Column(type: 'datetime', nullable: false)]
     public $startingDatetime;
 
     /**
      * @var DateTime2
-     * @Id
-     * @Column(type="datetime", nullable=false)
      */
+    #[Id]
+    #[Column(type: 'datetime', nullable: false)]
     public $duringDatetime;
 
     /**
      * @var DateTime2
-     * @Id
-     * @Column(type="datetime", nullable=false)
      */
+    #[Id]
+    #[Column(type: 'datetime', nullable: false)]
     public $endingDatetime;
 
     public function __construct(
-        /**
-         * @Id
-         * @ManyToOne(targetEntity="DDC1209One")
-         * @JoinColumn(referencedColumnName="id", nullable=false)
-         */
+        #[Id]
+        #[ManyToOne(targetEntity: 'DDC1209One')]
+        #[JoinColumn(referencedColumnName: 'id', nullable: false)]
         private DDC1209One $future1,
     ) {
         $this->startingDatetime = new DateTime2();
@@ -119,14 +115,14 @@ class DDC1209Two
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1209Three
 {
     /**
      * @var DateTime2
-     * @Id
-     * @Column(type="datetime", name="somedate")
      */
+    #[Id]
+    #[Column(type: 'datetime', name: 'somedate')]
     public $date;
 
     public function __construct()

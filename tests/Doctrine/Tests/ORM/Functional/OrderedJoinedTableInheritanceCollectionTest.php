@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
@@ -76,51 +77,47 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
- *      "cat" = "OJTICCat",
- *      "dog" = "OJTICDog"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['cat' => 'OJTICCat', 'dog' => 'OJTICDog'])]
 abstract class OJTICPet
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     /**
      * @var string
-     * @Column
      */
+    #[Column]
     public $name;
 
     /**
      * @var OJTICPet
-     * @ManyToOne(targetEntity="OJTICPet")
      */
+    #[ManyToOne(targetEntity: 'OJTICPet')]
     public $mother;
 
     /**
      * @psalm-var Collection<int, OJTICPet>
-     * @OneToMany(targetEntity="OJTICPet", mappedBy="mother")
-     * @OrderBy({"name" = "ASC"})
      */
+    #[OneToMany(targetEntity: 'OJTICPet', mappedBy: 'mother')]
+    #[OrderBy(['name' => 'ASC'])]
     public $children;
 
     /**
      * @psalm-var Collection<int, OJTICPet>
-     * @ManyToMany(targetEntity="OJTICPet")
-     * @JoinTable(name="OTJIC_Pet_Friends",
-     *     joinColumns={@JoinColumn(name="pet_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="friend_id", referencedColumnName="id")})
-     * @OrderBy({"name" = "ASC"})
      */
+    #[JoinTable(name: 'OTJIC_Pet_Friends')]
+    #[JoinColumn(name: 'pet_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'friend_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'OJTICPet')]
+    #[OrderBy(['name' => 'ASC'])]
     public $friends;
 
     public function getName(): string
@@ -129,12 +126,12 @@ abstract class OJTICPet
     }
 }
 
-/** @Entity */
+#[Entity]
 class OJTICCat extends OJTICPet
 {
 }
 
-/** @Entity */
+#[Entity]
 class OJTICDog extends OJTICPet
 {
 }

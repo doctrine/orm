@@ -11,23 +11,21 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="vct_owning_manytoone")
- */
+#[Table(name: 'vct_owning_manytoone')]
+#[Entity]
 class OwningManyToOneEntity
 {
     /**
      * @var string
-     * @Column(type="rot13", length=255)
-     * @Id
      */
+    #[Column(type: 'rot13', length: 255)]
+    #[Id]
     public $id2;
 
     /**
      * @var InversedOneToManyEntity
-     * @ManyToOne(targetEntity="InversedOneToManyEntity", inversedBy="associatedEntities")
-     * @JoinColumn(name="associated_id", referencedColumnName="id1")
      */
+    #[ManyToOne(targetEntity: 'InversedOneToManyEntity', inversedBy: 'associatedEntities')]
+    #[JoinColumn(name: 'associated_id', referencedColumnName: 'id1')]
     public $associatedEntity;
 }

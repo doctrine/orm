@@ -12,30 +12,28 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="vct_inversed_manytomany_compositeid")
- */
+#[Table(name: 'vct_inversed_manytomany_compositeid')]
+#[Entity]
 class InversedManyToManyCompositeIdEntity
 {
     /**
      * @var string
-     * @Column(type="rot13", length=255)
-     * @Id
      */
+    #[Column(type: 'rot13', length: 255)]
+    #[Id]
     public $id1;
 
     /**
      * @var string
-     * @Column(type="rot13", length=255)
-     * @Id
      */
+    #[Column(type: 'rot13', length: 255)]
+    #[Id]
     public $id2;
 
     /**
      * @psalm-var Collection<int, OwningManyToManyCompositeIdEntity>
-     * @ManyToMany(targetEntity="OwningManyToManyCompositeIdEntity", mappedBy="associatedEntities")
      */
+    #[ManyToMany(targetEntity: 'OwningManyToManyCompositeIdEntity', mappedBy: 'associatedEntities')]
     public $associatedEntities;
 
     public function __construct()

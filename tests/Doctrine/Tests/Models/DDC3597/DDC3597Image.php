@@ -10,12 +10,11 @@ use Doctrine\Tests\Models\DDC3597\Embeddable\DDC3597Dimension;
 
 /**
  * Description of Image
- *
- * @Entity
  */
+#[Entity]
 class DDC3597Image extends DDC3597Media
 {
-    /** @Embedded(class = "Doctrine\Tests\Models\DDC3597\Embeddable\DDC3597Dimension", columnPrefix = false) */
+    #[Embedded(class: 'Doctrine\Tests\Models\DDC3597\Embeddable\DDC3597Dimension', columnPrefix: false)]
     private DDC3597Dimension $dimension;
 
     public function __construct(string $distributionHash)

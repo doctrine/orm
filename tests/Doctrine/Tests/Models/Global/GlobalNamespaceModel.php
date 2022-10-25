@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
@@ -11,67 +12,59 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="articles")
- */
+#[Table(name: 'articles')]
+#[Entity]
 class DoctrineGlobalArticle
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
      */
+    #[Id]
+    #[Column(type: 'integer')]
     protected $id;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     protected $headline;
 
     /**
      * @var string
-     * @Column(type="text")
      */
+    #[Column(type: 'text')]
     protected $text;
 
     /**
      * @psalm-var Collection<int, DoctrineGlobalUser>
-     * @ManyToMany(targetEntity="DoctrineGlobalUser")
-     * @JoinTable(name="author_articles",
-     *      joinColumns={@JoinColumn(name="article_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="author_id", referencedColumnName="id", unique=true)}
-     * )
      */
+    #[JoinTable(name: 'author_articles')]
+    #[JoinColumn(name: 'article_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'author_id', referencedColumnName: 'id', unique: true)]
+    #[ManyToMany(targetEntity: 'DoctrineGlobalUser')]
     protected $author;
 
     /**
      * @psalm-var Collection<int, DoctrineGlobalUser>
-     * @ManyToMany(targetEntity="DoctrineGlobalUser")
-     * @JoinTable(name="editor_articles",
-     *      joinColumns={@JoinColumn(name="article_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="editor_id", referencedColumnName="id", unique=true)}
-     * )
      */
+    #[JoinTable(name: 'editor_articles')]
+    #[JoinColumn(name: 'article_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'editor_id', referencedColumnName: 'id', unique: true)]
+    #[ManyToMany(targetEntity: 'DoctrineGlobalUser')]
     protected $editor;
 }
 
-/**
- * @Entity
- * @Table(name="users")
- */
+#[Table(name: 'users')]
+#[Entity]
 class DoctrineGlobalUser
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
     private int $id;
 
-    /** @Column(type="string", length=64) */
+    #[Column(type: 'string', length: 64)]
     private string $username;
 
-    /** @Column(type="string", length=128) */
+    #[Column(type: 'string', length: 128)]
     private string $email;
 }

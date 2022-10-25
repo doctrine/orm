@@ -69,30 +69,22 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class CascadeRemoveOrderEntityO
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
-    /**
-     * @OneToOne(targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG")
-     * @JoinColumn(nullable=true, onDelete="SET NULL")
-     */
+    #[OneToOne(targetEntity: 'Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG')]
+    #[JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private CascadeRemoveOrderEntityG|null $oneToOneG = null;
 
     /**
      * @psalm-var Collection<int, CascadeRemoveOrderEntityG>
-     * @OneToMany(
-     *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG",
-     *     mappedBy="ownerO",
-     *     cascade={"persist", "remove"}
-     * )
      */
+    #[OneToMany(targetEntity: 'Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG', mappedBy: 'ownerO', cascade: ['persist', 'remove'])]
     private $oneToManyG;
 
     public function __construct()
@@ -127,23 +119,16 @@ class CascadeRemoveOrderEntityO
     }
 }
 
-/** @Entity */
+#[Entity]
 class CascadeRemoveOrderEntityG
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
     public function __construct(
-        /**
-         * @ManyToOne(
-         *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO",
-         *     inversedBy="oneToMany"
-         * )
-         */
+        #[ManyToOne(targetEntity: 'Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO', inversedBy: 'oneToMany')]
         private CascadeRemoveOrderEntityO $ownerO,
         private int $position = 1,
     ) {

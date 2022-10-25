@@ -42,26 +42,26 @@ final class GH7366Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7366Entity
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      * @var int
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var int
-     * @Column(type="integer")
-     * @Version
      */
+    #[Column(type: 'integer')]
+    #[Version]
     protected $lockVersion = 1;
 
     public function __construct(
-        /** @Column(length=32) */
+        #[Column(length: 32)]
         protected string $name,
     ) {
     }

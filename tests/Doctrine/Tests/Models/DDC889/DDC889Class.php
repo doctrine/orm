@@ -13,10 +13,10 @@ class DDC889Class extends DDC889SuperClass
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     protected $id;
 
     public static function loadMetadata(ClassMetadata $metadata): void

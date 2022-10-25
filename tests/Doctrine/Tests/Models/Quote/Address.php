@@ -15,34 +15,32 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="`quote-address`")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string", length=255)
- * @DiscriminatorMap({"simple" = Address::class, "full" = FullAddress::class})
- */
+#[Table(name: '`quote-address`')]
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'type', type: 'string', length: 255)]
+#[DiscriminatorMap(['simple' => Address::class, 'full' => FullAddress::class])]
 class Address
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="`address-id`")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer', name: '`address-id`')]
     public $id;
 
     /**
      * @var string
-     * @Column(name="`address-zip`")
      */
+    #[Column(name: '`address-zip`')]
     public $zip;
 
     /**
      * @var User
-     * @OneToOne(targetEntity="User", inversedBy="address")
-     * @JoinColumn(name="`user-id`", referencedColumnName="`user-id`")
      */
+    #[OneToOne(targetEntity: 'User', inversedBy: 'address')]
+    #[JoinColumn(name: '`user-id`', referencedColumnName: '`user-id`')]
     public $user;
 
     public function setUser(User $user): void

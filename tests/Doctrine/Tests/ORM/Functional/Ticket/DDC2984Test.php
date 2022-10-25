@@ -60,21 +60,17 @@ class DDC2984Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="users")
- */
+#[Table(name: 'users')]
+#[Entity]
 class DDC2984User
 {
-    /** @Column(type="string", length=50) */
+    #[Column(type: 'string', length: 50)]
     private string|null $name = null;
 
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="ddc2984_domain_user_id", length=255)
-         * @GeneratedValue(strategy="NONE")
-         */
+        #[Id]
+        #[Column(type: 'ddc2984_domain_user_id', length: 255)]
+        #[GeneratedValue(strategy: 'NONE')]
         private DDC2984DomainUserId $userId,
     ) {
     }

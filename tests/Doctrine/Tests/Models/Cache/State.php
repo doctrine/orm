@@ -16,36 +16,32 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table("cache_state")
- * @Cache("NONSTRICT_READ_WRITE")
- */
+#[Table('cache_state')]
+#[Entity]
+#[Cache('NONSTRICT_READ_WRITE')]
 class State
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     protected $id;
 
     /**
      * @psalm-var Collection<int, City>
-     * @Cache("NONSTRICT_READ_WRITE")
-     * @OneToMany(targetEntity="City", mappedBy="state")
      */
+    #[Cache('NONSTRICT_READ_WRITE')]
+    #[OneToMany(targetEntity: 'City', mappedBy: 'state')]
     protected $cities;
 
     public function __construct(
-        /** @Column(unique=true) */
+        #[Column(unique: true)]
         protected string $name,
-        /**
-         * @Cache
-         * @ManyToOne(targetEntity="Country")
-         * @JoinColumn(name="country_id", referencedColumnName="id")
-         */
+        #[Cache]
+        #[ManyToOne(targetEntity: 'Country')]
+        #[JoinColumn(name: 'country_id', referencedColumnName: 'id')]
         protected Country|null $country = null,
     ) {
         $this->cities = new ArrayCollection();

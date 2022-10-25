@@ -12,29 +12,27 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table("cache_client_address")
- */
+#[Table('cache_client_address')]
+#[Entity]
 class Address
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
      * @var Person
-     * @JoinColumn(name="person_id", referencedColumnName="id")
-     * @OneToOne(targetEntity="Person", inversedBy="address")
      */
+    #[JoinColumn(name: 'person_id', referencedColumnName: 'id')]
+    #[OneToOne(targetEntity: 'Person', inversedBy: 'address')]
     public $person;
 
     public function __construct(
-        /** @Column */
+        #[Column]
         public string $location,
     ) {
     }

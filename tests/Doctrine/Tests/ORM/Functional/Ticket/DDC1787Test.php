@@ -39,25 +39,19 @@ class DDC1787Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"bar" = "DDC1787Bar", "foo" = "DDC1787Foo"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['bar' => 'DDC1787Bar', 'foo' => 'DDC1787Foo'])]
 class DDC1787Foo
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /**
-     * @Version
-     * @Column(type="integer")
-     */
+    #[Version]
+    #[Column(type: 'integer')]
     private int $version;
 
     public function getVersion(): int
@@ -66,7 +60,7 @@ class DDC1787Foo
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1787Bar extends DDC1787Foo
 {
 }

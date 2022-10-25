@@ -27,20 +27,20 @@ class CmsAddress
 
     /**
      * @var string
-     * @Column(length=50)
      */
+    #[Column(length: 50)]
     public $country;
 
     /**
      * @var string
-     * @Column(length=50)
      */
+    #[Column(length: 50)]
     public $zip;
 
     /**
      * @var string
-     * @Column(length=50)
      */
+    #[Column(length: 50)]
     public $city;
 
     /**
@@ -52,9 +52,9 @@ class CmsAddress
 
     /**
      * @var CmsUser
-     * @OneToOne(targetEntity="CmsUser", inversedBy="address")
-     * @JoinColumn(referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'CmsUser', inversedBy: 'address')]
+    #[JoinColumn(referencedColumnName: 'id')]
     public $user;
 
     public function getId(): int

@@ -468,24 +468,22 @@ class ClassMetadataFactoryTest extends OrmTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"cube" = cube::class})
- * @DiscriminatorColumn(name="discr", length=32, type="string")
- */
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorMap(['cube' => cube::class])]
+#[DiscriminatorColumn(name: 'discr', length: 32, type: 'string')]
 abstract class Shape
 {
     /**
      * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 final class Cube extends Shape
 {
 }

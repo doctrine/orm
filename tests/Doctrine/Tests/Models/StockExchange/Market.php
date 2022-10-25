@@ -12,27 +12,23 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="exchange_markets")
- */
+#[Table(name: 'exchange_markets')]
+#[Entity]
 class Market
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
     /**
-     * @OneToMany(targetEntity="Stock", mappedBy="market", indexBy="symbol")
      * @psalm-var ArrayCollection<string, Stock>
      */
+    #[OneToMany(targetEntity: 'Stock', mappedBy: 'market', indexBy: 'symbol')]
     public $stocks;
 
     public function __construct(
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         private string $name,
     ) {
         $this->stocks = new ArrayCollection();

@@ -11,40 +11,40 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/** @Entity */
+#[Entity]
 class RoutingLeg
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
      * @var RoutingLocation
-     * @ManyToOne(targetEntity="RoutingLocation")
-     * @JoinColumn(name="from_id", referencedColumnName="id")
      */
+    #[ManyToOne(targetEntity: 'RoutingLocation')]
+    #[JoinColumn(name: 'from_id', referencedColumnName: 'id')]
     public $fromLocation;
 
     /**
      * @var RoutingLocation
-     * @ManyToOne(targetEntity="RoutingLocation")
-     * @JoinColumn(name="to_id", referencedColumnName="id")
      */
+    #[ManyToOne(targetEntity: 'RoutingLocation')]
+    #[JoinColumn(name: 'to_id', referencedColumnName: 'id')]
     public $toLocation;
 
     /**
      * @var DateTime
-     * @Column(type="datetime")
      */
+    #[Column(type: 'datetime')]
     public $departureDate;
 
     /**
      * @var DateTime
-     * @Column(type="datetime")
      */
+    #[Column(type: 'datetime')]
     public $arrivalDate;
 }

@@ -12,31 +12,29 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Version;
 
-/**
- * @Entity
- * @Table(name="first_entity")
- */
+#[Table(name: 'first_entity')]
+#[Entity]
 class FirstRelatedEntity
 {
     /**
      * @var SecondRelatedEntity
-     * @Id
-     * @OneToOne(targetEntity="SecondRelatedEntity", fetch="EAGER")
-     * @JoinColumn(name="second_entity_id", referencedColumnName="id")
      */
+    #[Id]
+    #[OneToOne(targetEntity: 'SecondRelatedEntity', fetch: 'EAGER')]
+    #[JoinColumn(name: 'second_entity_id', referencedColumnName: 'id')]
     public $secondEntity;
 
     /**
      * @var string
-     * @Column(name="name")
      */
+    #[Column(name: 'name')]
     public $name;
 
     /**
      * @var int
      * Version column
-     * @Column(type="integer", name="version")
-     * @Version
      */
+    #[Column(type: 'integer', name: 'version')]
+    #[Version]
     public $version;
 }

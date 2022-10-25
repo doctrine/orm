@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
@@ -88,35 +89,33 @@ class DDC992Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({"child" = "DDC992Child", "parent" = "DDC992Parent"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorMap(['child' => 'DDC992Child', 'parent' => 'DDC992Parent'])]
 class DDC992Parent
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
      * @var DDC992Parent
-     * @ManyToOne(targetEntity="DDC992Parent", inversedBy="childs")
      */
+    #[ManyToOne(targetEntity: 'DDC992Parent', inversedBy: 'childs')]
     public $parent;
 
     /**
      * @var Collection<int, DDC992Child>
-     * @OneToMany(targetEntity="DDC992Child", mappedBy="parent")
      */
+    #[OneToMany(targetEntity: 'DDC992Child', mappedBy: 'parent')]
     public $childs;
 }
 
-/** @Entity */
+#[Entity]
 class DDC992Child extends DDC992Parent
 {
     public function childs(): Collection
@@ -125,7 +124,7 @@ class DDC992Child extends DDC992Parent
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC992Role
 {
     public function getRoleID(): int
@@ -135,32 +134,31 @@ class DDC992Role
 
     /**
      * @var int
-     * @Id
-     * @Column(name="roleID", type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(name: 'roleID', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $roleID;
 
     /**
      * @var string
-     * @Column(name="name", type="string", length=45)
      */
+    #[Column(name: 'name', type: 'string', length: 45)]
     public $name;
 
     /**
      * @psalm-var Collection<int, DDC992Role>
-     * @ManyToMany(targetEntity="DDC992Role", mappedBy="extends")
      */
+    #[ManyToMany(targetEntity: 'DDC992Role', mappedBy: 'extends')]
     public $extendedBy;
 
     /**
      * @psalm-var Collection<int, DDC992Role>
-     * @ManyToMany (targetEntity="DDC992Role", inversedBy="extendedBy")
-     * @JoinTable(name="RoleRelations",
-     *     joinColumns={@JoinColumn(name="roleID", referencedColumnName="roleID")},
-     *     inverseJoinColumns={@JoinColumn(name="extendsRoleID", referencedColumnName="roleID")},
-     * )
      */
+    #[JoinTable(name: 'RoleRelations')]
+    #[JoinColumn(name: 'roleID', referencedColumnName: 'roleID')]
+    #[InverseJoinColumn(name: 'extendsRoleID', referencedColumnName: 'roleID')]
+    #[ManyToMany(targetEntity: 'DDC992Role', inversedBy: 'extendedBy')]
     public $extends;
 
     public function __construct()

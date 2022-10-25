@@ -12,28 +12,21 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="vct_inversed_onetomany_extralazy")
- */
+#[Table(name: 'vct_inversed_onetomany_extralazy')]
+#[Entity]
 class InversedOneToManyExtraLazyEntity
 {
     /**
      * @var string
-     * @Column(type="rot13", length=255)
-     * @Id
      */
+    #[Column(type: 'rot13', length: 255)]
+    #[Id]
     public $id1;
 
     /**
      * @var Collection<int, OwningManyToOneExtraLazyEntity>
-     * @OneToMany(
-     *     targetEntity="OwningManyToOneExtraLazyEntity",
-     *     mappedBy="associatedEntity",
-     *     fetch="EXTRA_LAZY",
-     *     indexBy="id2"
-     * )
      */
+    #[OneToMany(targetEntity: 'OwningManyToOneExtraLazyEntity', mappedBy: 'associatedEntity', fetch: 'EXTRA_LAZY', indexBy: 'id2')]
     public $associatedEntities;
 
     public function __construct()

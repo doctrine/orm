@@ -39,47 +39,45 @@ class DDC493Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"distributor" = "DDC493Distributor", "customer" = "DDC493Customer"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['distributor' => 'DDC493Distributor', 'customer' => 'DDC493Customer'])]
 class DDC493Customer
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
     /**
      * @var DDC493Contact
-     * @OneToOne(targetEntity="DDC493Contact", cascade={"remove","persist"})
-     * @JoinColumn(name="contact", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'DDC493Contact', cascade: ['remove', 'persist'])]
+    #[JoinColumn(name: 'contact', referencedColumnName: 'id')]
     public $contact;
 }
 
-/** @Entity */
+#[Entity]
 class DDC493Distributor extends DDC493Customer
 {
 }
 
-/** @Entity */
+#[Entity]
 class DDC493Contact
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $data;
 }

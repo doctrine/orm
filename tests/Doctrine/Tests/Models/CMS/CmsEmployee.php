@@ -14,26 +14,21 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * Description of CmsEmployee
- *
- * @Entity
- * @Table(name="cms_employees")
  */
+#[Table(name: 'cms_employees')]
+#[Entity]
 class CmsEmployee
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
-    /** @Column */
+    #[Column]
     private string $name;
 
-    /**
-     * @OneToOne(targetEntity="CmsEmployee")
-     * @JoinColumn(name="spouse_id", referencedColumnName="id")
-     */
+    #[OneToOne(targetEntity: 'CmsEmployee')]
+    #[JoinColumn(name: 'spouse_id', referencedColumnName: 'id')]
     private CmsEmployee $spouse;
 
     public function getId(): int

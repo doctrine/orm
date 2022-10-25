@@ -69,48 +69,48 @@ class DDC6460Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Embeddable() */
+#[Embeddable]
 class DDC6460Embeddable
 {
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $field;
 }
 
-/** @Entity() */
+#[Entity]
 class DDC6460Entity
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue(strategy = "NONE")
-     * @Column(type = "integer")
      */
+    #[Id]
+    #[GeneratedValue(strategy: 'NONE')]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
      * @var DDC6460Embeddable
-     * @Embedded(class = "DDC6460Embeddable")
      */
+    #[Embedded(class: 'DDC6460Embeddable')]
     public $embedded;
 }
 
-/** @Entity() */
+#[Entity]
 class DDC6460ParentEntity
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue(strategy = "NONE")
-     * @Column(type = "integer")
      */
+    #[Id]
+    #[GeneratedValue(strategy: 'NONE')]
+    #[Column(type: 'integer')]
     public $id;
 
     /**
      * @var DDC6460Entity
-     * @ManyToOne(targetEntity="DDC6460Entity", fetch="EXTRA_LAZY", cascade={"persist"})
      */
+    #[ManyToOne(targetEntity: 'DDC6460Entity', fetch: 'EXTRA_LAZY', cascade: ['persist'])]
     public $lazyLoaded;
 }

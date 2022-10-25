@@ -12,37 +12,25 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinColumns;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/** @Entity */
+#[Entity]
 class DDC117ApproveChanges
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
     public function __construct(
-        /**
-         * @ManyToOne(targetEntity="DDC117ArticleDetails")
-         * @JoinColumn(name="details_id", referencedColumnName="article_id")
-         */
+        #[ManyToOne(targetEntity: 'DDC117ArticleDetails')]
+        #[JoinColumn(name: 'details_id', referencedColumnName: 'article_id')]
         private DDC117ArticleDetails $articleDetails,
-        /**
-         * @ManyToOne(targetEntity="DDC117Reference")
-         * @JoinColumns({
-         *  @JoinColumn(name="source_id", referencedColumnName="source_id"),
-         *  @JoinColumn(name="target_id", referencedColumnName="target_id")
-         * })
-         */
+        #[JoinColumn(name: 'source_id', referencedColumnName: 'source_id')]
+        #[JoinColumn(name: 'target_id', referencedColumnName: 'target_id')]
+        #[ManyToOne(targetEntity: 'DDC117Reference')]
         private DDC117Reference $reference,
-        /**
-         * @ManyToOne(targetEntity="DDC117Translation")
-         * @JoinColumns({
-         *  @JoinColumn(name="trans_article_id", referencedColumnName="article_id"),
-         *  @JoinColumn(name="trans_language", referencedColumnName="language")
-         * })
-         */
+        #[JoinColumn(name: 'trans_article_id', referencedColumnName: 'article_id')]
+        #[JoinColumn(name: 'trans_language', referencedColumnName: 'language')]
+        #[ManyToOne(targetEntity: 'DDC117Translation')]
         private DDC117Translation $translation,
     ) {
     }

@@ -71,76 +71,70 @@ class DDC237Test extends OrmFunctionalTestCase
 }
 
 
-/**
- * @Entity
- * @Table(name="ddc237_x")
- */
+#[Table(name: 'ddc237_x')]
+#[Entity]
 class DDC237EntityX
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $data;
     /**
      * @var DDC237EntityY
-     * @OneToOne(targetEntity="DDC237EntityY")
-     * @JoinColumn(name="y_id", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'DDC237EntityY')]
+    #[JoinColumn(name: 'y_id', referencedColumnName: 'id')]
     public $y;
 }
 
 
-/**
- * @Entity
- * @Table(name="ddc237_y")
- */
+#[Table(name: 'ddc237_y')]
+#[Entity]
 class DDC237EntityY
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $data;
 }
 
-/**
- * @Entity
- * @Table(name="ddc237_z")
- */
+#[Table(name: 'ddc237_z')]
+#[Entity]
 class DDC237EntityZ
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $data;
 
     /**
      * @var DDC237EntityY
-     * @OneToOne(targetEntity="DDC237EntityY")
-     * @JoinColumn(name="y_id", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'DDC237EntityY')]
+    #[JoinColumn(name: 'y_id', referencedColumnName: 'id')]
     public $y;
 }

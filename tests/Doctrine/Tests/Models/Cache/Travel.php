@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -18,48 +19,39 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Cache
- * @Entity
- * @Table("cache_travel")
- */
+#[Table('cache_travel')]
+#[Cache]
+#[Entity]
 class Travel
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     protected $id;
 
     /**
      * @var DateTime
-     * @Column(type="date")
      */
+    #[Column(type: 'date')]
     protected $createdAt;
 
     /**
      * @psalm-var Collection<int, City>
-     * @Cache
-     * @ManyToMany(targetEntity="City", inversedBy="travels", cascade={"persist", "remove"})
-     * @JoinTable(name="cache_visited_cities",
-     *  joinColumns={
-     *      @JoinColumn(name="travel_id", referencedColumnName="id")
-     *  },
-     *  inverseJoinColumns={
-     *      @JoinColumn(name="city_id", referencedColumnName="id")
-     *  }
-     * )
      */
+    #[JoinTable(name: 'cache_visited_cities')]
+    #[JoinColumn(name: 'travel_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'city_id', referencedColumnName: 'id')]
+    #[Cache]
+    #[ManyToMany(targetEntity: 'City', inversedBy: 'travels', cascade: ['persist', 'remove'])]
     public $visitedCities;
 
     public function __construct(
-        /**
-         * @Cache
-         * @ManyToOne(targetEntity="Traveler", inversedBy="travels")
-         * @JoinColumn(name="traveler_id", referencedColumnName="id")
-         */
+        #[Cache]
+        #[ManyToOne(targetEntity: 'Traveler', inversedBy: 'travels')]
+        #[JoinColumn(name: 'traveler_id', referencedColumnName: 'id')]
         protected Traveler $traveler,
     ) {
         $this->createdAt     = new DateTime('now');

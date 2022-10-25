@@ -40,31 +40,31 @@ class DDC1515Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1515Foo
 {
     /**
      * @var DDC1515Bar
-     * @OneToOne(targetEntity="DDC1515Bar", inversedBy="foo")
-     * @Id
      */
+    #[OneToOne(targetEntity: 'DDC1515Bar', inversedBy: 'foo')]
+    #[Id]
     public $bar;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1515Bar
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var DDC1515Foo
-     * @OneToOne(targetEntity="DDC1515Foo", mappedBy="bar")
      */
+    #[OneToOne(targetEntity: 'DDC1515Foo', mappedBy: 'bar')]
     public $foo;
 }

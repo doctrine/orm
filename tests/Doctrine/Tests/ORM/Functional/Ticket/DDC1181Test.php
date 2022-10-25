@@ -58,55 +58,51 @@ class DDC1181Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1181Hotel
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
-     * @OneToMany(targetEntity="DDC1181Booking", mappedBy="hotel", cascade={"remove"})
      * @var Booking[]
      */
+    #[OneToMany(targetEntity: 'DDC1181Booking', mappedBy: 'hotel', cascade: ['remove'])]
     public $bookings;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1181Booking
 {
     /**
      * @var Hotel
-     * @Id
-     * @ManyToOne(targetEntity="DDC1181Hotel", inversedBy="bookings")
-     * @JoinColumns({
-     *   @JoinColumn(name="hotel_id", referencedColumnName="id")
-     * })
      */
+    #[JoinColumn(name: 'hotel_id', referencedColumnName: 'id')]
+    #[Id]
+    #[ManyToOne(targetEntity: 'DDC1181Hotel', inversedBy: 'bookings')]
     public $hotel;
     /**
      * @var Room
-     * @Id
-     * @ManyToOne(targetEntity="DDC1181Room")
-     * @JoinColumns({
-     *   @JoinColumn(name="room_id", referencedColumnName="id")
-     * })
      */
+    #[JoinColumn(name: 'room_id', referencedColumnName: 'id')]
+    #[Id]
+    #[ManyToOne(targetEntity: 'DDC1181Room')]
     public $room;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1181Room
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }

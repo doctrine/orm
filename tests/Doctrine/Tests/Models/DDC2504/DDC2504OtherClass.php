@@ -12,22 +12,22 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\PersistentCollection;
 
-/** @Entity */
+#[Entity]
 class DDC2504OtherClass
 {
     /**
      * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
      */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var DDC2504ChildClass
-     * @OneToMany(targetEntity="DDC2504ChildClass", mappedBy="other", fetch="EXTRA_LAZY")
      * @var ArrayCollection|PersistentCollection
      */
+    #[OneToMany(targetEntity: 'DDC2504ChildClass', mappedBy: 'other', fetch: 'EXTRA_LAZY')]
     public $childClasses;
 
     public function __construct()

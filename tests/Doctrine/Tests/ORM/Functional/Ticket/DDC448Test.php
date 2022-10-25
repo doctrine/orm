@@ -41,51 +41,38 @@ class DDC448Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="smallint")
- * @DiscriminatorMap({
- *     "0" = "DDC448MainTable",
- *     "1" = "DDC448SubTable"
- * })
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'smallint')]
+#[DiscriminatorMap(['0' => 'DDC448MainTable', '1' => 'DDC448SubTable'])]
 class DDC448MainTable
 {
-    /**
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /**
-     * @ManyToOne(targetEntity="DDC448ConnectedClass",  cascade={"all"}, fetch="EAGER")
-     * @JoinColumn(name="connectedClassId", referencedColumnName="id", onDelete="CASCADE", nullable=true)
-     */
+    #[ManyToOne(targetEntity: 'DDC448ConnectedClass', cascade: ['all'], fetch: 'EAGER')]
+    #[JoinColumn(name: 'connectedClassId', referencedColumnName: 'id', onDelete: 'CASCADE', nullable: true)]
     private DDC448ConnectedClass $connectedClassId;
 }
 
-/**
- * @Entity
- * @Table(name="connectedClass")
- * @HasLifecycleCallbacks
- */
+#[Table(name: 'connectedClass')]
+#[Entity]
+#[HasLifecycleCallbacks]
 class DDC448ConnectedClass
 {
     /**
      * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id; // connected with DDC448MainTable
 }
 
-/**
- * @Entity
- * @Table(name="SubTable")
- */
+#[Table(name: 'SubTable')]
+#[Entity]
 class DDC448SubTable extends DDC448MainTable
 {
 }

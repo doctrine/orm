@@ -39,49 +39,47 @@ class DDC513Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC513OfferItem extends DDC513Item
 {
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"item" = "DDC513Item", "offerItem" = "DDC513OfferItem"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['item' => 'DDC513Item', 'offerItem' => 'DDC513OfferItem'])]
 class DDC513Item
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     /**
      * @var DDC513Price
-     * @OneToOne(targetEntity="DDC513Price", cascade={"remove","persist"})
-     * @JoinColumn(name="price", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'DDC513Price', cascade: ['remove', 'persist'])]
+    #[JoinColumn(name: 'price', referencedColumnName: 'id')]
     public $price;
 }
 
-/** @Entity */
+#[Entity]
 class DDC513Price
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $data;
 }

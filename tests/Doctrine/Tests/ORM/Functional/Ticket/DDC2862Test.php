@@ -113,28 +113,24 @@ class DDC2862Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc2862_drivers")
- * @Cache("NONSTRICT_READ_WRITE")
- */
+#[Table(name: 'ddc2862_drivers')]
+#[Entity]
+#[Cache('NONSTRICT_READ_WRITE')]
 class DDC2862Driver
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     protected $id;
 
     public function __construct(
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         protected string $name,
-        /**
-         * @Cache()
-         * @OneToOne(targetEntity="DDC2862User")
-         */
+        #[Cache]
+        #[OneToOne(targetEntity: 'DDC2862User')]
         protected DDC2862User|null $userProfile = null,
     ) {
     }
@@ -165,23 +161,21 @@ class DDC2862Driver
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc2862_users")
- * @Cache("NONSTRICT_READ_WRITE")
- */
+#[Table(name: 'ddc2862_users')]
+#[Entity]
+#[Cache('NONSTRICT_READ_WRITE')]
 class DDC2862User
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     protected $id;
 
     public function __construct(
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         protected string $name,
     ) {
     }

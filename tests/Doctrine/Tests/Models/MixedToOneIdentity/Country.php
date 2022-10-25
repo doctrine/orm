@@ -9,14 +9,14 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/** @Entity */
+#[Entity]
 class Country
 {
     /**
      * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="NONE")
      */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
+    #[GeneratedValue(strategy: 'NONE')]
     public $country;
 }

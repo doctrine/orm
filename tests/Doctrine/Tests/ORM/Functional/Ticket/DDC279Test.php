@@ -67,79 +67,77 @@ class DDC279Test extends OrmFunctionalTestCase
 }
 
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"DDC279EntityX" = "DDC279EntityX"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['DDC279EntityX' => 'DDC279EntityX'])]
 abstract class DDC279EntityXAbstract
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(name="id", type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(name: 'id', type: 'integer')]
     public $id;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $data;
 }
 
-/** @Entity */
+#[Entity]
 class DDC279EntityX extends DDC279EntityXAbstract
 {
     /**
      * @var DDC279EntityY
-     * @OneToOne(targetEntity="DDC279EntityY")
-     * @JoinColumn(name="y_id", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'DDC279EntityY')]
+    #[JoinColumn(name: 'y_id', referencedColumnName: 'id')]
     public $y;
 }
 
-/** @Entity */
+#[Entity]
 class DDC279EntityY
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(name="id", type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(name: 'id', type: 'integer')]
     public $id;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $data;
 
     /**
      * @var DDC279EntityZ
-     * @OneToOne(targetEntity="DDC279EntityZ")
-     * @JoinColumn(name="z_id", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'DDC279EntityZ')]
+    #[JoinColumn(name: 'z_id', referencedColumnName: 'id')]
     public $z;
 }
 
-/** @Entity */
+#[Entity]
 class DDC279EntityZ
 {
     /**
      * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(name="id", type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(name: 'id', type: 'integer')]
     public $id;
 
     /**
      * @var string
-     * @Column(type="string", length=255)
      */
+    #[Column(type: 'string', length: 255)]
     public $data;
 }

@@ -80,33 +80,29 @@ class DDC440Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="phone")
- */
+#[Table(name: 'phone')]
+#[Entity]
 class DDC440Phone
 {
     /**
      * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
     /**
      * @var DDC440Client
-     * @ManyToOne(targetEntity="DDC440Client",inversedBy="phones")
-     * @JoinColumns({
-     *   @JoinColumn(name="client_id", referencedColumnName="id")
-     * })
      */
+    #[JoinColumn(name: 'client_id', referencedColumnName: 'id')]
+    #[ManyToOne(targetEntity: 'DDC440Client', inversedBy: 'phones')]
     protected $client;
 
     /**
      * @var string
-     * @Column(name="phonenumber", type="string", length=255)
      */
+    #[Column(name: 'phonenumber', type: 'string', length: 255)]
     protected $number;
 
     public function setNumber(string $value): void
@@ -143,40 +139,36 @@ class DDC440Phone
     }
 }
 
-/**
- * @Entity
- * @Table(name="client")
- */
+#[Table(name: 'client')]
+#[Entity]
 class DDC440Client
 {
     /**
      * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
     /**
      * @var DDC440Phone
-     * @OneToOne(targetEntity="DDC440Phone", fetch="EAGER")
-     * @JoinColumns({
-     *   @JoinColumn(name="main_phone_id", referencedColumnName="id",onDelete="SET NULL")
-     * })
      */
+    #[JoinColumn(name: 'main_phone_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
+    #[OneToOne(targetEntity: 'DDC440Phone', fetch: 'EAGER')]
     protected $mainPhone;
 
     /**
      * @psalm-var Collection<int, DDC440Phone>
-     * @OneToMany(targetEntity="DDC440Phone", mappedBy="client", cascade={"persist", "remove"}, fetch="EAGER", indexBy="id")
-     * @OrderBy({"number"="ASC"})
      */
+    #[OneToMany(targetEntity: 'DDC440Phone', mappedBy: 'client', cascade: ['persist', 'remove'], fetch: 'EAGER', indexBy: 'id')]
+    #[OrderBy(['number' => 'ASC'])]
     protected $phones;
 
     /**
      * @var string
-     * @Column(name="name", type="string", length=255)
      */
+    #[Column(name: 'name', type: 'string', length: 255)]
     protected $name;
 
     public function __construct()

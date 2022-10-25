@@ -67,93 +67,85 @@ class DDC2759Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc_2759_qualification")
- */
+#[Table(name: 'ddc_2759_qualification')]
+#[Entity]
 class DDC2759Qualification
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var DDC2759QualificationMetadata
-     * @OneToOne(targetEntity="DDC2759QualificationMetadata", mappedBy="content")
      */
+    #[OneToOne(targetEntity: 'DDC2759QualificationMetadata', mappedBy: 'content')]
     public $metadata;
 }
 
-/**
- * @Entity
- * @Table(name="ddc_2759_category")
- */
+#[Table(name: 'ddc_2759_category')]
+#[Entity]
 class DDC2759Category
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @psalm-var Collection<int, DDC2759MetadataCategory>
-     * @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="category")
      */
+    #[OneToMany(targetEntity: 'DDC2759MetadataCategory', mappedBy: 'category')]
     public $metadataCategories;
 }
 
-/**
- * @Entity
- * @Table(name="ddc_2759_qualification_metadata")
- */
+#[Table(name: 'ddc_2759_qualification_metadata')]
+#[Entity]
 class DDC2759QualificationMetadata
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @psalm-var Collection<int, DDC2759MetadataCategory>
-     * @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="metadata")
      */
+    #[OneToMany(targetEntity: 'DDC2759MetadataCategory', mappedBy: 'metadata')]
     protected $metadataCategories;
 
     public function __construct(
-        /** @OneToOne(targetEntity="DDC2759Qualification", inversedBy="metadata") */
+        #[OneToOne(targetEntity: 'DDC2759Qualification', inversedBy: 'metadata')]
         public DDC2759Qualification $content,
     ) {
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc_2759_metadata_category")
- */
+#[Table(name: 'ddc_2759_metadata_category')]
+#[Entity]
 class DDC2759MetadataCategory
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     public function __construct(
-        /** @ManyToOne(targetEntity="DDC2759QualificationMetadata", inversedBy="metadataCategories") */
+        #[ManyToOne(targetEntity: 'DDC2759QualificationMetadata', inversedBy: 'metadataCategories')]
         public DDC2759QualificationMetadata $metadata,
-        /** @ManyToOne(targetEntity="DDC2759Category", inversedBy="metadataCategories") */
+        #[ManyToOne(targetEntity: 'DDC2759Category', inversedBy: 'metadataCategories')]
         public DDC2759Category $category,
     ) {
     }

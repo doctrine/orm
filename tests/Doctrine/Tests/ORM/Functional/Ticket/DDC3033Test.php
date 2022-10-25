@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
@@ -63,11 +64,9 @@ class DDC3033Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Table
- * @Entity
- * @HasLifecycleCallbacks
- */
+#[Table]
+#[Entity]
+#[HasLifecycleCallbacks]
 class DDC3033Product
 {
     /** @psalm-var array<string, array{mixed, mixed}> */
@@ -75,27 +74,25 @@ class DDC3033Product
 
     /**
      * @var int $id
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     /**
      * @var string $title
-     * @Column(name="title", type="string", length=255)
      */
+    #[Column(name: 'title', type: 'string', length: 255)]
     public $title;
 
     /**
      * @var Collection<int, DDC3033User>
-     * @ManyToMany(targetEntity="DDC3033User")
-     * @JoinTable(
-     *   name="user_purchases_3033",
-     *   joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
-     *   inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")}
-     * )
      */
+    #[JoinTable(name: 'user_purchases_3033')]
+    #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'DDC3033User')]
     public $buyers;
 
     /**
@@ -106,12 +103,12 @@ class DDC3033Product
         $this->buyers = new ArrayCollection();
     }
 
-    /** @PreUpdate */
+    #[PreUpdate]
     public function preUpdate(PreUpdateEventArgs $eventArgs): void
     {
     }
 
-    /** @PostUpdate */
+    #[PostUpdate]
     public function postUpdate(PostUpdateEventArgs $eventArgs): void
     {
         $em            = $eventArgs->getObjectManager();
@@ -124,24 +121,22 @@ class DDC3033Product
     }
 }
 
-/**
- * @Table
- * @Entity
- * @HasLifecycleCallbacks
- */
+#[Table]
+#[Entity]
+#[HasLifecycleCallbacks]
 class DDC3033User
 {
     /**
      * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
      */
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     /**
      * @var string
-     * @Column(name="title", type="string", length=255)
      */
+    #[Column(name: 'title', type: 'string', length: 255)]
     public $name;
 }

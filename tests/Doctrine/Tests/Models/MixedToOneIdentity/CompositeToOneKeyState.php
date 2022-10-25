@@ -11,22 +11,22 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/** @Entity */
+#[Entity]
 class CompositeToOneKeyState
 {
     /**
      * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="NONE")
      */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
+    #[GeneratedValue(strategy: 'NONE')]
     public $state;
 
     /**
      * @var Country
-     * @Id
-     * @ManyToOne(targetEntity="Country", cascade={"MERGE"})
-     * @JoinColumn(referencedColumnName="country")
      */
+    #[Id]
+    #[ManyToOne(targetEntity: 'Country', cascade: ['MERGE'])]
+    #[JoinColumn(referencedColumnName: 'country')]
     public $country;
 }

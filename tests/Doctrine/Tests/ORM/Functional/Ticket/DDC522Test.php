@@ -87,76 +87,76 @@ class DDC522Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC522Customer
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var mixed
-     * @Column
      */
+    #[Column]
     public $name;
 
     /**
      * @var DDC522Cart
-     * @OneToOne(targetEntity="DDC522Cart", mappedBy="customer")
      */
+    #[OneToOne(targetEntity: 'DDC522Cart', mappedBy: 'customer')]
     public $cart;
 }
 
-/** @Entity */
+#[Entity]
 class DDC522Cart
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var int
-     * @Column(type="integer")
      */
+    #[Column(type: 'integer')]
     public $total;
 
     /**
      * @var DDC522Customer
-     * @OneToOne(targetEntity="DDC522Customer", inversedBy="cart")
-     * @JoinColumn(name="customer", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'DDC522Customer', inversedBy: 'cart')]
+    #[JoinColumn(name: 'customer', referencedColumnName: 'id')]
     public $customer;
 }
 
-/** @Entity */
+#[Entity]
 class DDC522ForeignKeyTest
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * @var int|null
-     * @Column(type="integer", name="cart_id", nullable=true)
      */
+    #[Column(type: 'integer', name: 'cart_id', nullable: true)]
     public $cartId;
 
     /**
      * @var DDC522Cart|null
-     * @OneToOne(targetEntity="DDC522Cart")
-     * @JoinColumn(name="cart_id", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'DDC522Cart')]
+    #[JoinColumn(name: 'cart_id', referencedColumnName: 'id')]
     public $cart;
 }

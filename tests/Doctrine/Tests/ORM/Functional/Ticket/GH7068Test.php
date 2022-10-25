@@ -39,14 +39,14 @@ final class GH7068Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 final class SomeEntity
 {
     /**
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
      */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
