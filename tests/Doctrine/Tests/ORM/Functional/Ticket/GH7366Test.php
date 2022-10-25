@@ -45,17 +45,13 @@ final class GH7366Test extends OrmFunctionalTestCase
 #[Entity]
 class GH7366Entity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Version]
     protected $lockVersion = 1;

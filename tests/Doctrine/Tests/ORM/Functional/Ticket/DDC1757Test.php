@@ -63,9 +63,7 @@ class DDC1757B
 #[Entity]
 class DDC1757C
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
@@ -78,9 +76,7 @@ class DDC1757C
 #[Entity]
 class DDC1757D
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]

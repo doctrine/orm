@@ -127,9 +127,7 @@ class GH7062Ranking
 #[Entity]
 class GH7062Season
 {
-    /**
-     * @var GH7062Ranking|null
-     */
+    /** @var GH7062Ranking|null */
     #[OneToOne(targetEntity: GH7062Ranking::class, mappedBy: 'season', cascade: ['all'])]
     public $ranking;
 
@@ -163,9 +161,7 @@ class GH7062Team
 #[Entity]
 class GH7062RankingPosition
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $points;
 

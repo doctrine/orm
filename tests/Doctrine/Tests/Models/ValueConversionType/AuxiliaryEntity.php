@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class AuxiliaryEntity
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'rot13', length: 255)]
     #[Id]
     public $id4;

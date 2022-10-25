@@ -84,9 +84,7 @@ class DDC258Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['class1' => 'DDC258Class1', 'class2' => 'DDC258Class2', 'class3' => 'DDC258Class3'])]
 abstract class DDC258Super
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'id', type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
@@ -96,15 +94,11 @@ abstract class DDC258Super
 #[Entity]
 class DDC258Class1 extends DDC258Super
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'title', type: 'string', length: 150)]
     public $title;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'content', type: 'string', length: 500)]
     public $description;
 }
@@ -112,21 +106,15 @@ class DDC258Class1 extends DDC258Super
 #[Entity]
 class DDC258Class2 extends DDC258Super
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'title', type: 'string', length: 150)]
     public $title;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'content', type: 'string', length: 500)]
     public $description;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'text', type: 'text')]
     public $text;
 }
@@ -137,15 +125,11 @@ class DDC258Class2 extends DDC258Super
 #[Entity]
 class DDC258Class3 extends DDC258Super
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'title', type: 'string', length: 150)]
     public $apples;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'content', type: 'string', length: 500)]
     public $bananas;
 }

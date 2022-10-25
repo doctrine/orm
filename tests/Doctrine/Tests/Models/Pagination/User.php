@@ -25,9 +25,7 @@ abstract class User
     #[GeneratedValue]
     private int $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 }

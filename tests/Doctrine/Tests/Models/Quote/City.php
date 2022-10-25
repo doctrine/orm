@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class City
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer', name: '`city-id`')]

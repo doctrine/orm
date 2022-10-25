@@ -14,23 +14,17 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class SerializationModel
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var mixed[]
-     */
+    /** @var mixed[] */
     #[Column(name: 'the_array', type: 'array', nullable: true)]
     public $array;
 
-    /**
-     * @var object
-     */
+    /** @var object */
     #[Column(name: 'the_obj', type: 'object', nullable: true)]
     public $object;
 }

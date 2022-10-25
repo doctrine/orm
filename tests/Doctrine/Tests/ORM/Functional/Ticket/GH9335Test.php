@@ -105,23 +105,17 @@ class GH9335IntObject
 #[Entity]
 class GH9335Book
 {
-    /**
-     * @var GH9335IntObject
-     */
+    /** @var GH9335IntObject */
     #[Id]
     #[Column(type: GH9335IntObjectType::class, unique: true)]
     private $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string')]
     private $title;
 
 
-    /**
-     * @var GH9335Author
-     */
+    /** @var GH9335Author */
     #[OneToOne(targetEntity: 'GH9335Author', mappedBy: 'book', cascade: ['persist', 'remove'])]
     private $author;
 
@@ -173,17 +167,13 @@ class GH9335Book
 #[Entity]
 class GH9335Author
 {
-    /**
-     * @var GH9335Book
-     */
+    /** @var GH9335Book */
     #[Id]
     #[OneToOne(targetEntity: 'GH9335Book', inversedBy: 'author')]
     #[JoinColumn(name: 'book')]
     private $book;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', nullable: true)]
     private $name;
 

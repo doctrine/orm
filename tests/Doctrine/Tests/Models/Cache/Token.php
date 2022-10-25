@@ -26,28 +26,20 @@ use function strtotime;
 #[Cache('READ_ONLY')]
 class Token
 {
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     #[Column(type: 'date')]
     public $expiresAt;
 
-    /**
-     * @psalm-var Collection<int, Login>
-     */
+    /** @psalm-var Collection<int, Login> */
     #[OneToMany(targetEntity: 'Login', cascade: ['persist', 'remove'], mappedBy: 'token')]
     public $logins;
 
-    /**
-     * @var Action
-     */
+    /** @var Action */
     #[ManyToOne(targetEntity: 'Action', cascade: ['persist', 'remove'], inversedBy: 'tokens')]
     #[JoinColumn(name: 'action_name', referencedColumnName: 'name')]
     public $action;
 
-    /**
-     * @var ComplexAction
-     */
+    /** @var ComplexAction */
     #[JoinColumn(name: 'complex_action1_name', referencedColumnName: 'action1_name')]
     #[JoinColumn(name: 'complex_action2_name', referencedColumnName: 'action2_name')]
     #[ManyToOne(targetEntity: 'ComplexAction', cascade: ['persist', 'remove'], inversedBy: 'tokens')]

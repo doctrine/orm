@@ -69,9 +69,7 @@ class GH7767ParentEntity
     #[GeneratedValue]
     private int $id;
 
-    /**
-     * @psalm-var Collection<int, GH7767ChildEntity>
-     */
+    /** @psalm-var Collection<int, GH7767ChildEntity> */
     #[OneToMany(targetEntity: GH7767ChildEntity::class, mappedBy: 'parent', fetch: 'EXTRA_LAZY', cascade: ['persist'])]
     #[OrderBy(['position' => 'ASC'])]
     private $children;

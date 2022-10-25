@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
@@ -12,6 +11,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -74,17 +74,13 @@ final class GH7761Test extends OrmFunctionalTestCase
 #[ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class GH7761Entity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var Collection<int, GH7761ChildEntity>
-     */
+    /** @var Collection<int, GH7761ChildEntity> */
     #[JoinTable(name: 'gh7761_to_child')]
     #[JoinColumn(name: 'entity_id')]
     #[InverseJoinColumn(name: 'child_id')]
@@ -101,9 +97,7 @@ class GH7761Entity
 #[ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class GH7761ChildEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

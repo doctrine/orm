@@ -24,15 +24,11 @@ class Car
     #[Column(type: 'string', length: 255)]
     private string|null $model = null;
 
-    /**
-     * @psalm-var Collection<int, Ride>
-     */
+    /** @psalm-var Collection<int, Ride> */
     #[OneToMany(targetEntity: 'Ride', mappedBy: 'car')]
     private $freeCarRides;
 
-    /**
-     * @psalm-var Collection<int, PaidRide>
-     */
+    /** @psalm-var Collection<int, PaidRide> */
     #[OneToMany(targetEntity: 'PaidRide', mappedBy: 'car')]
     private $carRides;
 

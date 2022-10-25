@@ -18,9 +18,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Cache('NONSTRICT_READ_WRITE')]
 class Flight
 {
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     #[Column(type: 'date')]
     protected $departure;
 

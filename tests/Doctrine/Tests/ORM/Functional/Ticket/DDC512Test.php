@@ -60,9 +60,7 @@ class DDC512Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC512Customer
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
@@ -90,9 +88,7 @@ class DDC512OfferItem extends DDC512Item
 #[DiscriminatorMap(['item' => 'DDC512Item', 'offerItem' => 'DDC512OfferItem'])]
 class DDC512Item
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]

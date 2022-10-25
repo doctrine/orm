@@ -88,17 +88,13 @@ class DDC599Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['0' => 'DDC599Item', '1' => 'DDC599Subitem'])]
 class DDC599Item
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC599Child>
-     */
+    /** @psalm-var Collection<int, DDC599Child> */
     #[OneToMany(targetEntity: 'DDC599Child', mappedBy: 'parent', cascade: ['remove'])]
     protected $children;
 
@@ -117,9 +113,7 @@ class DDC599Item
 #[Entity]
 class DDC599Subitem extends DDC599Item
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $elem;
 }
@@ -127,17 +121,13 @@ class DDC599Subitem extends DDC599Item
 #[Entity]
 class DDC599Child
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var DDC599Item
-     */
+    /** @var DDC599Item */
     #[ManyToOne(targetEntity: 'DDC599Item', inversedBy: 'children')]
     #[JoinColumn(name: 'parentId', referencedColumnName: 'id')]
     public $parent;

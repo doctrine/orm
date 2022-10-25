@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -46,31 +46,23 @@ class DDC698Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC698Role
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'roleID', type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     protected $roleID;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'name', type: 'string', length: 45)]
     protected $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'shortName', type: 'string', length: 45)]
     protected $shortName;
 
 
 
-    /**
-     * @var Collection<int, DDC698Privilege>
-     */
+    /** @var Collection<int, DDC698Privilege> */
     #[JoinTable(name: 'RolePrivileges')]
     #[JoinColumn(name: 'roleID', referencedColumnName: 'roleID')]
     #[InverseJoinColumn(name: 'privilegeID', referencedColumnName: 'privilegeID')]
@@ -83,23 +75,17 @@ class DDC698Role
 #[Entity]
 class DDC698Privilege
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'privilegeID', type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     protected $privilegeID;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'name', type: 'string', length: 45)]
     protected $name;
 
-    /**
-     * @psalm-var Collection<int, DDC698Role>
-     */
+    /** @psalm-var Collection<int, DDC698Role> */
     #[ManyToMany(targetEntity: 'DDC698Role', mappedBy: 'privilege')]
     protected $roles;
 }

@@ -46,17 +46,13 @@ final class GH8217Test extends OrmFunctionalTestCase
 #[Entity]
 class GH8217Collection
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, GH8217CollectionItem>
-     */
+    /** @psalm-var Collection<int, GH8217CollectionItem> */
     #[OneToMany(targetEntity: 'GH8217CollectionItem', mappedBy: 'collection', cascade: ['persist', 'remove'], orphanRemoval: true)]
     public $items;
 

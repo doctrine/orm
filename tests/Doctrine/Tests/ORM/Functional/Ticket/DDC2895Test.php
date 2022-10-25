@@ -54,9 +54,7 @@ class DDC2895Test extends OrmFunctionalTestCase
 #[HasLifecycleCallbacks]
 abstract class AbstractDDC2895
 {
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     #[Column(name: 'last_modified', type: 'datetimetz', nullable: false)]
     protected $lastModified;
 
@@ -82,9 +80,7 @@ abstract class AbstractDDC2895
 #[HasLifecycleCallbacks]
 class DDC2895 extends AbstractDDC2895
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]

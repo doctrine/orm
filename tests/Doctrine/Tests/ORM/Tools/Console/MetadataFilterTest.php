@@ -149,9 +149,7 @@ class MetadataFilterTest extends OrmTestCase
 #[Entity]
 class MetadataFilterTestEntityAaa
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column]
     protected $id;
@@ -160,9 +158,7 @@ class MetadataFilterTestEntityAaa
 #[Entity]
 class MetadataFilterTestEntityBbb
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column]
     protected $id;
@@ -171,9 +167,7 @@ class MetadataFilterTestEntityBbb
 #[Entity]
 class MetadataFilterTestEntityCcc
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column]
     protected $id;
@@ -182,9 +176,7 @@ class MetadataFilterTestEntityCcc
 #[Entity]
 class MetadataFilterTestEntityFoo
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column]
     protected $id;
@@ -193,9 +185,7 @@ class MetadataFilterTestEntityFoo
 #[Entity]
 class MetadataFilterTestEntityBar
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column]
     protected $id;
@@ -204,9 +194,7 @@ class MetadataFilterTestEntityBar
 #[Entity]
 class MetadataFilterTestEntityFooBar
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column]
     protected $id;

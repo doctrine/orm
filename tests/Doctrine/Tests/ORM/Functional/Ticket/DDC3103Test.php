@@ -37,9 +37,7 @@ class DDC3103Test extends OrmFunctionalTestCase
 #[Embeddable]
 class DDC3103ArticleId
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'name', type: 'string', length: 255)]
     protected $nameValue;
 }

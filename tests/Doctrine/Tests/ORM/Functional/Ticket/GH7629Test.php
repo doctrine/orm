@@ -53,9 +53,7 @@ class GH7629Test extends OrmFunctionalTestCase
 #[ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class GH7629Entity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

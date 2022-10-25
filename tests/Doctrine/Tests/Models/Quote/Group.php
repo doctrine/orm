@@ -18,17 +18,13 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class Group
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer', name: '`group-id`')]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, User>
-     */
+    /** @psalm-var Collection<int, User> */
     #[ManyToMany(targetEntity: 'User', mappedBy: 'groups')]
     public $users;
 

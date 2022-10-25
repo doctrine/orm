@@ -26,23 +26,17 @@ use Doctrine\ORM\Mapping\PreUpdate;
 #[HasLifecycleCallbacks]
 abstract class DDC3597Root
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(name: 'id', type: 'integer', nullable: false)]
     #[Id]
     #[GeneratedValue(strategy: 'IDENTITY')]
     protected $id;
 
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     #[Column(name: 'created_at', type: 'datetime', nullable: false)]
     protected $createdAt = null;
 
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     #[Column(name: 'updated_at', type: 'datetime', nullable: false)]
     protected $updatedAt = null;
 

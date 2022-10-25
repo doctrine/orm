@@ -18,9 +18,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class PaidRide
 {
-    /**
-     * @var float
-     */
+    /** @var float */
     #[Column(type: 'decimal', precision: 6, scale: 2)]
     private $fare;
 

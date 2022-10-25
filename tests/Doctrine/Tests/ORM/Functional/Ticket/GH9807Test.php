@@ -76,17 +76,13 @@ final class GH9807Test extends OrmFunctionalTestCase
 #[Entity]
 class GH9807Main
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue]
     private $id;
 
-    /**
-     * @var Collection<int, GH9807Join>
-     */
+    /** @var Collection<int, GH9807Join> */
     #[ORM\ManyToMany(targetEntity: 'GH9807Join', inversedBy: 'starts')]
     private $joins;
 
@@ -100,23 +96,17 @@ class GH9807Main
 #[Entity]
 class GH9807Join
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue]
     private $id;
 
-    /**
-     * @var Collection<int, GH9807Main>
-     */
+    /** @var Collection<int, GH9807Main> */
     #[ORM\ManyToMany(targetEntity: 'GH9807Main', mappedBy: 'bases')]
     private $mains;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[ORM\Column(type: 'string', nullable: false)]
     private $value;
 }

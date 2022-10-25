@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class Client
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]

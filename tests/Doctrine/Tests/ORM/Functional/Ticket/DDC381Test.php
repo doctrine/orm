@@ -46,9 +46,7 @@ class DDC381Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC381Entity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

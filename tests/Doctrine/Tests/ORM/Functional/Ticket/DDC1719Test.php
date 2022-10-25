@@ -85,9 +85,7 @@ class DDC1719Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC1719SimpleEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer', name: '`simple-entity-id`')]
     #[GeneratedValue(strategy: 'AUTO')]

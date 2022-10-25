@@ -64,14 +64,10 @@ class DDC371Child
     #[Column(type: 'integer')]
     #[GeneratedValue]
     private int $id;
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $data;
-    /**
-     * @var DDC371Parent
-     */
+    /** @var DDC371Parent */
     #[ManyToOne(targetEntity: 'DDC371Parent', inversedBy: 'children')]
     #[JoinColumn(name: 'parentId')]
     public $parent;
@@ -84,15 +80,11 @@ class DDC371Parent
     #[Column(type: 'integer')]
     #[GeneratedValue]
     private int $id;
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $data;
 
-    /**
-     * @psalm-var Collection<int, DDC371Child>
-     */
+    /** @psalm-var Collection<int, DDC371Child> */
     #[OneToMany(targetEntity: 'DDC371Child', mappedBy: 'parent')]
     public $children;
 }

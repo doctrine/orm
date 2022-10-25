@@ -50,17 +50,13 @@ class DDC513OfferItem extends DDC513Item
 #[DiscriminatorMap(['item' => 'DDC513Item', 'offerItem' => 'DDC513OfferItem'])]
 class DDC513Item
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var DDC513Price
-     */
+    /** @var DDC513Price */
     #[OneToOne(targetEntity: 'DDC513Price', cascade: ['remove', 'persist'])]
     #[JoinColumn(name: 'price', referencedColumnName: 'id')]
     public $price;
@@ -69,17 +65,13 @@ class DDC513Item
 #[Entity]
 class DDC513Price
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $data;
 }

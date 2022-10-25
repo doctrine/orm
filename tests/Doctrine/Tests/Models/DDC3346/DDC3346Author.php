@@ -16,23 +16,17 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class DDC3346Author
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255, unique: true)]
     public $username;
 
-    /**
-     * @var Collection<int, DDC3346Article>
-     */
+    /** @var Collection<int, DDC3346Article> */
     #[OneToMany(targetEntity: 'DDC3346Article', mappedBy: 'user', fetch: 'EAGER', cascade: ['detach'])]
     public $articles = [];
 }

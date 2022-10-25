@@ -113,9 +113,7 @@ class DDC881User
     #[Column(type: 'string', length: 255)]
     private string|null $name = null;
 
-    /**
-     * @psalm-var Collection<int, DDC881PhoneNumber>
-     */
+    /** @psalm-var Collection<int, DDC881PhoneNumber> */
     #[OneToMany(targetEntity: 'DDC881PhoneNumber', mappedBy: 'id')]
     private $phoneNumbers;
 
@@ -144,9 +142,7 @@ class DDC881PhoneNumber
     #[Column(type: 'string', length: 255)]
     private string|null $phonenumber = null;
 
-    /**
-     * @psalm-var Collection<int, DDC881PhoneCall>
-     */
+    /** @psalm-var Collection<int, DDC881PhoneCall> */
     #[OneToMany(targetEntity: 'DDC881PhoneCall', mappedBy: 'phonenumber')]
     private $calls;
 

@@ -16,23 +16,17 @@ use Doctrine\ORM\Mapping\Version;
 #[Entity]
 class Article
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'id', type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'name')]
     public $name;
 
-    /**
-     * @var Category
-     */
+    /** @var Category */
     #[ManyToOne(targetEntity: 'Category', cascade: ['merge', 'persist'])]
     public $category;
 

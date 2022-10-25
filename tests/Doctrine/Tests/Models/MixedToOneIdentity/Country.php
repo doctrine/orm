@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 #[Entity]
 class Country
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Id]
     #[Column(type: 'string', length: 255)]
     #[GeneratedValue(strategy: 'NONE')]

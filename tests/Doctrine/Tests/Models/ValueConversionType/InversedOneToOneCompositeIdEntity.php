@@ -14,29 +14,21 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class InversedOneToOneCompositeIdEntity
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'rot13', length: 255)]
     #[Id]
     public $id1;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'rot13', length: 255)]
     #[Id]
     public $id2;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255, name: 'some_property')]
     public $someProperty;
 
-    /**
-     * @var OwningOneToOneCompositeIdEntity
-     */
+    /** @var OwningOneToOneCompositeIdEntity */
     #[OneToOne(targetEntity: 'OwningOneToOneCompositeIdEntity', mappedBy: 'associatedEntity')]
     public $associatedEntity;
 }

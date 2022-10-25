@@ -2197,9 +2197,7 @@ class MyAbsFunction extends FunctionNode
 #[Entity]
 class DDC1384Model
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
@@ -2210,9 +2208,7 @@ class DDC1384Model
 #[Entity]
 class DDC1474Entity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

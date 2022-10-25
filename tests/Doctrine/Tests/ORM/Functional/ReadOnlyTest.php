@@ -136,20 +136,15 @@ class ReadOnlyTest extends OrmFunctionalTestCase
 #[Entity(readOnly: true)]
 class ReadOnlyEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /** @param int $number */
     public function __construct(
-        #[Column(type: 'string', length: 255)]
-        public string $name,
-        #[Column(type: 'integer')]
-        public $numericValue,
+        #[Column(type: 'string', length: 255)] public string $name,
+        #[Column(type: 'integer')] public int $numericValue,
     ) {
     }
 }

@@ -67,17 +67,13 @@ class GH7869Test extends OrmTestCase
 #[Entity]
 class GH7869Appointment
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var GH7869Patient
-     */
+    /** @var GH7869Patient */
     #[OneToOne(targetEntity: 'GH7869Patient', inversedBy: 'appointment', fetch: 'EAGER')]
     public $patient;
 }
@@ -85,17 +81,13 @@ class GH7869Appointment
 #[Entity]
 class GH7869Patient
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var GH7869Appointment
-     */
+    /** @var GH7869Appointment */
     #[OneToOne(targetEntity: 'GH7869Appointment', mappedBy: 'patient')]
     public $appointment;
 }

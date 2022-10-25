@@ -16,17 +16,13 @@ use Doctrine\ORM\Mapping\Version;
 #[Entity]
 class FirstRelatedEntity
 {
-    /**
-     * @var SecondRelatedEntity
-     */
+    /** @var SecondRelatedEntity */
     #[Id]
     #[OneToOne(targetEntity: 'SecondRelatedEntity', fetch: 'EAGER')]
     #[JoinColumn(name: 'second_entity_id', referencedColumnName: 'id')]
     public $secondEntity;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'name')]
     public $name;
 

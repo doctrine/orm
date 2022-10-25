@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
@@ -13,6 +12,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -81,9 +81,7 @@ class DDC1595Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['Entity1' => 'DDC1595InheritedEntity1', 'Entity2' => 'DDC1595InheritedEntity2'])]
 abstract class DDC1595BaseInheritance
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
@@ -94,9 +92,7 @@ abstract class DDC1595BaseInheritance
 #[Entity]
 class DDC1595InheritedEntity1 extends DDC1595BaseInheritance
 {
-    /**
-     * @psalm-var Collection<int, DDC1595InheritedEntity2>
-     */
+    /** @psalm-var Collection<int, DDC1595InheritedEntity2> */
     #[JoinTable(name: 'entity1_entity2')]
     #[JoinColumn(name: 'parent', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'item', referencedColumnName: 'id')]

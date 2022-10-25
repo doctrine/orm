@@ -61,17 +61,13 @@ class DDC1181Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC1181Hotel
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var Booking[]
-     */
+    /** @var Booking[] */
     #[OneToMany(targetEntity: 'DDC1181Booking', mappedBy: 'hotel', cascade: ['remove'])]
     public $bookings;
 }
@@ -79,16 +75,12 @@ class DDC1181Hotel
 #[Entity]
 class DDC1181Booking
 {
-    /**
-     * @var Hotel
-     */
+    /** @var Hotel */
     #[JoinColumn(name: 'hotel_id', referencedColumnName: 'id')]
     #[Id]
     #[ManyToOne(targetEntity: 'DDC1181Hotel', inversedBy: 'bookings')]
     public $hotel;
-    /**
-     * @var Room
-     */
+    /** @var Room */
     #[JoinColumn(name: 'room_id', referencedColumnName: 'id')]
     #[Id]
     #[ManyToOne(targetEntity: 'DDC1181Room')]
@@ -98,9 +90,7 @@ class DDC1181Booking
 #[Entity]
 class DDC1181Room
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

@@ -12,17 +12,13 @@ use Doctrine\ORM\Mapping\Id;
 #[Entity]
 class NullDefaultColumn
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     #[Column(options: ['default' => null])]
     public $nullDefault;
 }

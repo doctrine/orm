@@ -49,16 +49,12 @@ class DDC1998Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC1998Entity
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Id]
     #[Column(type: 'ddc1998', length: 255)]
     public $id;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $num = 0;
 }

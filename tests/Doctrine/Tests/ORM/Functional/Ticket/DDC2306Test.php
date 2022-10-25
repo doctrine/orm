@@ -85,9 +85,7 @@ class DDC2306Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC2306Zone
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
@@ -97,23 +95,17 @@ class DDC2306Zone
 #[Entity]
 class DDC2306User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC2306UserAddress[]|Collection
-     */
+    /** @var DDC2306UserAddress[]|Collection */
     #[OneToMany(targetEntity: 'DDC2306UserAddress', mappedBy: 'user')]
     public $addresses;
 
-    /**
-     * @var DDC2306Zone
-     */
+    /** @var DDC2306Zone */
     #[ManyToOne(targetEntity: 'DDC2306Zone', fetch: 'EAGER')]
     public $zone;
 
@@ -127,23 +119,17 @@ class DDC2306User
 #[Entity]
 class DDC2306Address
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC2306UserAddress[]|Collection
-     */
+    /** @var DDC2306UserAddress[]|Collection */
     #[OneToMany(targetEntity: 'DDC2306UserAddress', mappedBy: 'address', orphanRemoval: true)]
     public $users;
 
-    /**
-     * @var DDC2306Zone
-     */
+    /** @var DDC2306Zone */
     #[ManyToOne(targetEntity: 'DDC2306Zone', fetch: 'EAGER')]
     public $zone;
 
@@ -157,9 +143,7 @@ class DDC2306Address
 #[Entity]
 class DDC2306UserAddress
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

@@ -15,17 +15,13 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class InverseSide
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Id]
     #[Column(type: 'string', length: 255)]
     #[GeneratedValue(strategy: 'NONE')]
     public $id;
 
-    /**
-     * @var OwningSide
-     */
+    /** @var OwningSide */
     #[OneToOne(targetEntity: OwningSide::class, mappedBy: 'inverse')]
     public $owning;
 }

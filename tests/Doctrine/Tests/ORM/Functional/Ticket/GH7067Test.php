@@ -51,23 +51,17 @@ final class GH7067Test extends OrmFunctionalTestCase
 #[Cache(usage: 'NONSTRICT_READ_WRITE')]
 class GH7067Entity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     #[Column(type: 'datetime')]
     public $lastUpdate;
 
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     #[Column(type: 'datetime')]
     #[Version]
     public $version;

@@ -32,17 +32,13 @@ class GH8663Test extends OrmFunctionalTestCase
 #[Entity]
 class GH8663VersionedEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     protected $id;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Version]
     #[Column(type: 'integer')]
     protected $version;

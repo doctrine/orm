@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 #[InheritanceType('JOINED')]
 class RootClass
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue]

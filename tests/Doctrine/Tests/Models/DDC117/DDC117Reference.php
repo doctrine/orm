@@ -14,17 +14,13 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[Entity]
 class DDC117Reference
 {
-    /**
-     * @var DDC117Article
-     */
+    /** @var DDC117Article */
     #[Id]
     #[ManyToOne(targetEntity: 'DDC117Article', inversedBy: 'references')]
     #[JoinColumn(name: 'source_id', referencedColumnName: 'article_id')]
     private $source;
 
-    /**
-     * @var DDC117Article
-     */
+    /** @var DDC117Article */
     #[Id]
     #[ManyToOne(targetEntity: 'DDC117Article')]
     #[JoinColumn(name: 'target_id', referencedColumnName: 'article_id')]

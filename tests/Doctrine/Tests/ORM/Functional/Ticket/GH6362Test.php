@@ -91,9 +91,7 @@ final class GH6362Test extends OrmFunctionalTestCase
 #[Entity]
 class GH6362Start
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue]
@@ -109,17 +107,13 @@ class GH6362Start
 #[Entity]
 abstract class GH6362Base
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue]
     protected $id;
 
-    /**
-     * @psalm-var Collection<int, GH6362Start>
-     */
+    /** @psalm-var Collection<int, GH6362Start> */
     #[OneToMany(targetEntity: 'GH6362Start', mappedBy: 'bases')]
     private $starts;
 }
@@ -127,9 +121,7 @@ abstract class GH6362Base
 #[Entity]
 class GH6362Child extends GH6362Base
 {
-    /**
-     * @psalm-var Collection<int, GH6362Join>
-     */
+    /** @psalm-var Collection<int, GH6362Join> */
     #[OneToMany(targetEntity: 'GH6362Join', mappedBy: 'child')]
     private $joins;
 }

@@ -98,9 +98,7 @@ class DDC2575Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC2575Root
 {
-    /**
-     * @var DDC2575A
-     */
+    /** @var DDC2575A */
     #[OneToOne(targetEntity: 'DDC2575A', mappedBy: 'rootRelation')]
     public $aRelation;
 

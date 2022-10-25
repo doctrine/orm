@@ -60,9 +60,7 @@ final class GH7505Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['array' => GH7505ArrayResponse::class, 'text' => GH7505TextResponse::class])]
 abstract class GH7505AbstractResponse
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
@@ -72,9 +70,7 @@ abstract class GH7505AbstractResponse
 #[Entity]
 class GH7505ArrayResponse extends GH7505AbstractResponse
 {
-    /**
-     * @var mixed[]
-     */
+    /** @var mixed[] */
     #[Column(name: 'value_array', type: 'simple_array')]
     public $value = [];
 }
@@ -82,9 +78,7 @@ class GH7505ArrayResponse extends GH7505AbstractResponse
 #[Entity]
 class GH7505TextResponse extends GH7505AbstractResponse
 {
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     #[Column(name: 'value_string', type: 'string', length: 255)]
     public $value;
 }

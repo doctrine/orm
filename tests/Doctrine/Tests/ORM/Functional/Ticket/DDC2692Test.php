@@ -62,9 +62,7 @@ class DDC2692Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC2692Foo
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

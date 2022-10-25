@@ -14,16 +14,12 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class DDC3699RelationOne
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC3699Child
-     */
+    /** @var DDC3699Child */
     #[OneToOne(targetEntity: 'DDC3699Child', mappedBy: 'oneRelation')]
     public $child;
 }

@@ -14,16 +14,12 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class ForumEntry
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 50)]
     public $topic;
 

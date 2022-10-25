@@ -13,9 +13,7 @@ use Doctrine\Tests\DbalTypes\GH8565EmployeePayloadType;
 #[Entity]
 class GH8565Employee extends GH8565Person
 {
-    /**
-     * @var GH8565EmployeePayloadType
-     */
+    /** @var GH8565EmployeePayloadType */
     #[Column(type: 'GH8565EmployeePayloadType', nullable: false)]
     public $type;
 }

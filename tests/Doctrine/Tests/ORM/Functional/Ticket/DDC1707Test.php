@@ -45,9 +45,7 @@ class DDC1707Test extends OrmFunctionalTestCase
 #[HasLifecycleCallbacks]
 abstract class DDC1707Base
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

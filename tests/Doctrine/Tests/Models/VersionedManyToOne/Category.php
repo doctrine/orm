@@ -15,9 +15,7 @@ use Doctrine\ORM\Mapping\Version;
 #[Entity]
 class Category
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'id', type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]

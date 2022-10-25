@@ -71,17 +71,13 @@ class DDC2759Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC2759Qualification
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC2759QualificationMetadata
-     */
+    /** @var DDC2759QualificationMetadata */
     #[OneToOne(targetEntity: 'DDC2759QualificationMetadata', mappedBy: 'content')]
     public $metadata;
 }
@@ -90,17 +86,13 @@ class DDC2759Qualification
 #[Entity]
 class DDC2759Category
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC2759MetadataCategory>
-     */
+    /** @psalm-var Collection<int, DDC2759MetadataCategory> */
     #[OneToMany(targetEntity: 'DDC2759MetadataCategory', mappedBy: 'category')]
     public $metadataCategories;
 }
@@ -109,17 +101,13 @@ class DDC2759Category
 #[Entity]
 class DDC2759QualificationMetadata
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC2759MetadataCategory>
-     */
+    /** @psalm-var Collection<int, DDC2759MetadataCategory> */
     #[OneToMany(targetEntity: 'DDC2759MetadataCategory', mappedBy: 'metadata')]
     protected $metadataCategories;
 
@@ -134,9 +122,7 @@ class DDC2759QualificationMetadata
 #[Entity]
 class DDC2759MetadataCategory
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

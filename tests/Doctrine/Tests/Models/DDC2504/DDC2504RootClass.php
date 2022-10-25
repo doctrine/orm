@@ -19,17 +19,13 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[DiscriminatorMap(['root' => 'DDC2504RootClass', 'child' => 'DDC2504ChildClass'])]
 class DDC2504RootClass
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC2504OtherClass
-     */
+    /** @var DDC2504OtherClass */
     #[ManyToOne(targetEntity: 'DDC2504OtherClass', inversedBy: 'childClasses')]
     public $other;
 }

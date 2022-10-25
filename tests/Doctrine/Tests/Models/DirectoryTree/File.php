@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class File extends AbstractContentItem
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     protected $extension = 'html';
 

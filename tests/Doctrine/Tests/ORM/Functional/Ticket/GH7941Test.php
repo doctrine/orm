@@ -90,17 +90,13 @@ final class GH7941Test extends OrmFunctionalTestCase
 #[Entity]
 class GH7941Product
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DateTimeImmutable
-     */
+    /** @var DateTimeImmutable */
     #[Column(type: 'datetime_immutable')]
     public $createdAt;
 

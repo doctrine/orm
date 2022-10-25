@@ -14,17 +14,13 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 final class Keyboard
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'NONE')]
     private $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     private $name;
 

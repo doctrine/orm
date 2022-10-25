@@ -94,9 +94,7 @@ class GH8443Foo
     #[GeneratedValue]
     private int|null $id = null;
 
-    /**
-     * @var GH8443Foo|null
-     */
+    /** @var GH8443Foo|null */
     #[OneToOne(targetEntity: 'GH8443Foo')]
     #[JoinColumn(name: 'bar_id', referencedColumnName: 'id')]
     private $bar;

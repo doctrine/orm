@@ -89,17 +89,13 @@ class DDC2012Test extends OrmFunctionalTestCase
 #[DiscriminatorMap([1 => 'DDC2012ItemPerson', 2 => 'DDC2012Item'])]
 class DDC2012Item
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @psalm-var list<string>
-     */
+    /** @psalm-var list<string> */
     #[Column(name: 'tsv', type: 'tsvector', length: 255, nullable: true)]
     public $tsv;
 }

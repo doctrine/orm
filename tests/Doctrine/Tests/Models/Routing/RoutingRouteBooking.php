@@ -14,24 +14,18 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[Entity]
 class RoutingRouteBooking
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var RoutingRoute
-     */
+    /** @var RoutingRoute */
     #[ManyToOne(targetEntity: 'RoutingRoute', inversedBy: 'bookings')]
     #[JoinColumn(name: 'route_id', referencedColumnName: 'id')]
     public $route;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $passengerName = null;
 

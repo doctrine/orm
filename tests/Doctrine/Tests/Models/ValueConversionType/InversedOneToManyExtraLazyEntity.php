@@ -16,16 +16,12 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class InversedOneToManyExtraLazyEntity
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'rot13', length: 255)]
     #[Id]
     public $id1;
 
-    /**
-     * @var Collection<int, OwningManyToOneExtraLazyEntity>
-     */
+    /** @var Collection<int, OwningManyToOneExtraLazyEntity> */
     #[OneToMany(targetEntity: 'OwningManyToOneExtraLazyEntity', mappedBy: 'associatedEntity', fetch: 'EXTRA_LAZY', indexBy: 'id2')]
     public $associatedEntities;
 

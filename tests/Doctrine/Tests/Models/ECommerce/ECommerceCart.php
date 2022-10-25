@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\ECommerce;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -37,9 +37,7 @@ class ECommerceCart
     #[JoinColumn(name: 'customer_id', referencedColumnName: 'id')]
     private ECommerceCustomer|null $customer = null;
 
-    /**
-     * @psalm-var Collection<int, ECommerceProduct>
-     */
+    /** @psalm-var Collection<int, ECommerceProduct> */
     #[JoinTable(name: 'ecommerce_carts_products')]
     #[JoinColumn(name: 'cart_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'product_id', referencedColumnName: 'id')]

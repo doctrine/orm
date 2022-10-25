@@ -20,22 +20,16 @@ use Doctrine\ORM\Mapping\Table;
 #[DiscriminatorMap(['fix' => 'DDC3899FixContract', 'flexible' => 'DDC3899FlexContract'])]
 abstract class DDC3899Contract
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     #[Column(type: 'boolean')]
     public $completed = false;
 
-    /**
-     * @var DDC3899User
-     */
+    /** @var DDC3899User */
     #[ManyToOne(targetEntity: 'DDC3899User', inversedBy: 'contract')]
     public $user;
 }

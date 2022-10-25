@@ -48,9 +48,7 @@ class GH6394Test extends OrmFunctionalTestCase
 #[Entity]
 class A
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Version]
     #[Column(type: 'integer')]
     public $version;
@@ -66,9 +64,7 @@ class A
 #[Entity]
 class B
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Version]
     #[Column(type: 'integer')]
     public $version;

@@ -19,23 +19,17 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class CmsTag
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(length: 50, name: 'tag_name', nullable: true)]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, CmsUser>
-     */
+    /** @psalm-var Collection<int, CmsUser> */
     #[ManyToMany(targetEntity: 'CmsUser', mappedBy: 'tags')]
     public $users;
 

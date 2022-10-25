@@ -62,17 +62,13 @@ class DDC2138Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC2138Structure
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 32, nullable: true)]
     protected $name;
 }
@@ -84,9 +80,7 @@ class DDC2138Structure
 #[DiscriminatorMap([4 => 'DDC2138UserFollowedUser', 3 => 'DDC2138UserFollowedStructure'])]
 abstract class DDC2138UserFollowedObject
 {
-    /**
-     * @var int $id
-     */
+    /** @var int $id */
     #[Column(name: 'id', type: 'integer')]
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
@@ -165,29 +159,21 @@ class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
 #[Entity]
 class DDC2138User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 32, nullable: true)]
     protected $name;
 
-    /**
-     * @var ArrayCollection $followedUsers
-     */
+    /** @var ArrayCollection $followedUsers */
     #[OneToMany(targetEntity: 'DDC2138UserFollowedUser', mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
     protected $followedUsers;
 
-    /**
-     * @var ArrayCollection $followedStructures
-     */
+    /** @var ArrayCollection $followedStructures */
     #[OneToMany(targetEntity: 'DDC2138UserFollowedStructure', mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
     protected $followedStructures;
 

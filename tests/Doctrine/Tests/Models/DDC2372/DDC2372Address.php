@@ -23,9 +23,7 @@ class DDC2372Address
     #[Column(type: 'string', length: 255)]
     private string|null $street = null;
 
-    /**
-     * @var User
-     */
+    /** @var User */
     #[OneToOne(targetEntity: 'User', mappedBy: 'address')]
     private $user;
 

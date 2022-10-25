@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 #[Entity]
 class PersistentCollectionContent extends PersistentObject
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

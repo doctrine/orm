@@ -17,9 +17,7 @@ class DDC117ArticleDetails
     private string $text;
 
     public function __construct(
-        /**
-         * @var DDC117Article
-         */
+        /** @var DDC117Article */
         #[Id]
         #[OneToOne(targetEntity: 'DDC117Article', inversedBy: 'details')]
         #[JoinColumn(name: 'article_id', referencedColumnName: 'article_id')]

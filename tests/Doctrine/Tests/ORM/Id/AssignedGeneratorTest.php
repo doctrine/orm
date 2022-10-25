@@ -61,9 +61,7 @@ class AssignedGeneratorTest extends OrmTestCase
 #[Entity]
 class AssignedSingleIdEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     public $myId;
@@ -72,16 +70,12 @@ class AssignedSingleIdEntity
 #[Entity]
 class AssignedCompositeIdEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     public $myId1;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     public $myId2;

@@ -18,9 +18,7 @@ use Doctrine\ORM\Mapping\Table;
 #[DiscriminatorMap(['cat' => 'Cat'])]
 abstract class Pet
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]

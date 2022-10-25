@@ -14,17 +14,13 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class BooleanModel
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     #[Column(type: 'boolean')]
     public $booleanField;
 }

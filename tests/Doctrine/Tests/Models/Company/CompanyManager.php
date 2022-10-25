@@ -23,9 +23,7 @@ class CompanyManager extends CompanyEmployee
     #[JoinColumn(name: 'car_id', referencedColumnName: 'id')]
     private CompanyCar|null $car = null;
 
-    /**
-     * @psalm-var Collection<int, CompanyFlexContract>
-     */
+    /** @psalm-var Collection<int, CompanyFlexContract> */
     #[ManyToMany(targetEntity: 'CompanyFlexContract', mappedBy: 'managers', fetch: 'EXTRA_LAZY')]
     public $managedContracts;
 

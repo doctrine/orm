@@ -93,9 +93,7 @@ final class GH7875Test extends OrmFunctionalTestCase
 #[Entity]
 class GH7875MyEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
@@ -106,9 +104,7 @@ class GH7875MyEntity
 #[Entity]
 class GH7875MyOtherEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]

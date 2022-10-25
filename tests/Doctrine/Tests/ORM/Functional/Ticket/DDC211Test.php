@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -56,23 +56,17 @@ class DDC211Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC211User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'id', type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'name', type: 'string', length: 255)]
     protected $name;
 
-    /**
-     * @psalm-var Collection<int, DDC211Group>
-     */
+    /** @psalm-var Collection<int, DDC211Group> */
     #[JoinTable(name: 'user_groups')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
@@ -100,23 +94,17 @@ class DDC211User
 #[Entity]
 class DDC211Group
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'id', type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'name', type: 'string', length: 255)]
     protected $name;
 
-    /**
-     * @psalm-var Collection<int, DDC211User>
-     */
+    /** @psalm-var Collection<int, DDC211User> */
     #[ManyToMany(targetEntity: 'DDC211User', mappedBy: 'groups')]
     protected $users;
 

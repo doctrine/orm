@@ -43,9 +43,7 @@ class DDC1515Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC1515Foo
 {
-    /**
-     * @var DDC1515Bar
-     */
+    /** @var DDC1515Bar */
     #[OneToOne(targetEntity: 'DDC1515Bar', inversedBy: 'foo')]
     #[Id]
     public $bar;
@@ -54,17 +52,13 @@ class DDC1515Foo
 #[Entity]
 class DDC1515Bar
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC1515Foo
-     */
+    /** @var DDC1515Foo */
     #[OneToOne(targetEntity: 'DDC1515Foo', mappedBy: 'bar')]
     public $foo;
 }

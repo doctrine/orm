@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -302,9 +302,7 @@ class Phrase
     #[JoinColumn(name: 'phrase_type_id', referencedColumnName: 'phrase_type_id')]
     private PhraseType|null $type = null;
 
-    /**
-     * @psalm-var Collection<int, Definition>
-     */
+    /** @psalm-var Collection<int, Definition> */
     #[OneToMany(targetEntity: 'Definition', mappedBy: 'phrase', cascade: ['persist'])]
     private $definitions;
 
@@ -367,9 +365,7 @@ class PhraseType
     #[Column(type: 'string', name: 'phrase_type_abbreviation', unique: true)]
     private string|null $abbreviation = null;
 
-    /**
-     * @psalm-var Collection<int, Phrase>
-     */
+    /** @psalm-var Collection<int, Phrase> */
     #[OneToMany(targetEntity: 'Phrase', mappedBy: 'type')]
     private $phrases;
 

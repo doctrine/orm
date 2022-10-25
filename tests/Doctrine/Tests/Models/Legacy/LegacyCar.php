@@ -16,23 +16,17 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class LegacyCar
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(name: 'iCarId', type: 'integer', nullable: false)]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, LegacyUser>
-     */
+    /** @psalm-var Collection<int, LegacyUser> */
     #[ManyToMany(targetEntity: 'LegacyUser', mappedBy: 'cars')]
     public $users;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'sDescription', type: 'string', length: 255, unique: true)]
     public $description;
 

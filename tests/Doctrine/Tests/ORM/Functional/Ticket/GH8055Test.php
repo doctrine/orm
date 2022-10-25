@@ -49,9 +49,7 @@ final class GH8055Test extends OrmFunctionalTestCase
 #[DiscriminatorMap([1 => GH8055BaseClass::class, 2 => GH8055SubClass::class])]
 class GH8055BaseClass
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
@@ -61,9 +59,7 @@ class GH8055BaseClass
 #[Entity]
 class GH8055SubClass extends GH8055BaseClass
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'test', type: 'string', length: 255)]
     public $value;
 }

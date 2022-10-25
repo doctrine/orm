@@ -19,17 +19,13 @@ use Doctrine\ORM\Mapping\Table;
 #[Cache]
 class City
 {
-    /**
-     * @var Country
-     */
+    /** @var Country */
     #[ManyToOne(targetEntity: 'Country')]
     #[JoinColumn(name: 'country', referencedColumnName: 'id')]
     #[Cache]
     public $country;
 
-    /**
-     * @var Admin1
-     */
+    /** @var Admin1 */
     #[JoinColumn(name: 'admin1', referencedColumnName: 'id')]
     #[JoinColumn(name: 'country', referencedColumnName: 'country')]
     #[ManyToOne(targetEntity: 'Admin1')]

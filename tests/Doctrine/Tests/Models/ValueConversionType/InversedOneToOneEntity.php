@@ -14,22 +14,16 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class InversedOneToOneEntity
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'rot13', length: 255)]
     #[Id]
     public $id1;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255, name: 'some_property')]
     public $someProperty;
 
-    /**
-     * @var OwningOneToOneEntity
-     */
+    /** @var OwningOneToOneEntity */
     #[OneToOne(targetEntity: 'OwningOneToOneEntity', mappedBy: 'associatedEntity')]
     public $associatedEntity;
 }

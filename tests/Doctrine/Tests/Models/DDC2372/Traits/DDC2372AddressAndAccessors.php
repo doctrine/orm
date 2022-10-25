@@ -10,9 +10,7 @@ use Doctrine\Tests\Models\DDC2372\DDC2372Address;
 
 trait DDC2372AddressAndAccessors
 {
-    /**
-     * @var DDC2372Address
-     */
+    /** @var DDC2372Address */
     #[OneToOne(targetEntity: 'Doctrine\Tests\Models\DDC2372\DDC2372Address', inversedBy: 'user')]
     #[JoinColumn(name: 'address_id', referencedColumnName: 'id')]
     private $address;

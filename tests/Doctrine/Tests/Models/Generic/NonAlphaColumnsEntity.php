@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class NonAlphaColumnsEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer', name: '`simple-entity-id`')]
     #[GeneratedValue(strategy: 'AUTO')]

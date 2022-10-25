@@ -472,15 +472,11 @@ class LifecycleCallbackTestEntity
     #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', nullable: true)]
     public $value;
 
-    /**
-     * @var LifecycleCallbackCascader
-     */
+    /** @var LifecycleCallbackCascader */
     #[ManyToOne(targetEntity: 'LifecycleCallbackCascader')]
     #[JoinColumn(name: 'cascader_id', referencedColumnName: 'id')]
     public $cascader;
@@ -544,9 +540,7 @@ class LifecycleCallbackCascader
     #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /**
-     * @psalm-var Collection<int, LifecycleCallbackTestEntity>
-     */
+    /** @psalm-var Collection<int, LifecycleCallbackTestEntity> */
     #[OneToMany(targetEntity: 'LifecycleCallbackTestEntity', mappedBy: 'cascader', cascade: ['persist'])]
     public $entities;
 
@@ -600,17 +594,13 @@ class LifecycleListenerPreUpdate
 #[HasLifecycleCallbacks]
 class LifecycleCallbackEventArgEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column]
     public $value;
 

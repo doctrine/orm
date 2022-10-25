@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class NumericEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer', name: '`1:1`')]
     #[GeneratedValue(strategy: 'AUTO')]

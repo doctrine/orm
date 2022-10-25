@@ -87,29 +87,21 @@ class DDC2931Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC2931User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var DDC2931User
-     */
+    /** @var DDC2931User */
     #[OneToOne(targetEntity: 'DDC2931User', inversedBy: 'child')]
     public $parent;
 
-    /**
-     * @var DDC2931User
-     */
+    /** @var DDC2931User */
     #[OneToOne(targetEntity: 'DDC2931User', mappedBy: 'parent')]
     public $child;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $value = 0;
 

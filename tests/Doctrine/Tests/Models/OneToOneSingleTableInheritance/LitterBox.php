@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class LitterBox
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]

@@ -14,16 +14,12 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class JoinedDerivedIdentityClass
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     #[Id]
     protected $id = 'part-0';
 
-    /**
-     * @var JoinedDerivedRootClass[]
-     */
+    /** @var JoinedDerivedRootClass[] */
     #[OneToMany(targetEntity: 'JoinedDerivedRootClass', mappedBy: 'keyPart1')]
     protected $children;
 }

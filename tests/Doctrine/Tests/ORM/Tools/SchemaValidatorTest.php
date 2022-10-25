@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,6 +14,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -232,9 +232,7 @@ abstract class MappedSuperclassEntity extends ParentEntity
 #[DiscriminatorMap(['child' => ChildEntity::class])]
 abstract class ParentEntity
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     #[Id]
     #[Column]
     protected $key;
@@ -248,23 +246,17 @@ class ChildEntity extends MappedSuperclassEntity
 #[Entity]
 class InvalidEntity1
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     #[Id]
     #[Column]
     protected $key1;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     #[Id]
     #[Column]
     protected $key2;
 
-    /**
-     * @var ArrayCollection
-     */
+    /** @var ArrayCollection */
     #[JoinTable(name: 'Entity1Entity2')]
     #[JoinColumn(name: 'key1', referencedColumnName: 'key1')]
     #[InverseJoinColumn(name: 'key3', referencedColumnName: 'key3')]
@@ -275,23 +267,17 @@ class InvalidEntity1
 #[Entity]
 class InvalidEntity2
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     #[Id]
     #[Column]
     protected $key3;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     #[Id]
     #[Column]
     protected $key4;
 
-    /**
-     * @var InvalidEntity1
-     */
+    /** @var InvalidEntity1 */
     #[ManyToOne(targetEntity: 'InvalidEntity1')]
     protected $assoc;
 }
@@ -308,9 +294,7 @@ class DDC1587ValidEntity1
     #[Column(name: 'name', type: 'string', length: 32)]
     private string $name;
 
-    /**
-     * @var Identifier
-     */
+    /** @var Identifier */
     #[OneToOne(targetEntity: 'DDC1587ValidEntity2', cascade: ['all'], mappedBy: 'agent')]
     #[JoinColumn(name: 'pk', referencedColumnName: 'pk_agent')]
     private $identifier;
@@ -332,9 +316,7 @@ class DDC1587ValidEntity2
 #[Entity]
 class DDC1649One
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     #[Id]
     #[Column]
     #[GeneratedValue]
@@ -344,9 +326,7 @@ class DDC1649One
 #[Entity]
 class DDC1649Two
 {
-    /**
-     * @var DDC1649One
-     */
+    /** @var DDC1649One */
     #[Id]
     #[ManyToOne(targetEntity: 'DDC1649One')]
     public $one;
@@ -364,9 +344,7 @@ class DDC1649Three
 #[Entity]
 class DDC3274One
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     #[Id]
     #[Column]
     #[GeneratedValue]
@@ -387,9 +365,7 @@ class DDC3274Two
 #[Entity]
 class Issue9536Target
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     #[Id]
     #[Column]
     #[GeneratedValue]
@@ -402,9 +378,7 @@ class Issue9536Target
 #[Entity]
 class Issue9536Owner
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     #[Id]
     #[Column]
     #[GeneratedValue]
@@ -417,9 +391,7 @@ class Issue9536Owner
 #[Entity]
 class DDC3322ValidEntity1
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     #[Id]
     #[Column]
     #[GeneratedValue]
@@ -485,16 +457,12 @@ class DDC3322One
     #[GeneratedValue]
     private int $id;
 
-    /**
-     * @psalm-var Collection<int, DDC3322ValidEntity1>
-     */
+    /** @psalm-var Collection<int, DDC3322ValidEntity1> */
     #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'oneValid')]
     #[OrderBy(['id' => 'ASC'])]
     private $validAssoc;
 
-    /**
-     * @psalm-var Collection<int, DDC3322ValidEntity1>
-     */
+    /** @psalm-var Collection<int, DDC3322ValidEntity1> */
     #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'oneInvalid')]
     #[OrderBy(['invalidField' => 'ASC'])]
     private $invalidAssoc;
@@ -508,16 +476,12 @@ class DDC3322Two
     #[GeneratedValue]
     private int $id;
 
-    /**
-     * @psalm-var Collection<int, DDC3322ValidEntity1>
-     */
+    /** @psalm-var Collection<int, DDC3322ValidEntity1> */
     #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'twoValid')]
     #[OrderBy(['manyToOne' => 'ASC'])]
     private $validAssoc;
 
-    /**
-     * @psalm-var Collection<int, DDC3322ValidEntity1>
-     */
+    /** @psalm-var Collection<int, DDC3322ValidEntity1> */
     #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'twoInvalid')]
     #[OrderBy(['oneToMany' => 'ASC'])]
     private $invalidAssoc;
@@ -535,9 +499,7 @@ class DDC3322Three
     #[OrderBy(['oneToOneOwning' => 'ASC'])]
     private DDC3322ValidEntity1 $validAssoc;
 
-    /**
-     * @psalm-var Collection<int, DDC3322ValidEntity1>
-     */
+    /** @psalm-var Collection<int, DDC3322ValidEntity1> */
     #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'threeInvalid')]
     #[OrderBy(['oneToOneInverse' => 'ASC'])]
     private $invalidAssoc;

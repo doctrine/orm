@@ -80,23 +80,17 @@ class DDC1080Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC1080Foo
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'fooID', type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     protected $fooID;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'fooTitle', type: 'string', length: 255)]
     protected $fooTitle;
 
-    /**
-     * @psalm-var Collection<DDC1080FooBar>
-     */
+    /** @psalm-var Collection<DDC1080FooBar> */
     #[OneToMany(targetEntity: 'DDC1080FooBar', mappedBy: 'foo', cascade: ['persist'])]
     #[OrderBy(['orderNr' => 'ASC'])]
     protected $fooBars;
@@ -141,23 +135,17 @@ class DDC1080Foo
 #[Entity]
 class DDC1080Bar
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'barID', type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     protected $barID;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'barTitle', type: 'string', length: 255)]
     protected $barTitle;
 
-    /**
-     * @psalm-var Collection<DDC1080FooBar>
-     */
+    /** @psalm-var Collection<DDC1080FooBar> */
     #[OneToMany(targetEntity: 'DDC1080FooBar', mappedBy: 'bar', cascade: ['persist'])]
     #[OrderBy(['orderNr' => 'ASC'])]
     protected $fooBars;
@@ -203,25 +191,19 @@ class DDC1080Bar
 #[Entity]
 class DDC1080FooBar
 {
-    /**
-     * @var DDC1080Foo
-     */
+    /** @var DDC1080Foo */
     #[ManyToOne(targetEntity: 'DDC1080Foo')]
     #[JoinColumn(name: 'fooID', referencedColumnName: 'fooID')]
     #[Id]
     protected $foo = null;
 
-    /**
-     * @var DDC1080Bar
-     */
+    /** @var DDC1080Bar */
     #[ManyToOne(targetEntity: 'DDC1080Bar')]
     #[JoinColumn(name: 'barID', referencedColumnName: 'barID')]
     #[Id]
     protected $bar = null;
 
-    /**
-     * @var int orderNr
-     */
+    /** @var int orderNr */
     #[Column(name: 'orderNr', type: 'integer', nullable: false)]
     protected $orderNr = null;
 

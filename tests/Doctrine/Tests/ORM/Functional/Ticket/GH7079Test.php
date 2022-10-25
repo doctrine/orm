@@ -86,17 +86,13 @@ final class GH7079Test extends OrmFunctionalTestCase
 #[Entity]
 class GH7079CmsUser
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var GH7079CmsAddress
-     */
+    /** @var GH7079CmsAddress */
     #[OneToOne(targetEntity: GH7079CmsAddress::class, mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
     public $address;
 }
@@ -105,17 +101,13 @@ class GH7079CmsUser
 #[Entity]
 class GH7079CmsAddress
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var GH7079CmsUser
-     */
+    /** @var GH7079CmsUser */
     #[OneToOne(targetEntity: GH7079CmsUser::class, inversedBy: 'address')]
     #[JoinColumn(referencedColumnName: 'id')]
     public $user;

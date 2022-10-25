@@ -78,17 +78,13 @@ final class GH7259Test extends OrmFunctionalTestCase
 #[Entity]
 class GH7259File
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var GH7259Space|null
-     */
+    /** @var GH7259Space|null */
     #[ManyToOne(targetEntity: GH7259Space::class)]
     #[JoinColumn(nullable: false)]
     public $space;
@@ -97,17 +93,13 @@ class GH7259File
 #[Entity]
 class GH7259FileVersion
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var GH7259File|null
-     */
+    /** @var GH7259File|null */
     #[ManyToOne(targetEntity: GH7259File::class)]
     #[JoinColumn(nullable: false)]
     public $file;
@@ -116,17 +108,13 @@ class GH7259FileVersion
 #[Entity]
 class GH7259Space
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var GH7259File|null
-     */
+    /** @var GH7259File|null */
     #[ManyToOne(targetEntity: GH7259File::class)]
     #[JoinColumn(nullable: true)]
     public $ruleFile;
@@ -135,17 +123,13 @@ class GH7259Space
 #[Entity]
 class GH7259Feed
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var GH7259Space|null
-     */
+    /** @var GH7259Space|null */
     #[ManyToOne(targetEntity: GH7259Space::class)]
     #[JoinColumn(nullable: false)]
     public $space;

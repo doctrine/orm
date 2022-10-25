@@ -12,17 +12,13 @@ use Doctrine\ORM\Mapping\Id;
 #[Entity(repositoryClass: 'Doctrine\Tests\Models\DDC753\DDC753CustomRepository')]
 class DDC753EntityWithCustomRepository
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     protected $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     protected $name;
 }

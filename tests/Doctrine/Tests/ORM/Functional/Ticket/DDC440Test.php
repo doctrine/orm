@@ -84,24 +84,18 @@ class DDC440Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC440Phone
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(name: 'id', type: 'integer')]
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
-    /**
-     * @var DDC440Client
-     */
+    /** @var DDC440Client */
     #[JoinColumn(name: 'client_id', referencedColumnName: 'id')]
     #[ManyToOne(targetEntity: 'DDC440Client', inversedBy: 'phones')]
     protected $client;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'phonenumber', type: 'string', length: 255)]
     protected $number;
 
@@ -143,31 +137,23 @@ class DDC440Phone
 #[Entity]
 class DDC440Client
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(name: 'id', type: 'integer')]
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
-    /**
-     * @var DDC440Phone
-     */
+    /** @var DDC440Phone */
     #[JoinColumn(name: 'main_phone_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     #[OneToOne(targetEntity: 'DDC440Phone', fetch: 'EAGER')]
     protected $mainPhone;
 
-    /**
-     * @psalm-var Collection<int, DDC440Phone>
-     */
+    /** @psalm-var Collection<int, DDC440Phone> */
     #[OneToMany(targetEntity: 'DDC440Phone', mappedBy: 'client', cascade: ['persist', 'remove'], fetch: 'EAGER', indexBy: 'id')]
     #[OrderBy(['number' => 'ASC'])]
     protected $phones;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'name', type: 'string', length: 255)]
     protected $name;
 

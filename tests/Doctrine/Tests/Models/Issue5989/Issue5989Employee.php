@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class Issue5989Employee extends Issue5989Person
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     #[Column(type: 'simple_array', nullable: true)]
     public $tags;
 }

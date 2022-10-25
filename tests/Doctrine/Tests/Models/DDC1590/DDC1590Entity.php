@@ -15,17 +15,13 @@ use Doctrine\ORM\Mapping\MappedSuperclass;
 #[MappedSuperclass]
 abstract class DDC1590Entity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     #[Column(type: 'datetime')]
     protected $createdAt;
 

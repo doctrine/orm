@@ -21,24 +21,18 @@ class DDC117Article
     #[GeneratedValue]
     private int $id;
 
-    /**
-     * @psalm-var Collection<int, DDC117Reference>
-     */
+    /** @psalm-var Collection<int, DDC117Reference> */
     #[OneToMany(targetEntity: 'DDC117Reference', mappedBy: 'source', cascade: ['remove'])]
     private $references;
 
     #[OneToOne(targetEntity: 'DDC117ArticleDetails', mappedBy: 'article', cascade: ['persist', 'remove'])]
     private DDC117ArticleDetails|null $details = null;
 
-    /**
-     * @psalm-var Collection<int, DDC117Translation>
-     */
+    /** @psalm-var Collection<int, DDC117Translation> */
     #[OneToMany(targetEntity: 'DDC117Translation', mappedBy: 'article', cascade: ['persist', 'remove'])]
     private $translations;
 
-    /**
-     * @var Collection<int, DDC117Translation>
-     */
+    /** @var Collection<int, DDC117Translation> */
     #[OneToMany(targetEntity: 'DDC117Link', mappedBy: 'source', indexBy: 'target_id', cascade: ['persist', 'remove'])]
     private Collection $links;
 

@@ -142,9 +142,7 @@ class DDC1430Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC1430Order
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'order_id', type: 'integer')]
     #[GeneratedValue]
@@ -199,9 +197,7 @@ class DDC1430Order
 #[Entity]
 class DDC1430OrderProduct
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

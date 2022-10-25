@@ -17,17 +17,13 @@ use Doctrine\ORM\Mapping\Table;
 #[Cache('NONSTRICT_READ_WRITE')]
 class Person
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var Address
-     */
+    /** @var Address */
     #[OneToOne(targetEntity: 'Address', mappedBy: 'person')]
     public $address;
 

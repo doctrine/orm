@@ -49,17 +49,13 @@ class GH7512Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['entitya' => GH7512EntityA::class, 'entityB' => GH7512EntityB::class])]
 class GH7512EntityA
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var Collection<int, GH7512EntityC>
-     */
+    /** @var Collection<int, GH7512EntityC> */
     #[OneToMany(targetEntity: 'GH7512EntityC', mappedBy: 'entityA')]
     public $entityCs;
 }
@@ -72,17 +68,13 @@ class GH7512EntityB extends GH7512EntityA
 #[Entity]
 class GH7512EntityC
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var GH7512EntityA
-     */
+    /** @var GH7512EntityA */
     #[ManyToOne(targetEntity: 'GH7512EntityA', inversedBy: 'entityCs')]
     public $entityA;
 }

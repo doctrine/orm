@@ -16,28 +16,20 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class DDC3699Child extends DDC3699Parent
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $childField;
 
-    /**
-     * @var DDC3699RelationOne
-     */
+    /** @var DDC3699RelationOne */
     #[OneToOne(targetEntity: 'DDC3699RelationOne', inversedBy: 'child')]
     public $oneRelation;
 
-    /**
-     * @psalm-var Collection<int, DDC3699RelationMany>
-     */
+    /** @psalm-var Collection<int, DDC3699RelationMany> */
     #[OneToMany(targetEntity: 'DDC3699RelationMany', mappedBy: 'child')]
     public $relations;
 }

@@ -18,16 +18,12 @@ use Doctrine\ORM\Mapping\UniqueConstraint;
 #[Entity]
 class OwningOneToOneCompositeIdForeignKeyEntity
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'rot13', length: 255)]
     #[Id]
     public $id2;
 
-    /**
-     * @var InversedOneToOneCompositeIdForeignKeyEntity
-     */
+    /** @var InversedOneToOneCompositeIdForeignKeyEntity */
     #[JoinColumn(name: 'associated_id', referencedColumnName: 'id1')]
     #[JoinColumn(name: 'associated_foreign_id', referencedColumnName: 'foreign_id')]
     #[OneToOne(targetEntity: 'InversedOneToOneCompositeIdForeignKeyEntity', inversedBy: 'associatedEntity')]

@@ -72,23 +72,17 @@ class DDC345Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC345User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, DDC345Membership>
-     */
+    /** @psalm-var Collection<int, DDC345Membership> */
     #[OneToMany(targetEntity: 'DDC345Membership', mappedBy: 'user', cascade: ['persist'])]
     public $memberships;
 
@@ -101,23 +95,17 @@ class DDC345User
 #[Entity]
 class DDC345Group
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, DDC345Membership>
-     */
+    /** @psalm-var Collection<int, DDC345Membership> */
     #[OneToMany(targetEntity: 'DDC345Membership', mappedBy: 'group', cascade: ['persist'])]
     public $memberships;
 
@@ -133,37 +121,27 @@ class DDC345Group
 #[HasLifecycleCallbacks]
 class DDC345Membership
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC345User
-     */
+    /** @var DDC345User */
     #[OneToOne(targetEntity: 'DDC345User', inversedBy: 'memberships')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     public $user;
 
-    /**
-     * @var DDC345Group
-     */
+    /** @var DDC345Group */
     #[OneToOne(targetEntity: 'DDC345Group', inversedBy: 'memberships')]
     #[JoinColumn(name: 'group_id', referencedColumnName: 'id', nullable: false)]
     public $group;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $state;
 
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     #[Column(type: 'datetime')]
     public $updated;
 

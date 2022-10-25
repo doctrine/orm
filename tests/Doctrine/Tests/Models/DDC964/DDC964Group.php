@@ -19,9 +19,7 @@ class DDC964Group
     #[Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @psalm-var ArrayCollection<int, DDC964User>
-     */
+    /** @psalm-var ArrayCollection<int, DDC964User> */
     #[ManyToMany(targetEntity: 'DDC964User', mappedBy: 'groups')]
     private $users;
 

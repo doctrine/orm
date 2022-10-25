@@ -20,24 +20,18 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class Traveler
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     protected $id;
 
-    /**
-     * @psalm-var Collection<int, Travel>
-     */
+    /** @psalm-var Collection<int, Travel> */
     #[Cache('NONSTRICT_READ_WRITE')]
     #[OneToMany(targetEntity: 'Travel', mappedBy: 'traveler', cascade: ['persist', 'remove'], orphanRemoval: true)]
     public $travels;
 
-    /**
-      * @var TravelerProfile
-      */
+    /** @var TravelerProfile */
      #[Cache]
      #[OneToOne(targetEntity: 'TravelerProfile')]
      protected $profile;

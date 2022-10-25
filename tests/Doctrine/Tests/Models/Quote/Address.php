@@ -22,23 +22,17 @@ use Doctrine\ORM\Mapping\Table;
 #[DiscriminatorMap(['simple' => Address::class, 'full' => FullAddress::class])]
 class Address
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer', name: '`address-id`')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: '`address-zip`')]
     public $zip;
 
-    /**
-     * @var User
-     */
+    /** @var User */
     #[OneToOne(targetEntity: 'User', inversedBy: 'address')]
     #[JoinColumn(name: '`user-id`', referencedColumnName: '`user-id`')]
     public $user;

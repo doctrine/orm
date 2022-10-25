@@ -35,9 +35,7 @@ class DDC588Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC588Site
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer', name: 'site_id')]
     #[GeneratedValue]

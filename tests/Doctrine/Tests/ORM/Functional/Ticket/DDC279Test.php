@@ -73,17 +73,13 @@ class DDC279Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['DDC279EntityX' => 'DDC279EntityX'])]
 abstract class DDC279EntityXAbstract
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(name: 'id', type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $data;
 }
@@ -91,9 +87,7 @@ abstract class DDC279EntityXAbstract
 #[Entity]
 class DDC279EntityX extends DDC279EntityXAbstract
 {
-    /**
-     * @var DDC279EntityY
-     */
+    /** @var DDC279EntityY */
     #[OneToOne(targetEntity: 'DDC279EntityY')]
     #[JoinColumn(name: 'y_id', referencedColumnName: 'id')]
     public $y;
@@ -102,23 +96,17 @@ class DDC279EntityX extends DDC279EntityXAbstract
 #[Entity]
 class DDC279EntityY
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(name: 'id', type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $data;
 
-    /**
-     * @var DDC279EntityZ
-     */
+    /** @var DDC279EntityZ */
     #[OneToOne(targetEntity: 'DDC279EntityZ')]
     #[JoinColumn(name: 'z_id', referencedColumnName: 'id')]
     public $z;
@@ -127,17 +115,13 @@ class DDC279EntityY
 #[Entity]
 class DDC279EntityZ
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(name: 'id', type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $data;
 }

@@ -64,23 +64,17 @@ class GH7864Test extends OrmFunctionalTestCase
 #[Entity]
 class GH7864User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @var Collection<int, GH7864Tweet>
-     */
+    /** @var Collection<int, GH7864Tweet> */
     #[OneToMany(targetEntity: 'GH7864Tweet', mappedBy: 'user', fetch: 'EXTRA_LAZY')]
     public $tweets;
 
@@ -99,23 +93,17 @@ class GH7864User
 #[Entity]
 class GH7864Tweet
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $content;
 
-    /**
-     * @var GH7864User
-     */
+    /** @var GH7864User */
     #[ManyToOne(targetEntity: 'GH7864User', inversedBy: 'tweets')]
     public $user;
 }

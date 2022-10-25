@@ -18,23 +18,17 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class CmsEmail
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(length: 250)]
     public $email;
 
-    /**
-     * @var CmsUser
-     */
+    /** @var CmsUser */
     #[OneToOne(targetEntity: 'CmsUser', mappedBy: 'email')]
     public $user;
 

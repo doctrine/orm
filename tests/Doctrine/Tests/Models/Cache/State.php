@@ -21,17 +21,13 @@ use Doctrine\ORM\Mapping\Table;
 #[Cache('NONSTRICT_READ_WRITE')]
 class State
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     protected $id;
 
-    /**
-     * @psalm-var Collection<int, City>
-     */
+    /** @psalm-var Collection<int, City> */
     #[Cache('NONSTRICT_READ_WRITE')]
     #[OneToMany(targetEntity: 'City', mappedBy: 'state')]
     protected $cities;

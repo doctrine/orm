@@ -78,23 +78,17 @@ class DDC1228Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC1228User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name = 'Bar';
 
-    /**
-     * @var DDC1228Profile
-     */
+    /** @var DDC1228Profile */
     #[OneToOne(targetEntity: 'DDC1228Profile')]
     public $profile;
 
@@ -107,17 +101,13 @@ class DDC1228User
 #[Entity]
 class DDC1228Profile
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 

@@ -16,9 +16,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class OwningSide
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Id]
     #[Column(type: 'string', length: 255)]
     #[GeneratedValue(strategy: 'NONE')]

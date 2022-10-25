@@ -34,9 +34,7 @@ class Ticket2481Test extends OrmFunctionalTestCase
 #[Entity]
 class Ticket2481Product
 {
-  /**
-     * @var int
-     */
+  /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]

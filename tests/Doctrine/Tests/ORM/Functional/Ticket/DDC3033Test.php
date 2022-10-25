@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
@@ -14,6 +13,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -72,23 +72,17 @@ class DDC3033Product
     /** @psalm-var array<string, array{mixed, mixed}> */
     public $changeSet = [];
 
-    /**
-     * @var int $id
-     */
+    /** @var int $id */
     #[Column(name: 'id', type: 'integer')]
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string $title
-     */
+    /** @var string $title */
     #[Column(name: 'title', type: 'string', length: 255)]
     public $title;
 
-    /**
-     * @var Collection<int, DDC3033User>
-     */
+    /** @var Collection<int, DDC3033User> */
     #[JoinTable(name: 'user_purchases_3033')]
     #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'user_id', referencedColumnName: 'id')]
@@ -126,17 +120,13 @@ class DDC3033Product
 #[HasLifecycleCallbacks]
 class DDC3033User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(name: 'id', type: 'integer')]
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'title', type: 'string', length: 255)]
     public $name;
 }

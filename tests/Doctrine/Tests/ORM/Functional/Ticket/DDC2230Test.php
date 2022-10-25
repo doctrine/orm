@@ -53,17 +53,13 @@ class DDC2230Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC2230User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var DDC2230Address
-     */
+    /** @var DDC2230Address */
     #[OneToOne(targetEntity: 'DDC2230Address')]
     public $address;
 }
@@ -72,9 +68,7 @@ class DDC2230User
 #[ChangeTrackingPolicy('NOTIFY')]
 class DDC2230Address implements NotifyPropertyChanged
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]

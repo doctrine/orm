@@ -55,17 +55,13 @@ class DDC2350Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC2350User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC2350Bug>
-     */
+    /** @psalm-var Collection<int, DDC2350Bug> */
     #[OneToMany(targetEntity: 'DDC2350Bug', mappedBy: 'user', fetch: 'EAGER')]
     public $reportedBugs;
 }
@@ -73,16 +69,12 @@ class DDC2350User
 #[Entity]
 class DDC2350Bug
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
-    /**
-     * @var DDC2350User
-     */
+    /** @var DDC2350User */
     #[ManyToOne(targetEntity: 'DDC2350User', inversedBy: 'reportedBugs')]
     public $user;
 }

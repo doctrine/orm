@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -67,9 +67,7 @@ class DDC1925Product
     #[Column(name: 'title', type: 'string', length: 255)]
     private string|null $title = null;
 
-    /**
-     * @psalm-var Collection<int, DDC1925User>
-     */
+    /** @psalm-var Collection<int, DDC1925User> */
     #[JoinTable(name: 'user_purchases')]
     #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'user_id', referencedColumnName: 'id')]

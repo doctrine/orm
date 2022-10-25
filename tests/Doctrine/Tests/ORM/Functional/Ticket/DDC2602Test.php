@@ -161,23 +161,17 @@ class DDC2602PostLoadListener
 #[Entity]
 class DDC2602User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 15)]
     public $name;
 
-    /**
-     * @var DDC2602Biography
-     */
+    /** @var DDC2602Biography */
     #[OneToOne(targetEntity: 'DDC2602Biography', inversedBy: 'user', cascade: ['persist', 'merge', 'refresh', 'remove'])]
     #[JoinColumn(nullable: false)]
     public $biography;
@@ -186,23 +180,17 @@ class DDC2602User
 #[Entity]
 class DDC2602Biography
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC2602User
-     */
+    /** @var DDC2602User */
     #[OneToOne(targetEntity: 'DDC2602User', mappedBy: 'biography', cascade: ['persist', 'merge', 'refresh'])]
     public $user;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'text', nullable: true)]
     public $content;
 
@@ -213,29 +201,21 @@ class DDC2602Biography
 #[Entity]
 class DDC2602BiographyField
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', unique: true, length: 100)]
     public $alias;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 100)]
     public $label;
 
-    /**
-     * @var ArrayCollection
-     */
+    /** @var ArrayCollection */
     #[OneToMany(targetEntity: 'DDC2602BiographyFieldChoice', mappedBy: 'field', cascade: ['persist', 'merge', 'refresh'])]
     public $choiceList;
 
@@ -248,23 +228,17 @@ class DDC2602BiographyField
 #[Entity]
 class DDC2602BiographyFieldChoice
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', unique: true, length: 100)]
     public $label;
 
-    /**
-     * @var DDC2602BiographyField
-     */
+    /** @var DDC2602BiographyField */
     #[ManyToOne(targetEntity: 'DDC2602BiographyField', inversedBy: 'choiceList')]
     #[JoinColumn(onDelete: 'CASCADE')]
     public $field;

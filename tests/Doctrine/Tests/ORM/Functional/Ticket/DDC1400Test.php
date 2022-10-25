@@ -72,17 +72,13 @@ class DDC1400Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC1400Article
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC1400UserState>
-     */
+    /** @psalm-var Collection<int, DDC1400UserState> */
     #[OneToMany(targetEntity: 'DDC1400UserState', mappedBy: 'article', indexBy: 'userId', fetch: 'EXTRA_LAZY')]
     public $userStates;
 }
@@ -90,17 +86,13 @@ class DDC1400Article
 #[Entity]
 class DDC1400User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC1400UserState>
-     */
+    /** @psalm-var Collection<int, DDC1400UserState> */
     #[OneToMany(targetEntity: 'DDC1400UserState', mappedBy: 'user', indexBy: 'articleId', fetch: 'EXTRA_LAZY')]
     public $userStates;
 }
@@ -108,29 +100,21 @@ class DDC1400User
 #[Entity]
 class DDC1400UserState
 {
-    /**
-     * @var DDC1400Article
-     */
+    /** @var DDC1400Article */
     #[Id]
     #[ManyToOne(targetEntity: 'DDC1400Article', inversedBy: 'userStates')]
     public $article;
 
-    /**
-     * @var DDC1400User
-     */
+    /** @var DDC1400User */
     #[Id]
     #[ManyToOne(targetEntity: 'DDC1400User', inversedBy: 'userStates')]
     public $user;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(name: 'user_id', type: 'integer')]
     public $userId;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(name: 'article_id', type: 'integer')]
     public $articleId;
 }

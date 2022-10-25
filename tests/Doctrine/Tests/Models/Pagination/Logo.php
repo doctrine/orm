@@ -19,35 +19,25 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class Logo
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $image;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $imageHeight;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $imageWidth;
 
-    /**
-     * @var Company
-     */
+    /** @var Company */
     #[OneToOne(targetEntity: 'Company', inversedBy: 'logo', cascade: ['persist'])]
     #[JoinColumn(name: 'company_id')]
     public $company;

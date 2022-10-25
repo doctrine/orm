@@ -105,9 +105,7 @@ class DDC5684ObjectId implements Stringable
 #[Entity]
 class DDC5684Object
 {
-    /**
-     * @var DDC5684ObjectIdType
-     */
+    /** @var DDC5684ObjectIdType */
     #[Id]
     #[Column(type: DDC5684ObjectIdType::class)]
     #[GeneratedValue(strategy: 'AUTO')]

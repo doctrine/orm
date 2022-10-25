@@ -25,17 +25,13 @@ use Doctrine\ORM\Mapping\Table;
 #[DiscriminatorMap([1 => 'Restaurant', 2 => 'Beach', 3 => 'Bar'])]
 abstract class Attraction
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     protected $id;
 
-    /**
-     * @psalm-var Collection<int, AttractionInfo>
-     */
+    /** @psalm-var Collection<int, AttractionInfo> */
     #[Cache]
     #[OneToMany(targetEntity: 'AttractionInfo', mappedBy: 'attraction')]
     protected $infos;

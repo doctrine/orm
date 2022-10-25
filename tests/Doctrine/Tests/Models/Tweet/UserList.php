@@ -15,23 +15,17 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class UserList
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $listName;
 
-    /**
-     * @var User
-     */
+    /** @var User */
     #[ManyToOne(targetEntity: 'User', inversedBy: 'userLists')]
     public $owner;
 }

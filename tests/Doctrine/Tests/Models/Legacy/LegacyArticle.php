@@ -16,29 +16,21 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class LegacyArticle
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'iArticleId', type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'sTopic', type: 'string', length: 255)]
     public $topic;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'sText', type: 'text')]
     public $text;
 
-    /**
-     * @var LegacyUser
-     */
+    /** @var LegacyUser */
     #[ManyToOne(targetEntity: 'LegacyUser', inversedBy: 'articles')]
     #[JoinColumn(name: 'iUserId', referencedColumnName: 'iUserId')]
     public $user;

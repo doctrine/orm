@@ -21,23 +21,17 @@ use IteratorAggregate;
 #[Entity]
 class CmsGroup implements IteratorAggregate
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(length: 50)]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, CmsUser>
-     */
+    /** @psalm-var Collection<int, CmsUser> */
     #[ManyToMany(targetEntity: 'CmsUser', mappedBy: 'groups')]
     public $users;
 

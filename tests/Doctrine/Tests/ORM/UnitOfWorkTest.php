@@ -639,16 +639,12 @@ class NotifyChangedEntity implements NotifyPropertyChanged
     #[GeneratedValue]
     private int $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     private $data;
 
     private mixed $transient = null; // not persisted
-    /**
-     * @psalm-var Collection<int, NotifyChangedRelatedItem>
-     */
+    /** @psalm-var Collection<int, NotifyChangedRelatedItem> */
     #[OneToMany(targetEntity: 'NotifyChangedRelatedItem', mappedBy: 'owner')]
     private $items;
 
@@ -733,16 +729,12 @@ class NotifyChangedRelatedItem
 #[Entity]
 class VersionedAssignedIdentifierEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Version]
     #[Column(type: 'integer')]
     public $version;
@@ -751,9 +743,7 @@ class VersionedAssignedIdentifierEntity
 #[Entity]
 class EntityWithStringIdentifier
 {
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     #[Id]
     #[Column(type: 'string', length: 255)]
     public $id;
@@ -762,9 +752,7 @@ class EntityWithStringIdentifier
 #[Entity]
 class EntityWithBooleanIdentifier
 {
-    /**
-     * @var bool|null
-     */
+    /** @var bool|null */
     #[Id]
     #[Column(type: 'boolean')]
     public $id;
@@ -773,16 +761,12 @@ class EntityWithBooleanIdentifier
 #[Entity]
 class EntityWithCompositeStringIdentifier
 {
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     #[Id]
     #[Column(type: 'string', length: 255)]
     public $id1;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     #[Id]
     #[Column(type: 'string', length: 255)]
     public $id2;
@@ -791,16 +775,12 @@ class EntityWithCompositeStringIdentifier
 #[Entity]
 class EntityWithRandomlyGeneratedField
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Id]
     #[Column(type: 'string', length: 255)]
     public $id;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $generatedField;
 
@@ -833,9 +813,7 @@ class EntityWithCascadingAssociation
     #[GeneratedValue(strategy: 'NONE')]
     private string $id;
 
-    /**
-     * @var CascadePersistedEntity|null
-     */
+    /** @var CascadePersistedEntity|null */
     #[ManyToOne(targetEntity: CascadePersistedEntity::class, cascade: ['persist'])]
     public $cascaded;
 
@@ -853,9 +831,7 @@ class EntityWithNonCascadingAssociation
     #[GeneratedValue(strategy: 'NONE')]
     private string $id;
 
-    /**
-     * @var CascadePersistedEntity|null
-     */
+    /** @var CascadePersistedEntity|null */
     #[ManyToOne(targetEntity: CascadePersistedEntity::class)]
     public $nonCascaded;
 

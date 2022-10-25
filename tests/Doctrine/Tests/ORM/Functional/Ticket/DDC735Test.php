@@ -57,17 +57,13 @@ class DDC735Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC735Product
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     protected $id;
 
-    /**
-     * @psalm-var Collection<int, DDC735Review>
-     */
+    /** @psalm-var Collection<int, DDC735Review> */
     #[OneToMany(targetEntity: 'DDC735Review', mappedBy: 'product', cascade: ['persist'], orphanRemoval: true)]
     protected $reviews;
 
@@ -96,9 +92,7 @@ class DDC735Product
 #[Entity]
 class DDC735Review
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

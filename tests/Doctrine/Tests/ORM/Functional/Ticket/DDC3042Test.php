@@ -37,61 +37,39 @@ class DDC3042Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC3042Foo
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $field;
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $field1;
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $field2;
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $field3;
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $field4;
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $field5;
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $field6;
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $field7;
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $field8;
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $field9;
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $field10;
 }
@@ -99,9 +77,7 @@ class DDC3042Foo
 #[Entity]
 class DDC3042Bar
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

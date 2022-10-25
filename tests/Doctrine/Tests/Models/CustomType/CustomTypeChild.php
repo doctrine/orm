@@ -14,17 +14,13 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class CustomTypeChild
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'upper_case_string', length: 255)]
     public $lowerCaseString = 'foo';
 }

@@ -15,9 +15,7 @@ use Doctrine\ORM\PersistentCollection;
 #[Entity]
 class DDC2504OtherClass
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue]

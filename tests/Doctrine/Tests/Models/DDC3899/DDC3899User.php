@@ -15,16 +15,12 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class DDC3899User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC3899Contract>
-     */
+    /** @psalm-var Collection<int, DDC3899Contract> */
     #[OneToMany(targetEntity: 'DDC3899Contract', mappedBy: 'user')]
     public $contracts;
 }

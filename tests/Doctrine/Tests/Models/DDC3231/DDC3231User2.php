@@ -14,17 +14,13 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity(repositoryClass: 'DDC3231User2Repository')]
 class DDC3231User2
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     protected $name;
 }

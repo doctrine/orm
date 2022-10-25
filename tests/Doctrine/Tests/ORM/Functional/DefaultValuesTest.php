@@ -89,26 +89,18 @@ class DefaultValuesTest extends OrmFunctionalTestCase
 #[Entity]
 class DefaultValueUser
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name = '';
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $type = 'Poweruser';
-    /**
-     * @var DefaultValueAddress
-     */
+    /** @var DefaultValueAddress */
     #[OneToOne(targetEntity: 'DefaultValueAddress', mappedBy: 'user', cascade: ['persist'])]
     public $address;
 
@@ -125,29 +117,21 @@ class DefaultValueUser
 #[Entity]
 class DefaultValueAddress
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 50)]
     public $country;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 50)]
     public $zip;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 50)]
     public $city;
 
@@ -157,9 +141,7 @@ class DefaultValueAddress
      */
     public $street;
 
-    /**
-     * @var DefaultValueUser
-     */
+    /** @var DefaultValueUser */
     #[OneToOne(targetEntity: 'DefaultValueUser')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     public $user;

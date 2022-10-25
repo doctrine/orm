@@ -112,29 +112,21 @@ class GH8499Test extends OrmFunctionalTestCase
 #[Entity]
 class GH8499VersionableEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $description;
 
-    /**
-     * @var DateTimeInterface
-     */
+    /** @var DateTimeInterface */
     #[Version]
     #[Column(type: 'datetime')]
     public $revision;

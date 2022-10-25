@@ -20,35 +20,25 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class Company
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255, name: 'jurisdiction_code', nullable: true)]
     public $jurisdiction;
 
-    /**
-     * @var Logo
-     */
+    /** @var Logo */
     #[OneToOne(targetEntity: 'Logo', mappedBy: 'company', cascade: ['persist'], orphanRemoval: true)]
     public $logo;
 
-    /**
-     * @psalm-var Collection<int, Department>
-     */
+    /** @psalm-var Collection<int, Department> */
     #[OneToMany(targetEntity: 'Department', mappedBy: 'company', cascade: ['persist'], orphanRemoval: true)]
     public $departments;
 }

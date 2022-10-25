@@ -352,28 +352,20 @@ class ValueObjectsTest extends OrmFunctionalTestCase
 #[Entity]
 class DDC93Person
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC93Timestamps
-     */
+    /** @var DDC93Timestamps */
     #[Embedded(class: 'DDC93Timestamps')]
     public $timestamps;
 
     public function __construct(
-        /**
-         * @var string|null
-         */
-        #[Column(type: 'string', length: 255)]
-        public $name = null,
-        #[Embedded(class: 'DDC93Address')]
-        public DDC93Address|null $address = null,
+        /** @var string|null */
+        #[Column(type: 'string', length: 255)] public $name = null,
+        #[Embedded(class: 'DDC93Address')] public DDC93Address|null $address = null,
     ) {
         $this->timestamps = new DDC93Timestamps(new DateTime());
     }
@@ -383,8 +375,7 @@ class DDC93Person
 class DDC93Timestamps
 {
     public function __construct(
-        #[Column(type: 'datetime')]
-        public DateTime $createdAt,
+        #[Column(type: 'datetime')] public DateTime $createdAt,
     ) {
     }
 }
@@ -395,17 +386,14 @@ class DDC93Timestamps
 #[DiscriminatorMap(['v' => 'Doctrine\Tests\ORM\Functional\DDC93Car'])]
 abstract class DDC93Vehicle
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
     #[Column(type: 'integer')]
     public $id;
 
     public function __construct(
-        #[Embedded(class: 'DDC93Address')]
-        public DDC93Address $address,
+        #[Embedded(class: 'DDC93Address')] public DDC93Address $address,
     ) {
     }
 }
@@ -419,8 +407,7 @@ class DDC93Car extends DDC93Vehicle
 class DDC93Country
 {
     public function __construct(
-        #[Column(type: 'string', nullable: true)]
-        public string|null $name = null,
+        #[Column(type: 'string', nullable: true)] public string|null $name = null,
     ) {
     }
 }
@@ -428,25 +415,23 @@ class DDC93Country
 #[Embeddable]
 class DDC93Address
 {
+    #[Embedded(class: DDC93Country::class)]
+    public DDC93Country|null $country = null;
+
+    /**
+     * @param string|null $street
+     * @param string|null $zip
+     */
     public function __construct(
-        /**
-         * @var string|null
-         */
         #[Column(type: 'string', length: 255)]
         public $street = null,
-        /**
-         * @var string|null
-         */
         #[Column(type: 'string', length: 255)]
         public $zip = null,
         #[Column(type: 'string', length: 255)]
         public string|null $city = null,
-        /**
-         * @var DDC93Country|null
-         */
-        #[Embedded(class: 'DDC93Country')]
-        public $country = null,
+        DDC93Country|null $country = null,
     ) {
+        $this->country = $country;
     }
 }
 
@@ -465,15 +450,11 @@ class DDC93Customer
 #[Embeddable]
 class DDC93ContactInfo
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $email;
 
-    /**
-     * @var DDC93Address
-     */
+    /** @var DDC93Address */
     #[Embedded(class: 'DDC93Address')]
     public $address;
 }
@@ -482,10 +463,8 @@ class DDC93ContactInfo
 class DDC3028PersonWithPrefix
 {
     public function __construct(
-        #[Embedded(class: 'DDC3028Id', columnPrefix: 'foobar_')]
-        public DDC3028Id|null $id = null,
-        #[Embedded(class: 'DDC3028NestedEmbeddable', columnPrefix: 'bloo_')]
-        public DDC3028NestedEmbeddable|null $nested = null,
+        #[Embedded(class: 'DDC3028Id', columnPrefix: 'foobar_')] public DDC3028Id|null $id = null,
+        #[Embedded(class: 'DDC3028NestedEmbeddable', columnPrefix: 'bloo_')] public DDC3028NestedEmbeddable|null $nested = null,
     ) {
     }
 }
@@ -494,10 +473,8 @@ class DDC3028PersonWithPrefix
 class DDC3028PersonEmptyPrefix
 {
     public function __construct(
-        #[Embedded(class: 'DDC3028Id', columnPrefix: '')]
-        public DDC3028Id|null $id = null,
-        #[Embedded(class: 'DDC3028NestedEmbeddable', columnPrefix: '')]
-        public DDC3028NestedEmbeddable|null $nested = null,
+        #[Embedded(class: 'DDC3028Id', columnPrefix: '')] public DDC3028Id|null $id = null,
+        #[Embedded(class: 'DDC3028NestedEmbeddable', columnPrefix: '')] public DDC3028NestedEmbeddable|null $nested = null,
     ) {
     }
 }
@@ -506,8 +483,7 @@ class DDC3028PersonEmptyPrefix
 class DDC3028PersonPrefixFalse
 {
     public function __construct(
-        #[Embedded(class: 'DDC3028Id', columnPrefix: false)]
-        public DDC3028Id|null $id = null,
+        #[Embedded(class: 'DDC3028Id', columnPrefix: false)] public DDC3028Id|null $id = null,
     ) {
     }
 }
@@ -516,9 +492,7 @@ class DDC3028PersonPrefixFalse
 class DDC3028Id
 {
     public function __construct(
-        #[Id]
-        #[Column(type: 'string', length: 255)]
-        public string|null $id = null,
+        #[Id] #[Column(type: 'string', length: 255)] public string|null $id = null,
     ) {
     }
 }
@@ -527,12 +501,9 @@ class DDC3028Id
 class DDC3028NestedEmbeddable
 {
     public function __construct(
-        #[Embedded(class: 'DDC3028Id', columnPrefix: 'foo_')]
-        public DDC3028Id|null $nestedWithPrefix = null,
-        #[Embedded(class: 'DDC3028Id', columnPrefix: '')]
-        public DDC3028Id|null $nestedWithEmptyPrefix = null,
-        #[Embedded(class: 'DDC3028Id', columnPrefix: false)]
-        public DDC3028Id|null $nestedWithPrefixFalse = null,
+        #[Embedded(class: 'DDC3028Id', columnPrefix: 'foo_')] public DDC3028Id|null $nestedWithPrefix = null,
+        #[Embedded(class: 'DDC3028Id', columnPrefix: '')] public DDC3028Id|null $nestedWithEmptyPrefix = null,
+        #[Embedded(class: 'DDC3028Id', columnPrefix: false)] public DDC3028Id|null $nestedWithPrefixFalse = null,
     ) {
     }
 }
@@ -540,17 +511,13 @@ class DDC3028NestedEmbeddable
 #[MappedSuperclass]
 abstract class DDC3027Animal
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC93Address
-     */
+    /** @var DDC93Address */
     #[Embedded(class: 'DDC93Address')]
     public $address;
 }
@@ -563,9 +530,7 @@ class DDC3027Dog extends DDC3027Animal
 #[Embeddable]
 class DDCInfiniteNestingEmbeddable
 {
-    /**
-     * @var DDCInfiniteNestingEmbeddable
-     */
+    /** @var DDCInfiniteNestingEmbeddable */
     #[Embedded(class: 'DDCInfiniteNestingEmbeddable')]
     public $nested;
 }
@@ -573,21 +538,15 @@ class DDCInfiniteNestingEmbeddable
 #[Embeddable]
 class DDCNestingEmbeddable1
 {
-    /**
-     * @var DDC3028Id
-     */
+    /** @var DDC3028Id */
     #[Embedded(class: 'DDC3028Id')]
     public $id1;
 
-    /**
-     * @var DDC3028Id
-     */
+    /** @var DDC3028Id */
     #[Embedded(class: 'DDC3028Id')]
     public $id2;
 
-    /**
-     * @var DDCNestingEmbeddable2
-     */
+    /** @var DDCNestingEmbeddable2 */
     #[Embedded(class: 'DDCNestingEmbeddable2')]
     public $nested;
 }
@@ -595,21 +554,15 @@ class DDCNestingEmbeddable1
 #[Embeddable]
 class DDCNestingEmbeddable2
 {
-    /**
-     * @var DDC3028Id
-     */
+    /** @var DDC3028Id */
     #[Embedded(class: 'DDC3028Id')]
     public $id1;
 
-    /**
-     * @var DDC3028Id
-     */
+    /** @var DDC3028Id */
     #[Embedded(class: 'DDC3028Id')]
     public $id2;
 
-    /**
-     * @var DDCNestingEmbeddable3
-     */
+    /** @var DDCNestingEmbeddable3 */
     #[Embedded(class: 'DDCNestingEmbeddable3')]
     public $nested;
 }
@@ -617,21 +570,15 @@ class DDCNestingEmbeddable2
 #[Embeddable]
 class DDCNestingEmbeddable3
 {
-    /**
-     * @var DDC3028Id
-     */
+    /** @var DDC3028Id */
     #[Embedded(class: 'DDC3028Id')]
     public $id1;
 
-    /**
-     * @var DDC3028Id
-     */
+    /** @var DDC3028Id */
     #[Embedded(class: 'DDC3028Id')]
     public $id2;
 
-    /**
-     * @var DDCNestingEmbeddable4
-     */
+    /** @var DDCNestingEmbeddable4 */
     #[Embedded(class: 'DDCNestingEmbeddable4')]
     public $nested;
 }
@@ -639,21 +586,15 @@ class DDCNestingEmbeddable3
 #[Embeddable]
 class DDCNestingEmbeddable4
 {
-    /**
-     * @var DDC3028Id
-     */
+    /** @var DDC3028Id */
     #[Embedded(class: 'DDC3028Id')]
     public $id1;
 
-    /**
-     * @var DDC3028Id
-     */
+    /** @var DDC3028Id */
     #[Embedded(class: 'DDC3028Id')]
     public $id2;
 
-    /**
-     * @var DDCNestingEmbeddable1
-     */
+    /** @var DDCNestingEmbeddable1 */
     #[Embedded(class: 'DDCNestingEmbeddable1')]
     public $nested;
 }

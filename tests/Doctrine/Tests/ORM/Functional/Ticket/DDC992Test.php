@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
@@ -13,6 +12,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -94,23 +94,17 @@ class DDC992Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['child' => 'DDC992Child', 'parent' => 'DDC992Parent'])]
 class DDC992Parent
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC992Parent
-     */
+    /** @var DDC992Parent */
     #[ManyToOne(targetEntity: 'DDC992Parent', inversedBy: 'childs')]
     public $parent;
 
-    /**
-     * @var Collection<int, DDC992Child>
-     */
+    /** @var Collection<int, DDC992Child> */
     #[OneToMany(targetEntity: 'DDC992Child', mappedBy: 'parent')]
     public $childs;
 }
@@ -132,29 +126,21 @@ class DDC992Role
         return $this->roleID;
     }
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'roleID', type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $roleID;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'name', type: 'string', length: 45)]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, DDC992Role>
-     */
+    /** @psalm-var Collection<int, DDC992Role> */
     #[ManyToMany(targetEntity: 'DDC992Role', mappedBy: 'extends')]
     public $extendedBy;
 
-    /**
-     * @psalm-var Collection<int, DDC992Role>
-     */
+    /** @psalm-var Collection<int, DDC992Role> */
     #[JoinTable(name: 'RoleRelations')]
     #[JoinColumn(name: 'roleID', referencedColumnName: 'roleID')]
     #[InverseJoinColumn(name: 'extendsRoleID', referencedColumnName: 'roleID')]

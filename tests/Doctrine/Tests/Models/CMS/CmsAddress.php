@@ -25,21 +25,15 @@ class CmsAddress
     #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(length: 50)]
     public $country;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(length: 50)]
     public $zip;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(length: 50)]
     public $city;
 
@@ -50,9 +44,7 @@ class CmsAddress
      */
     public $street;
 
-    /**
-     * @var CmsUser
-     */
+    /** @var CmsUser */
     #[OneToOne(targetEntity: 'CmsUser', inversedBy: 'address')]
     #[JoinColumn(referencedColumnName: 'id')]
     public $user;

@@ -104,9 +104,7 @@ class DDC837Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['class1' => 'DDC837Class1', 'class2' => 'DDC837Class2', 'class3' => 'DDC837Class3'])]
 abstract class DDC837Super
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'id', type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
@@ -116,21 +114,15 @@ abstract class DDC837Super
 #[Entity]
 class DDC837Class1 extends DDC837Super
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'title', type: 'string', length: 150)]
     public $title;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'content', type: 'string', length: 500)]
     public $description;
 
-    /**
-     * @var DDC837Aggregate
-     */
+    /** @var DDC837Aggregate */
     #[OneToOne(targetEntity: 'DDC837Aggregate')]
     public $aggregate;
 }
@@ -138,27 +130,19 @@ class DDC837Class1 extends DDC837Super
 #[Entity]
 class DDC837Class2 extends DDC837Super
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'title', type: 'string', length: 150)]
     public $title;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'content', type: 'string', length: 500)]
     public $description;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'text', type: 'text')]
     public $text;
 
-    /**
-     * @var DDC837Aggregate
-     */
+    /** @var DDC837Aggregate */
     #[OneToOne(targetEntity: 'DDC837Aggregate')]
     public $aggregate;
 }
@@ -169,15 +153,11 @@ class DDC837Class2 extends DDC837Super
 #[Entity]
 class DDC837Class3 extends DDC837Super
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'title', type: 'string', length: 150)]
     public $apples;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'content', type: 'string', length: 500)]
     public $bananas;
 }
@@ -185,9 +165,7 @@ class DDC837Class3 extends DDC837Super
 #[Entity]
 class DDC837Aggregate
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'id', type: 'integer')]
     #[GeneratedValue]

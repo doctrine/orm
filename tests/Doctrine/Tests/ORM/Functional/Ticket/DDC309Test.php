@@ -67,9 +67,7 @@ class DDC309Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC309Country
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'id', type: 'integer')]
     #[GeneratedValue]
@@ -79,9 +77,7 @@ class DDC309Country
 #[Entity]
 class DDC309User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'id', type: 'integer')]
     #[GeneratedValue]

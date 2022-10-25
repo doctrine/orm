@@ -25,9 +25,7 @@ class Bond
     #[Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @var Stock[]
-     */
+    /** @var Stock[] */
     #[JoinTable(name: 'exchange_bonds_stocks')]
     #[ManyToMany(targetEntity: 'Stock', indexBy: 'symbol')]
     public $stocks;

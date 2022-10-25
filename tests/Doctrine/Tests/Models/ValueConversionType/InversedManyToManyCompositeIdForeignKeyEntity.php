@@ -18,24 +18,18 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class InversedManyToManyCompositeIdForeignKeyEntity
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'rot13', length: 255)]
     #[Id]
     public $id1;
 
-    /**
-     * @var AuxiliaryEntity
-     */
+    /** @var AuxiliaryEntity */
     #[ManyToOne(targetEntity: 'AuxiliaryEntity')]
     #[JoinColumn(name: 'foreign_id', referencedColumnName: 'id4')]
     #[Id]
     public $foreignEntity;
 
-    /**
-     * @psalm-var Collection<int, OwningManyToManyCompositeIdForeignKeyEntity>
-     */
+    /** @psalm-var Collection<int, OwningManyToManyCompositeIdForeignKeyEntity> */
     #[ManyToMany(targetEntity: 'OwningManyToManyCompositeIdForeignKeyEntity', mappedBy: 'associatedEntities')]
     public $associatedEntities;
 

@@ -1162,23 +1162,17 @@ class User
 #[Entity]
 class UserIncorrectIndex
 {
-    /**
-     * @var int
-     **/
+    /** @var int **/
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column]
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'user_email')]
     public $email;
 
@@ -1218,23 +1212,17 @@ class UserIncorrectIndex
 #[Entity]
 class UserIncorrectUniqueConstraint
 {
-    /**
-     * @var int
-     **/
+    /** @var int **/
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column]
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'user_email')]
     public $email;
 

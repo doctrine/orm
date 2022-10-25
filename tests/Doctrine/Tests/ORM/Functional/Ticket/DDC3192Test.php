@@ -81,9 +81,7 @@ class DDC3192Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC3192Currency
 {
-    /**
-     * @var Collection<int, DDC3192Transaction>
-     */
+    /** @var Collection<int, DDC3192Transaction> */
     #[OneToMany(targetEntity: 'DDC3192Transaction', mappedBy: 'currency')]
     public $transactions;
 
@@ -99,9 +97,7 @@ class DDC3192Currency
 #[Entity]
 class DDC3192Transaction
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]

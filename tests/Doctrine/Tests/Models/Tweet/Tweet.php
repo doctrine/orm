@@ -15,23 +15,17 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class Tweet
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $content;
 
-    /**
-     * @var User
-     */
+    /** @var User */
     #[ManyToOne(targetEntity: 'User', inversedBy: 'tweets')]
     public $author;
 

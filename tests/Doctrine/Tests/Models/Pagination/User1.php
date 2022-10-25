@@ -10,9 +10,7 @@ use Doctrine\ORM\Mapping\Entity;
 #[Entity]
 class User1 extends User
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $email;
 }

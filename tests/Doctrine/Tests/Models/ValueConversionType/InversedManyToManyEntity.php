@@ -16,16 +16,12 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class InversedManyToManyEntity
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'rot13', length: 255)]
     #[Id]
     public $id1;
 
-    /**
-     * @psalm-var Collection<int, OwningManyToManyEntity>
-     */
+    /** @psalm-var Collection<int, OwningManyToManyEntity> */
     #[ManyToMany(targetEntity: 'OwningManyToManyEntity', mappedBy: 'associatedEntities')]
     public $associatedEntities;
 

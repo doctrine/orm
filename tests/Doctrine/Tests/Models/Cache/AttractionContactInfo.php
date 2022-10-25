@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class AttractionContactInfo extends AttractionInfo
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(unique: true)]
     protected $fone;
 

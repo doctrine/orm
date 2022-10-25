@@ -118,9 +118,7 @@ class DDC2862Test extends OrmFunctionalTestCase
 #[Cache('NONSTRICT_READ_WRITE')]
 class DDC2862Driver
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
@@ -166,9 +164,7 @@ class DDC2862Driver
 #[Cache('NONSTRICT_READ_WRITE')]
 class DDC2862User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]

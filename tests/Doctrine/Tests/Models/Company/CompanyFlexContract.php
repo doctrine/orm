@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -12,6 +11,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -19,9 +19,7 @@ use Doctrine\ORM\Mapping\ManyToMany;
 #[ORM\Entity]
 class CompanyFlexContract extends CompanyContract
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
@@ -33,9 +31,7 @@ class CompanyFlexContract extends CompanyContract
     #[Column(type: 'integer')]
     private int $pricePerHour = 0;
 
-    /**
-     * @psalm-var Collection<int, CompanyManager>
-     */
+    /** @psalm-var Collection<int, CompanyManager> */
     #[JoinTable(name: 'company_contract_managers')]
     #[JoinColumn(name: 'contract_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[InverseJoinColumn(name: 'employee_id', referencedColumnName: 'id')]

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
@@ -12,6 +11,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -124,9 +124,7 @@ class DDC2252Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC2252Privilege
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
@@ -142,9 +140,7 @@ class DDC2252Privilege
 #[Entity]
 class DDC2252MerchantAccount
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     protected $accountid = 111;
@@ -159,16 +155,12 @@ class DDC2252MerchantAccount
 #[Entity]
 class DDC2252User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     protected $uid = 222;
 
-    /**
-     * @psalm-var Collection<int, DDC2252Membership>
-     */
+    /** @psalm-var Collection<int, DDC2252Membership> */
     #[OneToMany(targetEntity: 'DDC2252Membership', mappedBy: 'userAccount', cascade: ['persist'])]
     #[JoinColumn(name: 'uid', referencedColumnName: 'uid')]
     protected $memberships;
@@ -200,9 +192,7 @@ class DDC2252User
 #[HasLifecycleCallbacks]
 class DDC2252Membership
 {
-    /**
-     * @psalm-var Collection<int, DDC2252Privilege>
-     */
+    /** @psalm-var Collection<int, DDC2252Privilege> */
     #[JoinTable(name: 'ddc2252_user_mch_account_privilege')]
     #[JoinColumn(name: 'mch_accountid', referencedColumnName: 'mch_accountid')]
     #[JoinColumn(name: 'uid', referencedColumnName: 'uid')]

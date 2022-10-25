@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -44,9 +44,7 @@ class DDC719Test extends OrmFunctionalTestCase
 #[MappedSuperclass]
 class MyEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
@@ -62,30 +60,22 @@ class MyEntity
 #[Entity]
 class DDC719Group extends MyEntity
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', nullable: false)]
     protected $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', nullable: true)]
     protected $description;
 
-    /**
-     * @psalm-var Collection<int, DDC719Group>
-     */
+    /** @psalm-var Collection<int, DDC719Group> */
     #[JoinTable(name: 'groups_groups')]
     #[JoinColumn(name: 'parent_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'child_id', referencedColumnName: 'id')]
     #[ManyToMany(targetEntity: 'DDC719Group', inversedBy: 'parents')]
     protected $children = null;
 
-    /**
-     * @psalm-var Collection<int, DDC719Group>
-     */
+    /** @psalm-var Collection<int, DDC719Group> */
     #[ManyToMany(targetEntity: 'DDC719Group', mappedBy: 'children')]
     protected $parents = null;
 

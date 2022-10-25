@@ -19,42 +19,30 @@ use Doctrine\ORM\Mapping\Version;
 #[Entity]
 class CmsArticle
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $topic;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'text')]
     public $text;
 
-    /**
-     * @var CmsUser
-     */
+    /** @var CmsUser */
     #[ManyToOne(targetEntity: 'CmsUser', inversedBy: 'articles')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     public $user;
 
-    /**
-     * @var Collection<int, CmsComment>
-     */
+    /** @var Collection<int, CmsComment> */
     #[OneToMany(targetEntity: 'CmsComment', mappedBy: 'article')]
     public $comments;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Version]
     #[Column(type: 'integer')]
     public $version;

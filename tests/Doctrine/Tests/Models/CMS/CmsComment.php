@@ -17,29 +17,21 @@ use Stringable;
 #[Entity]
 class CmsComment implements Stringable
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $topic;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $text;
 
-    /**
-     * @var CmsArticle
-     */
+    /** @var CmsArticle */
     #[ManyToOne(targetEntity: 'CmsArticle', inversedBy: 'comments')]
     #[JoinColumn(name: 'article_id', referencedColumnName: 'id')]
     public $article;

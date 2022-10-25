@@ -119,9 +119,7 @@ class Lemma
     #[Column(type: 'string', name: 'lemma_name', unique: true, length: 255)]
     private string|null $lemma = null;
 
-    /**
-     * @var Collection<int, Relation>
-     */
+    /** @var Collection<int, Relation> */
     #[OneToMany(targetEntity: 'Relation', mappedBy: 'parent', cascade: ['persist'])]
     private Collection $relations;
 
@@ -256,9 +254,7 @@ class RelationType
     #[Column(type: 'string', name: 'relation_type_abbreviation', unique: true, length: 255)]
     private string|null $abbreviation = null;
 
-    /**
-     * @var Collection<int, Relation>
-     */
+    /** @var Collection<int, Relation> */
     #[OneToMany(targetEntity: 'Relation', mappedBy: 'type', cascade: ['persist'])]
     private $relations;
 

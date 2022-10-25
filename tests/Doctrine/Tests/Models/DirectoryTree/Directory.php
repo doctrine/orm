@@ -10,9 +10,7 @@ use Doctrine\ORM\Mapping\Entity;
 #[Entity]
 class Directory extends AbstractContentItem
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     protected $path;
 

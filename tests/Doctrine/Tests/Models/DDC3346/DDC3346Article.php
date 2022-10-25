@@ -16,17 +16,13 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class DDC3346Article
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var DDC3346Author
-     */
+    /** @var DDC3346Author */
     #[ManyToOne(targetEntity: 'DDC3346Author', inversedBy: 'articles')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     public $user;

@@ -11,22 +11,16 @@ use Doctrine\ORM\Mapping\OneToOne;
 
 trait DDC1872ExampleTrait
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Id]
     #[Column(type: 'string', length: 255)]
     private $id;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(name: 'trait_foo', type: 'integer', length: 100, nullable: true, unique: true)]
     protected $foo;
 
-    /**
-     * @var DDC1872Bar
-     */
+    /** @var DDC1872Bar */
     #[OneToOne(targetEntity: 'DDC1872Bar', cascade: ['persist', 'merge'])]
     #[JoinColumn(name: 'example_trait_bar_id', referencedColumnName: 'id')]
     protected $bar;

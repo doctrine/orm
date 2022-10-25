@@ -10,9 +10,7 @@ use Doctrine\ORM\Mapping\Entity;
 #[Entity]
 class ForumAdministrator extends ForumUser
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer', name: 'access_level')]
     public $accessLevel;
 }

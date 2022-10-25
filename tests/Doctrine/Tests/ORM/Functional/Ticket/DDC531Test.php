@@ -59,23 +59,17 @@ class DDC531Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['0' => 'DDC531Item', '1' => 'DDC531SubItem'])]
 class DDC531Item
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC531Item>
-     */
+    /** @psalm-var Collection<int, DDC531Item> */
     #[OneToMany(targetEntity: 'DDC531Item', mappedBy: 'parent')]
     protected $children;
 
-    /**
-     * @var DDC531Item
-     */
+    /** @var DDC531Item */
     #[ManyToOne(targetEntity: 'DDC531Item', inversedBy: 'children')]
     #[JoinColumn(name: 'parentId', referencedColumnName: 'id')]
     public $parent;

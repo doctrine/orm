@@ -67,17 +67,13 @@ class Journalist extends Participant
 #[DiscriminatorMap(['journalist' => 'Journalist', 'participant' => 'Participant'])]
 class Participant
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var ProfileStatus
-     */
+    /** @var ProfileStatus */
     #[ManyToOne(targetEntity: 'ProfileStatus')]
     public $profileStatus;
 }

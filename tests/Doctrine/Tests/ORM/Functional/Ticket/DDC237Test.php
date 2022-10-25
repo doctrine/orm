@@ -75,21 +75,15 @@ class DDC237Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC237EntityX
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $data;
-    /**
-     * @var DDC237EntityY
-     */
+    /** @var DDC237EntityY */
     #[OneToOne(targetEntity: 'DDC237EntityY')]
     #[JoinColumn(name: 'y_id', referencedColumnName: 'id')]
     public $y;
@@ -100,16 +94,12 @@ class DDC237EntityX
 #[Entity]
 class DDC237EntityY
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $data;
 }
@@ -118,22 +108,16 @@ class DDC237EntityY
 #[Entity]
 class DDC237EntityZ
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $data;
 
-    /**
-     * @var DDC237EntityY
-     */
+    /** @var DDC237EntityY */
     #[OneToOne(targetEntity: 'DDC237EntityY')]
     #[JoinColumn(name: 'y_id', referencedColumnName: 'id')]
     public $y;

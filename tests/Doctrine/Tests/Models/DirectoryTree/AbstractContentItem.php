@@ -18,9 +18,7 @@ abstract class AbstractContentItem
     #[GeneratedValue]
     private int $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     protected $name;
 

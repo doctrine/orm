@@ -40,17 +40,13 @@ class DDC192Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC192User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'id', type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'name', type: 'string', length: 255)]
     public $name;
 }
@@ -60,16 +56,12 @@ class DDC192User
 #[Entity]
 class DDC192Phonenumber
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Id]
     #[Column(name: 'phone', type: 'string', length: 40)]
     protected $phone;
 
-    /**
-     * @var DDC192User
-     */
+    /** @var DDC192User */
     #[Id]
     #[ManyToOne(targetEntity: 'DDC192User')]
     #[JoinColumn(name: 'userId', referencedColumnName: 'id')]

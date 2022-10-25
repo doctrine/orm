@@ -50,17 +50,13 @@ class DDC1461Test extends OrmFunctionalTestCase
 #[ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class DDC1461User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC1461TwitterAccount
-     */
+    /** @var DDC1461TwitterAccount */
     #[OneToOne(targetEntity: 'DDC1461TwitterAccount', orphanRemoval: true, fetch: 'EAGER', cascade: ['persist'], inversedBy: 'user')]
     public $twitterAccount;
 }
@@ -69,17 +65,13 @@ class DDC1461User
 #[ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class DDC1461TwitterAccount
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC1461User
-     */
+    /** @var DDC1461User */
     #[OneToOne(targetEntity: 'DDC1461User', fetch: 'EAGER')]
     public $user;
 }

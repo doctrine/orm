@@ -210,9 +210,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 #[Entity]
 class Train
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
@@ -236,9 +234,7 @@ class Train
     #[JoinColumn(nullable: false)]
     public $owner;
 
-    /**
-     * @psalm-var Collection<int, Waggon>
-     */
+    /** @psalm-var Collection<int, Waggon> */
     #[OneToMany(targetEntity: 'Waggon', mappedBy: 'train', cascade: ['persist'])]
     public $waggons;
 
@@ -270,9 +266,7 @@ class Train
 #[Entity]
 class TrainDriver
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
@@ -301,9 +295,7 @@ class TrainDriver
 #[Entity]
 class TrainOwner
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
@@ -332,16 +324,12 @@ class TrainOwner
 #[Entity]
 class Waggon
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
-    /**
-     * @var Train
-     */
+    /** @var Train */
     #[ManyToOne(targetEntity: 'Train', inversedBy: 'waggons', fetch: 'EAGER')]
     #[JoinColumn(nullable: false)]
     public $train;
@@ -355,9 +343,7 @@ class Waggon
 #[Entity]
 class TrainOrder
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]

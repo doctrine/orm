@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 #[Entity]
 class SimpleEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]

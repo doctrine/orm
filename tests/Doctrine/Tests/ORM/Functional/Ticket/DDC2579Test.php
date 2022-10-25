@@ -70,16 +70,12 @@ class DDC2579Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC2579Entity
 {
-    /**
-     * @var DDC2579Id
-     */
+    /** @var DDC2579Id */
     #[Id]
     #[Column(type: 'ddc2579', length: 255)]
     public $id;
 
-    /**
-     * @var DDC2579EntityAssoc
-     */
+    /** @var DDC2579EntityAssoc */
     #[Id]
     #[ManyToOne(targetEntity: 'DDC2579EntityAssoc')]
     #[JoinColumn(name: 'relation_id', referencedColumnName: 'association_id')]
@@ -99,9 +95,7 @@ class DDC2579Entity
 class DDC2579EntityAssoc
 {
     public function __construct(
-        /**
-         * @var DDC2579AssocAssoc
-         */
+        /** @var DDC2579AssocAssoc */
         #[Id]
         #[ManyToOne(targetEntity: 'DDC2579AssocAssoc')]
         #[JoinColumn(name: 'association_id', referencedColumnName: 'associationId')]

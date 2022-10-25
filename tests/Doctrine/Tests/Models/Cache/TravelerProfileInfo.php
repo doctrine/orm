@@ -18,9 +18,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Cache('NONSTRICT_READ_WRITE')]
 class TravelerProfileInfo
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]

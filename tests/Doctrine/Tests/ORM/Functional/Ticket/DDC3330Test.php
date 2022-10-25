@@ -77,17 +77,13 @@ class DDC3330Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC3330Building
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC3330Hall>
-     */
+    /** @psalm-var Collection<int, DDC3330Hall> */
     #[OneToMany(targetEntity: 'DDC3330Hall', mappedBy: 'building', cascade: ['persist'])]
     public $halls;
 
@@ -102,23 +98,17 @@ class DDC3330Building
 #[Entity]
 class DDC3330Hall
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var DDC3330Building
-     */
+    /** @var DDC3330Building */
     #[ManyToOne(targetEntity: 'DDC3330Building', inversedBy: 'halls')]
     public $building;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 100)]
     public $name;
 }

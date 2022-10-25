@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -15,6 +14,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -43,9 +43,7 @@ class CompanyPerson
     #[JoinColumn(name: 'spouse_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private CompanyPerson|null $spouse = null;
 
-    /**
-     * @psalm-var Collection<int, CompanyPerson>
-     */
+    /** @psalm-var Collection<int, CompanyPerson> */
     #[JoinTable(name: 'company_persons_friends')]
     #[JoinColumn(name: 'person_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[InverseJoinColumn(name: 'friend_id', referencedColumnName: 'id', onDelete: 'CASCADE')]

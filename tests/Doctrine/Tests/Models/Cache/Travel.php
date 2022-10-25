@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Cache;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,6 +12,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -24,23 +24,17 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class Travel
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     protected $id;
 
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     #[Column(type: 'date')]
     protected $createdAt;
 
-    /**
-     * @psalm-var Collection<int, City>
-     */
+    /** @psalm-var Collection<int, City> */
     #[JoinTable(name: 'cache_visited_cities')]
     #[JoinColumn(name: 'travel_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'city_id', referencedColumnName: 'id')]

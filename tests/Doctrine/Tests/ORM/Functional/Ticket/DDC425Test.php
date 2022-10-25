@@ -33,17 +33,13 @@ class DDC425Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC425Entity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     #[Column(type: 'datetime')]
     public $someDatetimeField;
 }

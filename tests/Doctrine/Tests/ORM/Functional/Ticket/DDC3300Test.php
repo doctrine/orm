@@ -57,9 +57,7 @@ class DDC3300Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['boss' => 'Doctrine\Tests\ORM\Functional\Ticket\DDC3300Boss', 'employee' => 'Doctrine\Tests\ORM\Functional\Ticket\DDC3300Employee'])]
 abstract class DDC3300Person
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]

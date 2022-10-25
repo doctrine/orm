@@ -55,17 +55,13 @@ class GH6464Test extends OrmFunctionalTestCase
 #[Entity]
 class GH6464Post
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $authorId;
 }
@@ -76,9 +72,7 @@ class GH6464Post
 #[DiscriminatorMap(['author' => 'GH6464Author'])]
 abstract class GH6464User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

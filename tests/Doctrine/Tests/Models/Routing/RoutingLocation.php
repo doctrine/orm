@@ -12,17 +12,13 @@ use Doctrine\ORM\Mapping\Id;
 #[Entity]
 class RoutingLocation
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 

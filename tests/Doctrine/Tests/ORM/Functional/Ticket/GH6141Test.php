@@ -148,9 +148,7 @@ class GH6141People implements Stringable
 #[DiscriminatorMap([GH6141People::BOSS => GH6141Boss::class, GH6141People::EMPLOYEE => GH6141Employee::class])]
 abstract class GH6141Person
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]

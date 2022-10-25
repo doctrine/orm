@@ -88,9 +88,7 @@ class DDC3634Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC3634Entity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'bigint')]
     #[GeneratedValue(strategy: 'AUTO')]
@@ -102,9 +100,7 @@ class DDC3634Entity
 #[DiscriminatorMap([DDC3634JTIBaseEntity::class => DDC3634JTIBaseEntity::class, DDC3634JTIChildEntity::class => DDC3634JTIChildEntity::class])]
 class DDC3634JTIBaseEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'bigint')]
     #[GeneratedValue(strategy: 'AUTO')]

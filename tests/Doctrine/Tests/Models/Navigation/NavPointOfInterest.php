@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Navigation;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -28,9 +28,7 @@ class NavPointOfInterest
     #[Column(type: 'integer', name: 'nav_lat')]
     private int $lat;
 
-    /**
-     * @psalm-var Collection<int, NavUser>
-     */
+    /** @psalm-var Collection<int, NavUser> */
     #[JoinTable(name: 'navigation_pois_visitors')]
     #[JoinColumn(name: 'poi_long', referencedColumnName: 'nav_long')]
     #[JoinColumn(name: 'poi_lat', referencedColumnName: 'nav_lat')]

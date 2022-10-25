@@ -10,9 +10,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 #[Entity]
 class Cat extends Pet
 {
-    /**
-     * @var LitterBox
-     */
+    /** @var LitterBox */
     #[OneToOne(targetEntity: 'LitterBox')]
     public $litterBox;
 }

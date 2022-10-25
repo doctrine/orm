@@ -14,17 +14,13 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[Entity]
 class CompositeToOneKeyState
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Id]
     #[Column(type: 'string', length: 255)]
     #[GeneratedValue(strategy: 'NONE')]
     public $state;
 
-    /**
-     * @var Country
-     */
+    /** @var Country */
     #[Id]
     #[ManyToOne(targetEntity: 'Country', cascade: ['MERGE'])]
     #[JoinColumn(referencedColumnName: 'country')]

@@ -14,23 +14,17 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class CustomTypeUpperCase
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'upper_case_string', length: 255)]
     public $lowerCaseString;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'upper_case_string', length: 255, name: 'named_lower_case_string', nullable: true)]
     public $namedLowerCaseString;
 }

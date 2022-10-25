@@ -11,9 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 
 class DDC889Class extends DDC889SuperClass
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

@@ -47,23 +47,17 @@ class DDC2106Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC2106Entity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue(strategy: 'IDENTITY')]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC2106Entity
-     */
+    /** @var DDC2106Entity */
     #[ManyToOne(targetEntity: 'DDC2106Entity', inversedBy: 'children')]
     public $parent;
 
-    /**
-     * @psalm-var Collection<int, DDC2106Entity>
-     */
+    /** @psalm-var Collection<int, DDC2106Entity> */
     #[OneToMany(targetEntity: 'DDC2106Entity', mappedBy: 'parent', cascade: ['persist'])]
     public $children;
 

@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class AttractionLocationInfo extends AttractionInfo
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(unique: true)]
     protected $address;
 

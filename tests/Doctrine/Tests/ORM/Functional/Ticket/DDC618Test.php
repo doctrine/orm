@@ -130,22 +130,16 @@ class DDC618Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC618Author
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, DDC618Book>
-     */
+    /** @psalm-var Collection<int, DDC618Book> */
     #[OneToMany(targetEntity: 'DDC618Book', mappedBy: 'author', cascade: ['persist'])]
     public $books;
 
@@ -164,9 +158,7 @@ class DDC618Author
 #[Entity]
 class DDC618Book
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]

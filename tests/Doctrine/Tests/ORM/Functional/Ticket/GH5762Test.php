@@ -110,9 +110,7 @@ class GH5762Test extends OrmFunctionalTestCase
 #[Entity]
 class GH5762Driver
 {
-    /**
-     * @psalm-var Collection<int, GH5762DriverRide>
-     */
+    /** @psalm-var Collection<int, GH5762DriverRide> */
     #[OneToMany(targetEntity: 'GH5762DriverRide', mappedBy: 'driver')]
     public $driverRides;
 
@@ -151,9 +149,7 @@ class GH5762DriverRide
 #[Entity]
 class GH5762Car
 {
-    /**
-     * @psalm-var Collection<int, GH5762DriverRide>
-     */
+    /** @psalm-var Collection<int, GH5762DriverRide> */
     #[OneToMany(targetEntity: 'GH5762DriverRide', mappedBy: 'car')]
     public $carRides;
 

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Quote;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -22,36 +22,26 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer', name: '`user-id`')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255, name: '`user-name`')]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, Phone>
-     */
+    /** @psalm-var Collection<int, Phone> */
     #[OneToMany(targetEntity: 'Phone', mappedBy: 'user', cascade: ['persist'])]
     public $phones;
 
-    /**
-     * @var Address
-     */
+    /** @var Address */
     #[JoinColumn(name: '`address-id`', referencedColumnName: '`address-id`')]
     #[OneToOne(targetEntity: 'Address', mappedBy: 'user', cascade: ['persist'], fetch: 'EAGER')]
     public $address;
 
-    /**
-     * @psalm-var Collection<int, Group>
-     */
+    /** @psalm-var Collection<int, Group> */
     #[JoinTable(name: '`quote-users-groups`')]
     #[JoinColumn(name: '`user-id`', referencedColumnName: '`user-id`')]
     #[InverseJoinColumn(name: '`group-id`', referencedColumnName: '`group-id`')]

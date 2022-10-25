@@ -138,9 +138,7 @@ class DDC1163ProxyHolder
 #[DiscriminatorMap(['special' => 'DDC1163SpecialProduct'])]
 abstract class DDC1163Product
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(name: 'id', type: 'integer')]
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
@@ -171,9 +169,7 @@ class DDC1163Tag
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
-    /**
-     * @var Product
-     */
+    /** @var Product */
     #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
     #[ManyToOne(targetEntity: 'DDC1163Product', inversedBy: 'tags')]
     private $product;

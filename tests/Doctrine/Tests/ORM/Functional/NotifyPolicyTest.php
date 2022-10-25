@@ -126,9 +126,7 @@ class NotifyUser extends NotifyBaseEntity
     #[Column]
     private string|null $name = null;
 
-    /**
-     * @psalm-var Collection<int, NotifyGroup>
-     */
+    /** @psalm-var Collection<int, NotifyGroup> */
     #[ManyToMany(targetEntity: 'NotifyGroup')]
     private $groups;
 
@@ -171,9 +169,7 @@ class NotifyGroup extends NotifyBaseEntity
     #[Column]
     private string|null $name = null;
 
-    /**
-     * @psalm-var Collection<int, NotifyUser>
-     */
+    /** @psalm-var Collection<int, NotifyUser> */
     #[ManyToMany(targetEntity: 'NotifyUser', mappedBy: 'groups')]
     private $users;
 

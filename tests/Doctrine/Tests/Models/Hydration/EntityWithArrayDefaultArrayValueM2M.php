@@ -14,17 +14,13 @@ use Doctrine\ORM\Mapping\ManyToMany;
 #[Entity]
 class EntityWithArrayDefaultArrayValueM2M
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, SimpleEntity>
-     */
+    /** @psalm-var Collection<int, SimpleEntity> */
     #[ManyToMany(targetEntity: SimpleEntity::class)]
     public $collection = [];
 }

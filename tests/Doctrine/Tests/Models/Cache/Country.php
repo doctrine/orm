@@ -16,9 +16,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class Country
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]

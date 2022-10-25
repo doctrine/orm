@@ -49,23 +49,17 @@ class DDC2175Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['entity' => 'DDC2175Entity'])]
 class DDC2175Entity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $field;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Version]
     #[Column(type: 'integer')]
     public $version;

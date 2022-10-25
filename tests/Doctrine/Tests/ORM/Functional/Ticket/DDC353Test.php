@@ -103,9 +103,7 @@ class DDC353Picture
 #[Entity]
 class DDC353File
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(name: 'file_id', type: 'integer')]
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]

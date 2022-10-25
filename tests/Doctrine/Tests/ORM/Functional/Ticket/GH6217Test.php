@@ -62,9 +62,7 @@ final class GH6217Test extends OrmFunctionalTestCase
 #[Cache(usage: 'NONSTRICT_READ_WRITE')]
 class GH6217AssociatedEntity
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Id]
     #[Column(type: 'string', length: 255)]
     #[GeneratedValue(strategy: 'NONE')]

@@ -89,9 +89,7 @@ class DDC2660Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC2660Product
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
@@ -102,9 +100,7 @@ class DDC2660Product
 #[Entity]
 class DDC2660Customer
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

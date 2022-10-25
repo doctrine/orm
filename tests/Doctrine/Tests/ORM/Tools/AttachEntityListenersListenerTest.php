@@ -115,9 +115,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
 #[Entity]
 class AttachEntityListenersListenerTestFooEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
@@ -128,9 +126,7 @@ class AttachEntityListenersListenerTestFooEntity
 #[EntityListeners(['AttachEntityListenersListenerTestListener'])]
 class AttachEntityListenersListenerTestBarEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]

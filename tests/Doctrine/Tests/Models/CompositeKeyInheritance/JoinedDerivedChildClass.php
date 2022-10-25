@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class JoinedDerivedChildClass extends JoinedDerivedRootClass
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $extension = 'ext';
 

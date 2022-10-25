@@ -1,12 +1,12 @@
 <?php
 
 declare(strict_types=1);
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -16,37 +16,27 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class DoctrineGlobalArticle
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     protected $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     protected $headline;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'text')]
     protected $text;
 
-    /**
-     * @psalm-var Collection<int, DoctrineGlobalUser>
-     */
+    /** @psalm-var Collection<int, DoctrineGlobalUser> */
     #[JoinTable(name: 'author_articles')]
     #[JoinColumn(name: 'article_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'author_id', referencedColumnName: 'id', unique: true)]
     #[ManyToMany(targetEntity: 'DoctrineGlobalUser')]
     protected $author;
 
-    /**
-     * @psalm-var Collection<int, DoctrineGlobalUser>
-     */
+    /** @psalm-var Collection<int, DoctrineGlobalUser> */
     #[JoinTable(name: 'editor_articles')]
     #[JoinColumn(name: 'article_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'editor_id', referencedColumnName: 'id', unique: true)]

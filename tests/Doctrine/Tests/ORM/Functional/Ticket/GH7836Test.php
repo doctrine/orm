@@ -90,9 +90,7 @@ class GH7836ParentEntity
     #[GeneratedValue]
     private int $id;
 
-    /**
-     * @var Collection<int, GH7836ChildEntity>
-     */
+    /** @var Collection<int, GH7836ChildEntity> */
     #[OneToMany(targetEntity: GH7836ChildEntity::class, mappedBy: 'parent', fetch: 'EXTRA_LAZY', cascade: ['persist'])]
     #[OrderBy(['position' => 'ASC', 'name' => 'ASC'])]
     private $children;

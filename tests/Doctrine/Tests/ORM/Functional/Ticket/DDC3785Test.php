@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -14,6 +13,7 @@ use Doctrine\ORM\Mapping\Embeddable;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -66,9 +66,7 @@ class DDC3785Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC3785Asset
 {
-    /**
-     * @psalm-var Collection<int, DDC3785Attribute>
-     */
+    /** @psalm-var Collection<int, DDC3785Attribute> */
     #[JoinTable(name: 'asset_attributes')]
     #[JoinColumn(name: 'asset_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'attribute_id', referencedColumnName: 'id')]
@@ -106,9 +104,7 @@ class DDC3785Asset
 #[Entity]
 class DDC3785Attribute
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

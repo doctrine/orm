@@ -68,17 +68,13 @@ class DDC2346Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC2346Foo
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC2346Bar[]|Collection
-     */
+    /** @var DDC2346Bar[]|Collection */
     #[OneToMany(targetEntity: 'DDC2346Bar', mappedBy: 'foo')]
     public $bars;
 
@@ -95,17 +91,13 @@ class DDC2346Foo
 #[DiscriminatorMap(['bar' => 'DDC2346Bar', 'baz' => 'DDC2346Baz'])]
 class DDC2346Bar
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC2346Foo
-     */
+    /** @var DDC2346Foo */
     #[ManyToOne(targetEntity: 'DDC2346Foo', inversedBy: 'bars', fetch: 'EAGER')]
     public $foo;
 }

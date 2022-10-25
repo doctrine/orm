@@ -18,20 +18,14 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class ForumBoard
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     public $id;
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $position;
-    /**
-     * @var ForumCategory
-     */
+    /** @var ForumCategory */
     #[ManyToOne(targetEntity: 'ForumCategory', inversedBy: 'boards')]
     #[JoinColumn(name: 'category_id', referencedColumnName: 'id')]
     public $category;

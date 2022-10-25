@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC117;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinColumns;
 use Doctrine\ORM\Mapping\JoinTable;
@@ -20,17 +20,13 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[Entity]
 class DDC117Editor
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC117Translation>
-     */
+    /** @psalm-var Collection<int, DDC117Translation> */
     #[JoinTable]
     #[JoinColumn(name: 'editor_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'article_id', referencedColumnName: 'article_id')]
@@ -38,9 +34,7 @@ class DDC117Editor
     #[ManyToMany(targetEntity: 'DDC117Translation', inversedBy: 'reviewedByEditors')]
     public $reviewingTranslations;
 
-    /**
-     * @var DDC117Translation
-     */
+    /** @var DDC117Translation */
     #[JoinColumn(name: 'lt_article_id', referencedColumnName: 'article_id')]
     #[JoinColumn(name: 'lt_language', referencedColumnName: 'language')]
     #[ManyToOne(targetEntity: 'DDC117Translation', inversedBy: 'lastTranslatedBy')]

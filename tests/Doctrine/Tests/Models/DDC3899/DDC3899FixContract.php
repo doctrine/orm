@@ -10,9 +10,7 @@ use Doctrine\ORM\Mapping\Entity;
 #[Entity]
 class DDC3899FixContract extends DDC3899Contract
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $fixPrice = 0;
 }

@@ -61,23 +61,17 @@ class DDC1113Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['vehicle' => 'DDC1113Vehicle', 'car' => 'DDC1113Car', 'bus' => 'DDC1113Bus'])]
 class DDC1113Vehicle
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC1113Vehicle
-     */
+    /** @var DDC1113Vehicle */
     #[ManyToOne(targetEntity: 'DDC1113Vehicle')]
     public $parent;
 
-    /**
-     * @var DDC1113Engine
-     */
+    /** @var DDC1113Engine */
     #[OneToOne(targetEntity: 'DDC1113Engine', cascade: ['persist', 'remove'])]
     public $engine;
 }
@@ -95,9 +89,7 @@ class DDC1113Bus extends DDC1113Vehicle
 #[Entity]
 class DDC1113Engine
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]

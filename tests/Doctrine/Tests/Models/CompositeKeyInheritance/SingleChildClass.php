@@ -11,9 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 #[Entity]
 class SingleChildClass extends SingleRootClass
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $extension = 'ext';
 

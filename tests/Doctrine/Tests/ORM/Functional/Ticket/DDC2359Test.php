@@ -64,9 +64,7 @@ class DDC2359Test extends TestCase
 #[Entity]
 class DDC2359Foo
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

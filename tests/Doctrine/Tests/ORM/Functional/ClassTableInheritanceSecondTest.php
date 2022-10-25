@@ -169,9 +169,7 @@ class CTIRelated2
     #[GeneratedValue]
     private int $id;
 
-    /**
-     * @psalm-var Collection<int, CTIChild>
-     */
+    /** @psalm-var Collection<int, CTIChild> */
     #[ManyToMany(targetEntity: 'CTIChild')]
     private $ctiChildren;
 

@@ -47,17 +47,13 @@ class DDC144Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['flowelement' => 'DDC144FlowElement', 'operand' => 'DDC144Operand'])]
 class DDC144FlowElement
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column]
     public $property;
 }
@@ -71,9 +67,7 @@ abstract class DDC144Expression extends DDC144FlowElement
 #[Entity]
 class DDC144Operand extends DDC144Expression
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column]
     public $operandProperty;
 

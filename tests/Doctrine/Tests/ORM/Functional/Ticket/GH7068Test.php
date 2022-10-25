@@ -42,9 +42,7 @@ final class GH7068Test extends OrmFunctionalTestCase
 #[Entity]
 final class SomeEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

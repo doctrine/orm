@@ -72,29 +72,21 @@ OR o.property2 = :value2)',
 #[Entity]
 class QueryBuilderParenthesisEntity
 {
-    /**
-     * @var int|null
-     */
+    /** @var int|null */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     #[Column]
     public $property1;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     #[Column]
     public $property2;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     #[Column]
     public $property3;
 }

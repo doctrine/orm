@@ -95,17 +95,13 @@ final class GH6937Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['employee' => GH6937Employee::class, 'manager' => GH6937Manager::class])]
 abstract class GH6937Person
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 }
@@ -113,9 +109,7 @@ abstract class GH6937Person
 #[Entity]
 abstract class GH6937Employee extends GH6937Person
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $phoneNumber;
 }
@@ -123,9 +117,7 @@ abstract class GH6937Employee extends GH6937Person
 #[Entity]
 class GH6937Manager extends GH6937Employee
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $department;
 }

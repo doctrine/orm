@@ -70,23 +70,17 @@ class DDC199Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['parent' => 'DDC199ParentClass', 'child' => 'DDC199ChildClass'])]
 class DDC199ParentClass
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $parentData;
 
-    /**
-     * @psalm-var Collection<int, DDC199RelatedClass>
-     */
+    /** @psalm-var Collection<int, DDC199RelatedClass> */
     #[OneToMany(targetEntity: 'DDC199RelatedClass', mappedBy: 'parent')]
     public $relatedEntities;
 }
@@ -95,9 +89,7 @@ class DDC199ParentClass
 #[Entity]
 class DDC199ChildClass extends DDC199ParentClass
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column]
     public $childData;
 }
@@ -106,23 +98,17 @@ class DDC199ChildClass extends DDC199ParentClass
 #[Entity]
 class DDC199RelatedClass
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column]
     public $relatedData;
 
-    /**
-     * @var DDC199ParentClass
-     */
+    /** @var DDC199ParentClass */
     #[ManyToOne(targetEntity: 'DDC199ParentClass', inversedBy: 'relatedEntities')]
     #[JoinColumn(name: 'parent_id', referencedColumnName: 'id')]
     public $parent;

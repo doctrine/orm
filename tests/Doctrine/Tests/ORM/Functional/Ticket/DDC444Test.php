@@ -67,17 +67,13 @@ class DDC444Test extends OrmFunctionalTestCase
 #[ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class DDC444User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'id', type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'name', type: 'string', length: 255)]
     public $name;
 }

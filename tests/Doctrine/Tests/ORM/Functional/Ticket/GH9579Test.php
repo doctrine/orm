@@ -69,17 +69,13 @@ DQL;
 #[Entity]
 class GH9579Container
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var Collection<int, GH9579Item>
-     */
+    /** @var Collection<int, GH9579Item> */
     #[OneToMany(targetEntity: 'GH9579Item', mappedBy: 'container')]
     public $items;
 
@@ -88,9 +84,7 @@ class GH9579Container
         $this->items = new ArrayCollection();
     }
 
-    /**
-     * @var GH9579Item
-     */
+    /** @var GH9579Item */
     #[OneToOne(targetEntity: 'GH9579Item')]
     #[JoinColumn(name: 'item_id', referencedColumnName: 'id')]
     public $currentItem;
@@ -105,23 +99,17 @@ class GH9579Item
         $this->parts = new ArrayCollection();
     }
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var Collection<int, GH9579Part>
-     */
+    /** @var Collection<int, GH9579Part> */
     #[OneToMany(targetEntity: 'GH9579Part', mappedBy: 'item')]
     public $parts;
 
-    /**
-     * @var GH9579Container
-     */
+    /** @var GH9579Container */
     #[ManyToOne(targetEntity: 'GH9579Container', inversedBy: 'items')]
     #[JoinColumn(name: 'container_id', referencedColumnName: 'id')]
     public $container;
@@ -131,17 +119,13 @@ class GH9579Item
 #[Entity]
 class GH9579Part
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var GH9579Item
-     */
+    /** @var GH9579Item */
     #[ManyToOne(targetEntity: 'GH9579Item', inversedBy: 'parts')]
     #[JoinColumn(name: 'item_id', referencedColumnName: 'id')]
     public $item;

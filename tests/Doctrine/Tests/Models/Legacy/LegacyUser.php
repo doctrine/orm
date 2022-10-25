@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Legacy;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -21,41 +21,29 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class LegacyUser
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(name: 'iUserId', type: 'integer', nullable: false)]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'sUsername', type: 'string', length: 255, unique: true)]
     public $username;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255, name: 'name')]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, LegacyArticle>
-     */
+    /** @psalm-var Collection<int, LegacyArticle> */
     #[OneToMany(targetEntity: 'LegacyArticle', mappedBy: 'user')]
     public $articles;
 
-    /**
-     * @psalm-var Collection<int, LegacyUserReference>
-     */
+    /** @psalm-var Collection<int, LegacyUserReference> */
     #[OneToMany(targetEntity: 'LegacyUserReference', mappedBy: '_source', cascade: ['remove'])]
     public $references;
 
-    /**
-     * @psalm-var Collection<int, LegacyCar>
-     */
+    /** @psalm-var Collection<int, LegacyCar> */
     #[JoinTable(name: 'legacy_users_cars')]
     #[JoinColumn(name: 'iUserId', referencedColumnName: 'iUserId')]
     #[InverseJoinColumn(name: 'iCarId', referencedColumnName: 'iCarId')]

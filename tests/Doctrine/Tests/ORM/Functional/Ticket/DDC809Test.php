@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -66,16 +66,12 @@ class DDC809Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC809Variant
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(name: 'variant_id', type: 'integer')]
     #[Id]
     protected $variantId;
 
-    /**
-     * @psalm-var Collection<int, DDC809SpecificationValue>
-     */
+    /** @psalm-var Collection<int, DDC809SpecificationValue> */
     #[JoinTable(name: 'var_spec_value_test')]
     #[JoinColumn(name: 'variant_id', referencedColumnName: 'variant_id')]
     #[InverseJoinColumn(name: 'specification_value_id', referencedColumnName: 'specification_value_id')]
@@ -93,16 +89,12 @@ class DDC809Variant
 #[Entity]
 class DDC809SpecificationValue
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(name: 'specification_value_id', type: 'integer')]
     #[Id]
     protected $specificationValueId;
 
-    /**
-     * @psalm-var Collection<int,DDC809Variant>
-     */
+    /** @psalm-var Collection<int,DDC809Variant> */
     #[ManyToMany(targetEntity: 'DDC809Variant', mappedBy: 'SpecificationValues')]
     protected $variants;
 }

@@ -81,9 +81,7 @@ class CascadeRemoveOrderEntityO
     #[JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private CascadeRemoveOrderEntityG|null $oneToOneG = null;
 
-    /**
-     * @psalm-var Collection<int, CascadeRemoveOrderEntityG>
-     */
+    /** @psalm-var Collection<int, CascadeRemoveOrderEntityG> */
     #[OneToMany(targetEntity: 'Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG', mappedBy: 'ownerO', cascade: ['persist', 'remove'])]
     private $oneToManyG;
 

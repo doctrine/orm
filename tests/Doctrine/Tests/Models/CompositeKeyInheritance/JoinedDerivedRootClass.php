@@ -20,16 +20,12 @@ use Doctrine\ORM\Mapping\Table;
 #[DiscriminatorMap(['child' => 'JoinedDerivedChildClass', 'root' => 'JoinedDerivedRootClass'])]
 class JoinedDerivedRootClass
 {
-    /**
-     * @var JoinedDerivedIdentityClass
-     */
+    /** @var JoinedDerivedIdentityClass */
     #[ManyToOne(targetEntity: 'JoinedDerivedIdentityClass', inversedBy: 'children')]
     #[Id]
     protected $keyPart1 = 'part-1';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     #[Id]
     protected $keyPart2 = 'part-2';

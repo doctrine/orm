@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\ECommerce;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
@@ -12,6 +11,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -40,15 +40,11 @@ class ECommerceProduct
     #[JoinColumn(name: 'shipping_id', referencedColumnName: 'id')]
     private ECommerceShipping|null $shipping = null;
 
-    /**
-     * @psalm-var Collection<int, ECommerceFeature>
-     */
+    /** @psalm-var Collection<int, ECommerceFeature> */
     #[OneToMany(targetEntity: 'ECommerceFeature', mappedBy: 'product', cascade: ['persist'])]
     private $features;
 
-    /**
-     * @psalm-var Collection<int, ECommerceCategory>
-     */
+    /** @psalm-var Collection<int, ECommerceCategory> */
     #[JoinTable(name: 'ecommerce_products_categories')]
     #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'category_id', referencedColumnName: 'id')]

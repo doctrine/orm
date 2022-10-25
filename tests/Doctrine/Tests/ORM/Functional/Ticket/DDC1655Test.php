@@ -102,9 +102,7 @@ class DDC1655Test extends OrmFunctionalTestCase
 #[HasLifecycleCallbacks]
 class DDC1655Foo
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
@@ -113,9 +111,7 @@ class DDC1655Foo
     /** @var int */
     public $loaded = 0;
 
-    /**
-     * @var DDC1655Baz
-     */
+    /** @var DDC1655Baz */
     #[ManyToOne(targetEntity: 'DDC1655Baz', inversedBy: 'foos')]
     public $baz;
 
@@ -143,17 +139,13 @@ class DDC1655Bar extends DDC1655Foo
 #[Entity]
 class DDC1655Baz
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC1655Foo>
-     */
+    /** @psalm-var Collection<int, DDC1655Foo> */
     #[OneToMany(targetEntity: 'DDC1655Foo', mappedBy: 'baz')]
     public $foos = [];
 }

@@ -87,9 +87,7 @@ final class GH6531Test extends OrmFunctionalTestCase
 #[Entity]
 class GH6531User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
@@ -99,9 +97,7 @@ class GH6531User
 #[Entity]
 class GH6531Address
 {
-    /**
-     * @var GH6531User
-     */
+    /** @var GH6531User */
     #[Id]
     #[OneToOne(targetEntity: GH6531User::class)]
     public $user;
@@ -110,17 +106,13 @@ class GH6531Address
 #[Entity]
 class GH6531Article
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<string, GH6531ArticleAttribute>
-     * */
+    /** @psalm-var Collection<string, GH6531ArticleAttribute> */
     #[OneToMany(targetEntity: GH6531ArticleAttribute::class, mappedBy: 'article', cascade: ['ALL'], indexBy: 'attribute')]
     public $attributes;
 
@@ -149,17 +141,13 @@ class GH6531ArticleAttribute
 #[Entity]
 class GH6531Order
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, GH6531OrderItem>
-     */
+    /** @psalm-var Collection<int, GH6531OrderItem> */
     #[OneToMany(targetEntity: GH6531OrderItem::class, mappedBy: 'order', cascade: ['ALL'])]
     public $items;
 
@@ -177,9 +165,7 @@ class GH6531Order
 #[Entity]
 class GH6531Product
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

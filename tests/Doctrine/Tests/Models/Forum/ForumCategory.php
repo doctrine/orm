@@ -19,21 +19,15 @@ class ForumCategory
     #[Id]
     private int $id;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $position;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, ForumBoard>
-     */
+    /** @psalm-var Collection<int, ForumBoard> */
     #[OneToMany(targetEntity: 'ForumBoard', mappedBy: 'category')]
     public $boards;
 

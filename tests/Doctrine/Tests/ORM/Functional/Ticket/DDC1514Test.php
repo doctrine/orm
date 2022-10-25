@@ -70,29 +70,21 @@ class DDC1514Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC1514EntityA
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column]
     public $title;
 
-    /**
-     * @psalm-var Collection<int, DDC1514EntityB>
-     */
+    /** @psalm-var Collection<int, DDC1514EntityB> */
     #[ManyToMany(targetEntity: 'DDC1514EntityB', mappedBy: 'entityAFrom')]
     public $entitiesB;
 
-    /**
-     * @var DDC1514EntityC
-     */
+    /** @var DDC1514EntityC */
     #[ManyToOne(targetEntity: 'DDC1514EntityC')]
     public $entityC;
 
@@ -105,22 +97,16 @@ class DDC1514EntityA
 #[Entity]
 class DDC1514EntityB
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC1514EntityA
-     */
+    /** @var DDC1514EntityA */
     #[ManyToOne(targetEntity: 'DDC1514EntityA', inversedBy: 'entitiesB')]
     public $entityAFrom;
-    /**
-     * @var DDC1514EntityA
-     */
+    /** @var DDC1514EntityA */
     #[ManyToOne(targetEntity: 'DDC1514EntityA')]
     public $entityATo;
 }
@@ -128,17 +114,13 @@ class DDC1514EntityB
 #[Entity]
 class DDC1514EntityC
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column]
     public $title;
 }

@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class OwningManyToOneIdForeignKeyEntity
 {
-    /**
-     * @var associatedEntities
-     */
+    /** @var associatedEntities */
     #[Id]
     #[ManyToOne(targetEntity: AuxiliaryEntity::class, inversedBy: 'associatedEntities')]
     #[JoinColumn(name: 'associated_id', referencedColumnName: 'id4')]

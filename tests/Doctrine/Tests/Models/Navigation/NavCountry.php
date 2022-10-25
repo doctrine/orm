@@ -21,9 +21,7 @@ class NavCountry
     #[GeneratedValue]
     private int $id;
 
-    /**
-     * @psalm-var Collection<int, NavPointOfInterest>
-     */
+    /** @psalm-var Collection<int, NavPointOfInterest> */
     #[OneToMany(targetEntity: 'NavPointOfInterest', mappedBy: 'country')]
     private $pois;
 

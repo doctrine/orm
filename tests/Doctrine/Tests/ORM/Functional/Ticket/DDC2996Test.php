@@ -46,16 +46,12 @@ class DDC2996Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC2996User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $counter = 0;
 }
@@ -64,22 +60,16 @@ class DDC2996User
 #[HasLifecycleCallbacks]
 class DDC2996UserPreference
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $value;
 
-    /**
-     * @var DDC2996User
-     */
+    /** @var DDC2996User */
     #[ManyToOne(targetEntity: 'DDC2996User')]
     public $user;
 

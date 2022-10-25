@@ -136,17 +136,13 @@ class DDC1654Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC1654Post
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC1654Comment>
-     */
+    /** @psalm-var Collection<int, DDC1654Comment> */
     #[ManyToMany(targetEntity: 'DDC1654Comment', orphanRemoval: true, cascade: ['persist'])]
     public $comments = [];
 }
@@ -154,9 +150,7 @@ class DDC1654Post
 #[Entity]
 class DDC1654Comment
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

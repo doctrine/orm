@@ -38,9 +38,7 @@ abstract class GH8914BaseEntity
 #[DiscriminatorMap(['person' => 'GH8914Person', 'employee' => 'GH8914Employee'])]
 class GH8914Person extends GH8914BaseEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

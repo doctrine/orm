@@ -21,9 +21,7 @@ class Market
     #[GeneratedValue]
     private int $id;
 
-    /**
-     * @psalm-var ArrayCollection<string, Stock>
-     */
+    /** @psalm-var ArrayCollection<string, Stock> */
     #[OneToMany(targetEntity: 'Stock', mappedBy: 'market', indexBy: 'symbol')]
     public $stocks;
 

@@ -15,17 +15,13 @@ use Doctrine\ORM\Mapping\Version;
 #[Entity]
 class SecondRelatedEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'id', type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'name')]
     public $name;
 

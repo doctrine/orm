@@ -45,9 +45,7 @@ class DDC1454Picture extends DDC1454File
 #[DiscriminatorMap(['file' => 'DDC1454File', 'picture' => 'DDC1454Picture'])]
 class DDC1454File
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(name: 'file_id', type: 'integer')]
     #[Id]
     public $fileId;

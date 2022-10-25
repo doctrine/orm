@@ -67,24 +67,18 @@ final class GH5562Test extends OrmFunctionalTestCase
 #[Cache(usage: 'NONSTRICT_READ_WRITE')]
 class GH5562Merchant
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'id', type: 'integer')]
     #[GeneratedValue(strategy: 'IDENTITY')]
     public $id;
 
-    /**
-     * @var GH5562Manager
-     */
+    /** @var GH5562Manager */
     #[OneToOne(targetEntity: GH5562Manager::class, mappedBy: 'merchant')]
     #[Cache(usage: 'NONSTRICT_READ_WRITE')]
     public $manager;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'name', type: 'string', length: 255, nullable: false)]
     public $name;
 }
@@ -94,9 +88,7 @@ class GH5562Merchant
 #[DiscriminatorMap(['MANAGER' => GH5562Manager::class])]
 abstract class GH5562User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'id', type: 'integer')]
     #[GeneratedValue(strategy: 'IDENTITY')]
@@ -107,15 +99,11 @@ abstract class GH5562User
 #[Cache(usage: 'NONSTRICT_READ_WRITE')]
 class GH5562Manager extends GH5562User
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column]
     public $username;
 
-    /**
-     * @var GH5562Merchant
-     */
+    /** @var GH5562Merchant */
     #[OneToOne(targetEntity: GH5562Merchant::class, inversedBy: 'manager')]
     public $merchant;
 }

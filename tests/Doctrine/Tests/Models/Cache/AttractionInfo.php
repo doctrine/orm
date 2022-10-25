@@ -22,17 +22,13 @@ use Doctrine\ORM\Mapping\Table;
 #[DiscriminatorMap([1 => 'AttractionContactInfo', 2 => 'AttractionLocationInfo'])]
 abstract class AttractionInfo
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     protected $id;
 
-    /**
-     * @var Attraction
-     */
+    /** @var Attraction */
     #[Cache]
     #[ManyToOne(targetEntity: 'Attraction', inversedBy: 'infos')]
     #[JoinColumn(name: 'attraction_id', referencedColumnName: 'id')]

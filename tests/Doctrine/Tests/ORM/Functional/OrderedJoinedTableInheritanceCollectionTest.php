@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
@@ -12,6 +11,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -83,36 +83,26 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
 #[DiscriminatorMap(['cat' => 'OJTICCat', 'dog' => 'OJTICDog'])]
 abstract class OJTICPet
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column]
     public $name;
 
-    /**
-     * @var OJTICPet
-     */
+    /** @var OJTICPet */
     #[ManyToOne(targetEntity: 'OJTICPet')]
     public $mother;
 
-    /**
-     * @psalm-var Collection<int, OJTICPet>
-     */
+    /** @psalm-var Collection<int, OJTICPet> */
     #[OneToMany(targetEntity: 'OJTICPet', mappedBy: 'mother')]
     #[OrderBy(['name' => 'ASC'])]
     public $children;
 
-    /**
-     * @psalm-var Collection<int, OJTICPet>
-     */
+    /** @psalm-var Collection<int, OJTICPet> */
     #[JoinTable(name: 'OTJIC_Pet_Friends')]
     #[JoinColumn(name: 'pet_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'friend_id', referencedColumnName: 'id')]

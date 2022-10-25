@@ -20,9 +20,7 @@ use Doctrine\ORM\Mapping\Table;
 #[DiscriminatorMap(['person' => 'GH8565Person', 'manager' => 'GH8565Manager', 'employee' => 'GH8565Employee'])]
 class GH8565Person
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

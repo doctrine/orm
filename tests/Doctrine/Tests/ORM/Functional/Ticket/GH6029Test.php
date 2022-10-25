@@ -90,17 +90,13 @@ final class GH6029Test extends OrmFunctionalTestCase
 #[Entity]
 class GH6029User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, GH6029Group>
-     */
+    /** @psalm-var Collection<int, GH6029Group> */
     #[ManyToMany(targetEntity: GH6029Group::class, cascade: ['all'])]
     public $groups;
 
@@ -113,9 +109,7 @@ class GH6029User
 #[Entity]
 class GH6029Group
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
@@ -125,9 +119,7 @@ class GH6029Group
 #[Entity]
 class GH6029Group2
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
@@ -137,17 +129,13 @@ class GH6029Group2
 #[Entity]
 class GH6029Product
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int,GH6029Feature>
-     */
+    /** @psalm-var Collection<int,GH6029Feature> */
     #[OneToMany(targetEntity: GH6029Feature::class, mappedBy: 'product', cascade: ['all'])]
     public $features;
 
@@ -160,17 +148,13 @@ class GH6029Product
 #[Entity]
 class GH6029Feature
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var GH6029Product
-     */
+    /** @var GH6029Product */
     #[ManyToOne(targetEntity: GH6029Product::class, inversedBy: 'features')]
     #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
     public $product;

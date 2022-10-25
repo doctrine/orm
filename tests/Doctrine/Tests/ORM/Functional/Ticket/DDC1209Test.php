@@ -82,23 +82,17 @@ class DDC1209One
 #[Entity]
 class DDC1209Two
 {
-    /**
-     * @var DateTime2
-     */
+    /** @var DateTime2 */
     #[Id]
     #[Column(type: 'datetime', nullable: false)]
     public $startingDatetime;
 
-    /**
-     * @var DateTime2
-     */
+    /** @var DateTime2 */
     #[Id]
     #[Column(type: 'datetime', nullable: false)]
     public $duringDatetime;
 
-    /**
-     * @var DateTime2
-     */
+    /** @var DateTime2 */
     #[Id]
     #[Column(type: 'datetime', nullable: false)]
     public $endingDatetime;
@@ -118,9 +112,7 @@ class DDC1209Two
 #[Entity]
 class DDC1209Three
 {
-    /**
-     * @var DateTime2
-     */
+    /** @var DateTime2 */
     #[Id]
     #[Column(type: 'datetime', name: 'somedate')]
     public $date;

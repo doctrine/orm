@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -35,29 +35,21 @@ abstract class PaginationTestCase extends OrmTestCase
 #[Entity]
 class MyBlogPost
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var Author
-     */
+    /** @var Author */
     #[ManyToOne(targetEntity: 'Author')]
     public $author;
 
-    /**
-     * @var Category
-     */
+    /** @var Category */
     #[ManyToOne(targetEntity: 'Category')]
     public $category;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $title;
 }
@@ -65,9 +57,7 @@ class MyBlogPost
 #[Entity]
 class MyAuthor
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
@@ -77,9 +67,7 @@ class MyAuthor
 #[Entity]
 class MyCategory
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
@@ -90,23 +78,17 @@ class MyCategory
 #[Entity]
 class BlogPost
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var Author
-     */
+    /** @var Author */
     #[ManyToOne(targetEntity: 'Author')]
     public $author;
 
-    /**
-     * @var Category
-     */
+    /** @var Category */
     #[ManyToOne(targetEntity: 'Category')]
     public $category;
 }
@@ -114,17 +96,13 @@ class BlogPost
 #[Entity]
 class Author
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 }
@@ -132,23 +110,17 @@ class Author
 #[Entity]
 class Person
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $biography;
 }
@@ -156,9 +128,7 @@ class Person
 #[Entity]
 class Category
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
@@ -170,17 +140,13 @@ class Category
 #[Entity]
 class Group
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, User>
-     */
+    /** @psalm-var Collection<int, User> */
     #[ManyToMany(targetEntity: 'User', mappedBy: 'groups')]
     public $users;
 }
@@ -188,26 +154,20 @@ class Group
 #[Entity]
 class User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, Group>
-     */
+    /** @psalm-var Collection<int, Group> */
     #[JoinTable(name: 'user_group')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
     #[ManyToMany(targetEntity: 'Group', inversedBy: 'users')]
     public $groups;
 
-    /**
-     * @var Avatar
-     */
+    /** @var Avatar */
     #[OneToOne(targetEntity: 'Avatar', mappedBy: 'user')]
     public $avatar;
 }
@@ -215,42 +175,30 @@ class User
 #[Entity]
 class Avatar
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var User
-     */
+    /** @var User */
     #[OneToOne(targetEntity: 'User', inversedBy: 'avatar')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     public $user;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $image;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $imageHeight;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     public $imageWidth;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $imageAltDesc;
 }
@@ -272,9 +220,7 @@ abstract class Identified
 #[Entity]
 class Banner extends Identified
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 }

@@ -144,17 +144,13 @@ class DDC832Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC832Like
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Version]
     #[Column(type: 'integer')]
     public $version;
@@ -173,17 +169,13 @@ class DDC832Like
 #[DiscriminatorMap(['like' => 'DDC832JoinedIndex', 'fuzzy' => 'DDC832JoinedTreeIndex'])]
 class DDC832JoinedIndex
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Version]
     #[Column(type: 'integer')]
     public $version;

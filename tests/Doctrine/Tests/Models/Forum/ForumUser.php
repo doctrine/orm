@@ -16,23 +16,17 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class ForumUser
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 50)]
     public $username;
 
-    /**
-     * @var ForumAvatar
-     */
+    /** @var ForumAvatar */
     #[OneToOne(targetEntity: 'ForumAvatar', cascade: ['persist'])]
     #[JoinColumn(name: 'avatar_id', referencedColumnName: 'id')]
     public $avatar;

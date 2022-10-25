@@ -32,15 +32,11 @@ class ECommerceCategory
     #[Column(type: 'string', length: 50)]
     private string|null $name = null;
 
-    /**
-     * @psalm-var Collection<int, ECommerceProduct>
-     */
+    /** @psalm-var Collection<int, ECommerceProduct> */
     #[ManyToMany(targetEntity: 'ECommerceProduct', mappedBy: 'categories')]
     private $products;
 
-    /**
-     * @psalm-var Collection<int, ECommerceCategory>
-     */
+    /** @psalm-var Collection<int, ECommerceCategory> */
     #[OneToMany(targetEntity: 'ECommerceCategory', mappedBy: 'parent', cascade: ['persist'])]
     private $children;
 

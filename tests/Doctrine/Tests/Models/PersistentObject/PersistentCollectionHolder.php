@@ -16,17 +16,13 @@ use Doctrine\ORM\Mapping\ManyToMany;
 #[Entity]
 class PersistentCollectionHolder extends PersistentObject
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     protected $id;
 
-    /**
-     * @var Collection
-     */
+    /** @var Collection */
     #[ManyToMany(targetEntity: 'PersistentCollectionContent', cascade: ['all'], fetch: 'EXTRA_LAZY')]
     protected $collection;
 

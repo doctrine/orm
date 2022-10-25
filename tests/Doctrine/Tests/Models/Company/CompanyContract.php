@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Events;
@@ -18,6 +17,7 @@ use Doctrine\ORM\Mapping\EntityListeners;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -40,9 +40,7 @@ abstract class CompanyContract
     #[Column(type: 'boolean')]
     private bool $completed = false;
 
-    /**
-     * @psalm-var Collection<int, CompanyEmployee>
-     */
+    /** @psalm-var Collection<int, CompanyEmployee> */
     #[JoinTable(name: 'company_contract_employees')]
     #[JoinColumn(name: 'contract_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[InverseJoinColumn(name: 'employee_id', referencedColumnName: 'id')]

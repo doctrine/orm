@@ -15,16 +15,12 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class Phone
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Id]
     #[Column(name: '`phone-number`')]
     public $number;
 
-    /**
-     * @var User
-     */
+    /** @var User */
     #[ManyToOne(targetEntity: 'User', inversedBy: 'phones')]
     #[JoinColumn(name: '`user-id`', referencedColumnName: '`user-id`')]
     public $user;

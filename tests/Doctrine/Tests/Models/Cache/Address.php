@@ -16,17 +16,13 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class Address
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var Person
-     */
+    /** @var Person */
     #[JoinColumn(name: 'person_id', referencedColumnName: 'id')]
     #[OneToOne(targetEntity: 'Person', inversedBy: 'address')]
     public $person;

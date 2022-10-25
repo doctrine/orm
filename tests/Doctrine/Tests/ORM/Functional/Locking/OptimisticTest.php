@@ -280,23 +280,17 @@ class OptimisticTest extends OrmFunctionalTestCase
 #[DiscriminatorMap(['parent' => 'OptimisticJoinedParent', 'child' => 'OptimisticJoinedChild'])]
 class OptimisticJoinedParent
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Version]
     #[Column(type: 'integer')]
     public $version;
@@ -307,9 +301,7 @@ class OptimisticJoinedParent
 #[Entity]
 class OptimisticJoinedChild extends OptimisticJoinedParent
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $whatever;
 }
@@ -318,17 +310,13 @@ class OptimisticJoinedChild extends OptimisticJoinedParent
 #[Entity]
 class OptimisticStandard
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 
@@ -346,23 +334,17 @@ class OptimisticStandard
 #[Entity]
 class OptimisticTimestamp
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     #[Version]
     #[Column(type: 'datetime')]
     public $version;

@@ -10,9 +10,7 @@ use Doctrine\ORM\Mapping\MappedSuperclass;
 #[MappedSuperclass]
 abstract class DDC3699Parent
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $parentField;
 }

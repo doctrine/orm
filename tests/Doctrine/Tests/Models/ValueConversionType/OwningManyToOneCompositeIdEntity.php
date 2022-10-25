@@ -16,16 +16,12 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class OwningManyToOneCompositeIdEntity
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'rot13', length: 255)]
     #[Id]
     public $id3;
 
-    /**
-     * @var InversedOneToManyCompositeIdEntity
-     */
+    /** @var InversedOneToManyCompositeIdEntity */
     #[JoinColumn(name: 'associated_id1', referencedColumnName: 'id1')]
     #[JoinColumn(name: 'associated_id2', referencedColumnName: 'id2')]
     #[ManyToOne(targetEntity: 'InversedOneToManyCompositeIdEntity', inversedBy: 'associatedEntities')]

@@ -62,9 +62,7 @@ class DDC448MainTable
 #[HasLifecycleCallbacks]
 class DDC448ConnectedClass
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'id', type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\CMS;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -12,6 +11,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -23,69 +23,49 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class CmsUser
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 50, nullable: true)]
     public $status;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255, unique: true)]
     public $username;
 
-    /**
-     * @psalm-var string|null
-     */
+    /** @psalm-var string|null */
     #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, CmsPhonenumber>
-     */
+    /** @psalm-var Collection<int, CmsPhonenumber> */
     #[OneToMany(targetEntity: 'CmsPhonenumber', mappedBy: 'user', cascade: ['persist', 'merge'], orphanRemoval: true)]
     public $phonenumbers;
 
-    /**
-     * @psalm-var Collection<int, CmsArticle>
-     */
+    /** @psalm-var Collection<int, CmsArticle> */
     #[OneToMany(targetEntity: 'CmsArticle', mappedBy: 'user', cascade: ['detach'])]
     public $articles;
 
-    /**
-     * @var CmsAddress
-     */
+    /** @var CmsAddress */
     #[OneToOne(targetEntity: 'CmsAddress', mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
     public $address;
 
-    /**
-     * @var CmsEmail
-     */
+    /** @var CmsEmail */
     #[OneToOne(targetEntity: 'CmsEmail', inversedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
     #[JoinColumn(referencedColumnName: 'id', nullable: true)]
     public $email;
 
-    /**
-     * @psalm-var Collection<int, CmsGroup>
-     */
+    /** @psalm-var Collection<int, CmsGroup> */
     #[JoinTable(name: 'cms_users_groups')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
     #[ManyToMany(targetEntity: 'CmsGroup', inversedBy: 'users', cascade: ['persist', 'merge', 'detach'])]
     public $groups;
 
-    /**
-     * @var Collection<int, CmsTag>
-     */
+    /** @var Collection<int, CmsTag> */
     #[JoinTable(name: 'cms_users_tags')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'tag_id', referencedColumnName: 'id')]

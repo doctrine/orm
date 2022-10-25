@@ -18,23 +18,17 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class Department
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @var Company
-     */
+    /** @var Company */
     #[ManyToOne(targetEntity: 'Company', inversedBy: 'departments', cascade: ['persist'])]
     public $company;
 }

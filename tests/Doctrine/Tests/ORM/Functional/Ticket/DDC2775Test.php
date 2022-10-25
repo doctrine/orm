@@ -72,23 +72,17 @@ class DDC2775Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['admin' => 'AdminRole'])]
 abstract class Role
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var User
-     */
+    /** @var User */
     #[ManyToOne(targetEntity: 'User', inversedBy: 'roles')]
     public $user;
 
-    /**
-     * @psalm-var Collection<int, Authorization>
-     */
+    /** @psalm-var Collection<int, Authorization> */
     #[OneToMany(targetEntity: 'Authorization', mappedBy: 'role', cascade: ['all'], orphanRemoval: true)]
     public $authorizations;
 
@@ -109,23 +103,17 @@ class AdminRole extends Role
 #[Entity]
 class Authorization
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
     public $id;
 
-    /**
-     * @var User
-     */
+    /** @var User */
     #[ManyToOne(targetEntity: 'User', inversedBy: 'authorizations')]
     public $user;
 
-    /**
-     * @var Role
-     */
+    /** @var Role */
     #[ManyToOne(targetEntity: 'Role', inversedBy: 'authorizations')]
     public $role;
 }
@@ -134,23 +122,17 @@ class Authorization
 #[Entity]
 class User
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, Role>
-     */
+    /** @psalm-var Collection<int, Role> */
     #[OneToMany(targetEntity: 'Role', mappedBy: 'user', cascade: ['all'], orphanRemoval: true)]
     public $roles;
 
-    /**
-     * @psalm-var Collection<int, Authorization>
-     */
+    /** @psalm-var Collection<int, Authorization> */
     #[OneToMany(targetEntity: 'Authorization', mappedBy: 'user', cascade: ['all'], orphanRemoval: true)]
     public $authorizations;
 

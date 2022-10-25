@@ -77,9 +77,7 @@ final class GH7286Test extends OrmFunctionalTestCase
 #[Entity]
 class GH7286Entity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

@@ -86,7 +86,6 @@ class DDC6303Test extends OrmFunctionalTestCase
 }
 
 /**
- *
  * Note: discriminator map order *IS IMPORTANT* for this test
  */
 #[Table]
@@ -96,9 +95,7 @@ class DDC6303Test extends OrmFunctionalTestCase
 #[DiscriminatorMap([DDC6303ChildB::class => DDC6303ChildB::class, DDC6303ChildA::class => DDC6303ChildA::class])]
 abstract class DDC6303BaseClass
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Id]
     #[Column(type: 'string', length: 255)]
     #[GeneratedValue(strategy: 'NONE')]

@@ -92,20 +92,16 @@ class GH7496EntityB
 #[Entity]
 class GH7496EntityAinB
 {
-    /**
-     * @param GH7496EntityA $a
-     * @param GH7496EntityB $b
-     */
     public function __construct(
         #[Id]
         #[Column(type: 'integer')]
         public int $id,
         #[ManyToOne(targetEntity: GH7496EntityA::class)]
         #[JoinColumn(name: 'a_id', referencedColumnName: 'a_id', nullable: false)]
-        public $eA,
+        public GH7496EntityA $eA,
         #[ManyToOne(targetEntity: GH7496EntityB::class)]
         #[JoinColumn(name: 'b_id', referencedColumnName: 'b_id', nullable: false)]
-        public $eB,
+        public GH7496EntityB $eB,
     ) {
     }
 }

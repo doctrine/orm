@@ -23,9 +23,7 @@ class CompanyOrganization
     #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /**
-     * @psalm-var Collection<int, CompanyEvent>
-     */
+    /** @psalm-var Collection<int, CompanyEvent> */
     #[OneToMany(targetEntity: 'CompanyEvent', mappedBy: 'organization', cascade: ['persist'], fetch: 'EXTRA_LAZY')]
     public $events;
 

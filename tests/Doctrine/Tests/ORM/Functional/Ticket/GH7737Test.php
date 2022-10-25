@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -74,9 +74,7 @@ class GH7737Group
 #[Entity]
 class GH7737Person
 {
-    /**
-     * @var Collection<int, GH7737Group>
-     */
+    /** @var Collection<int, GH7737Group> */
     #[JoinTable]
     #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id', unique: true)]
     #[ManyToMany(targetEntity: GH7737Group::class)]

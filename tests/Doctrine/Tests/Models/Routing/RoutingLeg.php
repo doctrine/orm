@@ -14,37 +14,27 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[Entity]
 class RoutingLeg
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var RoutingLocation
-     */
+    /** @var RoutingLocation */
     #[ManyToOne(targetEntity: 'RoutingLocation')]
     #[JoinColumn(name: 'from_id', referencedColumnName: 'id')]
     public $fromLocation;
 
-    /**
-     * @var RoutingLocation
-     */
+    /** @var RoutingLocation */
     #[ManyToOne(targetEntity: 'RoutingLocation')]
     #[JoinColumn(name: 'to_id', referencedColumnName: 'id')]
     public $toLocation;
 
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     #[Column(type: 'datetime')]
     public $departureDate;
 
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     #[Column(type: 'datetime')]
     public $arrivalDate;
 }

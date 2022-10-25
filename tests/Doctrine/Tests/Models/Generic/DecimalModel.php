@@ -14,23 +14,17 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class DecimalModel
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var float
-     */
+    /** @var float */
     #[Column(name: '`decimal`', type: 'decimal', scale: 2, precision: 5)]
     public $decimal;
 
-    /**
-     * @var float
-     */
+    /** @var float */
     #[Column(name: '`high_scale`', type: 'decimal', scale: 4, precision: 14)]
     public $highScale;
 }

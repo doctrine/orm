@@ -74,9 +74,7 @@ class DDC3170Test extends OrmFunctionalTestCase
 #[DiscriminatorMap(['product' => 'DDC3170ProductJoined'])]
 abstract class DDC3170AbstractEntityJoined
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
@@ -94,9 +92,7 @@ class DDC3170ProductJoined extends DDC3170AbstractEntityJoined
 #[DiscriminatorMap(['product' => 'DDC3170ProductSingleTable'])]
 abstract class DDC3170AbstractEntitySingleTable
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]

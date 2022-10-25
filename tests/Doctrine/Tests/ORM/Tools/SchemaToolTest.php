@@ -420,23 +420,17 @@ class UniqueConstraintAnnotationModel
 #[Entity]
 class FirstEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'id')]
     public $id;
 
-    /**
-     * @var SecondEntity
-     */
+    /** @var SecondEntity */
     #[OneToOne(targetEntity: 'SecondEntity')]
     #[JoinColumn(name: 'id', referencedColumnName: 'first_entity_id')]
     public $secondEntity;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'name')]
     public $name;
 }
@@ -445,16 +439,12 @@ class FirstEntity
 #[Entity]
 class SecondEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(name: 'first_entity_id')]
     public $firstEntityId;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(name: 'name')]
     public $name;
 }
@@ -462,16 +452,12 @@ class SecondEntity
 #[Entity]
 class GH6830Board
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var GH6830Category
-     */
+    /** @var GH6830Category */
     #[ManyToOne(targetEntity: GH6830Category::class, inversedBy: 'boards')]
     #[JoinColumn(name: 'category_id', referencedColumnName: 'id')]
     public $category;
@@ -480,16 +466,12 @@ class GH6830Board
 #[Entity]
 class GH6830Category
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Id]
     #[Column(type: 'string', length: 8, options: ['fixed' => true, 'collation' => 'latin1_bin', 'foo' => 'bar'])]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, GH6830Board>
-     */
+    /** @psalm-var Collection<int, GH6830Board> */
     #[OneToMany(targetEntity: GH6830Board::class, mappedBy: 'category')]
     public $boards;
 }
@@ -500,28 +482,20 @@ class GH6830Category
 #[Entity]
 class IndexByFieldEntity
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column]
     public $index;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column]
     public $table;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column]
     public $fieldName;
 }

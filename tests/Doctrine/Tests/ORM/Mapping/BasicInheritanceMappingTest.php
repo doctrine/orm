@@ -302,9 +302,7 @@ class EntityIndexSubClass extends MappedSuperclassBaseIndex
 #[DiscriminatorMap(['c' => 'HierarchyC', 'd' => 'HierarchyD', 'e' => 'HierarchyE'])]
 abstract class HierarchyBase
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue(strategy: 'SEQUENCE')]
@@ -315,9 +313,7 @@ abstract class HierarchyBase
 #[MappedSuperclass]
 abstract class HierarchyASuperclass extends HierarchyBase
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $a;
 }
@@ -325,9 +321,7 @@ abstract class HierarchyASuperclass extends HierarchyBase
 #[Entity]
 class HierarchyBEntity extends HierarchyBase
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $b;
 }
@@ -335,9 +329,7 @@ class HierarchyBEntity extends HierarchyBase
 #[Entity]
 class HierarchyC extends HierarchyBase
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $c;
 }
@@ -345,9 +337,7 @@ class HierarchyC extends HierarchyBase
 #[Entity]
 class HierarchyD extends HierarchyASuperclass
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $d;
 }
@@ -355,9 +345,7 @@ class HierarchyD extends HierarchyASuperclass
 #[Entity]
 class HierarchyE extends HierarchyBEntity
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     #[Column(type: 'string', length: 255)]
     public $e;
 }
@@ -370,9 +358,7 @@ class SuperclassEntity extends SuperclassBase
 #[MappedSuperclass]
 abstract class SuperclassBase
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     #[Column(type: 'integer')]
     #[Id]
     #[GeneratedValue(strategy: 'SEQUENCE')]

@@ -18,23 +18,17 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class ComplexAction
 {
-    /**
-     * @psalm-var Collection<int, Token>
-     */
+    /** @psalm-var Collection<int, Token> */
     #[OneToMany(targetEntity: 'Token', cascade: ['persist', 'remove'], mappedBy: 'complexAction')]
     public $tokens;
 
     public function __construct(
-        /**
-         * @var Action
-         */
+        /** @var Action */
         #[Id]
         #[OneToOne(targetEntity: 'Action', cascade: ['persist', 'remove'])]
         #[JoinColumn(name: 'action1_name', referencedColumnName: 'name')]
         public $action1,
-        /**
-         * @var Action
-         */
+        /** @var Action */
         #[Id]
         #[OneToOne(targetEntity: 'Action', cascade: ['persist', 'remove'])]
         #[JoinColumn(name: 'action2_name', referencedColumnName: 'name')]
