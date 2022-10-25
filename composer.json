@@ -25,7 +25,7 @@
         "ext-ctype": "*",
         "doctrine/collections": "^2.0",
         "doctrine/common": "^3.3",
-        "doctrine/dbal": "^3.4",
+        "doctrine/dbal": "^3.5",
         "doctrine/deprecations": "^0.5.3 || ^1",
         "doctrine/event-manager": "^1.2 || ^2",
         "doctrine/inflector": "^1.4 || ^2.0",

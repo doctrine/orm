@@ -30,10 +30,9 @@
             <errorLevel type="suppress">
                 <!-- Compatibility with DBAL 3 -->
                 <referencedMethod name="Doctrine\DBAL\Connection::getEventManager"/>
-                <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
+                <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSaveSql"/>
-                <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSql"/>
                 <referencedMethod name="Doctrine\ORM\ORMSetup::createDefaultAnnotationDriver"/>
             </errorLevel>
         </DeprecatedMethod>
@@ -49,18 +48,6 @@
                 <file name="lib/Doctrine/ORM/PersistentCollection.php"/>
             </errorLevel>
         </DocblockTypeContradiction>
-        <InvalidArgument>
-            <errorLevel type="suppress">
-                <!-- Argument type changes in DBAL 3.2 -->
-                <referencedFunction name="Doctrine\DBAL\Cache\QueryCacheProfile::__construct"/>
-            </errorLevel>
-        </InvalidArgument>
-        <InvalidClass>
-            <errorLevel type="suppress">
-                <!-- Class name changes in DBAL 3. -->
-                <referencedClass name="Doctrine\DBAL\Platforms\PostgreSQLPlatform" />
-            </errorLevel>
-        </InvalidClass>
         <LessSpecificReturnStatement>
             <errorLevel type="suppress">
                 <!-- In DBAL 4, column precision is nullable. See https://github.com/doctrine/dbal/pull/3511 -->
@@ -79,14 +66,6 @@
                 <file name="lib/Doctrine/ORM/Mapping/ReflectionReadonlyProperty.php"/>
             </errorLevel>
         </MethodSignatureMismatch>
-        <MissingDependency>
-            <errorLevel type="suppress">
-                <!-- DBAL 3.2 forward compatibility -->
-                <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
-                <file name="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php"/>
-            </errorLevel>
-        </MissingDependency>
         <MissingParamType>
             <errorLevel type="suppress">
                 <!-- Persistence 2 compatibility -->
@@ -133,14 +112,6 @@
         </TypeDoesNotContainType>
         <UndefinedClass>
             <errorLevel type="suppress">
-                <referencedClass name="Doctrine\Common\Cache\ApcCache"/>
-                <referencedClass name="Doctrine\Common\Cache\ArrayCache"/>
-                <referencedClass name="Doctrine\Common\Cache\XcacheCache"/>
-
-                <!-- DBAL 3.2 forward compatibility -->
-                <referencedClass name="Doctrine\DBAL\Platforms\PostgreSQLPlatform"/>
-                <referencedClass name="Doctrine\DBAL\Platforms\SQLServerPlatform"/>
-
                 <!-- Persistence 2 compatibility -->
                 <referencedClass name="Doctrine\Persistence\ObjectManagerAware"/>
 

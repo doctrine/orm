@@ -36,7 +36,6 @@ use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
-use function method_exists;
 use function random_int;
 use function uniqid;
 
@@ -71,11 +70,6 @@ class UnitOfWorkTest extends OrmTestCase
             ->willReturn(true);
 
         $driverStatement = $this->createMock(Statement::class);
-
-        if (method_exists($driverStatement, 'rowCount')) {
-            $driverStatement->method('rowCount')
-                ->willReturn(0);
-        }
 
         $driverConnection = $this->createMock(Driver\Connection::class);
         $driverConnection->method('prepare')

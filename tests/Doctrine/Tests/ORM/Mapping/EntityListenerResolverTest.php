@@ -8,7 +8,6 @@ use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\Tests\Models\Company\CompanyContractListener;
 use Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener;
 use Doctrine\Tests\OrmTestCase;
-use InvalidArgumentException;
 
 /** @group DDC-1955 */
 class EntityListenerResolverTest extends OrmTestCase
