@@ -181,7 +181,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::markTestSkipped('This test is just incorrect and must be fixed');
 
         $cmf    = new ClassMetadataFactory();
-        $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/JoinedInheritanceType/']);
+        $driver = $this->createAttributeDriver([__DIR__ . '/../../Models/JoinedInheritanceType/']);
         $em     = $this->createEntityManager($driver);
         $cmf->setEntityManager($em);
 
@@ -296,7 +296,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     public function testQuoteMetadata(): void
     {
         $cmf    = new ClassMetadataFactory();
-        $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/Quote/']);
+        $driver = $this->createAttributeDriver([__DIR__ . '/../../Models/Quote/']);
         $em     = $this->createEntityManager($driver);
         $cmf->setEntityManager($em);
 
@@ -445,7 +445,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     public function testInheritsIdGeneratorMappingFromEmbeddable(): void
     {
         $cmf    = new ClassMetadataFactory();
-        $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/DDC4006/']);
+        $driver = $this->createAttributeDriver([__DIR__ . '/../../Models/DDC4006/']);
         $em     = $this->createEntityManager($driver);
         $cmf->setEntityManager($em);
 
@@ -460,7 +460,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $this->expectExceptionMessage('Entity class \'Doctrine\Tests\ORM\Mapping\cube\' used in the discriminator map of class \'Doctrine\Tests\ORM\Mapping\Shape\' does not exist.');
 
         $cmf    = new ClassMetadataFactory();
-        $driver = $this->createAnnotationDriver([__DIR__]);
+        $driver = $this->createAttributeDriver([__DIR__]);
         $em     = $this->createEntityManager($driver);
         $cmf->setEntityManager($em);
 

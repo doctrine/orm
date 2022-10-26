@@ -31,7 +31,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->firstFeature = new ECommerceFeature();
         $this->firstFeature->setDescription('Model writing tutorial');
         $this->secondFeature = new ECommerceFeature();
-        $this->secondFeature->setDescription('Annotations examples');
+        $this->secondFeature->setDescription('Attributes examples');
     }
 
     public function testSavesAOneToManyAssociationWithCascadeSaveSet(): void
@@ -91,7 +91,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertInstanceOf(ECommerceFeature::class, $features[1]);
         self::assertSame($product, $features[1]->getProduct());
         self::assertNotInstanceOf(Proxy::class, $features[1]->getProduct());
-        self::assertEquals('Annotations examples', $features[1]->getDescription());
+        self::assertEquals('Attributes examples', $features[1]->getDescription());
     }
 
     public function testLazyLoadsObjectsOnTheOwningSide(): void
@@ -110,7 +110,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('Model writing tutorial', $features[0]->getDescription());
         self::assertInstanceOf(ECommerceFeature::class, $features[1]);
         self::assertSame($product, $features[1]->getProduct());
-        self::assertEquals('Annotations examples', $features[1]->getDescription());
+        self::assertEquals('Attributes examples', $features[1]->getDescription());
     }
 
     public function testLazyLoadsObjectsOnTheInverseSide(): void

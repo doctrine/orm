@@ -44,33 +44,6 @@ instead of simply adding the respective columns to the ``User`` class.
             private string $country;
         }
 
-    .. code-block:: annotation
-
-        <?php
-
-        /** @Entity */
-        class User
-        {
-            /** @Embedded(class = "Address") */
-            private Address $address;
-        }
-
-        /** @Embeddable */
-        class Address
-        {
-            /** @Column(type = "string") */
-            private string $street;
-
-            /** @Column(type = "string") */
-            private string $postalCode;
-
-            /** @Column(type = "string") */
-            private string $city;
-
-            /** @Column(type = "string") */
-            private string $country;
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -131,17 +104,6 @@ The following example shows you how to set your prefix to ``myPrefix_``:
             private Address $address;
         }
 
-    .. code-block:: annotation
-
-        <?php
-
-        /** @Entity */
-        class User
-        {
-            /** @Embedded(class = "Address", columnPrefix = "myPrefix_") */
-            private $address;
-        }
-
     .. code-block:: xml
 
         <entity name="User">
@@ -161,17 +123,6 @@ directly, set ``columnPrefix=false`` (``use-column-prefix="false"`` for XML):
         class User
         {
             #[Embedded(class: Address::class, columnPrefix: false)]
-            private Address $address;
-        }
-
-    .. code-block:: annotation
-
-        <?php
-
-        /** @Entity */
-        class User
-        {
-            /** @Embedded(class = "Address", columnPrefix = false) */
             private Address $address;
         }
 

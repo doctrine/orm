@@ -50,59 +50,6 @@ and year of production as primary keys:
             }
         }
 
-    .. code-block:: annotation
-
-        <?php
-        namespace VehicleCatalogue\Model;
-
-        /**
-         * @Entity
-         */
-        class Car
-        {
-            /** @Id @Column(type="string") */
-            private string $name;
-            /** @Id @Column(type="integer") */
-            private int $year;
-
-            public function __construct($name, $year)
-            {
-                $this->name = $name;
-                $this->year = $year;
-            }
-
-            public function getModelName(): string
-            {
-                return $this->name;
-            }
-
-            public function getYearOfProduction(): int
-            {
-                return $this->year;
-            }
-        }
-
-    .. code-block:: annotation
-
-        <?php
-        /**
-         * @Entity
-         */
-        class User
-        {
-            /** @Id @Column(type="integer") @GeneratedValue */
-            private int|null $id = null;
-        }
-
-        /**
-         * @Entity
-         */
-        class Address
-        {
-            /** @Id @OneToOne(targetEntity="User") */
-            private User|null $user = null;
-        }
-
     .. code-block:: xml
 
         <?xml version="1.0" encoding="UTF-8"?>

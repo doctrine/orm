@@ -11,30 +11,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\CustomIdGenerator;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
-use Doctrine\ORM\Mapping\DiscriminatorColumn;
-use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
-use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
-use Doctrine\ORM\Mapping\InheritanceType;
-use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\JoinTable;
-use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Mapping\OneToMany;
-use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\ORM\Mapping\OrderBy;
-use Doctrine\ORM\Mapping\PostPersist;
-use Doctrine\ORM\Mapping\PrePersist;
-use Doctrine\ORM\Mapping\SequenceGenerator;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\Mapping\UniqueConstraint;
-use Doctrine\ORM\Mapping\Version;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\Cache\City;
@@ -854,7 +839,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
      * @group DDC-2825
      * @group 881
      */
-    public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty(): void
+    public function testSchemaDefinitionViaExplicitTableSchemaAttributeProperty(): void
     {
         $metadata = $this->createClassMetadataFactory()->getMetadataFor(ExplicitSchemaAndTable::class);
         assert($metadata instanceof ClassMetadata);
@@ -867,7 +852,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
      * @group DDC-2825
      * @group 881
      */
-    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty(): void
+    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAttributeProperty(): void
     {
         $metadata = $this->createClassMetadataFactory()->getMetadataFor(SchemaAndTableInTableName::class);
         assert($metadata instanceof ClassMetadata);

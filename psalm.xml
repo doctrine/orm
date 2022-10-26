@@ -33,7 +33,6 @@
                 <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
                 <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSaveSql"/>
-                <referencedMethod name="Doctrine\ORM\ORMSetup::createDefaultAnnotationDriver"/>
             </errorLevel>
         </DeprecatedMethod>
         <DocblockTypeContradiction>

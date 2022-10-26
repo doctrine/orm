@@ -32,7 +32,7 @@ class StaticPHPMappingDriverTest extends MappingDriverTestCase
      * @group DDC-2825
      * @group 881
      */
-    public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty(): void
+    public function testSchemaDefinitionViaExplicitTableSchemaAttributeProperty(): void
     {
         self::markTestIncomplete();
     }
@@ -41,7 +41,7 @@ class StaticPHPMappingDriverTest extends MappingDriverTestCase
      * @group DDC-2825
      * @group 881
      */
-    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty(): void
+    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAttributeProperty(): void
     {
         self::markTestIncomplete();
     }

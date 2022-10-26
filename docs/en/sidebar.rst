@@ -41,7 +41,6 @@
       reference/native-sql
       reference/change-tracking-policies
       reference/partial-objects
-      reference/annotations-reference
       reference/attributes-reference
       reference/xml-mapping
       reference/php-mapping

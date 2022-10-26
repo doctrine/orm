@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Tools\Console\Command\SchemaTool;
 
 use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
-use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\AbstractCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\OrmFunctionalTestCase;

@@ -200,17 +200,6 @@ example we'll use an integer.
             // ...
         }
 
-    .. code-block:: annotation
-
-        <?php
-        class User
-        {
-            // ...
-            /** @Version @Column(type="integer") */
-            private int $version;
-            // ...
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -231,17 +220,6 @@ timestamp or datetime):
         {
             // ...
             #[Version, Column(type: 'datetime')]
-            private DateTime $version;
-            // ...
-        }
-
-    .. code-block:: annotation
-
-        <?php
-        class User
-        {
-            // ...
-            /** @Version @Column(type="datetime") */
             private DateTime $version;
             // ...
         }

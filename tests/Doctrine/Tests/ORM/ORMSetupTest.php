@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\Mapping as AnnotationNamespace;
+use Doctrine\ORM\Mapping as MappingNamespace;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\ORMSetup;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 use ReflectionProperty;
 use Symfony\Component\Cache\Adapter\AbstractAdapter;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
@@ -83,8 +82,8 @@ class ORMSetupTest extends TestCase
 
 class AnnotatedDummy
 {
-    #[AnnotationNamespace\PrePersist]
-    public function namespacedAnnotationMethod(): void
+    #[MappingNamespace\PrePersist]
+    public function namespacedAttributeMethod(): void
     {
     }
 }

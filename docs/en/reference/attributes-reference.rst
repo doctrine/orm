@@ -4,8 +4,9 @@ Attributes Reference
 PHP 8 adds native support for metadata with its "Attributes" feature.
 Doctrine ORM provides support for mapping metadata using PHP attributes as of version 2.9.
 
-The attributes metadata support is closely modelled after the already existing
-annotation metadata supported since the first version 2.0.
+The attributes metadata support is closely modelled after the already
+existing and now removed annotation metadata supported since the first
+version 2.0.
 
 Index
 -----
@@ -707,10 +708,6 @@ requires to specify the #[JoinTable] attribute which describes the
 details of the database join table. If you do not specify
 ``#[JoinTable]`` on these relations reasonable mapping defaults apply
 using the affected table and the column names.
-
-A notable difference to the annotation metadata support, ``#[JoinColumn]``
-and ``#[InverseJoinColumn]`` can be specified at the property level and are not
-nested within the ``#[JoinTable]`` attribute.
 
 Required attribute:
 

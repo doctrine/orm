@@ -30,10 +30,8 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
 
     protected function setUp(): void
     {
-        $annotationDriver = $this->createAnnotationDriver();
-
         $this->em = $this->getTestEntityManager();
-        $this->em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
+        $this->em->getConfiguration()->setMetadataDriverImpl($this->createAttributeDriver());
         $this->factory  = $this->em->getMetadataFactory();
         $this->listener = new ResolveTargetEntityListener();
     }

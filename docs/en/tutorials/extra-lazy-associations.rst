@@ -65,23 +65,6 @@ switch to extra lazy as shown in these examples:
             public Collection $users;
         }
 
-    .. code-block:: annotation
-
-        <?php
-        namespace Doctrine\Tests\Models\CMS;
-
-        /**
-         * @Entity
-         */
-        class CmsGroup
-        {
-            /**
-             * @ManyToMany(targetEntity="CmsUser", mappedBy="groups", fetch="EXTRA_LAZY")
-             * @var Collection<int, CmsUser>
-             */
-            public Collection $users;
-        }
-
     .. code-block:: xml
 
         <?xml version="1.0" encoding="UTF-8"?>
