@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Target("PROPERTY")
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class CustomIdGenerator implements Annotation
+final class CustomIdGenerator implements MappingAttribute
 {
     /**
      * @var string|null

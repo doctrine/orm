@@ -11,6 +11,6 @@ use Attribute;
  * @Target("METHOD")
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final class PreRemove implements Annotation
+final class PreRemove implements MappingAttribute
 {
 }

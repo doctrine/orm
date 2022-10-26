@@ -10,7 +10,7 @@ namespace Doctrine\ORM\Mapping;
  * @Annotation
  * @Target("ANNOTATION")
  */
-final class FieldResult implements Annotation
+final class FieldResult implements MappingAttribute
 {
     /**
      * Name of the column in the SELECT clause.

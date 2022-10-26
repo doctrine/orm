@@ -14,7 +14,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Target({"PROPERTY","ANNOTATION"})
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Column implements Annotation
+final class Column implements MappingAttribute
 {
     /**
      * @var string|null

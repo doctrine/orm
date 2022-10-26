@@ -15,7 +15,7 @@ use Doctrine\ORM\EntityRepository;
  * @template T of object
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class Entity implements Annotation
+final class Entity implements MappingAttribute
 {
     /**
      * @var string|null

@@ -11,7 +11,7 @@ namespace Doctrine\ORM\Mapping;
  * @Annotation
  * @Target("ANNOTATION")
  */
-final class ColumnResult implements Annotation
+final class ColumnResult implements MappingAttribute
 {
     /**
      * The name of a column in the SELECT clause of a SQL query.

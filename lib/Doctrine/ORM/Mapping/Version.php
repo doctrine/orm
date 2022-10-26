@@ -11,6 +11,6 @@ use Attribute;
  * @Target("PROPERTY")
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Version implements Annotation
+final class Version implements MappingAttribute
 {
 }

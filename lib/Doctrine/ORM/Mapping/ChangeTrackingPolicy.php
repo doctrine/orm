@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Target("CLASS")
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class ChangeTrackingPolicy implements Annotation
+final class ChangeTrackingPolicy implements MappingAttribute
 {
     /**
      * The change tracking policy.

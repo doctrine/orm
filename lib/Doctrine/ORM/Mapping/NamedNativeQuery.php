@@ -11,7 +11,7 @@ namespace Doctrine\ORM\Mapping;
  * @Annotation
  * @Target("ANNOTATION")
  */
-final class NamedNativeQuery implements Annotation
+final class NamedNativeQuery implements MappingAttribute
 {
     /**
      * The name used to refer to the query with the EntityManager methods that create query objects.

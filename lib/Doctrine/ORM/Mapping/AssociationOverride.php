@@ -11,7 +11,7 @@ namespace Doctrine\ORM\Mapping;
  * @NamedArgumentConstructor
  * @Target("ANNOTATION")
  */
-final class AssociationOverride implements Annotation
+final class AssociationOverride implements MappingAttribute
 {
     /**
      * The name of the relationship property whose mapping is being overridden.

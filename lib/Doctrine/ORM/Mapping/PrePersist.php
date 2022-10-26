@@ -11,6 +11,6 @@ use Attribute;
  * @Target("METHOD")
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final class PrePersist implements Annotation
+final class PrePersist implements MappingAttribute
 {
 }

@@ -11,6 +11,6 @@ use Attribute;
  * @Target("METHOD")
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final class PreUpdate implements Annotation
+final class PreUpdate implements MappingAttribute
 {
 }
