@@ -906,7 +906,7 @@ Load ClassMetadata Event
 
 ``loadClassMetadata`` - The ``loadClassMetadata`` event occurs after the
 mapping metadata for a class has been loaded from a mapping source
-(attributes/xml/yaml) in to a ``Doctrine\ORM\Mapping\ClassMetadata`` instance.
+(attributes/xml) in to a ``Doctrine\ORM\Mapping\ClassMetadata`` instance.
 You can hook in to this process and manipulate the instance.
 This event is not a lifecycle callback.
 
