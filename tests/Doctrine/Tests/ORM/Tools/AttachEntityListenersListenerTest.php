@@ -112,6 +112,31 @@ class AttachEntityListenersListenerTest extends OrmTestCase
 
         $this->factory->getMetadataFor(AttachEntityListenersListenerTestFooEntity::class);
     }
+
+    public function testAttachWithoutSpecifyingAnEventName(): void
+    {
+        $this->listener->addEntityListener(
+            AttachEntityListenersListenerTestFooEntity::class,
+            AttachEntityListenersListenerTestListener::class,
+            null
+        );
+
+        $metadata = $this->factory->getMetadataFor(AttachEntityListenersListenerTestFooEntity::class);
+
+        self::assertCount(2, $metadata->entityListeners);
+
+        self::assertArrayHasKey('prePersist', $metadata->entityListeners);
+        self::assertArrayHasKey('postPersist', $metadata->entityListeners);
+
+        self::assertCount(1, $metadata->entityListeners['prePersist']);
+        self::assertCount(1, $metadata->entityListeners['postPersist']);
+
+        self::assertEquals('prePersist', $metadata->entityListeners['prePersist'][0]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['prePersist'][0]['class']);
+
+        self::assertEquals('postPersist', $metadata->entityListeners['postPersist'][0]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['postPersist'][0]['class']);
+    }
 }
 
 /** @Entity */
