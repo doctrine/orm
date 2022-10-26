@@ -158,9 +158,10 @@ class MyStrategy implements NamingStrategy
 }
 ```
 
-## BC BREAK: Remove StaticPHPDriver
+## BC BREAK: Remove `StaticPHPDriver` and `DriverChain` 
 
-Use `Doctrine\Persistence\Mapping\Driver\StaticPHPDriver` from
+Use `Doctrine\Persistence\Mapping\Driver\StaticPHPDriver` and
+`Doctrine\Persistence\Mapping\Driver\MappingDriverChain` from
 `doctrine/persistence` instead.
 
 ## BC BREAK: `UnderscoreNamingStrategy` is number aware only
