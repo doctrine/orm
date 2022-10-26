@@ -6,10 +6,6 @@ namespace Doctrine\Tests\Models\DDC869;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\MappedSuperclass;
 
 #[ORM\MappedSuperclass(repositoryClass: DDC869PaymentRepository::class)]
 class DDC869Payment

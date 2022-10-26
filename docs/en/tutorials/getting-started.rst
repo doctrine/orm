@@ -142,11 +142,7 @@ step:
         paths: array(__DIR__."/src"),
         isDevMode: true,
     );
-    // or if you prefer annotation, YAML or XML
-    // $config = ORMSetup::createAnnotationMetadataConfiguration(
-    //    paths: array(__DIR__."/src"),
-    //    isDevMode: true,
-    // );
+    // or if you prefer XML
     // $config = ORMSetup::createXMLMetadataConfiguration(
     //    paths: array(__DIR__."/config/xml"),
     //    isDevMode: true,
@@ -509,33 +505,6 @@ methods, but you only need to choose one.
             #[ORM\GeneratedValue]
             private int|null $id = null;
             #[ORM\Column(type: 'string')]
-            private string $name;
-
-            // .. (other code)
-        }
-
-    .. code-block:: annotation
-
-        <?php
-        // src/Product.php
-
-        use Doctrine\ORM\Mapping as ORM;
-
-        /**
-         * @ORM\Entity
-         * @ORM\Table(name="products")
-         */
-        class Product
-        {
-            /**
-             * @ORM\Id
-             * @ORM\Column(type="integer")
-             * @ORM\GeneratedValue
-             */
-            private int|null $id = null;
-            /**
-             * @ORM\Column(type="string")
-             */
             private string $name;
 
             // .. (other code)
@@ -1062,59 +1031,6 @@ the ``Product`` before:
             // ... (other code)
         }
 
-    .. code-block:: annotation
-
-        <?php
-        // src/Bug.php
-
-        use Doctrine\ORM\Mapping as ORM;
-
-        /**
-         * @ORM\Entity
-         * @ORM\Table(name="bugs")
-         */
-        class Bug
-        {
-            /**
-             * @ORM\Id
-             * @ORM\Column(type="integer")
-             * @ORM\GeneratedValue
-             */
-            private int|null $id = null;
-
-            /**
-             * @ORM\Column(type="string")
-             */
-            private string $description;
-
-            /**
-             * @ORM\Column(type="datetime")
-             */
-            private DateTime $created;
-
-            /**
-             * @ORM\Column(type="string")
-             */
-            private string $status;
-
-            /**
-             * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedBugs")
-             */
-            private User|null $engineer;
-
-            /**
-             * @ORM\ManyToOne(targetEntity="User", inversedBy="reportedBugs")
-             */
-            private User|null $reporter;
-
-            /**
-             * @ORM\ManyToMany(targetEntity="Product")
-             */
-            private Collection $products;
-
-            // ... (other code)
-        }
-
     .. code-block:: xml
 
         <!-- config/xml/Bug.dcm.xml -->
@@ -1195,47 +1111,6 @@ Finally, we'll add metadata mappings for the ``User`` entity.
             // .. (other code)
         }
 
-    .. code-block:: annotation
-
-        <?php
-        // src/User.php
-
-        use Doctrine\ORM\Mapping as ORM;
-
-        /**
-         * @ORM\Entity
-         * @ORM\Table(name="users")
-         */
-        class User
-        {
-            /**
-             * @ORM\Id
-             * @ORM\GeneratedValue
-             * @ORM\Column(type="integer")
-             * @var int
-             */
-            private int|null $id = null;
-
-            /**
-             * @ORM\Column(type="string")
-             * @var string
-             */
-            private string $name;
-
-            /**
-             * @ORM\OneToMany(targetEntity="Bug", mappedBy="reporter")
-             * @var Collection<int, Bug> An ArrayCollection of Bug objects.
-             */
-            private Collection $reportedBugs;
-
-            /**
-             * @ORM\OneToMany(targetEntity="Bug", mappedBy="engineer")
-             * @var Collection<int, Bug> An ArrayCollection of Bug objects.
-             */
-            private Collection $assignedBugs;
-
-            // .. (other code)
-        }
     .. code-block:: xml
 
         <!-- config/xml/User.dcm.xml -->
@@ -1747,21 +1622,6 @@ we have to adjust the metadata slightly.
 
         #[ORM\Entity(repositoryClass: BugRepository::class)]
         #[ORM\Table(name: 'bugs')]
-        class Bug
-        {
-            // ...
-        }
-
-    .. code-block:: annotation
-
-        <?php
-
-        use Doctrine\ORM\Mapping as ORM;
-
-        /**
-         * @ORM\Entity(repositoryClass="BugRepository")
-         * @ORM\Table(name="bugs")
-         */
         class Bug
         {
             // ...

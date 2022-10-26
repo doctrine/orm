@@ -6,8 +6,6 @@ namespace Doctrine\Tests\Models\DDC869;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\Entity;
 
 #[ORM\Entity]
 class DDC869ChequePayment extends DDC869Payment

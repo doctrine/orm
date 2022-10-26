@@ -1,5 +1,10 @@
 # Upgrade to 3.0
 
+## BC Break: Removed AnnotationDriver
+
+The annotation driver and anything related to annotation has been removed.
+Please migrate to another mapping driver.
+
 ## BC BREAK: Removed `EntityManager::create()`
 
 The constructor of `EntityManager` is now public and must be used instead of the `create()` method.

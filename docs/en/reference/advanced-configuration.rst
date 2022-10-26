@@ -117,15 +117,12 @@ There are currently 4 available implementations:
 -  ``Doctrine\ORM\Mapping\Driver\AttributeDriver``
 -  ``Doctrine\ORM\Mapping\Driver\XmlDriver``
 -  ``Doctrine\ORM\Mapping\Driver\DriverChain``
--  ``Doctrine\ORM\Mapping\Driver\AnnotationDriver`` (deprecated and will
-  be removed in ``doctrine/orm`` 3.0)
 -  ``Doctrine\ORM\Mapping\Driver\YamlDriver`` (deprecated and will be
    removed in ``doctrine/orm`` 3.0)
 
 Throughout the most part of this manual the AttributeDriver is
 used in the examples. For information on the usage of the
-AnnotationDriver or XmlDriver please refer to the dedicated
-chapters ``Annotation Reference`` and ``XML Mapping``.
+XmlDriver please refer to the dedicated chapter ``XML Mapping``.
 
 The attribute driver can be injected in the ``Doctrine\ORM\Configuration``:
 
@@ -155,9 +152,9 @@ Metadata Cache (***RECOMMENDED***)
 
 Gets or sets the cache adapter to use for caching metadata
 information, that is, all the information you supply via attributes,
-annotations or xml, so that they do not need to be parsed and
-loaded from scratch on every single request which is a waste of
-resources. The cache implementation must implement the PSR-6
+xml, so that they do not need to be parsed and loaded from scratch on
+every single request which is a waste of resources. The cache
+implementation must implement the PSR-6
 ``Psr\Cache\CacheItemPoolInterface`` interface.
 
 Usage of a metadata cache is highly recommended.

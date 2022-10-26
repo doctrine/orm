@@ -55,7 +55,7 @@ listeners:
 .. code-block:: php
 
     <?php
-    // Mapping not shown, either in attributes, annotations or xml as usual
+    // Mapping not shown, either in attributes or xml as usual
     class MyEntity extends DomainObject
     {
         private $data;

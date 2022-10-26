@@ -47,18 +47,15 @@ mapping metadata:
 -  :doc:`Attributes <attributes-reference>`
 -  :doc:`XML <xml-mapping>`
 -  :doc:`PHP code <php-mapping>`
--  :doc:`Docblock Annotations <annotations-reference>` (deprecated and
-  will be removed in ``doctrine/orm`` 3.0)
 -  :doc:`YAML <yaml-mapping>` (deprecated and will be removed in ``doctrine/orm`` 3.0.)
 
 This manual will usually show mapping metadata via attributes, though
-many examples also show the equivalent configuration in annotations,
-YAML and XML.
+many examples also show the equivalent configuration in YAML and XML.
 
 .. note::
 
     All metadata drivers perform equally. Once the metadata of a class has been
-    read from the source (attributes, annotations, XML, etc.) it is stored in an instance
+    read from the source (attributes, XML, etc.) it is stored in an instance
     of the ``Doctrine\ORM\Mapping\ClassMetadata`` class which are
     stored in the metadata cache.  If you're not using a metadata cache (not
     recommended!) then the XML driver is the fastest.
@@ -73,17 +70,6 @@ Marking our ``Message`` class as an entity for Doctrine is straightforward:
         use Doctrine\ORM\Mapping\Entity;
 
         #[Entity]
-        class Message
-        {
-            // ...
-        }
-
-    .. code-block:: annotation
-
-        <?php
-        use Doctrine\ORM\Mapping\Entity;
-
-        /** @Entity */
         class Message
         {
             // ...
@@ -111,21 +97,6 @@ You can change this by configuring information about the table:
 
         #[Entity]
         #[Table(name: 'message')]
-        class Message
-        {
-            // ...
-        }
-
-    .. code-block:: annotation
-
-        <?php
-        use Doctrine\ORM\Mapping\Entity;
-        use Doctrine\ORM\Mapping\Table;
-
-        /**
-         * @Entity
-         * @Table(name="message")
-         */
         class Message
         {
             // ...
@@ -167,23 +138,6 @@ specified, ``string`` is used as the default.
             #[Column(length: 140)]
             private $text;
             #[Column(name: 'posted_at', type: Types::DATETIME)]
-            private $postedAt;
-        }
-
-    .. code-block:: annotation
-
-        <?php
-        use Doctrine\ORM\Mapping\Entity;
-        use Doctrine\ORM\Mapping\Column;
-
-        /** @Entity */
-        class Message
-        {
-            /** @Column(type="integer") */
-            private $id;
-            /** @Column(length=140) */
-            private $text;
-            /** @Column(type="datetime", name="posted_at") */
             private $postedAt;
         }
 
@@ -352,20 +306,6 @@ the field that serves as the identifier with the ``#[Id]`` attribute.
             // ...
         }
 
-    .. code-block:: annotation
-
-        <?php
-        class Message
-        {
-            /**
-             * @Id
-             * @Column(type="integer")
-             * @GeneratedValue
-             */
-            private int|null $id = null;
-            // ...
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -432,20 +372,6 @@ besides specifying the sequence's name:
             #[Id]
             #[GeneratedValue(strategy: 'SEQUENCE')]
             #[SequenceGenerator(sequenceName: 'message_seq', initialValue: 1, allocationSize: 100)]
-            protected int|null $id = null;
-            // ...
-        }
-
-    .. code-block:: annotation
-
-        <?php
-        class Message
-        {
-            /**
-             * @Id
-             * @GeneratedValue(strategy="SEQUENCE")
-             * @SequenceGenerator(sequenceName="message_seq", initialValue=1, allocationSize=100)
-             */
             protected int|null $id = null;
             // ...
         }

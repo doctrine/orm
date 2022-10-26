@@ -26,13 +26,6 @@ use const PHP_EOL;
  */
 class MappingException extends Exception implements ORMException
 {
-    /** @return MappingException */
-    public static function pathRequired()
-    {
-        return new self('Specifying the paths to your entities is required ' .
-            'in the AnnotationDriver to retrieve all class names.');
-    }
-
     /**
      * @param string $entityName
      *

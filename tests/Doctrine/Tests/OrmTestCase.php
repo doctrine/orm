@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\PsrCachedReader;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Result;
@@ -17,9 +15,7 @@ use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
-use Doctrine\ORM\ORMSetup;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -57,7 +53,7 @@ abstract class OrmTestCase extends DoctrineTestCase
 
     private CacheItemPoolInterface|null $secondLevelCache = null;
 
-    protected function createAnnotationDriver(array $paths = []): AttributeDriver
+    protected function createAttributeDriver(array $paths = []): AttributeDriver
     {
         return new AttributeDriver($paths);
     }

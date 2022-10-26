@@ -43,7 +43,6 @@ Reference Guide
    reference/native-sql
    reference/change-tracking-policies
    reference/partial-objects
-   reference/annotations-reference
    reference/attributes-reference
    reference/xml-mapping
    reference/php-mapping
@@ -59,7 +58,7 @@ Reference Guide
    reference/advanced-configuration
    reference/second-level-cache
    reference/security
-   
+
 
 Cookbook
 --------

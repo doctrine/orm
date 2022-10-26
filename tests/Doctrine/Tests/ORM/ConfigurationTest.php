@@ -9,7 +9,7 @@ use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
-use Doctrine\ORM\Mapping as AnnotationNamespace;
+use Doctrine\ORM\Mapping as MappingNamespace;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
@@ -146,7 +146,7 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testSetGetClassMetadataFactoryName(): void
     {
-        self::assertSame(AnnotationNamespace\ClassMetadataFactory::class, $this->configuration->getClassMetadataFactoryName());
+        self::assertSame(MappingNamespace\ClassMetadataFactory::class, $this->configuration->getClassMetadataFactoryName());
         $this->configuration->setClassMetadataFactoryName(self::class);
         self::assertSame(self::class, $this->configuration->getClassMetadataFactoryName());
     }
@@ -188,7 +188,7 @@ class ConfigurationTest extends DoctrineTestCase
     public function testSetGetEntityListenerResolver(): void
     {
         self::assertInstanceOf(EntityListenerResolver::class, $this->configuration->getEntityListenerResolver());
-        self::assertInstanceOf(AnnotationNamespace\DefaultEntityListenerResolver::class, $this->configuration->getEntityListenerResolver());
+        self::assertInstanceOf(MappingNamespace\DefaultEntityListenerResolver::class, $this->configuration->getEntityListenerResolver());
         $resolver = $this->createMock(EntityListenerResolver::class);
         $this->configuration->setEntityListenerResolver($resolver);
         self::assertSame($resolver, $this->configuration->getEntityListenerResolver());

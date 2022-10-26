@@ -46,7 +46,7 @@ use function current;
 
 class SchemaToolTest extends OrmTestCase
 {
-    public function testAddUniqueIndexForUniqueFieldAnnotation(): void
+    public function testAddUniqueIndexForUniqueFieldAttribute(): void
     {
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
@@ -67,15 +67,15 @@ class SchemaToolTest extends OrmTestCase
         self::assertTrue($schema->getTable('cms_users')->columnsAreIndexed(['username']), 'username column should be indexed.');
     }
 
-    public function testAnnotationOptionsAttribute(): void
+    public function testAttributeOptionsArgument(): void
     {
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
         $schema = $schemaTool->getSchemaFromMetadata(
-            [$em->getClassMetadata(TestEntityWithAnnotationOptionsAttribute::class)],
+            [$em->getClassMetadata(TestEntityWithAttributeOptionsArgument::class)],
         );
-        $table  = $schema->getTable('TestEntityWithAnnotationOptionsAttribute');
+        $table  = $schema->getTable('TestEntityWithAttributeOptionsArgument');
 
         foreach ([$table->getOptions(), $table->getColumn('test')->getPlatformOptions()] as $options) {
             self::assertArrayHasKey('foo', $options);
@@ -198,18 +198,18 @@ class SchemaToolTest extends OrmTestCase
     }
 
     /** @group DDC-3671 */
-    public function testSchemaHasProperIndexesFromUniqueConstraintAnnotation(): void
+    public function testSchemaHasProperIndexesFromUniqueConstraintAttribute(): void
     {
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
         $classes    = [
-            $em->getClassMetadata(UniqueConstraintAnnotationModel::class),
+            $em->getClassMetadata(UniqueConstraintAttributeModel::class),
         ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
-        self::assertTrue($schema->hasTable('unique_constraint_annotation_table'));
-        $table = $schema->getTable('unique_constraint_annotation_table');
+        self::assertTrue($schema->hasTable('unique_constraint_attribute_table'));
+        $table = $schema->getTable('unique_constraint_attribute_table');
 
         self::assertCount(2, $table->getIndexes());
         self::assertTrue($table->hasIndex('primary'));
@@ -374,7 +374,7 @@ class SchemaToolTest extends OrmTestCase
 
 #[Table(options: ['foo' => 'bar', 'baz' => ['key' => 'val']])]
 #[Entity]
-class TestEntityWithAnnotationOptionsAttribute
+class TestEntityWithAttributeOptionsArgument
 {
     #[Id]
     #[Column]
@@ -403,10 +403,10 @@ class GenerateSchemaEventListener
     }
 }
 
-#[Table(name: 'unique_constraint_annotation_table')]
+#[Table(name: 'unique_constraint_attribute_table')]
 #[UniqueConstraint(name: 'uniq_hash', columns: ['hash'])]
 #[Entity]
-class UniqueConstraintAnnotationModel
+class UniqueConstraintAttributeModel
 {
     #[Id]
     #[Column]

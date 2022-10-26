@@ -67,23 +67,6 @@ First Attributes:
         public function assertCustomerAllowedBuying() {}
     }
 
-As Annotations:
-
-.. code-block:: php
-
-    <?php
-    /**
-     * @Entity
-     * @HasLifecycleCallbacks
-     */
-    class Order
-    {
-        /**
-         * @PrePersist @PreUpdate
-         */
-        public function assertCustomerAllowedBuying() {}
-    }
-
 In XML Mappings:
 
 .. code-block:: xml

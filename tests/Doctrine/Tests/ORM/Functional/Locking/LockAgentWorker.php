@@ -9,7 +9,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\ORMSetup;
 use Doctrine\Tests\ORM\Functional\Locking\Doctrine\ORM\Query;
 use GearmanWorker;
 use InvalidArgumentException;

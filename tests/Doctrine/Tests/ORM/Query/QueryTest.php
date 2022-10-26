@@ -273,7 +273,7 @@ class QueryTest extends OrmTestCase
     public function testProcessParameterValueValueObjectWithDriverChain(): void
     {
         $driverChain = new MappingDriverChain();
-        $driverChain->addDriver($this->createAnnotationDriver(), 'Foo');
+        $driverChain->addDriver($this->createAttributeDriver(), 'Foo');
         $this->entityManager->getConfiguration()->setMetadataDriverImpl($driverChain);
 
         $query = $this->entityManager->createQuery();

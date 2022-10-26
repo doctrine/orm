@@ -13,9 +13,8 @@ programatically specify your mapping information inside of a static function
 defined on the entity class itself.
 
 This is useful for cases where you want to keep your entity and mapping
-information together but don't want to use attributes or
-annotations.  For this you just need
-to use the ``StaticPHPDriver``:
+information together but don't want to use attributes. For this you just
+need to use the ``StaticPHPDriver``:
 
 .. code-block:: php
 

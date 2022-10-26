@@ -7,7 +7,6 @@ namespace Doctrine\Tests\Models\Company;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\Entity;
 
 #[ORM\Entity]
 class CompanyFixContract extends CompanyContract

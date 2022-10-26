@@ -6,10 +6,6 @@ namespace Doctrine\Tests\Models\DDC1476;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\GeneratedValue;
-use Doctrine\ORM\Mapping\Id;
 
 #[ORM\Entity]
 class DDC1476EntityWithDefaultFieldType

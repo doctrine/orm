@@ -20,7 +20,7 @@ class DDC3103Test extends OrmFunctionalTestCase
     {
         $classMetadata = new ClassMetadata(DDC3103ArticleId::class);
 
-        $this->createAnnotationDriver()->loadMetadataForClass(DDC3103ArticleId::class, $classMetadata);
+        $this->createAttributeDriver()->loadMetadataForClass(DDC3103ArticleId::class, $classMetadata);
 
         self::assertTrue(
             $classMetadata->isEmbeddedClass,

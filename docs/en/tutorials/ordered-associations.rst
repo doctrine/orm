@@ -27,22 +27,6 @@ can specify the ``#[OrderBy]`` in the following way:
             private Collection $groups;
         }
 
-    .. code-block:: annotation
-
-        <?php
-        /** @Entity **/
-        class User
-        {
-            // ...
-
-            /**
-             * @ManyToMany(targetEntity="Group")
-             * @OrderBy({"name" = "ASC"})
-             * @var Collection<int, Group>
-             */
-            private Collection $groups;
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>

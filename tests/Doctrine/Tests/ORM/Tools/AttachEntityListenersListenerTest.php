@@ -29,7 +29,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
     protected function setUp(): void
     {
         $this->listener = new AttachEntityListenersListener();
-        $driver         = $this->createAnnotationDriver();
+        $driver         = $this->createAttributeDriver();
         $this->em       = $this->getTestEntityManager();
         $evm            = $this->em->getEventManager();
         $this->factory  = new ClassMetadataFactory();
