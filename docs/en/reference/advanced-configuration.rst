@@ -111,14 +111,12 @@ Gets or sets the metadata driver implementation that is used by
 Doctrine to acquire the object-relational metadata for your
 classes.
 
-There are currently 4 available implementations:
+There are currently 3 available implementations:
 
 
 -  ``Doctrine\ORM\Mapping\Driver\AttributeDriver``
 -  ``Doctrine\ORM\Mapping\Driver\XmlDriver``
 -  ``Doctrine\ORM\Mapping\Driver\DriverChain``
--  ``Doctrine\ORM\Mapping\Driver\YamlDriver`` (deprecated and will be
-   removed in ``doctrine/orm`` 3.0)
 
 Throughout the most part of this manual the AttributeDriver is
 used in the examples. For information on the usage of the
