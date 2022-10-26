@@ -43,7 +43,7 @@ The DQL Snippet in OrderBy is only allowed to consist of
 unqualified, unquoted field names and of an optional ASC/DESC
 positional statement. Multiple Fields are separated by a comma (,).
 The referenced field names have to exist on the ``targetEntity``
-class of the ``#[ManyToMany]`` or ``#[OneToMany]`` annotation.
+class of the ``#[ManyToMany]`` or ``#[OneToMany]`` attribute.
 
 The semantics of this feature can be described as follows:
 

@@ -434,6 +434,12 @@ complete list of supported helper methods available:
         // Example - $qb->expr()->isNotNull('u.id') => u.id IS NOT NULL
         public function isNotNull($x); // Returns string
 
+        // Example - $qb->expr()->isMemberOf('?1', 'u.groups') => ?1 MEMBER OF u.groups
+        public function isMemberOf($x, $y); // Returns Expr\Comparison instance
+
+        // Example - $qb->expr()->isInstanceOf('u', Employee::class) => u INSTANCE OF Employee
+        public function isInstanceOf($x, $y); // Returns Expr\Comparison instance
+
 
         /** Arithmetic objects **/
 

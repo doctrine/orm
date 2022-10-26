@@ -305,7 +305,7 @@ as follows:
 -  A removed entity X will be removed from the database as a result
    of the flush operation.
 
-After an entity has been removed its in-memory state is the same as
+After an entity has been removed, its in-memory state is the same as
 before the removal, except for generated identifiers.
 
 Removing an entity will also automatically delete any existing
