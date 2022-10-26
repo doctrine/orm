@@ -109,16 +109,14 @@ class GH7820Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7820Line
 {
     public function __construct(
-        /**
-         * @Id()
-         * @Column(type="Doctrine\Tests\ORM\Functional\Ticket\GH7820LineTextType", length=255)
-         */
+        #[Id]
+        #[Column(type: 'Doctrine\Tests\ORM\Functional\Ticket\GH7820LineTextType', length: 255)]
         private GH7820LineText $text,
-        /** @Column(type="integer") */
+        #[Column(type: 'integer')]
         private int $lineNumber,
     ) {
     }

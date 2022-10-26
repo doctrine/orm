@@ -85,38 +85,29 @@ class DDC3634Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC3634Entity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="bigint")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'bigint')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({
- *  DDC3634JTIBaseEntity::class  = DDC3634JTIBaseEntity::class,
- *  DDC3634JTIChildEntity::class = DDC3634JTIChildEntity::class,
- * })
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorMap([DDC3634JTIBaseEntity::class => DDC3634JTIBaseEntity::class, DDC3634JTIChildEntity::class => DDC3634JTIChildEntity::class])]
 class DDC3634JTIBaseEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="bigint")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'bigint')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class DDC3634JTIChildEntity extends DDC3634JTIBaseEntity
 {
 }

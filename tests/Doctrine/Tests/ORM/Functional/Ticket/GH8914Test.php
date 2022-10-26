@@ -27,29 +27,25 @@ final class GH8914Test extends OrmTestCase
     }
 }
 
-/** @MappedSuperclass */
+#[MappedSuperclass]
 abstract class GH8914BaseEntity
 {
 }
 
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"person" = "GH8914Person", "employee" = "GH8914Employee"})
- */
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['person' => 'GH8914Person', 'employee' => 'GH8914Employee'])]
 class GH8914Person extends GH8914BaseEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class GH8914Employee extends GH8914Person
 {
 }

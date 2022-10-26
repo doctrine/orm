@@ -41,22 +41,16 @@ class Ticket4646InstanceOfAbstractTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity()
- * @Table(name="instance_of_abstract_test_person")
- * @InheritanceType(value="JOINED")
- * @DiscriminatorColumn(name="kind", type="string")
- * @DiscriminatorMap(value={
- *     "employee": EmployeeTicket4646Abstract::class
- * })
- */
+#[Table(name: 'instance_of_abstract_test_person')]
+#[Entity]
+#[InheritanceType(value: 'JOINED')]
+#[DiscriminatorColumn(name: 'kind', type: 'string')]
+#[DiscriminatorMap(value: ['employee' => EmployeeTicket4646Abstract::class])]
 abstract class PersonTicket4646Abstract
 {
-    /**
-     * @Id()
-     * @GeneratedValue()
-     * @Column(type="integer")
-     */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     private int $id;
 
     public function getId(): int|null
@@ -65,10 +59,8 @@ abstract class PersonTicket4646Abstract
     }
 }
 
-/**
- * @Entity()
- * @Table(name="instance_of_abstract_test_employee")
- */
+#[Table(name: 'instance_of_abstract_test_employee')]
+#[Entity]
 class EmployeeTicket4646Abstract extends PersonTicket4646Abstract
 {
 }

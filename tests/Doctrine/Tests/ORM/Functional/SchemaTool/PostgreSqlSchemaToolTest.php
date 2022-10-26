@@ -51,65 +51,57 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="stonewood.screen")
- */
+#[Table(name: 'stonewood.screen')]
+#[Entity]
 class DDC1657Screen
 {
     /**
      * Identifier
-     *
-     * @Id
-     * @GeneratedValue(strategy="IDENTITY")
-     * @Column(name="pk", type="integer", nullable=false)
      */
+    #[Id]
+    #[GeneratedValue(strategy: 'IDENTITY')]
+    #[Column(name: 'pk', type: 'integer', nullable: false)]
     private int $pk;
 
     /**
      * Title
-     *
-     * @Column(name="title", type="string", length=255, nullable=false)
      */
+    #[Column(name: 'title', type: 'string', length: 255, nullable: false)]
     private string $title;
 
     /**
      * Path
-     *
-     * @Column(name="path", type="string", length=255, nullable=false)
      */
+    #[Column(name: 'path', type: 'string', length: 255, nullable: false)]
     private string $path;
 
     /**
      * Register date
      *
      * @var Date
-     * @Column(name="ddate", type="date", nullable=false)
      */
+    #[Column(name: 'ddate', type: 'date', nullable: false)]
     private $ddate;
 
     /**
      * Avatar
      *
      * @var Stonewood\Model\Entity\Avatar
-     * @ManyToOne(targetEntity="DDC1657Avatar")
-     * @JoinColumn(name="pk_avatar", referencedColumnName="pk", nullable=true, onDelete="CASCADE")
      */
+    #[ManyToOne(targetEntity: 'DDC1657Avatar')]
+    #[JoinColumn(name: 'pk_avatar', referencedColumnName: 'pk', nullable: true, onDelete: 'CASCADE')]
     private $avatar;
 }
 
-/**
- * @Entity
- * @Table(name="stonewood.avatar")
- */
+#[Table(name: 'stonewood.avatar')]
+#[Entity]
 class DDC1657Avatar
 {
     /**
      * Identifier
-     *
-     * @Id
-     * @GeneratedValue(strategy="IDENTITY")
-     * @Column(name="pk", type="integer", nullable=false)
      */
+    #[Id]
+    #[GeneratedValue(strategy: 'IDENTITY')]
+    #[Column(name: 'pk', type: 'integer', nullable: false)]
     private int $pk;
 }

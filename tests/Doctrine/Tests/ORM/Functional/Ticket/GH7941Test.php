@@ -86,30 +86,24 @@ final class GH7941Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table()
- */
+#[Table]
+#[Entity]
 class GH7941Product
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DateTimeImmutable
-     * @Column(type="datetime_immutable")
-     */
+    /** @var DateTimeImmutable */
+    #[Column(type: 'datetime_immutable')]
     public $createdAt;
 
     public function __construct(
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         public string $name,
-        /** @Column(type="decimal", precision=10) */
+        #[Column(type: 'decimal', precision: 10)]
         public string $price,
     ) {
         $this->createdAt = new DateTimeImmutable();

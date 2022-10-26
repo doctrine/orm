@@ -9,6 +9,7 @@ use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -57,95 +58,59 @@ class GH6823Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="gh6823_user", options={
- *     "charset"="utf8mb4",
- *     "collation"="utf8mb4_bin"
- * })
- */
+#[Table(name: 'gh6823_user', options: ['charset' => 'utf8mb4', 'collation' => 'utf8mb4_bin'])]
+#[Entity]
 class GH6823User
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
     public $id;
 
-    /**
-     * @var GH6823Group
-     * @ManyToOne(targetEntity="GH6823Group")
-     * @JoinColumn(name="group_id", referencedColumnName="id", options={"charset"="ascii", "collation"="ascii_general_ci"})
-     */
+    /** @var GH6823Group */
+    #[ManyToOne(targetEntity: 'GH6823Group')]
+    #[JoinColumn(name: 'group_id', referencedColumnName: 'id', options: ['charset' => 'ascii', 'collation' => 'ascii_general_ci'])]
     public $group;
 
-    /**
-     * @var GH6823Status
-     * @ManyToOne(targetEntity="GH6823Status")
-     * @JoinColumn(name="status_id", referencedColumnName="id", options={"charset"="latin1", "collation"="latin1_bin"})
-     */
+    /** @var GH6823Status */
+    #[ManyToOne(targetEntity: 'GH6823Status')]
+    #[JoinColumn(name: 'status_id', referencedColumnName: 'id', options: ['charset' => 'latin1', 'collation' => 'latin1_bin'])]
     public $status;
 
-    /**
-     * @var Collection<int, GH6823Tag>
-     * @ManyToMany(targetEntity="GH6823Tag")
-     * @JoinTable(name="gh6823_user_tags", joinColumns={
-     *   @JoinColumn(name="user_id", referencedColumnName="id", options={"charset"="utf8mb4", "collation"="utf8mb4_bin"})
-     * }, inverseJoinColumns={
-     *   @JoinColumn(name="tag_id", referencedColumnName="id", options={"charset"="latin1", "collation"="latin1_bin"})
-     * }, options={"charset"="ascii", "collation"="ascii_general_ci"})
-     */
+    /** @var Collection<int, GH6823Tag> */
+    #[JoinTable(name: 'gh6823_user_tags', options: ['charset' => 'ascii', 'collation' => 'ascii_general_ci'])]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', options: ['charset' => 'utf8mb4', 'collation' => 'utf8mb4_bin'])]
+    #[InverseJoinColumn(name: 'tag_id', referencedColumnName: 'id', options: ['charset' => 'latin1', 'collation' => 'latin1_bin'])]
+    #[ManyToMany(targetEntity: 'GH6823Tag')]
     public $tags;
 }
 
-/**
- * @Entity
- * @Table(name="gh6823_group", options={
- *     "charset"="ascii",
- *     "collation"="ascii_general_ci"
- * })
- */
+#[Table(name: 'gh6823_group', options: ['charset' => 'ascii', 'collation' => 'ascii_general_ci'])]
+#[Entity]
 class GH6823Group
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
     public $id;
 }
 
-/**
- * @Entity
- * @Table(name="gh6823_status", options={
- *     "charset"="koi8r",
- *     "collation"="koi8r_bin"
- * })
- */
+#[Table(name: 'gh6823_status', options: ['charset' => 'koi8r', 'collation' => 'koi8r_bin'])]
+#[Entity]
 class GH6823Status
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255, options={"charset"="latin1", "collation"="latin1_bin"})
-     */
+    /** @var string */
+    #[Id]
+    #[Column(type: 'string', length: 255, options: ['charset' => 'latin1', 'collation' => 'latin1_bin'])]
     public $id;
 }
 
-/**
- * @Entity
- * @Table(name="gh6823_tag", options={
- *     "charset"="koi8r",
- *     "collation"="koi8r_bin"
- * })
- */
+#[Table(name: 'gh6823_tag', options: ['charset' => 'koi8r', 'collation' => 'koi8r_bin'])]
+#[Entity]
 class GH6823Tag
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255, options={"charset"="latin1", "collation"="latin1_bin"})
-     */
+    /** @var string */
+    #[Id]
+    #[Column(type: 'string', length: 255, options: ['charset' => 'latin1', 'collation' => 'latin1_bin'])]
     public $id;
 }

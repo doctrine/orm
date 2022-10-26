@@ -64,26 +64,22 @@ class DDC309Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC309Country
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class DDC309User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }

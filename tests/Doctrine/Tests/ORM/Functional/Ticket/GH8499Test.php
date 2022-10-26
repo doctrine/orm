@@ -108,37 +108,27 @@ class GH8499Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table
- */
+#[Table]
+#[Entity]
 class GH8499VersionableEntity
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $description;
 
-    /**
-     * @Version
-     * @Column(type="datetime")
-     * @var DateTimeInterface
-     */
+    /** @var DateTimeInterface */
+    #[Version]
+    #[Column(type: 'datetime')]
     public $revision;
 
     public function getId(): int

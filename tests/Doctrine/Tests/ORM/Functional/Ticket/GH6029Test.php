@@ -87,21 +87,17 @@ final class GH6029Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH6029User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, GH6029Group>
-     * @ManyToMany(targetEntity=GH6029Group::class, cascade={"all"})
-     */
+    /** @psalm-var Collection<int, GH6029Group> */
+    #[ManyToMany(targetEntity: GH6029Group::class, cascade: ['all'])]
     public $groups;
 
     public function __construct()
@@ -110,45 +106,37 @@ class GH6029User
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH6029Group
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class GH6029Group2
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class GH6029Product
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int,GH6029Feature>
-     * @OneToMany(targetEntity=GH6029Feature::class, mappedBy="product", cascade={"all"})
-     */
+    /** @psalm-var Collection<int,GH6029Feature> */
+    #[OneToMany(targetEntity: GH6029Feature::class, mappedBy: 'product', cascade: ['all'])]
     public $features;
 
     public function __construct()
@@ -157,21 +145,17 @@ class GH6029Product
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH6029Feature
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var GH6029Product
-     * @ManyToOne(targetEntity=GH6029Product::class, inversedBy="features")
-     * @JoinColumn(name="product_id", referencedColumnName="id")
-     */
+    /** @var GH6029Product */
+    #[ManyToOne(targetEntity: GH6029Product::class, inversedBy: 'features')]
+    #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
     public $product;
 }

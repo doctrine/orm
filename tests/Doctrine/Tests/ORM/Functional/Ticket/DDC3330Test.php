@@ -73,24 +73,18 @@ class DDC3330Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc3330_building")
- */
+#[Table(name: 'ddc3330_building')]
+#[Entity]
 class DDC3330Building
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC3330Hall>
-     * @OneToMany(targetEntity="DDC3330Hall", mappedBy="building", cascade={"persist"})
-     */
+    /** @psalm-var Collection<int, DDC3330Hall> */
+    #[OneToMany(targetEntity: 'DDC3330Hall', mappedBy: 'building', cascade: ['persist'])]
     public $halls;
 
     public function addHall(DDC3330Hall $hall): void
@@ -100,29 +94,21 @@ class DDC3330Building
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc3330_hall")
- */
+#[Table(name: 'ddc3330_hall')]
+#[Entity]
 class DDC3330Hall
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var DDC3330Building
-     * @ManyToOne(targetEntity="DDC3330Building", inversedBy="halls")
-     */
+    /** @var DDC3330Building */
+    #[ManyToOne(targetEntity: 'DDC3330Building', inversedBy: 'halls')]
     public $building;
 
-    /**
-     * @var string
-     * @Column(type="string", length=100)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 100)]
     public $name;
 }

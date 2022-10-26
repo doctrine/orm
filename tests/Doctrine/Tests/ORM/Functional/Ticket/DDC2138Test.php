@@ -58,42 +58,32 @@ class DDC2138Test extends OrmFunctionalTestCase
 
 
 
-/**
- * @Table(name="structures")
- * @Entity
- */
+#[Table(name: 'structures')]
+#[Entity]
 class DDC2138Structure
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=32, nullable=true)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 32, nullable: true)]
     protected $name;
 }
 
-/**
- * @Entity
- * @Table(name="users_followed_objects")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="object_type", type="smallint")
- * @DiscriminatorMap({4 = "DDC2138UserFollowedUser", 3 = "DDC2138UserFollowedStructure"})
- */
+#[Table(name: 'users_followed_objects')]
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'object_type', type: 'smallint')]
+#[DiscriminatorMap([4 => 'DDC2138UserFollowedUser', 3 => 'DDC2138UserFollowedStructure'])]
 abstract class DDC2138UserFollowedObject
 {
-    /**
-     * @var int $id
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int $id */
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
     /**
@@ -105,22 +95,18 @@ abstract class DDC2138UserFollowedObject
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
 {
     /**
      * Construct a UserFollowedStructure entity
      */
     public function __construct(
-        /**
-         * @ManyToOne(targetEntity="DDC2138User", inversedBy="followedStructures")
-         * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
-         */
+        #[ManyToOne(targetEntity: 'DDC2138User', inversedBy: 'followedStructures')]
+        #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
         protected User $user,
-        /**
-         * @ManyToOne(targetEntity="DDC2138Structure")
-         * @JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
-         */
+        #[ManyToOne(targetEntity: 'DDC2138Structure')]
+        #[JoinColumn(name: 'object_id', referencedColumnName: 'id', nullable: false)]
         private Structure $followedStructure,
     ) {
     }
@@ -139,22 +125,18 @@ class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
 {
     /**
      * Construct a UserFollowedUser entity
      */
     public function __construct(
-        /**
-         * @ManyToOne(targetEntity="DDC2138User", inversedBy="followedUsers")
-         * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
-         */
+        #[ManyToOne(targetEntity: 'DDC2138User', inversedBy: 'followedUsers')]
+        #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
         protected User $user,
-        /**
-         * @ManyToOne(targetEntity="DDC2138User")
-         * @JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
-         */
+        #[ManyToOne(targetEntity: 'DDC2138User')]
+        #[JoinColumn(name: 'object_id', referencedColumnName: 'id', nullable: false)]
         private User $followedUser,
     ) {
     }
@@ -173,36 +155,26 @@ class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
     }
 }
 
-/**
- * @Table(name="users")
- * @Entity
- */
+#[Table(name: 'users')]
+#[Entity]
 class DDC2138User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=32, nullable=true)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 32, nullable: true)]
     protected $name;
 
-    /**
-     * @var ArrayCollection $followedUsers
-     * @OneToMany(targetEntity="DDC2138UserFollowedUser", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
-     */
+    /** @var ArrayCollection $followedUsers */
+    #[OneToMany(targetEntity: 'DDC2138UserFollowedUser', mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
     protected $followedUsers;
 
-    /**
-     * @var ArrayCollection $followedStructures
-     * @OneToMany(targetEntity="DDC2138UserFollowedStructure", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
-     */
+    /** @var ArrayCollection $followedStructures */
+    #[OneToMany(targetEntity: 'DDC2138UserFollowedStructure', mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
     protected $followedStructures;
 
     public function __construct()

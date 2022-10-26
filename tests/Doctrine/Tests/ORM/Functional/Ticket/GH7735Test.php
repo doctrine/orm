@@ -49,23 +49,17 @@ final class GH7735Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Cache(usage="READ_ONLY")
- */
+#[Entity]
+#[Cache(usage: 'READ_ONLY')]
 class GH7735Car
 {
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="integer")
-         */
+        #[Id]
+        #[Column(type: 'integer')]
         private int $id,
-        /**
-         * @ManyToOne(targetEntity=GH7735Engine::class, cascade={"all"})
-         * @JoinColumn(nullable=false)
-         * @Cache("READ_ONLY")
-         */
+        #[ManyToOne(targetEntity: GH7735Engine::class, cascade: ['all'])]
+        #[JoinColumn(nullable: false)]
+        #[Cache('READ_ONLY')]
         private GH7735Engine $engine,
     ) {
     }
@@ -81,24 +75,18 @@ class GH7735Car
     }
 }
 
-/**
- * @Entity
- * @Cache(usage="READ_ONLY")
- */
+#[Entity]
+#[Cache(usage: 'READ_ONLY')]
 class GH7735Engine
 {
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="integer")
-         */
+        #[Id]
+        #[Column(type: 'integer')]
         private int $id,
-        /** @Column */
+        #[Column]
         private string $model,
-        /**
-         * @OneToOne(targetEntity=GH7735Power::class, mappedBy="engine", cascade={"all"})
-         * @Cache("READ_ONLY")
-         */
+        #[OneToOne(targetEntity: GH7735Power::class, mappedBy: 'engine', cascade: ['all'])]
+        #[Cache('READ_ONLY')]
         private GH7735Power $power,
     ) {
         $power->setEngine($this);
@@ -120,23 +108,17 @@ class GH7735Engine
     }
 }
 
-/**
- * @Entity
- * @Cache(usage="READ_ONLY")
- */
+#[Entity]
+#[Cache(usage: 'READ_ONLY')]
 class GH7735Power
 {
-    /**
-     * @OneToOne(targetEntity=GH7735Engine::class, inversedBy="power")
-     * @Cache("READ_ONLY")
-     */
+    #[OneToOne(targetEntity: GH7735Engine::class, inversedBy: 'power')]
+    #[Cache('READ_ONLY')]
     private GH7735Engine|null $engine = null;
 
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="integer")
-         */
+        #[Id]
+        #[Column(type: 'integer')]
         private int $id,
     ) {
     }

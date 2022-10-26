@@ -41,20 +41,16 @@ class ClassMetadataLoadEventTest extends OrmTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="load_event_test_entity")
- */
+#[Table(name: 'load_event_test_entity')]
+#[Entity]
 class LoadEventTestEntity
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @Column(type="string", length=255) */
+    #[Column(type: 'string', length: 255)]
     private string $name;
 
     /** @var mixed */

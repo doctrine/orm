@@ -10,29 +10,21 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="customtype_uppercases")
- */
+#[Table(name: 'customtype_uppercases')]
+#[Entity]
 class CustomTypeUpperCase
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="upper_case_string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'upper_case_string', length: 255)]
     public $lowerCaseString;
 
-    /**
-     * @var string
-     * @Column(type="upper_case_string", length=255, name="named_lower_case_string", nullable = true)
-     */
+    /** @var string */
+    #[Column(type: 'upper_case_string', length: 255, name: 'named_lower_case_string', nullable: true)]
     public $namedLowerCaseString;
 }

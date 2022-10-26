@@ -7,12 +7,10 @@ namespace Doctrine\Tests\Models\DDC3699;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/** @MappedSuperclass */
+#[MappedSuperclass]
 abstract class DDC3699Parent
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $parentField;
 }

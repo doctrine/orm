@@ -12,30 +12,22 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="legacy_cars")
- */
+#[Table(name: 'legacy_cars')]
+#[Entity]
 class LegacyCar
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(name="iCarId", type="integer", nullable=false)
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(name: 'iCarId', type: 'integer', nullable: false)]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, LegacyUser>
-     * @ManyToMany(targetEntity="LegacyUser", mappedBy="cars")
-     */
+    /** @psalm-var Collection<int, LegacyUser> */
+    #[ManyToMany(targetEntity: 'LegacyUser', mappedBy: 'cars')]
     public $users;
 
-    /**
-     * @var string
-     * @Column(name="sDescription", type="string", length=255, unique=true)
-     */
+    /** @var string */
+    #[Column(name: 'sDescription', type: 'string', length: 255, unique: true)]
     public $description;
 
     public function getDescription(): string

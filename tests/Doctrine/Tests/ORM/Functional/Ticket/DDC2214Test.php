@@ -56,32 +56,26 @@ class DDC2214Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2214Foo
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var DDC2214Bar
-     * @ManyToOne(targetEntity="DDC2214Bar")
-     */
+    /** @var DDC2214Bar */
+    #[ManyToOne(targetEntity: 'DDC2214Bar')]
     public $bar;
 }
 
-/** @Entity */
+#[Entity]
 class DDC2214Bar
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }

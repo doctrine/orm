@@ -14,30 +14,22 @@ use Doctrine\ORM\Mapping\JoinColumns;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="geonames_admin1_alternate_name")
- * @Cache
- */
+#[Table(name: 'geonames_admin1_alternate_name')]
+#[Entity]
+#[Cache]
 class Admin1AlternateName
 {
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="string", length=25)
-         * @GeneratedValue(strategy="NONE")
-         */
+        #[Id]
+        #[Column(type: 'string', length: 25)]
+        #[GeneratedValue(strategy: 'NONE')]
         public int $id,
-        /** @Column(type="string", length=255); */
+        #[Column(type: 'string', length: 255)]
         public string $name,
-        /**
-         * @ManyToOne(targetEntity="Admin1", inversedBy="names")
-         * @JoinColumns({
-         *    @JoinColumn(name="admin1", referencedColumnName="id"),
-         *    @JoinColumn(name="country", referencedColumnName="country")
-         * })
-         * @Cache
-         */
+        #[JoinColumn(name: 'admin1', referencedColumnName: 'id')]
+        #[JoinColumn(name: 'country', referencedColumnName: 'country')]
+        #[ManyToOne(targetEntity: 'Admin1', inversedBy: 'names')]
+        #[Cache]
         public Admin1 $admin1,
     ) {
     }

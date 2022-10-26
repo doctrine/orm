@@ -11,19 +11,15 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
 
-/**
- * @Entity
- * @Table(name="custom_id_type_child")
- */
+#[Table(name: 'custom_id_type_child')]
+#[Entity]
 class CustomIdObjectTypeChild
 {
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="CustomIdObject", length=255)
-         */
+        #[Id]
+        #[Column(type: 'CustomIdObject', length: 255)]
         public CustomIdObject $id,
-        /** @ManyToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent", inversedBy="children") */
+        #[ManyToOne(targetEntity: 'Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent', inversedBy: 'children')]
         public CustomIdObjectTypeParent $parent,
     ) {
     }

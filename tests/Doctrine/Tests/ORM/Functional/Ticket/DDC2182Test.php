@@ -33,34 +33,24 @@ class DDC2182Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table
- */
+#[Table]
+#[Entity]
 class DDC2182OptionParent
 {
-    /**
-     * @Id
-     * @Column(type="integer", options={"unsigned": true})
-     */
+    #[Id]
+    #[Column(type: 'integer', options: ['unsigned' => true])]
     private int $id;
 }
 
-/**
- * @Entity
- * @Table
- */
+#[Table]
+#[Entity]
 class DDC2182OptionChild
 {
-    /**
-     * @Id
-     * @Column
-     */
+    #[Id]
+    #[Column]
     private string $id;
 
-    /**
-     * @ManyToOne(targetEntity="DDC2182OptionParent")
-     * @JoinColumn(referencedColumnName="id")
-     */
+    #[ManyToOne(targetEntity: 'DDC2182OptionParent')]
+    #[JoinColumn(referencedColumnName: 'id')]
     private DDC2182OptionParent $parent;
 }

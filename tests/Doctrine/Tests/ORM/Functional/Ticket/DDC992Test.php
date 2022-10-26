@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -88,35 +89,27 @@ class DDC992Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({"child" = "DDC992Child", "parent" = "DDC992Parent"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorMap(['child' => 'DDC992Child', 'parent' => 'DDC992Parent'])]
 class DDC992Parent
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC992Parent
-     * @ManyToOne(targetEntity="DDC992Parent", inversedBy="childs")
-     */
+    /** @var DDC992Parent */
+    #[ManyToOne(targetEntity: 'DDC992Parent', inversedBy: 'childs')]
     public $parent;
 
-    /**
-     * @var Collection<int, DDC992Child>
-     * @OneToMany(targetEntity="DDC992Child", mappedBy="parent")
-     */
+    /** @var Collection<int, DDC992Child> */
+    #[OneToMany(targetEntity: 'DDC992Child', mappedBy: 'parent')]
     public $childs;
 }
 
-/** @Entity */
+#[Entity]
 class DDC992Child extends DDC992Parent
 {
     public function childs(): Collection
@@ -125,7 +118,7 @@ class DDC992Child extends DDC992Parent
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC992Role
 {
     public function getRoleID(): int
@@ -133,34 +126,25 @@ class DDC992Role
         return $this->roleID;
     }
 
-    /**
-     * @var int
-     * @Id
-     * @Column(name="roleID", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'roleID', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $roleID;
 
-    /**
-     * @var string
-     * @Column(name="name", type="string", length=45)
-     */
+    /** @var string */
+    #[Column(name: 'name', type: 'string', length: 45)]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, DDC992Role>
-     * @ManyToMany(targetEntity="DDC992Role", mappedBy="extends")
-     */
+    /** @psalm-var Collection<int, DDC992Role> */
+    #[ManyToMany(targetEntity: 'DDC992Role', mappedBy: 'extends')]
     public $extendedBy;
 
-    /**
-     * @psalm-var Collection<int, DDC992Role>
-     * @ManyToMany (targetEntity="DDC992Role", inversedBy="extendedBy")
-     * @JoinTable(name="RoleRelations",
-     *     joinColumns={@JoinColumn(name="roleID", referencedColumnName="roleID")},
-     *     inverseJoinColumns={@JoinColumn(name="extendsRoleID", referencedColumnName="roleID")},
-     * )
-     */
+    /** @psalm-var Collection<int, DDC992Role> */
+    #[JoinTable(name: 'RoleRelations')]
+    #[JoinColumn(name: 'roleID', referencedColumnName: 'roleID')]
+    #[InverseJoinColumn(name: 'extendsRoleID', referencedColumnName: 'roleID')]
+    #[ManyToMany(targetEntity: 'DDC992Role', inversedBy: 'extendedBy')]
     public $extends;
 
     public function __construct()

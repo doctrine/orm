@@ -10,23 +10,17 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="boolean_model")
- */
+#[Table(name: 'boolean_model')]
+#[Entity]
 class BooleanModel
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var bool
-     * @Column(type="boolean")
-     */
+    /** @var bool */
+    #[Column(type: 'boolean')]
     public $booleanField;
 }

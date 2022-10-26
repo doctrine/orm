@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -54,34 +55,27 @@ class DDC422Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"guest" = "DDC422Guest", "customer" = "DDC422Customer"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['guest' => 'DDC422Guest', 'customer' => 'DDC422Customer'])]
 class DDC422Guest
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class DDC422Customer extends DDC422Guest
 {
-    /**
-     * @var Collection<int, DDC422Contact>
-     * @ManyToMany(targetEntity="DDC422Contact", cascade={"persist","remove"})
-     * @JoinTable(name="ddc422_customers_contacts",
-     *      joinColumns={@JoinColumn(name="customer_id", referencedColumnName="id", onDelete="cascade" )},
-     *      inverseJoinColumns={@JoinColumn(name="contact_id", referencedColumnName="id", onDelete="cascade" )}
-     *  )
-     */
+    /** @var Collection<int, DDC422Contact> */
+    #[JoinTable(name: 'ddc422_customers_contacts')]
+    #[JoinColumn(name: 'customer_id', referencedColumnName: 'id', onDelete: 'cascade')]
+    #[InverseJoinColumn(name: 'contact_id', referencedColumnName: 'id', onDelete: 'cascade')]
+    #[ManyToMany(targetEntity: 'DDC422Contact', cascade: ['persist', 'remove'])]
     public $contacts;
 
     public function __construct()
@@ -90,14 +84,12 @@ class DDC422Customer extends DDC422Guest
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC422Contact
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }

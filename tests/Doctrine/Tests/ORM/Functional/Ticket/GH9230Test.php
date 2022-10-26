@@ -126,44 +126,32 @@ class GH9230Test extends OrmFunctionalTestCase
 }
 
 
-/** @Entity */
+#[Entity]
 class GH9230Entity
 {
-    /**
-     * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var ?string
-     * @Column(name="name", type="string", nullable=true)
-     */
+    /** @var ?string */
+    #[Column(name: 'name', type: 'string', nullable: true)]
     public $name;
 
-    /**
-     * @var ?int
-     * @Column(name="counter", type="integer", nullable=true)
-     */
+    /** @var ?int */
+    #[Column(name: 'counter', type: 'integer', nullable: true)]
     public $counter;
 
-    /**
-     * @var ?bool
-     * @Column(name="enabled", type="boolean", nullable=true)
-     */
+    /** @var ?bool */
+    #[Column(name: 'enabled', type: 'boolean', nullable: true)]
     public $enabled;
 
-    /**
-     * @var ?float
-     * @Column(name="price", type="decimal", scale=1, precision=2, nullable=true)
-     */
+    /** @var ?float */
+    #[Column(name: 'price', type: 'decimal', scale: 1, precision: 2, nullable: true)]
     public $price;
 
-    /**
-     * @var mixed[]
-     * @Column(name="extra", type="json", nullable=true)
-     */
+    /** @var mixed[] */
+    #[Column(name: 'extra', type: 'json', nullable: true)]
     public $extra;
 }

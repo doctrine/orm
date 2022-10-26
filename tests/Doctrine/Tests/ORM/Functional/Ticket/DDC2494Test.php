@@ -81,25 +81,19 @@ class DDC2494Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Table(name="ddc2494_currency")
- * @Entity
- */
+#[Table(name: 'ddc2494_currency')]
+#[Entity]
 class DDC2494Currency
 {
-    /**
-     * @psalm-var Collection<int, DDC2494Campaign>
-     * @OneToMany(targetEntity="DDC2494Campaign", mappedBy="currency")
-     */
+    /** @psalm-var Collection<int, DDC2494Campaign> */
+    #[OneToMany(targetEntity: 'DDC2494Campaign', mappedBy: 'currency')]
     protected $campaigns;
 
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="ddc2494_tinyint")
-         */
+        #[Id]
+        #[Column(type: 'ddc2494_tinyint')]
         protected int $id,
-        /** @Column(name="temp", type="ddc2494_tinyint", nullable=false) */
+        #[Column(name: 'temp', type: 'ddc2494_tinyint', nullable: false)]
         protected int $temp,
     ) {
     }
@@ -121,25 +115,19 @@ class DDC2494Currency
     }
 }
 
-/**
- * @Table(name="ddc2494_campaign")
- * @Entity
- */
+#[Table(name: 'ddc2494_campaign')]
+#[Entity]
 class DDC2494Campaign
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     protected $id;
 
     public function __construct(
-        /**
-         * @ManyToOne(targetEntity="DDC2494Currency", inversedBy="campaigns")
-         * @JoinColumn(name="currency_id", referencedColumnName="id", nullable=false)
-         */
+        #[ManyToOne(targetEntity: 'DDC2494Currency', inversedBy: 'campaigns')]
+        #[JoinColumn(name: 'currency_id', referencedColumnName: 'id', nullable: false)]
         protected DDC2494Currency $currency,
     ) {
     }

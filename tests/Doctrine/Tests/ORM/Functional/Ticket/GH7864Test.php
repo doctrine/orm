@@ -61,27 +61,21 @@ class GH7864Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7864User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @var Collection<int, GH7864Tweet>
-     * @OneToMany(targetEntity="GH7864Tweet", mappedBy="user", fetch="EXTRA_LAZY")
-     */
+    /** @var Collection<int, GH7864Tweet> */
+    #[OneToMany(targetEntity: 'GH7864Tweet', mappedBy: 'user', fetch: 'EXTRA_LAZY')]
     public $tweets;
 
     public function __construct()
@@ -96,26 +90,20 @@ class GH7864User
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7864Tweet
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $content;
 
-    /**
-     * @var GH7864User
-     * @ManyToOne(targetEntity="GH7864User", inversedBy="tweets")
-     */
+    /** @var GH7864User */
+    #[ManyToOne(targetEntity: 'GH7864User', inversedBy: 'tweets')]
     public $user;
 }

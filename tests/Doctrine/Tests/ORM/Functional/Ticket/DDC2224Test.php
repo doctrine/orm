@@ -68,20 +68,16 @@ class DDC2224Type extends Type
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2224Entity
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var mixed
-     * @Column(type="DDC2224Type", length=255)
-     */
+    /** @var mixed */
+    #[Column(type: 'DDC2224Type', length: 255)]
     public $field;
 }

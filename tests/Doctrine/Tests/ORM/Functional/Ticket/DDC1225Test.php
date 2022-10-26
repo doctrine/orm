@@ -42,17 +42,13 @@ class DDC1225Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="te1")
- */
+#[Table(name: 'te1')]
+#[Entity]
 class DDC1225TestEntity1
 {
-    /**
-     * @Id
-     * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\DDC1225TestEntity2")
-     * @JoinColumn(name="test_entity2_id", referencedColumnName="id", nullable=false)
-     */
+    #[Id]
+    #[ManyToOne(targetEntity: 'Doctrine\Tests\ORM\Functional\Ticket\DDC1225TestEntity2')]
+    #[JoinColumn(name: 'test_entity2_id', referencedColumnName: 'id', nullable: false)]
     private DDC1225TestEntity2|null $testEntity2 = null;
 
     public function setTestEntity2(DDC1225TestEntity2 $testEntity2): void
@@ -66,16 +62,12 @@ class DDC1225TestEntity1
     }
 }
 
-/**
- * @Entity
- * @Table(name="te2")
- */
+#[Table(name: 'te2')]
+#[Entity]
 class DDC1225TestEntity2
 {
-    /**
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @Column(type="integer")
-     */
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
+    #[Column(type: 'integer')]
     private int $id;
 }

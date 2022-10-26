@@ -39,15 +39,13 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class SequenceEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="SEQUENCE")
-     * @SequenceGenerator(allocationSize=5, sequenceName="person_id_seq")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'SEQUENCE')]
+    #[SequenceGenerator(allocationSize: 5, sequenceName: 'person_id_seq')]
     public $id;
 }

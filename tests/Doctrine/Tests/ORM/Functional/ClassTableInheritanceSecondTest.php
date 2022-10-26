@@ -83,23 +83,19 @@ class ClassTableInheritanceSecondTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="cti_parents")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"parent" = "CTIParent", "child" = "CTIChild"})
- */
+#[Table(name: 'cti_parents')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'type', type: 'string')]
+#[DiscriminatorMap(['parent' => 'CTIParent', 'child' => 'CTIChild'])]
 class CTIParent
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent") */
+    #[OneToOne(targetEntity: 'CTIRelated', mappedBy: 'ctiParent')]
     private CTIRelated|null $related = null;
 
     public function getId(): int
@@ -119,13 +115,11 @@ class CTIParent
     }
 }
 
-/**
- * @Entity
- * @Table(name="cti_children")
- */
+#[Table(name: 'cti_children')]
+#[Entity]
 class CTIChild extends CTIParent
 {
-    /** @Column(type="string", length=255) */
+    #[Column(type: 'string', length: 255)]
     private string|null $data = null;
 
     public function getData(): string
@@ -139,20 +133,16 @@ class CTIChild extends CTIParent
     }
 }
 
-/** @Entity */
+#[Entity]
 class CTIRelated
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /**
-     * @OneToOne(targetEntity="CTIParent")
-     * @JoinColumn(name="ctiparent_id", referencedColumnName="id")
-     */
+    #[OneToOne(targetEntity: 'CTIParent')]
+    #[JoinColumn(name: 'ctiparent_id', referencedColumnName: 'id')]
     private CTIParent|null $ctiParent = null;
 
     public function getId(): int
@@ -171,20 +161,16 @@ class CTIRelated
     }
 }
 
-/** @Entity */
+#[Entity]
 class CTIRelated2
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
-    /**
-     * @psalm-var Collection<int, CTIChild>
-     * @ManyToMany(targetEntity="CTIChild")
-     */
+    /** @psalm-var Collection<int, CTIChild> */
+    #[ManyToMany(targetEntity: 'CTIChild')]
     private $ctiChildren;
 
     public function __construct()

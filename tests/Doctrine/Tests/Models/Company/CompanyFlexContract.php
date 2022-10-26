@@ -11,36 +11,31 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 
-/** @Entity */
 #[ORM\Entity]
 class CompanyFlexContract extends CompanyContract
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /** @Column(type="integer") */
+    #[Column(type: 'integer')]
     private int $hoursWorked = 0;
 
-    /** @Column(type="integer") */
+    #[Column(type: 'integer')]
     private int $pricePerHour = 0;
 
-    /**
-     * @psalm-var Collection<int, CompanyManager>
-     * @ManyToMany(targetEntity="CompanyManager", inversedBy="managedContracts", fetch="EXTRA_LAZY")
-     * @JoinTable(name="company_contract_managers",
-     *    joinColumns={@JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
-     *    inverseJoinColumns={@JoinColumn(name="employee_id", referencedColumnName="id")}
-     * )
-     */
+    /** @psalm-var Collection<int, CompanyManager> */
+    #[JoinTable(name: 'company_contract_managers')]
+    #[JoinColumn(name: 'contract_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[InverseJoinColumn(name: 'employee_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'CompanyManager', inversedBy: 'managedContracts', fetch: 'EXTRA_LAZY')]
     public $managers;
 
     public function calculatePrice(): int

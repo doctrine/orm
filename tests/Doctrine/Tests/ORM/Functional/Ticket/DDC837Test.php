@@ -97,107 +97,82 @@ class DDC837Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="DDC837Super")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"class1" = "DDC837Class1", "class2" = "DDC837Class2", "class3"="DDC837Class3"})
- */
+#[Table(name: 'DDC837Super')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'type', type: 'string')]
+#[DiscriminatorMap(['class1' => 'DDC837Class1', 'class2' => 'DDC837Class2', 'class3' => 'DDC837Class3'])]
 abstract class DDC837Super
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class DDC837Class1 extends DDC837Super
 {
-    /**
-     * @var string
-     * @Column(name="title", type="string", length=150)
-     */
+    /** @var string */
+    #[Column(name: 'title', type: 'string', length: 150)]
     public $title;
 
-    /**
-     * @var string
-     * @Column(name="content", type="string", length=500)
-     */
+    /** @var string */
+    #[Column(name: 'content', type: 'string', length: 500)]
     public $description;
 
-    /**
-     * @var DDC837Aggregate
-     * @OneToOne(targetEntity="DDC837Aggregate")
-     */
+    /** @var DDC837Aggregate */
+    #[OneToOne(targetEntity: 'DDC837Aggregate')]
     public $aggregate;
 }
 
-/** @Entity */
+#[Entity]
 class DDC837Class2 extends DDC837Super
 {
-    /**
-     * @var string
-     * @Column(name="title", type="string", length=150)
-     */
+    /** @var string */
+    #[Column(name: 'title', type: 'string', length: 150)]
     public $title;
 
-    /**
-     * @var string
-     * @Column(name="content", type="string", length=500)
-     */
+    /** @var string */
+    #[Column(name: 'content', type: 'string', length: 500)]
     public $description;
 
-    /**
-     * @var string
-     * @Column(name="text", type="text")
-     */
+    /** @var string */
+    #[Column(name: 'text', type: 'text')]
     public $text;
 
-    /**
-     * @var DDC837Aggregate
-     * @OneToOne(targetEntity="DDC837Aggregate")
-     */
+    /** @var DDC837Aggregate */
+    #[OneToOne(targetEntity: 'DDC837Aggregate')]
     public $aggregate;
 }
 
 /**
  * An extra class to demonstrate why title and description aren't in Super
- *
- * @Entity
  */
+#[Entity]
 class DDC837Class3 extends DDC837Super
 {
-    /**
-     * @var string
-     * @Column(name="title", type="string", length=150)
-     */
+    /** @var string */
+    #[Column(name: 'title', type: 'string', length: 150)]
     public $apples;
 
-    /**
-     * @var string
-     * @Column(name="content", type="string", length=500)
-     */
+    /** @var string */
+    #[Column(name: 'content', type: 'string', length: 500)]
     public $bananas;
 }
 
-/** @Entity */
+#[Entity]
 class DDC837Aggregate
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     public function __construct(
-        /** @Column(name="sysname", type="string", length=255) */
+        #[Column(name: 'sysname', type: 'string', length: 255)]
         protected string $sysname,
     ) {
     }

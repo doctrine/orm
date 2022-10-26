@@ -58,17 +58,13 @@ class DDC2692Test extends OrmFunctionalTestCase
         self::assertSame(1, $listener->registeredCalls);
     }
 }
-/**
- * @Entity
- * @Table(name="ddc_2692_foo")
- */
+#[Table(name: 'ddc_2692_foo')]
+#[Entity]
 class DDC2692Foo
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }

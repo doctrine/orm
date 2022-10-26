@@ -14,26 +14,21 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * Describes a product feature.
- *
- * @Entity
- * @Table(name="ecommerce_features")
  */
+#[Table(name: 'ecommerce_features')]
+#[Entity]
 class ECommerceFeature
 {
-    /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     private int $id;
 
-    /** @Column(length=50) */
+    #[Column(length: 50)]
     private string|null $description = null;
 
-    /**
-     * @ManyToOne(targetEntity="ECommerceProduct", inversedBy="features")
-     * @JoinColumn(name="product_id", referencedColumnName="id")
-     */
+    #[ManyToOne(targetEntity: 'ECommerceProduct', inversedBy: 'features')]
+    #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
     private ECommerceProduct|null $product = null;
 
     public function getId(): int

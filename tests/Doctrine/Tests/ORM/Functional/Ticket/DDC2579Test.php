@@ -67,27 +67,23 @@ class DDC2579Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2579Entity
 {
-    /**
-     * @var DDC2579Id
-     * @Id
-     * @Column(type="ddc2579", length=255)
-     */
+    /** @var DDC2579Id */
+    #[Id]
+    #[Column(type: 'ddc2579', length: 255)]
     public $id;
 
-    /**
-     * @var DDC2579EntityAssoc
-     * @Id
-     * @ManyToOne(targetEntity="DDC2579EntityAssoc")
-     * @JoinColumn(name="relation_id", referencedColumnName="association_id")
-     */
+    /** @var DDC2579EntityAssoc */
+    #[Id]
+    #[ManyToOne(targetEntity: 'DDC2579EntityAssoc')]
+    #[JoinColumn(name: 'relation_id', referencedColumnName: 'association_id')]
     public $assoc;
 
     public function __construct(
         DDC2579EntityAssoc $assoc,
-        /** @Column(type="integer") */
+        #[Column(type: 'integer')]
         public int $value = 0,
     ) {
         $this->id    = $assoc->assocAssoc->associationId;
@@ -95,29 +91,25 @@ class DDC2579Entity
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2579EntityAssoc
 {
     public function __construct(
-        /**
-         * @var DDC2579AssocAssoc
-         * @Id
-         * @ManyToOne(targetEntity="DDC2579AssocAssoc")
-         * @JoinColumn(name="association_id", referencedColumnName="associationId")
-         */
+        /** @var DDC2579AssocAssoc */
+        #[Id]
+        #[ManyToOne(targetEntity: 'DDC2579AssocAssoc')]
+        #[JoinColumn(name: 'association_id', referencedColumnName: 'associationId')]
         public $assocAssoc,
     ) {
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2579AssocAssoc
 {
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="ddc2579", length=255)
-         */
+        #[Id]
+        #[Column(type: 'ddc2579', length: 255)]
         public DDC2579Id $associationId,
     ) {
     }

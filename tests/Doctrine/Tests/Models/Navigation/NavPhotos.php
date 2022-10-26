@@ -13,29 +13,21 @@ use Doctrine\ORM\Mapping\JoinColumns;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="navigation_photos")
- */
+#[Table(name: 'navigation_photos')]
+#[Entity]
 class NavPhotos
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
     public function __construct(
-        /**
-         * @ManyToOne(targetEntity="NavPointOfInterest")
-         * @JoinColumns({
-         *   @JoinColumn(name="poi_long", referencedColumnName="nav_long"),
-         *   @JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
-         * })
-         */
+        #[JoinColumn(name: 'poi_long', referencedColumnName: 'nav_long')]
+        #[JoinColumn(name: 'poi_lat', referencedColumnName: 'nav_lat')]
+        #[ManyToOne(targetEntity: 'NavPointOfInterest')]
         private NavPointOfInterest $poi,
-        /** @Column(type="string", length=255, name="file_name") */
+        #[Column(type: 'string', length: 255, name: 'file_name')]
         private string $file,
     ) {
     }

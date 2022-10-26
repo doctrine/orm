@@ -52,37 +52,29 @@ class DDC2350Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2350User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC2350Bug>
-     * @OneToMany(targetEntity="DDC2350Bug", mappedBy="user", fetch="EAGER")
-     */
+    /** @psalm-var Collection<int, DDC2350Bug> */
+    #[OneToMany(targetEntity: 'DDC2350Bug', mappedBy: 'user', fetch: 'EAGER')]
     public $reportedBugs;
 }
 
-/** @Entity */
+#[Entity]
 class DDC2350Bug
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
-    /**
-     * @var DDC2350User
-     * @ManyToOne(targetEntity="DDC2350User", inversedBy="reportedBugs")
-     */
+    /** @var DDC2350User */
+    #[ManyToOne(targetEntity: 'DDC2350User', inversedBy: 'reportedBugs')]
     public $user;
 }

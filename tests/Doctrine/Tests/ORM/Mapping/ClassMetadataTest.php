@@ -934,13 +934,11 @@ class ClassMetadataTest extends OrmTestCase
     }
 }
 
-/** @MappedSuperclass */
+#[MappedSuperclass]
 class DDC2700MappedSuperClass
 {
-    /**
-     * @var mixed
-     * @Column
-     */
+    /** @var mixed */
+    #[Column]
     private $foo;
 }
 

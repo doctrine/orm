@@ -32,19 +32,17 @@ class DDC588Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC588Site
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer", name="site_id")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer', name: 'site_id')]
+    #[GeneratedValue]
     public $id;
 
     public function __construct(
-        /** @Column(type="string", length=45) */
+        #[Column(type: 'string', length: 45)]
         protected string $name = '',
     ) {
     }

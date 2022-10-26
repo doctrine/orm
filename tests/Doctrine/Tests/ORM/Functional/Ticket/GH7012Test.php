@@ -49,20 +49,16 @@ final class GH7012Test extends OrmFunctionalTestCase
 }
 
 
-/**
- * @Entity
- * @Table(name="`quote-user-data`")
- */
+#[Table(name: '`quote-user-data`')]
+#[Entity]
 class GH7012UserData
 {
     public function __construct(
-        /**
-         * @Id
-         * @OneToOne(targetEntity=QuotedUser::class)
-         * @JoinColumn(name="`user-id`", referencedColumnName="`user-id`", onDelete="CASCADE")
-         */
+        #[Id]
+        #[OneToOne(targetEntity: QuotedUser::class)]
+        #[JoinColumn(name: '`user-id`', referencedColumnName: '`user-id`', onDelete: 'CASCADE')]
         public QuotedUser $user,
-        /** @Column(type="string", name="`name`") */
+        #[Column(type: 'string', name: '`name`')]
         public string $name,
     ) {
     }

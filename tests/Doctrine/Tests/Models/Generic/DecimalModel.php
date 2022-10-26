@@ -10,29 +10,21 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="decimal_model")
- */
+#[Table(name: 'decimal_model')]
+#[Entity]
 class DecimalModel
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var float
-     * @Column(name="`decimal`", type="decimal", scale=2, precision=5)
-     */
+    /** @var float */
+    #[Column(name: '`decimal`', type: 'decimal', scale: 2, precision: 5)]
     public $decimal;
 
-    /**
-     * @var float
-     * @Column(name="`high_scale`", type="decimal", scale=4, precision=14)
-     */
+    /** @var float */
+    #[Column(name: '`high_scale`', type: 'decimal', scale: 4, precision: 14)]
     public $highScale;
 }

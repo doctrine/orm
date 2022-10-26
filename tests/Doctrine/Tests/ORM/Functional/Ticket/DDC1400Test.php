@@ -69,68 +69,52 @@ class DDC1400Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1400Article
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC1400UserState>
-     * @OneToMany(targetEntity="DDC1400UserState", mappedBy="article", indexBy="userId", fetch="EXTRA_LAZY")
-     */
+    /** @psalm-var Collection<int, DDC1400UserState> */
+    #[OneToMany(targetEntity: 'DDC1400UserState', mappedBy: 'article', indexBy: 'userId', fetch: 'EXTRA_LAZY')]
     public $userStates;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1400User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC1400UserState>
-     * @OneToMany(targetEntity="DDC1400UserState", mappedBy="user", indexBy="articleId", fetch="EXTRA_LAZY")
-     */
+    /** @psalm-var Collection<int, DDC1400UserState> */
+    #[OneToMany(targetEntity: 'DDC1400UserState', mappedBy: 'user', indexBy: 'articleId', fetch: 'EXTRA_LAZY')]
     public $userStates;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1400UserState
 {
-    /**
-     * @var DDC1400Article
-     * @Id
-     * @ManyToOne(targetEntity="DDC1400Article", inversedBy="userStates")
-     */
+    /** @var DDC1400Article */
+    #[Id]
+    #[ManyToOne(targetEntity: 'DDC1400Article', inversedBy: 'userStates')]
     public $article;
 
-    /**
-     * @var DDC1400User
-     * @Id
-     * @ManyToOne(targetEntity="DDC1400User", inversedBy="userStates")
-     */
+    /** @var DDC1400User */
+    #[Id]
+    #[ManyToOne(targetEntity: 'DDC1400User', inversedBy: 'userStates')]
     public $user;
 
-    /**
-     * @var int
-     * @Column(name="user_id", type="integer")
-     */
+    /** @var int */
+    #[Column(name: 'user_id', type: 'integer')]
     public $userId;
 
-    /**
-     * @var int
-     * @Column(name="article_id", type="integer")
-     */
+    /** @var int */
+    #[Column(name: 'article_id', type: 'integer')]
     public $articleId;
 }

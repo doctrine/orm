@@ -99,23 +99,19 @@ class NotifyBaseEntity implements NotifyPropertyChanged
     }
 }
 
-/**
- * @Entity
- * @ChangeTrackingPolicy("NOTIFY")
- */
+#[Entity]
+#[ChangeTrackingPolicy('NOTIFY')]
 class DDC1690Parent extends NotifyBaseEntity
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
-    /** @Column */
+    #[Column]
     private string|null $name = null;
 
-    /** @OneToOne(targetEntity="DDC1690Child") */
+    #[OneToOne(targetEntity: 'DDC1690Child')]
     private DDC1690Child|null $child = null;
 
     public function getId(): int
@@ -145,20 +141,18 @@ class DDC1690Parent extends NotifyBaseEntity
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1690Child extends NotifyBaseEntity
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
-    /** @Column */
+    #[Column]
     private string|null $name = null;
 
-    /** @OneToOne(targetEntity="DDC1690Parent", mappedBy="child") */
+    #[OneToOne(targetEntity: 'DDC1690Parent', mappedBy: 'child')]
     private DDC1690Parent|null $parent = null;
 
     public function getId(): int

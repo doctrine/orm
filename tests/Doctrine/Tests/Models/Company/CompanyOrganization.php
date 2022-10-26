@@ -14,23 +14,17 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="company_organizations")
- */
+#[Table(name: 'company_organizations')]
+#[Entity]
 class CompanyOrganization
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /**
-     * @psalm-var Collection<int, CompanyEvent>
-     * @OneToMany(targetEntity="CompanyEvent", mappedBy="organization", cascade={"persist"}, fetch="EXTRA_LAZY")
-     */
+    /** @psalm-var Collection<int, CompanyEvent> */
+    #[OneToMany(targetEntity: 'CompanyEvent', mappedBy: 'organization', cascade: ['persist'], fetch: 'EXTRA_LAZY')]
     public $events;
 
     public function getId(): int
@@ -50,10 +44,8 @@ class CompanyOrganization
         $event->setOrganization($this);
     }
 
-    /**
-     * @OneToOne(targetEntity="CompanyEvent", cascade={"persist"})
-     * @JoinColumn(name="main_event_id", referencedColumnName="id", nullable=true)
-     */
+    #[OneToOne(targetEntity: 'CompanyEvent', cascade: ['persist'])]
+    #[JoinColumn(name: 'main_event_id', referencedColumnName: 'id', nullable: true)]
     private CompanyEvent|null $mainevent = null;
 
     public function getMainEvent(): CompanyEvent|null

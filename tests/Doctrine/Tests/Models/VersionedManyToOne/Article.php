@@ -12,38 +12,30 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Version;
 
-/**
- * @Entity
- * @Table(name="versioned_many_to_one_article")
- */
+#[Table(name: 'versioned_many_to_one_article')]
+#[Entity]
 class Article
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(name="name")
-     */
+    /** @var string */
+    #[Column(name: 'name')]
     public $name;
 
-    /**
-     * @var Category
-     * @ManyToOne(targetEntity="Category", cascade={"merge", "persist"})
-     */
+    /** @var Category */
+    #[ManyToOne(targetEntity: 'Category', cascade: ['merge', 'persist'])]
     public $category;
 
     /**
      * Version column
      *
      * @var int
-     * @Column(type="integer", name="version")
-     * @Version
      */
+    #[Column(type: 'integer', name: 'version')]
+    #[Version]
     public $version;
 }

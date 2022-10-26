@@ -15,33 +15,29 @@ use Doctrine\ORM\Mapping\Table;
 /**
  * ECommerceCustomer
  * Represents a registered user of a shopping application.
- *
- * @Entity
- * @Table(name="ecommerce_customers")
  */
+#[Table(name: 'ecommerce_customers')]
+#[Entity]
 class ECommerceCustomer
 {
-    /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @Column(type="string", length=50) */
+    #[Column(type: 'string', length: 50)]
     private string|null $name = null;
 
-    /** @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"persist"}) */
+    #[OneToOne(targetEntity: 'ECommerceCart', mappedBy: 'customer', cascade: ['persist'])]
     private ECommerceCart|null $cart = null;
 
     /**
      * Example of a one-one self referential association. A mentor can follow
      * only one customer at the time, while a customer can choose only one
      * mentor. Not properly appropriate but it works.
-     *
-     * @OneToOne(targetEntity="ECommerceCustomer", cascade={"persist"}, fetch="EAGER")
-     * @JoinColumn(name="mentor_id", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'ECommerceCustomer', cascade: ['persist'], fetch: 'EAGER')]
+    #[JoinColumn(name: 'mentor_id', referencedColumnName: 'id')]
     private ECommerceCustomer|null $mentor = null;
 
     public function getId(): int

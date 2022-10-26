@@ -11,32 +11,28 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/** @Entity */
+#[Entity]
 class DDC117Reference
 {
-    /**
-     * @var DDC117Article
-     * @Id
-     * @ManyToOne(targetEntity="DDC117Article", inversedBy="references")
-     * @JoinColumn(name="source_id", referencedColumnName="article_id")
-     */
+    /** @var DDC117Article */
+    #[Id]
+    #[ManyToOne(targetEntity: 'DDC117Article', inversedBy: 'references')]
+    #[JoinColumn(name: 'source_id', referencedColumnName: 'article_id')]
     private $source;
 
-    /**
-     * @var DDC117Article
-     * @Id
-     * @ManyToOne(targetEntity="DDC117Article")
-     * @JoinColumn(name="target_id", referencedColumnName="article_id")
-     */
+    /** @var DDC117Article */
+    #[Id]
+    #[ManyToOne(targetEntity: 'DDC117Article')]
+    #[JoinColumn(name: 'target_id', referencedColumnName: 'article_id')]
     private $target;
 
-    /** @Column(type="datetime") */
+    #[Column(type: 'datetime')]
     private DateTime $created;
 
     public function __construct(
         DDC117Article $source,
         DDC117Article $target,
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         private string $description,
     ) {
         $source->addReference($this);

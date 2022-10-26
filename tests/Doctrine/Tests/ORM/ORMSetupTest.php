@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping as AnnotationNamespace;
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\ORMSetup;
@@ -21,30 +20,6 @@ use function sys_get_temp_dir;
 
 class ORMSetupTest extends TestCase
 {
-    public function testAnnotationConfiguration(): void
-    {
-        $config = ORMSetup::createAnnotationMetadataConfiguration([], true);
-
-        self::assertInstanceOf(Configuration::class, $config);
-        self::assertEquals(sys_get_temp_dir(), $config->getProxyDir());
-        self::assertEquals('DoctrineProxies', $config->getProxyNamespace());
-        self::assertInstanceOf(AnnotationDriver::class, $config->getMetadataDriverImpl());
-    }
-
-    public function testNewDefaultAnnotationDriver(): void
-    {
-        $paths           = [__DIR__];
-        $reflectionClass = new ReflectionClass(AnnotatedDummy::class);
-
-        $annotationDriver = ORMSetup::createDefaultAnnotationDriver($paths);
-        $reader           = $annotationDriver->getReader();
-        $annotation       = $reader->getMethodAnnotation(
-            $reflectionClass->getMethod('namespacedAnnotationMethod'),
-            AnnotationNamespace\PrePersist::class,
-        );
-        self::assertInstanceOf(AnnotationNamespace\PrePersist::class, $annotation);
-    }
-
     public function testAttributeConfiguration(): void
     {
         $config = ORMSetup::createAttributeMetadataConfiguration([], true);
@@ -79,7 +54,7 @@ class ORMSetupTest extends TestCase
     /** @group DDC-1350 */
     public function testConfigureProxyDir(): void
     {
-        $config = ORMSetup::createAnnotationMetadataConfiguration([], true, '/foo');
+        $config = ORMSetup::createAttributeMetadataConfiguration([], true, '/foo');
         self::assertEquals('/foo', $config->getProxyDir());
     }
 
@@ -87,7 +62,7 @@ class ORMSetupTest extends TestCase
     public function testConfigureCache(): void
     {
         $cache  = new ArrayAdapter();
-        $config = ORMSetup::createAnnotationMetadataConfiguration([], true, null, $cache);
+        $config = ORMSetup::createAttributeMetadataConfiguration([], true, null, $cache);
 
         self::assertSame($cache, $config->getResultCache());
         self::assertSame($cache, $config->getQueryCache());
@@ -108,7 +83,7 @@ class ORMSetupTest extends TestCase
 
 class AnnotatedDummy
 {
-    /** @AnnotationNamespace\PrePersist */
+    #[AnnotationNamespace\PrePersist]
     public function namespacedAnnotationMethod(): void
     {
     }

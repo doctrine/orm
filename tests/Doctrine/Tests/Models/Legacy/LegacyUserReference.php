@@ -12,33 +12,27 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="legacy_users_reference")
- */
+#[Table(name: 'legacy_users_reference')]
+#[Entity]
 class LegacyUserReference
 {
-    /**
-     * @Id
-     * @ManyToOne(targetEntity="LegacyUser", inversedBy="references")
-     * @JoinColumn(name="iUserIdSource", referencedColumnName="iUserId")
-     */
+    #[Id]
+    #[ManyToOne(targetEntity: 'LegacyUser', inversedBy: 'references')]
+    #[JoinColumn(name: 'iUserIdSource', referencedColumnName: 'iUserId')]
     private LegacyUser $_source;
 
-    /**
-     * @Id
-     * @ManyToOne(targetEntity="LegacyUser")
-     * @JoinColumn(name="iUserIdTarget", referencedColumnName="iUserId")
-     */
+    #[Id]
+    #[ManyToOne(targetEntity: 'LegacyUser')]
+    #[JoinColumn(name: 'iUserIdTarget', referencedColumnName: 'iUserId')]
     private LegacyUser $_target;
 
-    /** @Column(type="datetime", name="created") */
+    #[Column(type: 'datetime', name: 'created')]
     private DateTime $created;
 
     public function __construct(
         LegacyUser $source,
         LegacyUser $target,
-        /** @Column(type="string", length=255, name="description") */
+        #[Column(type: 'string', length: 255, name: 'description')]
         private string $_description,
     ) {
         $source->addReference($this);

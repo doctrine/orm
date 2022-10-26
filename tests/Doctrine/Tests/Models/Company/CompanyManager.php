@@ -12,25 +12,19 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="company_managers")
- */
+#[Table(name: 'company_managers')]
+#[Entity]
 class CompanyManager extends CompanyEmployee
 {
-    /** @Column(type="string", length=250) */
+    #[Column(type: 'string', length: 250)]
     private string|null $title = null;
 
-    /**
-     * @OneToOne(targetEntity="CompanyCar", cascade={"persist"})
-     * @JoinColumn(name="car_id", referencedColumnName="id")
-     */
+    #[OneToOne(targetEntity: 'CompanyCar', cascade: ['persist'])]
+    #[JoinColumn(name: 'car_id', referencedColumnName: 'id')]
     private CompanyCar|null $car = null;
 
-    /**
-     * @psalm-var Collection<int, CompanyFlexContract>
-     * @ManyToMany(targetEntity="CompanyFlexContract", mappedBy="managers", fetch="EXTRA_LAZY")
-     */
+    /** @psalm-var Collection<int, CompanyFlexContract> */
+    #[ManyToMany(targetEntity: 'CompanyFlexContract', mappedBy: 'managers', fetch: 'EXTRA_LAZY')]
     public $managedContracts;
 
     public function getTitle(): string

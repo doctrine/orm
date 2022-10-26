@@ -34,12 +34,10 @@ class DDC3103Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Embeddable */
+#[Embeddable]
 class DDC3103ArticleId
 {
-    /**
-     * @var string
-     * @Column(name="name", type="string", length=255)
-     */
+    /** @var string */
+    #[Column(name: 'name', type: 'string', length: 255)]
     protected $nameValue;
 }

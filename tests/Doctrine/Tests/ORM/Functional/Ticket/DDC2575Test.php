@@ -95,56 +95,46 @@ class DDC2575Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2575Root
 {
-    /**
-     * @var DDC2575A
-     * @OneToOne(targetEntity="DDC2575A", mappedBy="rootRelation")
-     */
+    /** @var DDC2575A */
+    #[OneToOne(targetEntity: 'DDC2575A', mappedBy: 'rootRelation')]
     public $aRelation;
 
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="integer")
-         */
+        #[Id]
+        #[Column(type: 'integer')]
         public int $id,
-        /** @Column(type="integer") */
+        #[Column(type: 'integer')]
         public int $sampleField = 0,
     ) {
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2575A
 {
     public function __construct(
-        /**
-         * @Id
-         * @OneToOne(targetEntity="DDC2575Root", inversedBy="aRelation")
-         * @JoinColumn(name="root_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
-         */
+        #[Id]
+        #[OneToOne(targetEntity: 'DDC2575Root', inversedBy: 'aRelation')]
+        #[JoinColumn(name: 'root_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
         public DDC2575Root $rootRelation,
-        /**
-         * @ManyToOne(targetEntity="DDC2575B")
-         * @JoinColumn(name="b_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
-         */
+        #[ManyToOne(targetEntity: 'DDC2575B')]
+        #[JoinColumn(name: 'b_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
         public DDC2575B $bRelation,
     ) {
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2575B
 {
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="integer")
-         */
+        #[Id]
+        #[Column(type: 'integer')]
         public int $id,
-        /** @Column(type="integer") */
+        #[Column(type: 'integer')]
         public int $sampleField = 0,
     ) {
     }

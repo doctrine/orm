@@ -115,17 +115,13 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table("namespace.entity")
- */
+#[Table('namespace.entity')]
+#[Entity]
 class MysqlSchemaNamespacedEntity
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     public $id;
 }

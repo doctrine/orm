@@ -12,37 +12,27 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="legacy_articles")
- */
+#[Table(name: 'legacy_articles')]
+#[Entity]
 class LegacyArticle
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="iArticleId", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'iArticleId', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(name="sTopic", type="string", length=255)
-     */
+    /** @var string */
+    #[Column(name: 'sTopic', type: 'string', length: 255)]
     public $topic;
 
-    /**
-     * @var string
-     * @Column(name="sText", type="text")
-     */
+    /** @var string */
+    #[Column(name: 'sText', type: 'text')]
     public $text;
 
-    /**
-     * @var LegacyUser
-     * @ManyToOne(targetEntity="LegacyUser", inversedBy="articles")
-     * @JoinColumn(name="iUserId", referencedColumnName="iUserId")
-     */
+    /** @var LegacyUser */
+    #[ManyToOne(targetEntity: 'LegacyUser', inversedBy: 'articles')]
+    #[JoinColumn(name: 'iUserId', referencedColumnName: 'iUserId')]
     public $user;
 
     public function setAuthor(LegacyUser $author): void

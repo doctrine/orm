@@ -18,6 +18,7 @@ use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Psr\Cache\CacheItemPoolInterface;
@@ -56,12 +57,9 @@ abstract class OrmTestCase extends DoctrineTestCase
 
     private CacheItemPoolInterface|null $secondLevelCache = null;
 
-    protected function createAnnotationDriver(array $paths = []): AnnotationDriver
+    protected function createAnnotationDriver(array $paths = []): AttributeDriver
     {
-        return new AnnotationDriver(
-            new PsrCachedReader(new AnnotationReader(), new ArrayAdapter()),
-            $paths,
-        );
+        return new AttributeDriver($paths);
     }
 
     /**
@@ -101,7 +99,7 @@ abstract class OrmTestCase extends DoctrineTestCase
         $config->setQueryCache(self::getSharedQueryCache());
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver([
+        $config->setMetadataDriverImpl(new AttributeDriver([
             realpath(__DIR__ . '/Models/Cache'),
         ]));
 

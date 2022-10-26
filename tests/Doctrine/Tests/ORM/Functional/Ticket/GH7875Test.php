@@ -89,32 +89,24 @@ final class GH7875Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="gh7875_my_entity")
- */
+#[Table(name: 'gh7875_my_entity')]
+#[Entity]
 class GH7875MyEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }
 
-/**
- * @Entity
- * @Table(name="gh7875_my_other_entity")
- */
+#[Table(name: 'gh7875_my_other_entity')]
+#[Entity]
 class GH7875MyOtherEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }

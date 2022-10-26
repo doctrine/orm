@@ -11,22 +11,16 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="dc3899_users")
- */
+#[Table(name: 'dc3899_users')]
+#[Entity]
 class DDC3899User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC3899Contract>
-     * @OneToMany(targetEntity="DDC3899Contract", mappedBy="user")
-     */
+    /** @psalm-var Collection<int, DDC3899Contract> */
+    #[OneToMany(targetEntity: 'DDC3899Contract', mappedBy: 'user')]
     public $contracts;
 }

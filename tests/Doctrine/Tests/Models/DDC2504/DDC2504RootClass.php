@@ -13,28 +13,19 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string", length=255)
- * @DiscriminatorMap({
- *     "root"  = "DDC2504RootClass",
- *     "child" = "DDC2504ChildClass"
- * })
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string', length: 255)]
+#[DiscriminatorMap(['root' => 'DDC2504RootClass', 'child' => 'DDC2504ChildClass'])]
 class DDC2504RootClass
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC2504OtherClass
-     * @ManyToOne(targetEntity="DDC2504OtherClass", inversedBy="childClasses")
-     */
+    /** @var DDC2504OtherClass */
+    #[ManyToOne(targetEntity: 'DDC2504OtherClass', inversedBy: 'childClasses')]
     public $other;
 }

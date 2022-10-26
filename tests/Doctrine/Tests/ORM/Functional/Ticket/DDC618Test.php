@@ -127,26 +127,20 @@ class DDC618Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC618Author
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, DDC618Book>
-     * @OneToMany(targetEntity="DDC618Book", mappedBy="author", cascade={"persist"})
-     */
+    /** @psalm-var Collection<int, DDC618Book> */
+    #[OneToMany(targetEntity: 'DDC618Book', mappedBy: 'author', cascade: ['persist'])]
     public $books;
 
     public function __construct()
@@ -161,21 +155,19 @@ class DDC618Author
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC618Book
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     public function __construct(
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         public string $title,
-        /** @ManyToOne(targetEntity="DDC618Author", inversedBy="books") */
+        #[ManyToOne(targetEntity: 'DDC618Author', inversedBy: 'books')]
         public DDC618Author $author,
     ) {
     }

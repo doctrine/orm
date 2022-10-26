@@ -14,35 +14,27 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="geonames_admin1")
- * @Cache
- */
+#[Table(name: 'geonames_admin1')]
+#[Entity]
+#[Cache]
 class Admin1
 {
-    /**
-     * @psalm-var Collection<int, Admin1AlternateName>
-     * @OneToMany(targetEntity="Admin1AlternateName", mappedBy="admin1")
-     * @Cache
-     */
+    /** @psalm-var Collection<int, Admin1AlternateName> */
+    #[OneToMany(targetEntity: 'Admin1AlternateName', mappedBy: 'admin1')]
+    #[Cache]
     public $names = [];
 
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="integer", length=25)
-         * @GeneratedValue(strategy="NONE")
-         */
+        #[Id]
+        #[Column(type: 'integer', length: 25)]
+        #[GeneratedValue(strategy: 'NONE')]
         public int $id,
-        /** @Column(type="string", length=255); */
+        #[Column(type: 'string', length: 255)]
         public string $name,
-        /**
-         * @Id
-         * @ManyToOne(targetEntity="Country")
-         * @JoinColumn(name="country", referencedColumnName="id")
-         * @Cache
-         */
+        #[Id]
+        #[ManyToOne(targetEntity: 'Country')]
+        #[JoinColumn(name: 'country', referencedColumnName: 'id')]
+        #[Cache]
         public Country $country,
     ) {
     }

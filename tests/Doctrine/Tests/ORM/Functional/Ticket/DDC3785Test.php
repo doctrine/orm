@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Embeddable;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -61,29 +62,22 @@ class DDC3785Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="asset")
- */
+#[Table(name: 'asset')]
+#[Entity]
 class DDC3785Asset
 {
-    /**
-     * @psalm-var Collection<int, DDC3785Attribute>
-     * @ManyToMany(targetEntity="DDC3785Attribute", cascade={"persist"}, orphanRemoval=true)
-     * @JoinTable(name="asset_attributes",
-     *      joinColumns={@JoinColumn(name="asset_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="attribute_id", referencedColumnName="id")}
-     *      )
-     */
+    /** @psalm-var Collection<int, DDC3785Attribute> */
+    #[JoinTable(name: 'asset_attributes')]
+    #[JoinColumn(name: 'asset_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'attribute_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'DDC3785Attribute', cascade: ['persist'], orphanRemoval: true)]
     private $attributes;
 
     /** @psalm-param list<DDC3785Attribute> $attributes */
     public function __construct(
-        /**
-         * @Id
-         * @GeneratedValue(strategy="NONE")
-         * @Column(type="ddc3785_asset_id")
-         */
+        #[Id]
+        #[GeneratedValue(strategy: 'NONE')]
+        #[Column(type: 'ddc3785_asset_id')]
         private DDC3785AssetId $id,
         $attributes = [],
     ) {
@@ -106,34 +100,30 @@ class DDC3785Asset
     }
 }
 
-/**
- * @Entity
- * @Table(name="attribute")
- */
+#[Table(name: 'attribute')]
+#[Entity]
 class DDC3785Attribute
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     public function __construct(
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         private string $name,
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         private string $value,
     ) {
     }
 }
 
-/** @Embeddable */
+#[Embeddable]
 class DDC3785AssetId implements Stringable
 {
     public function __construct(
-        /** @Column(type = "guid") */
+        #[Column(type: 'guid')]
         private string $id,
     ) {
     }

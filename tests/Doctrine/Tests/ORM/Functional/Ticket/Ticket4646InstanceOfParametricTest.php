@@ -43,23 +43,16 @@ class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity()
- * @Table(name="instance_of_parametric_person")
- * @InheritanceType(value="JOINED")
- * @DiscriminatorColumn(name="kind", type="string")
- * @DiscriminatorMap(value={
- *     "person": "Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Parametric",
- *     "employee": "Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646Parametric"
- * })
- */
+#[Table(name: 'instance_of_parametric_person')]
+#[Entity]
+#[InheritanceType(value: 'JOINED')]
+#[DiscriminatorColumn(name: 'kind', type: 'string')]
+#[DiscriminatorMap(value: ['person' => 'Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Parametric', 'employee' => 'Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646Parametric'])]
 class PersonTicket4646Parametric
 {
-    /**
-     * @Id()
-     * @GeneratedValue()
-     * @Column(type="integer")
-     */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     private int $id;
 
     public function getId(): int|null
@@ -68,10 +61,8 @@ class PersonTicket4646Parametric
     }
 }
 
-/**
- * @Entity()
- * @Table(name="instance_of_parametric_employee")
- */
+#[Table(name: 'instance_of_parametric_employee')]
+#[Entity]
 class EmployeeTicket4646Parametric extends PersonTicket4646Parametric
 {
 }

@@ -62,24 +62,18 @@ class DDC444Test extends OrmFunctionalTestCase
 }
 
 
-/**
- * @Entity
- * @Table(name="ddc444")
- * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- */
+#[Table(name: 'ddc444')]
+#[Entity]
+#[ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class DDC444User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(name="name", type="string", length=255)
-     */
+    /** @var string */
+    #[Column(name: 'name', type: 'string', length: 255)]
     public $name;
 }

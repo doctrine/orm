@@ -75,38 +75,30 @@ class DDC633Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC633Appointment
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC633Patient
-     * @OneToOne(targetEntity="DDC633Patient", inversedBy="appointment", fetch="EAGER")
-     */
+    /** @var DDC633Patient */
+    #[OneToOne(targetEntity: 'DDC633Patient', inversedBy: 'appointment', fetch: 'EAGER')]
     public $patient;
 }
 
-/** @Entity */
+#[Entity]
 class DDC633Patient
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC633Appointment
-     * @OneToOne(targetEntity="DDC633Appointment", mappedBy="patient")
-     */
+    /** @var DDC633Appointment */
+    #[OneToOne(targetEntity: 'DDC633Appointment', mappedBy: 'patient')]
     public $appointment;
 }

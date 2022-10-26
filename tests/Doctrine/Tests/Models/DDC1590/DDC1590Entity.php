@@ -11,24 +11,18 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/**
- * @Entity
- * @MappedSuperclass
- */
+#[Entity]
+#[MappedSuperclass]
 abstract class DDC1590Entity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
-    /**
-     * @var DateTime
-     * @Column(type="datetime")
-     */
+    /** @var DateTime */
+    #[Column(type: 'datetime')]
     protected $createdAt;
 
     public function getId(): int

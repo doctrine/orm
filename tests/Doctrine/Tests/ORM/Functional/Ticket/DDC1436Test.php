@@ -54,22 +54,18 @@ class DDC1436Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1436Page
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="id")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer', name: 'id')]
     protected $id;
 
-    /**
-     * @var DDC1436Page
-     * @ManyToOne(targetEntity="DDC1436Page")
-     * @JoinColumn(name="pid", referencedColumnName="id")
-     */
+    /** @var DDC1436Page */
+    #[ManyToOne(targetEntity: 'DDC1436Page')]
+    #[JoinColumn(name: 'pid', referencedColumnName: 'id')]
     protected $parent;
 
     public function getId(): int

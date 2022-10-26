@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -61,31 +62,20 @@ class DDC809Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Table(name="variant_test")
- * @Entity
- */
+#[Table(name: 'variant_test')]
+#[Entity]
 class DDC809Variant
 {
-    /**
-     * @var int
-     * @Column(name="variant_id", type="integer")
-     * @Id
-     */
+    /** @var int */
+    #[Column(name: 'variant_id', type: 'integer')]
+    #[Id]
     protected $variantId;
 
-    /**
-     * @psalm-var Collection<int, DDC809SpecificationValue>
-     * @ManyToMany(targetEntity="DDC809SpecificationValue", inversedBy="Variants")
-     * @JoinTable(name="var_spec_value_test",
-     *   joinColumns={
-     *     @JoinColumn(name="variant_id", referencedColumnName="variant_id")
-     *   },
-     *   inverseJoinColumns={
-     *     @JoinColumn(name="specification_value_id", referencedColumnName="specification_value_id")
-     *   }
-     * )
-     */
+    /** @psalm-var Collection<int, DDC809SpecificationValue> */
+    #[JoinTable(name: 'var_spec_value_test')]
+    #[JoinColumn(name: 'variant_id', referencedColumnName: 'variant_id')]
+    #[InverseJoinColumn(name: 'specification_value_id', referencedColumnName: 'specification_value_id')]
+    #[ManyToMany(targetEntity: 'DDC809SpecificationValue', inversedBy: 'Variants')]
     protected $specificationValues;
 
     /** @psalm-return Collection<int, DDC809SpecificationValue> */
@@ -95,22 +85,16 @@ class DDC809Variant
     }
 }
 
-/**
- * @Table(name="specification_value_test")
- * @Entity
- */
+#[Table(name: 'specification_value_test')]
+#[Entity]
 class DDC809SpecificationValue
 {
-    /**
-     * @var int
-     * @Column(name="specification_value_id", type="integer")
-     * @Id
-     */
+    /** @var int */
+    #[Column(name: 'specification_value_id', type: 'integer')]
+    #[Id]
     protected $specificationValueId;
 
-    /**
-     * @psalm-var Collection<int,DDC809Variant>
-     * @ManyToMany(targetEntity="DDC809Variant", mappedBy="SpecificationValues")
-     */
+    /** @psalm-var Collection<int,DDC809Variant> */
+    #[ManyToMany(targetEntity: 'DDC809Variant', mappedBy: 'SpecificationValues')]
     protected $variants;
 }

@@ -42,33 +42,24 @@ final class GH8055Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity()
- * @Table(name="gh8055")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="integer")
- * @DiscriminatorMap({
- *     "1" = GH8055BaseClass::class,
- *     "2" = GH8055SubClass::class
- * })
- */
+#[Table(name: 'gh8055')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'integer')]
+#[DiscriminatorMap([1 => GH8055BaseClass::class, 2 => GH8055SubClass::class])]
 class GH8055BaseClass
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 }
 
-/** @Entity() */
+#[Entity]
 class GH8055SubClass extends GH8055BaseClass
 {
-    /**
-     * @Column(name="test", type="string", length=255)
-     * @var string
-     */
+    /** @var string */
+    #[Column(name: 'test', type: 'string', length: 255)]
     public $value;
 }

@@ -83,28 +83,22 @@ final class GH5804Type extends Type
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH5804Article
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="GH5804Type", length=255)
-     * @GeneratedValue(strategy="CUSTOM")
-     * @CustomIdGenerator(class=\Doctrine\Tests\ORM\Functional\Ticket\GH5804Generator::class)
-     */
+    /** @var string */
+    #[Id]
+    #[Column(type: 'GH5804Type', length: 255)]
+    #[GeneratedValue(strategy: 'CUSTOM')]
+    #[CustomIdGenerator(class: GH5804Generator::class)]
     public $id;
 
-    /**
-     * @var int
-     * @Version
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Version]
+    #[Column(type: 'integer')]
     public $version;
 
-    /**
-     * @var string
-     * @Column(type="text")
-     */
+    /** @var string */
+    #[Column(type: 'text')]
     public $text;
 }

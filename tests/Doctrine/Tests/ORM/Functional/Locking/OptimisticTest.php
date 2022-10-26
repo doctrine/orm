@@ -273,75 +273,55 @@ class OptimisticTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="optimistic_joined_parent")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string", length=255)
- * @DiscriminatorMap({"parent" = "OptimisticJoinedParent", "child" = "OptimisticJoinedChild"})
- */
+#[Table(name: 'optimistic_joined_parent')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string', length: 255)]
+#[DiscriminatorMap(['parent' => 'OptimisticJoinedParent', 'child' => 'OptimisticJoinedChild'])]
 class OptimisticJoinedParent
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @var int
-     * @Version
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Version]
+    #[Column(type: 'integer')]
     public $version;
 }
 
 
-/**
- * @Entity
- * @Table(name="optimistic_joined_child")
- */
+#[Table(name: 'optimistic_joined_child')]
+#[Entity]
 class OptimisticJoinedChild extends OptimisticJoinedParent
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $whatever;
 }
 
-/**
- * @Entity
- * @Table(name="optimistic_standard")
- */
+#[Table(name: 'optimistic_standard')]
+#[Entity]
 class OptimisticStandard
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @Version
-     * @Column(type="integer")
-     */
+    #[Version]
+    #[Column(type: 'integer')]
     private int $version;
 
     public function getVersion(): int
@@ -350,30 +330,22 @@ class OptimisticStandard
     }
 }
 
-/**
- * @Entity
- * @Table(name="optimistic_timestamp")
- */
+#[Table(name: 'optimistic_timestamp')]
+#[Entity]
 class OptimisticTimestamp
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @var DateTime
-     * @Version
-     * @Column(type="datetime")
-     */
+    /** @var DateTime */
+    #[Version]
+    #[Column(type: 'datetime')]
     public $version;
 }

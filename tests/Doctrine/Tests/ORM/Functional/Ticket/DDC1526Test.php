@@ -51,25 +51,19 @@ class DDC1526Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1526Menu
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     public $id;
-    /**
-     * @var DDC1526Menu
-     * @ManyToOne(targetEntity="DDC1526Menu", inversedBy="children")
-     */
+    /** @var DDC1526Menu */
+    #[ManyToOne(targetEntity: 'DDC1526Menu', inversedBy: 'children')]
     public $parent;
 
-    /**
-     * @psalm-var Collection<int, DDC1526Menu>
-     * @OneToMany(targetEntity="DDC1526Menu", mappedBy="parent")
-     */
+    /** @psalm-var Collection<int, DDC1526Menu> */
+    #[OneToMany(targetEntity: 'DDC1526Menu', mappedBy: 'parent')]
     public $children;
 }

@@ -14,42 +14,31 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * Logo
- *
- * @Entity
- * @Table(name="pagination_logo")
  */
+#[Table(name: 'pagination_logo')]
+#[Entity]
 class Logo
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $image;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
     public $imageHeight;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
     public $imageWidth;
 
-    /**
-     * @var Company
-     * @OneToOne(targetEntity="Company", inversedBy="logo", cascade={"persist"})
-     * @JoinColumn(name="company_id")
-     */
+    /** @var Company */
+    #[OneToOne(targetEntity: 'Company', inversedBy: 'logo', cascade: ['persist'])]
+    #[JoinColumn(name: 'company_id')]
     public $company;
 }

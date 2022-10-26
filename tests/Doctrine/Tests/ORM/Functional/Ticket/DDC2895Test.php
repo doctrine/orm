@@ -50,22 +50,16 @@ class DDC2895Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @MappedSuperclass
- * @HasLifecycleCallbacks
- */
+#[MappedSuperclass]
+#[HasLifecycleCallbacks]
 abstract class AbstractDDC2895
 {
-    /**
-     * @Column(name="last_modified", type="datetimetz", nullable=false)
-     * @var DateTime
-     */
+    /** @var DateTime */
+    #[Column(name: 'last_modified', type: 'datetimetz', nullable: false)]
     protected $lastModified;
 
-    /**
-     * @PrePersist
-     * @PreUpdate
-     */
+    #[PrePersist]
+    #[PreUpdate]
     public function setLastModifiedPreUpdate(): void
     {
         $this->setLastModified(new DateTime());
@@ -82,18 +76,14 @@ abstract class AbstractDDC2895
     }
 }
 
-/**
- * @Entity
- * @HasLifecycleCallbacks
- */
+#[Entity]
+#[HasLifecycleCallbacks]
 class DDC2895 extends AbstractDDC2895
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     public function setId(mixed $id): void

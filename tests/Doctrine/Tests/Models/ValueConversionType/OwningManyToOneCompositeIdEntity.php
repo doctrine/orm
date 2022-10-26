@@ -12,26 +12,18 @@ use Doctrine\ORM\Mapping\JoinColumns;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="vct_owning_manytoone_compositeid")
- */
+#[Table(name: 'vct_owning_manytoone_compositeid')]
+#[Entity]
 class OwningManyToOneCompositeIdEntity
 {
-    /**
-     * @var string
-     * @Column(type="rot13", length=255)
-     * @Id
-     */
+    /** @var string */
+    #[Column(type: 'rot13', length: 255)]
+    #[Id]
     public $id3;
 
-    /**
-     * @var InversedOneToManyCompositeIdEntity
-     * @ManyToOne(targetEntity="InversedOneToManyCompositeIdEntity", inversedBy="associatedEntities")
-     * @JoinColumns({
-     *     @JoinColumn(name="associated_id1", referencedColumnName="id1"),
-     *     @JoinColumn(name="associated_id2", referencedColumnName="id2")
-     * })
-     */
+    /** @var InversedOneToManyCompositeIdEntity */
+    #[JoinColumn(name: 'associated_id1', referencedColumnName: 'id1')]
+    #[JoinColumn(name: 'associated_id2', referencedColumnName: 'id2')]
+    #[ManyToOne(targetEntity: 'InversedOneToManyCompositeIdEntity', inversedBy: 'associatedEntities')]
     public $associatedEntity;
 }

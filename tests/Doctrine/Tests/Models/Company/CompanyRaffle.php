@@ -8,13 +8,11 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="company_raffles")
- */
+#[Table(name: 'company_raffles')]
+#[Entity]
 class CompanyRaffle extends CompanyEvent
 {
-    /** @Column */
+    #[Column]
     private string|null $data = null;
 
     public function setData(string $data): void

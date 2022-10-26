@@ -63,17 +63,15 @@ class DDC1238Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1238User
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     private int|null $id = null;
 
-    /** @Column */
+    #[Column]
     private string|null $name = null;
 
     public function getId(): int|null

@@ -42,47 +42,37 @@ class DDC1548Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1548E1
 {
-    /**
-     * @var DDC1548Rel
-     * @Id
-     * @OneToOne(targetEntity="DDC1548Rel", inversedBy="e1")
-     */
+    /** @var DDC1548Rel */
+    #[Id]
+    #[OneToOne(targetEntity: 'DDC1548Rel', inversedBy: 'e1')]
     public $rel;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1548E2
 {
-    /**
-     * @var DDC1548Rel
-     * @Id
-     * @OneToOne(targetEntity="DDC1548Rel", inversedBy="e2")
-     */
+    /** @var DDC1548Rel */
+    #[Id]
+    #[OneToOne(targetEntity: 'DDC1548Rel', inversedBy: 'e2')]
     public $rel;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1548Rel
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC1548E1
-     * @OneToOne(targetEntity="DDC1548E1", mappedBy="rel")
-     */
+    /** @var DDC1548E1 */
+    #[OneToOne(targetEntity: 'DDC1548E1', mappedBy: 'rel')]
     public $e1;
-    /**
-     * @var DDC1548E2
-     * @OneToOne(targetEntity="DDC1548E2", mappedBy="rel")
-     */
+    /** @var DDC1548E2 */
+    #[OneToOne(targetEntity: 'DDC1548E2', mappedBy: 'rel')]
     public $e2;
 }

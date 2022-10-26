@@ -8,18 +8,14 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 
-/** @Entity */
+#[Entity]
 class JoinedChildClass extends JoinedRootClass
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $extension = 'ext';
 
-    /**
-     * @Column(type="string", length=255)
-     * @Id
-     */
+    #[Column(type: 'string', length: 255)]
+    #[Id]
     private string $additionalId = 'additional';
 }

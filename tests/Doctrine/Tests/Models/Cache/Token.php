@@ -21,49 +21,35 @@ use Doctrine\ORM\Mapping\Table;
 use function date;
 use function strtotime;
 
-/**
- * @Entity
- * @Cache("READ_ONLY")
- * @Table("cache_token")
- */
+#[Table('cache_token')]
+#[Entity]
+#[Cache('READ_ONLY')]
 class Token
 {
-    /**
-     * @var DateTime
-     * @Column(type="date")
-     */
+    /** @var DateTime */
+    #[Column(type: 'date')]
     public $expiresAt;
 
-    /**
-     * @psalm-var Collection<int, Login>
-     * @OneToMany(targetEntity="Login", cascade={"persist", "remove"}, mappedBy="token")
-     */
+    /** @psalm-var Collection<int, Login> */
+    #[OneToMany(targetEntity: 'Login', cascade: ['persist', 'remove'], mappedBy: 'token')]
     public $logins;
 
-    /**
-     * @var Action
-     * @ManyToOne(targetEntity="Action", cascade={"persist", "remove"}, inversedBy="tokens")
-     * @JoinColumn(name="action_name", referencedColumnName="name")
-     */
+    /** @var Action */
+    #[ManyToOne(targetEntity: 'Action', cascade: ['persist', 'remove'], inversedBy: 'tokens')]
+    #[JoinColumn(name: 'action_name', referencedColumnName: 'name')]
     public $action;
 
-    /**
-     * @ManyToOne(targetEntity="ComplexAction", cascade={"persist", "remove"}, inversedBy="tokens")
-     * @JoinColumns({
-     *   @JoinColumn(name="complex_action1_name", referencedColumnName="action1_name"),
-     *   @JoinColumn(name="complex_action2_name", referencedColumnName="action2_name")
-     * })
-     * @var ComplexAction
-     */
+    /** @var ComplexAction */
+    #[JoinColumn(name: 'complex_action1_name', referencedColumnName: 'action1_name')]
+    #[JoinColumn(name: 'complex_action2_name', referencedColumnName: 'action2_name')]
+    #[ManyToOne(targetEntity: 'ComplexAction', cascade: ['persist', 'remove'], inversedBy: 'tokens')]
     public $complexAction;
 
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="string", length=255)
-         */
+        #[Id]
+        #[Column(type: 'string', length: 255)]
         public string $token,
-        /** @OneToOne(targetEntity="Client") */
+        #[OneToOne(targetEntity: 'Client')]
         public Client|null $client = null,
     ) {
         $this->logins    = new ArrayCollection();

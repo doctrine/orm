@@ -82,39 +82,31 @@ class DDC2306Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2306Zone
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class DDC2306User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC2306UserAddress[]|Collection
-     * @OneToMany(targetEntity="DDC2306UserAddress", mappedBy="user")
-     */
+    /** @var DDC2306UserAddress[]|Collection */
+    #[OneToMany(targetEntity: 'DDC2306UserAddress', mappedBy: 'user')]
     public $addresses;
 
-    /**
-     * @var DDC2306Zone
-     * @ManyToOne(targetEntity="DDC2306Zone", fetch="EAGER")
-     */
+    /** @var DDC2306Zone */
+    #[ManyToOne(targetEntity: 'DDC2306Zone', fetch: 'EAGER')]
     public $zone;
 
     /** Constructor */
@@ -124,27 +116,21 @@ class DDC2306User
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2306Address
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC2306UserAddress[]|Collection
-     * @OneToMany(targetEntity="DDC2306UserAddress", mappedBy="address", orphanRemoval=true)
-     */
+    /** @var DDC2306UserAddress[]|Collection */
+    #[OneToMany(targetEntity: 'DDC2306UserAddress', mappedBy: 'address', orphanRemoval: true)]
     public $users;
 
-    /**
-     * @var DDC2306Zone
-     * @ManyToOne(targetEntity="DDC2306Zone", fetch="EAGER")
-     */
+    /** @var DDC2306Zone */
+    #[ManyToOne(targetEntity: 'DDC2306Zone', fetch: 'EAGER')]
     public $zone;
 
     /** Constructor */
@@ -154,22 +140,20 @@ class DDC2306Address
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2306UserAddress
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /** Constructor */
     public function __construct(
-        /** @ManyToOne(targetEntity="DDC2306User") */
+        #[ManyToOne(targetEntity: 'DDC2306User')]
         public DDC2306User $user,
-        /** @ManyToOne(targetEntity="DDC2306Address", fetch="LAZY") */
+        #[ManyToOne(targetEntity: 'DDC2306Address', fetch: 'LAZY')]
         public DDC2306Address $address,
     ) {
         $user->addresses->add($this);

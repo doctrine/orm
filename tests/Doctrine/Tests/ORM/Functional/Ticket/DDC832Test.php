@@ -140,76 +140,62 @@ class DDC832Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="`LIKE`")
- */
+#[Table(name: '`LIKE`')]
+#[Entity]
 class DDC832Like
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var int
-     * @Version
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Version]
+    #[Column(type: 'integer')]
     public $version;
 
     public function __construct(
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         public string $word,
     ) {
     }
 }
 
-/**
- * @Entity
- * @Table(name="`INDEX`")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"like" = "DDC832JoinedIndex", "fuzzy" = "DDC832JoinedTreeIndex"})
- */
+#[Table(name: '`INDEX`')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['like' => 'DDC832JoinedIndex', 'fuzzy' => 'DDC832JoinedTreeIndex'])]
 class DDC832JoinedIndex
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var int
-     * @Version
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Version]
+    #[Column(type: 'integer')]
     public $version;
 
     public function __construct(
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         public string $name,
     ) {
     }
 }
 
-/**
- * @Entity
- * @Table(name="`TREE_INDEX`")
- */
+#[Table(name: '`TREE_INDEX`')]
+#[Entity]
 class DDC832JoinedTreeIndex extends DDC832JoinedIndex
 {
     public function __construct(
         string $name,
-        /** @Column(type="integer") */
+        #[Column(type: 'integer')]
         public int $lft,
-        /** @Column(type="integer") */
+        #[Column(type: 'integer')]
         public int $rgt,
     ) {
         $this->name = $name;

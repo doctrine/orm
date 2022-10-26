@@ -89,45 +89,35 @@ final class GH6937Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"employee"=GH6937Employee::class, "manager"=GH6937Manager::class})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['employee' => GH6937Employee::class, 'manager' => GH6937Manager::class])]
 abstract class GH6937Person
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 }
 
-/** @Entity */
+#[Entity]
 abstract class GH6937Employee extends GH6937Person
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $phoneNumber;
 }
 
-/** @Entity */
+#[Entity]
 class GH6937Manager extends GH6937Employee
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $department;
 }

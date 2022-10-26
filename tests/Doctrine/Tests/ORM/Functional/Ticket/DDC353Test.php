@@ -72,22 +72,16 @@ class DDC353Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC353Picture
 {
-    /**
-     * @Column(name="picture_id", type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    #[Column(name: 'picture_id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     private int $pictureId;
 
-    /**
-     * @ManyToOne(targetEntity="DDC353File", cascade={"persist", "remove"})
-     * @JoinColumns({
-     *   @JoinColumn(name="file_id", referencedColumnName="file_id")
-     * })
-     */
+    #[JoinColumn(name: 'file_id', referencedColumnName: 'file_id')]
+    #[ManyToOne(targetEntity: 'DDC353File', cascade: ['persist', 'remove'])]
     private DDC353File|null $file = null;
 
     public function getPictureId(): int
@@ -106,15 +100,13 @@ class DDC353Picture
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC353File
 {
-    /**
-     * @var int
-     * @Column(name="file_id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Column(name: 'file_id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $fileId;
 
     /**

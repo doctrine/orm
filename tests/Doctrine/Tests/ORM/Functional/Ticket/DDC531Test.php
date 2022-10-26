@@ -53,33 +53,25 @@ class DDC531Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="integer")
- * @DiscriminatorMap({"0" = "DDC531Item", "1" = "DDC531SubItem"})
- */
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'type', type: 'integer')]
+#[DiscriminatorMap(['0' => 'DDC531Item', '1' => 'DDC531SubItem'])]
 class DDC531Item
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC531Item>
-     * @OneToMany(targetEntity="DDC531Item", mappedBy="parent")
-     */
+    /** @psalm-var Collection<int, DDC531Item> */
+    #[OneToMany(targetEntity: 'DDC531Item', mappedBy: 'parent')]
     protected $children;
 
-    /**
-     * @var DDC531Item
-     * @ManyToOne(targetEntity="DDC531Item", inversedBy="children")
-     * @JoinColumn(name="parentId", referencedColumnName="id")
-     */
+    /** @var DDC531Item */
+    #[ManyToOne(targetEntity: 'DDC531Item', inversedBy: 'children')]
+    #[JoinColumn(name: 'parentId', referencedColumnName: 'id')]
     public $parent;
 
     public function __construct()
@@ -99,7 +91,7 @@ class DDC531Item
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC531SubItem extends DDC531Item
 {
 }

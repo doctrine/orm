@@ -92,26 +92,23 @@ class GH7062Test extends OrmFunctionalTestCase
 
 /**
  * Simple Entity whose identity is defined through another Entity (Season)
- *
- * @Entity
- * @Table(name="soccer_rankings")
  */
+#[Table(name: 'soccer_rankings')]
+#[Entity]
 class GH7062Ranking
 {
     /**
-     * @OneToMany(targetEntity=GH7062RankingPosition::class, mappedBy="ranking", cascade={"all"})
      * @var Collection|GH7062RankingPosition[]
      * @psalm-var Collection<GH7062RankingPosition>
      */
+    #[OneToMany(targetEntity: GH7062RankingPosition::class, mappedBy: 'ranking', cascade: ['all'])]
     public $positions;
 
     /** @param GH7062Team[] $teams */
     public function __construct(
-        /**
-         * @Id
-         * @OneToOne(targetEntity=GH7062Season::class, inversedBy="ranking")
-         * @JoinColumn(name="season", referencedColumnName="id")
-         */
+        #[Id]
+        #[OneToOne(targetEntity: GH7062Season::class, inversedBy: 'ranking')]
+        #[JoinColumn(name: 'season', referencedColumnName: 'id')]
         public GH7062Season $season,
         array $teams,
     ) {
@@ -125,23 +122,18 @@ class GH7062Ranking
 
 /**
  * Entity which serves as a identity provider for other entities
- *
- * @Entity
- * @Table(name="soccer_seasons")
  */
+#[Table(name: 'soccer_seasons')]
+#[Entity]
 class GH7062Season
 {
-    /**
-     * @var GH7062Ranking|null
-     * @OneToOne(targetEntity=GH7062Ranking::class, mappedBy="season", cascade={"all"})
-     */
+    /** @var GH7062Ranking|null */
+    #[OneToOne(targetEntity: GH7062Ranking::class, mappedBy: 'season', cascade: ['all'])]
     public $ranking;
 
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="string", length=255)
-         */
+        #[Id]
+        #[Column(type: 'string', length: 255)]
         public string $id,
     ) {
     }
@@ -149,17 +141,14 @@ class GH7062Season
 
 /**
  * Entity which serves as a identity provider for other entities
- *
- * @Entity
- * @Table(name="soccer_teams")
  */
+#[Table(name: 'soccer_teams')]
+#[Entity]
 class GH7062Team
 {
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="string", length=255)
-         */
+        #[Id]
+        #[Column(type: 'string', length: 255)]
         public string $id,
     ) {
     }
@@ -167,30 +156,23 @@ class GH7062Team
 
 /**
  * Entity whose identity is defined through two other entities
- *
- * @Entity
- * @Table(name="soccer_ranking_positions")
  */
+#[Table(name: 'soccer_ranking_positions')]
+#[Entity]
 class GH7062RankingPosition
 {
-    /**
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
     public $points;
 
     public function __construct(
-        /**
-         * @Id
-         * @ManyToOne(targetEntity=GH7062Ranking::class, inversedBy="positions")
-         * @JoinColumn(name="season", referencedColumnName="season")
-         */
+        #[Id]
+        #[ManyToOne(targetEntity: GH7062Ranking::class, inversedBy: 'positions')]
+        #[JoinColumn(name: 'season', referencedColumnName: 'season')]
         public GH7062Ranking $ranking,
-        /**
-         * @Id
-         * @ManyToOne(targetEntity=GH7062Team::class)
-         * @JoinColumn(name="team_id", referencedColumnName="id")
-         */
+        #[Id]
+        #[ManyToOne(targetEntity: GH7062Team::class)]
+        #[JoinColumn(name: 'team_id', referencedColumnName: 'id')]
         public GH7062Team $team,
     ) {
         $this->points = 0;

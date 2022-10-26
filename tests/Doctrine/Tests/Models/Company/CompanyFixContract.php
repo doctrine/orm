@@ -9,11 +9,10 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 
-/** @Entity */
 #[ORM\Entity]
 class CompanyFixContract extends CompanyContract
 {
-    /** @Column(type="integer") */
+    #[Column(type: 'integer')]
     private int $fixPrice = 0;
 
     public function calculatePrice(): int

@@ -119,35 +119,27 @@ interface Target extends ResolveTarget
 {
 }
 
-/** @Entity */
+#[Entity]
 class ResolveTargetEntity implements ResolveTarget
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /**
-     * @psalm-var Collection<int, Target>
-     * @ManyToMany(targetEntity="Doctrine\Tests\ORM\Tools\Target")
-     */
+    /** @psalm-var Collection<int, Target> */
+    #[ManyToMany(targetEntity: 'Doctrine\Tests\ORM\Tools\Target')]
     private $manyToMany;
 
-    /** @ManyToOne(targetEntity="Doctrine\Tests\ORM\Tools\ResolveTarget", inversedBy="oneToMany") */
+    #[ManyToOne(targetEntity: 'Doctrine\Tests\ORM\Tools\ResolveTarget', inversedBy: 'oneToMany')]
     private ResolveTarget $manyToOne;
 
-    /**
-     * @psalm-var Collection<int, ResolveTarget>
-     * @OneToMany(targetEntity="Doctrine\Tests\ORM\Tools\ResolveTarget", mappedBy="manyToOne")
-     */
+    /** @psalm-var Collection<int, ResolveTarget> */
+    #[OneToMany(targetEntity: 'Doctrine\Tests\ORM\Tools\ResolveTarget', mappedBy: 'manyToOne')]
     private $oneToMany;
 
-    /**
-     * @OneToOne(targetEntity="Doctrine\Tests\ORM\Tools\Target")
-     * @JoinColumn(name="target_entity_id", referencedColumnName="id")
-     */
+    #[OneToOne(targetEntity: 'Doctrine\Tests\ORM\Tools\Target')]
+    #[JoinColumn(name: 'target_entity_id', referencedColumnName: 'id')]
     private Target $oneToOne;
 
     public function getId(): int
@@ -156,14 +148,12 @@ class ResolveTargetEntity implements ResolveTarget
     }
 }
 
-/** @Entity */
+#[Entity]
 class TargetEntity implements Target
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
     public function getId(): int

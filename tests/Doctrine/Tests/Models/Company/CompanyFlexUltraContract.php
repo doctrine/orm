@@ -13,15 +13,11 @@ use Doctrine\ORM\Mapping\EntityListeners;
 
 use function max;
 
-/**
- * @Entity
- * @EntityListeners({"CompanyContractListener","CompanyFlexUltraContractListener"})
- */
 #[ORM\Entity]
 #[ORM\EntityListeners(['CompanyContractListener', 'CompanyFlexUltraContractListener'])]
 class CompanyFlexUltraContract extends CompanyFlexContract
 {
-    /** @Column(type="integer") */
+    #[Column(type: 'integer')]
     private int $maxPrice = 0;
 
     public function calculatePrice(): int

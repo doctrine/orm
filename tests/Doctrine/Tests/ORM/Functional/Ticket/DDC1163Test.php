@@ -105,17 +105,15 @@ class DDC1163Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1163ProxyHolder
 {
-    /**
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @OneToOne(targetEntity="DDC1163SpecialProduct") */
+    #[OneToOne(targetEntity: 'DDC1163SpecialProduct')]
     private DDC1163SpecialProduct|null $specialProduct = null;
 
     public function getId(): int
@@ -134,20 +132,16 @@ class DDC1163ProxyHolder
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"special" = "DDC1163SpecialProduct"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'type', type: 'string')]
+#[DiscriminatorMap(['special' => 'DDC1163SpecialProduct'])]
 abstract class DDC1163Product
 {
-    /**
-     * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
     public function getId(): int
@@ -156,10 +150,10 @@ abstract class DDC1163Product
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1163SpecialProduct extends DDC1163Product
 {
-    /** @Column(name="subclass_property", type="string", nullable=true) */
+    #[Column(name: 'subclass_property', type: 'string', nullable: true)]
     private string|null $subclassProperty = null;
 
     public function setSubclassProperty(string $value): void
@@ -168,26 +162,20 @@ class DDC1163SpecialProduct extends DDC1163Product
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1163Tag
 {
-    /**
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
-    /**
-     * @var Product
-     * @ManyToOne(targetEntity="DDC1163Product", inversedBy="tags")
-     * @JoinColumns({
-     *   @JoinColumn(name="product_id", referencedColumnName="id")
-     * })
-     */
+    /** @var Product */
+    #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
+    #[ManyToOne(targetEntity: 'DDC1163Product', inversedBy: 'tags')]
     private $product;
 
     public function __construct(
-        /** @Column(name="name", type="string", length=255) */
+        #[Column(name: 'name', type: 'string', length: 255)]
         private string $name,
     ) {
     }

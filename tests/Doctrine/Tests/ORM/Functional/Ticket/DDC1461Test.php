@@ -46,44 +46,32 @@ class DDC1461Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- */
+#[Entity]
+#[ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class DDC1461User
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC1461TwitterAccount
-     * @OneToOne(targetEntity="DDC1461TwitterAccount", orphanRemoval=true, fetch="EAGER", cascade = {"persist"}, inversedBy="user")
-     */
+    /** @var DDC1461TwitterAccount */
+    #[OneToOne(targetEntity: 'DDC1461TwitterAccount', orphanRemoval: true, fetch: 'EAGER', cascade: ['persist'], inversedBy: 'user')]
     public $twitterAccount;
 }
 
-/**
- * @Entity
- * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- */
+#[Entity]
+#[ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class DDC1461TwitterAccount
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC1461User
-     * @OneToOne(targetEntity="DDC1461User", fetch="EAGER")
-     */
+    /** @var DDC1461User */
+    #[OneToOne(targetEntity: 'DDC1461User', fetch: 'EAGER')]
     public $user;
 }

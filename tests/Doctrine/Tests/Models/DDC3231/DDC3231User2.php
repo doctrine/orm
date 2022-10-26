@@ -10,23 +10,17 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity(repositoryClass="DDC3231User2Repository")
- * @Table(name="users2")
- */
+#[Table(name: 'users2')]
+#[Entity(repositoryClass: 'DDC3231User2Repository')]
 class DDC3231User2
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     protected $name;
 }

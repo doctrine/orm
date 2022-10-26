@@ -86,53 +86,43 @@ class DDC6303Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
- *      DDC6303ChildB::class = DDC6303ChildB::class,
- *      DDC6303ChildA::class = DDC6303ChildA::class,
- * })
- *
  * Note: discriminator map order *IS IMPORTANT* for this test
  */
+#[Table]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap([DDC6303ChildB::class => DDC6303ChildB::class, DDC6303ChildA::class => DDC6303ChildA::class])]
 abstract class DDC6303BaseClass
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="NONE")
-     */
+    /** @var string */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
+    #[GeneratedValue(strategy: 'NONE')]
     public $id;
 }
 
-/**
- * @Entity
- * @Table
- */
+#[Table]
+#[Entity]
 class DDC6303ChildA extends DDC6303BaseClass
 {
     public function __construct(
         string $id,
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         private mixed $originalData,
     ) {
         $this->id = $id;
     }
 }
 
-/**
- * @Entity
- * @Table
- */
+#[Table]
+#[Entity]
 class DDC6303ChildB extends DDC6303BaseClass
 {
     /** @param mixed[] $originalData */
     public function __construct(
         string $id,
-        /** @Column(type="simple_array", nullable=true) */
+        #[Column(type: 'simple_array', nullable: true)]
         private array $originalData,
     ) {
         $this->id = $id;

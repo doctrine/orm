@@ -114,26 +114,20 @@ class NotifyBaseEntity implements NotifyPropertyChanged
     }
 }
 
-/**
- * @Entity
- * @ChangeTrackingPolicy("NOTIFY")
- */
+#[Entity]
+#[ChangeTrackingPolicy('NOTIFY')]
 class NotifyUser extends NotifyBaseEntity
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
-    /** @Column */
+    #[Column]
     private string|null $name = null;
 
-    /**
-     * @psalm-var Collection<int, NotifyGroup>
-     * @ManyToMany(targetEntity="NotifyGroup")
-     */
+    /** @psalm-var Collection<int, NotifyGroup> */
+    #[ManyToMany(targetEntity: 'NotifyGroup')]
     private $groups;
 
     public function __construct()
@@ -164,23 +158,19 @@ class NotifyUser extends NotifyBaseEntity
     }
 }
 
-/** @Entity */
+#[Entity]
 class NotifyGroup extends NotifyBaseEntity
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
-    /** @Column */
+    #[Column]
     private string|null $name = null;
 
-    /**
-     * @psalm-var Collection<int, NotifyUser>
-     * @ManyToMany(targetEntity="NotifyUser", mappedBy="groups")
-     */
+    /** @psalm-var Collection<int, NotifyUser> */
+    #[ManyToMany(targetEntity: 'NotifyUser', mappedBy: 'groups')]
     private $users;
 
     public function __construct()

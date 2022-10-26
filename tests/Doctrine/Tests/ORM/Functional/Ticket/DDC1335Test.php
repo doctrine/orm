@@ -152,27 +152,22 @@ class DDC1335Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1335User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    public $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    public int|null $id = null;
 
-    /**
-     * @psalm-var Collection<int, DDC1335Phone>
-     * @OneToMany(targetEntity="DDC1335Phone", mappedBy="user", cascade={"persist", "remove"})
-     */
-    public $phones;
+    /** @psalm-var Collection<int, DDC1335Phone> */
+    #[OneToMany(targetEntity: 'DDC1335Phone', mappedBy: 'user', cascade: ['persist', 'remove'])]
+    public Collection $phones;
 
     public function __construct(
-        /** @Column(type="string", length=255, unique=true) */
+        #[Column(type: 'string', length: 255, unique: true)]
         public string $email,
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         public string $name,
         array $numbers = [],
     ) {
@@ -184,26 +179,20 @@ class DDC1335User
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1335Phone
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue
-     */
-    public $id;
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue]
+    public int|null $id = null;
 
-    /** @param string $number */
     public function __construct(
-        /**
-         * @ManyToOne(targetEntity="DDC1335User", inversedBy="phones")
-         * @JoinColumn(name="user_id", referencedColumnName="id", nullable = false)
-         */
+        #[ManyToOne(targetEntity: 'DDC1335User', inversedBy: 'phones')]
+        #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
         public DDC1335User $user,
-        /** @Column(name="numericalValue", type="string", nullable = false) */
-        public $numericalValue,
+        #[Column(name: 'numericalValue', type: 'string', nullable: false)]
+        public string $numericalValue,
     ) {
     }
 }

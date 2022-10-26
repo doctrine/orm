@@ -12,28 +12,18 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/** @MappedSuperclass */
 #[MappedSuperclass]
 class DDC3579User
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="user_id", length=150)
-     */
+    /** @var int */
     #[Id, GeneratedValue, Column(type: 'integer', name: 'user_id', length: 150)]
     protected $id;
 
-    /**
-     * @var ArrayCollection
-     * @ManyToMany(targetEntity="DDC3579Group")
-     */
+    /** @var ArrayCollection */
     #[ManyToMany(targetEntity: DDC3579Group::class)]
     protected $groups;
 
     public function __construct(
-        /** @Column(name="user_name", nullable=true, unique=false, length=250) */
         #[Column(name: 'user_name', nullable: true, unique: false, length: 250)] protected string|null $name = null,
     ) {
         $this->groups = new ArrayCollection();

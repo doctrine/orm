@@ -13,30 +13,23 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * CmsEmail
- *
- * @Entity
- * @Table(name="cms_emails")
  */
+#[Table(name: 'cms_emails')]
+#[Entity]
 class CmsEmail
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column(length=250)
-     */
+    /** @var string */
+    #[Column(length: 250)]
     public $email;
 
-    /**
-     * @var CmsUser
-     * @OneToOne(targetEntity="CmsUser", mappedBy="email")
-     */
+    /** @var CmsUser */
+    #[OneToOne(targetEntity: 'CmsUser', mappedBy: 'email')]
     public $user;
 
     public function getId(): int

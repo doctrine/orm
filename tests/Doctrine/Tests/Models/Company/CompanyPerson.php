@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -22,48 +23,31 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * Description of CompanyPerson
- *
- * @Entity
- * @Table(name="company_persons")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string", length=255)
- * @DiscriminatorMap({
- *      "person"    = "CompanyPerson",
- *      "manager"   = "CompanyManager",
- *      "employee"  = "CompanyEmployee"
- * })
  */
+#[Table(name: 'company_persons')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string', length: 255)]
+#[DiscriminatorMap(['person' => 'CompanyPerson', 'manager' => 'CompanyManager', 'employee' => 'CompanyEmployee'])]
 class CompanyPerson
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
-    /** @Column */
+    #[Column]
     private string|null $name = null;
 
-    /**
-     * @OneToOne(targetEntity="CompanyPerson")
-     * @JoinColumn(name="spouse_id", referencedColumnName="id", onDelete="CASCADE")
-     */
+    #[OneToOne(targetEntity: 'CompanyPerson')]
+    #[JoinColumn(name: 'spouse_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private CompanyPerson|null $spouse = null;
 
-    /**
-     * @psalm-var Collection<int, CompanyPerson>
-     * @ManyToMany(targetEntity="CompanyPerson")
-     * @JoinTable(
-     *     name="company_persons_friends",
-     *     joinColumns={
-     *         @JoinColumn(name="person_id", referencedColumnName="id", onDelete="CASCADE")
-     *     },
-     *     inverseJoinColumns={
-     *         @JoinColumn(name="friend_id", referencedColumnName="id", onDelete="CASCADE")
-     *     }
-     * )
-     */
+    /** @psalm-var Collection<int, CompanyPerson> */
+    #[JoinTable(name: 'company_persons_friends')]
+    #[JoinColumn(name: 'person_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[InverseJoinColumn(name: 'friend_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ManyToMany(targetEntity: 'CompanyPerson')]
     private $friends;
 
     public function __construct()

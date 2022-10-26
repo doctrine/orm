@@ -11,23 +11,14 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/** @Entity() */
 #[ORM\Entity]
 class DDC1476EntityWithDefaultFieldType
 {
-    /**
-     * @var int
-     * @Id
-     * @Column()
-     * @GeneratedValue("NONE")
-     */
+    /** @var int */
     #[ORM\Id, ORM\Column, ORM\GeneratedValue(strategy: 'NONE')]
     protected $id;
 
-    /**
-     * @var string
-     * @Column()
-     */
+    /** @var string */
     #[ORM\Column]
     protected $name;
 

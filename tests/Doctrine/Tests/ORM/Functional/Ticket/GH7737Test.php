@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -57,36 +58,31 @@ class GH7737Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7737Group
 {
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="integer")
-         */
+        #[Id]
+        #[Column(type: 'integer')]
         public int $id,
-        /** @Column */
+        #[Column]
         public string $name,
     ) {
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7737Person
 {
-    /**
-     * @var Collection<int, GH7737Group>
-     * @ManyToMany(targetEntity=GH7737Group::class)
-     * @JoinTable(inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id", unique=true)})
-     */
+    /** @var Collection<int, GH7737Group> */
+    #[JoinTable]
+    #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id', unique: true)]
+    #[ManyToMany(targetEntity: GH7737Group::class)]
     public $groups;
 
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="integer")
-         */
+        #[Id]
+        #[Column(type: 'integer')]
         public int $id,
     ) {
         $this->groups = new ArrayCollection();

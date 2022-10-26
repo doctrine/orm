@@ -64,38 +64,30 @@ class GH7869Test extends OrmTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7869Appointment
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var GH7869Patient
-     * @OneToOne(targetEntity="GH7869Patient", inversedBy="appointment", fetch="EAGER")
-     */
+    /** @var GH7869Patient */
+    #[OneToOne(targetEntity: 'GH7869Patient', inversedBy: 'appointment', fetch: 'EAGER')]
     public $patient;
 }
 
-/** @Entity */
+#[Entity]
 class GH7869Patient
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var GH7869Appointment
-     * @OneToOne(targetEntity="GH7869Appointment", mappedBy="patient")
-     */
+    /** @var GH7869Appointment */
+    #[OneToOne(targetEntity: 'GH7869Appointment', mappedBy: 'patient')]
     public $appointment;
 }

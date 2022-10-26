@@ -10,22 +10,18 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="`quote-city`")
- */
+#[Table(name: '`quote-city`')]
+#[Entity]
 class City
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="`city-id`")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer', name: '`city-id`')]
     public $id;
 
     public function __construct(
-        /** @Column(name="`city-name`") */
+        #[Column(name: '`city-name`')]
         public string $name,
     ) {
     }

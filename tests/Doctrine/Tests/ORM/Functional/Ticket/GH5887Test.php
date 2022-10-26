@@ -60,22 +60,19 @@ class GH5887Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH5887Cart
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="NONE")
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'NONE')]
     private int|null $id = null;
 
     /**
      * One Cart has One Customer.
-     *
-     * @OneToOne(targetEntity="GH5887Customer", inversedBy="cart")
-     * @JoinColumn(name="customer_id", referencedColumnName="id")
      */
+    #[OneToOne(targetEntity: 'GH5887Customer', inversedBy: 'cart')]
+    #[JoinColumn(name: 'customer_id', referencedColumnName: 'id')]
     private GH5887Customer|null $customer = null;
 
     public function getId(): int
@@ -102,21 +99,18 @@ class GH5887Cart
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH5887Customer
 {
-    /**
-     * @Id
-     * @Column(type="GH5887CustomIdObject", length=255)
-     * @GeneratedValue(strategy="NONE")
-     */
+    #[Id]
+    #[Column(type: 'GH5887CustomIdObject', length: 255)]
+    #[GeneratedValue(strategy: 'NONE')]
     private GH5887CustomIdObject|null $id = null;
 
     /**
      * One Customer has One Cart.
-     *
-     * @OneToOne(targetEntity="GH5887Cart", mappedBy="customer")
      */
+    #[OneToOne(targetEntity: 'GH5887Cart', mappedBy: 'customer')]
     private GH5887Cart|null $cart = null;
 
     public function getId(): GH5887CustomIdObject

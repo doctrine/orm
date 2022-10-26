@@ -9,13 +9,11 @@ use Doctrine\ORM\Mapping\Embeddable;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/** @Embeddable */
+#[Embeddable]
 class DDC4006UserId
 {
-    /**
-     * @Id
-     * @GeneratedValue("IDENTITY")
-     * @Column(type="integer")
-     */
+    #[Id]
+    #[GeneratedValue('IDENTITY')]
+    #[Column(type: 'integer')]
     private int $id;
 }

@@ -53,50 +53,40 @@ class DDC1193Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1193Company
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC1193Person
-     * @OneToOne(targetEntity="DDC1193Person", cascade={"persist", "remove"})
-     */
+    /** @var DDC1193Person */
+    #[OneToOne(targetEntity: 'DDC1193Person', cascade: ['persist', 'remove'])]
     public $member;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1193Person
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC1193Account
-     * @OneToOne(targetEntity="DDC1193Account", cascade={"persist", "remove"})
-     */
+    /** @var DDC1193Account */
+    #[OneToOne(targetEntity: 'DDC1193Account', cascade: ['persist', 'remove'])]
     public $account;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1193Account
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }

@@ -58,31 +58,25 @@ class AssignedGeneratorTest extends OrmTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class AssignedSingleIdEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
     public $myId;
 }
 
-/** @Entity */
+#[Entity]
 class AssignedCompositeIdEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
     public $myId1;
 
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
     public $myId2;
 }

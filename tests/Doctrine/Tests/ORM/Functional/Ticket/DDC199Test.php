@@ -63,71 +63,53 @@ class DDC199Test extends OrmFunctionalTestCase
 }
 
 
-/**
- * @Entity
- * @Table(name="ddc199_entities")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"parent" = "DDC199ParentClass", "child" = "DDC199ChildClass"})
- */
+#[Table(name: 'ddc199_entities')]
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['parent' => 'DDC199ParentClass', 'child' => 'DDC199ChildClass'])]
 class DDC199ParentClass
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $parentData;
 
-    /**
-     * @psalm-var Collection<int, DDC199RelatedClass>
-     * @OneToMany(targetEntity="DDC199RelatedClass", mappedBy="parent")
-     */
+    /** @psalm-var Collection<int, DDC199RelatedClass> */
+    #[OneToMany(targetEntity: 'DDC199RelatedClass', mappedBy: 'parent')]
     public $relatedEntities;
 }
 
 
-/** @Entity */
+#[Entity]
 class DDC199ChildClass extends DDC199ParentClass
 {
-    /**
-     * @var string
-     * @Column
-     */
+    /** @var string */
+    #[Column]
     public $childData;
 }
 
-/**
- * @Entity
- * @Table(name="ddc199_relatedclass")
- */
+#[Table(name: 'ddc199_relatedclass')]
+#[Entity]
 class DDC199RelatedClass
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column
-     */
+    /** @var string */
+    #[Column]
     public $relatedData;
 
-    /**
-     * @var DDC199ParentClass
-     * @ManyToOne(targetEntity="DDC199ParentClass", inversedBy="relatedEntities")
-     * @JoinColumn(name="parent_id", referencedColumnName="id")
-     */
+    /** @var DDC199ParentClass */
+    #[ManyToOne(targetEntity: 'DDC199ParentClass', inversedBy: 'relatedEntities')]
+    #[JoinColumn(name: 'parent_id', referencedColumnName: 'id')]
     public $parent;
 }

@@ -69,27 +69,21 @@ class DDC345Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC345User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, DDC345Membership>
-     * @OneToMany(targetEntity="DDC345Membership", mappedBy="user", cascade={"persist"})
-     */
+    /** @psalm-var Collection<int, DDC345Membership> */
+    #[OneToMany(targetEntity: 'DDC345Membership', mappedBy: 'user', cascade: ['persist'])]
     public $memberships;
 
     public function __construct()
@@ -98,27 +92,21 @@ class DDC345User
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC345Group
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, DDC345Membership>
-     * @OneToMany(targetEntity="DDC345Membership", mappedBy="group", cascade={"persist"})
-     */
+    /** @psalm-var Collection<int, DDC345Membership> */
+    #[OneToMany(targetEntity: 'DDC345Membership', mappedBy: 'group', cascade: ['persist'])]
     public $memberships;
 
     public function __construct()
@@ -127,47 +115,34 @@ class DDC345Group
     }
 }
 
-/**
- * @Entity
- * @HasLifecycleCallbacks
- * @Table(name="ddc345_memberships", uniqueConstraints={
- *      @UniqueConstraint(name="ddc345_memship_fks", columns={"user_id","group_id"})
- * })
- */
+#[Table(name: 'ddc345_memberships')]
+#[UniqueConstraint(name: 'ddc345_memship_fks', columns: ['user_id', 'group_id'])]
+#[Entity]
+#[HasLifecycleCallbacks]
 class DDC345Membership
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC345User
-     * @OneToOne(targetEntity="DDC345User", inversedBy="memberships")
-     * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
-     */
+    /** @var DDC345User */
+    #[OneToOne(targetEntity: 'DDC345User', inversedBy: 'memberships')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     public $user;
 
-    /**
-     * @var DDC345Group
-     * @OneToOne(targetEntity="DDC345Group", inversedBy="memberships")
-     * @JoinColumn(name="group_id", referencedColumnName="id", nullable=false)
-     */
+    /** @var DDC345Group */
+    #[OneToOne(targetEntity: 'DDC345Group', inversedBy: 'memberships')]
+    #[JoinColumn(name: 'group_id', referencedColumnName: 'id', nullable: false)]
     public $group;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $state;
 
-    /**
-     * @var DateTime
-     * @Column(type="datetime")
-     */
+    /** @var DateTime */
+    #[Column(type: 'datetime')]
     public $updated;
 
     /** @var int */
@@ -176,7 +151,7 @@ class DDC345Membership
     /** @var int */
     public $preUpdateCallCount = 0;
 
-    /** @PrePersist */
+    #[PrePersist]
     public function doStuffOnPrePersist(): void
     {
         //echo "***** PrePersist\n";
@@ -184,7 +159,7 @@ class DDC345Membership
         $this->updated = new DateTime();
     }
 
-    /** @PreUpdate */
+    #[PreUpdate]
     public function doStuffOnPreUpdate(): void
     {
         //echo "***** PreUpdate\n";

@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -148,25 +149,21 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="lemma")
- */
+#[Table(name: 'lemma')]
+#[Entity]
 class Lemma
 {
     public const CLASS_NAME = self::class;
 
-    /**
-     * @Id
-     * @Column(type="integer", name="lemma_id")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer', name: 'lemma_id')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @Column(type="string", name="lemma_name", unique=true, length=255) */
+    #[Column(type: 'string', name: 'lemma_name', unique: true, length: 255)]
     private string|null $lemma = null;
 
-    /** @ManyToMany(targetEntity="Type", mappedBy="lemmas", cascade={"persist"}) */
+    #[ManyToMany(targetEntity: 'Type', mappedBy: 'lemmas', cascade: ['persist'])]
     private Collection $types;
 
     public function __construct()
@@ -211,34 +208,27 @@ class Lemma
     }
 }
 
-/**
- * @Entity
- * @Table(name="type")
- */
+#[Table(name: 'type')]
+#[Entity]
 class Type
 {
     public const CLASS_NAME = self::class;
 
-    /**
-     * @Id
-     * @Column(type="integer", name="type_id")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer', name: 'type_id')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @Column(type="string", name="type_name", unique=true) */
+    #[Column(type: 'string', name: 'type_name', unique: true)]
     private string|null $type = null;
 
-    /** @Column(type="string", name="type_abbreviation", unique=true) */
+    #[Column(type: 'string', name: 'type_abbreviation', unique: true)]
     private string|null $abbreviation = null;
 
-    /**
-     * @ManyToMany(targetEntity="Lemma")
-     * @JoinTable(name="lemma_type",
-     *      joinColumns={@JoinColumn(name="type_id", referencedColumnName="type_id")},
-     *      inverseJoinColumns={@JoinColumn(name="lemma_id", referencedColumnName="lemma_id")}
-     * )
-     */
+    #[JoinTable(name: 'lemma_type')]
+    #[JoinColumn(name: 'type_id', referencedColumnName: 'type_id')]
+    #[InverseJoinColumn(name: 'lemma_id', referencedColumnName: 'lemma_id')]
+    #[ManyToMany(targetEntity: 'Lemma')]
     private Collection $lemmas;
 
     public function __construct()
@@ -294,34 +284,26 @@ class Type
 }
 
 
-/**
- * @Entity
- * @Table(name="phrase")
- */
+#[Table(name: 'phrase')]
+#[Entity]
 class Phrase
 {
     public const CLASS_NAME = self::class;
 
-    /**
-     * @Id
-     * @Column(type="integer", name="phrase_id")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer', name: 'phrase_id')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @Column(type="string", name="phrase_name", unique=true, length=255) */
+    #[Column(type: 'string', name: 'phrase_name', unique: true, length: 255)]
     private string|null $phrase = null;
 
-    /**
-     * @ManyToOne(targetEntity="PhraseType")
-     * @JoinColumn(name="phrase_type_id", referencedColumnName="phrase_type_id")
-     */
+    #[ManyToOne(targetEntity: 'PhraseType')]
+    #[JoinColumn(name: 'phrase_type_id', referencedColumnName: 'phrase_type_id')]
     private PhraseType|null $type = null;
 
-    /**
-     * @psalm-var Collection<int, Definition>
-     * @OneToMany(targetEntity="Definition", mappedBy="phrase", cascade={"persist"})
-     */
+    /** @psalm-var Collection<int, Definition> */
+    #[OneToMany(targetEntity: 'Definition', mappedBy: 'phrase', cascade: ['persist'])]
     private $definitions;
 
     public function __construct()
@@ -366,31 +348,25 @@ class Phrase
     }
 }
 
-/**
- * @Entity
- * @Table(name="phrase_type")
- */
+#[Table(name: 'phrase_type')]
+#[Entity]
 class PhraseType
 {
     public const CLASS_NAME = self::class;
 
-    /**
-     * @Id
-     * @Column(type="integer", name="phrase_type_id")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer', name: 'phrase_type_id')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @Column(type="string", name="phrase_type_name", unique=true) */
+    #[Column(type: 'string', name: 'phrase_type_name', unique: true)]
     private string|null $type = null;
 
-    /** @Column(type="string", name="phrase_type_abbreviation", unique=true) */
+    #[Column(type: 'string', name: 'phrase_type_abbreviation', unique: true)]
     private string|null $abbreviation = null;
 
-    /**
-     * @psalm-var Collection<int, Phrase>
-     * @OneToMany(targetEntity="Phrase", mappedBy="type")
-     */
+    /** @psalm-var Collection<int, Phrase> */
+    #[OneToMany(targetEntity: 'Phrase', mappedBy: 'type')]
     private $phrases;
 
     public function __construct()
@@ -434,28 +410,22 @@ class PhraseType
     }
 }
 
-/**
- * @Entity
- * @Table(name="definition")
- */
+#[Table(name: 'definition')]
+#[Entity]
 class Definition
 {
     public const CLASS_NAME = self::class;
 
-    /**
-     * @Id
-     * @Column(type="integer", name="definition_id")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer', name: 'definition_id')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /**
-     * @ManyToOne(targetEntity="Phrase")
-     * @JoinColumn(name="definition_phrase_id", referencedColumnName="phrase_id")
-     */
+    #[ManyToOne(targetEntity: 'Phrase')]
+    #[JoinColumn(name: 'definition_phrase_id', referencedColumnName: 'phrase_id')]
     private Phrase|null $phrase = null;
 
-    /** @Column(type="text", name="definition_text") */
+    #[Column(type: 'text', name: 'definition_text')]
     private string|null $definition = null;
 
     public function getId(): int

@@ -102,27 +102,21 @@ class GH9335IntObject
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH9335Book
 {
-    /**
-     * @var GH9335IntObject
-     * @Id
-     * @Column(type=GH9335IntObjectType::class, unique=true)
-     */
+    /** @var GH9335IntObject */
+    #[Id]
+    #[Column(type: GH9335IntObjectType::class, unique: true)]
     private $id;
 
-    /**
-     * @Column(type="string")
-     * @var string
-     */
+    /** @var string */
+    #[Column(type: 'string')]
     private $title;
 
 
-    /**
-     * @OneToOne(targetEntity="GH9335Author", mappedBy="book", cascade={"persist", "remove"})
-     * @var GH9335Author
-     */
+    /** @var GH9335Author */
+    #[OneToOne(targetEntity: 'GH9335Author', mappedBy: 'book', cascade: ['persist', 'remove'])]
     private $author;
 
     public function __construct(GH9335IntObject $id, string $title, GH9335Author|null $author = null)
@@ -170,21 +164,17 @@ class GH9335Book
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH9335Author
 {
-    /**
-     * @var GH9335Book
-     * @Id
-     * @OneToOne(targetEntity="GH9335Book", inversedBy="author")
-     * @JoinColumn(name="book")
-     */
+    /** @var GH9335Book */
+    #[Id]
+    #[OneToOne(targetEntity: 'GH9335Book', inversedBy: 'author')]
+    #[JoinColumn(name: 'book')]
     private $book;
 
-    /**
-     * @Column(type="string", nullable="true" )
-     * @var string
-     */
+    /** @var string */
+    #[Column(type: 'string', nullable: true)]
     private $name;
 
     public function __construct(string|null $name)

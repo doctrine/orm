@@ -13,23 +13,14 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 
-/** @Entity */
 #[Entity]
 class DDC5934BaseContract
 {
-    /**
-     * @var int
-     * @Id()
-     * @Column(name="id", type="integer")
-     * @GeneratedValue()
-     */
+    /** @var int */
     #[Id, Column, GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC5934Member>
-     * @ManyToMany(targetEntity="DDC5934Member", fetch="LAZY", inversedBy="contracts")
-     */
+    /** @psalm-var Collection<int, DDC5934Member> */
     #[ManyToMany(targetEntity: DDC5934Member::class, fetch: 'LAZY', inversedBy: 'contracts')]
     public $members;
 

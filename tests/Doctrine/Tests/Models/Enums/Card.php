@@ -10,21 +10,14 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/** @Entity */
 #[Entity]
 class Card
 {
-    /**
-     * @Id @GeneratedValue @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
     #[Id, GeneratedValue, Column(type: 'integer')]
     public $id;
 
-    /**
-     * @Column(type="string", length=255, enumType=Suit::class)
-     * @var Suit
-     */
+    /** @var Suit */
     #[Column(type: 'string', enumType: Suit::class)]
     public $suit;
 

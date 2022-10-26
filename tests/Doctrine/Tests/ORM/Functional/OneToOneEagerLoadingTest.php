@@ -207,39 +207,35 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class Train
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * Owning side
      *
      * @var TrainDriver
-     * @OneToOne(targetEntity="TrainDriver", inversedBy="train", fetch="EAGER", cascade={"persist"})
-     * @JoinColumn(nullable=true)
      */
+    #[OneToOne(targetEntity: 'TrainDriver', inversedBy: 'train', fetch: 'EAGER', cascade: ['persist'])]
+    #[JoinColumn(nullable: true)]
     public $driver;
 
     /**
      * Owning side
      *
      * @var TrainOwner
-     * @OneToOne(targetEntity="TrainOwner", inversedBy="train", fetch="EAGER", cascade={"persist"})
-     * @JoinColumn(nullable=false)
      */
+    #[OneToOne(targetEntity: 'TrainOwner', inversedBy: 'train', fetch: 'EAGER', cascade: ['persist'])]
+    #[JoinColumn(nullable: false)]
     public $owner;
 
-    /**
-     * @psalm-var Collection<int, Waggon>
-     * @OneToMany(targetEntity="Waggon", mappedBy="train", cascade={"persist"})
-     */
+    /** @psalm-var Collection<int, Waggon> */
+    #[OneToMany(targetEntity: 'Waggon', mappedBy: 'train', cascade: ['persist'])]
     public $waggons;
 
     public function __construct(TrainOwner $owner)
@@ -267,27 +263,25 @@ class Train
     }
 }
 
-/** @Entity */
+#[Entity]
 class TrainDriver
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * Inverse side
      *
      * @var Train
-     * @OneToOne(targetEntity="Train", mappedBy="driver", fetch="EAGER")
      */
+    #[OneToOne(targetEntity: 'Train', mappedBy: 'driver', fetch: 'EAGER')]
     public $train;
 
     public function __construct(
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         public string $name,
     ) {
     }
@@ -298,27 +292,25 @@ class TrainDriver
     }
 }
 
-/** @Entity */
+#[Entity]
 class TrainOwner
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     /**
      * Inverse side
      *
      * @var Train
-     * @OneToOne(targetEntity="Train", mappedBy="owner", fetch="EAGER")
      */
+    #[OneToOne(targetEntity: 'Train', mappedBy: 'owner', fetch: 'EAGER')]
     public $train;
 
     public function __construct(
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         public string $name,
     ) {
     }
@@ -329,21 +321,17 @@ class TrainOwner
     }
 }
 
-/** @Entity */
+#[Entity]
 class Waggon
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
-    /**
-     * @var Train
-     * @ManyToOne(targetEntity="Train", inversedBy="waggons", fetch="EAGER")
-     * @JoinColumn(nullable=false)
-     */
+    /** @var Train */
+    #[ManyToOne(targetEntity: 'Train', inversedBy: 'waggons', fetch: 'EAGER')]
+    #[JoinColumn(nullable: false)]
     public $train;
 
     public function setTrain($train): void
@@ -352,19 +340,17 @@ class Waggon
     }
 }
 
-/** @Entity */
+#[Entity]
 class TrainOrder
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     public function __construct(
-        /** @OneToOne(targetEntity="Train", fetch="EAGER") */
+        #[OneToOne(targetEntity: 'Train', fetch: 'EAGER')]
         public Train|null $train = null,
     ) {
     }

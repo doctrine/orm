@@ -58,18 +58,14 @@ final class GH6217Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Cache(usage="NONSTRICT_READ_WRITE")
- */
+#[Entity]
+#[Cache(usage: 'NONSTRICT_READ_WRITE')]
 class GH6217AssociatedEntity
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="NONE")
-     */
+    /** @var string */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
+    #[GeneratedValue(strategy: 'NONE')]
     public $id;
 
     public function __construct()
@@ -78,24 +74,18 @@ class GH6217AssociatedEntity
     }
 }
 
-/**
- * @Entity
- * @Cache(usage="NONSTRICT_READ_WRITE")
- */
+#[Entity]
+#[Cache(usage: 'NONSTRICT_READ_WRITE')]
 class GH6217FetchedEntity
 {
     public function __construct(
-        /**
-         * @Id
-         * @Cache("NONSTRICT_READ_WRITE")
-         * @ManyToOne(targetEntity=GH6217AssociatedEntity::class)
-         */
+        #[Id]
+        #[Cache('NONSTRICT_READ_WRITE')]
+        #[ManyToOne(targetEntity: GH6217AssociatedEntity::class)]
         public GH6217AssociatedEntity $lazy,
-        /**
-         * @Id
-         * @Cache("NONSTRICT_READ_WRITE")
-         * @ManyToOne(targetEntity=GH6217AssociatedEntity::class, fetch="EAGER")
-         */
+        #[Id]
+        #[Cache('NONSTRICT_READ_WRITE')]
+        #[ManyToOne(targetEntity: GH6217AssociatedEntity::class, fetch: 'EAGER')]
         public GH6217AssociatedEntity $eager,
     ) {
     }

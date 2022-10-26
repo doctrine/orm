@@ -53,43 +53,32 @@ final class GH7505Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity()
- * @Table(name="gh7505_responses")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
- *     "array" = GH7505ArrayResponse::class,
- *     "text"  = GH7505TextResponse::class,
- * })
- */
+#[Table(name: 'gh7505_responses')]
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['array' => GH7505ArrayResponse::class, 'text' => GH7505TextResponse::class])]
 abstract class GH7505AbstractResponse
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 }
 
-/** @Entity() */
+#[Entity]
 class GH7505ArrayResponse extends GH7505AbstractResponse
 {
-    /**
-     * @var mixed[]
-     * @Column(name="value_array", type="simple_array")
-     */
+    /** @var mixed[] */
+    #[Column(name: 'value_array', type: 'simple_array')]
     public $value = [];
 }
 
-/** @Entity() */
+#[Entity]
 class GH7505TextResponse extends GH7505AbstractResponse
 {
-    /**
-     * @Column(name="value_string", type="string", length=255)
-     * @var string|null
-     */
+    /** @var string|null */
+    #[Column(name: 'value_string', type: 'string', length: 255)]
     public $value;
 }

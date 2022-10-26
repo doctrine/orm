@@ -56,52 +56,42 @@ class DDC1113Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"vehicle" = "DDC1113Vehicle", "car" = "DDC1113Car", "bus" = "DDC1113Bus"})
- */
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorMap(['vehicle' => 'DDC1113Vehicle', 'car' => 'DDC1113Car', 'bus' => 'DDC1113Bus'])]
 class DDC1113Vehicle
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC1113Vehicle
-     * @ManyToOne(targetEntity="DDC1113Vehicle")
-     */
+    /** @var DDC1113Vehicle */
+    #[ManyToOne(targetEntity: 'DDC1113Vehicle')]
     public $parent;
 
-    /**
-     * @var DDC1113Engine
-     * @OneToOne(targetEntity="DDC1113Engine", cascade={"persist", "remove"})
-     */
+    /** @var DDC1113Engine */
+    #[OneToOne(targetEntity: 'DDC1113Engine', cascade: ['persist', 'remove'])]
     public $engine;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1113Car extends DDC1113Vehicle
 {
 }
 
-/** @Entity */
+#[Entity]
 class DDC1113Bus extends DDC1113Vehicle
 {
 }
 
-/** @Entity */
+#[Entity]
 class DDC1113Engine
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 }

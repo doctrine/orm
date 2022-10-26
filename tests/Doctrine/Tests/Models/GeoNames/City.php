@@ -14,40 +14,30 @@ use Doctrine\ORM\Mapping\JoinColumns;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="geonames_city")
- * @Cache
- */
+#[Table(name: 'geonames_city')]
+#[Entity]
+#[Cache]
 class City
 {
-    /**
-     * @var Country
-     * @ManyToOne(targetEntity="Country")
-     * @JoinColumn(name="country", referencedColumnName="id")
-     * @Cache
-     */
+    /** @var Country */
+    #[ManyToOne(targetEntity: 'Country')]
+    #[JoinColumn(name: 'country', referencedColumnName: 'id')]
+    #[Cache]
     public $country;
 
-    /**
-     * @var Admin1
-     * @ManyToOne(targetEntity="Admin1")
-     * @JoinColumns({
-     *   @JoinColumn(name="admin1", referencedColumnName="id"),
-     *   @JoinColumn(name="country", referencedColumnName="country")
-     * })
-     * @Cache
-     */
+    /** @var Admin1 */
+    #[JoinColumn(name: 'admin1', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'country', referencedColumnName: 'country')]
+    #[ManyToOne(targetEntity: 'Admin1')]
+    #[Cache]
     public $admin1;
 
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="string", length=25)
-         * @GeneratedValue(strategy="NONE")
-         */
+        #[Id]
+        #[Column(type: 'string', length: 25)]
+        #[GeneratedValue(strategy: 'NONE')]
         public int $id,
-        /** @Column(type="string", length=255); */
+        #[Column(type: 'string', length: 255)]
         public string $name,
     ) {
     }

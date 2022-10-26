@@ -30,20 +30,16 @@ class DDC425Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC425Entity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DateTime
-     * @Column(type="datetime")
-     */
+    /** @var DateTime */
+    #[Column(type: 'datetime')]
     public $someDatetimeField;
 }

@@ -21,6 +21,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -935,7 +936,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         $config->setMetadataDriverImpl(
-            $mappingDriver ?? ORMSetup::createDefaultAnnotationDriver([
+            $mappingDriver ?? new AttributeDriver([
                 realpath(__DIR__ . '/Models/Cache'),
                 realpath(__DIR__ . '/Models/GeoNames'),
             ]),

@@ -16,43 +16,25 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * CmsAddress
- *
- * @Entity
- * @Table(name="cms_addresses")
- * @EntityListeners({"CmsAddressListener"})
- */
 #[ORM\Entity]
 #[ORM\Table(name: 'cms_addresses')]
 #[ORM\EntityListeners(['CmsAddressListener'])]
 class CmsAddress
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    /** @var int */
     #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(length=50)
-     */
+    /** @var string */
+    #[Column(length: 50)]
     public $country;
 
-    /**
-     * @var string
-     * @Column(length=50)
-     */
+    /** @var string */
+    #[Column(length: 50)]
     public $zip;
 
-    /**
-     * @var string
-     * @Column(length=50)
-     */
+    /** @var string */
+    #[Column(length: 50)]
     public $city;
 
     /**
@@ -62,11 +44,9 @@ class CmsAddress
      */
     public $street;
 
-    /**
-     * @var CmsUser
-     * @OneToOne(targetEntity="CmsUser", inversedBy="address")
-     * @JoinColumn(referencedColumnName="id")
-     */
+    /** @var CmsUser */
+    #[OneToOne(targetEntity: 'CmsUser', inversedBy: 'address')]
+    #[JoinColumn(referencedColumnName: 'id')]
     public $user;
 
     public function getId(): int

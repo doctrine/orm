@@ -34,24 +34,20 @@ class DDC1454Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1454Picture extends DDC1454File
 {
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"file" = "DDC1454File", "picture" = "DDC1454Picture"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['file' => 'DDC1454File', 'picture' => 'DDC1454Picture'])]
 class DDC1454File
 {
-    /**
-     * @var int
-     * @Column(name="file_id", type="integer")
-     * @Id
-     */
+    /** @var int */
+    #[Column(name: 'file_id', type: 'integer')]
+    #[Id]
     public $fileId;
 
     public function __construct()

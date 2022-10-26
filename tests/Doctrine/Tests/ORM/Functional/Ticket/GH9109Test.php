@@ -86,24 +86,22 @@ class GH9109Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH9109Product
 {
-    /**
-     * @Column(name="`id`", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Column(name: '`id`', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @Column(name="`title`", type="string", length=255) */
+    #[Column(name: '`title`', type: 'string', length: 255)]
     private string|null $title = null;
 
     /**
      * @var Collection|GH9109User[]
      * @psalm-var Collection<int, GH9109User>
-     * @ManyToMany(targetEntity="GH9109User")
      */
+    #[ManyToMany(targetEntity: 'GH9109User')]
     private $buyers;
 
     public function __construct()
@@ -138,20 +136,18 @@ class GH9109Product
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH9109User
 {
-    /**
-     * @Column(name="`id`", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Column(name: '`id`', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @Column(name="`first_name`", type="string", length=255) */
+    #[Column(name: '`first_name`', type: 'string', length: 255)]
     private string|null $firstName = null;
 
-    /** @Column(name="last_name", type="string", length=255) */
+    #[Column(name: 'last_name', type: 'string', length: 255)]
     private string|null $lastName = null;
 
     public function getId(): int

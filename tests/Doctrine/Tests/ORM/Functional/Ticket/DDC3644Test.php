@@ -136,33 +136,25 @@ class DDC3644Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC3644User
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="hash_id")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer', name: 'hash_id')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, DDC3644Address>
-     * @OneToMany(targetEntity="DDC3644Address", mappedBy="user", orphanRemoval=true)
-     */
+    /** @psalm-var Collection<int, DDC3644Address> */
+    #[OneToMany(targetEntity: 'DDC3644Address', mappedBy: 'user', orphanRemoval: true)]
     public $addresses = [];
 
-    /**
-     * @psalm-var Collection<int, DDC3644Pet>
-     * @OneToMany(targetEntity="DDC3644Pet", mappedBy="owner", orphanRemoval=true)
-     */
+    /** @psalm-var Collection<int, DDC3644Pet> */
+    #[OneToMany(targetEntity: 'DDC3644Pet', mappedBy: 'owner', orphanRemoval: true)]
     public $pets = [];
 
     public function setAddresses(Collection $addresses): void
@@ -184,61 +176,51 @@ class DDC3644User
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC3644Address
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC3644User
-     * @ManyToOne(targetEntity="DDC3644User", inversedBy="addresses")
-     * @JoinColumn(referencedColumnName="hash_id")
-     */
+    /** @var DDC3644User */
+    #[ManyToOne(targetEntity: 'DDC3644User', inversedBy: 'addresses')]
+    #[JoinColumn(referencedColumnName: 'hash_id')]
     public $user;
 
     public function __construct(
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         public string $address,
     ) {
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discriminator", type="string")
- * @DiscriminatorMap({"pet" = "DDC3644Pet"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discriminator', type: 'string')]
+#[DiscriminatorMap(['pet' => 'DDC3644Pet'])]
 abstract class DDC3644Animal
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     public function __construct(
-        /** @Column(type="string", length=255) */
+        #[Column(type: 'string', length: 255)]
         public string $name,
     ) {
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC3644Pet extends DDC3644Animal
 {
-    /**
-     * @var DDC3644User
-     * @ManyToOne(targetEntity="DDC3644User", inversedBy="pets")
-     * @JoinColumn(referencedColumnName="hash_id")
-     */
+    /** @var DDC3644User */
+    #[ManyToOne(targetEntity: 'DDC3644User', inversedBy: 'pets')]
+    #[JoinColumn(referencedColumnName: 'hash_id')]
     public $owner;
 }

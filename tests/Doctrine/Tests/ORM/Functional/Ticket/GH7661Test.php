@@ -51,50 +51,42 @@ class GH7661Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7661User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class GH7661Event
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
-    /**
-     * @var GH7661Participant[]
-     * @OneToMany(targetEntity=GH7661Participant::class, mappedBy="event", indexBy="user_id")
-     */
+    /** @var GH7661Participant[] */
+    #[OneToMany(targetEntity: GH7661Participant::class, mappedBy: 'event', indexBy: 'user_id')]
     public $participants;
 }
 
-/** @Entity */
+#[Entity]
 class GH7661Participant
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
     public function __construct(
-        /** @ManyToOne(targetEntity=GH7661User::class) */
+        #[ManyToOne(targetEntity: GH7661User::class)]
         public GH7661User $user,
-        /** @ManyToOne(targetEntity=GH7661Event::class) */
+        #[ManyToOne(targetEntity: GH7661Event::class)]
         public GH7661Event $event,
     ) {
     }

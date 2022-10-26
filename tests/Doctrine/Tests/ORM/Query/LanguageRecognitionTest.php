@@ -659,31 +659,27 @@ class LanguageRecognitionTest extends OrmTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DQLKeywordsModelUser
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
-    /** @OneToOne(targetEntity="DQLKeywordsModelGroup") */
+    #[OneToOne(targetEntity: 'DQLKeywordsModelGroup')]
     private DQLKeywordsModelGroup $group;
 }
 
-/** @Entity */
+#[Entity]
 class DQLKeywordsModelGroup
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private int $id;
 
-    /** @Column */
+    #[Column]
     private string $from;
 }
 

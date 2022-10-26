@@ -105,28 +105,22 @@ class DDC69Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="lemma")
- */
+#[Table(name: 'lemma')]
+#[Entity]
 class Lemma
 {
     public const CLASS_NAME = self::class;
 
-    /**
-     * @Id
-     * @Column(type="integer", name="lemma_id")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer', name: 'lemma_id')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @Column(type="string", name="lemma_name", unique=true, length=255) */
+    #[Column(type: 'string', name: 'lemma_name', unique: true, length: 255)]
     private string|null $lemma = null;
 
-    /**
-     * @var Collection<int, Relation>
-     * @OneToMany(targetEntity="Relation", mappedBy="parent", cascade={"persist"})
-     */
+    /** @var Collection<int, Relation> */
+    #[OneToMany(targetEntity: 'Relation', mappedBy: 'parent', cascade: ['persist'])]
     private Collection $relations;
 
     public function __construct()
@@ -171,37 +165,27 @@ class Lemma
     }
 }
 
-/**
- * @Entity
- * @Table(name="relation")
- */
+#[Table(name: 'relation')]
+#[Entity]
 class Relation
 {
     public const CLASS_NAME = self::class;
 
-    /**
-     * @Id
-     * @Column(type="integer", name="relation_id")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer', name: 'relation_id')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /**
-     * @ManyToOne(targetEntity="Lemma", inversedBy="relations")
-     * @JoinColumn(name="relation_parent_id", referencedColumnName="lemma_id")
-     */
+    #[ManyToOne(targetEntity: 'Lemma', inversedBy: 'relations')]
+    #[JoinColumn(name: 'relation_parent_id', referencedColumnName: 'lemma_id')]
     private Lemma|null $parent = null;
 
-    /**
-     * @OneToOne(targetEntity="Lemma")
-     * @JoinColumn(name="relation_child_id", referencedColumnName="lemma_id")
-     */
+    #[OneToOne(targetEntity: 'Lemma')]
+    #[JoinColumn(name: 'relation_child_id', referencedColumnName: 'lemma_id')]
     private Lemma|null $child = null;
 
-    /**
-     * @ManyToOne(targetEntity="RelationType", inversedBy="relations")
-     * @JoinColumn(name="relation_type_id", referencedColumnName="relation_type_id")
-     */
+    #[ManyToOne(targetEntity: 'RelationType', inversedBy: 'relations')]
+    #[JoinColumn(name: 'relation_type_id', referencedColumnName: 'relation_type_id')]
     private RelationType|null $type = null;
 
     public function setParent(Lemma $parent): void
@@ -253,31 +237,25 @@ class Relation
     }
 }
 
-/**
- * @Entity
- * @Table(name="relation_type")
- */
+#[Table(name: 'relation_type')]
+#[Entity]
 class RelationType
 {
     public const CLASS_NAME = self::class;
 
-    /**
-     * @Id
-     * @Column(type="integer", name="relation_type_id")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    #[Id]
+    #[Column(type: 'integer', name: 'relation_type_id')]
+    #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @Column(type="string", name="relation_type_name", unique=true, length=255) */
+    #[Column(type: 'string', name: 'relation_type_name', unique: true, length: 255)]
     private string|null $type = null;
 
-    /** @Column(type="string", name="relation_type_abbreviation", unique=true, length=255) */
+    #[Column(type: 'string', name: 'relation_type_abbreviation', unique: true, length: 255)]
     private string|null $abbreviation = null;
 
-    /**
-     * @var Collection<int, Relation>
-     * @OneToMany(targetEntity="Relation", mappedBy="type", cascade={"persist"})
-     */
+    /** @var Collection<int, Relation> */
+    #[OneToMany(targetEntity: 'Relation', mappedBy: 'type', cascade: ['persist'])]
     private $relations;
 
     public function __construct()

@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -63,39 +64,29 @@ class DDC3033Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Table
- * @Entity
- * @HasLifecycleCallbacks
- */
+#[Table]
+#[Entity]
+#[HasLifecycleCallbacks]
 class DDC3033Product
 {
     /** @psalm-var array<string, array{mixed, mixed}> */
     public $changeSet = [];
 
-    /**
-     * @var int $id
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int $id */
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string $title
-     * @Column(name="title", type="string", length=255)
-     */
+    /** @var string $title */
+    #[Column(name: 'title', type: 'string', length: 255)]
     public $title;
 
-    /**
-     * @var Collection<int, DDC3033User>
-     * @ManyToMany(targetEntity="DDC3033User")
-     * @JoinTable(
-     *   name="user_purchases_3033",
-     *   joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
-     *   inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")}
-     * )
-     */
+    /** @var Collection<int, DDC3033User> */
+    #[JoinTable(name: 'user_purchases_3033')]
+    #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'DDC3033User')]
     public $buyers;
 
     /**
@@ -106,12 +97,12 @@ class DDC3033Product
         $this->buyers = new ArrayCollection();
     }
 
-    /** @PreUpdate */
+    #[PreUpdate]
     public function preUpdate(PreUpdateEventArgs $eventArgs): void
     {
     }
 
-    /** @PostUpdate */
+    #[PostUpdate]
     public function postUpdate(PostUpdateEventArgs $eventArgs): void
     {
         $em            = $eventArgs->getObjectManager();
@@ -124,24 +115,18 @@ class DDC3033Product
     }
 }
 
-/**
- * @Table
- * @Entity
- * @HasLifecycleCallbacks
- */
+#[Table]
+#[Entity]
+#[HasLifecycleCallbacks]
 class DDC3033User
 {
-    /**
-     * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(name="title", type="string", length=255)
-     */
+    /** @var string */
+    #[Column(name: 'title', type: 'string', length: 255)]
     public $name;
 }

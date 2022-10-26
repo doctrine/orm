@@ -77,49 +77,37 @@ class DDC3192Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Table(name="ddc3192_currency")
- * @Entity
- */
+#[Table(name: 'ddc3192_currency')]
+#[Entity]
 class DDC3192Currency
 {
-    /**
-     * @var Collection<int, DDC3192Transaction>
-     * @OneToMany(targetEntity="DDC3192Transaction", mappedBy="currency")
-     */
+    /** @var Collection<int, DDC3192Transaction> */
+    #[OneToMany(targetEntity: 'DDC3192Transaction', mappedBy: 'currency')]
     public $transactions;
 
     public function __construct(
-        /**
-         * @Id
-         * @Column(type="ddc3192_currency_code")
-         */
+        #[Id]
+        #[Column(type: 'ddc3192_currency_code')]
         public string $code,
     ) {
     }
 }
 
-/**
- * @Table(name="ddc3192_transaction")
- * @Entity
- */
+#[Table(name: 'ddc3192_transaction')]
+#[Entity]
 class DDC3192Transaction
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     public function __construct(
-        /** @Column(type="integer") */
+        #[Column(type: 'integer')]
         public int $amount,
-        /**
-         * @ManyToOne(targetEntity="DDC3192Currency", inversedBy="transactions")
-         * @JoinColumn(name="currency_id", referencedColumnName="code", nullable=false)
-         */
+        #[ManyToOne(targetEntity: 'DDC3192Currency', inversedBy: 'transactions')]
+        #[JoinColumn(name: 'currency_id', referencedColumnName: 'code', nullable: false)]
         public DDC3192Currency $currency,
     ) {
     }

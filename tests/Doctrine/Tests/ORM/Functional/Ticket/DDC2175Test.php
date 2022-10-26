@@ -44,31 +44,23 @@ class DDC2175Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({"entity": "DDC2175Entity"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorMap(['entity' => 'DDC2175Entity'])]
 class DDC2175Entity
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $field;
 
-    /**
-     * @var int
-     * @Version
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Version]
+    #[Column(type: 'integer')]
     public $version;
 }

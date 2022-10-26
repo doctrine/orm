@@ -14,19 +14,11 @@ use Doctrine\ORM\Mapping\Table;
 /**
  * Quoted column name to check that sequence names are
  * correctly handled
- *
- * @Entity
- * @Table(name="implicit_schema.implicit_table")
  */
 #[ORM\Entity, ORM\Table(name: 'implicit_schema.implicit_table')]
 class SchemaAndTableInTableName
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
     #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'AUTO')]
     public $id;
 }

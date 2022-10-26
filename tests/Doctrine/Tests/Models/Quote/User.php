@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -17,57 +18,34 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="`quote-user`")
- */
+#[Table(name: '`quote-user`')]
+#[Entity]
 class User
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="`user-id`")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer', name: '`user-id`')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255, name="`user-name`")
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255, name: '`user-name`')]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, Phone>
-     * @OneToMany(targetEntity="Phone", mappedBy="user", cascade={"persist"})
-     */
+    /** @psalm-var Collection<int, Phone> */
+    #[OneToMany(targetEntity: 'Phone', mappedBy: 'user', cascade: ['persist'])]
     public $phones;
 
-    /**
-     * @var Address
-     * @JoinColumn(name="`address-id`", referencedColumnName="`address-id`")
-     * @OneToOne(targetEntity="Address", mappedBy="user", cascade={"persist"}, fetch="EAGER")
-     */
+    /** @var Address */
+    #[JoinColumn(name: '`address-id`', referencedColumnName: '`address-id`')]
+    #[OneToOne(targetEntity: 'Address', mappedBy: 'user', cascade: ['persist'], fetch: 'EAGER')]
     public $address;
 
-    /**
-     * @psalm-var Collection<int, Group>
-     * @ManyToMany(targetEntity="Group", inversedBy="users", cascade={"all"}, fetch="EXTRA_LAZY")
-     * @JoinTable(name="`quote-users-groups`",
-     *      joinColumns={
-     *          @JoinColumn(
-     *              name="`user-id`",
-     *              referencedColumnName="`user-id`"
-     *          )
-     *      },
-     *      inverseJoinColumns={
-     *          @JoinColumn(
-     *              name="`group-id`",
-     *              referencedColumnName="`group-id`"
-     *          )
-     *      }
-     * )
-     */
+    /** @psalm-var Collection<int, Group> */
+    #[JoinTable(name: '`quote-users-groups`')]
+    #[JoinColumn(name: '`user-id`', referencedColumnName: '`user-id`')]
+    #[InverseJoinColumn(name: '`group-id`', referencedColumnName: '`group-id`')]
+    #[ManyToMany(targetEntity: 'Group', inversedBy: 'users', cascade: ['all'], fetch: 'EXTRA_LAZY')]
     public $groups;
 
     public function __construct()

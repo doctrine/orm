@@ -9,15 +9,11 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\DbalTypes\GH8565ManagerPayloadType;
 
-/**
- * @Entity
- * @Table(name="gh8565_managers")
- */
+#[Table(name: 'gh8565_managers')]
+#[Entity]
 class GH8565Manager extends GH8565Person
 {
-    /**
-     * @Column(type="GH8565ManagerPayloadType", nullable=false)
-     * @var GH8565ManagerPayloadType
-     */
+    /** @var GH8565ManagerPayloadType */
+    #[Column(type: 'GH8565ManagerPayloadType', nullable: false)]
     public $type;
 }

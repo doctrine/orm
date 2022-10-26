@@ -12,24 +12,18 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="ddc3346_articles")
- */
+#[Table(name: 'ddc3346_articles')]
+#[Entity]
 class DDC3346Article
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var DDC3346Author
-     * @ManyToOne(targetEntity="DDC3346Author", inversedBy="articles")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
-     */
+    /** @var DDC3346Author */
+    #[ManyToOne(targetEntity: 'DDC3346Author', inversedBy: 'articles')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     public $user;
 }

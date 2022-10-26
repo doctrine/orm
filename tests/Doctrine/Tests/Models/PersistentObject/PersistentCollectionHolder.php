@@ -13,21 +13,17 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 
-/** @Entity */
+#[Entity]
 class PersistentCollectionHolder extends PersistentObject
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     protected $id;
 
-    /**
-     * @var Collection
-     * @ManyToMany(targetEntity="PersistentCollectionContent", cascade={"all"}, fetch="EXTRA_LAZY")
-     */
+    /** @var Collection */
+    #[ManyToMany(targetEntity: 'PersistentCollectionContent', cascade: ['all'], fetch: 'EXTRA_LAZY')]
     protected $collection;
 
     public function __construct()

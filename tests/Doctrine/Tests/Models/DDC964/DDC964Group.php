@@ -11,24 +11,20 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 
-/** @Entity */
+#[Entity]
 class DDC964Group
 {
-    /**
-     * @GeneratedValue
-     * @Id
-     * @Column(type="integer")
-     */
+    #[GeneratedValue]
+    #[Id]
+    #[Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @psalm-var ArrayCollection<int, DDC964User>
-     * @ManyToMany(targetEntity="DDC964User", mappedBy="groups")
-     */
+    /** @psalm-var ArrayCollection<int, DDC964User> */
+    #[ManyToMany(targetEntity: 'DDC964User', mappedBy: 'groups')]
     private $users;
 
     public function __construct(
-        /** @Column */
+        #[Column]
         private string|null $name = null,
     ) {
         $this->users = new ArrayCollection();

@@ -11,20 +11,16 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 
-/** @Entity */
+#[Entity]
 class EntityWithArrayDefaultArrayValueM2M
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, SimpleEntity>
-     * @ManyToMany(targetEntity=SimpleEntity::class)
-     */
+    /** @psalm-var Collection<int, SimpleEntity> */
+    #[ManyToMany(targetEntity: SimpleEntity::class)]
     public $collection = [];
 }

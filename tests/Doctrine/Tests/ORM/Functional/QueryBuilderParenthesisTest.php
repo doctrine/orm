@@ -69,32 +69,24 @@ OR o.property2 = :value2)',
 }
 
 
-/** @Entity */
+#[Entity]
 class QueryBuilderParenthesisEntity
 {
-    /**
-     * @var int|null
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    /** @var int|null */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string|null
-     * @Column()
-     */
+    /** @var string|null */
+    #[Column]
     public $property1;
 
-    /**
-     * @var string|null
-     * @Column()
-     */
+    /** @var string|null */
+    #[Column]
     public $property2;
 
-    /**
-     * @var string|null
-     * @Column()
-     */
+    /** @var string|null */
+    #[Column]
     public $property3;
 }

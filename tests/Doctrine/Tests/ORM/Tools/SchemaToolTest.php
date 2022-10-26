@@ -372,19 +372,15 @@ class SchemaToolTest extends OrmTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(options={"foo": "bar", "baz": {"key": "val"}})
- */
+#[Table(options: ['foo' => 'bar', 'baz' => ['key' => 'val']])]
+#[Entity]
 class TestEntityWithAnnotationOptionsAttribute
 {
-    /**
-     * @Id
-     * @Column
-     */
+    #[Id]
+    #[Column]
     private int $id;
 
-    /** @Column(type="string", options={"foo": "bar", "baz": {"key": "val"}}) */
+    #[Column(type: 'string', options: ['foo' => 'bar', 'baz' => ['key' => 'val']])]
     private string $test;
 }
 
@@ -407,143 +403,100 @@ class GenerateSchemaEventListener
     }
 }
 
-/**
- * @Entity
- * @Table(name="unique_constraint_annotation_table", uniqueConstraints={
- *   @UniqueConstraint(name="uniq_hash", columns={"hash"})
- * })
- */
+#[Table(name: 'unique_constraint_annotation_table')]
+#[UniqueConstraint(name: 'uniq_hash', columns: ['hash'])]
+#[Entity]
 class UniqueConstraintAnnotationModel
 {
-    /**
-     * @Id
-     * @Column
-     */
+    #[Id]
+    #[Column]
     private int $id;
 
-    /** @Column(name="hash", type="string", length=8, nullable=false, unique=true) */
+    #[Column(name: 'hash', type: 'string', length: 8, nullable: false, unique: true)]
     private string $hash;
 }
 
-/**
- * @Entity
- * @Table(name="first_entity")
- */
+#[Table(name: 'first_entity')]
+#[Entity]
 class FirstEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'id')]
     public $id;
 
-    /**
-     * @var SecondEntity
-     * @OneToOne(targetEntity="SecondEntity")
-     * @JoinColumn(name="id", referencedColumnName="first_entity_id")
-     */
+    /** @var SecondEntity */
+    #[OneToOne(targetEntity: 'SecondEntity')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'first_entity_id')]
     public $secondEntity;
 
-    /**
-     * @var string
-     * @Column(name="name")
-     */
+    /** @var string */
+    #[Column(name: 'name')]
     public $name;
 }
 
-/**
- * @Entity
- * @Table(name="second_entity")
- */
+#[Table(name: 'second_entity')]
+#[Entity]
 class SecondEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="first_entity_id")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'first_entity_id')]
     public $firstEntityId;
 
-    /**
-     * @var string
-     * @Column(name="name")
-     */
+    /** @var string */
+    #[Column(name: 'name')]
     public $name;
 }
 
-/** @Entity */
+#[Entity]
 class GH6830Board
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var GH6830Category
-     * @ManyToOne(targetEntity=GH6830Category::class, inversedBy="boards")
-     * @JoinColumn(name="category_id", referencedColumnName="id")
-     */
+    /** @var GH6830Category */
+    #[ManyToOne(targetEntity: GH6830Category::class, inversedBy: 'boards')]
+    #[JoinColumn(name: 'category_id', referencedColumnName: 'id')]
     public $category;
 }
 
-/** @Entity */
+#[Entity]
 class GH6830Category
 {
-    /**
-     * @Id
-     * @Column(type="string", length=8, options={"fixed":true, "collation":"latin1_bin", "foo":"bar"})
-     * @var string
-     */
+    /** @var string */
+    #[Id]
+    #[Column(type: 'string', length: 8, options: ['fixed' => true, 'collation' => 'latin1_bin', 'foo' => 'bar'])]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, GH6830Board>
-     * @OneToMany(targetEntity=GH6830Board::class, mappedBy="category")
-     */
+    /** @psalm-var Collection<int, GH6830Board> */
+    #[OneToMany(targetEntity: GH6830Board::class, mappedBy: 'category')]
     public $boards;
 }
 
-/**
- * @Entity
- * @Table(
- *     name="field_index",
- *     indexes={
- *         @Index(name="index", fields={"index", "fieldName"}),
- *     },
- *     uniqueConstraints={
- *         @UniqueConstraint(name="uniq", fields={"index", "table"})
- *     }
- * )
- */
+#[Table(name: 'field_index')]
+#[Index(name: 'index', fields: ['index', 'fieldName'])]
+#[UniqueConstraint(name: 'uniq', fields: ['index', 'table'])]
+#[Entity]
 class IndexByFieldEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column
-     */
+    /** @var string */
+    #[Column]
     public $index;
 
-    /**
-     * @var string
-     * @Column
-     */
+    /** @var string */
+    #[Column]
     public $table;
 
-    /**
-     * @var string
-     * @Column
-     */
+    /** @var string */
+    #[Column]
     public $fieldName;
 }
 

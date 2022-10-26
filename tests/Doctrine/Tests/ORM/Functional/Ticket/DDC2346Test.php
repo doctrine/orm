@@ -65,21 +65,17 @@ class DDC2346Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2346Foo
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC2346Bar[]|Collection
-     * @OneToMany(targetEntity="DDC2346Bar", mappedBy="foo")
-     */
+    /** @var DDC2346Bar[]|Collection */
+    #[OneToMany(targetEntity: 'DDC2346Bar', mappedBy: 'foo')]
     public $bars;
 
     /** Constructor */
@@ -89,31 +85,25 @@ class DDC2346Foo
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"bar" = "DDC2346Bar", "baz" = "DDC2346Baz"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['bar' => 'DDC2346Bar', 'baz' => 'DDC2346Baz'])]
 class DDC2346Bar
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC2346Foo
-     * @ManyToOne(targetEntity="DDC2346Foo", inversedBy="bars", fetch="EAGER")
-     */
+    /** @var DDC2346Foo */
+    #[ManyToOne(targetEntity: 'DDC2346Foo', inversedBy: 'bars', fetch: 'EAGER')]
     public $foo;
 }
 
 
-/** @Entity */
+#[Entity]
 class DDC2346Baz extends DDC2346Bar
 {
 }

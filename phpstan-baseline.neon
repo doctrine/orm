@@ -141,36 +141,6 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
 
 		-
-			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:mapEmbedded\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
-
-		-
-			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:mapManyToMany\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
-
-		-
-			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:mapManyToOne\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
-
-		-
-			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:mapOneToMany\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
-
-		-
-			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:mapOneToOne\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
-
-		-
-			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
-
-		-
 			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php

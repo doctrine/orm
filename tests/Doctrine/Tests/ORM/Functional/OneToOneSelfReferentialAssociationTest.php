@@ -141,26 +141,20 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class MultiSelfReference
 {
-    /**
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @Column(type="integer")
-     */
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
+    #[Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
-     * @JoinColumn(name="other1", referencedColumnName="id")
-     */
+    #[OneToOne(targetEntity: 'MultiSelfReference', cascade: ['persist'])]
+    #[JoinColumn(name: 'other1', referencedColumnName: 'id')]
     private MultiSelfReference|null $other1 = null;
 
-    /**
-     * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
-     * @JoinColumn(name="other2", referencedColumnName="id")
-     */
+    #[OneToOne(targetEntity: 'MultiSelfReference', cascade: ['persist'])]
+    #[JoinColumn(name: 'other2', referencedColumnName: 'id')]
     private MultiSelfReference|null $other2 = null;
 
     public function getId(): int

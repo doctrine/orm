@@ -11,29 +11,24 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="exchange_stocks")
- */
+#[Table(name: 'exchange_stocks')]
+#[Entity]
 class Stock
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     private int $id;
 
     public function __construct(
         /**
          * For real this column would have to be unique=true. But I want to test behavior of non-unique overrides.
-         *
-         * @Column(type="string", length=255)
          */
+        #[Column(type: 'string', length: 255)]
         private string $symbol,
-        /** @Column(type="decimal", precision=10) */
+        #[Column(type: 'decimal', precision: 10)]
         private float $price,
-        /** @ManyToOne(targetEntity="Market", inversedBy="stocks") */
+        #[ManyToOne(targetEntity: 'Market', inversedBy: 'stocks')]
         private Market $market,
     ) {
         $market->addStock($this);

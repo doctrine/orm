@@ -11,23 +11,19 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Cache
- * @Entity
- * @Table("cache_country")
- */
+#[Table('cache_country')]
+#[Cache]
+#[Entity]
 class Country
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     protected $id;
 
     public function __construct(
-        /** @Column(unique=true) */
+        #[Column(unique: true)]
         protected string $name,
     ) {
     }
