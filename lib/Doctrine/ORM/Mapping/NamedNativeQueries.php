@@ -11,7 +11,7 @@ namespace Doctrine\ORM\Mapping;
  * @Annotation
  * @Target("CLASS")
  */
-final class NamedNativeQueries implements Annotation
+final class NamedNativeQueries implements MappingAttribute
 {
     /**
      * One or more NamedNativeQuery annotations.

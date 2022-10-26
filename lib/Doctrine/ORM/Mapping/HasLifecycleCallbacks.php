@@ -11,6 +11,6 @@ use Attribute;
  * @Target("CLASS")
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class HasLifecycleCallbacks implements Annotation
+final class HasLifecycleCallbacks implements MappingAttribute
 {
 }

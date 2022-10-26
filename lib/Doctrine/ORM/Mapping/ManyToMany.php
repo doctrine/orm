@@ -14,7 +14,7 @@ use Doctrine\Deprecations\Deprecation;
  * @Target("PROPERTY")
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class ManyToMany implements Annotation
+final class ManyToMany implements MappingAttribute
 {
     /**
      * @var class-string|null

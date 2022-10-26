@@ -8,7 +8,7 @@ namespace Doctrine\ORM\Mapping;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final class InverseJoinColumn implements Annotation
+final class InverseJoinColumn implements MappingAttribute
 {
     use JoinColumnProperties;
 }

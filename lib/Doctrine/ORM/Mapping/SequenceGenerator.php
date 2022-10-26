@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Target("PROPERTY")
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class SequenceGenerator implements Annotation
+final class SequenceGenerator implements MappingAttribute
 {
     /**
      * @var string|null

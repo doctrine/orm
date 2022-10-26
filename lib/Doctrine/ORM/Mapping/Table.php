@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Target("CLASS")
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class Table implements Annotation
+final class Table implements MappingAttribute
 {
     /**
      * @var string|null

@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Target("PROPERTY")
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class GeneratedValue implements Annotation
+final class GeneratedValue implements MappingAttribute
 {
     /**
      * The type of ID generator.

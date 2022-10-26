@@ -39,6 +39,8 @@
                 <referencedClass name="Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\EntityManagerProvider\HelperSetManagerProvider"/>
+                <!-- https://github.com/vimeo/psalm/issues/8617 -->
+                <referencedClass name="Doctrine\ORM\Mapping\Annotation"/>
             </errorLevel>
         </DeprecatedClass>
         <DeprecatedConstant>
@@ -52,7 +54,9 @@
         </DeprecatedConstant>
         <DeprecatedInterface>
             <errorLevel type="suppress">
+                <!-- Remove on 3.0.x -->
                 <referencedClass name="Doctrine\ORM\Cache\MultiGetRegion"/>
+                <referencedClass name="Doctrine\ORM\Mapping\Annotation"/>
             </errorLevel>
         </DeprecatedInterface>
         <DeprecatedMethod>
