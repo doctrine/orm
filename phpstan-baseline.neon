@@ -126,6 +126,11 @@ parameters:
 			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
 
 		-
+			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:refresh\\(\\) invoked with 2 parameters, 1 required\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
+
+		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
