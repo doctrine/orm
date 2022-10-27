@@ -36,8 +36,6 @@ use Throwable;
 
 use function array_keys;
 use function class_exists;
-use function func_get_arg;
-use function func_num_args;
 use function get_debug_type;
 use function gettype;
 use function is_array;
@@ -696,6 +694,7 @@ class EntityManager implements EntityManagerInterface
      * overriding any local changes that have not yet been persisted.
      *
      * @param object $entity The entity to refresh
+     * @psalm-param LockMode::*|null $lockMode
      *
      * @return void
      *
@@ -703,19 +702,13 @@ class EntityManager implements EntityManagerInterface
      * @throws ORMException
      * @throws TransactionRequiredException
      */
-    public function refresh($entity)
+    public function refresh($entity, ?int $lockMode = null)
     {
         if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#refresh()', $entity);
         }
 
         $this->errorIfClosed();
-
-        $lockMode = null;
-
-        if (func_num_args() === 2) {
-            $lockMode = func_get_arg(1);
-        }
 
         $this->unitOfWork->refresh($entity, $lockMode);
     }

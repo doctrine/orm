@@ -2214,7 +2214,7 @@ class UnitOfWork implements PropertyChangedListener
      * @throws ORMInvalidArgumentException If the entity is not MANAGED.
      * @throws TransactionRequiredException
      */
-    private function doRefresh($entity, array &$visited, $lockMode = null): void
+    private function doRefresh($entity, array &$visited, ?int $lockMode = null): void
     {
         switch (true) {
             case $lockMode === LockMode::PESSIMISTIC_READ:
@@ -2254,7 +2254,7 @@ class UnitOfWork implements PropertyChangedListener
      * @psalm-param array<int, object> $visited
      * @psalm-param LockMode::*|null $lockMode
      */
-    private function cascadeRefresh($entity, array &$visited, $lockMode = null): void
+    private function cascadeRefresh($entity, array &$visited, ?int $lockMode = null): void
     {
         $class = $this->em->getClassMetadata(get_class($entity));
 
