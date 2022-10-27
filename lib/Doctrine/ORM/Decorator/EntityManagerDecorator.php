@@ -214,6 +214,14 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritdoc}
      */
+    public function refresh($object, $lockMode = null)
+    {
+        return $this->wrapped->refresh($object, $lockMode);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getEventManager()
     {
         return $this->wrapped->getEventManager();
