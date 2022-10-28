@@ -8,13 +8,12 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class PostRemoveEventArgs extends LifecycleEventArgs
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     private $identifier;
 
     /**
-     * @param mixed $identifier
+     * @param object $entity
+     * @param mixed  $identifier
      */
     public function __construct($entity, EntityManagerInterface $objectManager, $identifier)
     {
