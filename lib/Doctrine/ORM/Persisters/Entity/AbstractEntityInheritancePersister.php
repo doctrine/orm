@@ -66,15 +66,16 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
      * @param string $tableAlias
      * @param string $joinColumnName
      * @param string $quotedColumnName
+     * @param bool   $isIdentifierColumn
      * @param string $type
      *
      * @return string
      */
-    protected function getSelectJoinColumnSQL($tableAlias, $joinColumnName, $quotedColumnName, $type)
+    protected function getSelectJoinColumnSQL($tableAlias, $joinColumnName, $quotedColumnName, $isIdentifierColumn, $type)
     {
         $columnAlias = $this->getSQLColumnAlias($joinColumnName);
 
-        $this->currentPersisterContext->rsm->addMetaResult('r', $columnAlias, $joinColumnName, false, $type);
+        $this->currentPersisterContext->rsm->addMetaResult('r', $columnAlias, $joinColumnName, $isIdentifierColumn, $type);
 
         return $tableAlias . '.' . $quotedColumnName . ' AS ' . $columnAlias;
     }

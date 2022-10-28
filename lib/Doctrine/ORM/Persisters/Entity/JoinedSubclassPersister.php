@@ -436,13 +436,15 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 ? $this->getSQLTableAlias($mapping['inherited'])
                 : $baseTableAlias;
 
-            $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+            $targetClass  = $this->em->getClassMetadata($mapping['targetEntity']);
+            $isIdentifier = isset($mapping['id']) && $mapping['id'] === true;
 
             foreach ($mapping['joinColumns'] as $joinColumn) {
                 $columnList[] = $this->getSelectJoinColumnSQL(
                     $tableAlias,
                     $joinColumn['name'],
                     $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform),
+                    $isIdentifier,
                     PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em)
                 );
             }
@@ -479,13 +481,15 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     continue;
                 }
 
-                $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+                $targetClass  = $this->em->getClassMetadata($mapping['targetEntity']);
+                $isIdentifier = isset($mapping['id']) && $mapping['id'] === true;
 
                 foreach ($mapping['joinColumns'] as $joinColumn) {
                     $columnList[] = $this->getSelectJoinColumnSQL(
                         $tableAlias,
                         $joinColumn['name'],
                         $this->quoteStrategy->getJoinColumnName($joinColumn, $subClass, $this->platform),
+                        $isIdentifier,
                         PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em)
                     );
                 }
