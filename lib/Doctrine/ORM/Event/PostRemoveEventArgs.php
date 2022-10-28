@@ -19,6 +19,7 @@ final class PostRemoveEventArgs extends LifecycleEventArgs
     public function __construct($entity, EntityManagerInterface $objectManager, $identifier)
     {
         parent::__construct($entity, $objectManager);
+
         $this->identifier = $identifier;
     }
 
