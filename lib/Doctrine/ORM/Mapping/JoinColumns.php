@@ -9,7 +9,7 @@ namespace Doctrine\ORM\Mapping;
  * @NamedArgumentConstructor
  * @Target("PROPERTY")
  */
-final class JoinColumns implements Annotation
+final class JoinColumns implements MappingAttribute
 {
     /** @param array<JoinColumn> $value */
     public function __construct(

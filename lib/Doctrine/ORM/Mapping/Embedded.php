@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Target("PROPERTY")
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Embedded implements Annotation
+final class Embedded implements MappingAttribute
 {
     public function __construct(
         public readonly string|null $class = null,

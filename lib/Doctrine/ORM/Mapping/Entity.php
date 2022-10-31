@@ -15,7 +15,7 @@ use Doctrine\ORM\EntityRepository;
  * @template T of object
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class Entity implements Annotation
+final class Entity implements MappingAttribute
 {
     /** @psalm-param class-string<EntityRepository<T>>|null $repositoryClass */
     public function __construct(

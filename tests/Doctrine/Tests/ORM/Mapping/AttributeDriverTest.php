@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Attribute;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
+use Doctrine\ORM\Mapping\MappingAttribute;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use stdClass;
 
@@ -74,7 +75,7 @@ class AttributeEntityStartingWithRepeatableAttributes
 }
 
 #[Attribute(Attribute::IS_REPEATABLE | Attribute::TARGET_ALL)]
-class AttributeTransientAttribute
+class AttributeTransientAttribute implements MappingAttribute
 {
 }
 

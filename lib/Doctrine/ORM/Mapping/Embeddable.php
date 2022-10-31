@@ -11,6 +11,6 @@ use Attribute;
  * @Target("CLASS")
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class Embeddable implements Annotation
+final class Embeddable implements MappingAttribute
 {
 }

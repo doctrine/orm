@@ -15,7 +15,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Target({"CLASS","PROPERTY"})
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
-final class Cache implements Annotation
+final class Cache implements MappingAttribute
 {
     /** @psalm-param 'READ_ONLY'|'NONSTRICT_READ_WRITE'|'READ_WRITE' $usage */
     public function __construct(

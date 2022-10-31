@@ -24,8 +24,16 @@
                 <!-- Remove on 3.0.x -->
                 <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
                 <referencedClass name="Doctrine\ORM\Event\LifecycleEventArgs"/>
+                <!-- https://github.com/vimeo/psalm/issues/8617 -->
+                <referencedClass name="Doctrine\ORM\Mapping\Annotation"/>
             </errorLevel>
         </DeprecatedClass>
+        <DeprecatedInterface>
+            <errorLevel type="suppress">
+                <!-- Remove on 3.0.x -->
+                <referencedClass name="Doctrine\ORM\Mapping\Annotation"/>
+            </errorLevel>
+        </DeprecatedInterface>
         <DeprecatedMethod>
             <errorLevel type="suppress">
                 <!-- Compatibility with DBAL 3 -->

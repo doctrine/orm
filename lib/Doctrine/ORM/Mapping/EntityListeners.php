@@ -16,7 +16,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Target("CLASS")
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class EntityListeners implements Annotation
+final class EntityListeners implements MappingAttribute
 {
     /** @param array<string> $value */
     public function __construct(

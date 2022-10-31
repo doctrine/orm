@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Target("ANNOTATION")
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-final class Index implements Annotation
+final class Index implements MappingAttribute
 {
     /**
      * @param array<string>|null       $columns

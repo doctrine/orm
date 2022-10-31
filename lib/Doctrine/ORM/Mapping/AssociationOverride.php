@@ -11,7 +11,7 @@ namespace Doctrine\ORM\Mapping;
  * @NamedArgumentConstructor
  * @Target("ANNOTATION")
  */
-final class AssociationOverride implements Annotation
+final class AssociationOverride implements MappingAttribute
 {
     /**
      * The join column that is being mapped to the persistent attribute.

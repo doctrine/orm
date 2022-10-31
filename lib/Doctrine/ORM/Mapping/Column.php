@@ -14,7 +14,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Target({"PROPERTY","ANNOTATION"})
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Column implements Annotation
+final class Column implements MappingAttribute
 {
     /**
      * @param int|null                      $precision The precision for a decimal (exact numeric) column (Applies only for decimal column).

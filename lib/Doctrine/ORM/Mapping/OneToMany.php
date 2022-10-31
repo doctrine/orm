@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Target("PROPERTY")
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class OneToMany implements Annotation
+final class OneToMany implements MappingAttribute
 {
     /**
      * @param class-string|null $targetEntity

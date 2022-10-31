@@ -11,6 +11,6 @@ use Attribute;
  * @Target("METHOD")
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final class PostLoad implements Annotation
+final class PostLoad implements MappingAttribute
 {
 }

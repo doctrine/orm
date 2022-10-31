@@ -11,6 +11,6 @@ use Attribute;
  * @Target("METHOD")
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final class PreFlush implements Annotation
+final class PreFlush implements MappingAttribute
 {
 }

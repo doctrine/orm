@@ -40,14 +40,14 @@ jobs:
         extension:
           - "pdo_sqlite"
         include:
-          - php-version: "8.1"
+          - php-version: "8.2"
             dbal-version: "3@dev"
             extension: "pdo_sqlite"
           - php-version: "8.1"
             dbal-version: "4@dev"
             extension: "pdo_sqlite"
-          - php-version: "8.1"
-            dbal-version: "3@dev"
+          - php-version: "8.2"
+            dbal-version: "default"
             extension: "sqlite3"
 
     steps:
@@ -98,19 +98,19 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.1"
+          - "8.2"
         dbal-version:
           - "default"
+          - "3@dev"
         postgres-version:
-          - "9.6"
-          - "14"
+          - "15"
         include:
-        - php-version: "8.1"
+        - php-version: "8.2"
           dbal-version: "4@dev"
           postgres-version: "14"
         - php-version: "8.2"
-          dbal-version: "3@dev"
-          postgres-version: "14"
+          dbal-version: "default"
+          postgres-version: "9.6"
 
     services:
       postgres:
@@ -164,24 +164,16 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.1"
+          - "8.2"
         dbal-version:
           - "default"
+          - "3@dev"
           - "4@dev"
         mariadb-version:
-          - "10.6"
+          - "10.9"
         extension:
           - "mysqli"
           - "pdo_mysql"
-        include:
-          - php-version: "8.2"
-            dbal-version: "3@dev"
-            mariadb-version: "10.6"
-            extension: "pdo_mysql"
-          - php-version: "8.2"
-            dbal-version: "3@dev"
-            mariadb-version: "10.6"
-            extension: "mysqli"
 
     services:
       mariadb:
@@ -237,9 +229,10 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.1"
+          - "8.2"
         dbal-version:
           - "default"
+          - "3@dev"
         mysql-version:
           - "5.7"
           - "8.0"
@@ -253,14 +246,6 @@ jobs:
             extension: "mysqli"
           - php-version: "8.1"
             dbal-version: "4@dev"
-            mysql-version: "8.0"
-            extension: "pdo_mysql"
-          - php-version: "8.2"
-            dbal-version: "3@dev"
-            mysql-version: "8.0"
-            extension: "mysqli"
-          - php-version: "8.2"
-            dbal-version: "3@dev"
             mysql-version: "8.0"
             extension: "pdo_mysql"
 

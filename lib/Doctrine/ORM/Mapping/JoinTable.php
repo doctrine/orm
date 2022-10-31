@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Target({"PROPERTY","ANNOTATION"})
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class JoinTable implements Annotation
+final class JoinTable implements MappingAttribute
 {
     /** @var array<JoinColumn> */
     public readonly array $joinColumns;

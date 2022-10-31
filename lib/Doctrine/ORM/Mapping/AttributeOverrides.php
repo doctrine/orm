@@ -17,7 +17,7 @@ use function is_array;
  * @Target("CLASS")
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class AttributeOverrides implements Annotation
+final class AttributeOverrides implements MappingAttribute
 {
     /**
      * One or more field or property mapping overrides.

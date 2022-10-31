@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Target("CLASS")
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class InheritanceType implements Annotation
+final class InheritanceType implements MappingAttribute
 {
     /** @psalm-param 'NONE'|'JOINED'|'SINGLE_TABLE'|'TABLE_PER_CLASS' $value */
     public function __construct(

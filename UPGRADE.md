@@ -525,6 +525,10 @@ As a consequence, the following methods are deprecated:
 - `ORMSetup::createAnnotationMetadataConfiguration`
 - `ORMSetup::createDefaultAnnotationDriver`
 
+The marker interface `Doctrine\ORM\Mapping\Annotation` is deprecated as well.
+All annotation/attribute classes implement
+`Doctrine\ORM\Mapping\MappingAttribute` now.
+
 ## Deprecated `Doctrine\ORM\Proxy\Proxy` interface.
 
 Use `Doctrine\Persistence\Proxy` instead to check whether proxies are initialized.

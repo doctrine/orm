@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Target("CLASS")
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class DiscriminatorColumn implements Annotation
+final class DiscriminatorColumn implements MappingAttribute
 {
     public function __construct(
         public readonly string|null $name = null,
