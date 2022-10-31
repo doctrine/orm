@@ -404,15 +404,15 @@ Multiple Metadata Sources
 
 When using different components using Doctrine ORM you may end up
 with them using two different metadata drivers, for example XML and
-YAML. You can use the DriverChain Metadata implementations to
+YAML. You can use the MappingDriverChain Metadata implementations to
 aggregate these drivers based on namespaces:
 
 .. code-block:: php
 
     <?php
-    use Doctrine\ORM\Mapping\Driver\DriverChain;
+    use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 
-    $chain = new DriverChain();
+    $chain = new MappingDriverChain();
     $chain->addDriver($xmlDriver, 'Doctrine\Tests\Models\Company');
     $chain->addDriver($yamlDriver, 'Doctrine\Tests\ORM\Mapping');
 
