@@ -258,9 +258,8 @@
       <code>transactional</code>
       <code>transactional</code>
     </DeprecatedMethod>
-    <MissingParamType occurrences="4">
+    <MissingParamType occurrences="3">
       <code>$entity</code>
-      <code>$lockMode</code>
       <code>$lockMode</code>
       <code>$lockVersion</code>
     </MissingParamType>
