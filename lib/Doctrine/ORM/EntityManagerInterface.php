@@ -17,6 +17,7 @@ use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ObjectManager;
 
+/** @method void refresh(object $object, LockMode|int|null $lockMode = null) */
 interface EntityManagerInterface extends ObjectManager
 {
     /**

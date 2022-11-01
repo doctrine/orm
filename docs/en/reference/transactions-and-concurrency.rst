@@ -372,7 +372,7 @@ Doctrine ORM currently supports two pessimistic lock modes:
    locks other concurrent requests that attempt to update or lock rows
    in write mode.
 
-You can use pessimistic locks in three different scenarios:
+You can use pessimistic locks in four different scenarios:
 
 
 1. Using
@@ -384,6 +384,10 @@ You can use pessimistic locks in three different scenarios:
    or
    ``EntityManager#lock($entity, \Doctrine\DBAL\LockMode::PESSIMISTIC_READ)``
 3. Using
+   ``EntityManager#refresh($entity, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE)``
+   or
+   ``EntityManager#refresh($entity, \Doctrine\DBAL\LockMode::PESSIMISTIC_READ)``
+4. Using
    ``Query#setLockMode(\Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE)``
    or
    ``Query#setLockMode(\Doctrine\DBAL\LockMode::PESSIMISTIC_READ)``

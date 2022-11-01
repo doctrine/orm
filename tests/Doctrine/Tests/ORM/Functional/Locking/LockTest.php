@@ -144,6 +144,21 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->lock($article, LockMode::PESSIMISTIC_WRITE);
     }
 
+    /** @group locking */
+    public function testRefreshWithLockPessimisticWriteNoTransactionThrowsException(): void
+    {
+        $article        = new CmsArticle();
+        $article->text  = 'my article';
+        $article->topic = 'Hello';
+
+        $this->_em->persist($article);
+        $this->_em->flush();
+
+        $this->expectException(TransactionRequiredException::class);
+
+        $this->_em->refresh($article, LockMode::PESSIMISTIC_WRITE);
+    }
+
     /**
      * @group DDC-178
      * @group locking
@@ -166,6 +181,39 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->beginTransaction();
         try {
             $this->_em->lock($article, LockMode::PESSIMISTIC_WRITE);
+            $this->_em->commit();
+        } catch (Exception) {
+            $this->_em->rollback();
+        }
+
+        $lastLoggedQuery = $this->getLastLoggedQuery()['sql'];
+        // DBAL 2 logs a commit as last query.
+        if ($lastLoggedQuery === '"COMMIT"') {
+            $lastLoggedQuery = $this->getLastLoggedQuery(1)['sql'];
+        }
+
+        self::assertStringContainsString($writeLockSql, $lastLoggedQuery);
+    }
+
+    /** @group locking */
+    public function testRefreshWithLockPessimisticWrite(): void
+    {
+        $writeLockSql = $this->_em->getConnection()->getDatabasePlatform()->getWriteLockSQL();
+
+        if (! $writeLockSql) {
+            self::markTestSkipped('Database Driver has no Write Lock support.');
+        }
+
+        $article        = new CmsArticle();
+        $article->text  = 'my article';
+        $article->topic = 'Hello';
+
+        $this->_em->persist($article);
+        $this->_em->flush();
+
+        $this->_em->beginTransaction();
+        try {
+            $this->_em->refresh($article, LockMode::PESSIMISTIC_WRITE);
             $this->_em->commit();
         } catch (Exception) {
             $this->_em->rollback();

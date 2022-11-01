@@ -88,6 +88,9 @@
                 <!-- Persistence 2 compatibility -->
                 <referencedFunction name="Doctrine\Persistence\ObjectManager::clear"/>
 
+                <!-- Remove on 3.0.x -->
+                <referencedFunction name="Doctrine\Persistence\ObjectManager::refresh"/>
+
                 <!-- See https://github.com/doctrine/orm/issues/8850 -->
                 <referencedFunction name="Doctrine\DBAL\Connection::lastInsertId"/>
 

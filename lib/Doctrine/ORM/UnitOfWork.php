@@ -64,6 +64,8 @@ use function array_values;
 use function assert;
 use function count;
 use function current;
+use function func_get_arg;
+use function func_num_args;
 use function get_debug_type;
 use function implode;
 use function in_array;
@@ -1789,23 +1791,40 @@ class UnitOfWork implements PropertyChangedListener
      * any local, unpersisted changes.
      *
      * @throws InvalidArgumentException If the entity is not MANAGED.
+     * @throws TransactionRequiredException
      */
     public function refresh(object $entity): void
     {
         $visited = [];
 
-        $this->doRefresh($entity, $visited);
+        $lockMode = null;
+
+        if (func_num_args() > 1) {
+            $lockMode = func_get_arg(1);
+        }
+
+        $this->doRefresh($entity, $visited, $lockMode);
     }
 
     /**
      * Executes a refresh operation on an entity.
      *
      * @psalm-param array<int, object>  $visited The already visited entities during cascades.
+     * @psalm-param LockMode::*|null $lockMode
      *
      * @throws ORMInvalidArgumentException If the entity is not MANAGED.
+     * @throws TransactionRequiredException
      */
-    private function doRefresh(object $entity, array &$visited): void
+    private function doRefresh(object $entity, array &$visited, LockMode|int|null $lockMode = null): void
     {
+        switch (true) {
+            case $lockMode === LockMode::PESSIMISTIC_READ:
+            case $lockMode === LockMode::PESSIMISTIC_WRITE:
+                if (! $this->em->getConnection()->isTransactionActive()) {
+                    throw TransactionRequiredException::transactionRequired();
+                }
+        }
+
         $oid = spl_object_id($entity);
 
         if (isset($visited[$oid])) {
@@ -1823,17 +1842,19 @@ class UnitOfWork implements PropertyChangedListener
         $this->getEntityPersister($class->name)->refresh(
             array_combine($class->getIdentifierFieldNames(), $this->entityIdentifiers[$oid]),
             $entity,
+            $lockMode,
         );
 
-        $this->cascadeRefresh($entity, $visited);
+        $this->cascadeRefresh($entity, $visited, $lockMode);
     }
 
     /**
      * Cascades a refresh operation to associated entities.
      *
      * @psalm-param array<int, object> $visited
+     * @psalm-param LockMode::*|null $lockMode
      */
-    private function cascadeRefresh(object $entity, array &$visited): void
+    private function cascadeRefresh(object $entity, array &$visited, LockMode|int|null $lockMode = null): void
     {
         $class = $this->em->getClassMetadata($entity::class);
 
@@ -1854,13 +1875,13 @@ class UnitOfWork implements PropertyChangedListener
                 case $relatedEntities instanceof Collection:
                 case is_array($relatedEntities):
                     foreach ($relatedEntities as $relatedEntity) {
-                        $this->doRefresh($relatedEntity, $visited);
+                        $this->doRefresh($relatedEntity, $visited, $lockMode);
                     }
 
                     break;
 
                 case $relatedEntities !== null:
-                    $this->doRefresh($relatedEntities, $visited);
+                    $this->doRefresh($relatedEntities, $visited, $lockMode);
                     break;
 
                 default:
