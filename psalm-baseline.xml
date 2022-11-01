@@ -269,9 +269,10 @@
     <MoreSpecificImplementedParamType occurrences="1">
       <code>$className</code>
     </MoreSpecificImplementedParamType>
-    <TooManyArguments occurrences="2">
+    <TooManyArguments occurrences="3">
       <code>find</code>
       <code>flush</code>
+      <code>refresh</code>
     </TooManyArguments>
   </file>
   <file src="lib/Doctrine/ORM/EntityManager.php">
