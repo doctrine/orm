@@ -2197,7 +2197,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $lockMode = null;
 
-        if (func_num_args() === 2) {
+        if (func_num_args() > 1) {
             $lockMode = func_get_arg(1);
         }
 
