@@ -64,8 +64,6 @@ use function array_values;
 use function assert;
 use function count;
 use function current;
-use function func_get_arg;
-use function func_num_args;
 use function get_debug_type;
 use function implode;
 use function in_array;
@@ -1790,18 +1788,14 @@ class UnitOfWork implements PropertyChangedListener
      * Refreshes the state of the given entity from the database, overwriting
      * any local, unpersisted changes.
      *
+     * @psalm-param LockMode::*|null $lockMode
+     *
      * @throws InvalidArgumentException If the entity is not MANAGED.
      * @throws TransactionRequiredException
      */
-    public function refresh(object $entity): void
+    public function refresh(object $entity, LockMode|int|null $lockMode = null): void
     {
         $visited = [];
-
-        $lockMode = null;
-
-        if (func_num_args() > 1) {
-            $lockMode = func_get_arg(1);
-        }
 
         $this->doRefresh($entity, $visited, $lockMode);
     }

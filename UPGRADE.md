@@ -1,5 +1,10 @@
 # Upgrade to 3.0
 
+## BC BREAK: Changed `EntityManagerInterface#refresh($entity)`, `EntityManagerDecorator#refresh($entity)` and `UnitOfWork#refresh($entity)` signatures
+
+The new signatures of these methods add an optional `LockMode|int|null $lockMode`
+param with default `null` value (no lock).
+
 ## BC Break: Removed AnnotationDriver
 
 The annotation driver and anything related to annotation has been removed.

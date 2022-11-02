@@ -496,16 +496,6 @@ class EntityManager implements EntityManagerInterface
         $this->unitOfWork->remove($object);
     }
 
-    /**
-     * Refreshes the persistent state of an entity from the database,
-     * overriding any local changes that have not yet been persisted.
-     *
-     * @psalm-param LockMode::*|null $lockMode
-     *
-     * @throws ORMInvalidArgumentException
-     * @throws ORMException
-     * @throws TransactionRequiredException
-     */
     public function refresh(object $object, LockMode|int|null $lockMode = null): void
     {
         $this->errorIfClosed();
