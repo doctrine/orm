@@ -201,9 +201,9 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
         $this->realEntityManager->detach($object);
     }
 
-    public function refresh(object $object): void
+    public function refresh(object $object, LockMode|int|null $lockMode = null): void
     {
-        $this->realEntityManager->refresh($object);
+        $this->realEntityManager->refresh($object, $lockMode);
     }
 
     public function flush(): void

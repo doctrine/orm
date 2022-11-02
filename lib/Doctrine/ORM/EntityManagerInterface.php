@@ -17,7 +17,6 @@ use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ObjectManager;
 
-/** @method void refresh(object $object, LockMode|int|null $lockMode = null) */
 interface EntityManagerInterface extends ObjectManager
 {
     /**
@@ -132,6 +131,21 @@ interface EntityManagerInterface extends ObjectManager
      * @template T of object
      */
     public function find(string $className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): object|null;
+
+    /**
+     * Refreshes the persistent state of an object from the database,
+     * overriding any local changes that have not yet been persisted.
+     *
+     * @param LockMode|int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
+     *                                    or NULL if no specific lock mode should be used
+     *                                    during the search.
+     * @psalm-param LockMode::*|null $lockMode
+     *
+     * @throws ORMInvalidArgumentException
+     * @throws ORMException
+     * @throws TransactionRequiredException
+     */
+    public function refresh(object $object, LockMode|int|null $lockMode = null): void;
 
     /**
      * Gets a reference to the entity identified by the given type and identifier

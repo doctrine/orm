@@ -24,9 +24,6 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\ObjectManagerDecorator;
 
-use function func_get_arg;
-use function func_num_args;
-
 /**
  * Base class for EntityManager decorators
  *
@@ -133,14 +130,8 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         return $this->wrapped->find($className, $id, $lockMode, $lockVersion);
     }
 
-    public function refresh(object $object): void
+    public function refresh(object $object, LockMode|int|null $lockMode = null): void
     {
-        $lockMode = null;
-
-        if (func_num_args() > 1) {
-            $lockMode = func_get_arg(1);
-        }
-
         $this->wrapped->refresh($object, $lockMode);
     }
 
