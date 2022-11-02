@@ -139,6 +139,38 @@ class EnumTest extends OrmFunctionalTestCase
         $this->assertEquals(Suit::Clubs, $result[0]['suit']);
     }
 
+    public function testEnumsInOriginalEntityData(): void
+    {
+        $this->setUpEntitySchema([Card::class, CardWithNullable::class]);
+
+        $card       = new Card();
+        $card->suit = Suit::Clubs;
+
+        $this->_em->persist($card);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(Card::class, 'c')
+            ->select('c')
+            ->getQuery()
+            ->getResult(AbstractQuery::HYDRATE_OBJECT);
+
+        $originalEntityData = $this->_em->getUnitOfWork()->getOriginalEntityData($result[0]);
+        $this->assertInstanceOf(Suit::class, $originalEntityData['suit']);
+
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(Card::class, 'c')
+            ->select('c')
+            ->getQuery()
+            ->getResult(AbstractQuery::HYDRATE_SIMPLEOBJECT);
+
+        $originalEntityData = $this->_em->getUnitOfWork()->getOriginalEntityData($result[0]);
+        $this->assertInstanceOf(Suit::class, $originalEntityData['suit']);
+    }
+
     public function testEnumHydrationArrayHydrator(): void
     {
         $this->setUpEntitySchema([Card::class, CardWithNullable::class]);
