@@ -319,9 +319,9 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function refresh($object)
+    public function refresh($object, ?int $lockMode = null)
     {
-        $this->realEntityManager->refresh($object);
+        $this->realEntityManager->refresh($object, $lockMode);
     }
 
     /**
