@@ -9,9 +9,6 @@ parameters:
 
         # Fallback logic for DBAL 2
         -
-            message: '/HelperSet constructor expects/'
-            path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
-        -
             message: '/Application::add\(\) expects Symfony\\Component\\Console\\Command\\Command/'
             path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
 
