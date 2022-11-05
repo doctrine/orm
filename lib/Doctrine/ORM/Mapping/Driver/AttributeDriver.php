@@ -9,6 +9,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\MappingAttribute;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
@@ -30,7 +31,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 {
     use ColocatedMappingDriver;
 
-    /** @var array<string,int> */
+    /** @var array<class-string<MappingAttribute>, int> */
     // @phpcs:ignore
     protected $entityAnnotationClasses = [
         Mapping\Entity::class => 1,
