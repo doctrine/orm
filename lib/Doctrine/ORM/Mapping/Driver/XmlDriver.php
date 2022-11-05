@@ -966,7 +966,7 @@ class XmlDriver extends FileDriver
         foreach ($cascadeElement->children() as $action) {
             // According to the JPA specifications, XML uses "cascade-persist"
             // instead of "persist". Here, both variations
-            // are supported because both YAML and Annotation use "persist"
+            // are supported because YAML, Annotation and Attribute use "persist"
             // and we want to make sure that this driver doesn't need to know
             // anything about the supported cascading actions
             $cascades[] = str_replace('cascade-', '', $action->getName());
