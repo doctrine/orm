@@ -84,9 +84,9 @@ class AttributeDriver extends CompatibilityAnnotationDriver
      */
     public function isTransient($className)
     {
-        $classAnnotations = $this->reader->getClassAnnotations(new ReflectionClass($className));
+        $classAttributes = $this->reader->getClassAttributes(new ReflectionClass($className));
 
-        foreach ($classAnnotations as $a) {
+        foreach ($classAttributes as $a) {
             $annot = $a instanceof RepeatableAttributeCollection ? $a[0] : $a;
             if (isset($this->entityAnnotationClasses[get_class($annot)])) {
                 return false;
@@ -111,7 +111,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
             // static reflection services. This is not the nicest fix
             ?? new ReflectionClass($metadata->name);
 
-        $classAttributes = $this->reader->getClassAnnotations($reflectionClass);
+        $classAttributes = $this->reader->getClassAttributes($reflectionClass);
 
         // Evaluate Entity annotation
         if (isset($classAttributes[Mapping\Entity::class])) {
@@ -294,7 +294,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
             $mapping['fieldName'] = $property->getName();
 
             // Evaluate @Cache annotation
-            $cacheAttribute = $this->reader->getPropertyAnnotation($property, Mapping\Cache::class);
+            $cacheAttribute = $this->reader->getPropertyAttribute($property, Mapping\Cache::class);
             if ($cacheAttribute !== null) {
                 assert($cacheAttribute instanceof Mapping\Cache);
 
@@ -310,7 +310,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
             // Check for JoinColumn/JoinColumns annotations
             $joinColumns = [];
 
-            $joinColumnAttributes = $this->reader->getPropertyAnnotationCollection($property, Mapping\JoinColumn::class);
+            $joinColumnAttributes = $this->reader->getPropertyAttributeCollection($property, Mapping\JoinColumn::class);
 
             foreach ($joinColumnAttributes as $joinColumnAttribute) {
                 $joinColumns[] = $this->joinColumnToArray($joinColumnAttribute);
@@ -318,35 +318,35 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 
             // Field can only be attributed with one of:
             // Column, OneToOne, OneToMany, ManyToOne, ManyToMany, Embedded
-            $columnAttribute     = $this->reader->getPropertyAnnotation($property, Mapping\Column::class);
-            $oneToOneAttribute   = $this->reader->getPropertyAnnotation($property, Mapping\OneToOne::class);
-            $oneToManyAttribute  = $this->reader->getPropertyAnnotation($property, Mapping\OneToMany::class);
-            $manyToOneAttribute  = $this->reader->getPropertyAnnotation($property, Mapping\ManyToOne::class);
-            $manyToManyAttribute = $this->reader->getPropertyAnnotation($property, Mapping\ManyToMany::class);
-            $embeddedAttribute   = $this->reader->getPropertyAnnotation($property, Mapping\Embedded::class);
+            $columnAttribute     = $this->reader->getPropertyAttribute($property, Mapping\Column::class);
+            $oneToOneAttribute   = $this->reader->getPropertyAttribute($property, Mapping\OneToOne::class);
+            $oneToManyAttribute  = $this->reader->getPropertyAttribute($property, Mapping\OneToMany::class);
+            $manyToOneAttribute  = $this->reader->getPropertyAttribute($property, Mapping\ManyToOne::class);
+            $manyToManyAttribute = $this->reader->getPropertyAttribute($property, Mapping\ManyToMany::class);
+            $embeddedAttribute   = $this->reader->getPropertyAttribute($property, Mapping\Embedded::class);
 
             if ($columnAttribute !== null) {
                 $mapping = $this->columnToArray($property->getName(), $columnAttribute);
 
-                if ($this->reader->getPropertyAnnotation($property, Mapping\Id::class)) {
+                if ($this->reader->getPropertyAttribute($property, Mapping\Id::class)) {
                     $mapping['id'] = true;
                 }
 
-                $generatedValueAttribute = $this->reader->getPropertyAnnotation($property, Mapping\GeneratedValue::class);
+                $generatedValueAttribute = $this->reader->getPropertyAttribute($property, Mapping\GeneratedValue::class);
 
                 if ($generatedValueAttribute !== null) {
                     $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatedValueAttribute->strategy));
                 }
 
-                if ($this->reader->getPropertyAnnotation($property, Mapping\Version::class)) {
+                if ($this->reader->getPropertyAttribute($property, Mapping\Version::class)) {
                     $metadata->setVersionMapping($mapping);
                 }
 
                 $metadata->mapField($mapping);
 
                 // Check for SequenceGenerator/TableGenerator definition
-                $seqGeneratorAttribute    = $this->reader->getPropertyAnnotation($property, Mapping\SequenceGenerator::class);
-                $customGeneratorAttribute = $this->reader->getPropertyAnnotation($property, Mapping\CustomIdGenerator::class);
+                $seqGeneratorAttribute    = $this->reader->getPropertyAttribute($property, Mapping\SequenceGenerator::class);
+                $customGeneratorAttribute = $this->reader->getPropertyAttribute($property, Mapping\CustomIdGenerator::class);
 
                 if ($seqGeneratorAttribute !== null) {
                     $metadata->setSequenceGeneratorDefinition(
@@ -364,7 +364,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
                     );
                 }
             } elseif ($oneToOneAttribute !== null) {
-                if ($this->reader->getPropertyAnnotation($property, Mapping\Id::class)) {
+                if ($this->reader->getPropertyAttribute($property, Mapping\Id::class)) {
                     $mapping['id'] = true;
                 }
 
@@ -384,7 +384,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
                 $mapping['orphanRemoval'] = $oneToManyAttribute->orphanRemoval;
                 $mapping['fetch']         = $this->getFetchMode($className, $oneToManyAttribute->fetch);
 
-                $orderByAttribute = $this->reader->getPropertyAnnotation($property, Mapping\OrderBy::class);
+                $orderByAttribute = $this->reader->getPropertyAttribute($property, Mapping\OrderBy::class);
 
                 if ($orderByAttribute !== null) {
                     $mapping['orderBy'] = $orderByAttribute->value;
@@ -392,7 +392,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 
                 $metadata->mapOneToMany($mapping);
             } elseif ($manyToOneAttribute !== null) {
-                $idAttribute = $this->reader->getPropertyAnnotation($property, Mapping\Id::class);
+                $idAttribute = $this->reader->getPropertyAttribute($property, Mapping\Id::class);
 
                 if ($idAttribute !== null) {
                     $mapping['id'] = true;
@@ -406,7 +406,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
                 $metadata->mapManyToOne($mapping);
             } elseif ($manyToManyAttribute !== null) {
                 $joinTable          = [];
-                $joinTableAttribute = $this->reader->getPropertyAnnotation($property, Mapping\JoinTable::class);
+                $joinTableAttribute = $this->reader->getPropertyAttribute($property, Mapping\JoinTable::class);
 
                 if ($joinTableAttribute !== null) {
                     $joinTable = [
@@ -419,11 +419,11 @@ class AttributeDriver extends CompatibilityAnnotationDriver
                     }
                 }
 
-                foreach ($this->reader->getPropertyAnnotationCollection($property, Mapping\JoinColumn::class) as $joinColumn) {
+                foreach ($this->reader->getPropertyAttributeCollection($property, Mapping\JoinColumn::class) as $joinColumn) {
                     $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
                 }
 
-                foreach ($this->reader->getPropertyAnnotationCollection($property, Mapping\InverseJoinColumn::class) as $joinColumn) {
+                foreach ($this->reader->getPropertyAttributeCollection($property, Mapping\InverseJoinColumn::class) as $joinColumn) {
                     $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumn);
                 }
 
@@ -436,7 +436,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
                 $mapping['orphanRemoval'] = $manyToManyAttribute->orphanRemoval;
                 $mapping['fetch']         = $this->getFetchMode($className, $manyToManyAttribute->fetch);
 
-                $orderByAttribute = $this->reader->getPropertyAnnotation($property, Mapping\OrderBy::class);
+                $orderByAttribute = $this->reader->getPropertyAttribute($property, Mapping\OrderBy::class);
 
                 if ($orderByAttribute !== null) {
                     $mapping['orderBy'] = $orderByAttribute->value;
@@ -604,7 +604,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
     private function getMethodCallbacks(ReflectionMethod $method): array
     {
         $callbacks  = [];
-        $attributes = $this->reader->getMethodAnnotations($method);
+        $attributes = $this->reader->getMethodAttributes($method);
 
         foreach ($attributes as $attribute) {
             if ($attribute instanceof Mapping\PrePersist) {
