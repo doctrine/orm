@@ -38,7 +38,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
     ];
 
     /**
-     * The annotation reader.
+     * The attribute reader.
      *
      * @internal this property will be private in 3.0
      *
@@ -87,8 +87,8 @@ class AttributeDriver extends CompatibilityAnnotationDriver
         $classAttributes = $this->reader->getClassAttributes(new ReflectionClass($className));
 
         foreach ($classAttributes as $a) {
-            $annot = $a instanceof RepeatableAttributeCollection ? $a[0] : $a;
-            if (isset($this->entityAnnotationClasses[get_class($annot)])) {
+            $attr = $a instanceof RepeatableAttributeCollection ? $a[0] : $a;
+            if (isset($this->entityAnnotationClasses[get_class($attr)])) {
                 return false;
             }
         }
@@ -107,13 +107,13 @@ class AttributeDriver extends CompatibilityAnnotationDriver
     public function loadMetadataForClass($className, PersistenceClassMetadata $metadata): void
     {
         $reflectionClass = $metadata->getReflectionClass()
-            // this happens when running annotation driver in combination with
+            // this happens when running attribute driver in combination with
             // static reflection services. This is not the nicest fix
             ?? new ReflectionClass($metadata->name);
 
         $classAttributes = $this->reader->getClassAttributes($reflectionClass);
 
-        // Evaluate Entity annotation
+        // Evaluate Entity attribute
         if (isset($classAttributes[Mapping\Entity::class])) {
             $entityAttribute = $classAttributes[Mapping\Entity::class];
             if ($entityAttribute->repositoryClass !== null) {
@@ -226,7 +226,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 
         $metadata->setPrimaryTable($primaryTable);
 
-        // Evaluate @Cache annotation
+        // Evaluate #[Cache] attribute
         if (isset($classAttributes[Mapping\Cache::class])) {
             $cacheAttribute = $classAttributes[Mapping\Cache::class];
             $cacheMap       = [
@@ -237,7 +237,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
             $metadata->enableCache($cacheMap);
         }
 
-        // Evaluate InheritanceType annotation
+        // Evaluate InheritanceType attribute
         if (isset($classAttributes[Mapping\InheritanceType::class])) {
             $inheritanceTypeAttribute = $classAttributes[Mapping\InheritanceType::class];
 
@@ -246,7 +246,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
             );
 
             if ($metadata->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
-                // Evaluate DiscriminatorColumn annotation
+                // Evaluate DiscriminatorColumn attribute
                 if (isset($classAttributes[Mapping\DiscriminatorColumn::class])) {
                     $discrColumnAttribute = $classAttributes[Mapping\DiscriminatorColumn::class];
 
@@ -262,7 +262,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
                     $metadata->setDiscriminatorColumn(['name' => 'dtype', 'type' => 'string', 'length' => 255]);
                 }
 
-                // Evaluate DiscriminatorMap annotation
+                // Evaluate DiscriminatorMap attribute
                 if (isset($classAttributes[Mapping\DiscriminatorMap::class])) {
                     $discrMapAttribute = $classAttributes[Mapping\DiscriminatorMap::class];
                     $metadata->setDiscriminatorMap($discrMapAttribute->value);
@@ -270,7 +270,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
             }
         }
 
-        // Evaluate DoctrineChangeTrackingPolicy annotation
+        // Evaluate DoctrineChangeTrackingPolicy attribute
         if (isset($classAttributes[Mapping\ChangeTrackingPolicy::class])) {
             $changeTrackingAttribute = $classAttributes[Mapping\ChangeTrackingPolicy::class];
             $metadata->setChangeTrackingPolicy(constant('Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_' . $changeTrackingAttribute->value));
@@ -293,7 +293,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
             $mapping              = [];
             $mapping['fieldName'] = $property->getName();
 
-            // Evaluate @Cache annotation
+            // Evaluate #[Cache] attribute
             $cacheAttribute = $this->reader->getPropertyAttribute($property, Mapping\Cache::class);
             if ($cacheAttribute !== null) {
                 assert($cacheAttribute instanceof Mapping\Cache);
@@ -307,7 +307,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
                 );
             }
 
-            // Check for JoinColumn/JoinColumns annotations
+            // Check for JoinColumn/JoinColumns attributes
             $joinColumns = [];
 
             $joinColumnAttributes = $this->reader->getPropertyAttributeCollection($property, Mapping\JoinColumn::class);
@@ -509,7 +509,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
             }
         }
 
-        // Evaluate AttributeOverrides annotation
+        // Evaluate AttributeOverrides attribute
         if (isset($classAttributes[Mapping\AttributeOverrides::class])) {
             $attributeOverridesAnnot = $classAttributes[Mapping\AttributeOverrides::class];
 
@@ -520,7 +520,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
             }
         }
 
-        // Evaluate EntityListeners annotation
+        // Evaluate EntityListeners attribute
         if (isset($classAttributes[Mapping\EntityListeners::class])) {
             $entityListenersAttribute = $classAttributes[Mapping\EntityListeners::class];
 
@@ -552,7 +552,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
             }
         }
 
-        // Evaluate @HasLifecycleCallbacks annotation
+        // Evaluate #[HasLifecycleCallbacks] attribute
         if (isset($classAttributes[Mapping\HasLifecycleCallbacks::class])) {
             foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                 assert($method instanceof ReflectionMethod);
