@@ -2703,8 +2703,7 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>$classToExtend</code>
     </PropertyNotSetInConstructor>
-    <RedundantCastGivenDocblockType occurrences="2">
-      <code>(array) $metadata-&gt;table['options']</code>
+    <RedundantCastGivenDocblockType occurrences="1">
       <code>(bool) $embeddablesImmutable</code>
     </RedundantCastGivenDocblockType>
     <RedundantConditionGivenDocblockType occurrences="1">
