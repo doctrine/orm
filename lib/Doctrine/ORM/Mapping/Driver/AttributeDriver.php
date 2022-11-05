@@ -31,11 +31,17 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 {
     use ColocatedMappingDriver;
 
-    /** @var array<class-string<MappingAttribute>, int> */
-    protected $entityAnnotationClasses = [
+    private const ENTITY_ATTRIBUTE_CLASSES = [
         Mapping\Entity::class => 1,
         Mapping\MappedSuperclass::class => 2,
     ];
+
+    /**
+     * @deprecated override isTransient() instead of overriding this property
+     *
+     * @var array<class-string<MappingAttribute>, int>
+     */
+    protected $entityAnnotationClasses = self::ENTITY_ATTRIBUTE_CLASSES;
 
     /**
      * The attribute reader.
@@ -58,6 +64,15 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 
         $this->reader = new AttributeReader();
         $this->addPaths($paths);
+
+        if ($this->entityAnnotationClasses !== self::ENTITY_ATTRIBUTE_CLASSES) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/10204',
+                'Changing the value of %s::$entityAnnotationClasses is deprecated and will have no effect in Doctrine ORM 3.0.',
+                self::class
+            );
+        }
     }
 
     /**

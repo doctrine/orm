@@ -92,6 +92,7 @@
         <DeprecatedProperty>
             <errorLevel type="suppress">
                 <referencedProperty name="Doctrine\ORM\Cache\Region\DefaultRegion::$cache"/>
+                <referencedProperty name="Doctrine\ORM\Mapping\Driver\AttributeDriver::$entityAnnotationClasses"/>
             </errorLevel>
         </DeprecatedProperty>
         <DocblockTypeContradiction>
