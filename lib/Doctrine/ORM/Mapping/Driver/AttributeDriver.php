@@ -32,7 +32,6 @@ class AttributeDriver extends CompatibilityAnnotationDriver
     use ColocatedMappingDriver;
 
     /** @var array<class-string<MappingAttribute>, int> */
-    // @phpcs:ignore
     protected $entityAnnotationClasses = [
         Mapping\Entity::class => 1,
         Mapping\MappedSuperclass::class => 2,
