@@ -652,13 +652,8 @@ parameters:
 
 		-
 			message: "#^If condition is always true\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php
-
-		-
-			message: "#^Left side of && is always true\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
+			path: lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php
 
 		-
 			message: "#^Offset 'name' on array\\{name\\: string, schema\\?\\: string, indexes\\?\\: array, uniqueConstraints\\?\\: array, options\\?\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"

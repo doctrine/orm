@@ -2782,9 +2782,7 @@
       <code>$associationMapping['joinColumns']</code>
       <code>$associationMapping['orphanRemoval']</code>
     </PossiblyUndefinedArrayOffset>
-    <RedundantConditionGivenDocblockType occurrences="4">
-      <code>$metadata-&gt;inheritanceType</code>
-      <code>$metadata-&gt;inheritanceType</code>
+    <RedundantConditionGivenDocblockType occurrences="2">
       <code>$metadata-&gt;table</code>
       <code>$metadata-&gt;table</code>
     </RedundantConditionGivenDocblockType>
@@ -2810,9 +2808,7 @@
       <code>$field['associationKey']</code>
       <code>isset($field['associationKey']) &amp;&amp; $field['associationKey']</code>
     </RedundantCondition>
-    <RedundantConditionGivenDocblockType occurrences="3">
-      <code>$metadata-&gt;inheritanceType</code>
-      <code>$metadata-&gt;inheritanceType</code>
+    <RedundantConditionGivenDocblockType occurrences="1">
       <code>isset($metadata-&gt;lifecycleCallbacks)</code>
     </RedundantConditionGivenDocblockType>
   </file>
