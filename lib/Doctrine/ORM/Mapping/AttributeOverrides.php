@@ -9,13 +9,7 @@ use Attribute;
 use function array_values;
 use function is_array;
 
-/**
- * This attribute is used to override the mapping of a entity property.
- *
- * @Annotation
- * @NamedArgumentConstructor()
- * @Target("CLASS")
- */
+/** This attribute is used to override the mapping of a entity property. */
 #[Attribute(Attribute::TARGET_CLASS)]
 final class AttributeOverrides implements MappingAttribute
 {

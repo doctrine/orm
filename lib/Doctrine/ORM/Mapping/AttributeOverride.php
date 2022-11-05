@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-/**
- * This attribute is used to override the mapping of a entity property.
- *
- * @Annotation
- * @NamedArgumentConstructor
- * @Target("ANNOTATION")
- */
+/** This attribute is used to override the mapping of a entity property. */
 final class AttributeOverride implements MappingAttribute
 {
     public function __construct(
