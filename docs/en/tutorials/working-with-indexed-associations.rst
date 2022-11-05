@@ -24,7 +24,6 @@ Mapping Indexed Associations
 You can map indexed associations by adding:
 
     * ``indexBy`` argument to any ``#[OneToMany]`` or ``#[ManyToMany]`` attribute.
-    * ``indexBy`` attribute to any ``@OneToMany`` or ``@ManyToMany`` annotation.
     * ``index-by`` attribute to any ``<one-to-many />`` or ``<many-to-many />`` xml element.
 
 The code and mappings for the Market entity looks like this:
