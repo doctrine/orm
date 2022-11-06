@@ -1,5 +1,10 @@
 # Upgrade to 2.14
 
+## Deprecated `AttributeDriver::$entityAnnotationClasses`
+
+If you need to change the behavior of `AttributeDriver::isTransient()`,
+override that method instead.
+
 ## Deprecated incomplete schema updates
 
 Using `orm:schema-tool:update` without passing the `--complete` flag is
