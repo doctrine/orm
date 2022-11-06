@@ -54,27 +54,27 @@ final class AttributeReader
     }
 
     /**
-     * @param class-string<T> $annotationName The name of the annotation.
+     * @param class-string<T> $attributeName The name of the annotation.
      *
      * @return T|null
      *
      * @template T of Annotation
      */
-    public function getPropertyAttribute(ReflectionProperty $property, $annotationName)
+    public function getPropertyAttribute(ReflectionProperty $property, $attributeName)
     {
-        if ($this->isRepeatable($annotationName)) {
+        if ($this->isRepeatable($attributeName)) {
             throw new LogicException(sprintf(
                 'The attribute "%s" is repeatable. Call getPropertyAttributeCollection() instead.',
-                $annotationName
+                $attributeName
             ));
         }
 
-        return $this->getPropertyAttributes($property)[$annotationName]
-            ?? ($this->isRepeatable($annotationName) ? new RepeatableAttributeCollection() : null);
+        return $this->getPropertyAttributes($property)[$attributeName]
+            ?? ($this->isRepeatable($attributeName) ? new RepeatableAttributeCollection() : null);
     }
 
     /**
-     * @param class-string<T> $annotationName The name of the annotation.
+     * @param class-string<T> $attributeName The name of the annotation.
      *
      * @return RepeatableAttributeCollection<T>
      *
@@ -82,16 +82,16 @@ final class AttributeReader
      */
     public function getPropertyAttributeCollection(
         ReflectionProperty $property,
-        string $annotationName
+        string $attributeName
     ): RepeatableAttributeCollection {
-        if (! $this->isRepeatable($annotationName)) {
+        if (! $this->isRepeatable($attributeName)) {
             throw new LogicException(sprintf(
                 'The attribute "%s" is not repeatable. Call getPropertyAttribute() instead.',
-                $annotationName
+                $attributeName
             ));
         }
 
-        return $this->getPropertyAttributes($property)[$annotationName] ?? new RepeatableAttributeCollection();
+        return $this->getPropertyAttributes($property)[$attributeName] ?? new RepeatableAttributeCollection();
     }
 
     /**
