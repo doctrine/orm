@@ -566,8 +566,8 @@ class AttributeDriver extends CompatibilityAnnotationDriver
     /**
      * Attempts to resolve the fetch mode.
      *
-     * @param string $className The class name.
-     * @param string $fetchMode The fetch mode.
+     * @param class-string $className The class name.
+     * @param string       $fetchMode The fetch mode.
      *
      * @return ClassMetadata::FETCH_* The fetch mode as defined in ClassMetadata.
      *

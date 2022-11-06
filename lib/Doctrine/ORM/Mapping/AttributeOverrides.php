@@ -10,7 +10,7 @@ use function array_values;
 use function is_array;
 
 /**
- * This annotation is used to override the mapping of a entity property.
+ * This attribute is used to override the mapping of a entity property.
  *
  * @Annotation
  * @NamedArgumentConstructor()

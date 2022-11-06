@@ -546,8 +546,9 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
     }
 
     /**
-     * @param mixed[] $joinColumns
-     * @psalm-param array<string, mixed> $mapping
+     * @param mixed[]              $joinColumns
+     * @param class-string         $className
+     * @param array<string, mixed> $mapping
      */
     private function loadRelationShipMapping(
         ReflectionProperty $property,
@@ -659,6 +660,8 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
 
     /**
      * Attempts to resolve the fetch mode.
+     *
+     * @param class-string $className
      *
      * @psalm-return ClassMetadata::FETCH_* The fetch mode as defined in ClassMetadata.
      *
