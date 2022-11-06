@@ -8,8 +8,8 @@ use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
 /**
- * The EntityListeners annotation specifies the callback listener classes to be used for an entity or mapped superclass.
- * The EntityListeners annotation may be applied to an entity class or mapped superclass.
+ * The EntityListeners attribute specifies the callback listener classes to be used for an entity or mapped superclass.
+ * The EntityListeners attribute may be applied to an entity class or mapped superclass.
  *
  * @Annotation
  * @NamedArgumentConstructor()

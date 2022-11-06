@@ -10,7 +10,7 @@ use function array_values;
 use function is_array;
 
 /**
- * This annotation is used to override association mappings of relationship properties.
+ * This attribute is used to override association mappings of relationship properties.
  *
  * @Annotation
  * @NamedArgumentConstructor()

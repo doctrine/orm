@@ -16,26 +16,26 @@ use ReflectionProperty;
 
 class AttributeReaderTest extends TestCase
 {
-    public function testItThrowsWhenGettingRepeatableAnnotationWithTheWrongMethod(): void
+    public function testItThrowsWhenGettingRepeatableAttributeWithTheWrongMethod(): void
     {
         $reader   = new AttributeReader();
         $property = new ReflectionProperty(TestEntity::class, 'id');
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage(
-            'The attribute "Doctrine\ORM\Mapping\Index" is repeatable. Call getPropertyAnnotationCollection() instead.',
+            'The attribute "Doctrine\ORM\Mapping\Index" is repeatable. Call getPropertyAttributeCollection() instead.',
         );
-        $reader->getPropertyAnnotation($property, ORM\Index::class);
+        $reader->getPropertyAttribute($property, ORM\Index::class);
     }
 
-    public function testItThrowsWhenGettingNonRepeatableAnnotationWithTheWrongMethod(): void
+    public function testItThrowsWhenGettingNonRepeatableAttributeWithTheWrongMethod(): void
     {
         $reader   = new AttributeReader();
         $property = new ReflectionProperty(TestEntity::class, 'id');
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage(
-            'The attribute "Doctrine\ORM\Mapping\Id" is not repeatable. Call getPropertyAnnotation() instead.',
+            'The attribute "Doctrine\ORM\Mapping\Id" is not repeatable. Call getPropertyAttribute() instead.',
         );
-        $reader->getPropertyAnnotationCollection($property, ORM\Id::class);
+        $reader->getPropertyAttributeCollection($property, ORM\Id::class);
     }
 
     public function testJoinTableOptions(): void
@@ -43,7 +43,7 @@ class AttributeReaderTest extends TestCase
         $reader   = new AttributeReader();
         $property = new ReflectionProperty(TestEntity::class, 'tags');
 
-        $joinTable = $reader->getPropertyAnnotation($property, ORM\JoinTable::class);
+        $joinTable = $reader->getPropertyAttribute($property, ORM\JoinTable::class);
         self::assertSame([
             'charset' => 'ascii',
             'collation' => 'ascii_general_ci',
@@ -55,14 +55,14 @@ class AttributeReaderTest extends TestCase
         $reader   = new AttributeReader();
         $property = new ReflectionProperty(TestEntity::class, 'tags');
 
-        $joinColumns = $reader->getPropertyAnnotationCollection($property, ORM\JoinColumn::class);
+        $joinColumns = $reader->getPropertyAttributeCollection($property, ORM\JoinColumn::class);
         self::assertCount(1, $joinColumns);
         self::assertSame([
             'charset' => 'latin1',
             'collation' => 'latin1_swedish_ci',
         ], $joinColumns[0]->options);
 
-        $inverseJoinColumns = $reader->getPropertyAnnotationCollection($property, ORM\InverseJoinColumn::class);
+        $inverseJoinColumns = $reader->getPropertyAttributeCollection($property, ORM\InverseJoinColumn::class);
         self::assertCount(1, $inverseJoinColumns);
         self::assertSame([
             'charset' => 'utf8mb4',
