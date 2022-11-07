@@ -5,13 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
-/**
- * @Annotation
- * @NamedArgumentConstructor()
- * @Target("ANNOTATION")
- */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 final class Index implements MappingAttribute
 {

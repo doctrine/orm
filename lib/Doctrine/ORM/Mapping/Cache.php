@@ -5,15 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
-/**
- * Caching to an entity or a collection.
- *
- * @Annotation
- * @NamedArgumentConstructor()
- * @Target({"CLASS","PROPERTY"})
- */
+/** Caching to an entity or a collection. */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
 final class Cache implements MappingAttribute
 {

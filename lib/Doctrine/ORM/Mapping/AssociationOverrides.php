@@ -9,13 +9,7 @@ use Attribute;
 use function array_values;
 use function is_array;
 
-/**
- * This attribute is used to override association mappings of relationship properties.
- *
- * @Annotation
- * @NamedArgumentConstructor()
- * @Target("CLASS")
- */
+/** This attribute is used to override association mappings of relationship properties. */
 #[Attribute(Attribute::TARGET_CLASS)]
 final class AssociationOverrides implements MappingAttribute
 {

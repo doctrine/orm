@@ -6,13 +6,7 @@ namespace Doctrine\ORM\Mapping;
 
 use Attribute;
 use BackedEnum;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
-/**
- * @Annotation
- * @NamedArgumentConstructor
- * @Target({"PROPERTY","ANNOTATION"})
- */
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class Column implements MappingAttribute
 {
