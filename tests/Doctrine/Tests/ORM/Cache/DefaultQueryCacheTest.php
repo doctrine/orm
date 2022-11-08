@@ -504,13 +504,12 @@ class DefaultQueryCacheTest extends OrmTestCase
                 ['identifier' => ['id' => 1]],
                 ['identifier' => ['id' => 2]],
             ],
+            microtime(true) - 100,
         );
         $entities = [
             ['id' => 1, 'name' => 'Foo'],
             ['id' => 2, 'name' => 'Bar'],
         ];
-
-        $entry->time = microtime(true) - 100;
 
         $this->region->addReturn('get', $entry);
 

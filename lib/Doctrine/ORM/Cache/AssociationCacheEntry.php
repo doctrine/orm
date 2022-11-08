@@ -4,35 +4,16 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
-/**
- * Association cache entry
- */
 class AssociationCacheEntry implements CacheEntry
 {
     /**
-     * The entity identifier
-     *
-     * @readonly Public only for performance reasons, it should be considered immutable.
-     * @var array<string, mixed>
-     */
-    public array $identifier;
-
-    /**
-     * The entity class name
-     *
-     * @readonly Public only for performance reasons, it should be considered immutable.
-     * @psalm-var class-string
-     */
-    public string $class;
-
-    /**
      * @param array<string, mixed> $identifier The entity identifier.
-     * @psalm-param class-string $class
+     * @param class-string         $class      The entity class name
      */
-    public function __construct(string $class, array $identifier)
-    {
-        $this->class      = $class;
-        $this->identifier = $identifier;
+    public function __construct(
+        public readonly string $class,
+        public readonly array $identifier,
+    ) {
     }
 
     /**

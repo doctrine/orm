@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Region;
 
-use Closure;
 use Doctrine\ORM\Cache\CacheEntry;
 use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
@@ -58,7 +57,7 @@ class DefaultRegion implements Region
     public function getMultiple(CollectionCacheEntry $collection): array|null
     {
         $keys = array_map(
-            Closure::fromCallable([$this, 'getCacheEntryKey']),
+            $this->getCacheEntryKey(...),
             $collection->identifiers,
         );
         /** @var iterable<string, CacheItemInterface> $items */

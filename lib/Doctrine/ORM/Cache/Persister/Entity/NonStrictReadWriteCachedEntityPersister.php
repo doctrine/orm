@@ -6,8 +6,6 @@ namespace Doctrine\ORM\Cache\Persister\Entity;
 
 use Doctrine\ORM\Cache\EntityCacheKey;
 
-use function get_class;
-
 /**
  * Specific non-strict read/write cached entity persister
  */
@@ -72,7 +70,7 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
 
     private function updateCache(object $entity, bool $isChanged): bool
     {
-        $class     = $this->metadataFactory->getMetadataFor(get_class($entity));
+        $class     = $this->metadataFactory->getMetadataFor($entity::class);
         $key       = new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($entity));
         $entry     = $this->hydrator->buildCacheEntry($class, $key, $entity);
         $cached    = $this->region->put($key, $entry);

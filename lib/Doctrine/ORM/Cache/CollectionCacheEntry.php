@@ -4,23 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
-/**
- * Collection cache entry
- */
 class CollectionCacheEntry implements CacheEntry
 {
-    /**
-     * The list of entity identifiers hold by the collection
-     *
-     * @readonly Public only for performance reasons, it should be considered immutable.
-     * @var CacheKey[]
-     */
-    public array $identifiers;
-
     /** @param CacheKey[] $identifiers List of entity identifiers hold by the collection */
-    public function __construct(array $identifiers)
+    public function __construct(public readonly array $identifiers)
     {
-        $this->identifiers = $identifiers;
     }
 
     /**

@@ -35,7 +35,7 @@ use const LOCK_EX;
  */
 class FileLockRegion implements ConcurrentRegion
 {
-    public const LOCK_EXTENSION = 'lock';
+    final public const LOCK_EXTENSION = 'lock';
 
     /**
      * @param numeric-string|int $lockLifetime
@@ -127,7 +127,7 @@ class FileLockRegion implements ConcurrentRegion
 
     public function getMultiple(CollectionCacheEntry $collection): array|null
     {
-        if (array_filter(array_map([$this, 'isLocked'], $collection->identifiers))) {
+        if (array_filter(array_map($this->isLocked(...), $collection->identifiers))) {
             return null;
         }
 

@@ -31,7 +31,6 @@ use const DIRECTORY_SEPARATOR;
 
 class DefaultCacheFactory implements CacheFactory
 {
-    private RegionsConfiguration $regionsConfig;
     private TimestampRegion|null $timestampRegion = null;
 
     /** @var Region[] */
@@ -39,9 +38,8 @@ class DefaultCacheFactory implements CacheFactory
 
     private string|null $fileLockRegionDirectory = null;
 
-    public function __construct(RegionsConfiguration $cacheConfig, private CacheItemPoolInterface $cacheItemPool)
+    public function __construct(private readonly RegionsConfiguration $regionsConfig, private readonly CacheItemPoolInterface $cacheItemPool)
     {
-        $this->regionsConfig = $cacheConfig;
     }
 
     public function setFileLockRegionDirectory(string $fileLockRegionDirectory): void
