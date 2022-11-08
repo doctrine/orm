@@ -6,13 +6,9 @@ namespace Doctrine\ORM\Cache;
 
 use function microtime;
 
-/**
- * Timestamp cache entry
- */
 class TimestampCacheEntry implements CacheEntry
 {
-    /** @readonly Public only for performance reasons, it should be considered immutable. */
-    public float $time;
+    public readonly float $time;
 
     public function __construct(float|null $time = null)
     {

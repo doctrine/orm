@@ -43,6 +43,9 @@
     </NullableReturnStatement>
   </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultEntityHydrator.php">
+    <InvalidScalarArgument occurrences="1">
+      <code>$data</code>
+    </InvalidScalarArgument>
     <PossiblyNullArrayOffset occurrences="1">
       <code>$targetClassMetadata-&gt;associationMappings</code>
     </PossiblyNullArrayOffset>

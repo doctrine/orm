@@ -11,7 +11,6 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 
-use function array_merge;
 use function assert;
 use function is_array;
 use function is_object;
@@ -22,14 +21,14 @@ use function reset;
  */
 class DefaultEntityHydrator implements EntityHydrator
 {
-    private UnitOfWork $uow;
-    private IdentifierFlattener $identifierFlattener;
+    private readonly UnitOfWork $uow;
+    private readonly IdentifierFlattener $identifierFlattener;
 
     /** @var array<string,mixed> */
     private static array $hints = [Query::HINT_CACHE_ENABLED => true];
 
     public function __construct(
-        private EntityManagerInterface $em,
+        private readonly EntityManagerInterface $em,
     ) {
         $this->uow                 = $em->getUnitOfWork();
         $this->identifierFlattener = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
@@ -38,7 +37,7 @@ class DefaultEntityHydrator implements EntityHydrator
     public function buildCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, object $entity): EntityCacheEntry
     {
         $data = $this->uow->getOriginalEntityData($entity);
-        $data = array_merge($data, $metadata->getIdentifierValues($entity)); // why update has no identifier values ?
+        $data = [...$data, ...$metadata->getIdentifierValues($entity)]; // why update has no identifier values ?
 
         if ($metadata->requiresFetchAfterChange) {
             if ($metadata->isVersioned) {

@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\Proxy;
 
@@ -82,9 +83,7 @@ class DefaultQueryCache implements QueryCache
 
         $cm = $this->em->getClassMetadata($entityName);
 
-        $generateKeys = static function (array $entry) use ($cm): EntityCacheKey {
-            return new EntityCacheKey($cm->rootEntityName, $entry['identifier']);
-        };
+        $generateKeys = static fn (array $entry): EntityCacheKey => new EntityCacheKey($cm->rootEntityName, $entry['identifier']);
 
         $cacheKeys = new CollectionCacheEntry(array_map($generateKeys, $cacheEntry->result));
         $entries   = $region->getMultiple($cacheKeys) ?? [];
@@ -139,9 +138,7 @@ class DefaultQueryCache implements QueryCache
                     continue;
                 }
 
-                $generateKeys = static function ($id) use ($assocMetadata): EntityCacheKey {
-                    return new EntityCacheKey($assocMetadata->rootEntityName, $id);
-                };
+                $generateKeys = static fn (array $id): EntityCacheKey => new EntityCacheKey($assocMetadata->rootEntityName, $id);
 
                 $collection   = new PersistentCollection($this->em, $assocMetadata, new ArrayCollection());
                 $assocKeys    = new CollectionCacheEntry(array_map($generateKeys, $assoc['list']));
@@ -214,7 +211,7 @@ class DefaultQueryCache implements QueryCache
             throw FeatureNotImplemented::nonSelectStatements();
         }
 
-        if (($hints[Query\SqlWalker::HINT_PARTIAL] ?? false) === true || ($hints[Query::HINT_FORCE_PARTIAL_LOAD] ?? false) === true) {
+        if (($hints[SqlWalker::HINT_PARTIAL] ?? false) === true || ($hints[Query::HINT_FORCE_PARTIAL_LOAD] ?? false) === true) {
             throw FeatureNotImplemented::partialEntities();
         }
 

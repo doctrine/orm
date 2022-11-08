@@ -23,9 +23,8 @@ final class AttributeOverrides implements MappingAttribute
      * One or more field or property mapping overrides.
      *
      * @var list<AttributeOverride>
-     * @readonly
      */
-    public array $overrides = [];
+    public readonly array $overrides;
 
     /** @param array<AttributeOverride>|AttributeOverride $overrides */
     public function __construct(array|AttributeOverride $overrides)

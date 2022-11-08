@@ -8,7 +8,7 @@ use function microtime;
 
 class TimestampQueryCacheValidator implements QueryCacheValidator
 {
-    public function __construct(private TimestampRegion $timestampRegion)
+    public function __construct(private readonly TimestampRegion $timestampRegion)
     {
     }
 
