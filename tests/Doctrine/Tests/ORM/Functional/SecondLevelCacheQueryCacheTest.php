@@ -830,7 +830,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
             ->get($key);
 
         self::assertInstanceOf(QueryCacheEntry::class, $entry);
-        $entry->time /= 2;
+        $entry = new QueryCacheEntry($entry->result, $entry->time / 2);
 
         $this->cache->getQueryCache()
             ->getRegion()
