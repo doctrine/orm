@@ -41,9 +41,10 @@ class QueryCacheKey extends CacheKey
         int $cacheMode = Cache::MODE_NORMAL,
         ?TimestampCacheKey $timestampKey = null
     ) {
-        $this->hash         = $cacheId;
         $this->lifetime     = $lifetime;
         $this->cacheMode    = $cacheMode;
         $this->timestampKey = $timestampKey;
+
+        parent::__construct($cacheId);
     }
 }

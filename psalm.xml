@@ -141,6 +141,12 @@
                 <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php"/>
             </errorLevel>
         </MissingParamType>
+        <PropertyNotSetInConstructor>
+            <errorLevel type="suppress">
+                <!-- Remove on 3.0.x -->
+                <referencedProperty name="Doctrine\ORM\Cache\CacheKey::$hash"/>
+            </errorLevel>
+        </PropertyNotSetInConstructor>
         <RedundantCastGivenDocblockType>
             <errorLevel type="suppress">
                 <!-- Can be removed once the "getMaxResults" methods of those classes have native parameter types -->

@@ -13,9 +13,9 @@ use Doctrine\ORM\Cache\CacheKey;
  */
 class CacheKeyMock extends CacheKey
 {
-    /** @param string $hash The string hash that represend this cache key */
+    /** @param string $hash The string hash that represents this cache key */
     public function __construct(string $hash)
     {
-        $this->hash = $hash;
+        parent::__construct($hash);
     }
 }
