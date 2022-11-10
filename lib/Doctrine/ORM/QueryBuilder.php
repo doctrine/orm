@@ -992,11 +992,11 @@ class QueryBuilder
      *         ->join('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');
      * </code>
      *
-     * @param string                                     $join          The relationship to join.
-     * @param string                                     $alias         The alias of the join.
-     * @param string|null                                $conditionType The condition type constant. Either ON or WITH.
-     * @param string|Expr\Comparison|Expr\Composite|null $condition     The condition for the join.
-     * @param string|null                                $indexBy       The index for the join.
+     * @param string                                               $join          The relationship to join.
+     * @param string                                               $alias         The alias of the join.
+     * @param string|null                                          $conditionType The condition type constant. Either ON or WITH.
+     * @param string|Expr\Comparison|Expr\Composite|Expr\Func|null $condition     The condition for the join.
+     * @param string|null                                          $indexBy       The index for the join.
      * @psalm-param Expr\Join::ON|Expr\Join::WITH|null $conditionType
      *
      * @return $this
@@ -1019,11 +1019,11 @@ class QueryBuilder
      *         ->from('User', 'u')
      *         ->innerJoin('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');
      *
-     * @param string                                     $join          The relationship to join.
-     * @param string                                     $alias         The alias of the join.
-     * @param string|null                                $conditionType The condition type constant. Either ON or WITH.
-     * @param string|Expr\Comparison|Expr\Composite|null $condition     The condition for the join.
-     * @param string|null                                $indexBy       The index for the join.
+     * @param string                                               $join          The relationship to join.
+     * @param string                                               $alias         The alias of the join.
+     * @param string|null                                          $conditionType The condition type constant. Either ON or WITH.
+     * @param string|Expr\Comparison|Expr\Composite|Expr\Func|null $condition     The condition for the join.
+     * @param string|null                                          $indexBy       The index for the join.
      * @psalm-param Expr\Join::ON|Expr\Join::WITH|null $conditionType
      *
      * @return $this
@@ -1060,11 +1060,11 @@ class QueryBuilder
      *         ->leftJoin('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');
      * </code>
      *
-     * @param string                                     $join          The relationship to join.
-     * @param string                                     $alias         The alias of the join.
-     * @param string|null                                $conditionType The condition type constant. Either ON or WITH.
-     * @param string|Expr\Comparison|Expr\Composite|null $condition     The condition for the join.
-     * @param string|null                                $indexBy       The index for the join.
+     * @param string                                               $join          The relationship to join.
+     * @param string                                               $alias         The alias of the join.
+     * @param string|null                                          $conditionType The condition type constant. Either ON or WITH.
+     * @param string|Expr\Comparison|Expr\Composite|Expr\Func|null $condition     The condition for the join.
+     * @param string|null                                          $indexBy       The index for the join.
      * @psalm-param Expr\Join::ON|Expr\Join::WITH|null $conditionType
      *
      * @return $this
