@@ -19,16 +19,14 @@ class AbsFunction extends FunctionNode
     /** @var SimpleArithmeticExpression */
     public $simpleArithmeticExpression;
 
-    /** @inheritdoc */
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         return 'ABS(' . $sqlWalker->walkSimpleArithmeticExpression(
             $this->simpleArithmeticExpression,
         ) . ')';
     }
 
-    /** @inheritdoc */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);

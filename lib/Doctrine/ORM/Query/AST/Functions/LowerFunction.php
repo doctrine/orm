@@ -18,11 +18,9 @@ use function sprintf;
  */
 class LowerFunction extends FunctionNode
 {
-    /** @var Node */
-    public $stringPrimary;
+    public Node $stringPrimary;
 
-    /** @inheritdoc */
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         return sprintf(
             'LOWER(%s)',
@@ -30,8 +28,7 @@ class LowerFunction extends FunctionNode
         );
     }
 
-    /** @inheritdoc */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);

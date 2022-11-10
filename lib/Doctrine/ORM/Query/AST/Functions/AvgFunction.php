@@ -13,8 +13,7 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 final class AvgFunction extends FunctionNode
 {
-    /** @var AggregateExpression */
-    private $aggregateExpression;
+    private AggregateExpression $aggregateExpression;
 
     public function getSql(SqlWalker $sqlWalker): string
     {

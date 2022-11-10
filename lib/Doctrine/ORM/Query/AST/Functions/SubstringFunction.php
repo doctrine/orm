@@ -17,8 +17,7 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class SubstringFunction extends FunctionNode
 {
-    /** @var Node */
-    public $stringPrimary;
+    public Node $stringPrimary;
 
     /** @var SimpleArithmeticExpression */
     public $firstSimpleArithmeticExpression;
@@ -26,8 +25,7 @@ class SubstringFunction extends FunctionNode
     /** @var SimpleArithmeticExpression|null */
     public $secondSimpleArithmeticExpression = null;
 
-    /** @inheritdoc */
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         $optionalSecondSimpleArithmeticExpression = null;
         if ($this->secondSimpleArithmeticExpression !== null) {
@@ -41,8 +39,7 @@ class SubstringFunction extends FunctionNode
         );
     }
 
-    /** @inheritdoc */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);

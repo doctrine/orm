@@ -27,10 +27,7 @@ class IdentityFunction extends FunctionNode
     /** @var string|null */
     public $fieldMapping;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         assert($this->pathExpression->field !== null);
         $entityManager = $sqlWalker->getEntityManager();
@@ -72,10 +69,7 @@ class IdentityFunction extends FunctionNode
         return $tableAlias . '.' . $columnName;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);

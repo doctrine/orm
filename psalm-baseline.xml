@@ -65,9 +65,6 @@
       <code>$cacheKeys-&gt;identifiers[$index]</code>
       <code>$cacheKeys-&gt;identifiers[$index]</code>
     </ArgumentTypeCoercion>
-    <MissingClosureParamType occurrences="1">
-      <code>$id</code>
-    </MissingClosureParamType>
     <NoInterfaceProperties occurrences="2">
       <code>$assocEntry-&gt;class</code>
       <code>$assocEntry-&gt;class</code>
@@ -315,6 +312,7 @@
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadata.php">
     <PropertyNotSetInConstructor occurrences="2">
+      <code>ClassMetadata</code>
       <code>ClassMetadata</code>
     </PropertyNotSetInConstructor>
   </file>
@@ -1039,11 +1037,11 @@
       <code>$parser-&gt;ArithmeticPrimary()</code>
       <code>$parser-&gt;ArithmeticPrimary()</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PossiblyNullPropertyAssignmentValue occurrences="3">
-      <code>null</code>
-      <code>null</code>
-      <code>null</code>
-    </PossiblyNullPropertyAssignmentValue>
+    <PropertyNotSetInConstructor occurrences="3">
+      <code>$firstDateExpression</code>
+      <code>$intervalExpression</code>
+      <code>$unit</code>
+    </PropertyNotSetInConstructor>
     <UndefinedPropertyFetch occurrences="1">
       <code>$this-&gt;unit-&gt;value</code>
     </UndefinedPropertyFetch>
@@ -1059,6 +1057,11 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php">
+    <PropertyNotSetInConstructor occurrences="3">
+      <code>DateSubFunction</code>
+      <code>DateSubFunction</code>
+      <code>DateSubFunction</code>
+    </PropertyNotSetInConstructor>
     <UndefinedPropertyFetch occurrences="1">
       <code>$this-&gt;unit-&gt;value</code>
     </UndefinedPropertyFetch>
@@ -1173,11 +1176,8 @@
       <code>$lexer-&gt;lookahead['value']</code>
       <code>$lexer-&gt;token['value']</code>
     </PossiblyNullArrayAccess>
-    <PropertyNotSetInConstructor occurrences="4">
-      <code>$both</code>
-      <code>$leading</code>
+    <PropertyNotSetInConstructor occurrences="1">
       <code>$stringPrimary</code>
-      <code>$trailing</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/UpperFunction.php">

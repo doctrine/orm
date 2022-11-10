@@ -16,14 +16,10 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class DateDiffFunction extends FunctionNode
 {
-    /** @var Node */
-    public $date1;
+    public Node $date1;
+    public Node $date2;
 
-    /** @var Node */
-    public $date2;
-
-    /** @inheritdoc */
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         return $sqlWalker->getConnection()->getDatabasePlatform()->getDateDiffExpression(
             $this->date1->dispatch($sqlWalker),
@@ -31,8 +27,7 @@ class DateDiffFunction extends FunctionNode
         );
     }
 
-    /** @inheritdoc */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
