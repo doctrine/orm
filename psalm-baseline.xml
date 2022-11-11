@@ -1414,19 +1414,11 @@
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$not</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/CoalesceExpression.php">
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/CollectionMemberExpression.php">
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$not</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/ComparisonExpression.php">
     <ParamNameMismatch occurrences="1">
@@ -1457,9 +1449,6 @@
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$aliasIdentificationVariable</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/DeleteStatement.php">
     <ParamNameMismatch occurrences="1">
@@ -1470,17 +1459,11 @@
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$not</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/ExistsExpression.php">
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$not</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/FromClause.php">
     <ParamNameMismatch occurrences="1">
@@ -1491,45 +1474,18 @@
     <PossiblyInvalidPropertyAssignmentValue occurrences="1">
       <code>$parser-&gt;SimpleArithmeticExpression()</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$simpleArithmeticExpression</code>
-    </PropertyNotSetInConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/AvgFunction.php">
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$aggregateExpression</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/BitAndFunction.php">
     <PossiblyInvalidPropertyAssignmentValue occurrences="2">
       <code>$parser-&gt;ArithmeticPrimary()</code>
       <code>$parser-&gt;ArithmeticPrimary()</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PropertyNotSetInConstructor occurrences="2">
-      <code>$firstArithmetic</code>
-      <code>$secondArithmetic</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/BitOrFunction.php">
     <PossiblyInvalidPropertyAssignmentValue occurrences="2">
       <code>$parser-&gt;ArithmeticPrimary()</code>
       <code>$parser-&gt;ArithmeticPrimary()</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PropertyNotSetInConstructor occurrences="2">
-      <code>$firstArithmetic</code>
-      <code>$secondArithmetic</code>
-    </PropertyNotSetInConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/ConcatFunction.php">
-    <PropertyNotSetInConstructor occurrences="2">
-      <code>$firstStringPrimary</code>
-      <code>$secondStringPrimary</code>
-    </PropertyNotSetInConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/CountFunction.php">
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$aggregateExpression</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php">
     <ArgumentTypeCoercion occurrences="7">
@@ -1559,10 +1515,6 @@
       <code>$parser-&gt;ArithmeticPrimary()</code>
       <code>$parser-&gt;ArithmeticPrimary()</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PropertyNotSetInConstructor occurrences="2">
-      <code>$date1</code>
-      <code>$date2</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php">
     <ArgumentTypeCoercion occurrences="7">
@@ -1593,17 +1545,11 @@
     <PossiblyUndefinedArrayOffset occurrences="1">
       <code>$assoc['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$pathExpression</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/LengthFunction.php">
     <ArgumentTypeCoercion occurrences="1">
       <code>$this-&gt;stringPrimary</code>
     </ArgumentTypeCoercion>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$stringPrimary</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/LocateFunction.php">
     <PossiblyInvalidArgument occurrences="1">
@@ -1612,38 +1558,17 @@
     <PossiblyInvalidPropertyAssignmentValue occurrences="1">
       <code>$parser-&gt;SimpleArithmeticExpression()</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PropertyNotSetInConstructor occurrences="2">
-      <code>$firstStringPrimary</code>
-      <code>$secondStringPrimary</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/LowerFunction.php">
     <ArgumentTypeCoercion occurrences="1">
       <code>$this-&gt;stringPrimary</code>
     </ArgumentTypeCoercion>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$stringPrimary</code>
-    </PropertyNotSetInConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/MaxFunction.php">
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$aggregateExpression</code>
-    </PropertyNotSetInConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/MinFunction.php">
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$aggregateExpression</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/ModFunction.php">
     <PossiblyInvalidPropertyAssignmentValue occurrences="2">
       <code>$parser-&gt;SimpleArithmeticExpression()</code>
       <code>$parser-&gt;SimpleArithmeticExpression()</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PropertyNotSetInConstructor occurrences="2">
-      <code>$firstSimpleArithmeticExpression</code>
-      <code>$secondSimpleArithmeticExpression</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/SizeFunction.php">
     <PossiblyNullArrayOffset occurrences="2">
@@ -1654,32 +1579,17 @@
       <code>$owningAssoc['joinTable']</code>
       <code>$owningAssoc['targetToSourceKeyColumns']</code>
     </PossiblyUndefinedArrayOffset>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$collectionPathExpression</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/SqrtFunction.php">
     <PossiblyInvalidPropertyAssignmentValue occurrences="1">
       <code>$parser-&gt;SimpleArithmeticExpression()</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$simpleArithmeticExpression</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/SubstringFunction.php">
     <PossiblyInvalidPropertyAssignmentValue occurrences="2">
       <code>$parser-&gt;SimpleArithmeticExpression()</code>
       <code>$parser-&gt;SimpleArithmeticExpression()</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PropertyNotSetInConstructor occurrences="2">
-      <code>$firstSimpleArithmeticExpression</code>
-      <code>$stringPrimary</code>
-    </PropertyNotSetInConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/SumFunction.php">
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$aggregateExpression</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/TrimFunction.php">
     <PossiblyInvalidArgument occurrences="3">
@@ -1694,20 +1604,11 @@
       <code>$lexer-&gt;lookahead['value']</code>
       <code>$lexer-&gt;token['value']</code>
     </PossiblyNullArrayAccess>
-    <PropertyNotSetInConstructor occurrences="4">
-      <code>$both</code>
-      <code>$leading</code>
-      <code>$stringPrimary</code>
-      <code>$trailing</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/UpperFunction.php">
     <ArgumentTypeCoercion occurrences="1">
       <code>$this-&gt;stringPrimary</code>
     </ArgumentTypeCoercion>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$stringPrimary</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/GeneralCaseExpression.php">
     <ParamNameMismatch occurrences="1">
@@ -1733,9 +1634,6 @@
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$not</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/IndexBy.php">
     <DeprecatedProperty occurrences="1">
@@ -1759,10 +1657,6 @@
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-    <PropertyNotSetInConstructor occurrences="2">
-      <code>$not</code>
-      <code>$value</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Join.php">
     <ParamNameMismatch occurrences="1">
@@ -1806,9 +1700,6 @@
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$not</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/NullIfExpression.php">
     <ParamNameMismatch occurrences="1">
@@ -1824,17 +1715,11 @@
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$type</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/QuantifiedExpression.php">
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$type</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/SelectClause.php">
     <ParamNameMismatch occurrences="1">
@@ -1873,9 +1758,6 @@
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$fieldIdentificationVariable</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/SimpleWhenClause.php">
     <ParamNameMismatch occurrences="1">
@@ -1899,9 +1781,6 @@
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$aliasIdentificationVariable</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/UpdateItem.php">
     <ParamNameMismatch occurrences="1">

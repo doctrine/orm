@@ -146,6 +146,9 @@
                 <!-- Remove on 3.0.x -->
                 <referencedProperty name="Doctrine\ORM\Cache\CacheKey::$hash"/>
             </errorLevel>
+            <errorLevel type="suppress">
+                <directory name="lib/Doctrine/ORM/Query/AST" />
+            </errorLevel>
         </PropertyNotSetInConstructor>
         <RedundantCastGivenDocblockType>
             <errorLevel type="suppress">
