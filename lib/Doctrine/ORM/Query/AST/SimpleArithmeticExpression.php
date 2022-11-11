@@ -13,13 +13,9 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class SimpleArithmeticExpression extends Node
 {
-    /** @var mixed[] */
-    public $arithmeticTerms = [];
-
     /** @param mixed[] $arithmeticTerms */
-    public function __construct(array $arithmeticTerms)
+    public function __construct(public array $arithmeticTerms)
     {
-        $this->arithmeticTerms = $arithmeticTerms;
     }
 
     public function dispatch(SqlWalker $walker): string

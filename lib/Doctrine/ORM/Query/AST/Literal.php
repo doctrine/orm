@@ -8,24 +8,15 @@ use Doctrine\ORM\Query\SqlWalker;
 
 class Literal extends Node
 {
-    public const STRING  = 1;
-    public const BOOLEAN = 2;
-    public const NUMERIC = 3;
+    final public const STRING  = 1;
+    final public const BOOLEAN = 2;
+    final public const NUMERIC = 3;
 
-    /**
-     * @var int
-     * @psalm-var self::*
-     */
-    public $type;
-
-    /**
-     * @param int   $type
-     * @param mixed $value
-     * @psalm-param self::* $type
-     */
-    public function __construct($type, public $value)
-    {
-        $this->type = $type;
+    /** @psalm-param self::* $type */
+    public function __construct(
+        public int $type,
+        public mixed $value,
+    ) {
     }
 
     public function dispatch(SqlWalker $walker): string

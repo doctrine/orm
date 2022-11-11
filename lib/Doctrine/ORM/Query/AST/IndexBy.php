@@ -13,12 +13,8 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class IndexBy extends Node
 {
-    /** @var PathExpression */
-    public $singleValuedPathExpression = null;
-
-    public function __construct(PathExpression $singleValuedPathExpression)
+    public function __construct(public PathExpression $singleValuedPathExpression)
     {
-        $this->singleValuedPathExpression = $singleValuedPathExpression;
     }
 
     public function dispatch(SqlWalker $walker): string

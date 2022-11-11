@@ -16,12 +16,11 @@ class SimpleCaseExpression extends Node
     /**
      * @param PathExpression $caseOperand
      * @param mixed[]        $simpleWhenClauses
-     * @param mixed          $elseScalarExpression
      */
     public function __construct(
         public $caseOperand = null,
         public array $simpleWhenClauses = [],
-        public $elseScalarExpression = null,
+        public mixed $elseScalarExpression = null,
     ) {
     }
 

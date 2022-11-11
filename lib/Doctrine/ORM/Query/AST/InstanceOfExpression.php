@@ -17,15 +17,12 @@ use function func_num_args;
  */
 class InstanceOfExpression extends Node
 {
-    /** @var string */
-    public $identificationVariable;
-
     /**
      * @param string                                $identVariable
      * @param non-empty-list<InputParameter|string> $value
      */
     public function __construct(
-        $identVariable,
+        public $identificationvariableVariable,
         public array $value = [],
         public bool $not = false,
     ) {

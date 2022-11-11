@@ -13,17 +13,16 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class RangeVariableDeclaration extends Node
 {
-    /** @var string */
-    public $aliasIdentificationVariable;
-
     /**
      * @param string $abstractSchemaName
-     * @param string $aliasIdentificationVar
+     * @param string $aliasIdentificationVariable
      * @param bool   $isRoot
      */
-    public function __construct(public $abstractSchemaName, $aliasIdentificationVar, public $isRoot = true)
-    {
-        $this->aliasIdentificationVariable = $aliasIdentificationVar;
+    public function __construct(
+        public $abstractSchemaName,
+        public $aliasIdentificationVariable,
+        public $isRoot = true,
+    ) {
     }
 
     public function dispatch(SqlWalker $walker): string

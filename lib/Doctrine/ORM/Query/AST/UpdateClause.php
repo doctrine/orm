@@ -16,16 +16,12 @@ class UpdateClause extends Node
     /** @var string */
     public $aliasIdentificationVariable;
 
-    /** @var mixed[] */
-    public $updateItems = [];
-
     /**
      * @param string  $abstractSchemaName
      * @param mixed[] $updateItems
      */
-    public function __construct(public $abstractSchemaName, array $updateItems)
+    public function __construct(public $abstractSchemaName, public array $updateItems)
     {
-        $this->updateItems = $updateItems;
     }
 
     public function dispatch(SqlWalker $walker): string

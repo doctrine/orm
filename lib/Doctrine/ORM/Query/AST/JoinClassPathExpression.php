@@ -13,16 +13,10 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class JoinClassPathExpression extends Node
 {
-    /** @var mixed */
-    public $aliasIdentificationVariable;
-
-    /**
-     * @param mixed $abstractSchemaName
-     * @param mixed $aliasIdentificationVar
-     */
-    public function __construct(public $abstractSchemaName, $aliasIdentificationVar)
-    {
-        $this->aliasIdentificationVariable = $aliasIdentificationVar;
+    public function __construct(
+        public mixed $abstractSchemaName,
+        public mixed $aliasIdentificationVariable,
+    ) {
     }
 
     public function dispatch(SqlWalker $walker): string

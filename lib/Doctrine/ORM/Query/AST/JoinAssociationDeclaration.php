@@ -18,8 +18,11 @@ class JoinAssociationDeclaration extends Node
      * @param string                        $aliasIdentificationVariable
      * @param IndexBy|null                  $indexBy
      */
-    public function __construct(public $joinAssociationPathExpression, public $aliasIdentificationVariable, public $indexBy)
-    {
+    public function __construct(
+        public $joinAssociationPathExpression,
+        public $aliasIdentificationVariable,
+        public $indexBy,
+    ) {
     }
 
     public function dispatch(SqlWalker $walker): string

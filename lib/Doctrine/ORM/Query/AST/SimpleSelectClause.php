@@ -17,8 +17,10 @@ class SimpleSelectClause extends Node
      * @param SimpleSelectExpression $simpleSelectExpression
      * @param bool                   $isDistinct
      */
-    public function __construct(public $simpleSelectExpression, public $isDistinct = false)
-    {
+    public function __construct(
+        public $simpleSelectExpression,
+        public $isDistinct = false,
+    ) {
     }
 
     public function dispatch(SqlWalker $walker): string

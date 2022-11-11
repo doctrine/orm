@@ -13,30 +13,18 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class ArithmeticFactor extends Node
 {
-    /**
-     * NULL represents no sign, TRUE means positive and FALSE means negative sign.
-     *
-     * @var bool|null
-     */
-    public $sign;
-
-    /**
-     * @param mixed     $arithmeticPrimary
-     * @param bool|null $sign
-     */
-    public function __construct(public $arithmeticPrimary, $sign = null)
-    {
-        $this->sign = $sign;
+    public function __construct(
+        public mixed $arithmeticPrimary,
+        public bool|null $sign = null,
+    ) {
     }
 
-    /** @return bool */
-    public function isPositiveSigned()
+    public function isPositiveSigned(): bool
     {
         return $this->sign === true;
     }
 
-    /** @return bool */
-    public function isNegativeSigned()
+    public function isNegativeSigned(): bool
     {
         return $this->sign === false;
     }

@@ -9,20 +9,15 @@ use Doctrine\ORM\Query\SqlWalker;
 class AggregateExpression extends Node
 {
     /**
-     * Some aggregate expressions support distinct, eg COUNT.
-     *
-     * @var bool
-     */
-    public $isDistinct = false;
-
-    /**
      * @param string                                    $functionName
      * @param PathExpression|SimpleArithmeticExpression $pathExpression
-     * @param bool                                      $isDistinct
+     * @param bool                                      $isDistinct     Some aggregate expressions support distinct, eg COUNT.
      */
-    public function __construct(public $functionName, public $pathExpression, $isDistinct)
-    {
-        $this->isDistinct = $isDistinct;
+    public function __construct(
+        public $functionName,
+        public $pathExpression,
+        public $isDistinct,
+    ) {
     }
 
     public function dispatch(SqlWalker $walker): string
