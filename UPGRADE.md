@@ -1,5 +1,10 @@
 # Upgrade to 2.14
 
+## Deprecated constructing a `CacheKey` without `$hash`
+
+The `Doctrine\ORM\Cache\CacheKey` class has an explicit constructor now with
+an optional parameter `$hash`. That parameter will become mandatory in 3.0.
+
 ## Deprecated `AttributeDriver::$entityAnnotationClasses`
 
 If you need to change the behavior of `AttributeDriver::isTransient()`,
