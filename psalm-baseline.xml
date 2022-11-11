@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.29.0@7ec5ffbd5f68ae03782d7fd33fff0c45a69f95b3">
+<files psalm-version="4.30.0@d0bc6e25d89f649e4f36a534f330f8bb4643dd69">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <FalsableReturnStatement occurrences="1">
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
@@ -1323,18 +1323,9 @@
       <code>$parts</code>
     </NonInvariantDocblockPropertyType>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Base.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$this-&gt;parts</code>
-    </ArgumentTypeCoercion>
-    <PossiblyInvalidCast occurrences="1">
-      <code>$this-&gt;parts[0]</code>
-    </PossiblyInvalidCast>
-  </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Composite.php">
-    <PossiblyInvalidCast occurrences="2">
+    <PossiblyInvalidCast occurrences="1">
       <code>$part</code>
-      <code>$this-&gt;parts[0]</code>
     </PossiblyInvalidCast>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/GroupBy.php">

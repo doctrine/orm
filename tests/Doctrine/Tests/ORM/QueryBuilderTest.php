@@ -169,6 +169,23 @@ class QueryBuilderTest extends OrmTestCase
         );
     }
 
+    public function testComplexInnerJoinWithFuncCondition(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb
+            ->select('u', 'a')
+            ->from(CmsUser::class, 'u')
+            ->innerJoin('u.articles', 'a', Join::WITH, $qb->expr()->in(
+                'u.id',
+                [1, 2, 3],
+            ));
+
+        $this->assertValidQueryBuilder(
+            $qb,
+            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a WITH u.id IN(1, 2, 3)',
+        );
+    }
+
     public function testComplexInnerJoinWithIndexBy(): void
     {
         $qb = $this->entityManager->createQueryBuilder()

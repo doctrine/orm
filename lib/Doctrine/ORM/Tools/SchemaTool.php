@@ -92,7 +92,7 @@ class SchemaTool
      *
      * @psalm-param list<ClassMetadata> $classes
      *
-     * @return string[] The SQL statements needed to create the schema for the classes.
+     * @return list<string> The SQL statements needed to create the schema for the classes.
      */
     public function getCreateSchemaSql(array $classes): array
     {
@@ -122,7 +122,7 @@ class SchemaTool
      *
      * @param mixed[] $indexData index or unique constraint data
      *
-     * @return string[] Column names from combined fields and columns mappings
+     * @return list<string> Column names from combined fields and columns mappings
      */
     private function getIndexColumns(ClassMetadata $class, array $indexData): array
     {
@@ -832,7 +832,7 @@ class SchemaTool
     /**
      * Gets the SQL needed to drop the database schema for the connections database.
      *
-     * @return string[]
+     * @return list<string>
      */
     public function getDropDatabaseSQL(): array
     {
@@ -846,7 +846,7 @@ class SchemaTool
      *
      * @psalm-param list<ClassMetadata> $classes
      *
-     * @return string[]
+     * @return list<string>
      */
     public function getDropSchemaSQL(array $classes): array
     {
@@ -917,11 +917,11 @@ class SchemaTool
      * Gets the sequence of SQL statements that need to be performed in order
      * to bring the given class mappings in-synch with the relational schema.
      *
-     * @param mixed[] $classes  The classes to consider.
-     * @param bool    $saveMode If TRUE, only generates SQL for a partial update
-     *                           that does not include SQL for dropping assets which are scheduled for deletion.
+     * @param bool                $saveMode If TRUE, only generates SQL for a partial update
+     *                                      that does not include SQL for dropping assets which are scheduled for deletion.
+     * @param list<ClassMetadata> $classes  The classes to consider.
      *
-     * @return string[] The sequence of SQL statements.
+     * @return list<string> The sequence of SQL statements.
      */
     public function getUpdateSchemaSql(array $classes, bool $saveMode = false): array
     {

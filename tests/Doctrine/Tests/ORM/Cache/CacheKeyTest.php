@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
+use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\Tests\DoctrineTestCase;
@@ -65,5 +66,13 @@ class CacheKeyTest extends DoctrineTestCase
         $key2 = new CollectionCacheKey('Foo', 'assoc2', ['id' => 1]);
 
         self::assertNotEquals($key1->hash, $key2->hash);
+    }
+
+    public function testConstructor(): void
+    {
+        $key = new class ('my-hash') extends CacheKey {
+        };
+
+        self::assertSame('my-hash', $key->hash);
     }
 }

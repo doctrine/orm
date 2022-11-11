@@ -818,7 +818,7 @@ class QueryBuilder implements Stringable
         string $join,
         string $alias,
         string|null $conditionType = null,
-        string|Expr\Composite|Expr\Comparison|null $condition = null,
+        string|Expr\Composite|Expr\Comparison|Expr\Func|null $condition = null,
         string|null $indexBy = null,
     ): static {
         return $this->innerJoin($join, $alias, $conditionType, $condition, $indexBy);
@@ -845,7 +845,7 @@ class QueryBuilder implements Stringable
         string $join,
         string $alias,
         string|null $conditionType = null,
-        string|Expr\Composite|Expr\Comparison|null $condition = null,
+        string|Expr\Composite|Expr\Comparison|Expr\Func|null $condition = null,
         string|null $indexBy = null,
     ): static {
         $parentAlias = substr($join, 0, (int) strpos($join, '.'));
@@ -886,7 +886,7 @@ class QueryBuilder implements Stringable
         string $join,
         string $alias,
         string|null $conditionType = null,
-        string|Expr\Composite|Expr\Comparison|null $condition = null,
+        string|Expr\Composite|Expr\Comparison|Expr\Func|null $condition = null,
         string|null $indexBy = null,
     ): static {
         $parentAlias = substr($join, 0, (int) strpos($join, '.'));

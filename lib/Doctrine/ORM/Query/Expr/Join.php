@@ -28,7 +28,7 @@ class Join
         protected string $join,
         protected string|null $alias = null,
         protected string|null $conditionType = null,
-        protected string|Comparison|Composite|null $condition = null,
+        protected string|Comparison|Composite|Func|null $condition = null,
         protected string|null $indexBy = null,
     ) {
     }
@@ -55,7 +55,7 @@ class Join
         return $this->conditionType;
     }
 
-    public function getCondition(): string|Comparison|Composite|null
+    public function getCondition(): string|Comparison|Composite|Func|null
     {
         return $this->condition;
     }
