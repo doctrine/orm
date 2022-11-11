@@ -15,13 +15,4 @@ use Doctrine\Persistence\Event\LoadClassMetadataEventArgs as BaseLoadClassMetada
  */
 class LoadClassMetadataEventArgs extends BaseLoadClassMetadataEventArgs
 {
-    /**
-     * Retrieve associated EntityManager.
-     *
-     * @return EntityManagerInterface
-     */
-    public function getEntityManager()
-    {
-        return $this->getObjectManager();
-    }
 }

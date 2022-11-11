@@ -76,7 +76,7 @@ class ResolveTargetEntityListener implements EventSubscriber
 
         foreach ($this->resolveTargetEntities as $interface => $data) {
             if ($data['targetEntity'] === $cm->getName()) {
-                $args->getEntityManager()->getMetadataFactory()->setMetadataFor($interface, $cm);
+                $args->getObjectManager()->getMetadataFactory()->setMetadataFor($interface, $cm);
             }
         }
 

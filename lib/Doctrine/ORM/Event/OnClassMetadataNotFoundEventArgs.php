@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Event;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\Event\ManagerEventArgs;
 use Doctrine\Persistence\Mapping\ClassMetadata;
-use Doctrine\Persistence\ObjectManager;
 
 /**
  * Class that holds event arguments for a `onClassMetadataNotFound` event.
@@ -19,41 +18,29 @@ use Doctrine\Persistence\ObjectManager;
  */
 class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
 {
-    /** @var string */
-    private $className;
+    private ClassMetadata|null $foundMetadata = null;
 
-    /** @var ClassMetadata|null */
-    private $foundMetadata;
-
-    /**
-     * @param string                 $className
-     * @param EntityManagerInterface $objectManager
-     */
-    public function __construct($className, ObjectManager $objectManager)
-    {
-        $this->className = (string) $className;
-
+    public function __construct(
+        private readonly string $className,
+        EntityManagerInterface $objectManager,
+    ) {
         parent::__construct($objectManager);
     }
 
-    /** @return void */
-    public function setFoundMetadata(ClassMetadata|null $classMetadata)
+    public function setFoundMetadata(ClassMetadata|null $classMetadata): void
     {
         $this->foundMetadata = $classMetadata;
     }
 
-    /** @return ClassMetadata|null */
-    public function getFoundMetadata()
+    public function getFoundMetadata(): ClassMetadata|null
     {
         return $this->foundMetadata;
     }
 
     /**
      * Retrieve class name for which a failed metadata fetch attempt was executed
-     *
-     * @return string
      */
-    public function getClassName()
+    public function getClassName(): string
     {
         return $this->className;
     }
