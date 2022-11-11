@@ -1688,14 +1688,6 @@
       <code>$sqlWalker</code>
     </ParamNameMismatch>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Node.php">
-    <DocblockTypeContradiction occurrences="1">
-      <code>is_array($obj)</code>
-    </DocblockTypeContradiction>
-    <RedundantConditionGivenDocblockType occurrences="1">
-      <code>is_object($obj)</code>
-    </RedundantConditionGivenDocblockType>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/NullComparisonExpression.php">
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>

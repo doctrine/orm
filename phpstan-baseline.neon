@@ -421,16 +421,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/AST/JoinVariableDeclaration.php
 
 		-
-			message: "#^Call to function is_array\\(\\) with object will always evaluate to false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Node.php
-
-		-
-			message: "#^Else branch is unreachable because previous condition is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Node.php
-
-		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkWhenClauseExpression\\(\\)\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/AST/SimpleWhenClause.php
