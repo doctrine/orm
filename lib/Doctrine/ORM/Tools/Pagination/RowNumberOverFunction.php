@@ -19,11 +19,9 @@ use function trim;
  */
 class RowNumberOverFunction extends FunctionNode
 {
-    /** @var OrderByClause */
-    public $orderByClause;
+    public OrderByClause $orderByClause;
 
-    /** @inheritdoc */
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         return 'ROW_NUMBER() OVER(' . trim($sqlWalker->walkOrderByClause(
             $this->orderByClause,
@@ -35,7 +33,7 @@ class RowNumberOverFunction extends FunctionNode
      *
      * @inheritdoc
      */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
         throw RowNumberOverFunctionNotEnabled::create();
     }

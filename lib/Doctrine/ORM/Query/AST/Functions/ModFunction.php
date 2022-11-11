@@ -22,8 +22,7 @@ class ModFunction extends FunctionNode
     /** @var SimpleArithmeticExpression */
     public $secondSimpleArithmeticExpression;
 
-    /** @inheritdoc */
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         return $sqlWalker->getConnection()->getDatabasePlatform()->getModExpression(
             $sqlWalker->walkSimpleArithmeticExpression($this->firstSimpleArithmeticExpression),
@@ -31,8 +30,7 @@ class ModFunction extends FunctionNode
         );
     }
 
-    /** @inheritdoc */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);

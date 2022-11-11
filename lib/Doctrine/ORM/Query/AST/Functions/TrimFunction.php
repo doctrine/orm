@@ -19,25 +19,13 @@ use function strcasecmp;
  */
 class TrimFunction extends FunctionNode
 {
-    /** @var bool */
-    public $leading;
+    public bool $leading          = false;
+    public bool $trailing         = false;
+    public bool $both             = false;
+    public string|false $trimChar = false;
+    public Node $stringPrimary;
 
-    /** @var bool */
-    public $trailing;
-
-    /** @var bool */
-    public $both;
-
-    /** @var string|false */
-    public $trimChar = false;
-
-    /** @var Node */
-    public $stringPrimary;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         $stringPrimary = $sqlWalker->walkStringPrimary($this->stringPrimary);
         $platform      = $sqlWalker->getConnection()->getDatabasePlatform();
@@ -54,10 +42,7 @@ class TrimFunction extends FunctionNode
         return $platform->getTrimExpression($stringPrimary, $trimMode);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
         $lexer = $parser->getLexer();
 

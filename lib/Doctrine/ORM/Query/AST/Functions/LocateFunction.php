@@ -17,17 +17,13 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class LocateFunction extends FunctionNode
 {
-    /** @var Node */
-    public $firstStringPrimary;
-
-    /** @var Node */
-    public $secondStringPrimary;
+    public Node $firstStringPrimary;
+    public Node $secondStringPrimary;
 
     /** @var SimpleArithmeticExpression|bool */
     public $simpleArithmeticExpression = false;
 
-    /** @inheritdoc */
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         $platform = $sqlWalker->getConnection()->getDatabasePlatform();
 
@@ -45,8 +41,7 @@ class LocateFunction extends FunctionNode
         return $platform->getLocateExpression($secondString, $firstString);
     }
 
-    /** @inheritdoc */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
