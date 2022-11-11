@@ -1020,6 +1020,7 @@ class Parser
         $this->match(Lexer::T_IDENTIFIER);
 
         $resultVariable = $this->lexer->token['value'];
+        assert(is_string($resultVariable));
 
         // Defer ResultVariable validation
         $this->deferredResultVariables[] = [

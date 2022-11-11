@@ -20,12 +20,11 @@ class ComparisonExpression extends Node
 {
     /**
      * @param Node|string $leftExpression
-     * @param string      $operator
      * @param Node|string $rightExpression
      */
     public function __construct(
         public $leftExpression,
-        public $operator,
+        public string $operator,
         public $rightExpression,
     ) {
     }

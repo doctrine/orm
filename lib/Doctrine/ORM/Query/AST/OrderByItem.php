@@ -15,8 +15,7 @@ use function strtoupper;
  */
 class OrderByItem extends Node
 {
-    /** @var string */
-    public $type;
+    public string $type;
 
     public function __construct(public mixed $expression)
     {

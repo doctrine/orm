@@ -1268,7 +1268,7 @@
       <code>AST\ArithmeticTerm</code>
       <code>AST\BetweenExpression|</code>
       <code>AST\SimpleArithmeticExpression|AST\ArithmeticTerm</code>
-      <code>string</code>
+      <code>class-string</code>
       <code>string</code>
       <code>string</code>
       <code>string</code>

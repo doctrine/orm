@@ -14,14 +14,10 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class SelectExpression extends Node
 {
-    /**
-     * @param string|null $fieldIdentificationVariable
-     * @param bool        $hiddenAliasResultVariable
-     */
     public function __construct(
         public mixed $expression,
-        public $fieldIdentificationVariable,
-        public $hiddenAliasResultVariable = false,
+        public string|null $fieldIdentificationVariable,
+        public bool $hiddenAliasResultVariable = false,
     ) {
     }
 

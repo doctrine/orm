@@ -9,14 +9,13 @@ use Doctrine\ORM\Query\SqlWalker;
 class AggregateExpression extends Node
 {
     /**
-     * @param string                                    $functionName
      * @param PathExpression|SimpleArithmeticExpression $pathExpression
      * @param bool                                      $isDistinct     Some aggregate expressions support distinct, eg COUNT.
      */
     public function __construct(
-        public $functionName,
+        public string $functionName,
         public $pathExpression,
-        public $isDistinct,
+        public bool $isDistinct,
     ) {
     }
 

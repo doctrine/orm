@@ -13,15 +13,13 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class UpdateClause extends Node
 {
-    /** @var string */
-    public $aliasIdentificationVariable;
+    public string $aliasIdentificationVariable;
 
-    /**
-     * @param string  $abstractSchemaName
-     * @param mixed[] $updateItems
-     */
-    public function __construct(public $abstractSchemaName, public array $updateItems)
-    {
+    /** @param mixed[] $updateItems */
+    public function __construct(
+        public string $abstractSchemaName,
+        public array $updateItems,
+    ) {
     }
 
     public function dispatch(SqlWalker $walker): string

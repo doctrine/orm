@@ -15,8 +15,7 @@ use function strtoupper;
  */
 class QuantifiedExpression extends Node
 {
-    /** @var string */
-    public $type;
+    public string $type;
 
     /** @param Subselect $subselect */
     public function __construct(public $subselect)

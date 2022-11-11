@@ -13,11 +13,8 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class NewObjectExpression extends Node
 {
-    /**
-     * @param string  $className
-     * @param mixed[] $args
-     */
-    public function __construct(public $className, public array $args)
+    /** @param mixed[] $args */
+    public function __construct(public string $className, public array $args)
     {
     }
 

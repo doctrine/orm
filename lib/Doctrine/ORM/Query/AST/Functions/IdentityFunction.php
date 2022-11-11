@@ -24,8 +24,7 @@ class IdentityFunction extends FunctionNode
     /** @var PathExpression */
     public $pathExpression;
 
-    /** @var string|null */
-    public $fieldMapping;
+    public string|null $fieldMapping = null;
 
     public function getSql(SqlWalker $sqlWalker): string
     {

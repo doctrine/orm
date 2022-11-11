@@ -15,12 +15,11 @@ class JoinAssociationDeclaration extends Node
 {
     /**
      * @param JoinAssociationPathExpression $joinAssociationPathExpression
-     * @param string                        $aliasIdentificationVariable
      * @param IndexBy|null                  $indexBy
      */
     public function __construct(
         public $joinAssociationPathExpression,
-        public $aliasIdentificationVariable,
+        public string $aliasIdentificationVariable,
         public $indexBy,
     ) {
     }

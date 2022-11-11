@@ -22,12 +22,13 @@ class Join extends Node
     public $conditionalExpression = null;
 
     /**
-     * @param int  $joinType
      * @param Node $joinAssociationDeclaration
      * @psalm-param self::JOIN_TYPE_* $joinType
      */
-    public function __construct(public $joinType, public $joinAssociationDeclaration = null)
-    {
+    public function __construct(
+        public int $joinType,
+        public $joinAssociationDeclaration = null,
+    ) {
     }
 
     public function dispatch(SqlWalker $walker): string

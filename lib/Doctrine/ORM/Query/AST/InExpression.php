@@ -14,11 +14,10 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class InExpression extends Node
 {
-    /** @var bool */
-    public $not;
+    public bool $not = false;
 
     /** @var mixed[] */
-    public $literals = [];
+    public array $literals = [];
 
     /** @var Subselect|null */
     public $subselect;
