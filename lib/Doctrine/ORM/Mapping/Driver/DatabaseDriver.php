@@ -66,7 +66,7 @@ class DatabaseDriver implements MappingDriver
     /** @var array<string,Table>|null */
     private $tables = null;
 
-    /** @var mixed[] */
+    /** @var array<class-string, string> */
     private $classToTableNames = [];
 
     /** @psalm-var array<string, Table> */
