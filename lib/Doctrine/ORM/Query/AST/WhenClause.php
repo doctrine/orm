@@ -12,7 +12,7 @@ namespace Doctrine\ORM\Query\AST;
 class WhenClause extends Node
 {
     /** @var ConditionalExpression */
-    public $caseConditionExpression = null;
+    public $caseConditionExpression;
 
     /** @var mixed */
     public $thenScalarExpression = null;
