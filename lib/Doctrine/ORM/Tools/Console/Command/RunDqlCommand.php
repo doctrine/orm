@@ -41,7 +41,23 @@ class RunDqlCommand extends AbstractEntityManagerCommand
              ->addOption('max-result', null, InputOption::VALUE_REQUIRED, 'The maximum number of results in the result set.')
              ->addOption('depth', null, InputOption::VALUE_REQUIRED, 'Dumping depth of Entity graph.', 7)
              ->addOption('show-sql', null, InputOption::VALUE_NONE, 'Dump generated SQL instead of executing query')
-             ->setHelp('Executes arbitrary DQL directly from the command line.');
+            ->setHelp(<<<'EOT'
+The <info>%command.name%</info> command executes the given DQL query and
+outputs the results:
+
+<info>php %command.full_name% "SELECT u FROM App\Entity\User u"</info>
+
+You can also optional specify some additional options like what type of
+hydration to use when executing the query:
+
+<info>php %command.full_name% "SELECT u FROM App\Entity\User u" --hydrate=array</info>
+
+Additionally you can specify the first result and maximum amount of results to
+show:
+
+<info>php %command.full_name% "SELECT u FROM App\Entity\User u" --first-result=0 --max-result=30</info>
+EOT
+            );
     }
 
     /**
