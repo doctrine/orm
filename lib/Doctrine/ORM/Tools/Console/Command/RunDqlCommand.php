@@ -82,7 +82,7 @@ EOT
             throw new LogicException("Option 'depth' must contain an integer value");
         }
 
-        $hydrationModeName = $input->getOption('hydrate');
+        $hydrationModeName = (string) $input->getOption('hydrate');
         $hydrationMode     = 'Doctrine\ORM\Query::HYDRATE_' . strtoupper(str_replace('-', '_', $hydrationModeName));
 
         if (! defined($hydrationMode)) {

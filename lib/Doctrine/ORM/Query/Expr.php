@@ -9,9 +9,9 @@ use Traversable;
 use function func_get_args;
 use function implode;
 use function is_bool;
+use function is_float;
+use function is_int;
 use function is_iterable;
-use function is_numeric;
-use function is_string;
 use function iterator_to_array;
 use function str_replace;
 
@@ -608,7 +608,7 @@ class Expr
     /**
      * Creates a literal expression of the given argument.
      *
-     * @param mixed $literal Argument to be converted to literal.
+     * @param scalar $literal Argument to be converted to literal.
      *
      * @return Expr\Literal
      */
@@ -620,13 +620,15 @@ class Expr
     /**
      * Quotes a literal value, if necessary, according to the DQL syntax.
      *
-     * @param mixed $literal The literal value.
+     * @param scalar $literal The literal value.
      */
     private function quoteLiteral($literal): string
     {
-        if (is_numeric($literal) && ! is_string($literal)) {
+        if (is_int($literal) || is_float($literal)) {
             return (string) $literal;
-        } elseif (is_bool($literal)) {
+        }
+
+        if (is_bool($literal)) {
             return $literal ? 'true' : 'false';
         }
 
