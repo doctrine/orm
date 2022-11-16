@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\PersistentCollection;
@@ -190,6 +192,9 @@ interface EntityPersister
      *
      * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
      *
+     * @throws Exception
+     * @throws ORMException
+     *
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
     public function load(
@@ -209,6 +214,9 @@ interface EntityPersister
      * @psalm-param array<string, mixed> $identifier The entity identifier.
      *
      * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
+     *
+     * @throws Exception
+     * @throws ORMException
      *
      * @todo Check parameters
      */
