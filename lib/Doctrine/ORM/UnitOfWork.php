@@ -752,6 +752,13 @@ class UnitOfWork implements PropertyChangedListener
                 if ($orgValue === $actualValue) {
                     continue;
                 }
+                
+                //skip if values are DateTime objects and their value is equal
+                if($orgValue instanceof \DateTime && $actualValue instanceof \DateTime){
+                    if($orgValue->format('U') == $actualValue->format('U')){
+                        continue;
+                    }
+                }
 
                 // if regular field
                 if (! isset($class->associationMappings[$propName])) {
