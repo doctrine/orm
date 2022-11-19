@@ -770,6 +770,8 @@ final class Query extends AbstractQuery
      * @param int $lockMode
      * @psalm-param LockMode::* $lockMode
      *
+     * @return $this
+     *
      * @throws TransactionRequiredException
      */
     public function setLockMode($lockMode): self
