@@ -1269,9 +1269,9 @@ class ClassMetadataInfo implements ClassMetadata, Stringable
     /**
      * Validates & completes the given field mapping based on typed property.
      *
-     * @param  mixed[] $mapping The field mapping to validate & complete.
+     * @param  array{fieldName: string, type?: mixed} $mapping The field mapping to validate & complete.
      *
-     * @return mixed[] The updated mapping.
+     * @return array{fieldName: string, enumType?: string, type?: mixed} The updated mapping.
      */
     private function validateAndCompleteTypedFieldMapping(array $mapping): array
     {
@@ -1326,7 +1326,7 @@ class ClassMetadataInfo implements ClassMetadata, Stringable
     /**
      * Validates & completes the basic mapping information based on typed property.
      *
-     * @param mixed[] $mapping The mapping.
+     * @param array{type: self::ONE_TO_ONE|self::MANY_TO_ONE|self::ONE_TO_MANY|self::MANY_TO_MANY, fieldName: string, targetEntity?: class-string} $mapping The mapping.
      *
      * @return mixed[] The updated mapping.
      */
@@ -1348,7 +1348,13 @@ class ClassMetadataInfo implements ClassMetadata, Stringable
     /**
      * Validates & completes the given field mapping.
      *
-     * @psalm-param array<string, mixed> $mapping The field mapping to validate & complete.
+     * @psalm-param array{
+     *     fieldName?: string,
+     *     columnName?: string,
+     *     id?: bool,
+     *     generated?: int,
+     *     enumType?: class-string,
+     * } $mapping The field mapping to validate & complete.
      *
      * @return mixed[] The updated mapping.
      *
@@ -1579,7 +1585,6 @@ class ClassMetadataInfo implements ClassMetadata, Stringable
     /**
      * Validates & completes a one-to-one association mapping.
      *
-     * @psalm-param array<string, mixed> $mapping The mapping to validate & complete.
      * @psalm-param array<string, mixed> $mapping The mapping to validate & complete.
      *
      * @return mixed[] The validated & completed mapping.

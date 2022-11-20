@@ -684,7 +684,7 @@ class Parser
             $fromClassName = $AST->fromClause->identificationVariableDeclarations[0]->rangeVariableDeclaration->abstractSchemaName ?? null;
 
             // If the namespace is not given then assumes the first FROM entity namespace
-            if (! str_contains($className, '\\') && ! class_exists($className) && str_contains($fromClassName, '\\')) {
+            if (! str_contains($className, '\\') && ! class_exists($className) && is_string($fromClassName) && str_contains($fromClassName, '\\')) {
                 $namespace = substr($fromClassName, 0, strrpos($fromClassName, '\\'));
                 $fqcn      = $namespace . '\\' . $className;
 
