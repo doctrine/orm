@@ -806,9 +806,6 @@
       <code>getColumns</code>
       <code>getIndexes</code>
     </PossiblyNullReference>
-    <PropertyTypeCoercion occurrences="1">
-      <code>$metadata-&gt;table</code>
-    </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/PHPDriver.php">
     <PropertyNotSetInConstructor occurrences="1">
@@ -1788,9 +1785,6 @@
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
     </ParamNameMismatch>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>null</code>
-    </PossiblyNullPropertyAssignmentValue>
     <UndefinedMethod occurrences="1">
       <code>walkWhenClauseExpression</code>
     </UndefinedMethod>
@@ -2021,10 +2015,9 @@
       <code>$this-&gt;SimpleArithmeticExpression()</code>
       <code>$value</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PossiblyNullArgument occurrences="6">
+    <PossiblyNullArgument occurrences="5">
       <code>$aliasIdentVariable</code>
       <code>$dql</code>
-      <code>$fromClassName</code>
       <code>$resultVariable</code>
       <code>$this-&gt;query-&gt;getDQL()</code>
       <code>$token['value']</code>

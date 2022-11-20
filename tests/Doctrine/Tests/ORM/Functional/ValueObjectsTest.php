@@ -19,8 +19,8 @@ use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\ReflectionEmbeddedProperty;
 use Doctrine\ORM\Query\QueryException;
-use Doctrine\Persistence\Reflection\RuntimePublicReflectionProperty;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ReflectionProperty;
 
 use function class_exists;
 use function sprintf;
@@ -53,7 +53,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             );
         } else {
             self::assertInstanceOf(
-                RuntimePublicReflectionProperty::class,
+                ReflectionProperty::class,
                 $classMetadata->getReflectionProperty('address')
             );
         }
