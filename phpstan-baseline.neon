@@ -716,6 +716,11 @@ parameters:
 			path: lib/Doctrine/ORM/UnitOfWork.php
 
 		-
+			message: "#^Parameter \\#3 \\$collection of class Doctrine\\\\ORM\\\\PersistentCollection constructor expects Doctrine\\\\Common\\\\Collections\\\\Collection\\<\\(int\\|string\\), mixed\\>&Doctrine\\\\Common\\\\Collections\\\\Selectable\\<\\(int\\|string\\), mixed\\>, Doctrine\\\\Common\\\\Collections\\\\Collection given\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/UnitOfWork.php
+
+		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$name\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Utility/HierarchyDiscriminatorResolver.php

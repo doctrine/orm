@@ -1031,6 +1031,11 @@
       <code>$entity</code>
     </PossiblyInvalidArgument>
   </file>
+  <file src="lib/Doctrine/ORM/ORMSetup.php">
+    <UndefinedClass occurrences="1">
+      <code>MemcachedAdapter::createConnection('memcached://127.0.0.1')</code>
+    </UndefinedClass>
+  </file>
   <file src="lib/Doctrine/ORM/PersistentCollection.php">
     <ImplementedReturnTypeMismatch occurrences="2">
       <code>Collection&lt;TKey, T&gt;</code>
@@ -1039,6 +1044,12 @@
     <InvalidReturnStatement occurrences="2">
       <code>$this-&gt;em-&gt;find($this-&gt;typeClass-&gt;name, $key)</code>
     </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>Collection&lt;TKey, T&gt;</code>
+    </InvalidReturnType>
+    <LessSpecificReturnStatement occurrences="1">
+      <code>$this-&gt;unwrap()-&gt;matching($criteria)</code>
+    </LessSpecificReturnStatement>
     <MissingParamType occurrences="1">
       <code>$offset</code>
     </MissingParamType>
@@ -1070,9 +1081,6 @@
       <code>setValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
-    <UndefinedInterfaceMethod occurrences="1">
-      <code>matching</code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php">
     <PossiblyNullArgument occurrences="44">
@@ -2800,11 +2808,9 @@
     </UnresolvableInclude>
   </file>
   <file src="lib/Doctrine/ORM/UnitOfWork.php">
-    <ArgumentTypeCoercion occurrences="5">
+    <ArgumentTypeCoercion occurrences="3">
       <code>$class</code>
       <code>$class</code>
-      <code>$collectionToDelete</code>
-      <code>$collectionToUpdate</code>
       <code>$commitOrder[$i]</code>
     </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="2">
@@ -2829,10 +2835,13 @@
     <NullableReturnStatement occurrences="1">
       <code>$this-&gt;identityMap[$rootClassName][$idHash]</code>
     </NullableReturnStatement>
+    <PossiblyInvalidArgument occurrences="1">
+      <code>$value</code>
+    </PossiblyInvalidArgument>
     <PossiblyInvalidArrayOffset occurrences="1">
       <code>$this-&gt;identityMap[$rootClassName]</code>
     </PossiblyInvalidArrayOffset>
-    <PossiblyNullArgument occurrences="12">
+    <PossiblyNullArgument occurrences="13">
       <code>$assoc</code>
       <code>$assoc</code>
       <code>$assoc</code>
@@ -2842,6 +2851,7 @@
       <code>$collection-&gt;getOwner()</code>
       <code>$collection-&gt;getOwner()</code>
       <code>$collectionToDelete-&gt;getMapping()</code>
+      <code>$collectionToUpdate-&gt;getMapping()</code>
       <code>$entity</code>
       <code>$entity</code>
       <code>$owner</code>
@@ -2905,11 +2915,6 @@
     <ReferenceConstraintViolation occurrences="1">
       <code>$visited</code>
     </ReferenceConstraintViolation>
-    <UndefinedInterfaceMethod occurrences="3">
-      <code>getMapping</code>
-      <code>getMapping</code>
-      <code>takeSnapshot</code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Utility/HierarchyDiscriminatorResolver.php">
     <NoInterfaceProperties occurrences="2">
