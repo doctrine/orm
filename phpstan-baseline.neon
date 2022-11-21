@@ -251,11 +251,6 @@ parameters:
 			path: lib/Doctrine/ORM/NativeQuery.php
 
 		-
-			message: "#^Call to an undefined method Doctrine\\\\Common\\\\Collections\\\\Collection\\<TKey of \\(int\\|string\\), T\\>\\:\\:matching\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/PersistentCollection.php
-
-		-
 			message: "#^Method Doctrine\\\\ORM\\\\Persisters\\\\Collection\\\\OneToManyPersister\\:\\:delete\\(\\) should return int\\|null but empty return statement found\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php
@@ -716,27 +711,12 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/SchemaTool.php
 
 		-
-			message: "#^Call to an undefined method Doctrine\\\\Common\\\\Collections\\\\Collection\\<\\(int\\|string\\), object\\>\\:\\:getMapping\\(\\)\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/UnitOfWork.php
-
-		-
-			message: "#^Call to an undefined method Doctrine\\\\Common\\\\Collections\\\\Collection\\<\\(int\\|string\\), object\\>\\:\\:takeSnapshot\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/UnitOfWork.php
-
-		-
-			message: "#^Parameter \\#1 \\$collection of method Doctrine\\\\ORM\\\\Persisters\\\\Collection\\\\CollectionPersister\\:\\:delete\\(\\) expects Doctrine\\\\ORM\\\\PersistentCollection, Doctrine\\\\Common\\\\Collections\\\\Collection\\<\\(int\\|string\\), object\\> given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/UnitOfWork.php
-
-		-
-			message: "#^Parameter \\#1 \\$collection of method Doctrine\\\\ORM\\\\Persisters\\\\Collection\\\\CollectionPersister\\:\\:update\\(\\) expects Doctrine\\\\ORM\\\\PersistentCollection, Doctrine\\\\Common\\\\Collections\\\\Collection\\<\\(int\\|string\\), object\\> given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/UnitOfWork.php
-
-		-
 			message: "#^Parameter \\#3 \\$changeSet of class Doctrine\\\\ORM\\\\Event\\\\PreUpdateEventArgs constructor is passed by reference, so it expects variables only$#"
+			count: 1
+			path: lib/Doctrine/ORM/UnitOfWork.php
+
+		-
+			message: "#^Parameter \\#3 \\$collection of class Doctrine\\\\ORM\\\\PersistentCollection constructor expects Doctrine\\\\Common\\\\Collections\\\\Collection\\<\\(int\\|string\\), mixed\\>&Doctrine\\\\Common\\\\Collections\\\\Selectable\\<\\(int\\|string\\), mixed\\>, Doctrine\\\\Common\\\\Collections\\\\Collection given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/UnitOfWork.php
 

@@ -222,14 +222,14 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * All pending collection deletions.
      *
-     * @psalm-var array<int, Collection<array-key, object>>
+     * @psalm-var array<int, PersistentCollection<array-key, object>>
      */
     private $collectionDeletions = [];
 
     /**
      * All pending collection updates.
      *
-     * @psalm-var array<int, Collection<array-key, object>>
+     * @psalm-var array<int, PersistentCollection<array-key, object>>
      */
     private $collectionUpdates = [];
 
@@ -238,7 +238,7 @@ class UnitOfWork implements PropertyChangedListener
      * At the end of the UnitOfWork all these collections will make new snapshots
      * of their data.
      *
-     * @psalm-var array<int, Collection<array-key, object>>
+     * @psalm-var array<int, PersistentCollection<array-key, object>>
      */
     private $visitedCollections = [];
 
@@ -419,12 +419,6 @@ class UnitOfWork implements PropertyChangedListener
         try {
             // Collection deletions (deletions of complete collections)
             foreach ($this->collectionDeletions as $collectionToDelete) {
-                if (! $collectionToDelete instanceof PersistentCollection) {
-                    $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
-
-                    continue;
-                }
-
                 // Deferred explicit tracked collections can be removed only when owning relation was persisted
                 $owner = $collectionToDelete->getOwner();
 
@@ -3376,7 +3370,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the currently scheduled complete collection deletions
      *
-     * @psalm-return array<int, Collection<array-key, object>>
+     * @psalm-return array<int, PersistentCollection<array-key, object>>
      */
     public function getScheduledCollectionDeletions()
     {
@@ -3386,7 +3380,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the currently scheduled collection inserts, updates and deletes.
      *
-     * @psalm-return array<int, Collection<array-key, object>>
+     * @psalm-return array<int, PersistentCollection<array-key, object>>
      */
     public function getScheduledCollectionUpdates()
     {

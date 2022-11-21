@@ -97,7 +97,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @param EntityManagerInterface $em    The EntityManager the collection will be associated with.
      * @param ClassMetadata          $class The class descriptor of the entity type of this collection.
-     * @psalm-param Collection<TKey, T> $collection The collection elements.
+     * @psalm-param Collection<TKey, T>&Selectable<TKey, T> $collection The collection elements.
      */
     public function __construct(EntityManagerInterface $em, $class, Collection $collection)
     {
@@ -675,11 +675,12 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * Retrieves the wrapped Collection instance.
      *
-     * @return Collection<TKey, T>
+     * @return Collection<TKey, T>&Selectable<TKey, T>
      */
     public function unwrap(): Collection
     {
-        assert($this->collection !== null);
+        assert($this->collection instanceof Collection);
+        assert($this->collection instanceof Selectable);
 
         return $this->collection;
     }
