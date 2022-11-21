@@ -19,20 +19,6 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
 class CachedPersisterContext
 {
     /**
-     * Metadata object that describes the mapping of the mapped entity class.
-     *
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
-     */
-    public $class;
-
-    /**
-     * ResultSetMapping that is used for all queries. Is generated lazily once per request.
-     *
-     * @var ResultSetMapping
-     */
-    public $rsm;
-
-    /**
      * The SELECT column list SQL fragment used for querying entities by this persister.
      * This SQL fragment is only generated once per request, if at all.
      *
@@ -62,21 +48,19 @@ class CachedPersisterContext
      */
     public $sqlTableAliases = [];
 
-    /**
-     * Whether this persistent context is considering limit operations applied to the selection queries
-     *
-     * @var bool
-     */
-    public $handlesLimits;
-
-    /** @param bool $handlesLimits */
     public function __construct(
-        ClassMetadata $class,
-        ResultSetMapping $rsm,
-        $handlesLimits,
+        /**
+         * Metadata object that describes the mapping of the mapped entity class.
+         */
+        public ClassMetadata $class,
+        /**
+         * ResultSetMapping that is used for all queries. Is generated lazily once per request.
+         */
+        public ResultSetMapping $rsm,
+        /**
+         * Whether this persistent context is considering limit operations applied to the selection queries
+         */
+        public bool $handlesLimits,
     ) {
-        $this->class         = $class;
-        $this->rsm           = $rsm;
-        $this->handlesLimits = (bool) $handlesLimits;
     }
 }

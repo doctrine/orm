@@ -186,11 +186,6 @@ parameters:
 			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: "#^Property Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\CachedPersisterContext\\:\\:\\$class \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata\\) does not accept Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/CachedPersisterContext.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$isEmbeddedClass\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php

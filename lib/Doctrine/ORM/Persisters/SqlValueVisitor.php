@@ -15,10 +15,10 @@ use Doctrine\Common\Collections\Expr\Value;
 class SqlValueVisitor extends ExpressionVisitor
 {
     /** @var mixed[] */
-    private $values = [];
+    private array $values = [];
 
     /** @var mixed[][] */
-    private $types = [];
+    private array $types = [];
 
     /**
      * Converts a comparison expression into the target query language output.
@@ -73,7 +73,7 @@ class SqlValueVisitor extends ExpressionVisitor
      * @return mixed[][]
      * @psalm-return array{0: array, 1: array<array<mixed>>}
      */
-    public function getParamsAndTypes()
+    public function getParamsAndTypes(): array
     {
         return [$this->values, $this->types];
     }
@@ -88,18 +88,11 @@ class SqlValueVisitor extends ExpressionVisitor
     {
         $value = $comparison->getValue()->getValue();
 
-        switch ($comparison->getOperator()) {
-            case Comparison::CONTAINS:
-                return '%' . $value . '%';
-
-            case Comparison::STARTS_WITH:
-                return $value . '%';
-
-            case Comparison::ENDS_WITH:
-                return '%' . $value;
-
-            default:
-                return $value;
-        }
+        return match ($comparison->getOperator()) {
+            Comparison::CONTAINS => '%' . $value . '%',
+            Comparison::STARTS_WITH => $value . '%',
+            Comparison::ENDS_WITH => '%' . $value,
+            default => $value,
+        };
     }
 }

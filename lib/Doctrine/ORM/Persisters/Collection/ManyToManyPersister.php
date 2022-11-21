@@ -17,7 +17,6 @@ use Doctrine\ORM\Utility\PersisterHelper;
 use function array_fill;
 use function array_pop;
 use function count;
-use function get_class;
 use function implode;
 use function in_array;
 use function reset;
@@ -74,7 +73,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
     }
 
-    public function get(PersistentCollection $collection, mixed $index): mixed
+    public function get(PersistentCollection $collection, mixed $index): object|null
     {
         $mapping = $collection->getMapping();
 
@@ -207,7 +206,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $mapping       = $collection->getMapping();
         $owner         = $collection->getOwner();
-        $ownerMetadata = $this->em->getClassMetadata(get_class($owner));
+        $ownerMetadata = $this->em->getClassMetadata($owner::class);
         $id            = $this->uow->getEntityIdentifier($owner);
         $targetClass   = $this->em->getClassMetadata($mapping['targetEntity']);
         $onConditions  = $this->getOnConditionSQL($mapping);
@@ -361,7 +360,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $columns   = [];
         $mapping   = $collection->getMapping();
-        $class     = $this->em->getClassMetadata(get_class($collection->getOwner()));
+        $class     = $this->em->getClassMetadata($collection->getOwner()::class);
         $joinTable = $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform);
 
         foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
@@ -441,7 +440,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * @return mixed[]
      * @psalm-return list<mixed>
      */
-    protected function getDeleteRowSQLParameters(PersistentCollection $collection, object $element)
+    protected function getDeleteRowSQLParameters(PersistentCollection $collection, object $element): array
     {
         return $this->collectJoinTableColumnParameters($collection, $element);
     }
@@ -514,7 +513,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         $class1 = $class2 = null;
         if ($isComposite) {
-            $class1 = $this->em->getClassMetadata(get_class($collection->getOwner()));
+            $class1 = $this->em->getClassMetadata($collection->getOwner()::class);
             $class2 = $collection->getTypeClass();
         }
 
