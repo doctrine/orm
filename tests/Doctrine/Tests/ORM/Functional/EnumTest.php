@@ -450,13 +450,9 @@ EXCEPTION
         $qb->join('assoc.card', 'card');
         $assoc = $qb->getQuery()->getSingleResult();
 
-        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($assoc->card));
-
         $card = $this->_em->find(CardWithDefault::class, $cardId);
-        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($card));
 
         $this->_em->getUnitOfWork()->computeChangeSet($this->_em->getClassMetadata(CardWithDefault::class), $card);
-
         static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($card));
     }
 }
