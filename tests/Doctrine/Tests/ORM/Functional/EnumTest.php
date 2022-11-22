@@ -12,6 +12,7 @@ use Doctrine\ORM\Query\Expr\Func;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\DataTransferObjects\DtoWithArrayOfEnums;
 use Doctrine\Tests\Models\DataTransferObjects\DtoWithEnum;
+use Doctrine\Tests\Models\Enums\AssocToCardWithDefault;
 use Doctrine\Tests\Models\Enums\Card;
 use Doctrine\Tests\Models\Enums\CardWithDefault;
 use Doctrine\Tests\Models\Enums\CardWithNullable;
@@ -433,19 +434,23 @@ EXCEPTION
 
     public function testEnumAreNotConsideredAsChanges(): void
     {
-        $this->setUpEntitySchema([CardWithDefault::class]);
+        $this->setUpEntitySchema([CardWithDefault::class, AssocToCardWithDefault::class]);
 
         $table  = $this->_em->getClassMetadata(CardWithDefault::class)->getTableName();
         $cardId = uniqid('', true);
 
         $this->_em->getConnection()->insert($table, ['id' => $cardId]);
 
-        $card = $this->_em->find(CardWithDefault::class, $cardId);
+        $tableAssoc = $this->_em->getClassMetadata(AssocToCardWithDefault::class)->getTableName();
+        $assocId    = uniqid('', true);
+        $this->_em->getConnection()->insert($tableAssoc, ['id' => $assocId, 'card_id' => $cardId]);
 
-        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($card));
+        $assoc = $this->_em->find(AssocToCardWithDefault::class, $assocId);
+
+        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($assoc->card));
         $this->_em->flush();
-        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($card));
+        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($assoc->card));
         $this->_em->flush();
-        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($card));
+        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($assoc->card));
     }
 }
