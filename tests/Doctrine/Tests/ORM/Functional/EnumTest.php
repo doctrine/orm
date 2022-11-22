@@ -445,18 +445,18 @@ EXCEPTION
         $assocId    = uniqid('', true);
         $this->_em->getConnection()->insert($tableAssoc, ['id' => $assocId, 'card_id' => $cardId]);
 
-        $card = $this->_em->find(CardWithDefault::class, $cardId);
-        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($card));
-
         $qb = $this->_em->createQueryBuilder();
         $qb->select('assoc')->from(AssocToCardWithDefault::class, 'assoc');
         $qb->join('assoc.card', 'card');
         $assoc = $qb->getQuery()->getSingleResult();
 
         static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($assoc->card));
-        $this->_em->flush();
-        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($assoc->card));
-        $this->_em->flush();
-        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($assoc->card));
+
+        $card = $this->_em->find(CardWithDefault::class, $cardId);
+        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($card));
+
+        $this->_em->getUnitOfWork()->recomputeSingleEntityChangeSet($this->_em->getClassMetadata(CardWithDefault::class), $card);
+
+        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($card));
     }
 }
