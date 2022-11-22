@@ -455,7 +455,7 @@ EXCEPTION
         $card = $this->_em->find(CardWithDefault::class, $cardId);
         static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($card));
 
-        $this->_em->getUnitOfWork()->recomputeSingleEntityChangeSet($this->_em->getClassMetadata(CardWithDefault::class), $card);
+        $this->_em->getUnitOfWork()->computeChangeSet($this->_em->getClassMetadata(CardWithDefault::class), $card);
 
         static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($card));
     }
