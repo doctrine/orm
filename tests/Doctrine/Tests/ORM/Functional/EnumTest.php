@@ -430,4 +430,22 @@ EXCEPTION
 
         self::assertSame(Suit::Hearts, $card->suit);
     }
+
+    public function testEnumAreNotConsideredAsChanges()
+    {
+        $this->setUpEntitySchema([CardWithDefault::class]);
+
+        $table  = $this->_em->getClassMetadata(CardWithDefault::class)->getTableName();
+        $cardId = uniqid('', true);
+
+        $this->_em->getConnection()->insert($table, ['id' => $cardId]);
+
+        $card = $this->_em->find(CardWithDefault::class, $cardId);
+
+        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($card));
+        $this->_em->flush();
+        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($card));
+        $this->_em->flush();
+        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($card));
+    }
 }
