@@ -58,6 +58,31 @@ class SchemaValidator
     }
 
     /**
+     * Checks the *-to-one relations doesn't have subclasses.
+     * If it might be a subtype, it can not be lazy. There isn't even
+     * a way to solve this with deferred eager loading, which means putting
+     * an entity with subclasses at a *-to-one location is really bad! (performance-wise)
+     *
+     * @psalm-return array<string, list<string>>
+     */
+    public function validateToOneRelations(): array
+    {
+        $cmf     = $this->em->getMetadataFactory();
+        $classes = $cmf->getAllMetadata();
+        $errors = [];
+        foreach ($classes as $class) {
+            if (!empty($class->subClasses) && !$class->isMappedSuperclass) {
+                $reflection = new \ReflectionClass($class->getName());
+                if (!$reflection->isAbstract()) {
+                    $errors[$class->name] = ['Class ' . $class->name . ' is inheritance with subclasses'];
+                }
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
      * Validates a single class of the current.
      *
      * @return string[]

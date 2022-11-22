@@ -49,6 +49,7 @@ class SchemaValidatorTest extends OrmTestCase
                  ->addPaths([$path]);
 
         self::assertEmpty($this->validator->validateMapping());
+        self::assertEmpty($this->validator->validateToOneRelations());
     }
 
     public function modelSetProvider(): array

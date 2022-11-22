@@ -27,6 +27,7 @@ class ValidateSchemaCommand extends AbstractEntityManagerCommand
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('skip-mapping', null, InputOption::VALUE_NONE, 'Skip the mapping validation check')
              ->addOption('skip-sync', null, InputOption::VALUE_NONE, 'Skip checking if the mapping is in sync with the database')
+             ->addOption('skip-one-to-relations', null, InputOption::VALUE_NONE, 'Skip checking if *-to-one relations doesn\'t have subclasses.')
              ->setHelp('Validate that the mapping files are correct and in sync with the database.');
     }
 
@@ -81,6 +82,29 @@ class ValidateSchemaCommand extends AbstractEntityManagerCommand
             $exit += 2;
         } else {
             $ui->success('The database schema is in sync with the mapping files.');
+        }
+
+        if ($input->getOption('skip-one-to-relations')) {
+            $ui->text('<comment>[SKIPPED] The *-to-relation with subclasses was not checked.</comment>');
+        } else {
+            $errors = $validator->validateToOneRelations();
+            if ($errors) {
+                foreach ($errors as $className => $errorMessages) {
+                    $ui->text(
+                        sprintf(
+                            '<error>[FAIL]</error> The entity-class <comment>%s</comment> has *-to-one relation with subclasses:',
+                            $className
+                        )
+                    );
+
+                    $ui->listing($errorMessages);
+                    $ui->newLine();
+                }
+
+                ++$exit;
+            } else {
+                $ui->success('*-to-one relation with subclasses check is correct.');
+            }
         }
 
         return $exit;
