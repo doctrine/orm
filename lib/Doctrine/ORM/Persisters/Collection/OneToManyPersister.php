@@ -11,7 +11,6 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Utility\PersisterHelper;
 
-use function array_merge;
 use function array_reverse;
 use function array_values;
 use function assert;
@@ -52,7 +51,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         return;
     }
 
-    public function get(PersistentCollection $collection, mixed $index): mixed
+    public function get(PersistentCollection $collection, mixed $index): object|null
     {
         $mapping = $collection->getMapping();
 
@@ -213,7 +212,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $numDeleted = $this->conn->executeStatement($statement, $parameters);
 
         // 3) Delete records on each table in the hierarchy
-        $classNames = array_merge($targetClass->parentClasses, [$targetClass->name], $targetClass->subClasses);
+        $classNames = [...$targetClass->parentClasses, ...[$targetClass->name], ...$targetClass->subClasses];
 
         foreach (array_reverse($classNames) as $className) {
             $tableName = $this->quoteStrategy->getTableName($this->em->getClassMetadata($className), $this->platform);

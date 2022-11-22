@@ -29,6 +29,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
     protected function getSelectColumnsSQL(): string
     {
+        $columnList = [];
         if ($this->currentPersisterContext->selectColumnListSql !== null) {
             return $this->currentPersisterContext->selectColumnListSql;
         }

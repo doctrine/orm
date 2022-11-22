@@ -158,11 +158,11 @@ class BasicEntityPersister implements EntityPersister
     /**
      * The IdentifierFlattener used for manipulating identifiers
      */
-    private IdentifierFlattener $identifierFlattener;
+    private readonly IdentifierFlattener $identifierFlattener;
 
     protected CachedPersisterContext $currentPersisterContext;
-    private CachedPersisterContext $limitsHandlingContext;
-    private CachedPersisterContext $noLimitsContext;
+    private readonly CachedPersisterContext $limitsHandlingContext;
+    private readonly CachedPersisterContext $noLimitsContext;
 
     /**
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
@@ -338,7 +338,7 @@ class BasicEntityPersister implements EntityPersister
         $types = [];
 
         foreach ($id as $field => $value) {
-            $types = array_merge($types, $this->getTypes($field, $value, $versionedClass));
+            $types = [...$types, ...$this->getTypes($field, $value, $versionedClass)];
         }
 
         return $types;
@@ -852,7 +852,7 @@ class BasicEntityPersister implements EntityPersister
 
         foreach ($types as $type) {
             [$field, $value] = $type;
-            $sqlTypes        = array_merge($sqlTypes, $this->getTypes($field, $value, $this->class));
+            $sqlTypes        = [...$sqlTypes, ...$this->getTypes($field, $value, $this->class)];
         }
 
         return [$sqlParams, $sqlTypes];
@@ -1791,7 +1791,7 @@ class BasicEntityPersister implements EntityPersister
                 continue; // skip null values.
             }
 
-            $types  = array_merge($types, $this->getTypes($field, $value, $this->class));
+            $types  = [...$types, ...$this->getTypes($field, $value, $this->class)];
             $params = array_merge($params, $this->getValues($value));
         }
 
@@ -1820,7 +1820,7 @@ class BasicEntityPersister implements EntityPersister
                 continue; // skip null values.
             }
 
-            $types  = array_merge($types, $this->getTypes($criterion['field'], $criterion['value'], $criterion['class']));
+            $types  = [...$types, ...$this->getTypes($criterion['field'], $criterion['value'], $criterion['class'])];
             $params = array_merge($params, $this->getValues($criterion['value']));
         }
 
@@ -1869,7 +1869,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
         if (is_array($value)) {
-            return array_map([$this, 'getArrayBindingType'], $types);
+            return array_map($this->getArrayBindingType(...), $types);
         }
 
         return $types;
@@ -1964,8 +1964,8 @@ class BasicEntityPersister implements EntityPersister
             $sql                             .= ' AND ' . $this->getSelectConditionCriteriaSQL($extraConditions);
             [$criteriaParams, $criteriaTypes] = $this->expandCriteriaParameters($extraConditions);
 
-            $params = array_merge($params, $criteriaParams);
-            $types  = array_merge($types, $criteriaTypes);
+            $params = [...$params, ...$criteriaParams];
+            $types  = [...$types, ...$criteriaTypes];
         }
 
         $filterSql = $this->generateFilterConditionSQL($this->class, $alias);

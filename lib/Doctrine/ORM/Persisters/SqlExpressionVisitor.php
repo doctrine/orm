@@ -21,24 +21,14 @@ use function is_object;
  */
 class SqlExpressionVisitor extends ExpressionVisitor
 {
-    /** @var BasicEntityPersister */
-    private $persister;
-
-    /** @var ClassMetadata */
-    private $classMetadata;
-
-    public function __construct(BasicEntityPersister $persister, ClassMetadata $classMetadata)
-    {
-        $this->persister     = $persister;
-        $this->classMetadata = $classMetadata;
+    public function __construct(
+        private readonly BasicEntityPersister $persister,
+        private readonly ClassMetadata $classMetadata,
+    ) {
     }
 
-    /**
-     * Converts a comparison expression into the target query language output.
-     *
-     * @return mixed
-     */
-    public function walkComparison(Comparison $comparison)
+    /** Converts a comparison expression into the target query language output. */
+    public function walkComparison(Comparison $comparison): string
     {
         $field = $comparison->getField();
         $value = $comparison->getValue()->getValue(); // shortcut for walkValue()
@@ -61,11 +51,9 @@ class SqlExpressionVisitor extends ExpressionVisitor
     /**
      * Converts a composite expression into the target query language output.
      *
-     * @return string
-     *
      * @throws RuntimeException
      */
-    public function walkCompositeExpression(CompositeExpression $expr)
+    public function walkCompositeExpression(CompositeExpression $expr): string
     {
         $expressionList = [];
 
@@ -73,24 +61,17 @@ class SqlExpressionVisitor extends ExpressionVisitor
             $expressionList[] = $this->dispatch($child);
         }
 
-        switch ($expr->getType()) {
-            case CompositeExpression::TYPE_AND:
-                return '(' . implode(' AND ', $expressionList) . ')';
-
-            case CompositeExpression::TYPE_OR:
-                return '(' . implode(' OR ', $expressionList) . ')';
-
-            default:
-                throw new RuntimeException('Unknown composite ' . $expr->getType());
-        }
+        return match ($expr->getType()) {
+            CompositeExpression::TYPE_AND => '(' . implode(' AND ', $expressionList) . ')',
+            CompositeExpression::TYPE_OR => '(' . implode(' OR ', $expressionList) . ')',
+            default => throw new RuntimeException('Unknown composite ' . $expr->getType()),
+        };
     }
 
     /**
      * Converts a value expression into the target query language part.
-     *
-     * @return string
      */
-    public function walkValue(Value $value)
+    public function walkValue(Value $value): string
     {
         return '?';
     }
