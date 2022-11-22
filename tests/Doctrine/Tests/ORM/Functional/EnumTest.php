@@ -431,7 +431,7 @@ EXCEPTION
         self::assertSame(Suit::Hearts, $card->suit);
     }
 
-    public function testEnumAreNotConsideredAsChanges()
+    public function testEnumAreNotConsideredAsChanges(): void
     {
         $this->setUpEntitySchema([CardWithDefault::class]);
 
