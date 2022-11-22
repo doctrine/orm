@@ -445,7 +445,10 @@ EXCEPTION
         $assocId    = uniqid('', true);
         $this->_em->getConnection()->insert($tableAssoc, ['id' => $assocId, 'card_id' => $cardId]);
 
-        $assoc = $this->_em->find(AssocToCardWithDefault::class, $assocId);
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('assoc')->from(AssocToCardWithDefault::class, 'assoc');
+        $qb->join('assoc.card','card');
+        $assoc = $qb->getQuery()->getSingleResult();
 
         static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($assoc->card));
         $this->_em->flush();
