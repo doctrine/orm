@@ -12,7 +12,7 @@ use Doctrine\ORM\Query\Expr\Func;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\DataTransferObjects\DtoWithArrayOfEnums;
 use Doctrine\Tests\Models\DataTransferObjects\DtoWithEnum;
-use Doctrine\Tests\Models\Enums\AssocToCardWithDefault;
+use Doctrine\Tests\Models\Enums\AssocToCardReadOnlyCache;
 use Doctrine\Tests\Models\Enums\Card;
 use Doctrine\Tests\Models\Enums\CardWithDefault;
 use Doctrine\Tests\Models\Enums\CardWithNullable;
@@ -39,10 +39,6 @@ class EnumTest extends OrmFunctionalTestCase
 
         $this->_em         = $this->getEntityManager(null, new AttributeDriver([dirname(__DIR__, 2) . '/Models/Enums']));
         $this->_schemaTool = new SchemaTool($this->_em);
-
-        if ($this->isSecondLevelCacheEnabled) {
-            $this->markTestSkipped();
-        }
     }
 
     /**
@@ -434,25 +430,26 @@ EXCEPTION
 
     public function testEnumAreNotConsideredAsChanges(): void
     {
-        $this->setUpEntitySchema([CardWithDefault::class, AssocToCardWithDefault::class]);
+        $this->setUpEntitySchema([CardWithDefault::class, AssocToCardReadOnlyCache::class]);
 
         $table  = $this->_em->getClassMetadata(CardWithDefault::class)->getTableName();
         $cardId = uniqid('', true);
 
-        $this->_em->getConnection()->insert($table, ['id' => $cardId]);
+        $this->_em->getConnection()->insert($table, ['id' => $cardId, 'suit' => 'H']);
 
-        $tableAssoc = $this->_em->getClassMetadata(AssocToCardWithDefault::class)->getTableName();
+        $tableAssoc = $this->_em->getClassMetadata(AssocToCardReadOnlyCache::class)->getTableName();
         $assocId    = uniqid('', true);
         $this->_em->getConnection()->insert($tableAssoc, ['id' => $assocId, 'card_id' => $cardId]);
 
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('assoc')->from(AssocToCardWithDefault::class, 'assoc');
+        $qb->select('assoc')->from(AssocToCardReadOnlyCache::class, 'assoc');
         $qb->join('assoc.card', 'card');
         $assoc = $qb->getQuery()->getSingleResult();
 
         $card = $this->_em->find(CardWithDefault::class, $cardId);
 
-        $this->_em->getUnitOfWork()->computeChangeSet($this->_em->getClassMetadata(CardWithDefault::class), $card);
-        static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($card));
+        $this->_em->flush();
+
+        $this->expectNotToPerformAssertions();
     }
 }
