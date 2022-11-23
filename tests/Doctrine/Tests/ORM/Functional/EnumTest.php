@@ -14,6 +14,7 @@ use Doctrine\Tests\Models\DataTransferObjects\DtoWithArrayOfEnums;
 use Doctrine\Tests\Models\DataTransferObjects\DtoWithEnum;
 use Doctrine\Tests\Models\Enums\AssocToCardReadOnlyCache;
 use Doctrine\Tests\Models\Enums\Card;
+use Doctrine\Tests\Models\Enums\CardReadOnlyCache;
 use Doctrine\Tests\Models\Enums\CardWithDefault;
 use Doctrine\Tests\Models\Enums\CardWithNullable;
 use Doctrine\Tests\Models\Enums\Product;
@@ -430,9 +431,9 @@ EXCEPTION
 
     public function testEnumAreNotConsideredAsChanges(): void
     {
-        $this->setUpEntitySchema([CardWithDefault::class, AssocToCardReadOnlyCache::class]);
+        $this->setUpEntitySchema([CardReadOnlyCache::class, AssocToCardReadOnlyCache::class]);
 
-        $table  = $this->_em->getClassMetadata(CardWithDefault::class)->getTableName();
+        $table  = $this->_em->getClassMetadata(CardReadOnlyCache::class)->getTableName();
         $cardId = uniqid('', true);
 
         $this->_em->getConnection()->insert($table, ['id' => $cardId, 'suit' => 'H']);
@@ -446,7 +447,7 @@ EXCEPTION
         $qb->join('assoc.card', 'card');
         $assoc = $qb->getQuery()->getSingleResult();
 
-        $card = $this->_em->find(CardWithDefault::class, $cardId);
+        $card = $this->_em->find(CardReadOnlyCache::class, $cardId);
 
         $this->_em->flush();
 
