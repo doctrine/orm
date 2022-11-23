@@ -2880,12 +2880,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$parameters</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="1">
-      <code>$this-&gt;count === null</code>
-    </DocblockTypeContradiction>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$count</code>
-    </PropertyNotSetInConstructor>
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(bool) $fetchJoinCollection</code>
     </RedundantCastGivenDocblockType>
