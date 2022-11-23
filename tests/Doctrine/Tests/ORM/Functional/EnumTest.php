@@ -436,7 +436,7 @@ EXCEPTION
         $table  = $this->_em->getClassMetadata(CardReadOnlyCache::class)->getTableName();
         $cardId = uniqid('', true);
 
-        $this->_em->getConnection()->insert($table, ['id' => $cardId, 'suit' => 'H']);
+        $this->_em->getConnection()->insert($table, ['id' => $cardId, 'suit' => Suit::Hearts->value]);
 
         $tableAssoc = $this->_em->getClassMetadata(AssocToCardReadOnlyCache::class)->getTableName();
         $assocId    = uniqid('', true);
