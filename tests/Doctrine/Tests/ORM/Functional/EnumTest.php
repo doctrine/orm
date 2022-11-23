@@ -447,7 +447,7 @@ EXCEPTION
 
         $qb = $this->_em->createQueryBuilder();
         $qb->select('assoc')->from(AssocToCardWithDefault::class, 'assoc');
-        $qb->join('assoc.card', 'card')->addSelect('assoc');
+        $qb->join('assoc.card', 'card')->addSelect('card');
         $assoc = $qb->getQuery()->getSingleResult();
 
         $card = $this->_em->find(CardWithDefault::class, $cardId);
