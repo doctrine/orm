@@ -452,7 +452,7 @@ EXCEPTION
 
         $card = $this->_em->find(CardWithDefault::class, $cardId);
 
-        $this->_em->getUnitOfWork()->computeChangeSet($this->_em->getClassMetadata(CardWithDefault::class), $card);
+        $this->_em->getUnitOfWork()->computeChangeSets();
         static::assertEquals([], $this->_em->getUnitOfWork()->getEntityChangeSet($card));
     }
 }
