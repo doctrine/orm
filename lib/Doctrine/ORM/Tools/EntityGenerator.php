@@ -1055,7 +1055,7 @@ public function __construct(<params>)
         }
 
         if (isset($metadata->table['options']) && $metadata->table['options']) {
-            $table[] = 'options={' . $this->exportTableOptions((array) $metadata->table['options']) . '}';
+            $table[] = 'options={' . $this->exportTableOptions($metadata->table['options']) . '}';
         }
 
         if (isset($metadata->table['uniqueConstraints']) && $metadata->table['uniqueConstraints']) {
