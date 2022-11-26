@@ -614,7 +614,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return Collection<TKey, T>&Selectable<TKey, T>
      */
-    public function unwrap(): Collection
+    public function unwrap(): Collection&Selectable
     {
         assert($this->collection instanceof Collection);
         assert($this->collection instanceof Selectable);
