@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.30.0@d0bc6e25d89f649e4f36a534f330f8bb4643dd69">
+<files psalm-version="5.0.0-rc1@8f39de9001c995eb203cee3399307570f322076a">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass occurrences="1">
       <code>IterableResult</code>
@@ -107,9 +107,9 @@
     <PossiblyNullReference occurrences="1">
       <code>getCacheLogger</code>
     </PossiblyNullReference>
-    <RedundantConditionGivenDocblockType occurrences="1">
+    <RedundantCondition occurrences="1">
       <code>assert($cm instanceof ClassMetadata)</code>
-    </RedundantConditionGivenDocblockType>
+    </RedundantCondition>
     <UndefinedInterfaceMethod occurrences="5">
       <code>getCacheRegion</code>
       <code>resolveAssociationEntries</code>
@@ -258,6 +258,12 @@
       <code>transactional</code>
       <code>transactional</code>
     </DeprecatedMethod>
+    <InvalidReturnStatement occurrences="1">
+      <code>$this-&gt;wrapped-&gt;getClassMetadata($className)</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>getClassMetadata</code>
+    </InvalidReturnType>
     <MissingParamType occurrences="3">
       <code>$entity</code>
       <code>$lockMode</code>
@@ -315,12 +321,13 @@
     <MissingReturnType occurrences="1">
       <code>wrapInTransaction</code>
     </MissingReturnType>
-    <ParamNameMismatch occurrences="6">
+    <ParamNameMismatch occurrences="7">
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity</code>
+      <code>$entityName</code>
       <code>$entityName</code>
     </ParamNameMismatch>
     <PossiblyNullArgument occurrences="2">
@@ -337,7 +344,8 @@
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(string) $hydrationMode</code>
     </RedundantCastGivenDocblockType>
-    <RedundantCondition occurrences="1">
+    <RedundantCondition occurrences="2">
+      <code>$repository instanceof EntityRepository</code>
       <code>is_object($connection)</code>
     </RedundantCondition>
     <TypeDoesNotContainType occurrences="1">
@@ -378,6 +386,12 @@
       <code>$entity</code>
     </PossiblyNullArgument>
   </file>
+  <file src="lib/Doctrine/ORM/Id/SequenceGenerator.php">
+    <MethodSignatureMustProvideReturnType occurrences="2">
+      <code>serialize</code>
+      <code>unserialize</code>
+    </MethodSignatureMustProvideReturnType>
+  </file>
   <file src="lib/Doctrine/ORM/Id/TableGenerator.php">
     <PossiblyFalseOperand occurrences="3">
       <code>$currentLevel</code>
@@ -404,7 +418,8 @@
       <code>$class-&gt;associationMappings[$fieldName]['joinColumns']</code>
       <code>$class-&gt;associationMappings[$fieldName]['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
-    <ReferenceConstraintViolation occurrences="1">
+    <ReferenceConstraintViolation occurrences="2">
+      <code>return $rowData;</code>
       <code>return $rowData;</code>
     </ReferenceConstraintViolation>
   </file>
@@ -422,11 +437,21 @@
     <ReferenceConstraintViolation occurrences="1">
       <code>$result</code>
     </ReferenceConstraintViolation>
+    <ReferenceReusedFromConfusingScope occurrences="1">
+      <code>$baseElement</code>
+    </ReferenceReusedFromConfusingScope>
+    <UnsupportedReferenceUsage occurrences="2">
+      <code>$baseElement =&amp; $this-&gt;_resultPointers[$parent][key($first)]</code>
+      <code>$this-&gt;_resultPointers[$dqlAlias] =&amp; $coll[key($coll)]</code>
+    </UnsupportedReferenceUsage>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/IterableResult.php">
     <ImplementedReturnTypeMismatch occurrences="1">
       <code>mixed[]|false</code>
     </ImplementedReturnTypeMismatch>
+    <MissingTemplateParam occurrences="1">
+      <code>Iterator</code>
+    </MissingTemplateParam>
     <PossiblyFalsePropertyAssignmentValue occurrences="2">
       <code>$this-&gt;_hydrator-&gt;hydrateRow()</code>
       <code>$this-&gt;next()</code>
@@ -448,8 +473,7 @@
       <code>$parentObject</code>
       <code>$parentObject</code>
     </PossiblyInvalidArgument>
-    <PossiblyNullArgument occurrences="2">
-      <code>$objectClass</code>
+    <PossiblyNullArgument occurrences="1">
       <code>$relation['mappedBy']</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayOffset occurrences="1">
@@ -575,6 +599,11 @@
       <code>! class_exists($mapping['targetEntity'])</code>
       <code>$this-&gt;table</code>
     </DocblockTypeContradiction>
+    <InvalidArgument occurrences="3">
+      <code>$mapping</code>
+      <code>$mapping</code>
+      <code>$overrideMapping</code>
+    </InvalidArgument>
     <InvalidDocblock occurrences="3">
       <code>protected function _validateAndCompleteAssociationMapping(array $mapping)</code>
       <code>protected function _validateAndCompleteManyToManyMapping(array $mapping)</code>
@@ -585,8 +614,9 @@
       <code>ReflectionProperty</code>
       <code>getAssociationMappedByTargetField</code>
     </InvalidNullableReturnType>
-    <InvalidPropertyAssignmentValue occurrences="2">
+    <InvalidPropertyAssignmentValue occurrences="3">
       <code>$definition</code>
+      <code>$this-&gt;sqlResultSetMappings</code>
       <code>$this-&gt;subClasses</code>
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement occurrences="1">
@@ -601,6 +631,9 @@
       <code>$className</code>
       <code>$this-&gt;namespace . '\\' . $className</code>
     </LessSpecificReturnStatement>
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
     <MissingReturnType occurrences="3">
       <code>_validateAndCompleteAssociationMapping</code>
       <code>_validateAndCompleteManyToManyMapping</code>
@@ -662,13 +695,12 @@
       <code>$table</code>
       <code>$tableGeneratorDefinition</code>
     </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="12">
+    <PropertyTypeCoercion occurrences="11">
       <code>$this-&gt;associationMappings</code>
       <code>$this-&gt;associationMappings</code>
       <code>$this-&gt;entityListeners</code>
       <code>$this-&gt;fieldMappings</code>
       <code>$this-&gt;fullyQualifiedClassName($repositoryClassName)</code>
-      <code>$this-&gt;sqlResultSetMappings</code>
       <code>$this-&gt;table</code>
       <code>$this-&gt;table</code>
       <code>$this-&gt;table</code>
@@ -723,9 +755,6 @@
       <code>addNamedNativeQuery</code>
       <code>addNamedQuery</code>
     </DeprecatedMethod>
-    <DocblockTypeContradiction occurrences="1">
-      <code>new ReflectionClass($metadata-&gt;name)</code>
-    </DocblockTypeContradiction>
     <InvalidArgument occurrences="1"/>
     <LessSpecificReturnStatement occurrences="1">
       <code>$mapping</code>
@@ -741,9 +770,12 @@
       <code>$primaryTable['indexes']</code>
       <code>$primaryTable['uniqueConstraints']</code>
     </PossiblyUndefinedArrayOffset>
-    <RedundantConditionGivenDocblockType occurrences="1">
+    <RedundantCondition occurrences="1">
       <code>$metadata-&gt;getReflectionClass()</code>
-    </RedundantConditionGivenDocblockType>
+    </RedundantCondition>
+    <TypeDoesNotContainNull occurrences="1">
+      <code>new ReflectionClass($metadata-&gt;name)</code>
+    </TypeDoesNotContainNull>
     <UndefinedInterfaceMethod occurrences="5">
       <code>mapEmbedded</code>
       <code>mapManyToMany</code>
@@ -753,9 +785,6 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php">
-    <DocblockTypeContradiction occurrences="1">
-      <code>new ReflectionClass($metadata-&gt;name)</code>
-    </DocblockTypeContradiction>
     <InvalidArgument occurrences="1"/>
     <InvalidArrayAccess occurrences="4">
       <code>$value[0]</code>
@@ -773,15 +802,18 @@
     <PossiblyNullArgument occurrences="1">
       <code>$listenerClassName</code>
     </PossiblyNullArgument>
-    <RedundantCondition occurrences="3">
+    <RedundantCondition occurrences="4">
+      <code>$metadata-&gt;getReflectionClass()</code>
       <code>assert($method instanceof ReflectionMethod)</code>
       <code>assert($method instanceof ReflectionMethod)</code>
       <code>assert($property instanceof ReflectionProperty)</code>
     </RedundantCondition>
-    <RedundantConditionGivenDocblockType occurrences="2">
-      <code>$metadata-&gt;getReflectionClass()</code>
+    <RedundantConditionGivenDocblockType occurrences="1">
       <code>assert($cacheAttribute instanceof Mapping\Cache)</code>
     </RedundantConditionGivenDocblockType>
+    <TypeDoesNotContainNull occurrences="1">
+      <code>new ReflectionClass($metadata-&gt;name)</code>
+    </TypeDoesNotContainNull>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php">
     <DocblockTypeContradiction occurrences="1">
@@ -833,11 +865,6 @@
       <code>addNamedNativeQuery</code>
       <code>addNamedQuery</code>
     </DeprecatedMethod>
-    <DocblockTypeContradiction occurrences="3">
-      <code>$xmlRoot-&gt;getName() === 'embeddable'</code>
-      <code>$xmlRoot-&gt;getName() === 'entity'</code>
-      <code>$xmlRoot-&gt;getName() === 'mapped-superclass'</code>
-    </DocblockTypeContradiction>
     <InvalidArgument occurrences="4">
       <code>$this-&gt;cacheToArray($manyToManyElement-&gt;cache)</code>
       <code>$this-&gt;cacheToArray($manyToOneElement-&gt;cache)</code>
@@ -847,6 +874,10 @@
     <InvalidPropertyAssignmentValue occurrences="1">
       <code>$metadata-&gt;table</code>
     </InvalidPropertyAssignmentValue>
+    <InvalidReturnStatement occurrences="1">
+      <code>$mapping</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1"/>
     <LessSpecificReturnStatement occurrences="1"/>
     <MissingParamType occurrences="2">
       <code>$fileExtension</code>
@@ -858,15 +889,19 @@
     <MoreSpecificReturnType occurrences="1">
       <code>array{usage: int|null, region?: string}</code>
     </MoreSpecificReturnType>
-    <NoInterfaceProperties occurrences="2">
+    <NoInterfaceProperties occurrences="4">
       <code>$indexXml-&gt;options</code>
       <code>$uniqueXml-&gt;options</code>
+      <code>$xmlRoot-&gt;{'discriminator-column'}</code>
+      <code>$xmlRoot-&gt;{'discriminator-map'}</code>
     </NoInterfaceProperties>
-    <PossiblyInvalidPropertyFetch occurrences="2">
+    <PossiblyInvalidPropertyFetch occurrences="4">
       <code>$indexXml-&gt;options</code>
       <code>$uniqueXml-&gt;options</code>
+      <code>$xmlRoot-&gt;{'discriminator-column'}</code>
+      <code>$xmlRoot-&gt;{'discriminator-map'}</code>
     </PossiblyInvalidPropertyFetch>
-    <RedundantCondition occurrences="19">
+    <RedundantCondition occurrences="17">
       <code>isset($xmlRoot-&gt;cache)</code>
       <code>isset($xmlRoot-&gt;embedded)</code>
       <code>isset($xmlRoot-&gt;field)</code>
@@ -874,8 +909,6 @@
       <code>isset($xmlRoot-&gt;options)</code>
       <code>isset($xmlRoot-&gt;{'association-overrides'})</code>
       <code>isset($xmlRoot-&gt;{'attribute-overrides'})</code>
-      <code>isset($xmlRoot-&gt;{'discriminator-column'})</code>
-      <code>isset($xmlRoot-&gt;{'discriminator-map'})</code>
       <code>isset($xmlRoot-&gt;{'entity-listeners'})</code>
       <code>isset($xmlRoot-&gt;{'lifecycle-callbacks'})</code>
       <code>isset($xmlRoot-&gt;{'many-to-many'})</code>
@@ -887,6 +920,11 @@
       <code>isset($xmlRoot-&gt;{'sql-result-set-mappings'})</code>
       <code>isset($xmlRoot-&gt;{'unique-constraints'})</code>
     </RedundantCondition>
+    <TypeDoesNotContainType occurrences="3">
+      <code>$xmlRoot-&gt;getName() === 'embeddable'</code>
+      <code>$xmlRoot-&gt;getName() === 'entity'</code>
+      <code>$xmlRoot-&gt;getName() === 'mapped-superclass'</code>
+    </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/YamlDriver.php">
     <DeprecatedMethod occurrences="2">
@@ -1007,9 +1045,25 @@
       <code>$object</code>
       <code>$value</code>
     </MissingParamType>
+    <PropertyNotSetInConstructor occurrences="2">
+      <code>ReflectionEmbeddedProperty</code>
+      <code>ReflectionEmbeddedProperty</code>
+    </PropertyNotSetInConstructor>
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(string) $embeddedClass</code>
     </RedundantCastGivenDocblockType>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/ReflectionEnumProperty.php">
+    <PropertyNotSetInConstructor occurrences="2">
+      <code>ReflectionEnumProperty</code>
+      <code>ReflectionEnumProperty</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/ReflectionReadonlyProperty.php">
+    <PropertyNotSetInConstructor occurrences="2">
+      <code>ReflectionReadonlyProperty</code>
+      <code>ReflectionReadonlyProperty</code>
+    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/SqlResultSetMapping.php">
     <MissingConstructor occurrences="1">
@@ -1031,11 +1085,6 @@
       <code>$entity</code>
     </PossiblyInvalidArgument>
   </file>
-  <file src="lib/Doctrine/ORM/ORMSetup.php">
-    <UndefinedClass occurrences="1">
-      <code>MemcachedAdapter::createConnection('memcached://127.0.0.1')</code>
-    </UndefinedClass>
-  </file>
   <file src="lib/Doctrine/ORM/PersistentCollection.php">
     <ImplementedReturnTypeMismatch occurrences="2">
       <code>Collection&lt;TKey, T&gt;</code>
@@ -1053,7 +1102,8 @@
     <MissingParamType occurrences="1">
       <code>$offset</code>
     </MissingParamType>
-    <ParamNameMismatch occurrences="1">
+    <ParamNameMismatch occurrences="2">
+      <code>$value</code>
       <code>$value</code>
     </ParamNameMismatch>
     <PossiblyNullArgument occurrences="5">
@@ -1129,7 +1179,7 @@
       <code>$mapping['targetEntity']</code>
       <code>$owner</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess occurrences="36">
+    <PossiblyNullArrayAccess occurrences="42">
       <code>$mapping['indexBy']</code>
       <code>$mapping['isOwningSide']</code>
       <code>$mapping['isOwningSide']</code>
@@ -1142,6 +1192,10 @@
       <code>$mapping['joinTable']</code>
       <code>$mapping['joinTable']['inverseJoinColumns']</code>
       <code>$mapping['joinTable']['inverseJoinColumns']</code>
+      <code>$mapping['joinTable']['inverseJoinColumns']</code>
+      <code>$mapping['joinTable']['joinColumns']</code>
+      <code>$mapping['joinTable']['joinColumns']</code>
+      <code>$mapping['joinTable']['joinColumns']</code>
       <code>$mapping['joinTableColumns']</code>
       <code>$mapping['mappedBy']</code>
       <code>$mapping['mappedBy']</code>
@@ -1149,7 +1203,9 @@
       <code>$mapping['relationToSourceKeyColumns']</code>
       <code>$mapping['relationToSourceKeyColumns']</code>
       <code>$mapping['relationToSourceKeyColumns']</code>
+      <code>$mapping['relationToSourceKeyColumns'][$joinTableColumn]</code>
       <code>$mapping['relationToTargetKeyColumns']</code>
+      <code>$mapping['relationToTargetKeyColumns'][$joinTableColumn]</code>
       <code>$mapping['sourceEntity']</code>
       <code>$mapping['sourceEntity']</code>
       <code>$mapping['sourceEntity']</code>
@@ -1244,19 +1300,17 @@
     <DocblockTypeContradiction occurrences="1">
       <code>$value === null</code>
     </DocblockTypeContradiction>
-    <InvalidArgument occurrences="2">
+    <InvalidArgument occurrences="6">
       <code>$em-&gt;getMetadataFactory()</code>
       <code>$hints</code>
-    </InvalidArgument>
-    <InvalidNullableReturnType occurrences="1">
-      <code>loadOneToOneEntity</code>
-    </InvalidNullableReturnType>
-    <InvalidScalarArgument occurrences="4">
       <code>$hints</code>
       <code>[Query::HINT_REFRESH =&gt; true]</code>
       <code>[UnitOfWork::HINT_DEFEREAGERLOAD =&gt; true]</code>
       <code>[UnitOfWork::HINT_DEFEREAGERLOAD =&gt; true]</code>
-    </InvalidScalarArgument>
+    </InvalidArgument>
+    <InvalidNullableReturnType occurrences="1">
+      <code>loadOneToOneEntity</code>
+    </InvalidNullableReturnType>
     <LessSpecificReturnStatement occurrences="3">
       <code>$postInsertIds</code>
       <code>[$params, $types]</code>
@@ -1353,6 +1407,11 @@
       <code>$columnList</code>
     </PossiblyUndefinedVariable>
   </file>
+  <file src="lib/Doctrine/ORM/Proxy/Proxy.php">
+    <MissingTemplateParam occurrences="1">
+      <code>BaseProxy</code>
+    </MissingTemplateParam>
+  </file>
   <file src="lib/Doctrine/ORM/Proxy/ProxyFactory.php">
     <ArgumentTypeCoercion occurrences="2">
       <code>$classMetadata</code>
@@ -1384,17 +1443,9 @@
     <DeprecatedMethod occurrences="1">
       <code>parent::iterate($parameters, $hydrationMode)</code>
     </DeprecatedMethod>
-    <InvalidScalarArgument occurrences="1">
+    <InvalidArgument occurrences="1">
       <code>$sqlParams</code>
-    </InvalidScalarArgument>
-    <LessSpecificReturnStatement occurrences="2">
-      <code>parent::setHint($name, $value)</code>
-      <code>parent::setHydrationMode($hydrationMode)</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="2">
-      <code>self</code>
-      <code>self</code>
-    </MoreSpecificReturnType>
+    </InvalidArgument>
     <PossiblyNullArgument occurrences="1">
       <code>$this-&gt;getDQL()</code>
     </PossiblyNullArgument>
@@ -1693,6 +1744,11 @@
       <code>$sqlWalker</code>
     </ParamNameMismatch>
   </file>
+  <file src="lib/Doctrine/ORM/Query/AST/Node.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
+  </file>
   <file src="lib/Doctrine/ORM/Query/AST/NullComparisonExpression.php">
     <ParamNameMismatch occurrences="1">
       <code>$sqlWalker</code>
@@ -1835,12 +1891,16 @@
     <PossiblyInvalidIterator occurrences="1">
       <code>$this-&gt;_sqlStatements</code>
     </PossiblyInvalidIterator>
-    <PropertyNotSetInConstructor occurrences="1">
+    <PropertyNotSetInConstructor occurrences="2">
+      <code>MultiTableUpdateExecutor</code>
       <code>MultiTableUpdateExecutor</code>
     </PropertyNotSetInConstructor>
     <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;_sqlStatements</code>
     </PropertyTypeCoercion>
+    <UninitializedProperty occurrences="1">
+      <code>$this-&gt;_sqlStatements</code>
+    </UninitializedProperty>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/SingleSelectExecutor.php">
     <PossiblyInvalidArgument occurrences="1">
@@ -1876,10 +1936,33 @@
       <code>$parts</code>
     </NonInvariantDocblockPropertyType>
   </file>
+  <file src="lib/Doctrine/ORM/Query/Expr/Base.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/Expr/Comparison.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
+  </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Composite.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
     <PossiblyInvalidCast occurrences="1">
       <code>$part</code>
     </PossiblyInvalidCast>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/Expr/From.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/Expr/Func.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/GroupBy.php">
     <NonInvariantDocblockPropertyType occurrences="1">
@@ -1887,6 +1970,9 @@
     </NonInvariantDocblockPropertyType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Join.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
     <PossiblyNullArgument occurrences="1">
       <code>$this-&gt;conditionType</code>
     </PossiblyNullArgument>
@@ -1895,6 +1981,16 @@
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$parts</code>
     </NonInvariantDocblockPropertyType>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/Expr/Math.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
+  </file>
+  <file src="lib/Doctrine/ORM/Query/Expr/OrderBy.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Orx.php">
     <NonInvariantDocblockPropertyType occurrences="2">
@@ -1909,6 +2005,9 @@
     </NonInvariantDocblockPropertyType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Filter/SQLFilter.php">
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
     <MissingClosureParamType occurrences="1">
       <code>$value</code>
     </MissingClosureParamType>
@@ -1929,6 +2028,9 @@
     <InvalidNullableReturnType occurrences="1">
       <code>SelectStatement|UpdateStatement|DeleteStatement</code>
     </InvalidNullableReturnType>
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>$this-&gt;queryComponents</code>
+    </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement occurrences="17">
       <code>$aliasIdentVariable</code>
       <code>$factors[0]</code>
@@ -1959,21 +2061,6 @@
       <code>string</code>
       <code>string</code>
     </InvalidReturnType>
-    <InvalidScalarArgument occurrences="13">
-      <code>$field</code>
-      <code>$field</code>
-      <code>$functionName</code>
-      <code>$functionName</code>
-      <code>$functionName</code>
-      <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
-      <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
-      <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-    </InvalidScalarArgument>
     <InvalidStringClass occurrences="3">
       <code>new $functionClass($functionName)</code>
       <code>new $functionClass($functionName)</code>
@@ -2002,17 +2089,30 @@
     <PossiblyFalseArgument occurrences="1">
       <code>strrpos($fromClassName, '\\')</code>
     </PossiblyFalseArgument>
-    <PossiblyInvalidArgument occurrences="13">
+    <PossiblyInvalidArgument occurrences="26">
       <code>$AST</code>
       <code>$conditionalExpression</code>
       <code>$expr</code>
+      <code>$field</code>
+      <code>$field</code>
+      <code>$functionName</code>
+      <code>$functionName</code>
+      <code>$functionName</code>
       <code>$pathExp</code>
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>
+      <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
+      <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
+      <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
       <code>$this-&gt;lexer-&gt;lookahead['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$token['value']</code>
       <code>$token['value']</code>
@@ -2135,6 +2235,9 @@
       <code>addNamedNativeQueryResultClassMapping</code>
       <code>addNamedNativeQueryResultSetMapping</code>
     </DeprecatedMethod>
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
     <PossiblyUndefinedArrayOffset occurrences="3">
       <code>$associationMapping['joinColumns']</code>
       <code>$associationMapping['joinColumns']</code>
@@ -2206,16 +2309,14 @@
     <InvalidNullableReturnType occurrences="1">
       <code>string</code>
     </InvalidNullableReturnType>
-    <InvalidScalarArgument occurrences="3">
-      <code>$this-&gt;queryComponents[$expr]['token']['value']</code>
-      <code>$this-&gt;queryComponents[$factor]['token']['value']</code>
-      <code>$this-&gt;queryComponents[$term]['token']['value']</code>
-    </InvalidScalarArgument>
     <MoreSpecificImplementedParamType occurrences="1">
       <code>$query</code>
     </MoreSpecificImplementedParamType>
-    <PossiblyInvalidArgument occurrences="2">
+    <PossiblyInvalidArgument occurrences="5">
       <code>$aggExpression-&gt;pathExpression</code>
+      <code>$this-&gt;queryComponents[$expr]['token']['value']</code>
+      <code>$this-&gt;queryComponents[$factor]['token']['value']</code>
+      <code>$this-&gt;queryComponents[$term]['token']['value']</code>
       <code>$whereClause-&gt;conditionalExpression</code>
     </PossiblyInvalidArgument>
     <PossiblyNullArgument occurrences="8">
@@ -2305,6 +2406,9 @@
     <InvalidFalsableReturnType occurrences="1">
       <code>Parameter|null</code>
     </InvalidFalsableReturnType>
+    <MethodSignatureMustProvideReturnType occurrences="1">
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
     <PossiblyFalseArgument occurrences="2">
       <code>$spacePos</code>
       <code>$spacePos</code>
@@ -2518,6 +2622,14 @@
       <code>configure</code>
     </MissingReturnType>
   </file>
+  <file src="lib/Doctrine/ORM/Tools/Console/MetadataFilter.php">
+    <InvalidArgument occurrences="1">
+      <code>new ArrayIterator($metadatas)</code>
+    </InvalidArgument>
+    <MissingTemplateParam occurrences="1">
+      <code>MetadataFilter</code>
+    </MissingTemplateParam>
+  </file>
   <file src="lib/Doctrine/ORM/Tools/DebugUnitOfWorkListener.php">
     <PossiblyNullArgument occurrences="2">
       <code>$entity</code>
@@ -2534,9 +2646,6 @@
       <code>$this-&gt;getClassToExtend() ?: $metadata-&gt;name</code>
       <code>array_map('strlen', $paramTypes)</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="1">
-      <code>class_exists($metadata-&gt;name)</code>
-    </DocblockTypeContradiction>
     <PossiblyFalseArgument occurrences="2">
       <code>$last</code>
       <code>strrpos($metadata-&gt;name, '\\')</code>
@@ -2547,8 +2656,7 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>$classToExtend</code>
     </PropertyNotSetInConstructor>
-    <RedundantCastGivenDocblockType occurrences="2">
-      <code>(array) $metadata-&gt;table['options']</code>
+    <RedundantCastGivenDocblockType occurrences="1">
       <code>(bool) $embeddablesImmutable</code>
     </RedundantCastGivenDocblockType>
     <RedundantConditionGivenDocblockType occurrences="1">
@@ -2626,10 +2734,7 @@
       <code>$associationMapping['joinColumns']</code>
       <code>$associationMapping['orphanRemoval']</code>
     </PossiblyUndefinedArrayOffset>
-    <RedundantConditionGivenDocblockType occurrences="4">
-      <code>$metadata-&gt;inheritanceType</code>
-      <code>$metadata-&gt;inheritanceType</code>
-      <code>$metadata-&gt;table</code>
+    <RedundantConditionGivenDocblockType occurrences="1">
       <code>$metadata-&gt;table</code>
     </RedundantConditionGivenDocblockType>
   </file>
@@ -2641,6 +2746,9 @@
     <DeprecatedClass occurrences="1">
       <code>AbstractExporter</code>
     </DeprecatedClass>
+    <InvalidArrayOffset occurrences="1">
+      <code>$field['version']</code>
+    </InvalidArrayOffset>
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$_extension</code>
     </NonInvariantDocblockPropertyType>
@@ -2654,15 +2762,12 @@
       <code>$field['associationKey']</code>
       <code>isset($field['associationKey']) &amp;&amp; $field['associationKey']</code>
     </RedundantCondition>
-    <RedundantConditionGivenDocblockType occurrences="3">
-      <code>$metadata-&gt;inheritanceType</code>
-      <code>$metadata-&gt;inheritanceType</code>
+    <RedundantConditionGivenDocblockType occurrences="1">
       <code>isset($metadata-&gt;lifecycleCallbacks)</code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php">
-    <ArgumentTypeCoercion occurrences="2">
-      <code>$array</code>
+    <ArgumentTypeCoercion occurrences="1">
       <code>$metadata-&gt;changeTrackingPolicy</code>
     </ArgumentTypeCoercion>
     <DeprecatedClass occurrences="1">
@@ -2671,6 +2776,9 @@
     <DocblockTypeContradiction occurrences="1">
       <code>['name' =&gt; null]</code>
     </DocblockTypeContradiction>
+    <InvalidArgument occurrences="1">
+      <code>$array</code>
+    </InvalidArgument>
     <LessSpecificReturnStatement occurrences="1">
       <code>$array</code>
     </LessSpecificReturnStatement>
@@ -2724,12 +2832,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$parameters</code>
     </ArgumentTypeCoercion>
-    <DocblockTypeContradiction occurrences="1">
-      <code>$this-&gt;count === null</code>
-    </DocblockTypeContradiction>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$count</code>
-    </PropertyNotSetInConstructor>
     <RedundantCastGivenDocblockType occurrences="1">
       <code>(bool) $fetchJoinCollection</code>
     </RedundantCastGivenDocblockType>
@@ -2793,9 +2895,6 @@
       <code>$assoc['orderBy'] !== null</code>
       <code>isset($assoc['orderBy']) &amp;&amp; $assoc['orderBy'] !== null</code>
     </RedundantConditionGivenDocblockType>
-    <TypeDoesNotContainType occurrences="1">
-      <code>! class_exists($assoc['targetEntity'])</code>
-    </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Setup.php">
     <DeprecatedClass occurrences="2">
@@ -2817,7 +2916,9 @@
       <code>! is_object($object)</code>
       <code>is_object($object)</code>
     </DocblockTypeContradiction>
-    <InvalidArgument occurrences="1">
+    <InvalidArgument occurrences="3">
+      <code>$collectionToDelete</code>
+      <code>$collectionToUpdate</code>
       <code>$em-&gt;getMetadataFactory()</code>
     </InvalidArgument>
     <InvalidNullableReturnType occurrences="1">
@@ -2832,6 +2933,10 @@
       <code>$prevManagedCopy</code>
       <code>$previousManagedCopy</code>
     </MissingParamType>
+    <NoValue occurrences="2">
+      <code>$entityState</code>
+      <code>$entityState</code>
+    </NoValue>
     <NullableReturnStatement occurrences="1">
       <code>$this-&gt;identityMap[$rootClassName][$idHash]</code>
     </NullableReturnStatement>
@@ -2909,6 +3014,10 @@
       <code>unwrap</code>
       <code>unwrap</code>
     </PossiblyUndefinedMethod>
+    <RedundantCondition occurrences="2">
+      <code>$i &gt;= 0 &amp;&amp; $this-&gt;entityDeletions</code>
+      <code>$this-&gt;entityDeletions</code>
+    </RedundantCondition>
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>is_array($entity)</code>
     </RedundantConditionGivenDocblockType>

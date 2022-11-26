@@ -27,6 +27,7 @@ use function count;
  * The paginator can handle various complex scenarios with DQL.
  *
  * @template-covariant T
+ * @implements IteratorAggregate<array-key, T>
  */
 class Paginator implements Countable, IteratorAggregate
 {
@@ -41,7 +42,7 @@ class Paginator implements Countable, IteratorAggregate
     /** @var bool|null */
     private $useOutputWalkers;
 
-    /** @var int */
+    /** @var int|null */
     private $count;
 
     /**
