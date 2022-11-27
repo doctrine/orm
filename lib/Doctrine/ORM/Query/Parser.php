@@ -9,58 +9,7 @@ use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\AST\AggregateExpression;
-use Doctrine\ORM\Query\AST\ArithmeticExpression;
-use Doctrine\ORM\Query\AST\ArithmeticFactor;
-use Doctrine\ORM\Query\AST\ArithmeticTerm;
-use Doctrine\ORM\Query\AST\BetweenExpression;
-use Doctrine\ORM\Query\AST\CoalesceExpression;
-use Doctrine\ORM\Query\AST\CollectionMemberExpression;
-use Doctrine\ORM\Query\AST\ComparisonExpression;
-use Doctrine\ORM\Query\AST\ConditionalPrimary;
-use Doctrine\ORM\Query\AST\DeleteClause;
-use Doctrine\ORM\Query\AST\DeleteStatement;
-use Doctrine\ORM\Query\AST\EmptyCollectionComparisonExpression;
-use Doctrine\ORM\Query\AST\ExistsExpression;
-use Doctrine\ORM\Query\AST\FromClause;
 use Doctrine\ORM\Query\AST\Functions;
-use Doctrine\ORM\Query\AST\Functions\FunctionNode;
-use Doctrine\ORM\Query\AST\GeneralCaseExpression;
-use Doctrine\ORM\Query\AST\GroupByClause;
-use Doctrine\ORM\Query\AST\HavingClause;
-use Doctrine\ORM\Query\AST\IdentificationVariableDeclaration;
-use Doctrine\ORM\Query\AST\IndexBy;
-use Doctrine\ORM\Query\AST\InExpression;
-use Doctrine\ORM\Query\AST\InputParameter;
-use Doctrine\ORM\Query\AST\InstanceOfExpression;
-use Doctrine\ORM\Query\AST\Join;
-use Doctrine\ORM\Query\AST\JoinAssociationPathExpression;
-use Doctrine\ORM\Query\AST\LikeExpression;
-use Doctrine\ORM\Query\AST\Literal;
-use Doctrine\ORM\Query\AST\NewObjectExpression;
-use Doctrine\ORM\Query\AST\Node;
-use Doctrine\ORM\Query\AST\NullComparisonExpression;
-use Doctrine\ORM\Query\AST\NullIfExpression;
-use Doctrine\ORM\Query\AST\OrderByClause;
-use Doctrine\ORM\Query\AST\OrderByItem;
-use Doctrine\ORM\Query\AST\PartialObjectExpression;
-use Doctrine\ORM\Query\AST\PathExpression;
-use Doctrine\ORM\Query\AST\QuantifiedExpression;
-use Doctrine\ORM\Query\AST\RangeVariableDeclaration;
-use Doctrine\ORM\Query\AST\SelectClause;
-use Doctrine\ORM\Query\AST\SelectExpression;
-use Doctrine\ORM\Query\AST\SelectStatement;
-use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
-use Doctrine\ORM\Query\AST\SimpleSelectClause;
-use Doctrine\ORM\Query\AST\SimpleSelectExpression;
-use Doctrine\ORM\Query\AST\SimpleWhenClause;
-use Doctrine\ORM\Query\AST\Subselect;
-use Doctrine\ORM\Query\AST\SubselectFromClause;
-use Doctrine\ORM\Query\AST\UpdateClause;
-use Doctrine\ORM\Query\AST\UpdateItem;
-use Doctrine\ORM\Query\AST\UpdateStatement;
-use Doctrine\ORM\Query\AST\WhenClause;
-use Doctrine\ORM\Query\AST\WhereClause;
 use LogicException;
 use ReflectionClass;
 
@@ -299,7 +248,7 @@ class Parser
     /**
      * Parses and builds AST for the given Query.
      *
-     * @return SelectStatement|UpdateStatement|DeleteStatement
+     * @return AST\SelectStatement|AST\UpdateStatement|AST\DeleteStatement
      */
     public function getAST()
     {
@@ -459,7 +408,7 @@ class Parser
      *
      * @param AST\SelectStatement|AST\DeleteStatement|AST\UpdateStatement $AST
      */
-    private function fixIdentificationVariableOrder(Node $AST): void
+    private function fixIdentificationVariableOrder(AST\Node $AST): void
     {
         if (count($this->identVariableExpressions) <= 1) {
             return;
@@ -675,7 +624,7 @@ class Parser
     /**
      * Validates that the given <tt>NewObjectExpression</tt>.
      */
-    private function processDeferredNewObjectExpressions(SelectStatement $AST): void
+    private function processDeferredNewObjectExpressions(AST\SelectStatement $AST): void
     {
         foreach ($this->deferredNewObjectExpressions as $deferredItem) {
             $expression    = $deferredItem['expression'];
@@ -884,7 +833,7 @@ class Parser
     /**
      * QueryLanguage ::= SelectStatement | UpdateStatement | DeleteStatement
      *
-     * @return SelectStatement|UpdateStatement|DeleteStatement
+     * @return AST\SelectStatement|AST\UpdateStatement|AST\DeleteStatement
      */
     public function QueryLanguage()
     {
@@ -921,7 +870,7 @@ class Parser
     /**
      * SelectStatement ::= SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
      *
-     * @return SelectStatement
+     * @return AST\SelectStatement
      */
     public function SelectStatement()
     {
@@ -938,7 +887,7 @@ class Parser
     /**
      * UpdateStatement ::= UpdateClause [WhereClause]
      *
-     * @return UpdateStatement
+     * @return AST\UpdateStatement
      */
     public function UpdateStatement()
     {
@@ -952,7 +901,7 @@ class Parser
     /**
      * DeleteStatement ::= DeleteClause [WhereClause]
      *
-     * @return DeleteStatement
+     * @return AST\DeleteStatement
      */
     public function DeleteStatement()
     {
@@ -1101,7 +1050,7 @@ class Parser
     /**
      * JoinAssociationPathExpression ::= IdentificationVariable "." (CollectionValuedAssociationField | SingleValuedAssociationField)
      *
-     * @return JoinAssociationPathExpression
+     * @return AST\JoinAssociationPathExpression
      */
     public function JoinAssociationPathExpression()
     {
@@ -1136,9 +1085,9 @@ class Parser
      * PathExpression ::= IdentificationVariable {"." identifier}*
      *
      * @param int $expectedTypes
-     * @psalm-param int-mask-of<PathExpression::TYPE_*> $expectedTypes
+     * @psalm-param int-mask-of<AST\PathExpression::TYPE_*> $expectedTypes
      *
-     * @return PathExpression
+     * @return AST\PathExpression
      */
     public function PathExpression($expectedTypes)
     {
@@ -1174,7 +1123,7 @@ class Parser
     /**
      * AssociationPathExpression ::= CollectionValuedPathExpression | SingleValuedAssociationPathExpression
      *
-     * @return PathExpression
+     * @return AST\PathExpression
      */
     public function AssociationPathExpression()
     {
@@ -1187,7 +1136,7 @@ class Parser
     /**
      * SingleValuedPathExpression ::= StateFieldPathExpression | SingleValuedAssociationPathExpression
      *
-     * @return PathExpression
+     * @return AST\PathExpression
      */
     public function SingleValuedPathExpression()
     {
@@ -1200,7 +1149,7 @@ class Parser
     /**
      * StateFieldPathExpression ::= IdentificationVariable "." StateField
      *
-     * @return PathExpression
+     * @return AST\PathExpression
      */
     public function StateFieldPathExpression()
     {
@@ -1210,7 +1159,7 @@ class Parser
     /**
      * SingleValuedAssociationPathExpression ::= IdentificationVariable "." SingleValuedAssociationField
      *
-     * @return PathExpression
+     * @return AST\PathExpression
      */
     public function SingleValuedAssociationPathExpression()
     {
@@ -1220,7 +1169,7 @@ class Parser
     /**
      * CollectionValuedPathExpression ::= IdentificationVariable "." CollectionValuedAssociationField
      *
-     * @return PathExpression
+     * @return AST\PathExpression
      */
     public function CollectionValuedPathExpression()
     {
@@ -1230,7 +1179,7 @@ class Parser
     /**
      * SelectClause ::= "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}
      *
-     * @return SelectClause
+     * @return AST\SelectClause
      */
     public function SelectClause()
     {
@@ -1260,7 +1209,7 @@ class Parser
     /**
      * SimpleSelectClause ::= "SELECT" ["DISTINCT"] SimpleSelectExpression
      *
-     * @return SimpleSelectClause
+     * @return AST\SimpleSelectClause
      */
     public function SimpleSelectClause()
     {
@@ -1279,7 +1228,7 @@ class Parser
     /**
      * UpdateClause ::= "UPDATE" AbstractSchemaName ["AS"] AliasIdentificationVariable "SET" UpdateItem {"," UpdateItem}*
      *
-     * @return UpdateClause
+     * @return AST\UpdateClause
      */
     public function UpdateClause()
     {
@@ -1331,7 +1280,7 @@ class Parser
     /**
      * DeleteClause ::= "DELETE" ["FROM"] AbstractSchemaName ["AS"] AliasIdentificationVariable
      *
-     * @return DeleteClause
+     * @return AST\DeleteClause
      */
     public function DeleteClause()
     {
@@ -1378,7 +1327,7 @@ class Parser
     /**
      * FromClause ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}*
      *
-     * @return FromClause
+     * @return AST\FromClause
      */
     public function FromClause()
     {
@@ -1399,7 +1348,7 @@ class Parser
     /**
      * SubselectFromClause ::= "FROM" SubselectIdentificationVariableDeclaration {"," SubselectIdentificationVariableDeclaration}*
      *
-     * @return SubselectFromClause
+     * @return AST\SubselectFromClause
      */
     public function SubselectFromClause()
     {
@@ -1420,7 +1369,7 @@ class Parser
     /**
      * WhereClause ::= "WHERE" ConditionalExpression
      *
-     * @return WhereClause
+     * @return AST\WhereClause
      */
     public function WhereClause()
     {
@@ -1432,7 +1381,7 @@ class Parser
     /**
      * HavingClause ::= "HAVING" ConditionalExpression
      *
-     * @return HavingClause
+     * @return AST\HavingClause
      */
     public function HavingClause()
     {
@@ -1444,7 +1393,7 @@ class Parser
     /**
      * GroupByClause ::= "GROUP" "BY" GroupByItem {"," GroupByItem}*
      *
-     * @return GroupByClause
+     * @return AST\GroupByClause
      */
     public function GroupByClause()
     {
@@ -1465,7 +1414,7 @@ class Parser
     /**
      * OrderByClause ::= "ORDER" "BY" OrderByItem {"," OrderByItem}*
      *
-     * @return OrderByClause
+     * @return AST\OrderByClause
      */
     public function OrderByClause()
     {
@@ -1487,7 +1436,7 @@ class Parser
     /**
      * Subselect ::= SimpleSelectClause SubselectFromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
      *
-     * @return Subselect
+     * @return AST\Subselect
      */
     public function Subselect()
     {
@@ -1510,7 +1459,7 @@ class Parser
     /**
      * UpdateItem ::= SingleValuedPathExpression "=" NewValue
      *
-     * @return UpdateItem
+     * @return AST\UpdateItem
      */
     public function UpdateItem()
     {
@@ -1524,7 +1473,7 @@ class Parser
     /**
      * GroupByItem ::= IdentificationVariable | ResultVariable | SingleValuedPathExpression
      *
-     * @return string|PathExpression
+     * @return string|AST\PathExpression
      */
     public function GroupByItem()
     {
@@ -1553,7 +1502,7 @@ class Parser
      *      ScalarExpression | ResultVariable | FunctionDeclaration
      * ) ["ASC" | "DESC"]
      *
-     * @return OrderByItem
+     * @return AST\OrderByItem
      */
     public function OrderByItem()
     {
@@ -1647,7 +1596,7 @@ class Parser
     /**
      * IdentificationVariableDeclaration ::= RangeVariableDeclaration [IndexBy] {Join}*
      *
-     * @return IdentificationVariableDeclaration
+     * @return AST\IdentificationVariableDeclaration
      */
     public function IdentificationVariableDeclaration()
     {
@@ -1688,7 +1637,7 @@ class Parser
      * accessible is "FROM", prohibiting an easy implementation without larger
      * changes.}
      *
-     * @return IdentificationVariableDeclaration
+     * @return AST\IdentificationVariableDeclaration
      */
     public function SubselectIdentificationVariableDeclaration()
     {
@@ -1737,7 +1686,7 @@ class Parser
      *          (JoinAssociationDeclaration | RangeVariableDeclaration)
      *          ["WITH" ConditionalExpression]
      *
-     * @return Join
+     * @return AST\Join
      */
     public function Join()
     {
@@ -1792,7 +1741,7 @@ class Parser
     /**
      * RangeVariableDeclaration ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
      *
-     * @return RangeVariableDeclaration
+     * @return AST\RangeVariableDeclaration
      *
      * @throws QueryException
      */
@@ -1873,7 +1822,7 @@ class Parser
      * PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
      * PartialFieldSet ::= "{" SimpleStateField {"," SimpleStateField}* "}"
      *
-     * @return PartialObjectExpression
+     * @return AST\PartialObjectExpression
      */
     public function PartialObjectExpression()
     {
@@ -1937,7 +1886,7 @@ class Parser
     /**
      * NewObjectExpression ::= "NEW" AbstractSchemaName "(" NewObjectArg {"," NewObjectArg}* ")"
      *
-     * @return NewObjectExpression
+     * @return AST\NewObjectExpression
      */
     public function NewObjectExpression()
     {
@@ -1994,7 +1943,7 @@ class Parser
     /**
      * IndexBy ::= "INDEX" "BY" SingleValuedPathExpression
      *
-     * @return IndexBy
+     * @return AST\IndexBy
      */
     public function IndexBy()
     {
@@ -2133,7 +2082,7 @@ class Parser
     /**
      * CoalesceExpression ::= "COALESCE" "(" ScalarExpression {"," ScalarExpression}* ")"
      *
-     * @return CoalesceExpression
+     * @return AST\CoalesceExpression
      */
     public function CoalesceExpression()
     {
@@ -2158,7 +2107,7 @@ class Parser
     /**
      * NullIfExpression ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
      *
-     * @return NullIfExpression
+     * @return AST\NullIfExpression
      */
     public function NullIfExpression()
     {
@@ -2177,7 +2126,7 @@ class Parser
     /**
      * GeneralCaseExpression ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression "END"
      *
-     * @return GeneralCaseExpression
+     * @return AST\GeneralCaseExpression
      */
     public function GeneralCaseExpression()
     {
@@ -2225,7 +2174,7 @@ class Parser
     /**
      * WhenClause ::= "WHEN" ConditionalExpression "THEN" ScalarExpression
      *
-     * @return WhenClause
+     * @return AST\WhenClause
      */
     public function WhenClause()
     {
@@ -2239,7 +2188,7 @@ class Parser
     /**
      * SimpleWhenClause ::= "WHEN" ScalarExpression "THEN" ScalarExpression
      *
-     * @return SimpleWhenClause
+     * @return AST\SimpleWhenClause
      */
     public function SimpleWhenClause()
     {
@@ -2256,7 +2205,7 @@ class Parser
      *     PartialObjectExpression | "(" Subselect ")" | CaseExpression | NewObjectExpression
      * ) [["AS"] ["HIDDEN"] AliasResultVariable]
      *
-     * @return SelectExpression
+     * @return AST\SelectExpression
      */
     public function SelectExpression()
     {
@@ -2387,7 +2336,7 @@ class Parser
      *      AggregateExpression | "(" Subselect ")" | ScalarExpression
      * ) [["AS"] AliasResultVariable]
      *
-     * @return SimpleSelectExpression
+     * @return AST\SimpleSelectExpression
      */
     public function SimpleSelectExpression()
     {
@@ -2553,7 +2502,7 @@ class Parser
     /**
      * ConditionalPrimary ::= SimpleConditionalExpression | "(" ConditionalExpression ")"
      *
-     * @return ConditionalPrimary
+     * @return AST\ConditionalPrimary
      */
     public function ConditionalPrimary()
     {
@@ -2698,7 +2647,7 @@ class Parser
     /**
      * EmptyCollectionComparisonExpression ::= CollectionValuedPathExpression "IS" ["NOT"] "EMPTY"
      *
-     * @return EmptyCollectionComparisonExpression
+     * @return AST\EmptyCollectionComparisonExpression
      */
     public function EmptyCollectionComparisonExpression()
     {
@@ -2723,7 +2672,7 @@ class Parser
      * EntityExpression ::= SingleValuedAssociationPathExpression | SimpleEntityExpression
      * SimpleEntityExpression ::= IdentificationVariable | InputParameter
      *
-     * @return CollectionMemberExpression
+     * @return AST\CollectionMemberExpression
      */
     public function CollectionMemberExpression()
     {
@@ -2754,7 +2703,7 @@ class Parser
     /**
      * Literal ::= string | char | integer | float | boolean
      *
-     * @return Literal
+     * @return AST\Literal
      */
     public function Literal()
     {
@@ -2802,7 +2751,7 @@ class Parser
     /**
      * InputParameter ::= PositionalParameter | NamedParameter
      *
-     * @return InputParameter
+     * @return AST\InputParameter
      */
     public function InputParameter()
     {
@@ -2814,7 +2763,7 @@ class Parser
     /**
      * ArithmeticExpression ::= SimpleArithmeticExpression | "(" Subselect ")"
      *
-     * @return ArithmeticExpression
+     * @return AST\ArithmeticExpression
      */
     public function ArithmeticExpression()
     {
@@ -2840,7 +2789,7 @@ class Parser
     /**
      * SimpleArithmeticExpression ::= ArithmeticTerm {("+" | "-") ArithmeticTerm}*
      *
-     * @return SimpleArithmeticExpression|ArithmeticTerm
+     * @return AST\SimpleArithmeticExpression|AST\ArithmeticTerm
      */
     public function SimpleArithmeticExpression()
     {
@@ -2866,7 +2815,7 @@ class Parser
     /**
      * ArithmeticTerm ::= ArithmeticFactor {("*" | "/") ArithmeticFactor}*
      *
-     * @return ArithmeticTerm
+     * @return AST\ArithmeticTerm
      */
     public function ArithmeticTerm()
     {
@@ -2892,7 +2841,7 @@ class Parser
     /**
      * ArithmeticFactor ::= [("+" | "-")] ArithmeticPrimary
      *
-     * @return ArithmeticFactor
+     * @return AST\ArithmeticFactor
      */
     public function ArithmeticFactor()
     {
@@ -2921,7 +2870,7 @@ class Parser
      *          | FunctionsReturningDatetime | IdentificationVariable | ResultVariable
      *          | InputParameter | CaseExpression
      *
-     * @return Node|string
+     * @return AST\Node|string
      */
     public function ArithmeticPrimary()
     {
@@ -2975,7 +2924,7 @@ class Parser
     /**
      * StringExpression ::= StringPrimary | ResultVariable | "(" Subselect ")"
      *
-     * @return Subselect|Node|string
+     * @return AST\Subselect|AST\Node|string
      */
     public function StringExpression()
     {
@@ -3004,7 +2953,7 @@ class Parser
     /**
      * StringPrimary ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression | CaseExpression
      *
-     * @return Node
+     * @return AST\Node
      */
     public function StringPrimary()
     {
@@ -3053,7 +3002,7 @@ class Parser
     /**
      * EntityExpression ::= SingleValuedAssociationPathExpression | SimpleEntityExpression
      *
-     * @return AST\InputParameter|PathExpression
+     * @return AST\InputParameter|AST\PathExpression
      */
     public function EntityExpression()
     {
@@ -3084,7 +3033,7 @@ class Parser
      * AggregateExpression ::=
      *  ("AVG" | "MAX" | "MIN" | "SUM" | "COUNT") "(" ["DISTINCT"] SimpleArithmeticExpression ")"
      *
-     * @return AggregateExpression
+     * @return AST\AggregateExpression
      */
     public function AggregateExpression()
     {
@@ -3114,7 +3063,7 @@ class Parser
     /**
      * QuantifiedExpression ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"
      *
-     * @return QuantifiedExpression
+     * @return AST\QuantifiedExpression
      */
     public function QuantifiedExpression()
     {
@@ -3139,7 +3088,7 @@ class Parser
     /**
      * BetweenExpression ::= ArithmeticExpression ["NOT"] "BETWEEN" ArithmeticExpression "AND" ArithmeticExpression
      *
-     * @return BetweenExpression
+     * @return AST\BetweenExpression
      */
     public function BetweenExpression()
     {
@@ -3165,7 +3114,7 @@ class Parser
     /**
      * ComparisonExpression ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression )
      *
-     * @return ComparisonExpression
+     * @return AST\ComparisonExpression
      */
     public function ComparisonExpression()
     {
@@ -3183,7 +3132,7 @@ class Parser
     /**
      * InExpression ::= SingleValuedPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
      *
-     * @return InExpression
+     * @return AST\InExpression
      */
     public function InExpression()
     {
@@ -3219,7 +3168,7 @@ class Parser
     /**
      * InstanceOfExpression ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (InstanceOfParameter | "(" InstanceOfParameter {"," InstanceOfParameter}* ")")
      *
-     * @return InstanceOfExpression
+     * @return AST\InstanceOfExpression
      */
     public function InstanceOfExpression()
     {
@@ -3283,7 +3232,7 @@ class Parser
     /**
      * LikeExpression ::= StringExpression ["NOT"] "LIKE" StringPrimary ["ESCAPE" char]
      *
-     * @return LikeExpression
+     * @return AST\LikeExpression
      */
     public function LikeExpression()
     {
@@ -3322,7 +3271,7 @@ class Parser
     /**
      * NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | AggregateExpression | FunctionDeclaration | IdentificationVariable | SingleValuedPathExpression | ResultVariable) "IS" ["NOT"] "NULL"
      *
-     * @return NullComparisonExpression
+     * @return AST\NullComparisonExpression
      */
     public function NullComparisonExpression()
     {
@@ -3396,7 +3345,7 @@ class Parser
     /**
      * ExistsExpression ::= ["NOT"] "EXISTS" "(" Subselect ")"
      *
-     * @return ExistsExpression
+     * @return AST\ExistsExpression
      */
     public function ExistsExpression()
     {
@@ -3470,7 +3419,7 @@ class Parser
     /**
      * FunctionDeclaration ::= FunctionsReturningStrings | FunctionsReturningNumerics | FunctionsReturningDatetime
      *
-     * @return FunctionNode
+     * @return Functions\FunctionNode
      */
     public function FunctionDeclaration()
     {
@@ -3501,7 +3450,7 @@ class Parser
     /**
      * Helper function for FunctionDeclaration grammar rule.
      */
-    private function CustomFunctionDeclaration(): ?FunctionNode
+    private function CustomFunctionDeclaration(): ?Functions\FunctionNode
     {
         $token    = $this->lexer->lookahead;
         $funcName = strtolower($token['value']);
@@ -3536,7 +3485,7 @@ class Parser
      *      "BIT_AND" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
      *      "BIT_OR" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
      *
-     * @return FunctionNode
+     * @return Functions\FunctionNode
      */
     public function FunctionsReturningNumerics()
     {
@@ -3549,7 +3498,7 @@ class Parser
         return $function;
     }
 
-    /** @return FunctionNode */
+    /** @return Functions\FunctionNode */
     public function CustomFunctionsReturningNumerics()
     {
         // getCustomNumericFunction is case-insensitive
@@ -3575,7 +3524,7 @@ class Parser
      *     "DATE_ADD" "(" ArithmeticPrimary "," ArithmeticPrimary "," StringPrimary ")" |
      *     "DATE_SUB" "(" ArithmeticPrimary "," ArithmeticPrimary "," StringPrimary ")"
      *
-     * @return FunctionNode
+     * @return Functions\FunctionNode
      */
     public function FunctionsReturningDatetime()
     {
@@ -3588,7 +3537,7 @@ class Parser
         return $function;
     }
 
-    /** @return FunctionNode */
+    /** @return Functions\FunctionNode */
     public function CustomFunctionsReturningDatetime()
     {
         // getCustomDatetimeFunction is case-insensitive
@@ -3615,7 +3564,7 @@ class Parser
      *   "UPPER" "(" StringPrimary ")" |
      *   "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")"
      *
-     * @return FunctionNode
+     * @return Functions\FunctionNode
      */
     public function FunctionsReturningStrings()
     {
@@ -3628,7 +3577,7 @@ class Parser
         return $function;
     }
 
-    /** @return FunctionNode */
+    /** @return Functions\FunctionNode */
     public function CustomFunctionsReturningStrings()
     {
         // getCustomStringFunction is case-insensitive

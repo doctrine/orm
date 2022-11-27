@@ -2026,7 +2026,7 @@
       <code>$lookaheadType</code>
     </InvalidArgument>
     <InvalidNullableReturnType occurrences="1">
-      <code>SelectStatement|UpdateStatement|DeleteStatement</code>
+      <code>AST\SelectStatement|AST\UpdateStatement|AST\DeleteStatement</code>
     </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue occurrences="1">
       <code>$this-&gt;queryComponents</code>
@@ -2051,10 +2051,10 @@
       <code>$this-&gt;lexer-&gt;token['value']</code>
     </InvalidReturnStatement>
     <InvalidReturnType occurrences="9">
+      <code>AST\ArithmeticFactor</code>
+      <code>AST\ArithmeticTerm</code>
       <code>AST\BetweenExpression|</code>
-      <code>ArithmeticFactor</code>
-      <code>ArithmeticTerm</code>
-      <code>SimpleArithmeticExpression|ArithmeticTerm</code>
+      <code>AST\SimpleArithmeticExpression|AST\ArithmeticTerm</code>
       <code>string</code>
       <code>string</code>
       <code>string</code>
