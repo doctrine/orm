@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\Expr;
 
+use Stringable;
+
 use function strtoupper;
 
 /**
@@ -11,13 +13,13 @@ use function strtoupper;
  *
  * @link    www.doctrine-project.org
  */
-class Join
+class Join implements Stringable
 {
-    public const INNER_JOIN = 'INNER';
-    public const LEFT_JOIN  = 'LEFT';
+    final public const INNER_JOIN = 'INNER';
+    final public const LEFT_JOIN  = 'LEFT';
 
-    public const ON   = 'ON';
-    public const WITH = 'WITH';
+    final public const ON   = 'ON';
+    final public const WITH = 'WITH';
 
     /**
      * @psalm-param self::INNER_JOIN|self::LEFT_JOIN $joinType
