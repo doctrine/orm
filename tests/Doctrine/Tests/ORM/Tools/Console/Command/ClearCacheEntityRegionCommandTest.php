@@ -11,6 +11,9 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
+use function preg_replace;
+use function trim;
+
 /** @group DDC-2183 */
 class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
 {
@@ -80,12 +83,10 @@ class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
             ['decorated' => false]
         );
 
-        self::assertStringContainsString(
-            ' // Clearing second-level cache entry for entity "Doctrine\Tests\Models\Cache\Country" identified by',
-            $tester->getDisplay()
+        self::assertSame(
+            'Clearing second-level cache entry for entity "Doctrine\Tests\Models\Cache\Country" identified by "1"',
+            trim(preg_replace('#\s+//\s#', ' ', $tester->getDisplay()))
         );
-
-        self::assertStringContainsString(' // "1"', $tester->getDisplay());
     }
 
     public function testFlushRegionName(): void
