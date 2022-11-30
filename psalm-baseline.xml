@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.0.0-rc1@8f39de9001c995eb203cee3399307570f322076a">
+<files psalm-version="5.0.0@4e177bf0c9f03c17d2fbfd83b7cc9c47605274d8">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass occurrences="1">
       <code>IterableResult</code>
@@ -2066,15 +2066,11 @@
       <code>new $functionClass($functionName)</code>
       <code>new $functionClass($functionName)</code>
     </InvalidStringClass>
-    <LessSpecificReturnStatement occurrences="4">
+    <LessSpecificReturnStatement occurrences="3">
       <code>$function</code>
       <code>$function</code>
       <code>$function</code>
-      <code>$token</code>
     </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
-      <code>array{value: string, type: int|null|string, position: int}|null</code>
-    </MoreSpecificReturnType>
     <NullableReturnStatement occurrences="9">
       <code>$aliasIdentVariable</code>
       <code>$factors[0]</code>
@@ -2130,7 +2126,7 @@
       <code>$this-&gt;query-&gt;getDQL()</code>
       <code>$token['value']</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess occurrences="73">
+    <PossiblyNullArrayAccess occurrences="72">
       <code>$glimpse['type']</code>
       <code>$glimpse['value']</code>
       <code>$lookahead['type']</code>
