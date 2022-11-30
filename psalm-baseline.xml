@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.0.0-rc1@8f39de9001c995eb203cee3399307570f322076a">
+<files psalm-version="5.0.0@4e177bf0c9f03c17d2fbfd83b7cc9c47605274d8">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <FalsableReturnStatement occurrences="1">
       <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
@@ -1209,34 +1209,6 @@
       <code>$parts</code>
     </NonInvariantDocblockPropertyType>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Base.php">
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Comparison.php">
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Composite.php">
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-    <PossiblyInvalidCast occurrences="1">
-      <code>$part</code>
-    </PossiblyInvalidCast>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/From.php">
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Func.php">
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Query/Expr/GroupBy.php">
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$parts</code>
@@ -1251,16 +1223,6 @@
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$parts</code>
     </NonInvariantDocblockPropertyType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Math.php">
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/OrderBy.php">
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Orx.php">
     <NonInvariantDocblockPropertyType occurrences="2">
@@ -1287,7 +1249,7 @@
       <code>$lookaheadType</code>
     </InvalidArgument>
     <InvalidNullableReturnType occurrences="1">
-      <code>SelectStatement|UpdateStatement|DeleteStatement</code>
+      <code>AST\SelectStatement|AST\UpdateStatement|AST\DeleteStatement</code>
     </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue occurrences="1">
       <code>$this-&gt;queryComponents</code>
@@ -1312,10 +1274,10 @@
       <code>$this-&gt;lexer-&gt;token['value']</code>
     </InvalidReturnStatement>
     <InvalidReturnType occurrences="9">
+      <code>AST\ArithmeticFactor</code>
+      <code>AST\ArithmeticTerm</code>
       <code>AST\BetweenExpression|</code>
-      <code>ArithmeticFactor</code>
-      <code>ArithmeticTerm</code>
-      <code>SimpleArithmeticExpression|ArithmeticTerm</code>
+      <code>AST\SimpleArithmeticExpression|AST\ArithmeticTerm</code>
       <code>string</code>
       <code>string</code>
       <code>string</code>
@@ -1327,15 +1289,11 @@
       <code>new $functionClass($functionName)</code>
       <code>new $functionClass($functionName)</code>
     </InvalidStringClass>
-    <LessSpecificReturnStatement occurrences="4">
+    <LessSpecificReturnStatement occurrences="3">
       <code>$function</code>
       <code>$function</code>
       <code>$function</code>
-      <code>$token</code>
     </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
-      <code>array{value: string, type: int|null|string, position: int}|null</code>
-    </MoreSpecificReturnType>
     <NullableReturnStatement occurrences="9">
       <code>$aliasIdentVariable</code>
       <code>$factors[0]</code>
@@ -1389,7 +1347,7 @@
       <code>$this-&gt;query-&gt;getDQL()</code>
       <code>$token['value']</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess occurrences="72">
+    <PossiblyNullArrayAccess occurrences="71">
       <code>$glimpse['type']</code>
       <code>$glimpse['value']</code>
       <code>$lookahead['type']</code>
