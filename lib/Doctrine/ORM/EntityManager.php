@@ -767,6 +767,8 @@ class EntityManager implements EntityManagerInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @psalm-return never
      */
     public function copy($entity, $deep = false)
     {
