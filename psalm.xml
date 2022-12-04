@@ -64,6 +64,12 @@
                 <file name="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php"/>
             </errorLevel>
         </MoreSpecificReturnType>
+        <InvalidReturnType>
+            <errorLevel type="suppress">
+                <!-- https://github.com/vimeo/psalm/issues/8819 -->
+                <file name="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php"/>
+            </errorLevel>
+        </InvalidReturnType>
         <MethodSignatureMismatch>
             <errorLevel type="suppress">
                 <!-- See https://github.com/vimeo/psalm/issues/7357 -->
