@@ -80,7 +80,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
     }
 
     /** @return ReadableCollection<TKey, TValue>&Selectable<TKey, TValue> */
-    public function matching(Criteria $criteria): ReadableCollection
+    public function matching(Criteria $criteria): ReadableCollection&Selectable
     {
         $this->initialize();
         assert($this->collection instanceof Selectable);
