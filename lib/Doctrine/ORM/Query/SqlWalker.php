@@ -2218,6 +2218,7 @@ class SqlWalker implements TreeWalker
     {
         Deprecation::triggerIfCalledFromOutside(
             'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/10267',
             '%s() is deprecated, call walkInListExpression() or walkInSubselectExpression() instead.',
             __METHOD__
         );
