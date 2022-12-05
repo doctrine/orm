@@ -13,12 +13,11 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class ExistsExpression extends Node
 {
-    /** @var bool */
-    public $not;
-
     /** @param Subselect $subselect */
-    public function __construct(public $subselect)
-    {
+    public function __construct(
+        public $subselect,
+        public bool $not = false,
+    ) {
     }
 
     public function dispatch(SqlWalker $walker): string

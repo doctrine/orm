@@ -515,6 +515,14 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.14
 
+## Deprecated `Doctrine\ORM\Query\AST\InExpression`
+
+The AST parser will create a `InListExpression` or a `InSubselectExpression` when
+encountering an `IN ()` DQL expression instead of a generic `InExpression`.
+
+As a consequence, `SqlWalker::walkInExpression()` has been deprecated in favor of
+`SqlWalker::walkInListExpression()` and `SqlWalker::walkInSubselectExpression()`.
+
 ## Deprecated constructing a `CacheKey` without `$hash`
 
 The `Doctrine\ORM\Cache\CacheKey` class has an explicit constructor now with

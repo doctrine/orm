@@ -24,6 +24,7 @@
                 <!-- Remove on 3.0.x -->
                 <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
                 <referencedClass name="Doctrine\ORM\Event\LifecycleEventArgs"/>
+                <referencedClass name="Doctrine\ORM\Query\AST\InExpression"/>
             </errorLevel>
         </DeprecatedClass>
         <DeprecatedMethod>
@@ -33,6 +34,7 @@
                 <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
                 <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSaveSql"/>
+                <referencedMethod name="Doctrine\ORM\Query\SqlWalker::walkInExpression"/>
             </errorLevel>
         </DeprecatedMethod>
         <DeprecatedProperty>
@@ -64,6 +66,12 @@
                 <file name="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php"/>
             </errorLevel>
         </MoreSpecificReturnType>
+        <InvalidParamDefault>
+            <errorLevel type="suppress">
+                <!-- Remove on 3.0.x -->
+                <file name="lib/Doctrine/ORM/Query/AST/InstanceOfExpression.php"/>
+            </errorLevel>
+        </InvalidParamDefault>
         <InvalidReturnType>
             <errorLevel type="suppress">
                 <!-- https://github.com/vimeo/psalm/issues/8819 -->
@@ -84,6 +92,13 @@
                 <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php"/>
             </errorLevel>
         </MissingParamType>
+        <NonInvariantDocblockPropertyType>
+            <errorLevel type="suppress">
+                <!-- Remove on 3.0.x -->
+                <file name="lib/Doctrine/ORM/Query/AST/InListExpression.php"/>
+                <file name="lib/Doctrine/ORM/Query/AST/InSubselectExpression.php"/>
+            </errorLevel>
+        </NonInvariantDocblockPropertyType>
         <PropertyNotSetInConstructor>
             <errorLevel type="suppress">
                 <directory name="lib/Doctrine/ORM/Query/AST" />

@@ -2477,10 +2477,7 @@ class Parser
             return $conditionalPrimary;
         }
 
-        $conditionalFactor      = new AST\ConditionalFactor($conditionalPrimary);
-        $conditionalFactor->not = $not;
-
-        return $conditionalFactor;
+        return new AST\ConditionalFactor($conditionalPrimary, $not);
     }
 
     /**
@@ -2635,19 +2632,21 @@ class Parser
      */
     public function EmptyCollectionComparisonExpression()
     {
-        $emptyCollectionCompExpr = new AST\EmptyCollectionComparisonExpression(
-            $this->CollectionValuedPathExpression(),
-        );
+        $pathExpression = $this->CollectionValuedPathExpression();
         $this->match(Lexer::T_IS);
 
+        $not = false;
         if ($this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
-            $emptyCollectionCompExpr->not = true;
+            $not = true;
         }
 
         $this->match(Lexer::T_EMPTY);
 
-        return $emptyCollectionCompExpr;
+        return new AST\EmptyCollectionComparisonExpression(
+            $pathExpression,
+            $not,
+        );
     }
 
     /**
@@ -2675,13 +2674,11 @@ class Parser
             $this->match(Lexer::T_OF);
         }
 
-        $collMemberExpr      = new AST\CollectionMemberExpression(
+        return new AST\CollectionMemberExpression(
             $entityExpr,
             $this->CollectionValuedPathExpression(),
+            $not,
         );
-        $collMemberExpr->not = $not;
-
-        return $collMemberExpr;
     }
 
     /**
@@ -3089,10 +3086,7 @@ class Parser
         $this->match(Lexer::T_AND);
         $arithExpr3 = $this->ArithmeticExpression();
 
-        $betweenExpr      = new AST\BetweenExpression($arithExpr1, $arithExpr2, $arithExpr3);
-        $betweenExpr->not = $not;
-
-        return $betweenExpr;
+        return new AST\BetweenExpression($arithExpr1, $arithExpr2, $arithExpr3, $not);
     }
 
     /**
@@ -3116,32 +3110,40 @@ class Parser
     /**
      * InExpression ::= SingleValuedPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
      *
-     * @return AST\InExpression
+     * @return AST\InListExpression|AST\InSubselectExpression
      */
     public function InExpression()
     {
-        $inExpression = new AST\InExpression($this->ArithmeticExpression());
+        $expression = $this->ArithmeticExpression();
 
+        $not = false;
         if ($this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
-            $inExpression->not = true;
+            $not = true;
         }
 
         $this->match(Lexer::T_IN);
         $this->match(Lexer::T_OPEN_PARENTHESIS);
 
         if ($this->lexer->isNextToken(Lexer::T_SELECT)) {
-            $inExpression->subselect = $this->Subselect();
+            $inExpression = new AST\InSubselectExpression(
+                $expression,
+                $this->Subselect(),
+                $not,
+            );
         } else {
-            $literals   = [];
-            $literals[] = $this->InParameter();
+            $literals = [$this->InParameter()];
 
             while ($this->lexer->isNextToken(Lexer::T_COMMA)) {
                 $this->match(Lexer::T_COMMA);
                 $literals[] = $this->InParameter();
             }
 
-            $inExpression->literals = $literals;
+            $inExpression = new AST\InListExpression(
+                $expression,
+                $literals,
+                $not,
+            );
         }
 
         $this->match(Lexer::T_CLOSE_PARENTHESIS);
@@ -3156,47 +3158,50 @@ class Parser
      */
     public function InstanceOfExpression()
     {
-        $instanceOfExpression = new AST\InstanceOfExpression($this->IdentificationVariable());
+        $identificationVariable = $this->IdentificationVariable();
 
+        $not = false;
         if ($this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
-            $instanceOfExpression->not = true;
+            $not = true;
         }
 
         $this->match(Lexer::T_INSTANCE);
         $this->match(Lexer::T_OF);
 
-        $exprValues = [];
+        $exprValues = $this->lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)
+            ? $this->InstanceOfParameterList()
+            : [$this->InstanceOfParameter()];
 
-        if ($this->lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
-            $this->match(Lexer::T_OPEN_PARENTHESIS);
+        return new AST\InstanceOfExpression(
+            $identificationVariable,
+            $exprValues,
+            $not,
+        );
+    }
+
+    /** @return non-empty-list<AST\InputParameter|string> */
+    public function InstanceOfParameterList(): array
+    {
+        $this->match(Lexer::T_OPEN_PARENTHESIS);
+
+        $exprValues = [$this->InstanceOfParameter()];
+
+        while ($this->lexer->isNextToken(Lexer::T_COMMA)) {
+            $this->match(Lexer::T_COMMA);
 
             $exprValues[] = $this->InstanceOfParameter();
-
-            while ($this->lexer->isNextToken(Lexer::T_COMMA)) {
-                $this->match(Lexer::T_COMMA);
-
-                $exprValues[] = $this->InstanceOfParameter();
-            }
-
-            $this->match(Lexer::T_CLOSE_PARENTHESIS);
-
-            $instanceOfExpression->value = $exprValues;
-
-            return $instanceOfExpression;
         }
 
-        $exprValues[] = $this->InstanceOfParameter();
+        $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
-        $instanceOfExpression->value = $exprValues;
-
-        return $instanceOfExpression;
+        return $exprValues;
     }
 
     /**
      * InstanceOfParameter ::= AbstractSchemaName | InputParameter
      *
-     * @return mixed
+     * @return AST\InputParameter|string
      */
     public function InstanceOfParameter()
     {
@@ -3246,10 +3251,7 @@ class Parser
             $escapeChar = new AST\Literal(AST\Literal::STRING, $this->lexer->token['value']);
         }
 
-        $likeExpr      = new AST\LikeExpression($stringExpr, $stringPattern, $escapeChar);
-        $likeExpr->not = $not;
-
-        return $likeExpr;
+        return new AST\LikeExpression($stringExpr, $stringPattern, $escapeChar, $not);
     }
 
     /**
@@ -3311,19 +3313,18 @@ class Parser
                 break;
         }
 
-        $nullCompExpr = new AST\NullComparisonExpression($expr);
-
         $this->match(Lexer::T_IS);
 
+        $not = false;
         if ($this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
 
-            $nullCompExpr->not = true;
+            $not = true;
         }
 
         $this->match(Lexer::T_NULL);
 
-        return $nullCompExpr;
+        return new AST\NullComparisonExpression($expr, $not);
     }
 
     /**
@@ -3343,12 +3344,11 @@ class Parser
         $this->match(Lexer::T_EXISTS);
         $this->match(Lexer::T_OPEN_PARENTHESIS);
 
-        $existsExpression      = new AST\ExistsExpression($this->Subselect());
-        $existsExpression->not = $not;
+        $subselect = $this->Subselect();
 
         $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
-        return $existsExpression;
+        return new AST\ExistsExpression($subselect, $not);
     }
 
     /**

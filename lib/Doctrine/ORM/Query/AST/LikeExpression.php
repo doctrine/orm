@@ -14,16 +14,17 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class LikeExpression extends Node
 {
-    /** @var bool */
-    public $not = false;
-
     /**
      * @param Node|string                                        $stringExpression
      * @param InputParameter|FunctionNode|PathExpression|Literal $stringPattern
      * @param Literal|null                                       $escapeChar
      */
-    public function __construct(public $stringExpression, public $stringPattern, public $escapeChar = null)
-    {
+    public function __construct(
+        public $stringExpression,
+        public $stringPattern,
+        public $escapeChar = null,
+        public bool $not = false,
+    ) {
     }
 
     public function dispatch(SqlWalker $walker): string
