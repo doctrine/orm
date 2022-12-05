@@ -9,7 +9,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\QuoteStrategy;
@@ -1942,38 +1941,6 @@ class SqlWalker
         }
 
         return $expression->dispatch($this) . $comparison;
-    }
-
-    /**
-     * Walks down an InExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @deprecated Use {@see walkInListExpression()} or {@see walkInSubselectExpression()} instead.
-     */
-    public function walkInExpression(AST\InExpression $inExpr): string
-    {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/orm',
-            '%s() is deprecated, call walkInListExpression() or walkInSubselectExpression() instead.',
-            __METHOD__,
-        );
-
-        if ($inExpr instanceof AST\InListExpression) {
-            return $this->walkInListExpression($inExpr);
-        }
-
-        if ($inExpr instanceof AST\InSubselectExpression) {
-            return $this->walkInSubselectExpression($inExpr);
-        }
-
-        $sql = $this->walkArithmeticExpression($inExpr->expression) . ($inExpr->not ? ' NOT' : '') . ' IN (';
-
-        $sql .= $inExpr->subselect
-            ? $this->walkSubselect($inExpr->subselect)
-            : implode(', ', array_map([$this, 'walkInParameter'], $inExpr->literals));
-
-        $sql .= ')';
-
-        return $sql;
     }
 
     /**
