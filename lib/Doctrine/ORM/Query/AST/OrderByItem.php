@@ -15,22 +15,18 @@ use function strtoupper;
  */
 class OrderByItem extends Node
 {
-    /** @var string */
-    public $type;
+    public string $type;
 
-    /** @param mixed $expression */
-    public function __construct(public $expression)
+    public function __construct(public mixed $expression)
     {
     }
 
-    /** @return bool */
-    public function isAsc()
+    public function isAsc(): bool
     {
         return strtoupper($this->type) === 'ASC';
     }
 
-    /** @return bool */
-    public function isDesc()
+    public function isDesc(): bool
     {
         return strtoupper($this->type) === 'DESC';
     }

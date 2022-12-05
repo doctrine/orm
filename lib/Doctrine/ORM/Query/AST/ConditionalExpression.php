@@ -13,13 +13,9 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class ConditionalExpression extends Node
 {
-    /** @var mixed[] */
-    public $conditionalTerms = [];
-
     /** @param mixed[] $conditionalTerms */
-    public function __construct(array $conditionalTerms)
+    public function __construct(public array $conditionalTerms)
     {
-        $this->conditionalTerms = $conditionalTerms;
     }
 
     public function dispatch(SqlWalker $walker): string

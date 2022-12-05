@@ -1106,11 +1106,6 @@
       <code>$lexer-&gt;token['value']</code>
     </PossiblyNullArrayAccess>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/IndexBy.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>null</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/JoinClassPathExpression.php">
     <UndefinedMethod occurrences="1">
       <code>walkJoinPathExpression</code>
@@ -1120,11 +1115,6 @@
     <UndefinedMethod occurrences="1">
       <code>walkJoinVariableDeclaration</code>
     </UndefinedMethod>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Node.php">
-    <MethodSignatureMustProvideReturnType occurrences="1">
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/SimpleWhenClause.php">
     <UndefinedMethod occurrences="1">
@@ -1278,7 +1268,7 @@
       <code>AST\ArithmeticTerm</code>
       <code>AST\BetweenExpression|</code>
       <code>AST\SimpleArithmeticExpression|AST\ArithmeticTerm</code>
-      <code>string</code>
+      <code>class-string</code>
       <code>string</code>
       <code>string</code>
       <code>string</code>
@@ -1411,7 +1401,6 @@
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$token['type']</code>
       <code>$token['type']</code>
       <code>$token['type']</code>
       <code>$token['type']</code>

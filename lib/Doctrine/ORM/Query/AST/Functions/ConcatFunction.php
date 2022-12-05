@@ -20,7 +20,7 @@ class ConcatFunction extends FunctionNode
     public Node $secondStringPrimary;
 
     /** @psalm-var list<Node> */
-    public $concatExpressions = [];
+    public array $concatExpressions = [];
 
     public function getSql(SqlWalker $sqlWalker): string
     {

@@ -14,8 +14,7 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class SimpleSelectExpression extends Node
 {
-    /** @var string */
-    public $fieldIdentificationVariable;
+    public string|null $fieldIdentificationVariable = null;
 
     /** @param Node|string $expression */
     public function __construct(public $expression)

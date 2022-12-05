@@ -14,27 +14,21 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class Join extends Node
 {
-    public const JOIN_TYPE_LEFT      = 1;
-    public const JOIN_TYPE_LEFTOUTER = 2;
-    public const JOIN_TYPE_INNER     = 3;
-
-    /**
-     * @var int
-     * @psalm-var self::JOIN_TYPE_*
-     */
-    public $joinType = self::JOIN_TYPE_INNER;
+    final public const JOIN_TYPE_LEFT      = 1;
+    final public const JOIN_TYPE_LEFTOUTER = 2;
+    final public const JOIN_TYPE_INNER     = 3;
 
     /** @var ConditionalExpression|null */
     public $conditionalExpression = null;
 
     /**
-     * @param int  $joinType
      * @param Node $joinAssociationDeclaration
      * @psalm-param self::JOIN_TYPE_* $joinType
      */
-    public function __construct($joinType, public $joinAssociationDeclaration = null)
-    {
-        $this->joinType = $joinType;
+    public function __construct(
+        public int $joinType,
+        public $joinAssociationDeclaration = null,
+    ) {
     }
 
     public function dispatch(SqlWalker $walker): string

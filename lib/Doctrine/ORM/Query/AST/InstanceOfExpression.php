@@ -17,15 +17,12 @@ use function func_num_args;
  */
 class InstanceOfExpression extends Node
 {
-    /** @var string */
-    public $identificationVariable;
-
     /**
-     * @param string                                $identVariable
+     * @param string                                $identificationVariable
      * @param non-empty-list<InputParameter|string> $value
      */
     public function __construct(
-        $identVariable,
+        public $identificationVariable,
         public array $value = [],
         public bool $not = false,
     ) {
@@ -37,8 +34,6 @@ class InstanceOfExpression extends Node
                 __METHOD__,
             );
         }
-
-        $this->identificationVariable = $identVariable;
     }
 
     public function dispatch(SqlWalker $walker): string

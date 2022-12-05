@@ -19,14 +19,12 @@ class ConditionalPrimary extends Node
     /** @var ConditionalExpression|null */
     public $conditionalExpression;
 
-    /** @return bool */
-    public function isSimpleConditionalExpression()
+    public function isSimpleConditionalExpression(): bool
     {
         return (bool) $this->simpleConditionalExpression;
     }
 
-    /** @return bool */
-    public function isConditionalExpression()
+    public function isConditionalExpression(): bool
     {
         return (bool) $this->conditionalExpression;
     }

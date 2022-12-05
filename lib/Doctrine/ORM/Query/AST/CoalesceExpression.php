@@ -13,13 +13,9 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class CoalesceExpression extends Node
 {
-    /** @var mixed[] */
-    public $scalarExpressions = [];
-
     /** @param mixed[] $scalarExpressions */
-    public function __construct(array $scalarExpressions)
+    public function __construct(public array $scalarExpressions)
     {
-        $this->scalarExpressions = $scalarExpressions;
     }
 
     public function dispatch(SqlWalker $walker): string

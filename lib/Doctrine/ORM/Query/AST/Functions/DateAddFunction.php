@@ -68,7 +68,7 @@ class DateAddFunction extends FunctionNode
      *
      * @throws ASTException
      */
-    private function dispatchIntervalExpression(SqlWalker $sqlWalker)
+    private function dispatchIntervalExpression(SqlWalker $sqlWalker): string
     {
         $sql = $this->intervalExpression->dispatch($sqlWalker);
         assert(is_numeric($sql));

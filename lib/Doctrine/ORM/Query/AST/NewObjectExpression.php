@@ -13,16 +13,9 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class NewObjectExpression extends Node
 {
-    /** @var mixed[] */
-    public $args;
-
-    /**
-     * @param string  $className
-     * @param mixed[] $args
-     */
-    public function __construct(public $className, array $args)
+    /** @param mixed[] $args */
+    public function __construct(public string $className, public array $args)
     {
-        $this->args = $args;
     }
 
     public function dispatch(SqlWalker $walker): string

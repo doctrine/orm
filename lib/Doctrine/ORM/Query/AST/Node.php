@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\AST;
 
 use Doctrine\ORM\Query\SqlWalker;
+use Stringable;
 
 use function get_debug_type;
 use function get_object_vars;
@@ -20,7 +21,7 @@ use const PHP_EOL;
  *
  * @link    www.doctrine-project.org
  */
-abstract class Node
+abstract class Node implements Stringable
 {
     /**
      * Double-dispatch method, supposed to dispatch back to the walker.
@@ -36,20 +37,13 @@ abstract class Node
 
     /**
      * Dumps the AST Node into a string representation for information purpose only.
-     *
-     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->dump($this);
     }
 
-    /**
-     * @param mixed $value
-     *
-     * @return string
-     */
-    public function dump($value)
+    public function dump(mixed $value): string
     {
         static $ident = 0;
 
