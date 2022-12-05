@@ -9,7 +9,7 @@ use Doctrine\ORM\Query\AST\ConditionalExpression;
 use Doctrine\ORM\Query\AST\ConditionalFactor;
 use Doctrine\ORM\Query\AST\ConditionalPrimary;
 use Doctrine\ORM\Query\AST\ConditionalTerm;
-use Doctrine\ORM\Query\AST\InExpression;
+use Doctrine\ORM\Query\AST\InListExpression;
 use Doctrine\ORM\Query\AST\InputParameter;
 use Doctrine\ORM\Query\AST\NullComparisonExpression;
 use Doctrine\ORM\Query\AST\PathExpression;
@@ -76,8 +76,10 @@ class WhereInWalker extends TreeWalkerAdapter
             $arithmeticExpression->simpleArithmeticExpression = new SimpleArithmeticExpression(
                 [$pathExpression]
             );
-            $expression                                       = new InExpression($arithmeticExpression);
-            $expression->literals[]                           = new InputParameter(':' . self::PAGINATOR_ID_ALIAS);
+            $expression                                       = new InListExpression(
+                $arithmeticExpression,
+                [new InputParameter(':' . self::PAGINATOR_ID_ALIAS)]
+            );
 
             $this->convertWhereInIdentifiersToDatabaseValue(
                 PersisterHelper::getTypeOfField(
@@ -88,8 +90,7 @@ class WhereInWalker extends TreeWalkerAdapter
                 )[0]
             );
         } else {
-            $expression      = new NullComparisonExpression($pathExpression);
-            $expression->not = false;
+            $expression = new NullComparisonExpression($pathExpression);
         }
 
         $conditionalPrimary                              = new ConditionalPrimary();

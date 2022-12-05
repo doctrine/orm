@@ -18,9 +18,10 @@ class ConditionalFactor extends Node
     public $conditionalPrimary;
 
     /** @param ConditionalPrimary $conditionalPrimary */
-    public function __construct($conditionalPrimary)
+    public function __construct($conditionalPrimary, bool $not = false)
     {
         $this->conditionalPrimary = $conditionalPrimary;
+        $this->not                = $not;
     }
 
     /**
