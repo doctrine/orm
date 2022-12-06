@@ -32,6 +32,6 @@ final class MultiManagerProvider implements EntityManagerProvider
             throw UnknownManagerException::unknownManager($name, $this->entityManagers);
         }
 
-        return $this->entityManagers[$this->defaultManagerName];
+        return $this->entityManagers[$name];
     }
 }
