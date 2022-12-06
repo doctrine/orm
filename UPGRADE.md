@@ -1,5 +1,13 @@
 # Upgrade to 3.0
 
+## BC BREAK: Removed `Doctrine\ORM\Query\AST\InExpression`
+
+The AST parser will create a `InListExpression` or a `InSubselectExpression` when
+encountering an `IN ()` DQL expression instead of a generic `InExpression`.
+
+As a consequence, `SqlWalker::walkInExpression()` has been replaced by
+`SqlWalker::walkInListExpression()` and `SqlWalker::walkInSubselectExpression()`.
+
 ## BC BREAK: Changed `EntityManagerInterface#refresh($entity)`, `EntityManagerDecorator#refresh($entity)` and `UnitOfWork#refresh($entity)` signatures
 
 The new signatures of these methods add an optional `LockMode|int|null $lockMode`
