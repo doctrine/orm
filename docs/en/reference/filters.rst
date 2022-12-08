@@ -33,6 +33,10 @@ Parameters for the query should be set on the filter object by
 in filters.  The ``SQLFilter#getParameter()`` function takes care of the
 proper quoting of parameters.
 
+.. warning::
+    For the query cache to correctly work the filter must always return the same result from ``SQLFilter#addFilterConstraint()`` for a given set of parameters / values.
+    Do not set parameters inside ``SQLFilter#addFilterConstraint()`` function.
+
 .. code-block:: php
 
     <?php
