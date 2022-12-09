@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Proxy;
 
-use Closure;
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Proxy\Proxy as CommonProxy;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityNotFoundException;
@@ -77,7 +77,7 @@ class ProxyFactoryTest extends OrmTestCase
             ->expects(self::atLeastOnce())
             ->method('load')
             ->with(self::equalTo($identifier), self::isInstanceOf($proxyClass))
-            ->will(self::returnValue(new stdClass()));
+            ->will(self::returnValue($proxy));
 
         $proxy->getDescription();
     }
@@ -123,7 +123,7 @@ class ProxyFactoryTest extends OrmTestCase
     public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized(): void
     {
         $persister = $this
-            ->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['load', 'getClassMetadata'])
+            ->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['load'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
@@ -143,15 +143,13 @@ class ProxyFactoryTest extends OrmTestCase
         }
 
         self::assertFalse($proxy->__isInitialized());
-        self::assertInstanceOf(Closure::class, $proxy->__getInitializer(), 'The initializer wasn\'t removed');
-        self::assertInstanceOf(Closure::class, $proxy->__getCloner(), 'The cloner wasn\'t removed');
     }
 
     /** @group DDC-2432 */
     public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized(): void
     {
         $persister = $this
-            ->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['load', 'getClassMetadata'])
+            ->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['load'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
@@ -166,13 +164,12 @@ class ProxyFactoryTest extends OrmTestCase
 
         try {
             $cloned = clone $proxy;
+            $cloned->__load();
             self::fail('An exception was expected to be raised');
         } catch (EntityNotFoundException $exception) {
         }
 
         self::assertFalse($proxy->__isInitialized());
-        self::assertInstanceOf(Closure::class, $proxy->__getInitializer(), 'The initializer wasn\'t removed');
-        self::assertInstanceOf(Closure::class, $proxy->__getCloner(), 'The cloner wasn\'t removed');
     }
 
     public function testProxyClonesParentFields(): void
@@ -190,7 +187,7 @@ class ProxyFactoryTest extends OrmTestCase
         $classMetaData = $this->emMock->getClassMetadata(CompanyEmployee::class);
 
         $persister = $this
-            ->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['load', 'getClassMetadata'])
+            ->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['loadById', 'getClassMetadata'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->uowMock->setEntityPersister(CompanyEmployee::class, $persister);
@@ -198,15 +195,25 @@ class ProxyFactoryTest extends OrmTestCase
         $proxy = $this->proxyFactory->getProxy(CompanyEmployee::class, ['id' => 42]);
         assert($proxy instanceof Proxy);
 
-        $persister
+        $loadByIdMock = $persister
             ->expects(self::atLeastOnce())
-            ->method('load')
-            ->willReturn($companyEmployee);
+            ->method('loadById');
 
-        $persister
-            ->expects(self::atLeastOnce())
-            ->method('getClassMetadata')
-            ->willReturn($classMetaData);
+        if ($proxy instanceof CommonProxy) {
+            $loadByIdMock->willReturn($companyEmployee);
+
+            $persister
+                ->expects(self::atLeastOnce())
+                ->method('getClassMetadata')
+                ->willReturn($classMetaData);
+        } else {
+            $loadByIdMock->willReturnCallback(static function (array $id, CompanyEmployee $companyEmployee) {
+                $companyEmployee->setSalary(1000); // A property on the CompanyEmployee
+                $companyEmployee->setName('Bob'); // A property on the parent class, CompanyPerson
+
+                return $companyEmployee;
+            });
+        }
 
         $cloned = clone $proxy;
         assert($cloned instanceof CompanyEmployee);

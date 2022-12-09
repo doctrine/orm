@@ -112,7 +112,6 @@ Cookbook
 * **Implementation**:
   :doc:`Array Access <cookbook/implementing-arrayaccess-for-domain-objects>` |
   :doc:`Notify ChangeTracking Example <cookbook/implementing-the-notify-changetracking-policy>` |
-  :doc:`Using Wakeup Or Clone <cookbook/implementing-wakeup-or-clone>` |
   :doc:`Working with DateTime <cookbook/working-with-datetime>` |
   :doc:`Validation <cookbook/validation-of-entities>` |
   :doc:`Entities in the Session <cookbook/entities-in-session>` |

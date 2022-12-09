@@ -13,13 +13,16 @@ use Doctrine\ORM\Tools\ConvertDoctrine1Schema;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\Reflection\RuntimeReflectionProperty;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\OrmTestCase;
+use Symfony\Component\VarExporter\LazyGhostTrait;
 
 use function class_exists;
 use function count;
 use function file_exists;
 use function rmdir;
+use function trait_exists;
 use function unlink;
 
 /**
@@ -42,6 +45,7 @@ class ConvertDoctrine1SchemaTest extends OrmTestCase
             ->willReturn(new EventManager());
 
         $config = new Configuration();
+        $config->setLazyGhostObjectEnabled(trait_exists(LazyGhostTrait::class) && class_exists(RuntimeReflectionProperty::class));
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setMetadataDriverImpl($metadataDriver);

@@ -43,14 +43,17 @@ use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectRepository;
+use Doctrine\Persistence\Reflection\RuntimeReflectionProperty;
 use LogicException;
 use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\VarExporter\LazyGhostTrait;
 
 use function class_exists;
 use function is_a;
 use function method_exists;
 use function sprintf;
 use function strtolower;
+use function trait_exists;
 use function trim;
 
 /**
@@ -171,11 +174,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
         );
 
         if (! class_exists(AnnotationReader::class)) {
-            throw new LogicException(sprintf(
+            throw new LogicException(
                 'The annotation metadata driver cannot be enabled because the "doctrine/annotations" library'
                 . ' is not installed. Please run "composer require doctrine/annotations" or choose a different'
                 . ' metadata driver.'
-            ));
+            );
         }
 
         AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
@@ -1071,5 +1074,29 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setSchemaIgnoreClasses(array $schemaIgnoreClasses): void
     {
         $this->_attributes['schemaIgnoreClasses'] = $schemaIgnoreClasses;
+    }
+
+    public function isLazyGhostObjectEnabled(): bool
+    {
+        return $this->_attributes['isLazyGhostObjectEnabled'] ?? false;
+    }
+
+    public function setLazyGhostObjectEnabled(bool $flag): void
+    {
+        if ($flag && ! trait_exists(LazyGhostTrait::class)) {
+            throw new LogicException(
+                'Lazy ghost objects cannot be enabled because the "symfony/var-exporter" library'
+                . ' version 6.2 or higher is not installed. Please run "composer require symfony/var-exporter:^6.2".'
+            );
+        }
+
+        if ($flag && ! class_exists(RuntimeReflectionProperty::class)) {
+            throw new LogicException(
+                'Lazy ghost objects cannot be enabled because the "doctrine/persistence" library'
+                . ' version 3.1 or higher is not installed. Please run "composer update doctrine/persistence".'
+            );
+        }
+
+        $this->_attributes['isLazyGhostObjectEnabled'] = $flag;
     }
 }

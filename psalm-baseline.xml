@@ -1413,7 +1413,7 @@
     </MissingTemplateParam>
   </file>
   <file src="lib/Doctrine/ORM/Proxy/ProxyFactory.php">
-    <ArgumentTypeCoercion occurrences="2">
+    <ArgumentTypeCoercion occurrences="3">
       <code>$classMetadata</code>
       <code>$classMetadata</code>
     </ArgumentTypeCoercion>
@@ -1422,14 +1422,15 @@
       <code>$em-&gt;getMetadataFactory()</code>
       <code>$em-&gt;getMetadataFactory()</code>
     </InvalidArgument>
-    <NoInterfaceProperties occurrences="2">
+    <NoInterfaceProperties occurrences="3">
       <code>$metadata-&gt;isEmbeddedClass</code>
       <code>$metadata-&gt;isMappedSuperclass</code>
+      <code>$proxy-&gt;__isCloning</code>
     </NoInterfaceProperties>
-    <PossiblyNullPropertyFetch occurrences="1">
+    <PossiblyNullPropertyFetch occurrences="2">
       <code>$property-&gt;name</code>
     </PossiblyNullPropertyFetch>
-    <PossiblyNullReference occurrences="1">
+    <PossiblyNullReference occurrences="2">
       <code>setAccessible</code>
     </PossiblyNullReference>
     <UndefinedInterfaceMethod occurrences="1">
