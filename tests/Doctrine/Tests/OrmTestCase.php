@@ -14,15 +14,11 @@ use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\ORMSetup;
-use Doctrine\Persistence\Reflection\RuntimeReflectionProperty;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
-use Symfony\Component\VarExporter\LazyGhostTrait;
 
-use function class_exists;
 use function realpath;
-use function trait_exists;
 
 /**
  * Base testcase class for all ORM testcases.
@@ -80,11 +76,9 @@ abstract class OrmTestCase extends DoctrineTestCase
 
         $config = new Configuration();
 
-        $config->setLazyGhostObjectEnabled(trait_exists(LazyGhostTrait::class) && class_exists(RuntimeReflectionProperty::class));
+        TestUtil::configureProxies($config);
         $config->setMetadataCache($metadataCache);
         $config->setQueryCache(self::getSharedQueryCache());
-        $config->setProxyDir(__DIR__ . '/Proxies');
-        $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver([
             realpath(__DIR__ . '/Models/Cache'),
         ]));

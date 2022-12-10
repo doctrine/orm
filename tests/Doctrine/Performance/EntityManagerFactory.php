@@ -16,14 +16,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\Persistence\Reflection\RuntimeReflectionProperty;
 use Doctrine\Tests\Mocks\DriverResultMock;
-use Symfony\Component\VarExporter\LazyGhostTrait;
+use Doctrine\Tests\TestUtil;
 
 use function array_map;
-use function class_exists;
 use function realpath;
-use function trait_exists;
 
 final class EntityManagerFactory
 {
@@ -31,9 +28,7 @@ final class EntityManagerFactory
     {
         $config = new Configuration();
 
-        $config->setLazyGhostObjectEnabled(trait_exists(LazyGhostTrait::class) && class_exists(RuntimeReflectionProperty::class));
-        $config->setProxyDir(__DIR__ . '/../Tests/Proxies');
-        $config->setProxyNamespace('Doctrine\Tests\Proxies');
+        TestUtil::configureProxies($config);
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
         $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver([
             realpath(__DIR__ . '/Models/Cache'),
@@ -58,9 +53,7 @@ final class EntityManagerFactory
     {
         $config = new Configuration();
 
-        $config->setLazyGhostObjectEnabled(trait_exists(LazyGhostTrait::class) && class_exists(RuntimeReflectionProperty::class));
-        $config->setProxyDir(__DIR__ . '/../Tests/Proxies');
-        $config->setProxyNamespace('Doctrine\Tests\Proxies');
+        TestUtil::configureProxies($config);
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
         $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver([
             realpath(__DIR__ . '/Models/Cache'),

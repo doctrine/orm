@@ -20,13 +20,11 @@ use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\Driver\PHPDriver;
-use Doctrine\Persistence\Reflection\RuntimeReflectionProperty;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\OrmTestCase;
-use Symfony\Component\VarExporter\LazyGhostTrait;
+use Doctrine\Tests\TestUtil;
 use Symfony\Component\Yaml\Parser;
 
-use function class_exists;
 use function count;
 use function current;
 use function file_get_contents;
@@ -38,7 +36,6 @@ use function rmdir;
 use function rtrim;
 use function simplexml_load_file;
 use function str_replace;
-use function trait_exists;
 use function unlink;
 
 /**
@@ -66,9 +63,7 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
             ->willReturn(new EventManager());
 
         $config = new Configuration();
-        $config->setLazyGhostObjectEnabled(trait_exists(LazyGhostTrait::class) && class_exists(RuntimeReflectionProperty::class));
-        $config->setProxyDir(__DIR__ . '/../../Proxies');
-        $config->setProxyNamespace('Doctrine\Tests\Proxies');
+        TestUtil::configureProxies($config);
         $config->setMetadataDriverImpl($metadataDriver);
 
         return new EntityManagerMock($connection, $config);
