@@ -219,6 +219,8 @@
         <exclude-pattern>tests/Doctrine/Tests/OrmFunctionalTestCase.php</exclude-pattern>
     </rule>
     <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps">
+        <!-- Member variable "__isCloning" is not in valid camel caps format -->
+        <exclude-pattern>lib/Doctrine/ORM/Proxy/ProxyFactory.php</exclude-pattern>
         <!-- accessing public property __isInitialized__ of a proxy -->
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/ProxiesLikeEntitiesTest.php</exclude-pattern>
     </rule>

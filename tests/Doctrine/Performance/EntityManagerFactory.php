@@ -17,9 +17,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Persistence\Reflection\RuntimeReflectionProperty;
+use Symfony\Component\VarExporter\LazyGhostTrait;
 
 use function array_map;
+use function class_exists;
 use function realpath;
+use function trait_exists;
 
 final class EntityManagerFactory
 {
@@ -27,6 +31,7 @@ final class EntityManagerFactory
     {
         $config = new Configuration();
 
+        $config->setLazyGhostObjectEnabled(trait_exists(LazyGhostTrait::class) && class_exists(RuntimeReflectionProperty::class));
         $config->setProxyDir(__DIR__ . '/../Tests/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
@@ -53,6 +58,7 @@ final class EntityManagerFactory
     {
         $config = new Configuration();
 
+        $config->setLazyGhostObjectEnabled(trait_exists(LazyGhostTrait::class) && class_exists(RuntimeReflectionProperty::class));
         $config->setProxyDir(__DIR__ . '/../Tests/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);

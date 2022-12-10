@@ -162,28 +162,6 @@ your code. See the following code:
         echo "This will always be true!";
     }
 
-A slice of the generated proxy classes code looks like the
-following piece of code. A real proxy class override ALL public
-methods along the lines of the ``getName()`` method shown below:
-
-.. code-block:: php
-
-    <?php
-    class UserProxy extends User implements Proxy
-    {
-        private function _load(): void
-        {
-            // lazy loading code
-        }
-
-        public function getName(): string
-        {
-            $this->_load();
-            return parent::getName();
-        }
-        // .. other public methods of User
-    }
-
 .. warning::
 
     Traversing the object graph for parts that are lazy-loaded will
@@ -413,14 +391,6 @@ Example:
     $entity = $em->merge($detachedEntity);
     // $entity now refers to the fully managed copy returned by the merge operation.
     // The EntityManager $em now manages the persistence of $entity as usual.
-
-.. note::
-
-    When you want to serialize/unserialize entities you
-    have to make all entity properties protected, never private. The
-    reason for this is, if you serialize a class that was a proxy
-    instance before, the private variables won't be serialized and a
-    PHP Notice is thrown.
 
 
 The semantics of the merge operation, applied to an entity X, are

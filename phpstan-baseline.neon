@@ -181,6 +181,11 @@ parameters:
 			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
 
 		-
+			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Proxy::\\$__isCloning\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
+
+		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$isEmbeddedClass\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
@@ -197,7 +202,7 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$class of method Doctrine\\\\ORM\\\\Utility\\\\IdentifierFlattener\\:\\:flattenIdentifier\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
-			count: 2
+			count: 3
 			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
 
 		-

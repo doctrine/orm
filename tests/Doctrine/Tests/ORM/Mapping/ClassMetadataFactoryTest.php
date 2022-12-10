@@ -28,6 +28,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\Persistence\Reflection\RuntimeReflectionProperty;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\MetadataDriverMock;
 use Doctrine\Tests\Models\CMS\CmsArticle;
@@ -45,12 +46,15 @@ use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\Assert;
 use ReflectionClass;
+use Symfony\Component\VarExporter\LazyGhostTrait;
 
 use function array_search;
 use function assert;
+use function class_exists;
 use function count;
 use function method_exists;
 use function sprintf;
+use function trait_exists;
 
 class ClassMetadataFactoryTest extends OrmTestCase
 {
@@ -237,6 +241,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     protected function createEntityManager(MappingDriver $metadataDriver, $conn = null): EntityManagerMock
     {
         $config = new Configuration();
+        $config->setLazyGhostObjectEnabled(trait_exists(LazyGhostTrait::class) && class_exists(RuntimeReflectionProperty::class));
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $eventManager = new EventManager();

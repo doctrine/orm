@@ -9,7 +9,6 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Proxy\Proxy as CommonProxy;
 use Doctrine\DBAL;
 use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
 use Doctrine\DBAL\LockMode;
@@ -589,7 +588,7 @@ class UnitOfWork implements PropertyChangedListener
                 $value->setOwner($entity, $assoc);
                 $value->setDirty(! $value->isEmpty());
 
-                $class->reflFields[$name]->setValue($entity, $value);
+                $refProp->setValue($entity, $value);
 
                 $actualData[$name] = $value;
 
@@ -1926,6 +1925,11 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function cascadePersist(object $entity, array &$visited): void
     {
+        if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
+            // nothing to do - proxy is not initialized, therefore we don't do anything with it
+            return;
+        }
+
         $class = $this->em->getClassMetadata($entity::class);
 
         $associationMappings = array_filter(
@@ -2202,26 +2206,14 @@ class UnitOfWork implements PropertyChangedListener
                     && $unmanagedProxy instanceof Proxy
                     && $this->isIdentifierEquals($unmanagedProxy, $entity)
                 ) {
-                    // DDC-1238 - we have a managed instance, but it isn't the provided one.
-                    // Therefore we clear its identifier. Also, we must re-fetch metadata since the
-                    // refreshed object may be anything
-
-                    foreach ($class->identifier as $fieldName) {
-                        $class->reflFields[$fieldName]->setValue($unmanagedProxy, null);
-                    }
-
-                    return $unmanagedProxy;
+                    // We will hydrate the given un-managed proxy anyway:
+                    // continue work, but consider it the entity from now on
+                    $entity = $unmanagedProxy;
                 }
             }
 
             if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
-                if ($entity instanceof CommonProxy) {
-                    $entity->__setInitialized(true);
-                }
-
-                if ($entity instanceof NotifyPropertyChanged) {
-                    $entity->addPropertyChangedListener($this);
-                }
+                $entity->__setInitialized(true);
             } else {
                 if (
                     ! isset($hints[Query::HINT_REFRESH])
@@ -2242,13 +2234,13 @@ class UnitOfWork implements PropertyChangedListener
 
             $this->identityMap[$class->rootEntityName][$idHash] = $entity;
 
-            if ($entity instanceof NotifyPropertyChanged) {
-                $entity->addPropertyChangedListener($this);
-            }
-
             if (isset($hints[Query::HINT_READ_ONLY])) {
                 $this->readOnlyObjects[$oid] = true;
             }
+        }
+
+        if ($entity instanceof NotifyPropertyChanged) {
+            $entity->addPropertyChangedListener($this);
         }
 
         foreach ($data as $field => $value) {
@@ -2378,23 +2370,25 @@ class UnitOfWork implements PropertyChangedListener
                             break;
 
                         default:
+                            $normalizedAssociatedId = $this->normalizeIdentifier($targetClass, $associatedId);
+
                             switch (true) {
                                 // We are negating the condition here. Other cases will assume it is valid!
                                 case $hints['fetchMode'][$class->name][$field] !== ClassMetadata::FETCH_EAGER:
-                                    $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $associatedId);
+                                    $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $normalizedAssociatedId);
                                     break;
 
                                 // Deferred eager load only works for single identifier classes
                                 case isset($hints[self::HINT_DEFEREAGERLOAD]) && ! $targetClass->isIdentifierComposite:
                                     // TODO: Is there a faster approach?
-                                    $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($associatedId);
+                                    $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($normalizedAssociatedId);
 
-                                    $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $associatedId);
+                                    $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $normalizedAssociatedId);
                                     break;
 
                                 default:
                                     // TODO: This is very imperformant, ignore it?
-                                    $newValue = $this->em->find($assoc['targetEntity'], $associatedId);
+                                    $newValue = $this->em->find($assoc['targetEntity'], $normalizedAssociatedId);
                                     break;
                             }
 
@@ -2960,5 +2954,43 @@ class UnitOfWork implements PropertyChangedListener
             $identifierValue,
             $class->getTypeOfField($class->getSingleIdentifierFieldName()),
         );
+    }
+
+    /**
+     * Given a flat identifier, this method will produce another flat identifier, but with all
+     * association fields that are mapped as identifiers replaced by entity references, recursively.
+     *
+     * @param mixed[] $flatIdentifier
+     *
+     * @return array<string, mixed>
+     */
+    private function normalizeIdentifier(ClassMetadata $targetClass, array $flatIdentifier): array
+    {
+        $normalizedAssociatedId = [];
+
+        foreach ($targetClass->getIdentifierFieldNames() as $name) {
+            if (! array_key_exists($name, $flatIdentifier)) {
+                continue;
+            }
+
+            if (! $targetClass->isSingleValuedAssociation($name)) {
+                $normalizedAssociatedId[$name] = $flatIdentifier[$name];
+                continue;
+            }
+
+            $targetIdMetadata = $this->em->getClassMetadata($targetClass->getAssociationTargetClass($name));
+
+            // Note: the ORM prevents using an entity with a composite identifier as an identifier association
+            //       therefore, reset($targetIdMetadata->identifier) is always correct
+            $normalizedAssociatedId[$name] = $this->em->getReference(
+                $targetIdMetadata->getName(),
+                $this->normalizeIdentifier(
+                    $targetIdMetadata,
+                    [(string) reset($targetIdMetadata->identifier) => $flatIdentifier[$name]],
+                ),
+            );
+        }
+
+        return $normalizedAssociatedId;
     }
 }

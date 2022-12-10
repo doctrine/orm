@@ -320,8 +320,9 @@ identifier. You could simply do this:
     $cart->addItem($item);
 
 Here, we added an Item to a Cart without loading the Item from the
-database. If you invoke any method on the Item instance, it would
-fully initialize its state transparently from the database. Here
+database. If you access any state that isn't yet available in the
+Item instance, the proxying mechanism would fully initialize the
+object's state transparently from the database. Here
 $item is actually an instance of the proxy class that was generated
 for the Item class but your code does not need to care. In fact it
 **should not care**. Proxy objects should be transparent to your

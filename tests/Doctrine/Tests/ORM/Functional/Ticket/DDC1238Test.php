@@ -47,8 +47,6 @@ class DDC1238Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        // force proxy load, getId() doesn't work anymore
-        $user->getName();
         $userId = $user->getId();
         $this->_em->clear();
 
@@ -57,9 +55,13 @@ class DDC1238Test extends OrmFunctionalTestCase
 
         $user2 = $this->_em->getReference(DDC1238User::class, $userId);
 
-        // force proxy load, getId() doesn't work anymore
-        $user->getName();
-        self::assertNull($user->getId(), 'Now this is null, we already have a user instance of that type');
+        $user->__load();
+
+        self::assertIsInt($user->getId(), 'Even if a proxy is detached, it should still have an identifier');
+
+        $user2->__load();
+
+        self::assertIsInt($user2->getId(), 'The managed instance still has an identifier');
     }
 }
 

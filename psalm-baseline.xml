@@ -965,16 +965,17 @@
     </MissingTemplateParam>
   </file>
   <file src="lib/Doctrine/ORM/Proxy/ProxyFactory.php">
-    <ArgumentTypeCoercion occurrences="2">
+    <ArgumentTypeCoercion occurrences="3">
       <code>$classMetadata</code>
       <code>$classMetadata</code>
     </ArgumentTypeCoercion>
     <InvalidArgument occurrences="1">
       <code>$classMetadata-&gt;getReflectionProperties()</code>
     </InvalidArgument>
-    <NoInterfaceProperties occurrences="2">
+    <NoInterfaceProperties occurrences="3">
       <code>$metadata-&gt;isEmbeddedClass</code>
       <code>$metadata-&gt;isMappedSuperclass</code>
+      <code>$proxy-&gt;__isCloning</code>
     </NoInterfaceProperties>
     <PossiblyNullArgument occurrences="1">
       <code>$property-&gt;name</code>
@@ -1244,7 +1245,7 @@
     <InvalidPropertyAssignmentValue occurrences="1">
       <code>$this-&gt;queryComponents</code>
     </InvalidPropertyAssignmentValue>
-    <InvalidReturnStatement occurrences="17">
+    <InvalidReturnStatement occurrences="16">
       <code>$aliasIdentVariable</code>
       <code>$factors[0]</code>
       <code>$identVariable</code>
@@ -1263,12 +1264,11 @@
       <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;lexer-&gt;token['value']</code>
     </InvalidReturnStatement>
-    <InvalidReturnType occurrences="9">
+    <InvalidReturnType occurrences="8">
       <code>AST\ArithmeticFactor</code>
       <code>AST\ArithmeticTerm</code>
       <code>AST\BetweenExpression|</code>
       <code>AST\SimpleArithmeticExpression|AST\ArithmeticTerm</code>
-      <code>class-string</code>
       <code>string</code>
       <code>string</code>
       <code>string</code>
@@ -1284,7 +1284,7 @@
       <code>$function</code>
       <code>$function</code>
     </LessSpecificReturnStatement>
-    <NullableReturnStatement occurrences="9">
+    <NullableReturnStatement occurrences="8">
       <code>$aliasIdentVariable</code>
       <code>$factors[0]</code>
       <code>$identVariable</code>
@@ -1709,7 +1709,7 @@
     <PossiblyNullArrayOffset occurrences="1">
       <code>$targetClass-&gt;reflFields</code>
     </PossiblyNullArrayOffset>
-    <PossiblyNullReference occurrences="27">
+    <PossiblyNullReference occurrences="25">
       <code>buildCachedCollectionPersister</code>
       <code>buildCachedEntityPersister</code>
       <code>getCacheFactory</code>
