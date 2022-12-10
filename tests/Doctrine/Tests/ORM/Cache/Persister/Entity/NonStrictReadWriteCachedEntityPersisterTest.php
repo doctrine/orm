@@ -29,8 +29,6 @@ class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCas
         $persister = $this->createPersisterDefault();
         $property  = new ReflectionProperty($persister, 'queuedCache');
 
-        $property->setAccessible(true);
-
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($entity);
@@ -50,8 +48,6 @@ class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCas
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $entry     = new EntityCacheEntry(Country::class, ['id' => 1, 'name' => 'Foo']);
         $property  = new ReflectionProperty($persister, 'queuedCache');
-
-        $property->setAccessible(true);
 
         $this->region->expects(self::once())
             ->method('put')
@@ -88,8 +84,6 @@ class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCas
         $entry     = new EntityCacheEntry(Country::class, ['id' => 1, 'name' => 'Foo']);
         $property  = new ReflectionProperty($persister, 'queuedCache');
 
-        $property->setAccessible(true);
-
         $this->region->expects(self::once())
             ->method('put')
             ->with(self::equalTo($key), self::equalTo($entry));
@@ -115,8 +109,6 @@ class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCas
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $property  = new ReflectionProperty($persister, 'queuedCache');
-
-        $property->setAccessible(true);
 
         $this->region->expects(self::once())
             ->method('evict')

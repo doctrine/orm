@@ -242,8 +242,6 @@ class DefaultCacheTest extends OrmTestCase
         $method     = new ReflectionMethod($this->cache, 'toIdentifierArray');
         $property   = new ReflectionProperty($entity, 'id');
 
-        $property->setAccessible(true);
-        $method->setAccessible(true);
         $property->setValue($entity, $identifier);
 
         self::assertEquals(['id' => $identifier], $method->invoke($this->cache, $metadata, $identifier));

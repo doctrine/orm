@@ -44,7 +44,6 @@ class ORMSetupTest extends TestCase
         $cache  = $config->getMetadataCache();
 
         $namespaceProperty = new ReflectionProperty(AbstractAdapter::class, 'namespace');
-        $namespaceProperty->setAccessible(true);
 
         self::assertInstanceOf(ApcuAdapter::class, $cache);
         self::assertSame('dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf:', $namespaceProperty->getValue($cache));

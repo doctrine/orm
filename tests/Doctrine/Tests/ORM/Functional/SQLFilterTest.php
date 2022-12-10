@@ -273,7 +273,6 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $filter = new MyLocaleFilter($em);
 
         $reflMethod = new ReflectionMethod(SQLFilter::class, 'getConnection');
-        $reflMethod->setAccessible(true);
 
         self::assertSame($conn, $reflMethod->invoke($filter));
     }

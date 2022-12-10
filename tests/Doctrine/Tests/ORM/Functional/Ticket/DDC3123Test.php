@@ -43,7 +43,6 @@ class DDC3123Test extends OrmFunctionalTestCase
             public function postFlush(): void
             {
                 $property = new ReflectionProperty(UnitOfWork::class, 'extraUpdates');
-                $property->setAccessible(true);
 
                 Assert::assertEmpty(
                     $property->getValue($this->uow),

@@ -117,8 +117,6 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $property  = new ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
-
         $this->region->expects(self::exactly(2))
             ->method('lock')
             ->with(self::equalTo($key))
@@ -148,8 +146,6 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $property  = new ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
-
         $this->region->expects(self::exactly(2))
             ->method('lock')
             ->with(self::equalTo($key))
@@ -178,8 +174,6 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $property  = new ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
-
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
@@ -201,8 +195,6 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $property  = new ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
-
-        $property->setAccessible(true);
 
         $this->region->expects(self::once())
             ->method('lock')
