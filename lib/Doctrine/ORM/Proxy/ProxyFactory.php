@@ -107,9 +107,9 @@ EOPHP;
 
         if ($em->getConfiguration()->isLazyGhostObjectEnabled()) {
             $proxyGenerator->setPlaceholder('baseProxyInterface', Proxy::class);
-            $proxyGenerator->setPlaceholder('useLazyGhostTrait', Closure::fromCallable([$this, 'generateUseLazyGhostTrait']));
-            $proxyGenerator->setPlaceholder('skippedProperties', Closure::fromCallable([$this, 'generateSkippedProperties']));
-            $proxyGenerator->setPlaceholder('serializeImpl', Closure::fromCallable([$this, 'generateSerializeImpl']));
+            $proxyGenerator->setPlaceholder('useLazyGhostTrait', $this->generateUseLazyGhostTrait(...));
+            $proxyGenerator->setPlaceholder('skippedProperties', $this->generateSkippedProperties(...));
+            $proxyGenerator->setPlaceholder('serializeImpl', $this->generateSerializeImpl(...));
             $proxyGenerator->setProxyClassTemplate(self::PROXY_CLASS_TEMPLATE);
         } else {
             $proxyGenerator->setPlaceholder('baseProxyInterface', LegacyProxy::class);
