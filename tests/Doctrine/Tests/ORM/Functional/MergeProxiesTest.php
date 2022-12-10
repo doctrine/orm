@@ -12,18 +12,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Persistence\Proxy;
-use Doctrine\Persistence\Reflection\RuntimeReflectionProperty;
 use Doctrine\Tests\DbalExtensions\Connection;
 use Doctrine\Tests\DbalExtensions\QueryLog;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Symfony\Component\VarExporter\LazyGhostTrait;
+use Doctrine\Tests\TestUtil;
 
 use function assert;
-use function class_exists;
 use function realpath;
 use function serialize;
-use function trait_exists;
 use function unserialize;
 
 class MergeProxiesTest extends OrmFunctionalTestCase
@@ -243,9 +240,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
     {
         $config = new Configuration();
 
-        $config->setLazyGhostObjectEnabled(trait_exists(LazyGhostTrait::class) && class_exists(RuntimeReflectionProperty::class));
-        $config->setProxyDir(realpath(__DIR__ . '/../../Proxies'));
-        $config->setProxyNamespace('Doctrine\Tests\Proxies');
+        TestUtil::configureProxies($config);
         $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver(
             [realpath(__DIR__ . '/../../Models/Cache')]
         ));

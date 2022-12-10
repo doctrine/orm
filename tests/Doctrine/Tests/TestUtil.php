@@ -10,17 +10,22 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\ORM\Configuration;
+use LogicException;
+use Symfony\Component\VarExporter\LazyGhostTrait;
 use UnexpectedValueException;
 
 use function assert;
 use function explode;
 use function fwrite;
 use function get_debug_type;
+use function getenv;
 use function method_exists;
 use function sprintf;
 use function str_starts_with;
 use function strlen;
 use function substr;
+use function trait_exists;
 
 use const STDERR;
 
@@ -72,6 +77,29 @@ class TestUtil
         assert($connection instanceof DbalExtensions\Connection);
 
         return $connection;
+    }
+
+    public static function configureProxies(Configuration $configuration): void
+    {
+        $configuration->setProxyDir(__DIR__ . '/Proxies');
+        $configuration->setProxyNamespace('Doctrine\Tests\Proxies');
+
+        $proxyImplementation = getenv('ORM_PROXY_IMPLEMENTATION')
+            ?: (trait_exists(LazyGhostTrait::class) ? 'lazy-ghost' : 'common');
+
+        switch ($proxyImplementation) {
+            case 'lazy-ghost':
+                $configuration->setLazyGhostObjectEnabled(true);
+
+                return;
+
+            case 'common':
+                $configuration->setLazyGhostObjectEnabled(false);
+
+                return;
+        }
+
+        throw new LogicException(sprintf('Unknown proxy implementation: %s.', $proxyImplementation));
     }
 
     private static function initializeDatabase(): void
