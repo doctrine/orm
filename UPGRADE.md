@@ -256,8 +256,8 @@ The following methods have been deprecated:
 
 - `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativeQueryMapping()`
 - `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativeQueryResultClassMapping()`
-- `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativQueryResultSetMapping()`
-- `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativQueryEntityResultMapping()`
+- `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativeQueryResultSetMapping()`
+- `Doctrine\ORM\Query\ResultSetMappingBuilder::addNamedNativeQueryEntityResultMapping()`
 
 ## Deprecated classes related to Doctrine 1 and reverse engineering
 
