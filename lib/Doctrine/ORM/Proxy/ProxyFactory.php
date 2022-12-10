@@ -236,7 +236,6 @@ EOPHP;
                     continue;
                 }
 
-                $property->setAccessible(true);
                 $property->setValue($proxy, $property->getValue($entity));
             }
         };

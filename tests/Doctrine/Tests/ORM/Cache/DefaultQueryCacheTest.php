@@ -580,8 +580,6 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm        = new ResultSetMappingBuilder($this->em);
         $key        = new QueryCacheKey('query.key1', 0);
 
-        $reflection->setAccessible(true);
-
         $germany  = new Country('Germany');
         $bavaria  = new State('Bavaria', $germany);
         $wurzburg = new City('Würzburg', $bavaria);

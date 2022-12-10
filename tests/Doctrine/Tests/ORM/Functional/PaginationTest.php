@@ -637,8 +637,6 @@ class PaginationTest extends OrmFunctionalTestCase
 
         $getCountQuery = new ReflectionMethod($paginator, 'getCountQuery');
 
-        $getCountQuery->setAccessible(true);
-
         self::assertCount(2, $getCountQuery->invoke($paginator)->getParameters());
         self::assertCount(9, $paginator);
 

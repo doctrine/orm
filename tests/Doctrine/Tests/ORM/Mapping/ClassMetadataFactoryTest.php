@@ -414,7 +414,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
         // not really the cleanest way to check it, but we won't add a getter to the CMF just for the sake of testing.
         $class    = new ReflectionClass(ClassMetadataFactory::class);
         $property = $class->getProperty('em');
-        $property->setAccessible(true);
         self::assertSame($entityManager, $property->getValue($classMetadataFactory));
     }
 

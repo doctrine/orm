@@ -179,8 +179,6 @@ class ProxyFactoryTest extends OrmTestCase
 
         // Set the id of the CompanyEmployee (which is in the parent CompanyPerson)
         $property = new ReflectionProperty(CompanyPerson::class, 'id');
-
-        $property->setAccessible(true);
         $property->setValue($companyEmployee, 42);
 
         $classMetaData = $this->emMock->getClassMetadata(CompanyEmployee::class);

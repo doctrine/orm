@@ -122,8 +122,6 @@ class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
         $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
-
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
@@ -153,8 +151,6 @@ class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
         $collection = $this->createCollection($entity);
         $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
-
-        $property->setAccessible(true);
 
         $this->region->expects(self::once())
             ->method('lock')
@@ -186,8 +182,6 @@ class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
         $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
-
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
@@ -218,8 +212,6 @@ class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
         $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
-
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
@@ -249,8 +241,6 @@ class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
         $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
-
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
@@ -273,8 +263,6 @@ class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
         $collection = $this->createCollection($entity);
         $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
-
-        $property->setAccessible(true);
 
         $this->region->expects(self::once())
             ->method('lock')

@@ -805,7 +805,6 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
 
         $getHash = static function (AbstractQuery $query) {
             $method = new ReflectionMethod($query, 'getHash');
-            $method->setAccessible(true);
 
             return $method->invoke($query);
         };
