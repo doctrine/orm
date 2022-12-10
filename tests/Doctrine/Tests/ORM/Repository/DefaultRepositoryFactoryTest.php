@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Repository;
 
-use Closure;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -43,7 +42,7 @@ class DefaultRepositoryFactoryTest extends TestCase
         $this->entityManager
             ->expects(self::any())
             ->method('getClassMetadata')
-            ->will(self::returnCallback(Closure::fromCallable([$this, 'buildClassMetadata'])));
+            ->will(self::returnCallback($this->buildClassMetadata(...)));
 
         self::assertInstanceOf(
             DDC869PaymentRepository::class,
@@ -56,7 +55,7 @@ class DefaultRepositoryFactoryTest extends TestCase
         $this->entityManager
             ->expects(self::any())
             ->method('getClassMetadata')
-            ->will(self::returnCallback(Closure::fromCallable([$this, 'buildClassMetadata'])));
+            ->will(self::returnCallback($this->buildClassMetadata(...)));
 
         self::assertSame(
             $this->repositoryFactory->getRepository($this->entityManager, self::class),
@@ -87,11 +86,11 @@ class DefaultRepositoryFactoryTest extends TestCase
 
         $em1->expects(self::any())
             ->method('getClassMetadata')
-            ->will(self::returnCallback(Closure::fromCallable([$this, 'buildClassMetadata'])));
+            ->will(self::returnCallback($this->buildClassMetadata(...)));
 
         $em2->expects(self::any())
             ->method('getClassMetadata')
-            ->will(self::returnCallback(Closure::fromCallable([$this, 'buildClassMetadata'])));
+            ->will(self::returnCallback($this->buildClassMetadata(...)));
 
         $repo1 = $this->repositoryFactory->getRepository($em1, self::class);
         $repo2 = $this->repositoryFactory->getRepository($em2, self::class);
