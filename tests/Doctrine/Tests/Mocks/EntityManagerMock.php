@@ -11,11 +11,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Persistence\Reflection\RuntimeReflectionProperty;
-use Symfony\Component\VarExporter\LazyGhostTrait;
-
-use function class_exists;
-use function trait_exists;
+use Doctrine\Tests\TestUtil;
 
 /**
  * Special EntityManager mock used for testing purposes.
@@ -29,9 +25,7 @@ class EntityManagerMock extends EntityManager
     {
         if ($config === null) {
             $config = new Configuration();
-            $config->setLazyGhostObjectEnabled(trait_exists(LazyGhostTrait::class) && class_exists(RuntimeReflectionProperty::class));
-            $config->setProxyDir(__DIR__ . '/../Proxies');
-            $config->setProxyNamespace('Doctrine\Tests\Proxies');
+            TestUtil::configureProxies($config);
             $config->setMetadataDriverImpl(new AttributeDriver([]));
         }
 

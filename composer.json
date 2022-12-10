@@ -43,6 +43,7 @@
         "psr/log": "^1 || ^2 || ^3",
         "squizlabs/php_codesniffer": "3.7.1",
         "symfony/cache": "^5.4 || ^6.0",
+        "symfony/var-exporter": "^5.4 || ^6.2",
         "vimeo/psalm": "5.1.0"
     },
     "suggest": {

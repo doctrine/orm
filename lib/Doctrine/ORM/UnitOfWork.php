@@ -2310,6 +2310,10 @@ class UnitOfWork implements PropertyChangedListener
                         $joinColumnValue = $data[$srcColumn] ?? null;
 
                         if ($joinColumnValue !== null) {
+                            if ($joinColumnValue instanceof BackedEnum) {
+                                $joinColumnValue = $joinColumnValue->value;
+                            }
+
                             if ($targetClass->containsForeignIdentifier) {
                                 $associatedId[$targetClass->getFieldForColumn($targetColumn)] = $joinColumnValue;
                             } else {

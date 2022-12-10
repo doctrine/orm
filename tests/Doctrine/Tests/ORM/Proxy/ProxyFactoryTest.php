@@ -148,7 +148,7 @@ class ProxyFactoryTest extends OrmTestCase
     public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized(): void
     {
         $persister = $this->getMockBuilder(BasicEntityPersister::class)
-            ->onlyMethods(['load'])
+            ->onlyMethods(['load', 'getClassMetadata'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);

@@ -5,21 +5,26 @@ declare(strict_types=1);
 namespace Doctrine\Tests;
 
 use Doctrine\Common\EventSubscriber;
-use Doctrine\DBAL\Configuration;
+use Doctrine\DBAL\Configuration as DbalConfiguration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception\DatabaseObjectNotFoundException;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
+use Doctrine\ORM\Configuration;
+use LogicException;
+use Symfony\Component\VarExporter\LazyGhostTrait;
 use UnexpectedValueException;
 
 use function assert;
 use function explode;
 use function fwrite;
 use function get_debug_type;
+use function getenv;
 use function sprintf;
 use function str_starts_with;
 use function strlen;
 use function substr;
+use function trait_exists;
 
 use const STDERR;
 
@@ -50,7 +55,7 @@ class TestUtil
      * 1) Each invocation of this method returns a NEW database connection.
      * 2) The database is dropped and recreated to ensure it's clean.
      */
-    public static function getConnection(Configuration|null $config = null): DbalExtensions\Connection
+    public static function getConnection(DbalConfiguration|null $config = null): DbalExtensions\Connection
     {
         if (! self::$initialized) {
             self::initializeDatabase();
@@ -71,6 +76,29 @@ class TestUtil
         assert($connection instanceof DbalExtensions\Connection);
 
         return $connection;
+    }
+
+    public static function configureProxies(Configuration $configuration): void
+    {
+        $configuration->setProxyDir(__DIR__ . '/Proxies');
+        $configuration->setProxyNamespace('Doctrine\Tests\Proxies');
+
+        $proxyImplementation = getenv('ORM_PROXY_IMPLEMENTATION')
+            ?: (trait_exists(LazyGhostTrait::class) ? 'lazy-ghost' : 'common');
+
+        switch ($proxyImplementation) {
+            case 'lazy-ghost':
+                $configuration->setLazyGhostObjectEnabled(true);
+
+                return;
+
+            case 'common':
+                $configuration->setLazyGhostObjectEnabled(false);
+
+                return;
+        }
+
+        throw new LogicException(sprintf('Unknown proxy implementation: %s.', $proxyImplementation));
     }
 
     private static function initializeDatabase(): void

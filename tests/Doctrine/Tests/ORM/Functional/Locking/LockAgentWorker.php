@@ -9,19 +9,16 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\Reflection\RuntimeReflectionProperty;
 use Doctrine\Tests\ORM\Functional\Locking\Doctrine\ORM\Query;
+use Doctrine\Tests\TestUtil;
 use GearmanWorker;
 use InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
-use Symfony\Component\VarExporter\LazyGhostTrait;
 
 use function assert;
-use function class_exists;
 use function is_array;
 use function microtime;
 use function sleep;
-use function trait_exists;
 use function unserialize;
 
 class LockAgentWorker
@@ -116,9 +113,7 @@ class LockAgentWorker
     protected function createEntityManager(Connection $conn): EntityManagerInterface
     {
         $config = new Configuration();
-        $config->setLazyGhostObjectEnabled(trait_exists(LazyGhostTrait::class) && class_exists(RuntimeReflectionProperty::class));
-        $config->setProxyDir(__DIR__ . '/../../../Proxies');
-        $config->setProxyNamespace('MyProject\Proxies');
+        TestUtil::configureProxies($config);
         $config->setAutoGenerateProxyClasses(true);
 
         $annotDriver = new AttributeDriver([__DIR__ . '/../../../Models/']);
