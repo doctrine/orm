@@ -1,0 +1,10 @@
+Doctrine\Tests\Models\TypedProperties\UserTypedWithCustomTypedField:
+    type: entity
+    table: cms_users_typed_with_custom_typed_field
+    id:
+        id:
+            generator:
+                strategy: AUTO
+    fields:
+        customId: ~
+        customIntTypedField: ~

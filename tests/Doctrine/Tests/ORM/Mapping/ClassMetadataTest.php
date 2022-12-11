@@ -14,6 +14,9 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\Mapping\StaticReflectionService;
+use Doctrine\Tests\DbalTypes\CustomIdObject;
+use Doctrine\Tests\DbalTypes\CustomIdObjectType;
+use Doctrine\Tests\DbalTypes\CustomIntType;
 use Doctrine\Tests\Models\CMS;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\Company\CompanyContract;
@@ -175,6 +178,22 @@ class ClassMetadataTest extends OrmTestCase
         // float
         $cm->mapField(['fieldName' => 'float']);
         self::assertEquals('float', $cm->getTypeOfField('float'));
+
+        $cm = new ClassMetadata(
+            TypedProperties\UserTypedWithCustomTypedField::class,
+            null,
+            [
+                CustomIdObject::class => CustomIdObjectType::class,
+                'int' => CustomIntType::class,
+            ]
+        );
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        // Integer
+        $cm->mapField(['fieldName' => 'customId']);
+        $cm->mapField(['fieldName' => 'customIntTypedField']);
+        self::assertEquals(CustomIdObjectType::class, $cm->getTypeOfField('customId'));
+        self::assertEquals(CustomIntType::class, $cm->getTypeOfField('customIntTypedField'));
     }
 
     /** @group DDC-115 */

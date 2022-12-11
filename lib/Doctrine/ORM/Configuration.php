@@ -13,6 +13,7 @@ use Doctrine\Common\Cache\Cache as CacheDriver;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Persistence\PersistentObject;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\Exception\CacheException;
@@ -28,6 +29,7 @@ use Doctrine\ORM\Exception\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Exception\UnknownEntityNamespace;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
@@ -63,6 +65,7 @@ use function trim;
  * Internal note: When adding a new configuration option just write a getter/setter pair.
  *
  * @psalm-import-type AutogenerateMode from ProxyFactory
+ * @psalm-import-type ScalarName from ClassMetadataInfo
  */
 class Configuration extends \Doctrine\DBAL\Configuration
 {
@@ -719,7 +722,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string $name
      *
      * @return string|callable|null
-     * @psalm-return class-string|callable|null $name
+     * @psalm-return class-string|callable|null
      */
     public function getCustomDatetimeFunction($name)
     {
@@ -746,6 +749,57 @@ class Configuration extends \Doctrine\DBAL\Configuration
         foreach ($functions as $name => $className) {
             $this->addCustomDatetimeFunction($name, $className);
         }
+    }
+
+    /**
+     * Sets a map of php typed fields to DBAL types for auto-completion.
+     *
+     * Keys must be FQCNs of the PHP types
+     * Values are either FQCNs of DBAL Type or their name
+     *
+     * @param array $mappings The map of custom DQL date/time functions.
+     * @psalm-param array<class-string|ScalarName, class-string<Type>|string> $mappings
+     */
+    public function setTypedFieldMappings(array $mappings): void
+    {
+        foreach ($mappings as $phpType => $dbalType) {
+            $this->addTypedFieldMapping($phpType, $dbalType);
+        }
+    }
+
+    /**
+     * Registers a custom PHP type => DBAL Type mapping for typed Entity fields.
+     * With this configuration option used there is no need to specify the Column::type
+     * for given explicitly typed field.
+     *
+     * @psalm-param class-string|ScalarName   $phpType  the FQCN of PHP type to be mapped
+     * @psalm-param class-string<Type>|string $dbalType either FQCN of DBAL Type or its name
+     */
+    public function addTypedFieldMapping(string $phpType, string $dbalType): void
+    {
+        $this->_attributes['typedFieldMappings'][$phpType] = $dbalType;
+    }
+
+    /**
+     * Gets the mapped DBAL Type for given PHP type
+     *
+     * @psalm-param class-string|ScalarName $phpType  the FQCN of PHP type to be mapped
+     *
+     * @psalm-return class-string<Type>|string|null either FQCN of DBAL Type or its name
+     */
+    public function getTypedFieldMapping($phpType): ?string
+    {
+        return $this->_attributes['typedFieldMappings'][$phpType] ?? null;
+    }
+
+    /**
+     * Gets the array of all the PHP type => DBAL Type mappings
+     *
+     * @psalm-return array<class-string|ScalarName,class-string<Type>|string>
+     */
+    public function getTypedFieldMappings(): array
+    {
+        return $this->_attributes['typedFieldMappings'] ?? [];
     }
 
     /**

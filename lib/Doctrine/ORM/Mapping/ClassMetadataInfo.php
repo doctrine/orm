@@ -142,6 +142,7 @@ use const PHP_VERSION_ID;
  *     type: int,
  *     unique?: bool,
  * }
+ * @psalm-type ScalarName = 'array'|'bool'|'float'|'int'|'string'
  */
 class ClassMetadataInfo implements ClassMetadata
 {
@@ -800,19 +801,24 @@ class ClassMetadataInfo implements ClassMetadata
     /** @var InstantiatorInterface|null */
     private $instantiator;
 
+    /** @var array<class-string|ScalarName,class-string<Type>|string> $typedFieldMappings */
+    private $typedFieldMappings;
+
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
-     * @param string $entityName The name of the entity class the new instance is used for.
+     * @param string                                                    $entityName         The name of the entity class the new instance is used for.
+     * @param array<class-string|ScalarName, class-string<Type>|string> $typedFieldMappings
      * @psalm-param class-string<T> $entityName
      */
-    public function __construct($entityName, ?NamingStrategy $namingStrategy = null)
+    public function __construct($entityName, ?NamingStrategy $namingStrategy = null, array $typedFieldMappings = [])
     {
-        $this->name           = $entityName;
-        $this->rootEntityName = $entityName;
-        $this->namingStrategy = $namingStrategy ?: new DefaultNamingStrategy();
-        $this->instantiator   = new Instantiator();
+        $this->name               = $entityName;
+        $this->rootEntityName     = $entityName;
+        $this->namingStrategy     = $namingStrategy ?: new DefaultNamingStrategy();
+        $this->instantiator       = new Instantiator();
+        $this->typedFieldMappings = $typedFieldMappings;
     }
 
     /**
@@ -1596,31 +1602,21 @@ class ClassMetadataInfo implements ClassMetadata
                     assert($type instanceof ReflectionNamedType);
                 }
 
-                switch ($type->getName()) {
-                    case DateInterval::class:
-                        $mapping['type'] = Types::DATEINTERVAL;
-                        break;
-                    case DateTime::class:
-                        $mapping['type'] = Types::DATETIME_MUTABLE;
-                        break;
-                    case DateTimeImmutable::class:
-                        $mapping['type'] = Types::DATETIME_IMMUTABLE;
-                        break;
-                    case 'array':
-                        $mapping['type'] = Types::JSON;
-                        break;
-                    case 'bool':
-                        $mapping['type'] = Types::BOOLEAN;
-                        break;
-                    case 'float':
-                        $mapping['type'] = Types::FLOAT;
-                        break;
-                    case 'int':
-                        $mapping['type'] = Types::INTEGER;
-                        break;
-                    case 'string':
-                        $mapping['type'] = Types::STRING;
-                        break;
+                $defaultTypedFieldMappings = [
+                    DateInterval::class => Types::DATEINTERVAL,
+                    DateTime::class => Types::DATETIME_MUTABLE,
+                    DateTimeImmutable::class => Types::DATETIME_IMMUTABLE,
+                    'array' => Types::JSON,
+                    'bool' => Types::BOOLEAN,
+                    'float' => Types::FLOAT,
+                    'int' => Types::INTEGER,
+                    'string' => Types::STRING,
+                ];
+
+                $typedFieldMappings = array_merge($defaultTypedFieldMappings, $this->typedFieldMappings);
+
+                if (isset($typedFieldMappings[$type->getName()])) {
+                    $mapping['type'] = $typedFieldMappings[$type->getName()];
                 }
             }
         }

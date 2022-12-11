@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\CustomIdGenerator;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
@@ -27,6 +29,7 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\NamedQueries;
 use Doctrine\ORM\Mapping\NamedQuery;
+use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\OrderBy;
@@ -39,6 +42,9 @@ use Doctrine\ORM\Mapping\UniqueConstraint;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\Tests\DbalTypes\CustomIdObject;
+use Doctrine\Tests\DbalTypes\CustomIdObjectType;
+use Doctrine\Tests\DbalTypes\CustomIntType;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsAddressListener;
@@ -68,6 +74,7 @@ use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\GH10288\GH10288People;
 use Doctrine\Tests\Models\TypedProperties\Contact;
 use Doctrine\Tests\Models\TypedProperties\UserTyped;
+use Doctrine\Tests\Models\TypedProperties\UserTypedWithCustomTypedField;
 use Doctrine\Tests\Models\Upsertable\Insertable;
 use Doctrine\Tests\Models\Upsertable\Updatable;
 use Doctrine\Tests\OrmTestCase;
@@ -82,16 +89,25 @@ use function strtolower;
 use const CASE_UPPER;
 use const PHP_VERSION_ID;
 
+/**
+ * @psalm-import-type ScalarName from ClassMetadataInfo
+ */
 abstract class MappingDriverTestCase extends OrmTestCase
 {
     abstract protected function loadDriver(): MappingDriver;
 
-    /** @psalm-param class-string<object> $entityClassName */
-    public function createClassMetadata(string $entityClassName): ClassMetadata
-    {
+    /**
+     * @param array<class-string|ScalarName, class-string<Type>|string> $typedFieldMappings
+     * @psalm-param class-string<object> $entityClassName
+     */
+    public function createClassMetadata(
+        string $entityClassName,
+        ?NamingStrategy $namingStrategy = null,
+        array $typedFieldMappings = []
+    ): ClassMetadata {
         $mappingDriver = $this->loadDriver();
 
-        $class = new ClassMetadata($entityClassName);
+        $class = new ClassMetadata($entityClassName, $namingStrategy, $typedFieldMappings);
         $class->initializeReflection(new RuntimeReflectionService());
         $mappingDriver->loadMetadataForClass($entityClassName, $class);
 
@@ -274,7 +290,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
     public function testFieldTypeFromReflection(): void
     {
         if (PHP_VERSION_ID < 70400) {
-            self::markTestSkipped('requies PHP 7.4');
+            self::markTestSkipped('requires PHP 7.4');
         }
 
         $class = $this->createClassMetadata(UserTyped::class);
@@ -291,6 +307,26 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals(CmsEmail::class, $class->getAssociationMapping('email')['targetEntity']);
         self::assertEquals(CmsEmail::class, $class->getAssociationMapping('mainEmail')['targetEntity']);
         self::assertEquals(Contact::class, $class->embeddedClasses['contact']['class']);
+    }
+
+    /** @group GH10290 */
+    public function testCustomFieldTypeFromReflection(): void
+    {
+        if (PHP_VERSION_ID < 70400) {
+            self::markTestSkipped('requires PHP 7.4');
+        }
+
+        $class = $this->createClassMetadata(
+            UserTypedWithCustomTypedField::class,
+            null,
+            [
+                CustomIdObject::class => CustomIdObjectType::class,
+                'int' => CustomIntType::class,
+            ]
+        );
+
+        self::assertEquals(CustomIdObjectType::class, $class->getTypeOfField('customId'));
+        self::assertEquals(CustomIntType::class, $class->getTypeOfField('customIntTypedField'));
     }
 
     /** @depends testEntityTableNameAndInheritance */

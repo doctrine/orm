@@ -289,6 +289,77 @@ These are the "automatic" mapping rules:
 As of version 2.11 Doctrine can also automatically map typed properties using a
 PHP 8.1 enum to set the right ``type`` and ``enumType``.
 
+.. versionadded:: 2.14
+
+Since version 2.14 you can specify custom typed field mapping between PHP type and DBAL type using ``Configuration``
+
+.. code-block:: php
+
+    <?php
+    use App\CustomIds\CustomIdObject;
+    use App\DBAL\Type\CustomIdObjectType;
+
+    $configuration->addTypedFieldMapping(CustomIdObject::class, CustomIdType::class);
+
+Then, an entity using the ``CustomIdObject`` typed field will be correctly assigned its DBAL type
+(``CustomIdObjectType``) without the need of explicit declaration.
+
+.. configuration-block::
+
+    .. code-block:: attribute
+
+        <?php
+        #[ORM\Entity]
+        #[ORM\Table(name: 'cms_users_typed_with_custom_typed_field')]
+        class UserTypedWithCustomTypedField
+        {
+            #[ORM\Column]
+            public CustomIdObject $customId;
+
+            // ...
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        /**
+         * @Entity
+         * @Table(name="cms_users_typed_with_custom_typed_field")
+         */
+        class UserTypedWithCustomTypedField
+        {
+            /** @Column */
+            public CustomIdObject $customId;
+
+            // ...
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+          <entity name="UserTypedWithCustomTypedField">
+            <field name="customId"/>
+            <!-- -->
+          </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        UserTypedWithCustomTypedField:
+          type: entity
+          fields:
+            customId: ~
+
+It is perfectly valid to override even the "automatic" mapping rules mentioned above:
+
+.. code-block:: php
+
+    <?php
+    use App\CustomIds\CustomIdObject;
+    use App\DBAL\Type\CustomIdObjectType;
+
+    $configuration->addTypedFieldMapping('int', CustomIntType::class);
+
 .. _reference-mapping-types:
 
 Doctrine Mapping Types

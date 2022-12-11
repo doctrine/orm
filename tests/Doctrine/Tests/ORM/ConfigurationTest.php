@@ -440,6 +440,22 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->setSecondLevelCacheConfiguration($mockClass);
         self::assertEquals($mockClass, $this->configuration->getSecondLevelCacheConfiguration());
     }
+
+    /** @group GH10290 */
+    public function testAddGetTypedFieldMapping(): void
+    {
+        self::assertNull($this->configuration->getTypedFieldMapping(CacheConfiguration::class));
+        $this->configuration->addTypedFieldMapping(CacheConfiguration::class, self::class);
+        self::assertSame(self::class, $this->configuration->getTypedFieldMapping(CacheConfiguration::class));
+    }
+
+    /** @group GH10290 */
+    public function testSetGetTypedFieldMappings(): void
+    {
+        self::assertEmpty($this->configuration->getTypedFieldMappings());
+        $this->configuration->setTypedFieldMappings([CacheConfiguration::class => self::class]);
+        self::assertSame([CacheConfiguration::class => self::class], $this->configuration->getTypedFieldMappings());
+    }
 }
 
 class ConfigurationTestAnnotationReaderChecker
