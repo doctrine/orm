@@ -289,6 +289,13 @@ These are the "automatic" mapping rules:
 As of version 2.11 Doctrine can also automatically map typed properties using a
 PHP 8.1 enum to set the right ``type`` and ``enumType``.
 
+.. versionadded:: 2.14
+
+Since version 2.14 you can specify custom typed field mapping between PHP type and DBAL type using ``Configuration``
+and a custom ``Doctrine\ORM\Mapping\TypedFieldMapper`` implementation.
+
+:doc:`Read more about TypedFieldMapper <typedfieldmapper>`.
+
 .. _reference-mapping-types:
 
 Doctrine Mapping Types

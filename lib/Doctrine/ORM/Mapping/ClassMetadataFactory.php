@@ -293,7 +293,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function newClassMetadataInstance($className)
     {
-        return new ClassMetadata($className, $this->em->getConfiguration()->getNamingStrategy());
+        return new ClassMetadata(
+            $className,
+            $this->em->getConfiguration()->getNamingStrategy(),
+            $this->em->getConfiguration()->getTypedFieldMapper()
+        );
     }
 
     /**

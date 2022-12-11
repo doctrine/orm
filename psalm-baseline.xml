@@ -741,6 +741,11 @@
       <code>strrpos($className, '\\')</code>
     </PossiblyFalseOperand>
   </file>
+  <file src="lib/Doctrine/ORM/Mapping/DefaultTypedFieldMapper.php">
+    <PropertyTypeCoercion occurrences="1">
+      <code>array_merge(self::DEFAULT_TYPED_FIELD_MAPPINGS, $typedFieldMappings)</code>
+    </PropertyTypeCoercion>
+  </file>
   <file src="lib/Doctrine/ORM/Mapping/DefaultQuoteStrategy.php">
     <DeprecatedMethod occurrences="2">
       <code>canEmulateSchemas</code>

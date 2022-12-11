@@ -35,6 +35,7 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
+use Doctrine\ORM\Mapping\TypedFieldMapper;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\Filter\SQLFilter;
@@ -719,7 +720,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string $name
      *
      * @return string|callable|null
-     * @psalm-return class-string|callable|null $name
+     * @psalm-return class-string|callable|null
      */
     public function getCustomDatetimeFunction($name)
     {
@@ -746,6 +747,22 @@ class Configuration extends \Doctrine\DBAL\Configuration
         foreach ($functions as $name => $className) {
             $this->addCustomDatetimeFunction($name, $className);
         }
+    }
+
+    /**
+     * Sets a TypedFieldMapper for php typed fields to DBAL types auto-completion.
+     */
+    public function setTypedFieldMapper(?TypedFieldMapper $typedFieldMapper): void
+    {
+        $this->_attributes['typedFieldMapper'] = $typedFieldMapper;
+    }
+
+    /**
+     * Gets a TypedFieldMapper for php typed fields to DBAL types auto-completion.
+     */
+    public function getTypedFieldMapper(): ?TypedFieldMapper
+    {
+        return $this->_attributes['typedFieldMapper'] ?? null;
     }
 
     /**
