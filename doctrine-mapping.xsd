@@ -337,6 +337,7 @@
     <xs:attribute name="field-name" type="xs:NMTOKEN" />
     <xs:attribute name="length" type="xs:NMTOKEN" />
     <xs:attribute name="column-definition" type="xs:string" />
+    <xs:attribute name="enum-type" type="xs:string" />
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
 

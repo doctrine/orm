@@ -1,0 +1,12 @@
+Doctrine\Tests\ORM\Mapping\GH10288EnumTypePerson:
+  type: entity
+  inheritanceType: SINGLE_TABLE
+  discriminatorMap:
+    boss: Doctrine\Tests\ORM\Mapping\GH10288EnumTypeBoss
+  discriminatorColumn:
+    name: discr
+    enumType: Doctrine\Tests\Models\GH10288\GH10288People
+  id:
+    id: 
+      generator:
+        strategy: NONE

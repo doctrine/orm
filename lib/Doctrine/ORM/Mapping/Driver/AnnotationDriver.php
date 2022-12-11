@@ -319,6 +319,7 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
                             'type'             => $discrColumnAnnot->type ?: 'string',
                             'length'           => $discrColumnAnnot->length ?? 255,
                             'columnDefinition' => $discrColumnAnnot->columnDefinition,
+                            'enumType'         => $discrColumnAnnot->enumType,
                         ]
                     );
                 } else {
