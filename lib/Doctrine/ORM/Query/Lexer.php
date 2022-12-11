@@ -20,6 +20,8 @@ use function substr;
 
 /**
  * Scans a DQL query for tokens.
+ *
+ * @extends AbstractLexer<Lexer::T_*, string>
  */
 class Lexer extends AbstractLexer
 {
