@@ -33,6 +33,7 @@ class CollectionCacheKey extends CacheKey
         ksort($ownerIdentifier);
 
         $this->ownerIdentifier = $ownerIdentifier;
+
         parent::__construct(str_replace('\\', '.', strtolower($entityClass)) . '_' . implode(' ', $ownerIdentifier) . '__' . $association);
     }
 }

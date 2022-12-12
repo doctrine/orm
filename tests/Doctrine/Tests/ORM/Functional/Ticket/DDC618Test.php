@@ -22,6 +22,7 @@ class DDC618Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(DDC618Author::class, DDC618Book::class);
 
         try {

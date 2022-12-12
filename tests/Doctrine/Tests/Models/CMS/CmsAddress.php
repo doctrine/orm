@@ -17,7 +17,9 @@ use Doctrine\ORM\Mapping\OneToOne;
 class CmsAddress
 {
     /** @var int */
-    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     public $id;
 
     /** @var string */

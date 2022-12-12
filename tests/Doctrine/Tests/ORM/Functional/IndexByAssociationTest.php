@@ -21,7 +21,9 @@ class IndexByAssociationTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('stockexchange');
+
         parent::setUp();
+
         $this->loadFixture();
     }
 

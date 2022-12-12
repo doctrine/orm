@@ -19,6 +19,7 @@ class DDC3068Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('taxi');
+
         parent::setUp();
 
         $this->foo = new Driver();

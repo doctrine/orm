@@ -23,6 +23,7 @@ class ResultSetMappingTest extends OrmTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->_rsm          = new ResultSetMapping();
         $this->entityManager = $this->getTestEntityManager();
     }

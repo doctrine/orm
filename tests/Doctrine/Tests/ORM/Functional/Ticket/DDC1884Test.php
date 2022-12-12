@@ -16,6 +16,7 @@ class DDC1884Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('taxi');
+
         parent::setUp();
 
         [$bimmer, $crysler, $merc, $volvo] = $this->createCars(Car::class);

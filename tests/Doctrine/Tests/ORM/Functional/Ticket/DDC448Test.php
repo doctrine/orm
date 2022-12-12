@@ -24,6 +24,7 @@ class DDC448Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC448MainTable::class,
             DDC448ConnectedClass::class,

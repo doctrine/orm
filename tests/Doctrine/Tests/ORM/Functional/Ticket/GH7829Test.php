@@ -14,6 +14,7 @@ final class GH7829Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
 
         $article = new CmsArticle();

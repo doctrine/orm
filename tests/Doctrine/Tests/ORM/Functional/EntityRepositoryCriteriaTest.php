@@ -18,6 +18,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     {
         $this->useModelSet('generic');
         $this->useModelSet('tweet');
+
         parent::setUp();
     }
 

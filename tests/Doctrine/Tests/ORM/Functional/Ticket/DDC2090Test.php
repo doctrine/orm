@@ -19,6 +19,7 @@ class DDC2090Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('company');
+
         parent::setUp();
     }
 

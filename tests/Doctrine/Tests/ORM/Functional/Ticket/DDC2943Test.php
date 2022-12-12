@@ -16,6 +16,7 @@ class DDC2943Test extends OrmFunctionalTestCase
     {
         $this->enableSecondLevelCache();
         $this->useModelSet('cache');
+
         parent::setUp();
     }
 

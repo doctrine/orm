@@ -20,6 +20,7 @@ class DDC1300Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC1300Foo::class,
             DDC1300FooLocale::class,

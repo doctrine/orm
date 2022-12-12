@@ -19,6 +19,7 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('routing');
+
         parent::setUp();
 
         $locations = ['Berlin', 'Bonn', 'Brasilia', 'Atlanta'];

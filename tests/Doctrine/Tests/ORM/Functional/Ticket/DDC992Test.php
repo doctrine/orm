@@ -26,6 +26,7 @@ class DDC992Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC992Role::class,
             DDC992Parent::class,

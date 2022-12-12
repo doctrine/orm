@@ -25,6 +25,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
 
         $this->schemaManager = $this->createSchemaManager();

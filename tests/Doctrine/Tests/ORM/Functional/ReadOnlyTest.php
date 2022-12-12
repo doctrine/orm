@@ -143,8 +143,10 @@ class ReadOnlyEntity
     public $id;
 
     public function __construct(
-        #[Column(type: 'string', length: 255)] public string $name,
-        #[Column(type: 'integer')] public int $numericValue,
+        #[Column(type: 'string', length: 255)]
+        public string $name,
+        #[Column(type: 'integer')]
+        public int $numericValue,
     ) {
     }
 }

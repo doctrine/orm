@@ -11,7 +11,8 @@ use Doctrine\ORM\Mapping\Id;
 #[Entity]
 class CardWithDefault
 {
-    #[Id, Column]
+    #[Id]
+    #[Column]
     public string $id;
 
     #[Column(options: ['default' => Suit::Hearts])]

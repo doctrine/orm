@@ -21,6 +21,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DefaultValueUser::class,
             DefaultValueAddress::class,

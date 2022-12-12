@@ -15,7 +15,8 @@ use Doctrine\Tests\Models\Enums\Suit;
 #[Entity]
 class Complex
 {
-    #[Id, Column(type: 'string', enumType: Suit::class)]
+    #[Id]
+    #[Column(type: 'string', enumType: Suit::class)]
     protected Suit $type;
 
     #[OneToMany(targetEntity: ComplexChild::class, mappedBy: 'complex', cascade: ['persist'])]

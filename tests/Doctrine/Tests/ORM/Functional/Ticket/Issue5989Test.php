@@ -15,6 +15,7 @@ class Issue5989Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('issue5989');
+
         parent::setUp();
     }
 

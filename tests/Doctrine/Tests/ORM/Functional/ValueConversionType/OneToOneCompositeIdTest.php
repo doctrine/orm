@@ -22,6 +22,7 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('vct_onetoone_compositeid');
+
         parent::setUp();
 
         $inversed               = new Entity\InversedOneToOneCompositeIdEntity();

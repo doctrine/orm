@@ -28,7 +28,9 @@ class DeleteSqlGenerationTest extends OrmTestCase
     public function assertSqlGeneration(string $dqlToBeTested, string $sqlToBeConfirmed): void
     {
         $query = $this->entityManager->createQuery($dqlToBeTested);
+
         parent::assertEquals($sqlToBeConfirmed, $query->getSql());
+
         $query->free();
     }
 

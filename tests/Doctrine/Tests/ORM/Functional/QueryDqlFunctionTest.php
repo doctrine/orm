@@ -21,6 +21,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('company');
+
         parent::setUp();
 
         $this->generateFixture();

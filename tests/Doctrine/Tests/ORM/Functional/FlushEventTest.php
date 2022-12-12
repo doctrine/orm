@@ -18,6 +18,7 @@ class FlushEventTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 

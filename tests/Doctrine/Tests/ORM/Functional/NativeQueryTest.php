@@ -37,6 +37,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
     {
         $this->useModelSet('cms');
         $this->useModelSet('company');
+
         parent::setUp();
 
         $this->platform = $this->_em->getConnection()->getDatabasePlatform();

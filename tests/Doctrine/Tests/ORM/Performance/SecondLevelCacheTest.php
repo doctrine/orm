@@ -28,6 +28,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::useModelSet('cache');
+
         parent::setUp();
     }
 

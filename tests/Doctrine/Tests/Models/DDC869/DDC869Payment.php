@@ -11,7 +11,9 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 class DDC869Payment
 {
     /** @var int */
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue]
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     protected $id;
 
     /** @var float */

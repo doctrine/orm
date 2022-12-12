@@ -114,7 +114,6 @@ class GH9335Book
     #[Column(type: 'string')]
     private $title;
 
-
     /** @var GH9335Author */
     #[OneToOne(targetEntity: 'GH9335Author', mappedBy: 'book', cascade: ['persist', 'remove'])]
     private $author;

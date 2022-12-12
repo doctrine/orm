@@ -11,10 +11,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 
-#[ORM\Entity, ORM\Table(name: 'cms_users_typed')]
+#[ORM\Entity]
+#[ORM\Table(name: 'cms_users_typed')]
 class UserTyped
 {
-    #[ORM\Id, ORM\Column, ORM\GeneratedValue]
+    #[ORM\Id]
+    #[ORM\Column]
+    #[ORM\GeneratedValue]
     public int $id;
 
     #[ORM\Column(length: 50)]
@@ -41,7 +44,8 @@ class UserTyped
     #[ORM\Column]
     public float $float;
 
-    #[ORM\OneToOne(cascade: ['persist'], orphanRemoval: true), ORM\JoinColumn]
+    #[ORM\OneToOne(cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\JoinColumn]
     public CmsEmail $email;
 
     #[ORM\ManyToOne]

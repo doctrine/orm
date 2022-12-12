@@ -15,6 +15,7 @@ class CompanySchemaTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('company');
+
         parent::setUp();
     }
 

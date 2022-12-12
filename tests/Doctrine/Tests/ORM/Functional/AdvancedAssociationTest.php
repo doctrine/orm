@@ -33,6 +33,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             Phrase::class,
             PhraseType::class,

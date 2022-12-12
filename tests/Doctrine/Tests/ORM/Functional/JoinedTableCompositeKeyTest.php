@@ -13,6 +13,7 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('compositekeyinheritance');
+
         parent::setUp();
     }
 

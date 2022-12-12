@@ -14,7 +14,9 @@ use Doctrine\ORM\Mapping\Id;
 class Scale
 {
     /** @var int */
-    #[Id, GeneratedValue, Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /** @var Unit[] */

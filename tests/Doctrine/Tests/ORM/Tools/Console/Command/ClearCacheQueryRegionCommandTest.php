@@ -20,6 +20,7 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->enableSecondLevelCache();
+
         parent::setUp();
 
         $this->command = new QueryRegionCommand(new SingleManagerProvider($this->_em));

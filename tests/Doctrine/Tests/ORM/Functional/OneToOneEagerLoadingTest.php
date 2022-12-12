@@ -23,6 +23,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             Train::class,
             TrainDriver::class,

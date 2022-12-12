@@ -21,7 +21,9 @@ use Doctrine\ORM\Mapping\MappedSuperclass;
 class DDC964User
 {
     /** @var int */
-    #[Id, GeneratedValue, Column(type: 'integer', name: 'user_id', length: 150)]
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer', name: 'user_id', length: 150)]
     protected $id;
 
     /** @psalm-var Collection<int, DDC964Group> */
@@ -37,7 +39,8 @@ class DDC964User
     protected $address;
 
     public function __construct(
-        #[Column(name: 'user_name', nullable: true, unique: false, length: 250)] protected string|null $name = null,
+        #[Column(name: 'user_name', nullable: true, unique: false, length: 250)]
+        protected string|null $name = null,
     ) {
         $this->groups = new ArrayCollection();
     }

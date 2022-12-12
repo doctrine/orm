@@ -30,6 +30,7 @@ abstract class CollectionPersisterTestCase extends OrmTestCase
     {
         $this->getSharedSecondLevelCache()->clear();
         $this->enableSecondLevelCache();
+
         parent::setUp();
 
         $this->em                  = $this->getTestEntityManager();

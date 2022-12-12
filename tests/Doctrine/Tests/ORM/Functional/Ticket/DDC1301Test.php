@@ -22,6 +22,7 @@ class DDC1301Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('legacy');
+
         parent::setUp();
 
         $class                                             = $this->_em->getClassMetadata(LegacyUser::class);

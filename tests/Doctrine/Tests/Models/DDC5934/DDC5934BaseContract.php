@@ -17,7 +17,9 @@ use Doctrine\ORM\Mapping\ManyToMany;
 class DDC5934BaseContract
 {
     /** @var int */
-    #[Id, Column, GeneratedValue]
+    #[Id]
+    #[Column]
+    #[GeneratedValue]
     public $id;
 
     /** @psalm-var Collection<int, DDC5934Member> */

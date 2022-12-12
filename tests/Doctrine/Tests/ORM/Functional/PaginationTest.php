@@ -52,6 +52,7 @@ class PaginationTest extends OrmFunctionalTestCase
         }
 
         parent::setUp();
+
         $this->populate();
     }
 

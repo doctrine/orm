@@ -29,6 +29,7 @@ class TypeValueSqlTest extends OrmFunctionalTestCase
         }
 
         $this->useModelSet('customtype');
+
         parent::setUp();
     }
 
