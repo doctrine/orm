@@ -7,7 +7,7 @@ namespace Doctrine\Tests\ORM\Tools\Console\Command\SchemaTool;
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\DropCommand;
 use Doctrine\Tests\ORM\Tools\Console\Command\SchemaTool\Models\Keyboard;
 
-final class DropCommandTest extends AbstractCommandTest
+final class DropCommandTest extends CommandTestCase
 {
     /** @doesNotPerformAssertions */
     public function testItPrintsTheSql(): void
