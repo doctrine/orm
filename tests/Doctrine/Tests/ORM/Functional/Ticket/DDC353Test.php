@@ -19,6 +19,7 @@ class DDC353Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(DDC353File::class, DDC353Picture::class);
     }
 

@@ -18,6 +18,7 @@ class DDC1209Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC1209One::class,
             DDC1209Two::class,

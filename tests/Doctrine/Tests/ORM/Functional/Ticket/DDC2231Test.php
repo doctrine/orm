@@ -28,6 +28,7 @@ class DDC2231Test extends OrmFunctionalTestCase
         }
 
         parent::setUp();
+
         $this->createSchemaForModels(DDC2231EntityY::class);
     }
 

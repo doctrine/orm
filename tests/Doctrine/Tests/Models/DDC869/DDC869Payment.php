@@ -21,7 +21,9 @@ class DDC869Payment
      * @Column(type="integer")
      * @GeneratedValue
      */
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue]
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     protected $id;
 
     /**

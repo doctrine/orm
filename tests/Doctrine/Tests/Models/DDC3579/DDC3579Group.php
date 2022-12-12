@@ -22,7 +22,9 @@ class DDC3579Group
      * @Id
      * @Column(type="integer")
      */
-    #[Id, GeneratedValue, Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     private $id;
 
     /**

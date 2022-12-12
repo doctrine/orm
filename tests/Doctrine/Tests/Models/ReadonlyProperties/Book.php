@@ -14,16 +14,20 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 
-#[Entity, Table(name: 'book')]
+#[Entity]
+#[Table(name: 'book')]
 class Book
 {
-    #[Column, Id, GeneratedValue(strategy: 'IDENTITY')]
+    #[Column]
+    #[Id]
+    #[GeneratedValue(strategy: 'IDENTITY')]
     private readonly int $id;
 
     #[Column]
     private readonly string $title;
 
-    #[ManyToMany(targetEntity: Author::class), JoinTable(name: 'book_author')]
+    #[ManyToMany(targetEntity: Author::class)]
+    #[JoinTable(name: 'book_author')]
     private readonly Collection $authors;
 
     public function __construct()

@@ -19,6 +19,7 @@ class DDC1685Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('ddc117');
+
         parent::setUp();
 
         $this->_em->createQuery('DELETE FROM Doctrine\Tests\Models\DDC117\DDC117ArticleDetails ad')->execute();

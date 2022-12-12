@@ -15,7 +15,8 @@ use Doctrine\ORM\Mapping\Table;
  * @Entity
  * @Table(name="updatable_column")
  */
-#[Entity, Table(name: 'updatable_column')]
+#[Entity]
+#[Table(name: 'updatable_column')]
 class Updatable
 {
     /**
@@ -24,7 +25,9 @@ class Updatable
      * @GeneratedValue
      * @Column(type="integer")
      */
-    #[Id, GeneratedValue, Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /**

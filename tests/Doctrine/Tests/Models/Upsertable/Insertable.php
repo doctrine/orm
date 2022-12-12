@@ -25,7 +25,9 @@ class Insertable
      * @GeneratedValue
      * @Column(type="integer")
      */
-    #[Id, GeneratedValue, Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /**

@@ -17,13 +17,15 @@ class TypedCardEnumCompositeId
      * @ORM\Id()
      * @ORM\Column(type="string", enumType=Suit::class)
      */
-    #[Id, Column(type: 'string', enumType: Suit::class)]
+    #[Id]
+    #[Column(type: 'string', enumType: Suit::class)]
     public Suit $suit;
 
     /**
      * @ORM\Id()
      * @ORM\Column(type="string", enumType=Unit::class)
      */
-    #[Id, Column(type: 'string', enumType: Unit::class)]
+    #[Id]
+    #[Column(type: 'string', enumType: Unit::class)]
     public Unit $unit;
 }

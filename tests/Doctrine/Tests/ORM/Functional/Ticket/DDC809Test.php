@@ -19,6 +19,7 @@ class DDC809Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC809Variant::class,
             DDC809SpecificationValue::class

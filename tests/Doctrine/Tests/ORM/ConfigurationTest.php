@@ -49,6 +49,7 @@ class ConfigurationTest extends DoctrineTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->configuration = new Configuration();
     }
 

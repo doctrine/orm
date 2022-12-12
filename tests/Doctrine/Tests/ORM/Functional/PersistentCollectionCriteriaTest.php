@@ -22,6 +22,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
         $this->useModelSet('tweet');
         $this->useModelSet('quote');
         $this->useModelSet('vct_manytomany_extralazy');
+
         parent::setUp();
     }
 

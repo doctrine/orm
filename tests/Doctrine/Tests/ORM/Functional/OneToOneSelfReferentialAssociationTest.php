@@ -35,7 +35,9 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('ecommerce');
+
         parent::setUp();
+
         $this->customer = new ECommerceCustomer();
         $this->customer->setName('Anakin Skywalker');
         $this->mentor = new ECommerceCustomer();
