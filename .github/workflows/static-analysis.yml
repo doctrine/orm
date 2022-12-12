@@ -1,4 +1,4 @@
-name: Static Analysis
+name: "Static Analysis"
 
 on:
   pull_request:
@@ -43,7 +43,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           coverage: none
-          php-version: "8.1"
+          php-version: "8.2"
           tools: cs2pr
 
       - name: Require specific DBAL version
@@ -74,7 +74,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           coverage: none
-          php-version: "8.1"
+          php-version: "8.2"
           tools: cs2pr
 
       - name: Require specific DBAL version

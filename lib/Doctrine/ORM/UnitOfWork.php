@@ -638,8 +638,18 @@ class UnitOfWork implements PropertyChangedListener
 
                 $orgValue = $originalData[$propName];
 
-                if ($orgValue instanceof BackedEnum) {
-                    $orgValue = $orgValue->value;
+                if (! empty($class->fieldMappings[$propName]['enumType'])) {
+                    if (is_array($orgValue)) {
+                        foreach ($orgValue as $id => $val) {
+                            if ($val instanceof BackedEnum) {
+                                $orgValue[$id] = $val->value;
+                            }
+                        }
+                    } else {
+                        if ($orgValue instanceof BackedEnum) {
+                            $orgValue = $orgValue->value;
+                        }
+                    }
                 }
 
                 // skip if value haven't changed
@@ -698,6 +708,7 @@ class UnitOfWork implements PropertyChangedListener
                     }
 
                     if ($orgValue !== null && $assoc['orphanRemoval']) {
+                        assert(is_object($orgValue));
                         $this->scheduleOrphanRemoval($orgValue);
                     }
                 }

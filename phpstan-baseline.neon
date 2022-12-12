@@ -301,6 +301,11 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
+			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\:\\:\\$pathExpression\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Query/SqlWalker.php
+
+		-
 			message: "#^Call to function is_string\\(\\) with Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node will always evaluate to false\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/SqlWalker.php

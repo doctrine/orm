@@ -298,6 +298,28 @@ class EnumTest extends OrmFunctionalTestCase
         self::assertFalse($this->_em->getUnitOfWork()->isScheduledForUpdate($result[0]));
     }
 
+    public function testEnumArrayChangeSets(): void
+    {
+        $this->setUpEntitySchema([Scale::class]);
+
+        $scale                 = new Scale();
+        $scale->supportedUnits = [Unit::Gram];
+
+        $this->_em->persist($scale);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(Scale::class, 's')
+            ->select('s')
+            ->getQuery()
+            ->getResult();
+
+        $this->_em->getUnitOfWork()->computeChangeSets();
+
+        self::assertFalse($this->_em->getUnitOfWork()->isScheduledForUpdate($result[0]));
+    }
+
     public function testFindByEnum(): void
     {
         $this->setUpEntitySchema([Card::class]);
