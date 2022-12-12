@@ -1,4 +1,3 @@
-
 name: "Static Analysis"
 
 on:
@@ -31,18 +30,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version:
-          - "8.1"
         dbal-version:
           - "default"
         persistence-version:
           - "default"
         include:
-          - php-version: "8.1"
-            dbal-version: "2.13"
+          - dbal-version: "2.13"
             persistence-version: "default"
-          - php-version: "8.1"
-            dbal-version: "default"
+          - dbal-version: "default"
             persistence-version: "2.5"
 
     steps:
@@ -53,7 +48,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           coverage: "none"
-          php-version: "${{ matrix.php-version }}"
+          php-version: "8.2"
 
       - name: "Require specific DBAL version"
         run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
@@ -85,9 +80,6 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix:
-        php-version:
-          - "8.1"
 
     steps:
       - name: "Checkout code"
@@ -97,7 +89,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           coverage: "none"
-          php-version: "${{ matrix.php-version }}"
+          php-version: "8.2"
 
       - name: "Require specific persistence version"
         run: "composer require doctrine/persistence ^3.1 --no-update"
