@@ -85,6 +85,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->useModelSet('cms');
         $this->useModelSet('company');
+
         parent::setUp();
     }
 

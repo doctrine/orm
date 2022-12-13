@@ -33,6 +33,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             CmsUser::class,
             CmsTag::class,

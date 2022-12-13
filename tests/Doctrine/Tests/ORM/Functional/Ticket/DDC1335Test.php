@@ -22,6 +22,7 @@ class DDC1335Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(DDC1335User::class, DDC1335Phone::class);
         try {
             $this->loadFixture();

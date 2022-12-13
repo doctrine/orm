@@ -43,6 +43,7 @@ class DDC117Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('ddc117');
+
         parent::setUp();
 
         $this->article1 = new DDC117Article('Foo');

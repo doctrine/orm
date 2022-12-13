@@ -29,6 +29,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
     {
         $this->useModelSet('ecommerce');
         $this->useModelSet('company');
+
         parent::setUp();
     }
 

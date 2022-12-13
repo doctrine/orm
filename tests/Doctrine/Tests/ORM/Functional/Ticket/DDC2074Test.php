@@ -16,6 +16,7 @@ class DDC2074Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('ecommerce');
+
         parent::setUp();
     }
 

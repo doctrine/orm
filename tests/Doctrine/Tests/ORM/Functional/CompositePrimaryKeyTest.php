@@ -20,6 +20,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('navigation');
+
         parent::setUp();
     }
 

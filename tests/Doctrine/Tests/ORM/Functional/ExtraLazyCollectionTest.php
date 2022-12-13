@@ -59,6 +59,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->useModelSet('tweet');
         $this->useModelSet('cms');
         $this->useModelSet('ddc2504');
+
         parent::setUp();
 
         $class                                                 = $this->_em->getClassMetadata(CmsUser::class);

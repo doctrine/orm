@@ -23,6 +23,7 @@ class DDC1690Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(DDC1690Parent::class, DDC1690Child::class);
     }
 

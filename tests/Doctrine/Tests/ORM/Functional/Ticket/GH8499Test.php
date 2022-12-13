@@ -28,6 +28,7 @@ class GH8499Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->conn = $this->_em->getConnection();
     }
 

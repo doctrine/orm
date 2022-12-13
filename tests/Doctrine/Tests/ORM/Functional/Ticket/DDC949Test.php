@@ -12,6 +12,7 @@ class DDC949Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('generic');
+
         parent::setUp();
     }
 

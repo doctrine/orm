@@ -18,7 +18,8 @@ use Doctrine\ORM\Mapping\Table;
  * @Entity
  * @Table(name="implicit_schema.implicit_table")
  */
-#[ORM\Entity, ORM\Table(name: 'implicit_schema.implicit_table')]
+#[ORM\Entity]
+#[ORM\Table(name: 'implicit_schema.implicit_table')]
 class SchemaAndTableInTableName
 {
     /**
@@ -27,6 +28,8 @@ class SchemaAndTableInTableName
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     public $id;
 }

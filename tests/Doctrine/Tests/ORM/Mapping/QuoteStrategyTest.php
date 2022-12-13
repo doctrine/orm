@@ -27,6 +27,7 @@ class QuoteStrategyTest extends OrmTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $em             = $this->getTestEntityManager();
         $this->platform = $em->getConnection()->getDatabasePlatform();
         $this->strategy = new DefaultQuoteStrategy();

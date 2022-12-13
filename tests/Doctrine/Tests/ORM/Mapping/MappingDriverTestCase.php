@@ -1114,10 +1114,14 @@ abstract class MappingDriverTestCase extends OrmTestCase
  * )
  * @NamedQueries({@NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")})
  */
-#[ORM\Entity(), ORM\HasLifecycleCallbacks()]
+#[ORM\Entity()]
+#[ORM\HasLifecycleCallbacks()]
 #[ORM\Table(name: 'cms_users', options: ['foo' => 'bar', 'baz' => ['key' => 'val']])]
-#[ORM\Index(name: 'name_idx', columns: ['name']), ORM\Index(name: '0', columns: ['user_email']), ORM\Index(name: 'fields', fields: ['name', 'email'])]
-#[ORM\UniqueConstraint(name: 'search_idx', columns: ['name', 'user_email'], options: ['where' => 'name IS NOT NULL']), ORM\UniqueConstraint(name: 'phone_idx', fields: ['name', 'phone'])]
+#[ORM\Index(name: 'name_idx', columns: ['name'])]
+#[ORM\Index(name: '0', columns: ['user_email'])]
+#[ORM\Index(name: 'fields', fields: ['name', 'email'])]
+#[ORM\UniqueConstraint(name: 'search_idx', columns: ['name', 'user_email'], options: ['where' => 'name IS NOT NULL'])]
+#[ORM\UniqueConstraint(name: 'phone_idx', fields: ['name', 'phone'])]
 class User
 {
     /**
@@ -1127,7 +1131,8 @@ class User
      * @GeneratedValue(strategy="AUTO")
      * @SequenceGenerator(sequenceName="tablename_seq", initialValue=1, allocationSize=100)
      **/
-    #[ORM\Id, ORM\Column(type: 'integer', options: ['foo' => 'bar', 'unsigned' => false])]
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer', options: ['foo' => 'bar', 'unsigned' => false])]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\SequenceGenerator(sequenceName: 'tablename_seq', initialValue: 1, allocationSize: 100)]
     public $id;
@@ -1183,7 +1188,8 @@ class User
      * @Column(type="integer")
      * @Version
      */
-    #[ORM\Column(type: 'integer'), ORM\Version]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Version]
     public $version;
 
     /** @PrePersist */
@@ -1469,7 +1475,9 @@ class UserIncorrectUniqueConstraint
  * @DiscriminatorMap({"cat" = "Cat", "dog" = "Dog"})
  * @DiscriminatorColumn(name="discr", length=32, type="string")
  */
-#[ORM\Entity, ORM\InheritanceType('SINGLE_TABLE'), ORM\DiscriminatorColumn(name: 'discr', length: 32, type: 'string')]
+#[ORM\Entity]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', length: 32, type: 'string')]
 #[ORM\DiscriminatorMap(['cat' => 'Cat', 'dog' => 'Dog'])]
 abstract class Animal
 {
@@ -1480,7 +1488,9 @@ abstract class Animal
      * @GeneratedValue(strategy="CUSTOM")
      * @CustomIdGenerator(class="stdClass")
      */
-    #[ORM\Id, ORM\Column(type: 'string'), ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\Id]
+    #[ORM\Column(type: 'string')]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'stdClass')]
     public $id;
 
@@ -1524,9 +1534,10 @@ class DDC1170Entity
      * @GeneratedValue(strategy="NONE")
      * @Column(type="integer", columnDefinition = "INT unsigned NOT NULL")
      **/
-    #[ORM\Id, ORM\GeneratedValue(strategy: 'NONE'), ORM\Column(type: 'integer', columnDefinition: 'INT UNSIGNED NOT NULL')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
+    #[ORM\Column(type: 'integer', columnDefinition: 'INT UNSIGNED NOT NULL')]
     private $id;
-
 
     /**
      * @var string|null
@@ -1572,7 +1583,8 @@ class DDC1170Entity
  * @DiscriminatorMap({"ONE" = "DDC807SubClasse1", "TWO" = "DDC807SubClasse2"})
  * @DiscriminatorColumn(name = "dtype", columnDefinition="ENUM('ONE','TWO')")
  */
-#[ORM\Entity, ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\Entity]
+#[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'dtype', columnDefinition: "ENUM('ONE','TWO')")]
 #[ORM\DiscriminatorMap(['ONE' => 'DDC807SubClasse1', 'TWO' => 'DDC807SubClasse2'])]
 class DDC807Entity
@@ -1583,7 +1595,9 @@ class DDC807Entity
      * @Column(type="integer")
      * @GeneratedValue(strategy="NONE")
      **/
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'NONE')]
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     public $id;
 
     public static function loadMetadata(ClassMetadata $metadata): void
@@ -1628,7 +1642,8 @@ class Group
  * @Entity
  * @Table(indexes={@Index(columns={"content"}, flags={"fulltext"}, options={"where": "content IS NOT NULL"})})
  */
-#[ORM\Entity, ORM\Table(name: 'Comment')]
+#[ORM\Entity]
+#[ORM\Table(name: 'Comment')]
 #[ORM\Index(columns: ['content'], flags: ['fulltext'], options: ['where' => 'content IS NOT NULL'])]
 class Comment
 {
@@ -1673,7 +1688,8 @@ class Comment
  *     "TWO" = "SingleTableEntityNoDiscriminatorColumnMappingSub2"
  * })
  */
-#[ORM\Entity, ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\Entity]
+#[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorMap(['ONE' => 'SingleTableEntityNoDiscriminatorColumnMappingSub1', 'TWO' => 'SingleTableEntityNoDiscriminatorColumnMappingSub2'])]
 class SingleTableEntityNoDiscriminatorColumnMapping
 {
@@ -1683,7 +1699,9 @@ class SingleTableEntityNoDiscriminatorColumnMapping
      * @Column(type="integer")
      * @GeneratedValue(strategy="NONE")
      */
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'NONE')]
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     public $id;
 
     public static function loadMetadata(ClassMetadata $metadata): void
@@ -1715,7 +1733,8 @@ class SingleTableEntityNoDiscriminatorColumnMappingSub2 extends SingleTableEntit
  * })
  * @DiscriminatorColumn(name="dtype")
  */
-#[ORM\Entity, ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\Entity]
+#[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorMap(['ONE' => 'SingleTableEntityNoDiscriminatorColumnMappingSub1', 'TWO' => 'SingleTableEntityNoDiscriminatorColumnMappingSub2'])]
 #[ORM\DiscriminatorColumn(name: 'dtype')]
 class SingleTableEntityIncompleteDiscriminatorColumnMapping
@@ -1726,7 +1745,9 @@ class SingleTableEntityIncompleteDiscriminatorColumnMapping
      * @Column(type="integer")
      * @GeneratedValue(strategy="NONE")
      */
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'NONE')]
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     public $id;
 
     public static function loadMetadata(ClassMetadata $metadata): void
@@ -1759,7 +1780,9 @@ class ReservedWordInTableColumn
      * @Column(type="integer")
      * @GeneratedValue(strategy="NONE")
      */
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'NONE')]
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     public $id;
 
     /**
