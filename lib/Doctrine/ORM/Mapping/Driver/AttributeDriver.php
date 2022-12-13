@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\MappingAttribute;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
@@ -33,67 +31,22 @@ class AttributeDriver implements MappingDriver
         Mapping\MappedSuperclass::class => 2,
     ];
 
-    /**
-     * @deprecated override isTransient() instead of overriding this property
-     *
-     * @var array<class-string<MappingAttribute>, int>
-     */
-    protected $entityAnnotationClasses = self::ENTITY_ATTRIBUTE_CLASSES;
-
-    /**
-     * The attribute reader.
-     *
-     * @internal this property will be private in 3.0
-     *
-     * @var AttributeReader
-     */
-    protected $reader;
+    private AttributeReader $reader;
 
     /** @param array<string> $paths */
     public function __construct(array $paths)
     {
         $this->reader = new AttributeReader();
         $this->addPaths($paths);
-
-        if ($this->entityAnnotationClasses !== self::ENTITY_ATTRIBUTE_CLASSES) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/10204',
-                'Changing the value of %s::$entityAnnotationClasses is deprecated and will have no effect in Doctrine ORM 3.0.',
-                self::class,
-            );
-        }
     }
 
-    /**
-     * Retrieve the current annotation reader
-     *
-     * @deprecated no replacement planned.
-     *
-     * @return AttributeReader
-     */
-    public function getReader()
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/9587',
-            '%s is deprecated with no replacement',
-            __METHOD__,
-        );
-
-        return $this->reader;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function isTransient($className)
+    public function isTransient(string $className): bool
     {
         $classAttributes = $this->reader->getClassAttributes(new ReflectionClass($className));
 
         foreach ($classAttributes as $a) {
             $attr = $a instanceof RepeatableAttributeCollection ? $a[0] : $a;
-            if (isset($this->entityAnnotationClasses[get_class($attr)])) {
+            if (isset(self::ENTITY_ATTRIBUTE_CLASSES[get_class($attr)])) {
                 return false;
             }
         }
@@ -109,7 +62,7 @@ class AttributeDriver implements MappingDriver
      *
      * @template T of object
      */
-    public function loadMetadataForClass($className, PersistenceClassMetadata $metadata): void
+    public function loadMetadataForClass(string $className, PersistenceClassMetadata $metadata): void
     {
         $reflectionClass = $metadata->getReflectionClass()
             // this happens when running attribute driver in combination with
@@ -651,8 +604,6 @@ class AttributeDriver implements MappingDriver
     /**
      * Parse the given JoinColumn as array
      *
-     * @param Mapping\JoinColumn|Mapping\InverseJoinColumn $joinColumn
-     *
      * @return mixed[]
      * @psalm-return array{
      *                   name: string|null,
@@ -664,7 +615,7 @@ class AttributeDriver implements MappingDriver
      *                   options?: array<string, mixed>
      *               }
      */
-    private function joinColumnToArray($joinColumn): array
+    private function joinColumnToArray(Mapping\JoinColumn|Mapping\InverseJoinColumn $joinColumn): array
     {
         $mapping = [
             'name' => $joinColumn->name,
