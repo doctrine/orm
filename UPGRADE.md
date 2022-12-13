@@ -1,5 +1,11 @@
 # Upgrade to 3.0
 
+## BC BREAK: Removed `AttributeDriver::$entityAnnotationClasses` and `AttributeDriver::getReader()`
+
+* If you need to change the behavior of `AttributeDriver::isTransient()`,
+  override that method instead.
+* The attribute reader is internal to the driver and should not be accessed from outside.
+
 ## BC BREAK: Removed `Doctrine\ORM\Query\AST\InExpression`
 
 The AST parser will create a `InListExpression` or a `InSubselectExpression` when
