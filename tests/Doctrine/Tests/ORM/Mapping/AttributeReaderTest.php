@@ -75,8 +75,10 @@ class AttributeReaderTest extends TestCase
 #[ORM\Index(name: 'bar', columns: ['id'])]
 class TestEntity
 {
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue]
     /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     public $id;
 
     /** @var mixed */
@@ -90,7 +92,9 @@ class TestEntity
 #[ORM\Entity]
 class TestTag
 {
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue]
     /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     public $id;
 }

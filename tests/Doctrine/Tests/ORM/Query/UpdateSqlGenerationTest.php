@@ -36,7 +36,9 @@ class UpdateSqlGenerationTest extends OrmTestCase
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed): void
     {
         $query = $this->entityManager->createQuery($dqlToBeTested);
+
         parent::assertEquals($sqlToBeConfirmed, $query->getSql());
+
         $query->free();
     }
 

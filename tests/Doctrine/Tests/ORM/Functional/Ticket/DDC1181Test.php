@@ -18,6 +18,7 @@ class DDC1181Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC1181Hotel::class,
             DDC1181Booking::class,

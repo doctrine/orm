@@ -21,6 +21,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->enableSecondLevelCache();
+
         parent::setUp();
 
         $this->command = new CollectionRegionCommand(new SingleManagerProvider($this->_em));

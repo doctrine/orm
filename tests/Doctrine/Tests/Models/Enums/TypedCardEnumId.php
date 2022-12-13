@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 #[Entity]
 class TypedCardEnumId
 {
-    #[Id, Column(type: 'string', enumType: Suit::class)]
+    #[Id]
+    #[Column(type: 'string', enumType: Suit::class)]
     public Suit $suit;
 }

@@ -29,7 +29,9 @@ class GearmanLockTest extends OrmFunctionalTestCase
         }
 
         $this->useModelSet('cms');
+
         parent::setUp();
+
         $this->tasks = [];
 
         $this->gearman = new GearmanClient();

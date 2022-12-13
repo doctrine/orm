@@ -24,6 +24,7 @@ class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->enableSecondLevelCache();
+
         parent::setUp();
 
         $this->command = new EntityRegionCommand(new SingleManagerProvider($this->_em));

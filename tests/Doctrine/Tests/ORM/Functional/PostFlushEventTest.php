@@ -20,7 +20,9 @@ class PostFlushEventTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
+
         $this->listener = new PostFlushListener();
         $evm            = $this->_em->getEventManager();
         $evm->addEventListener(Events::postFlush, $this->listener);

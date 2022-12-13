@@ -15,6 +15,7 @@ class DDC2519Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('legacy');
+
         parent::setUp();
 
         $this->loadFixture();

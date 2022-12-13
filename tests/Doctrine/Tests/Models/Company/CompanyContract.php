@@ -16,14 +16,17 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-#[ORM\Entity, ORM\Table(name: 'company_contracts')]
+#[ORM\Entity]
+#[ORM\Table(name: 'company_contracts')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['fix' => 'CompanyFixContract', 'flexible' => 'CompanyFlexContract', 'flexultra' => 'CompanyFlexUltraContract'])]
 #[ORM\EntityListeners(['CompanyContractListener'])]
 abstract class CompanyContract
 {
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue]
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
     #[ManyToOne(targetEntity: 'CompanyEmployee', inversedBy: 'soldContracts')]

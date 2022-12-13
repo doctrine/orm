@@ -11,7 +11,7 @@ use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-abstract class AbstractCommandTest extends OrmFunctionalTestCase
+abstract class CommandTestCase extends OrmFunctionalTestCase
 {
     /** @param class-string<AbstractCommand> $commandClass */
     protected function getCommandTester(string $commandClass): CommandTester

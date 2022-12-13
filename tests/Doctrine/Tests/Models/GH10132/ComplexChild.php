@@ -18,7 +18,8 @@ class ComplexChild
     #[JoinColumn(name: 'complexType', referencedColumnName: 'type', nullable: false)]
     protected Complex $complex;
 
-    #[Id, Column(type: 'string', enumType: Suit::class)]
+    #[Id]
+    #[Column(type: 'string', enumType: Suit::class)]
     protected Suit $complexType;
 
     public function setComplex(Complex $complex): void

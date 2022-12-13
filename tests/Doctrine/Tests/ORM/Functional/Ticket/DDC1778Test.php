@@ -18,6 +18,7 @@ class DDC1778Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
 
         $this->user           = new CmsUser();

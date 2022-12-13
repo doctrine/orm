@@ -22,6 +22,7 @@ class DDC2895Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(DDC2895::class);
     }
 

@@ -949,14 +949,19 @@ abstract class MappingDriverTestCase extends OrmTestCase
     }
 }
 
-#[ORM\Entity(), ORM\HasLifecycleCallbacks()]
+#[ORM\Entity()]
+#[ORM\HasLifecycleCallbacks()]
 #[ORM\Table(name: 'cms_users', options: ['foo' => 'bar', 'baz' => ['key' => 'val']])]
-#[ORM\Index(name: 'name_idx', columns: ['name']), ORM\Index(name: '0', columns: ['user_email']), ORM\Index(name: 'fields', fields: ['name', 'email'])]
-#[ORM\UniqueConstraint(name: 'search_idx', columns: ['name', 'user_email'], options: ['where' => 'name IS NOT NULL']), ORM\UniqueConstraint(name: 'phone_idx', fields: ['name', 'phone'])]
+#[ORM\Index(name: 'name_idx', columns: ['name'])]
+#[ORM\Index(name: '0', columns: ['user_email'])]
+#[ORM\Index(name: 'fields', fields: ['name', 'email'])]
+#[ORM\UniqueConstraint(name: 'search_idx', columns: ['name', 'user_email'], options: ['where' => 'name IS NOT NULL'])]
+#[ORM\UniqueConstraint(name: 'phone_idx', fields: ['name', 'phone'])]
 class User
 {
     /** @var int **/
-    #[ORM\Id, ORM\Column(type: 'integer', options: ['foo' => 'bar', 'unsigned' => false])]
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer', options: ['foo' => 'bar', 'unsigned' => false])]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\SequenceGenerator(sequenceName: 'tablename_seq', initialValue: 1, allocationSize: 100)]
     public $id;
@@ -987,7 +992,8 @@ class User
     public $groups;
 
     /** @var int */
-    #[ORM\Column(type: 'integer'), ORM\Version]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Version]
     public $version;
 
     #[ORM\PrePersist]
@@ -1240,12 +1246,16 @@ class UserIncorrectUniqueConstraint
     }
 }
 
-#[ORM\Entity, ORM\InheritanceType('SINGLE_TABLE'), ORM\DiscriminatorColumn(name: 'discr', length: 32, type: 'string')]
+#[ORM\Entity]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', length: 32, type: 'string')]
 #[ORM\DiscriminatorMap(['cat' => 'Cat', 'dog' => 'Dog'])]
 abstract class Animal
 {
     /** @var string */
-    #[ORM\Id, ORM\Column(type: 'string'), ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\Id]
+    #[ORM\Column(type: 'string')]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: stdClass::class)]
     public $id;
 
@@ -1276,11 +1286,14 @@ class Dog extends Animal
 class DDC1170Entity
 {
     public function __construct(
-        #[ORM\Column(columnDefinition: 'VARCHAR(255) NOT NULL')] private string|null $value = null,
+        #[ORM\Column(columnDefinition: 'VARCHAR(255) NOT NULL')]
+        private string|null $value = null,
     ) {
     }
 
-    #[ORM\Id, ORM\GeneratedValue(strategy: 'NONE'), ORM\Column(type: 'integer', columnDefinition: 'INT UNSIGNED NOT NULL')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
+    #[ORM\Column(type: 'integer', columnDefinition: 'INT UNSIGNED NOT NULL')]
     private int $id;
 
     public function getId(): int
@@ -1314,13 +1327,16 @@ class DDC1170Entity
     }
 }
 
-#[ORM\Entity, ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\Entity]
+#[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'dtype', columnDefinition: "ENUM('ONE','TWO')")]
 #[ORM\DiscriminatorMap(['ONE' => 'DDC807SubClasse1', 'TWO' => 'DDC807SubClasse2'])]
 class DDC807Entity
 {
     /** @var int **/
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'NONE')]
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     public $id;
 
     public static function loadMetadata(ClassMetadata $metadata): void
@@ -1361,7 +1377,8 @@ class Group
 {
 }
 
-#[ORM\Entity, ORM\Table(name: 'Comment')]
+#[ORM\Entity]
+#[ORM\Table(name: 'Comment')]
 #[ORM\Index(columns: ['content'], flags: ['fulltext'], options: ['where' => 'content IS NOT NULL'])]
 class Comment
 {
@@ -1394,12 +1411,15 @@ class Comment
     }
 }
 
-#[ORM\Entity, ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\Entity]
+#[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorMap(['ONE' => 'SingleTableEntityNoDiscriminatorColumnMappingSub1', 'TWO' => 'SingleTableEntityNoDiscriminatorColumnMappingSub2'])]
 class SingleTableEntityNoDiscriminatorColumnMapping
 {
     /** @var int */
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'NONE')]
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     public $id;
 
     public static function loadMetadata(ClassMetadata $metadata): void
@@ -1422,13 +1442,16 @@ class SingleTableEntityNoDiscriminatorColumnMappingSub2 extends SingleTableEntit
 {
 }
 
-#[ORM\Entity, ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\Entity]
+#[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorMap(['ONE' => 'SingleTableEntityNoDiscriminatorColumnMappingSub1', 'TWO' => 'SingleTableEntityNoDiscriminatorColumnMappingSub2'])]
 #[ORM\DiscriminatorColumn(name: 'dtype')]
 class SingleTableEntityIncompleteDiscriminatorColumnMapping
 {
     /** @var int */
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'NONE')]
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     public $id;
 
     public static function loadMetadata(ClassMetadata $metadata): void
@@ -1455,7 +1478,9 @@ class SingleTableEntityIncompleteDiscriminatorColumnMappingSub2 extends SingleTa
 class ReservedWordInTableColumn
 {
     /** @var int */
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'NONE')]
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     public $id;
 
     /** @var string|null */

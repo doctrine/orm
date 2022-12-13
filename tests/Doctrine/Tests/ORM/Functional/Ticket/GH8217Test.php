@@ -20,6 +20,7 @@ final class GH8217Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->setUpEntitySchema(
             [
                 GH8217Collection::class,

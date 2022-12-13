@@ -11,11 +11,14 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-#[Entity, Table(name: 'updatable_column')]
+#[Entity]
+#[Table(name: 'updatable_column')]
 class Updatable
 {
     /** @var int */
-    #[Id, GeneratedValue, Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /** @var string */

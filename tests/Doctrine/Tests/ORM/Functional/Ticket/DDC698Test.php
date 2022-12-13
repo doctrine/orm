@@ -23,6 +23,7 @@ class DDC698Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(DDC698Role::class, DDC698Privilege::class);
     }
 
@@ -59,8 +60,6 @@ class DDC698Role
     /** @var string */
     #[Column(name: 'shortName', type: 'string', length: 45)]
     protected $shortName;
-
-
 
     /** @var Collection<int, DDC698Privilege> */
     #[JoinTable(name: 'RolePrivileges')]

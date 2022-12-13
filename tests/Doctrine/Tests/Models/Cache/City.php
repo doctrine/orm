@@ -9,11 +9,15 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-#[ORM\Entity, ORM\Table(name: 'cache_city'), ORM\Cache]
+#[ORM\Entity]
+#[ORM\Table(name: 'cache_city')]
+#[ORM\Cache]
 class City
 {
     /** @var int */
-    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     protected $id;
 
     /** @var Collection<int, Travel> */
@@ -21,13 +25,18 @@ class City
     public $travels;
 
     /** @psalm-var Collection<int, Attraction> */
-    #[ORM\Cache, ORM\OrderBy(['name' => 'ASC'])]
+    #[ORM\Cache]
+    #[ORM\OrderBy(['name' => 'ASC'])]
     #[ORM\OneToMany(targetEntity: 'Attraction', mappedBy: 'city')]
     public $attractions;
 
     public function __construct(
-        #[ORM\Column(unique: true)] protected string $name,
-        #[ORM\Cache] #[ORM\ManyToOne(targetEntity: 'State', inversedBy: 'cities')] #[ORM\JoinColumn(name: 'state_id', referencedColumnName: 'id')] protected State|null $state = null,
+        #[ORM\Column(unique: true)]
+        protected string $name,
+        #[ORM\Cache]
+        #[ORM\ManyToOne(targetEntity: 'State', inversedBy: 'cities')]
+        #[ORM\JoinColumn(name: 'state_id', referencedColumnName: 'id')]
+        protected State|null $state = null,
     ) {
         $this->travels     = new ArrayCollection();
         $this->attractions = new ArrayCollection();

@@ -20,6 +20,7 @@ class DDC512Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC512Customer::class,
             DDC512OfferItem::class,

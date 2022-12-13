@@ -56,14 +56,16 @@ class AttributeDriverTest extends MappingDriverTestCase
 #[ORM\Index(name: 'bar', columns: ['id'])]
 class AttributeEntityWithoutOriginalParents
 {
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue]
     /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     public $id;
 
+    /** @var AttributeEntityWithoutOriginalParents[] */
     #[ORM\ManyToMany(targetEntity: self::class)]
     #[ORM\JoinColumn(name: 'assoz_id', referencedColumnName: 'assoz_id')]
     #[ORM\InverseJoinColumn(name: 'assoz_id', referencedColumnName: 'assoz_id')]
-    /** @var AttributeEntityWithoutOriginalParents[] */
     public $assoc;
 }
 

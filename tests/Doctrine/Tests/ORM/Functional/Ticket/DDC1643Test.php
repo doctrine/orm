@@ -18,6 +18,7 @@ class DDC1643Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
 
         $user1           = new CmsUser();

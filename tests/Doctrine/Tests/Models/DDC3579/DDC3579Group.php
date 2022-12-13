@@ -15,7 +15,9 @@ use Doctrine\ORM\Mapping\ManyToMany;
 #[Entity]
 class DDC3579Group
 {
-    #[Id, GeneratedValue, Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     #[GeneratedValue]
     private int $id;
 
@@ -24,7 +26,8 @@ class DDC3579Group
     private $admins;
 
     public function __construct(
-        #[Column] private string|null $name = null,
+        #[Column]
+        private string|null $name = null,
     ) {
         $this->admins = new ArrayCollection();
     }

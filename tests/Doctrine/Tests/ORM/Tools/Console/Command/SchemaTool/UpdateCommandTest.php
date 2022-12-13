@@ -9,7 +9,7 @@ use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
 
 use function method_exists;
 
-class UpdateCommandTest extends AbstractCommandTest
+class UpdateCommandTest extends CommandTestCase
 {
     /** @doesNotPerformAssertions */
     public function testItPrintsTheSql(): void

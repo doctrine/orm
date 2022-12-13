@@ -19,7 +19,9 @@ class ManyToManyEventTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
+
         $this->listener = new PostUpdateListener();
         $evm            = $this->_em->getEventManager();
         $evm->addEventListener(Events::postUpdate, $this->listener);

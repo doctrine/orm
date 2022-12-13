@@ -34,7 +34,9 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
     protected function setUp(): void
     {
         $this->useModelSet('ecommerce');
+
         parent::setUp();
+
         $this->firstProduct = new ECommerceProduct();
         $this->firstProduct->setName('Doctrine 1.x Manual');
         $this->secondProduct = new ECommerceProduct();

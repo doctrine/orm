@@ -17,6 +17,7 @@ class MappedSuperclassTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('directorytree');
+
         parent::setUp();
     }
 

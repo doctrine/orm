@@ -370,8 +370,10 @@ class DDC93Person
 
     public function __construct(
         /** @var string|null */
-        #[Column(type: 'string', length: 255)] public $name = null,
-        #[Embedded(class: 'DDC93Address')] public DDC93Address|null $address = null,
+        #[Column(type: 'string', length: 255)]
+        public $name = null,
+        #[Embedded(class: 'DDC93Address')]
+        public DDC93Address|null $address = null,
     ) {
         $this->timestamps = new DDC93Timestamps(new DateTime());
     }
@@ -381,7 +383,8 @@ class DDC93Person
 class DDC93Timestamps
 {
     public function __construct(
-        #[Column(type: 'datetime')] public DateTime $createdAt,
+        #[Column(type: 'datetime')]
+        public DateTime $createdAt,
     ) {
     }
 }
@@ -399,7 +402,8 @@ abstract class DDC93Vehicle
     public $id;
 
     public function __construct(
-        #[Embedded(class: 'DDC93Address')] public DDC93Address $address,
+        #[Embedded(class: 'DDC93Address')]
+        public DDC93Address $address,
     ) {
     }
 }
@@ -413,7 +417,8 @@ class DDC93Car extends DDC93Vehicle
 class DDC93Country
 {
     public function __construct(
-        #[Column(type: 'string', nullable: true)] public string|null $name = null,
+        #[Column(type: 'string', nullable: true)]
+        public string|null $name = null,
     ) {
     }
 }
@@ -469,8 +474,10 @@ class DDC93ContactInfo
 class DDC3028PersonWithPrefix
 {
     public function __construct(
-        #[Embedded(class: 'DDC3028Id', columnPrefix: 'foobar_')] public DDC3028Id|null $id = null,
-        #[Embedded(class: 'DDC3028NestedEmbeddable', columnPrefix: 'bloo_')] public DDC3028NestedEmbeddable|null $nested = null,
+        #[Embedded(class: 'DDC3028Id', columnPrefix: 'foobar_')]
+        public DDC3028Id|null $id = null,
+        #[Embedded(class: 'DDC3028NestedEmbeddable', columnPrefix: 'bloo_')]
+        public DDC3028NestedEmbeddable|null $nested = null,
     ) {
     }
 }
@@ -479,8 +486,10 @@ class DDC3028PersonWithPrefix
 class DDC3028PersonEmptyPrefix
 {
     public function __construct(
-        #[Embedded(class: 'DDC3028Id', columnPrefix: '')] public DDC3028Id|null $id = null,
-        #[Embedded(class: 'DDC3028NestedEmbeddable', columnPrefix: '')] public DDC3028NestedEmbeddable|null $nested = null,
+        #[Embedded(class: 'DDC3028Id', columnPrefix: '')]
+        public DDC3028Id|null $id = null,
+        #[Embedded(class: 'DDC3028NestedEmbeddable', columnPrefix: '')]
+        public DDC3028NestedEmbeddable|null $nested = null,
     ) {
     }
 }
@@ -489,7 +498,8 @@ class DDC3028PersonEmptyPrefix
 class DDC3028PersonPrefixFalse
 {
     public function __construct(
-        #[Embedded(class: 'DDC3028Id', columnPrefix: false)] public DDC3028Id|null $id = null,
+        #[Embedded(class: 'DDC3028Id', columnPrefix: false)]
+        public DDC3028Id|null $id = null,
     ) {
     }
 }
@@ -498,7 +508,9 @@ class DDC3028PersonPrefixFalse
 class DDC3028Id
 {
     public function __construct(
-        #[Id] #[Column(type: 'string', length: 255)] public string|null $id = null,
+        #[Id]
+        #[Column(type: 'string', length: 255)]
+        public string|null $id = null,
     ) {
     }
 }
@@ -507,9 +519,12 @@ class DDC3028Id
 class DDC3028NestedEmbeddable
 {
     public function __construct(
-        #[Embedded(class: 'DDC3028Id', columnPrefix: 'foo_')] public DDC3028Id|null $nestedWithPrefix = null,
-        #[Embedded(class: 'DDC3028Id', columnPrefix: '')] public DDC3028Id|null $nestedWithEmptyPrefix = null,
-        #[Embedded(class: 'DDC3028Id', columnPrefix: false)] public DDC3028Id|null $nestedWithPrefixFalse = null,
+        #[Embedded(class: 'DDC3028Id', columnPrefix: 'foo_')]
+        public DDC3028Id|null $nestedWithPrefix = null,
+        #[Embedded(class: 'DDC3028Id', columnPrefix: '')]
+        public DDC3028Id|null $nestedWithEmptyPrefix = null,
+        #[Embedded(class: 'DDC3028Id', columnPrefix: false)]
+        public DDC3028Id|null $nestedWithPrefixFalse = null,
     ) {
     }
 }
