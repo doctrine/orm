@@ -1417,6 +1417,7 @@
     <ArgumentTypeCoercion occurrences="3">
       <code>$classMetadata</code>
       <code>$classMetadata</code>
+      <code>$classMetadata</code>
     </ArgumentTypeCoercion>
     <InvalidArgument occurrences="3">
       <code>$classMetadata-&gt;getReflectionProperties()</code>
@@ -1430,8 +1431,10 @@
     </NoInterfaceProperties>
     <PossiblyNullPropertyFetch occurrences="2">
       <code>$property-&gt;name</code>
+      <code>$property-&gt;name</code>
     </PossiblyNullPropertyFetch>
     <PossiblyNullReference occurrences="2">
+      <code>setAccessible</code>
       <code>setAccessible</code>
     </PossiblyNullReference>
     <UndefinedInterfaceMethod occurrences="1">
@@ -1595,11 +1598,8 @@
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/IdentityFunction.php">
     <PossiblyInvalidPropertyAssignmentValue occurrences="1">
-      <code>$parser-&gt;getLexer()-&gt;token['value']</code>
+      <code>$token['value']</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PossiblyNullArrayAccess occurrences="1">
-      <code>$parser-&gt;getLexer()-&gt;token['value']</code>
-    </PossiblyNullArrayAccess>
     <PossiblyUndefinedArrayOffset occurrences="1">
       <code>$assoc['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
@@ -1658,10 +1658,6 @@
     <PossiblyInvalidPropertyAssignmentValue occurrences="1">
       <code>$lexer-&gt;token['value']</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PossiblyNullArrayAccess occurrences="2">
-      <code>$lexer-&gt;lookahead['value']</code>
-      <code>$lexer-&gt;token['value']</code>
-    </PossiblyNullArrayAccess>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/UpperFunction.php">
     <ArgumentTypeCoercion occurrences="1">
@@ -2073,16 +2069,8 @@
       <code>$function</code>
       <code>$function</code>
     </LessSpecificReturnStatement>
-    <NullableReturnStatement occurrences="9">
-      <code>$aliasIdentVariable</code>
-      <code>$factors[0]</code>
-      <code>$identVariable</code>
-      <code>$resultVariable</code>
-      <code>$resultVariable</code>
+    <NullableReturnStatement occurrences="1">
       <code>$statement</code>
-      <code>$terms[0]</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
     </NullableReturnStatement>
     <PossiblyFalseArgument occurrences="1">
       <code>strrpos($fromClassName, '\\')</code>
@@ -2121,85 +2109,13 @@
       <code>$this-&gt;SimpleArithmeticExpression()</code>
       <code>$value</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PossiblyNullArgument occurrences="5">
-      <code>$aliasIdentVariable</code>
+    <PossiblyNullArgument occurrences="3">
       <code>$dql</code>
-      <code>$resultVariable</code>
       <code>$this-&gt;query-&gt;getDQL()</code>
       <code>$token['value']</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess occurrences="72">
-      <code>$glimpse['type']</code>
-      <code>$glimpse['value']</code>
-      <code>$lookahead['type']</code>
-      <code>$lookahead['type']</code>
-      <code>$next['type']</code>
-      <code>$peek['type']</code>
-      <code>$peek['type']</code>
-      <code>$peek['type']</code>
-      <code>$peek['type']</code>
-      <code>$peek['type']</code>
-      <code>$peek['type']</code>
-      <code>$peek['type']</code>
-      <code>$peek['type']</code>
-      <code>$peek['type']</code>
-      <code>$peek['type']</code>
-      <code>$peek['value']</code>
-      <code>$peek['value']</code>
+    <PossiblyNullArrayAccess occurrences="3">
       <code>$this-&gt;lexer-&gt;glimpse()['type']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['type']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['type']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['type']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['type']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['type']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['type']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['type']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['type']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['type']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['type']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['type']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['type']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['type']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$token['type']</code>
-      <code>$token['type']</code>
-      <code>$token['type']</code>
-      <code>$token['type']</code>
-      <code>$token['type']</code>
-      <code>$token['value']</code>
-      <code>$token['value']</code>
       <code>$token['value']</code>
       <code>$token['value']</code>
     </PossiblyNullArrayAccess>
@@ -2967,7 +2883,7 @@
       <code>$class-&gt;reflFields</code>
       <code>$targetClass-&gt;reflFields</code>
     </PossiblyNullArrayOffset>
-    <PossiblyNullReference occurrences="33">
+    <PossiblyNullReference occurrences="31">
       <code>buildCachedCollectionPersister</code>
       <code>buildCachedEntityPersister</code>
       <code>getCacheFactory</code>
@@ -2984,8 +2900,6 @@
       <code>getValue</code>
       <code>getValue</code>
       <code>getValue</code>
-      <code>setValue</code>
-      <code>setValue</code>
       <code>setValue</code>
       <code>setValue</code>
       <code>setValue</code>
