@@ -15,6 +15,7 @@ class DDC3597Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC3597Root::class,
             DDC3597Media::class,

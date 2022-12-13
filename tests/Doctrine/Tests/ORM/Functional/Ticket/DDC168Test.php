@@ -18,6 +18,7 @@ class DDC168Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('company');
+
         parent::setUp();
 
         $this->oldMetadata = $this->_em->getClassMetadata(CompanyEmployee::class);
@@ -30,6 +31,7 @@ class DDC168Test extends OrmFunctionalTestCase
     public function tearDown(): void
     {
         $this->_em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $this->oldMetadata);
+
         parent::tearDown();
     }
 

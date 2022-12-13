@@ -19,6 +19,7 @@ class DDC2790Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 

@@ -23,7 +23,9 @@ class DDC5934BaseContract
      * @Column(name="id", type="integer")
      * @GeneratedValue()
      */
-    #[Id, Column, GeneratedValue]
+    #[Id]
+    #[Column]
+    #[GeneratedValue]
     public $id;
 
     /**

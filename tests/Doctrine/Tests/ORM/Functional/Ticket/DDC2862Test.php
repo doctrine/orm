@@ -22,6 +22,7 @@ class DDC2862Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->enableSecondLevelCache();
+
         parent::setUp();
 
         $this->createSchemaForModels(DDC2862User::class, DDC2862Driver::class);

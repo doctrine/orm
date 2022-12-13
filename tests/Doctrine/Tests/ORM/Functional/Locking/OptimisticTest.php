@@ -30,6 +30,7 @@ class OptimisticTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->_conn = $this->_em->getConnection();
     }
 

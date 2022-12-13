@@ -16,6 +16,7 @@ class EntityListenerResolverTest extends OrmTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->resolver = new DefaultEntityListenerResolver();
     }
 

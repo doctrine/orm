@@ -22,6 +22,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('vct_onetoone_compositeid_foreignkey');
+
         parent::setUp();
 
         $auxiliary      = new Entity\AuxiliaryEntity();

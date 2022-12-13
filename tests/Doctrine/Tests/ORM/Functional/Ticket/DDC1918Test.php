@@ -17,6 +17,7 @@ class DDC1918Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 

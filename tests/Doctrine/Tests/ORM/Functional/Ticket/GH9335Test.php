@@ -115,7 +115,6 @@ class GH9335Book
      */
     private $title;
 
-
     /**
      * @OneToOne(targetEntity="GH9335Author", mappedBy="book", cascade={"persist", "remove"})
      * @var GH9335Author

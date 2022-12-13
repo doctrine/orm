@@ -22,6 +22,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('vct_manytomany_extralazy');
+
         parent::setUp();
 
         $inversed1      = new Entity\InversedManyToManyExtraLazyEntity();

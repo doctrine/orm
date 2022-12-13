@@ -24,7 +24,9 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('ecommerce');
+
         parent::setUp();
+
         $this->customer = new ECommerceCustomer();
         $this->customer->setName('John Doe');
         $this->cart = new ECommerceCart();

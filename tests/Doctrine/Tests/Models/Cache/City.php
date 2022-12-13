@@ -25,7 +25,9 @@ use Doctrine\ORM\Mapping\Table;
  * @Entity
  * @Table("cache_city")
  */
-#[ORM\Entity, ORM\Table(name: 'cache_city'), ORM\Cache]
+#[ORM\Entity]
+#[ORM\Table(name: 'cache_city')]
+#[ORM\Cache]
 class City
 {
     /**
@@ -34,7 +36,9 @@ class City
      * @GeneratedValue
      * @Column(type="integer")
      */
-    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     protected $id;
 
     /**
@@ -68,7 +72,8 @@ class City
      * @OrderBy({"name" = "ASC"})
      * @OneToMany(targetEntity="Attraction", mappedBy="city")
      */
-    #[ORM\Cache, ORM\OrderBy(['name' => 'ASC'])]
+    #[ORM\Cache]
+    #[ORM\OrderBy(['name' => 'ASC'])]
     #[ORM\OneToMany(targetEntity: 'Attraction', mappedBy: 'city')]
     public $attractions;
 

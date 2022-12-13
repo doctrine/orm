@@ -18,6 +18,7 @@ class DDC1654Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->setUpEntitySchema(
             [
                 DDC1654Post::class,

@@ -20,6 +20,7 @@ final class GH7735Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->enableSecondLevelCache();
+
         parent::setUp();
 
         $this->createSchemaForModels(

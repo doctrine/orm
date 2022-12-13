@@ -20,6 +20,7 @@ class EntityListenersTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('company');
+
         parent::setUp();
 
         $this->listener = $this->_em->getConfiguration()

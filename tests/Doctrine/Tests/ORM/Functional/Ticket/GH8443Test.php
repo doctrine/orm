@@ -26,7 +26,9 @@ final class GH8443Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('company');
+
         parent::setUp();
+
         $this->createSchemaForModels(GH8443Foo::class);
     }
 

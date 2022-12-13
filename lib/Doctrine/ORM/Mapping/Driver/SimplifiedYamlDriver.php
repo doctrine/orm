@@ -21,6 +21,7 @@ class SimplifiedYamlDriver extends YamlDriver
     public function __construct($prefixes, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
         $locator = new SymfonyFileLocator((array) $prefixes, $fileExtension);
+
         parent::__construct($locator, $fileExtension);
     }
 }
