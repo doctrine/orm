@@ -775,6 +775,9 @@ class SqlWalker implements TreeWalker
 
                 $this->rsm->setDiscriminatorColumn($dqlAlias, $columnAlias);
                 $this->rsm->addMetaResult($dqlAlias, $columnAlias, $discrColumn['fieldName'], false, $discrColumn['type']);
+                if (! empty($discrColumn['enumType'])) {
+                    $this->rsm->addEnumResult($columnAlias, $discrColumn['enumType']);
+                }
             }
 
             // Add foreign key columns to SQL, if necessary

@@ -785,7 +785,7 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php">
-    <InvalidArgument occurrences="1"/>
+    <InvalidArgument occurrences="2"/>
     <InvalidArrayAccess occurrences="4">
       <code>$value[0]</code>
       <code>$value[0]</code>
@@ -865,7 +865,7 @@
       <code>addNamedNativeQuery</code>
       <code>addNamedQuery</code>
     </DeprecatedMethod>
-    <InvalidArgument occurrences="4">
+    <InvalidArgument occurrences="5">
       <code>$this-&gt;cacheToArray($manyToManyElement-&gt;cache)</code>
       <code>$this-&gt;cacheToArray($manyToOneElement-&gt;cache)</code>
       <code>$this-&gt;cacheToArray($oneToManyElement-&gt;cache)</code>
@@ -931,6 +931,7 @@
       <code>addNamedNativeQuery</code>
       <code>addNamedQuery</code>
     </DeprecatedMethod>
+    <InvalidArgument occurrences="1"/>
     <InvalidDocblock occurrences="1">
       <code>private function cacheToArray(array $cacheMapping): array</code>
     </InvalidDocblock>
