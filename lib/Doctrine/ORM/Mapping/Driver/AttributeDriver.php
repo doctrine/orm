@@ -207,14 +207,15 @@ class AttributeDriver implements MappingDriver
                 // Evaluate DiscriminatorColumn attribute
                 if (isset($classAttributes[Mapping\DiscriminatorColumn::class])) {
                     $discrColumnAttribute = $classAttributes[Mapping\DiscriminatorColumn::class];
+                    assert($discrColumnAttribute instanceof Mapping\DiscriminatorColumn);
 
                     $metadata->setDiscriminatorColumn(
                         [
-                            'name'             => isset($discrColumnAttribute->name) ? (string) $discrColumnAttribute->name : null,
-                            'type'             => isset($discrColumnAttribute->type) ? (string) $discrColumnAttribute->type : 'string',
-                            'length'           => isset($discrColumnAttribute->length) ? (int) $discrColumnAttribute->length : 255,
-                            'columnDefinition' => isset($discrColumnAttribute->columnDefinition) ? (string) $discrColumnAttribute->columnDefinition : null,
-                            'enumType'         => isset($discrColumnAttribute->enumType) ? (string) $discrColumnAttribute->enumType : null,
+                            'name'             => $discrColumnAttribute->name,
+                            'type'             => $discrColumnAttribute->type ?? 'string',
+                            'length'           => $discrColumnAttribute->length ?? 255,
+                            'columnDefinition' => $discrColumnAttribute->columnDefinition,
+                            'enumType'         => $discrColumnAttribute->enumType,
                         ],
                     );
                 } else {

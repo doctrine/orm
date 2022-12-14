@@ -502,7 +502,7 @@
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php">
-    <InvalidArgument occurrences="2"/>
+    <InvalidArgument occurrences="1"/>
     <InvalidArrayAccess occurrences="4">
       <code>$value[0]</code>
       <code>$value[0]</code>
