@@ -12,10 +12,13 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
@@ -46,6 +49,7 @@ use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
 use Doctrine\Tests\Models\Enums\Card;
 use Doctrine\Tests\Models\Enums\Suit;
+use Doctrine\Tests\Models\GH10288\GH10288People;
 use Doctrine\Tests\Models\TypedProperties\Contact;
 use Doctrine\Tests\Models\TypedProperties\UserTyped;
 use Doctrine\Tests\Models\Upsertable\Insertable;
@@ -423,7 +427,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         $class = $this->createClassMetadata(Animal::class);
 
         self::assertEquals(
-            ['name' => 'discr', 'type' => 'string', 'length' => '32', 'fieldName' => 'discr', 'columnDefinition' => null],
+            ['name' => 'discr', 'type' => 'string', 'length' => 32, 'fieldName' => 'discr', 'columnDefinition' => null, 'enumType' => null],
             $class->discriminatorColumn,
         );
     }
@@ -528,6 +532,18 @@ abstract class MappingDriverTestCase extends OrmTestCase
 
         self::assertEquals("ENUM('ONE','TWO')", $class->discriminatorColumn['columnDefinition']);
         self::assertEquals('dtype', $class->discriminatorColumn['name']);
+    }
+
+    /** @group GH10288 */
+    public function testDiscriminatorColumnEnumTypeDefinition(): void
+    {
+        $class = $this->createClassMetadata(GH10288EnumTypePerson::class);
+
+        self::assertArrayHasKey('enumType', $class->discriminatorColumn);
+        self::assertArrayHasKey('name', $class->discriminatorColumn);
+
+        self::assertEquals(GH10288People::class, $class->discriminatorColumn['enumType']);
+        self::assertEquals('discr', $class->discriminatorColumn['name']);
     }
 
     /** @group DDC-889 */
@@ -1511,5 +1527,41 @@ class UserIncorrectAttributes extends User
 }
 
 class UserMissingAttributes extends User
+{
+}
+
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'discr', enumType: GH10288People::class)]
+#[DiscriminatorMap(['boss' => GH10288EnumTypeBoss::class])]
+abstract class GH10288EnumTypePerson
+{
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    public int|null $id = null;
+
+    public static function loadMetadata(ClassMetadata $metadata): void
+    {
+        $metadata->mapField(
+            [
+                'id'                 => true,
+                'fieldName'          => 'id',
+            ],
+        );
+
+        $metadata->setDiscriminatorColumn(
+            [
+                'name'     => 'discr',
+                'enumType' =>  GH10288People::class,
+            ],
+        );
+
+        $metadata->setIdGeneratorType(ORM\ClassMetadataInfo::GENERATOR_TYPE_NONE);
+    }
+}
+
+#[Entity]
+class GH10288EnumTypeBoss extends GH10288EnumTypePerson
 {
 }

@@ -470,6 +470,7 @@ abstract class AbstractHydrator
                     'fieldName'    => $fieldName,
                     'type'         => $type,
                     'dqlAlias'     => $dqlAlias,
+                    'enumType'     => $this->_rsm->enumMappings[$key] ?? null,
                 ];
         }
 

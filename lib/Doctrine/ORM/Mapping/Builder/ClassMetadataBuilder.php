@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
+use BackedEnum;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
@@ -166,15 +167,19 @@ class ClassMetadataBuilder
     /**
      * Sets the discriminator column details.
      *
+     * @psalm-param class-string<BackedEnum>|null $enumType
+     *
      * @return $this
      */
-    public function setDiscriminatorColumn(string $name, string $type = 'string', int $length = 255): static
+    public function setDiscriminatorColumn(string $name, string $type = 'string', int $length = 255, string|null $columnDefinition = null, string|null $enumType = null): static
     {
         $this->cm->setDiscriminatorColumn(
             [
                 'name' => $name,
                 'type' => $type,
                 'length' => $length,
+                'columnDefinition' => $columnDefinition,
+                'enumType' => $enumType,
             ],
         );
 

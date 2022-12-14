@@ -14,6 +14,7 @@ final class DiscriminatorColumn implements MappingAttribute
         public readonly string|null $type = null,
         public readonly int|null $length = null,
         public readonly string|null $columnDefinition = null,
+        public readonly string|null $enumType = null,
     ) {
     }
 }

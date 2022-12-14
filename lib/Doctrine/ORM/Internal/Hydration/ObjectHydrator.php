@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use BackedEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
@@ -236,7 +237,12 @@ class ObjectHydrator extends AbstractHydrator
             }
 
             $discrMap           = $this->_metadataCache[$className]->discriminatorMap;
-            $discriminatorValue = (string) $data[$discrColumn];
+            $discriminatorValue = $data[$discrColumn];
+            if ($discriminatorValue instanceof BackedEnum) {
+                $discriminatorValue = $discriminatorValue->value;
+            }
+
+            $discriminatorValue = (string) $discriminatorValue;
 
             if (! isset($discrMap[$discriminatorValue])) {
                 throw HydrationException::invalidDiscriminatorValue($discriminatorValue, array_keys($discrMap));

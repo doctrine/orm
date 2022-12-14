@@ -89,7 +89,7 @@ The API of the ClassMetadataBuilder has the following methods with a fluent inte
 -   ``addUniqueConstraint(array $columns, $constraintName)``
 -   ``setJoinedTableInheritance()``
 -   ``setSingleTableInheritance()``
--   ``setDiscriminatorColumn($name, $type = 'string', $length = 255)``
+-   ``setDiscriminatorColumn($name, $type = 'string', $length = 255, $columnDefinition = null, $enumType = null)``
 -   ``addDiscriminatorMapClass($name, $class)``
 -   ``setChangeTrackingPolicyDeferredExplicit()``
 -   ``setChangeTrackingPolicyNotify()``
