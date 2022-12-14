@@ -1597,9 +1597,6 @@
     </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/IdentityFunction.php">
-    <PossiblyInvalidPropertyAssignmentValue occurrences="1">
-      <code>$token['value']</code>
-    </PossiblyInvalidPropertyAssignmentValue>
     <PossiblyUndefinedArrayOffset occurrences="1">
       <code>$assoc['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
@@ -1647,16 +1644,6 @@
     <PossiblyInvalidPropertyAssignmentValue occurrences="2">
       <code>$parser-&gt;SimpleArithmeticExpression()</code>
       <code>$parser-&gt;SimpleArithmeticExpression()</code>
-    </PossiblyInvalidPropertyAssignmentValue>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/TrimFunction.php">
-    <PossiblyInvalidArgument occurrences="3">
-      <code>$value</code>
-      <code>$value</code>
-      <code>$value</code>
-    </PossiblyInvalidArgument>
-    <PossiblyInvalidPropertyAssignmentValue occurrences="1">
-      <code>$lexer-&gt;token['value']</code>
     </PossiblyInvalidPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/UpperFunction.php">
@@ -2020,22 +2007,15 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$stringPattern</code>
     </ArgumentTypeCoercion>
-    <InvalidArgument occurrences="1">
-      <code>$lookaheadType</code>
-    </InvalidArgument>
     <InvalidNullableReturnType occurrences="1">
       <code>AST\SelectStatement|AST\UpdateStatement|AST\DeleteStatement</code>
     </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue occurrences="1">
       <code>$this-&gt;queryComponents</code>
     </InvalidPropertyAssignmentValue>
-    <InvalidReturnStatement occurrences="17">
-      <code>$aliasIdentVariable</code>
+    <InvalidReturnStatement occurrences="11">
       <code>$factors[0]</code>
-      <code>$identVariable</code>
       <code>$primary</code>
-      <code>$resultVariable</code>
-      <code>$resultVariable</code>
       <code>$terms[0]</code>
       <code>$this-&gt;CollectionMemberExpression()</code>
       <code>$this-&gt;ComparisonExpression()</code>
@@ -2045,19 +2025,12 @@
       <code>$this-&gt;InstanceOfExpression()</code>
       <code>$this-&gt;LikeExpression()</code>
       <code>$this-&gt;NullComparisonExpression()</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
     </InvalidReturnStatement>
-    <InvalidReturnType occurrences="9">
+    <InvalidReturnType occurrences="4">
       <code>AST\ArithmeticFactor</code>
       <code>AST\ArithmeticTerm</code>
       <code>AST\BetweenExpression|</code>
       <code>AST\SimpleArithmeticExpression|AST\ArithmeticTerm</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
     </InvalidReturnType>
     <InvalidStringClass occurrences="3">
       <code>new $functionClass($functionName)</code>
@@ -2075,58 +2048,44 @@
     <PossiblyFalseArgument occurrences="1">
       <code>strrpos($fromClassName, '\\')</code>
     </PossiblyFalseArgument>
-    <PossiblyInvalidArgument occurrences="26">
+    <PossiblyInvalidArgument occurrences="9">
       <code>$AST</code>
       <code>$conditionalExpression</code>
       <code>$expr</code>
-      <code>$field</code>
-      <code>$field</code>
-      <code>$functionName</code>
-      <code>$functionName</code>
-      <code>$functionName</code>
       <code>$pathExp</code>
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
       <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
       <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$token['value']</code>
-      <code>$token['value']</code>
     </PossiblyInvalidArgument>
-    <PossiblyInvalidPropertyAssignmentValue occurrences="4">
+    <PossiblyInvalidPropertyAssignmentValue occurrences="3">
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;SimpleArithmeticExpression()</code>
-      <code>$value</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PossiblyNullArgument occurrences="3">
+    <PossiblyNullArgument occurrences="2">
       <code>$dql</code>
       <code>$this-&gt;query-&gt;getDQL()</code>
-      <code>$token['value']</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess occurrences="3">
+    <PossiblyNullArrayAccess occurrences="2">
       <code>$this-&gt;lexer-&gt;glimpse()['type']</code>
       <code>$token['value']</code>
-      <code>$token['value']</code>
     </PossiblyNullArrayAccess>
-    <PossiblyNullReference occurrences="1">
+    <PossiblyNullReference occurrences="3">
+      <code>$this-&gt;lexer-&gt;glimpse()</code>
+      <code>$token</code>
       <code>getNumberOfRequiredParameters</code>
     </PossiblyNullReference>
     <PossiblyUndefinedVariable occurrences="1">
       <code>$args</code>
     </PossiblyUndefinedVariable>
-    <RedundantConditionGivenDocblockType occurrences="1">
+    <RedundantCondition occurrences="1">
+      <code>$this-&gt;lexer-&gt;lookahead !== null</code>
+    </RedundantCondition>
+    <RedundantConditionGivenDocblockType occurrences="2">
       <code>$AST instanceof AST\SelectStatement</code>
+      <code>$token === Lexer::T_IDENTIFIER</code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/ParserResult.php">
@@ -2226,11 +2185,8 @@
     <MoreSpecificImplementedParamType occurrences="1">
       <code>$query</code>
     </MoreSpecificImplementedParamType>
-    <PossiblyInvalidArgument occurrences="5">
+    <PossiblyInvalidArgument occurrences="2">
       <code>$aggExpression-&gt;pathExpression</code>
-      <code>$this-&gt;queryComponents[$expr]['token']['value']</code>
-      <code>$this-&gt;queryComponents[$factor]['token']['value']</code>
-      <code>$this-&gt;queryComponents[$term]['token']['value']</code>
       <code>$whereClause-&gt;conditionalExpression</code>
     </PossiblyInvalidArgument>
     <PossiblyNullArgument occurrences="8">
