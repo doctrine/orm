@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\Common\Lexer\AbstractLexer;
+use Doctrine\Common\Lexer\Token;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -34,7 +34,7 @@ use function substr;
  * An LL(*) recursive-descent parser for the context-free grammar of the Doctrine Query Language.
  * Parses a DQL query, reports any errors in it, and generates an AST.
  *
- * @psalm-import-type Token from AbstractLexer
+ * @psalm-type DqlToken = Token<Lexer::T_*, string>
  * @psalm-type QueryComponent = array{
  *                 metadata?: ClassMetadata<object>,
  *                 parent?: string|null,
@@ -42,7 +42,7 @@ use function substr;
  *                 map?: string|null,
  *                 resultVariable?: AST\Node|string,
  *                 nestingLevel: int,
- *                 token: Token,
+ *                 token: DqlToken,
  *             }
  */
 class Parser
@@ -100,19 +100,19 @@ class Parser
      * and still need to be validated.
      */
 
-    /** @psalm-var list<array{token: Token|null, expression: mixed, nestingLevel: int}> */
+    /** @psalm-var list<array{token: DqlToken|null, expression: mixed, nestingLevel: int}> */
     private $deferredIdentificationVariables = [];
 
-    /** @psalm-var list<array{token: Token|null, expression: AST\PartialObjectExpression, nestingLevel: int}> */
+    /** @psalm-var list<array{token: DqlToken|null, expression: AST\PartialObjectExpression, nestingLevel: int}> */
     private $deferredPartialObjectExpressions = [];
 
-    /** @psalm-var list<array{token: Token|null, expression: AST\PathExpression, nestingLevel: int}> */
+    /** @psalm-var list<array{token: DqlToken|null, expression: AST\PathExpression, nestingLevel: int}> */
     private $deferredPathExpressions = [];
 
-    /** @psalm-var list<array{token: Token|null, expression: mixed, nestingLevel: int}> */
+    /** @psalm-var list<array{token: DqlToken|null, expression: mixed, nestingLevel: int}> */
     private $deferredResultVariables = [];
 
-    /** @psalm-var list<array{token: Token|null, expression: AST\NewObjectExpression, nestingLevel: int}> */
+    /** @psalm-var list<array{token: DqlToken|null, expression: AST\NewObjectExpression, nestingLevel: int}> */
     private $deferredNewObjectExpressions = [];
 
     /**
@@ -288,7 +288,7 @@ class Parser
      * If they match, updates the lookahead token; otherwise raises a syntax
      * error.
      *
-     * @param int $token The token type.
+     * @param Lexer::T_* $token The token type.
      *
      * @return void
      *
@@ -434,7 +434,7 @@ class Parser
      *
      * @param string       $expected Expected string.
      * @param mixed[]|null $token    Got token.
-     * @psalm-param Token|null $token
+     * @psalm-param DqlToken|null $token
      *
      * @return void
      * @psalm-return no-return
@@ -461,7 +461,7 @@ class Parser
      *
      * @param string       $message Optional message.
      * @param mixed[]|null $token   Optional token.
-     * @psalm-param Token|null $token
+     * @psalm-param DqlToken|null $token
      *
      * @return void
      * @psalm-return no-return
@@ -499,9 +499,9 @@ class Parser
      * @param bool $resetPeek Reset peek after finding the closing parenthesis.
      *
      * @return mixed[]
-     * @psalm-return Token|null
+     * @psalm-return DqlToken|array|null
      */
-    private function peekBeyondClosingParenthesis(bool $resetPeek = true): array|null
+    private function peekBeyondClosingParenthesis(bool $resetPeek = true): Token|array|null
     {
         $token        = $this->lexer->peek();
         $numUnmatched = 1;
@@ -533,9 +533,9 @@ class Parser
     /**
      * Checks if the given token indicates a mathematical operator.
      *
-     * @psalm-param Token|null $token
+     * @psalm-param DqlToken|array|null $token
      */
-    private function isMathOperator(array|null $token): bool
+    private function isMathOperator(Token|array|null $token): bool
     {
         return $token !== null && in_array($token['type'], [Lexer::T_PLUS, Lexer::T_MINUS, Lexer::T_DIVIDE, Lexer::T_MULTIPLY], true);
     }
@@ -1030,7 +1030,6 @@ class Parser
 
         assert($this->lexer->token !== null);
         $resultVariable = $this->lexer->token['value'];
-        assert(is_string($resultVariable));
 
         // Defer ResultVariable validation
         $this->deferredResultVariables[] = [
@@ -3590,8 +3589,7 @@ class Parser
     {
         assert($this->lexer->lookahead !== null);
         // getCustomDatetimeFunction is case-insensitive
-        $functionName = $this->lexer->lookahead['value'];
-        assert(is_string($functionName));
+        $functionName  = $this->lexer->lookahead['value'];
         $functionClass = $this->em->getConfiguration()->getCustomDatetimeFunction($functionName);
 
         assert($functionClass !== null);
@@ -3633,8 +3631,7 @@ class Parser
     {
         assert($this->lexer->lookahead !== null);
         // getCustomStringFunction is case-insensitive
-        $functionName = $this->lexer->lookahead['value'];
-        assert(is_string($functionName));
+        $functionName  = $this->lexer->lookahead['value'];
         $functionClass = $this->em->getConfiguration()->getCustomStringFunction($functionName);
 
         assert($functionClass !== null);
