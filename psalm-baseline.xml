@@ -1217,6 +1217,10 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$stringPattern</code>
     </ArgumentTypeCoercion>
+    <DocblockTypeContradiction occurrences="2">
+      <code>$this-&gt;lexer-&gt;lookahead !== null &amp;&amp; $this-&gt;lexer-&gt;lookahead-&gt;type === TokenType::T_ESCAPE</code>
+      <code>$token-&gt;type === TokenType::T_OPEN_PARENTHESIS</code>
+    </DocblockTypeContradiction>
     <InvalidNullableReturnType occurrences="1">
       <code>AST\SelectStatement|AST\UpdateStatement|AST\DeleteStatement</code>
     </InvalidNullableReturnType>
@@ -1274,28 +1278,26 @@
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;SimpleArithmeticExpression()</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PossiblyNullArgument occurrences="2">
+    <PossiblyNullArgument occurrences="3">
       <code>$dql</code>
       <code>$this-&gt;query-&gt;getDQL()</code>
+      <code>$token-&gt;value</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess occurrences="2">
-      <code>$this-&gt;lexer-&gt;glimpse()['type']</code>
-      <code>$token['value']</code>
-    </PossiblyNullArrayAccess>
-    <PossiblyNullReference occurrences="3">
-      <code>$this-&gt;lexer-&gt;glimpse()</code>
-      <code>$token</code>
+    <PossiblyNullPropertyFetch occurrences="5">
+      <code>$lookaheadType-&gt;value</code>
+      <code>$lookaheadType-&gt;value</code>
+      <code>$this-&gt;lexer-&gt;glimpse()-&gt;type</code>
+      <code>$token-&gt;value</code>
+      <code>$token-&gt;value</code>
+    </PossiblyNullPropertyFetch>
+    <PossiblyNullReference occurrences="1">
       <code>getNumberOfRequiredParameters</code>
     </PossiblyNullReference>
     <PossiblyUndefinedVariable occurrences="1">
       <code>$args</code>
     </PossiblyUndefinedVariable>
-    <RedundantCondition occurrences="1">
-      <code>$this-&gt;lexer-&gt;lookahead !== null</code>
-    </RedundantCondition>
-    <RedundantConditionGivenDocblockType occurrences="2">
+    <RedundantConditionGivenDocblockType occurrences="1">
       <code>$AST instanceof AST\SelectStatement</code>
-      <code>$token === Lexer::T_IDENTIFIER</code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/ParserResult.php">
