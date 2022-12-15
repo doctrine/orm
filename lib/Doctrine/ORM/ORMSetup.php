@@ -22,6 +22,7 @@ use Symfony\Component\Cache\Adapter\RedisAdapter;
 
 use function class_exists;
 use function extension_loaded;
+use function ini_get;
 use function md5;
 use function sprintf;
 use function sys_get_temp_dir;
@@ -181,7 +182,7 @@ final class ORMSetup
 
         $namespace = 'dc2_' . md5($proxyDir);
 
-        if (extension_loaded('apcu')) {
+        if (extension_loaded('apcu') && ini_get('apc.enabled')) {
             return new ApcuAdapter($namespace);
         }
 

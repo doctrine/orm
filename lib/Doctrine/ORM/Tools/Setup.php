@@ -31,6 +31,7 @@ use function class_exists;
 use function dirname;
 use function extension_loaded;
 use function file_exists;
+use function ini_get;
 use function md5;
 use function sys_get_temp_dir;
 
@@ -236,7 +237,7 @@ class Setup
 
         if ($isDevMode === true) {
             $cache = class_exists(ArrayCache::class) ? new ArrayCache() : new ArrayAdapter();
-        } elseif (extension_loaded('apcu')) {
+        } elseif (extension_loaded('apcu') && ini_get('apc.enabled')) {
             $cache = class_exists(ApcuCache::class) ? new ApcuCache() : new ApcuAdapter();
         } elseif (extension_loaded('memcached') && (class_exists(MemcachedCache::class) || MemcachedAdapter::isSupported())) {
             $memcached = new Memcached();
