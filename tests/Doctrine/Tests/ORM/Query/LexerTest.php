@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query\Lexer;
+use Doctrine\ORM\Query\TokenType;
 use Doctrine\Tests\OrmTestCase;
 
 class LexerTest extends OrmTestCase
@@ -34,7 +35,7 @@ class LexerTest extends OrmTestCase
         $lexer->moveNext();
         $token = $lexer->lookahead;
 
-        self::assertEquals(Lexer::T_ALL, $token['type']);
+        self::assertEquals(TokenType::T_ALL, $token['type']);
     }
 
     public function testScannerRecognizesDecimalInteger(): void
@@ -42,7 +43,7 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer('1234');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        self::assertEquals(Lexer::T_INTEGER, $token['type']);
+        self::assertEquals(TokenType::T_INTEGER, $token['type']);
         self::assertEquals(1234, $token['value']);
     }
 
@@ -51,7 +52,7 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer('1.234');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        self::assertEquals(Lexer::T_FLOAT, $token['type']);
+        self::assertEquals(TokenType::T_FLOAT, $token['type']);
         self::assertEquals(1.234, $token['value']);
     }
 
@@ -60,7 +61,7 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer('1.2e3');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        self::assertEquals(Lexer::T_FLOAT, $token['type']);
+        self::assertEquals(TokenType::T_FLOAT, $token['type']);
         self::assertEquals(1.2e3, $token['value']);
     }
 
@@ -69,7 +70,7 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer('0.2e3');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        self::assertEquals(Lexer::T_FLOAT, $token['type']);
+        self::assertEquals(TokenType::T_FLOAT, $token['type']);
         self::assertEquals(.2e3, $token['value']);
     }
 
@@ -78,7 +79,7 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer('7E-10');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        self::assertEquals(Lexer::T_FLOAT, $token['type']);
+        self::assertEquals(TokenType::T_FLOAT, $token['type']);
         self::assertEquals(7E-10, $token['value']);
     }
 
@@ -87,7 +88,7 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer('123456789.01');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        self::assertEquals(Lexer::T_FLOAT, $token['type']);
+        self::assertEquals(TokenType::T_FLOAT, $token['type']);
         self::assertEquals(1.2345678901e8, $token['value']);
     }
 
@@ -96,12 +97,12 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer('-   1.234e2');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        self::assertEquals(Lexer::T_MINUS, $token['type']);
+        self::assertEquals(TokenType::T_MINUS, $token['type']);
         self::assertEquals('-', $token['value']);
 
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        self::assertEquals(Lexer::T_FLOAT, $token['type']);
+        self::assertEquals(TokenType::T_FLOAT, $token['type']);
         self::assertNotEquals(-1.234e2, $token['value']);
         self::assertEquals(1.234e2, $token['value']);
     }
@@ -111,7 +112,7 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer("'This is a string.'");
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        self::assertEquals(Lexer::T_STRING, $token['type']);
+        self::assertEquals(TokenType::T_STRING, $token['type']);
         self::assertEquals('This is a string.', $token['value']);
     }
 
@@ -120,7 +121,7 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer("'abc''defg'''");
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        self::assertEquals(Lexer::T_STRING, $token['type']);
+        self::assertEquals(TokenType::T_STRING, $token['type']);
         self::assertEquals("abc'defg'", $token['value']);
     }
 
@@ -129,7 +130,7 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer('?1');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        self::assertEquals(Lexer::T_INPUT_PARAMETER, $token['type']);
+        self::assertEquals(TokenType::T_INPUT_PARAMETER, $token['type']);
         self::assertEquals('?1', $token['value']);
     }
 
@@ -138,7 +139,7 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer(':name');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        self::assertEquals(Lexer::T_INPUT_PARAMETER, $token['type']);
+        self::assertEquals(TokenType::T_INPUT_PARAMETER, $token['type']);
         self::assertEquals(':name', $token['value']);
     }
 
@@ -147,7 +148,7 @@ class LexerTest extends OrmTestCase
         $lexer = new Lexer(':_name');
         $lexer->moveNext();
         $token = $lexer->lookahead;
-        self::assertEquals(Lexer::T_INPUT_PARAMETER, $token['type']);
+        self::assertEquals(TokenType::T_INPUT_PARAMETER, $token['type']);
         self::assertEquals(':_name', $token['value']);
     }
 
@@ -159,57 +160,57 @@ class LexerTest extends OrmTestCase
         $tokens = [
             [
                 'value' => 'SELECT',
-                'type'  => Lexer::T_SELECT,
+                'type'  => TokenType::T_SELECT,
                 'position' => 0,
             ],
             [
                 'value' => 'u',
-                'type'  => Lexer::T_IDENTIFIER,
+                'type'  => TokenType::T_IDENTIFIER,
                 'position' => 7,
             ],
             [
                 'value' => 'FROM',
-                'type'  => Lexer::T_FROM,
+                'type'  => TokenType::T_FROM,
                 'position' => 9,
             ],
             [
                 'value' => 'My\Namespace\User',
-                'type'  => Lexer::T_FULLY_QUALIFIED_NAME,
+                'type'  => TokenType::T_FULLY_QUALIFIED_NAME,
                 'position' => 14,
             ],
             [
                 'value' => 'u',
-                'type'  => Lexer::T_IDENTIFIER,
+                'type'  => TokenType::T_IDENTIFIER,
                 'position' => 32,
             ],
             [
                 'value' => 'WHERE',
-                'type'  => Lexer::T_WHERE,
+                'type'  => TokenType::T_WHERE,
                 'position' => 34,
             ],
             [
                 'value' => 'u',
-                'type'  => Lexer::T_IDENTIFIER,
+                'type'  => TokenType::T_IDENTIFIER,
                 'position' => 40,
             ],
             [
                 'value' => '.',
-                'type'  => Lexer::T_DOT,
+                'type'  => TokenType::T_DOT,
                 'position' => 41,
             ],
             [
                 'value' => 'name',
-                'type'  => Lexer::T_IDENTIFIER,
+                'type'  => TokenType::T_IDENTIFIER,
                 'position' => 42,
             ],
             [
                 'value' => '=',
-                'type'  => Lexer::T_EQUALS,
+                'type'  => TokenType::T_EQUALS,
                 'position' => 47,
             ],
             [
                 'value' => "Jack O'Neil",
-                'type'  => Lexer::T_STRING,
+                'type'  => TokenType::T_STRING,
                 'position' => 49,
             ],
         ];
@@ -229,13 +230,13 @@ class LexerTest extends OrmTestCase
     public function provideTokens(): array
     {
         return [
-            [Lexer::T_IDENTIFIER, 'u'], // one char
-            [Lexer::T_IDENTIFIER, 'someIdentifier'],
-            [Lexer::T_IDENTIFIER, 's0m31d3nt1f13r'], // including digits
-            [Lexer::T_IDENTIFIER, 'some_identifier'], // including underscore
-            [Lexer::T_IDENTIFIER, '_some_identifier'], // starts with underscore
-            [Lexer::T_IDENTIFIER, 'comma'], // name of a token class with value < 100 (whitebox test)
-            [Lexer::T_FULLY_QUALIFIED_NAME, 'Some\Class'], // DQL class reference
+            [TokenType::T_IDENTIFIER, 'u'], // one char
+            [TokenType::T_IDENTIFIER, 'someIdentifier'],
+            [TokenType::T_IDENTIFIER, 's0m31d3nt1f13r'], // including digits
+            [TokenType::T_IDENTIFIER, 'some_identifier'], // including underscore
+            [TokenType::T_IDENTIFIER, '_some_identifier'], // starts with underscore
+            [TokenType::T_IDENTIFIER, 'comma'], // name of a token class with value < 100 (whitebox test)
+            [TokenType::T_FULLY_QUALIFIED_NAME, 'Some\Class'], // DQL class reference
         ];
     }
 }
