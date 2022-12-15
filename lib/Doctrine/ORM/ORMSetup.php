@@ -182,7 +182,7 @@ final class ORMSetup
 
         $namespace = 'dc2_' . md5($proxyDir);
 
-        if (extension_loaded('apcu') && ini_get('apc.enabled')) {
+        if (extension_loaded('apcu') && apcu_enabled()) {
             return new ApcuAdapter($namespace);
         }
 

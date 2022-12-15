@@ -237,7 +237,7 @@ class Setup
 
         if ($isDevMode === true) {
             $cache = class_exists(ArrayCache::class) ? new ArrayCache() : new ArrayAdapter();
-        } elseif (extension_loaded('apcu') && ini_get('apc.enabled')) {
+        } elseif (extension_loaded('apcu') && apcu_enabled()) {
             $cache = class_exists(ApcuCache::class) ? new ApcuCache() : new ApcuAdapter();
         } elseif (extension_loaded('memcached') && (class_exists(MemcachedCache::class) || MemcachedAdapter::isSupported())) {
             $memcached = new Memcached();
