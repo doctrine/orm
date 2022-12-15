@@ -27,11 +27,11 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\MemcachedAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 
+use function apcu_enabled;
 use function class_exists;
 use function dirname;
 use function extension_loaded;
 use function file_exists;
-use function ini_get;
 use function md5;
 use function sys_get_temp_dir;
 
