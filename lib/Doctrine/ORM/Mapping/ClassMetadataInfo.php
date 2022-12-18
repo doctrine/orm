@@ -6,12 +6,8 @@ namespace Doctrine\ORM\Mapping;
 
 use BackedEnum;
 use BadMethodCallException;
-use DateInterval;
-use DateTime;
-use DateTimeImmutable;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
@@ -23,7 +19,6 @@ use Doctrine\Persistence\Mapping\ReflectionService;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
-use ReflectionEnum;
 use ReflectionNamedType;
 use ReflectionProperty;
 use RuntimeException;
@@ -800,6 +795,9 @@ class ClassMetadataInfo implements ClassMetadata
     /** @var InstantiatorInterface|null */
     private $instantiator;
 
+    /** @var TypedFieldMapper $typedFieldMapper */
+    private $typedFieldMapper;
+
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
@@ -807,12 +805,13 @@ class ClassMetadataInfo implements ClassMetadata
      * @param string $entityName The name of the entity class the new instance is used for.
      * @psalm-param class-string<T> $entityName
      */
-    public function __construct($entityName, ?NamingStrategy $namingStrategy = null)
+    public function __construct($entityName, ?NamingStrategy $namingStrategy = null, ?TypedFieldMapper $typedFieldMapper = null)
     {
-        $this->name           = $entityName;
-        $this->rootEntityName = $entityName;
-        $this->namingStrategy = $namingStrategy ?: new DefaultNamingStrategy();
-        $this->instantiator   = new Instantiator();
+        $this->name             = $entityName;
+        $this->rootEntityName   = $entityName;
+        $this->namingStrategy   = $namingStrategy ?? new DefaultNamingStrategy();
+        $this->instantiator     = new Instantiator();
+        $this->typedFieldMapper = $typedFieldMapper ?? new DefaultTypedFieldMapper();
     }
 
     /**
@@ -1580,50 +1579,9 @@ class ClassMetadataInfo implements ClassMetadata
      */
     private function validateAndCompleteTypedFieldMapping(array $mapping): array
     {
-        $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
+        $field = $this->reflClass->getProperty($mapping['fieldName']);
 
-        if ($type) {
-            if (
-                ! isset($mapping['type'])
-                && ($type instanceof ReflectionNamedType)
-            ) {
-                if (PHP_VERSION_ID >= 80100 && ! $type->isBuiltin() && enum_exists($type->getName())) {
-                    $mapping['enumType'] = $type->getName();
-
-                    $reflection = new ReflectionEnum($type->getName());
-                    $type       = $reflection->getBackingType();
-
-                    assert($type instanceof ReflectionNamedType);
-                }
-
-                switch ($type->getName()) {
-                    case DateInterval::class:
-                        $mapping['type'] = Types::DATEINTERVAL;
-                        break;
-                    case DateTime::class:
-                        $mapping['type'] = Types::DATETIME_MUTABLE;
-                        break;
-                    case DateTimeImmutable::class:
-                        $mapping['type'] = Types::DATETIME_IMMUTABLE;
-                        break;
-                    case 'array':
-                        $mapping['type'] = Types::JSON;
-                        break;
-                    case 'bool':
-                        $mapping['type'] = Types::BOOLEAN;
-                        break;
-                    case 'float':
-                        $mapping['type'] = Types::FLOAT;
-                        break;
-                    case 'int':
-                        $mapping['type'] = Types::INTEGER;
-                        break;
-                    case 'string':
-                        $mapping['type'] = Types::STRING;
-                        break;
-                }
-            }
-        }
+        $mapping = $this->typedFieldMapper->validateAndComplete($mapping, $field);
 
         return $mapping;
     }
