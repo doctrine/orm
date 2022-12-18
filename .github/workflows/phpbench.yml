@@ -45,7 +45,7 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           coverage: "pcov"
-          ini-values: "zend.assertions=1"
+          ini-values: "zend.assertions=1, apc.enable_cli=1"
 
       - name: "Cache dependencies installed with composer"
         uses: "actions/cache@v3"
