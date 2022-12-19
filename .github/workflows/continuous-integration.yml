@@ -74,6 +74,9 @@ jobs:
         run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
         if: "${{ matrix.dbal-version != 'default' }}"
 
+      - name: "Uninstall PHPBench"
+        run: "composer remove --dev --no-update phpbench/phpbench"
+
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v2"
         with:
@@ -149,6 +152,9 @@ jobs:
         run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
         if: "${{ matrix.dbal-version != 'default' }}"
 
+      - name: "Uninstall PHPBench"
+        run: "composer remove --dev --no-update phpbench/phpbench"
+
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v2"
         with:
@@ -205,6 +211,9 @@ jobs:
       - name: "Require specific DBAL version"
         run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
         if: "${{ matrix.dbal-version != 'default' }}"
+
+      - name: "Uninstall PHPBench"
+        run: "composer remove --dev --no-update phpbench/phpbench"
 
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
@@ -286,6 +295,9 @@ jobs:
       - name: "Require specific DBAL version"
         run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
         if: "${{ matrix.dbal-version != 'default' }}"
+
+      - name: "Uninstall PHPBench"
+        run: "composer remove --dev --no-update phpbench/phpbench"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v2"
