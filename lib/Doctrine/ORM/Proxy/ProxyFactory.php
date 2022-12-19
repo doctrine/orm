@@ -17,6 +17,8 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 
+use function in_array;
+
 /**
  * This factory is used to create proxy objects for entities at runtime.
  *
@@ -171,8 +173,10 @@ class ProxyFactory extends AbstractProxyFactory
                 );
             }
 
+            $identifierFields = $class->identifier;
             foreach ($class->getReflectionProperties() as $property) {
-                if (! $class->hasField($property->name) && ! $class->hasAssociation($property->name)) {
+                // Skip identifiers, too
+                if (in_array($property->name, $identifierFields) || (! $class->hasField($property->name) && ! $class->hasAssociation($property->name))) {
                     continue;
                 }
 
