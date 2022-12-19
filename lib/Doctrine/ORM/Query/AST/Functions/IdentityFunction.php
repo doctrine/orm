@@ -88,7 +88,7 @@ class IdentityFunction extends FunctionNode
 
             $token = $parser->getLexer()->token;
             assert($token !== null);
-            $this->fieldMapping = $token['value'];
+            $this->fieldMapping = $token->value;
         }
 
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);

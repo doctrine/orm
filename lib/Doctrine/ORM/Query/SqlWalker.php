@@ -1200,7 +1200,7 @@ class SqlWalker implements TreeWalker
         $expr = $orderByItem->expression;
         $sql  = $expr instanceof AST\Node
             ? $expr->dispatch($this)
-            : $this->walkResultVariable($this->queryComponents[$expr]['token']['value']);
+            : $this->walkResultVariable($this->queryComponents[$expr]['token']->value);
 
         $this->orderedColumnsMap[$sql] = $type;
 
@@ -2495,7 +2495,7 @@ class SqlWalker implements TreeWalker
     {
         if (is_string($term)) {
             return isset($this->queryComponents[$term])
-                ? $this->walkResultVariable($this->queryComponents[$term]['token']['value'])
+                ? $this->walkResultVariable($this->queryComponents[$term]['token']->value)
                 : $term;
         }
 
@@ -2519,7 +2519,7 @@ class SqlWalker implements TreeWalker
     {
         if (is_string($factor)) {
             return isset($this->queryComponents[$factor])
-                ? $this->walkResultVariable($this->queryComponents[$factor]['token']['value'])
+                ? $this->walkResultVariable($this->queryComponents[$factor]['token']->value)
                 : $factor;
         }
 
