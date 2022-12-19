@@ -39,7 +39,7 @@
         "symfony/polyfill-php80": "^1.16"
     },
     "require-dev": {
-        "doctrine/annotations": "^1.13",
+        "doctrine/annotations": "^1.13 || ^2",
         "doctrine/coding-standard": "^9.0.2 || ^11.0",
         "phpbench/phpbench": "^0.16.10 || ^1.0",
         "phpstan/phpstan": "~1.4.10 || 1.9.4",
@@ -52,7 +52,7 @@
         "vimeo/psalm": "4.30.0 || 5.3.0"
     },
     "conflict": {
-        "doctrine/annotations": "<1.13 || >= 2.0"
+        "doctrine/annotations": "<1.13 || >= 3.0"
     },
     "suggest": {
         "ext-dom": "Provides support for XSD validation for XML mapping files",

@@ -41,3 +41,8 @@ parameters:
 
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'
+
+        # Cache 1 compatibility
+        -
+            message: '~^Parameter #2 \$cache of class Doctrine\\Common\\Annotations\\CachedReader constructor expects Doctrine\\Common\\Cache\\Cache, Doctrine\\Common\\Cache\\ArrayCache given\.~'
+            path: lib/Doctrine/ORM/Configuration.php

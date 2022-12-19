@@ -248,8 +248,7 @@
       <code>new CachedReader($reader, new ArrayCache())</code>
       <code>new SimpleAnnotationReader()</code>
     </DeprecatedClass>
-    <DeprecatedMethod occurrences="3">
-      <code>AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php')</code>
+    <DeprecatedMethod occurrences="2">
       <code>getMetadataCacheImpl</code>
       <code>getQueryCacheImpl</code>
     </DeprecatedMethod>

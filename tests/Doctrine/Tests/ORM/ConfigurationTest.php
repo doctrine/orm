@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
@@ -105,6 +106,16 @@ class ConfigurationTest extends DoctrineTestCase
             AnnotationNamespace\PrePersist::class
         );
         self::assertInstanceOf(AnnotationNamespace\PrePersist::class, $annotation);
+    }
+
+    public function testNewDefaultAnnotationDriverWithSimpleAnnotationReader(): void
+    {
+        if (! class_exists(SimpleAnnotationReader::class)) {
+            self::markTestSkipped('Requires doctrine/annotations 1.x');
+        }
+
+        $paths           = [__DIR__];
+        $reflectionClass = new ReflectionClass(ConfigurationTestAnnotationReaderChecker::class);
 
         $annotationDriver = $this->configuration->newDefaultAnnotationDriver($paths);
         $reader           = $annotationDriver->getReader();

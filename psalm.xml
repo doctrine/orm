@@ -220,6 +220,9 @@
 
                 <!-- Persistence 2 compatibility -->
                 <referencedClass name="Doctrine\Persistence\ObjectManagerAware"/>
+
+                <!-- Annotations 1 compatibility -->
+                <referencedClass name="Doctrine\Common\Annotations\CachedReader"/>
             </errorLevel>
         </UndefinedClass>
         <UndefinedDocblockClass>
