@@ -68,7 +68,7 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           extensions: "apcu, pdo, ${{ matrix.extension }}"
           coverage: "pcov"
-          ini-values: "zend.assertions=1"
+          ini-values: "zend.assertions=1, apc.enable_cli=1"
 
       - name: "Require specific DBAL version"
         run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
@@ -143,7 +143,7 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           coverage: "pcov"
-          ini-values: "zend.assertions=1"
+          ini-values: "zend.assertions=1, apc.enable_cli=1"
 
       - name: "Require specific DBAL version"
         run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
@@ -211,7 +211,7 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           coverage: "pcov"
-          ini-values: "zend.assertions=1"
+          ini-values: "zend.assertions=1, apc.enable_cli=1"
           extensions: "${{ matrix.extension }}"
 
       - name: "Install dependencies with Composer"
@@ -280,7 +280,7 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           coverage: "pcov"
-          ini-values: "zend.assertions=1"
+          ini-values: "zend.assertions=1, apc.enable_cli=1"
           extensions: "${{ matrix.extension }}"
 
       - name: "Require specific DBAL version"

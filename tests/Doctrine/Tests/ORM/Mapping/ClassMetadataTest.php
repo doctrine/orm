@@ -5,15 +5,21 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use ArrayObject;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\ChainTypedFieldMapper;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\Mapping\StaticReflectionService;
+use Doctrine\Tests\DbalTypes\CustomIdObject;
+use Doctrine\Tests\DbalTypes\CustomIdObjectType;
+use Doctrine\Tests\DbalTypes\CustomIntType;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -32,6 +38,8 @@ use Doctrine\Tests\Models\DDC964\DDC964Guest;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
 use Doctrine\Tests\Models\TypedProperties\Contact;
 use Doctrine\Tests\Models\TypedProperties\UserTyped;
+use Doctrine\Tests\Models\TypedProperties\UserTypedWithCustomTypedField;
+use Doctrine\Tests\ORM\Mapping\TypedFieldMapper\CustomIntAsStringTypedFieldMapper;
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobalArticle;
 use ReflectionClass;
@@ -172,6 +180,46 @@ class ClassMetadataTest extends OrmTestCase
         // float
         $cm->mapField(['fieldName' => 'float']);
         self::assertEquals('float', $cm->getTypeOfField('float'));
+    }
+
+    /** @group GH10313 */
+    public function testFieldTypeFromReflectionDefaultTypedFieldMapper(): void
+    {
+        $cm = new ClassMetadata(
+            UserTypedWithCustomTypedField::class,
+            null,
+            new DefaultTypedFieldMapper(
+                [
+                    CustomIdObject::class => CustomIdObjectType::class,
+                    'int' => CustomIntType::class,
+                ],
+            ),
+        );
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->mapField(['fieldName' => 'customId']);
+        $cm->mapField(['fieldName' => 'customIntTypedField']);
+        self::assertEquals(CustomIdObjectType::class, $cm->getTypeOfField('customId'));
+        self::assertEquals(CustomIntType::class, $cm->getTypeOfField('customIntTypedField'));
+    }
+
+    /** @group GH10313 */
+    public function testFieldTypeFromReflectionChainTypedFieldMapper(): void
+    {
+        $cm = new ClassMetadata(
+            UserTyped::class,
+            null,
+            new ChainTypedFieldMapper(
+                new CustomIntAsStringTypedFieldMapper(),
+                new DefaultTypedFieldMapper(),
+            ),
+        );
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->mapField(['fieldName' => 'id']);
+        $cm->mapField(['fieldName' => 'username']);
+        self::assertEquals(Types::STRING, $cm->getTypeOfField('id'));
+        self::assertEquals(Types::STRING, $cm->getTypeOfField('username'));
     }
 
     /** @group DDC-115 */

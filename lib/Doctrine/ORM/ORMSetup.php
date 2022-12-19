@@ -14,6 +14,7 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\MemcachedAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 
+use function apcu_enabled;
 use function class_exists;
 use function extension_loaded;
 use function md5;
@@ -102,7 +103,7 @@ final class ORMSetup
 
         $namespace = 'dc2_' . md5($proxyDir);
 
-        if (extension_loaded('apcu')) {
+        if (extension_loaded('apcu') && apcu_enabled()) {
             return new ApcuAdapter($namespace);
         }
 

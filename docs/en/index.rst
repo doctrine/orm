@@ -70,6 +70,7 @@ Advanced Topics
 * :doc:`Transactions and Concurrency <reference/transactions-and-concurrency>`
 * :doc:`Filters <reference/filters>`
 * :doc:`NamingStrategy <reference/namingstrategy>`
+* :doc:`TypedFieldMapper <reference/typedfieldmapper>`
 * :doc:`Improving Performance <reference/improving-performance>`
 * :doc:`Caching <reference/caching>`
 * :doc:`Partial Objects <reference/partial-objects>`

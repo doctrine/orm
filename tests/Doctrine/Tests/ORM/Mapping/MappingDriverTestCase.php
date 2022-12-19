@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
@@ -20,11 +21,16 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\Table;
+use Doctrine\ORM\Mapping\TypedFieldMapper;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\Tests\DbalTypes\CustomIdObject;
+use Doctrine\Tests\DbalTypes\CustomIdObjectType;
+use Doctrine\Tests\DbalTypes\CustomIntType;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsAddressListener;
@@ -52,6 +58,7 @@ use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\GH10288\GH10288People;
 use Doctrine\Tests\Models\TypedProperties\Contact;
 use Doctrine\Tests\Models\TypedProperties\UserTyped;
+use Doctrine\Tests\Models\TypedProperties\UserTypedWithCustomTypedField;
 use Doctrine\Tests\Models\Upsertable\Insertable;
 use Doctrine\Tests\Models\Upsertable\Updatable;
 use Doctrine\Tests\OrmTestCase;
@@ -69,11 +76,14 @@ abstract class MappingDriverTestCase extends OrmTestCase
     abstract protected function loadDriver(): MappingDriver;
 
     /** @psalm-param class-string<object> $entityClassName */
-    public function createClassMetadata(string $entityClassName): ClassMetadata
-    {
+    public function createClassMetadata(
+        string $entityClassName,
+        NamingStrategy|null $namingStrategy = null,
+        TypedFieldMapper|null $typedFieldMapper = null,
+    ): ClassMetadata {
         $mappingDriver = $this->loadDriver();
 
-        $class = new ClassMetadata($entityClassName);
+        $class = new ClassMetadata($entityClassName, $namingStrategy, $typedFieldMapper);
         $class->initializeReflection(new RuntimeReflectionService());
         $mappingDriver->loadMetadataForClass($entityClassName, $class);
 
@@ -269,6 +279,24 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals(CmsEmail::class, $class->getAssociationMapping('email')['targetEntity']);
         self::assertEquals(CmsEmail::class, $class->getAssociationMapping('mainEmail')['targetEntity']);
         self::assertEquals(Contact::class, $class->embeddedClasses['contact']['class']);
+    }
+
+    /** @group GH10313 */
+    public function testCustomFieldTypeFromReflection(): void
+    {
+        $class = $this->createClassMetadata(
+            UserTypedWithCustomTypedField::class,
+            null,
+            new DefaultTypedFieldMapper(
+                [
+                    CustomIdObject::class => CustomIdObjectType::class,
+                    'int' => CustomIntType::class,
+                ],
+            ),
+        );
+
+        self::assertEquals(CustomIdObjectType::class, $class->getTypeOfField('customId'));
+        self::assertEquals(CustomIntType::class, $class->getTypeOfField('customIntTypedField'));
     }
 
     /** @depends testEntityTableNameAndInheritance */

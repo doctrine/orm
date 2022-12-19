@@ -10,6 +10,7 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Mapping as MappingNamespace;
+use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
@@ -203,5 +204,14 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertNull($this->configuration->getSecondLevelCacheConfiguration());
         $this->configuration->setSecondLevelCacheConfiguration($mockClass);
         self::assertEquals($mockClass, $this->configuration->getSecondLevelCacheConfiguration());
+    }
+
+    /** @group GH10313 */
+    public function testSetGetTypedFieldMapper(): void
+    {
+        self::assertEmpty($this->configuration->getTypedFieldMapper());
+        $defaultTypedFieldMapper = new DefaultTypedFieldMapper();
+        $this->configuration->setTypedFieldMapper($defaultTypedFieldMapper);
+        self::assertSame($defaultTypedFieldMapper, $this->configuration->getTypedFieldMapper());
     }
 }

@@ -529,6 +529,16 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.14
 
+## Deprecated constants of `Doctrine\ORM\Internal\CommitOrderCalculator`
+
+The following public constants have been deprecated:
+
+* `CommitOrderCalculator::NOT_VISITED`
+* `CommitOrderCalculator::IN_PROGRESS`
+* `CommitOrderCalculator::VISITED`
+
+These constants were used for internal purposes. Relying on them is discouraged.
+
 ## Deprecated `Doctrine\ORM\Query\AST\InExpression`
 
 The AST parser will create a `InListExpression` or a `InSubselectExpression` when
