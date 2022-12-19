@@ -137,6 +137,14 @@ use const PHP_VERSION_ID;
  *     type: int,
  *     unique?: bool,
  * }
+ * @psalm-type DiscriminatorColumnMapping = array{
+ *     name: string,
+ *     fieldName: string,
+ *     type: string,
+ *     length?: int,
+ *     columnDefinition?: string|null,
+ *     enumType?: class-string<BackedEnum>|null,
+ * }
  */
 class ClassMetadataInfo implements ClassMetadata
 {
@@ -569,7 +577,8 @@ class ClassMetadataInfo implements ClassMetadata
      * READ-ONLY: The definition of the discriminator column used in JOINED and SINGLE_TABLE
      * inheritance mappings.
      *
-     * @psalm-var array{name: string, fieldName: string, type: string, length?: int, columnDefinition?: string|null, enumType?: class-string<BackedEnum>|null}|null
+     * @var array<string, mixed>
+     * @psalm-var DiscriminatorColumnMapping|null
      */
     public $discriminatorColumn;
 
@@ -3211,7 +3220,10 @@ class ClassMetadataInfo implements ClassMetadata
         }
     }
 
-    /** @return array<string, mixed> */
+    /**
+     * @return array<string, mixed>
+     * @psalm-return DiscriminatorColumnMapping
+     */
     final public function getDiscriminatorColumn(): array
     {
         if ($this->discriminatorColumn === null) {
