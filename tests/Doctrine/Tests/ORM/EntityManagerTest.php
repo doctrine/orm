@@ -23,6 +23,7 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\GeoNames\Country;
+use Doctrine\Tests\Models\GH10097\EntityWithReadonlyIdentifier;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
 use InvalidArgumentException;
@@ -365,5 +366,26 @@ class EntityManagerTest extends OrmTestCase
         $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8459');
 
         $this->entityManager->flush($entity);
+    }
+
+    /**
+     * @requires PHP 8.1
+     *
+     * Note: before the fix, removing and Entity with a readonly identifier
+     * threw a LogicException from Doctrine\ORM\Mapping\ReflectionReadonlyProperty::setValue().
+     */
+    public function testDeleteEntityWithReadonlyIdentifierWorks(): void
+    {
+        $entity = new EntityWithReadonlyIdentifier();
+
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+
+        self::assertTrue($this->entityManager->contains($entity), 'The entity is not stored');
+
+        $this->entityManager->remove($entity);
+        $this->entityManager->flush();
+
+        self::assertFalse($this->entityManager->contains($entity), 'The entity is still stored');
     }
 }
