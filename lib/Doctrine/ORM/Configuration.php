@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
@@ -181,8 +180,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
                 . ' metadata driver.'
             );
         }
-
-        AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
 
         if ($useSimpleAnnotationReader) {
             // Register the ORM Annotations in the AnnotationRegistry
