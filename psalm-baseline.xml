@@ -251,9 +251,8 @@
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Internal/CommitOrderCalculator.php">
-    <RedundantCondition occurrences="2">
-      <code>$vertex-&gt;state !== VertexState::VISITED</code>
-      <code>$vertex-&gt;state !== VertexState::VISITED</code>
+    <RedundantCondition occurrences="1">
+      <code>$vertex-&gt;state !== VertexState::Visited</code>
     </RedundantCondition>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php">

@@ -20,15 +20,6 @@ use function array_reverse;
  */
 class CommitOrderCalculator
 {
-    /** @deprecated */
-    public const NOT_VISITED = VertexState::NOT_VISITED;
-
-    /** @deprecated */
-    public const IN_PROGRESS = VertexState::IN_PROGRESS;
-
-    /** @deprecated */
-    public const VISITED = VertexState::VISITED;
-
     /**
      * Matrix of nodes (aka. vertex).
      *
@@ -81,7 +72,7 @@ class CommitOrderCalculator
     public function sort(): array
     {
         foreach ($this->nodeList as $vertex) {
-            if ($vertex->state !== VertexState::NOT_VISITED) {
+            if ($vertex->state !== VertexState::NotVisited) {
                 continue;
             }
 
@@ -103,17 +94,17 @@ class CommitOrderCalculator
      */
     private function visit(Vertex $vertex): void
     {
-        $vertex->state = VertexState::IN_PROGRESS;
+        $vertex->state = VertexState::InProgress;
 
         foreach ($vertex->dependencyList as $edge) {
             $adjacentVertex = $this->nodeList[$edge->to];
 
             switch ($adjacentVertex->state) {
-                case VertexState::VISITED:
+                case VertexState::Visited:
                     // Do nothing, since node was already visited
                     break;
 
-                case VertexState::IN_PROGRESS:
+                case VertexState::InProgress:
                     if (
                         isset($adjacentVertex->dependencyList[$vertex->hash]) &&
                         $adjacentVertex->dependencyList[$vertex->hash]->weight < $edge->weight
@@ -123,25 +114,25 @@ class CommitOrderCalculator
                         foreach ($adjacentVertex->dependencyList as $adjacentEdge) {
                             $adjacentEdgeVertex = $this->nodeList[$adjacentEdge->to];
 
-                            if ($adjacentEdgeVertex->state === VertexState::NOT_VISITED) {
+                            if ($adjacentEdgeVertex->state === VertexState::NotVisited) {
                                 $this->visit($adjacentEdgeVertex);
                             }
                         }
 
-                        $adjacentVertex->state = VertexState::VISITED;
+                        $adjacentVertex->state = VertexState::Visited;
 
                         $this->sortedNodeList[] = $adjacentVertex->value;
                     }
 
                     break;
 
-                case VertexState::NOT_VISITED:
+                case VertexState::NotVisited:
                     $this->visit($adjacentVertex);
             }
         }
 
-        if ($vertex->state !== VertexState::VISITED) {
-            $vertex->state = VertexState::VISITED;
+        if ($vertex->state !== VertexState::Visited) {
+            $vertex->state = VertexState::Visited;
 
             $this->sortedNodeList[] = $vertex->value;
         }
