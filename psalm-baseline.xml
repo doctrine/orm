@@ -410,13 +410,9 @@
     </UndefinedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Internal/CommitOrderCalculator.php">
-    <InvalidPropertyAssignmentValue occurrences="2">
-      <code>$this-&gt;sortedNodeList</code>
-      <code>$this-&gt;sortedNodeList</code>
-    </InvalidPropertyAssignmentValue>
     <RedundantCondition occurrences="2">
-      <code>$vertex-&gt;state !== self::VISITED</code>
-      <code>$vertex-&gt;state !== self::VISITED</code>
+      <code>$vertex-&gt;state !== VertexState::VISITED</code>
+      <code>$vertex-&gt;state !== VertexState::VISITED</code>
     </RedundantCondition>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php">
@@ -2895,10 +2891,6 @@
     </UnresolvableInclude>
   </file>
   <file src="lib/Doctrine/ORM/UnitOfWork.php">
-    <ArgumentTypeCoercion occurrences="2">
-      <code>$class</code>
-      <code>$class</code>
-    </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="2">
       <code>! is_object($object)</code>
       <code>is_object($object)</code>
