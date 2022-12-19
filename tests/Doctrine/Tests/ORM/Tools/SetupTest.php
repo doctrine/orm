@@ -61,7 +61,7 @@ class SetupTest extends TestCase
 
     public function testAnnotationConfiguration(): void
     {
-        $config = Setup::createAnnotationMetadataConfiguration([], true);
+        $config = Setup::createAnnotationMetadataConfiguration([], true, null, null, false);
 
         self::assertInstanceOf(Configuration::class, $config);
         self::assertEquals(sys_get_temp_dir(), $config->getProxyDir());
@@ -135,7 +135,7 @@ class SetupTest extends TestCase
     /** @group DDC-1350 */
     public function testConfigureProxyDir(): void
     {
-        $config = Setup::createAnnotationMetadataConfiguration([], true, '/foo');
+        $config = Setup::createAnnotationMetadataConfiguration([], true, '/foo', null, false);
         self::assertEquals('/foo', $config->getProxyDir());
     }
 
@@ -144,7 +144,7 @@ class SetupTest extends TestCase
     {
         $adapter = new ArrayAdapter();
         $cache   = DoctrineProvider::wrap($adapter);
-        $config  = Setup::createAnnotationMetadataConfiguration([], true, null, $cache);
+        $config  = Setup::createAnnotationMetadataConfiguration([], true, null, $cache, false);
 
         self::assertSame($adapter, $config->getResultCache()->getCache()->getPool());
         self::assertSame($cache, $config->getResultCacheImpl());

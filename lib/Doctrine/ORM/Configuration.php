@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use BadMethodCallException;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
@@ -182,6 +183,13 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         if ($useSimpleAnnotationReader) {
+            if (! class_exists(SimpleAnnotationReader::class)) {
+                throw new BadMethodCallException(
+                    'SimpleAnnotationReader has been removed in doctrine/annotations 2.'
+                    . ' Downgrade to version 1 or set $useSimpleAnnotationReader to false.'
+                );
+            }
+
             // Register the ORM Annotations in the AnnotationRegistry
             $reader = new SimpleAnnotationReader();
             $reader->addNamespace('Doctrine\ORM\Mapping');
@@ -189,7 +197,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
             $reader = new AnnotationReader();
         }
 
-        if (class_exists(ArrayCache::class)) {
+        if (class_exists(ArrayCache::class) && class_exists(CachedReader::class)) {
             $reader = new CachedReader($reader, new ArrayCache());
         }
 
