@@ -691,8 +691,7 @@ class ClassMetadataInfo implements ClassMetadata, Stringable
 
     private InstantiatorInterface|null $instantiator = null;
 
-    /** @var TypedFieldMapper $typedFieldMapper */
-    private $typedFieldMapper;
+    private TypedFieldMapper $typedFieldMapper;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
