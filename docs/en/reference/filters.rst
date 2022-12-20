@@ -30,7 +30,7 @@ table alias of the SQL table of the entity.
 
 For the filter to correctly function, the following rules must be followed. Failure to do so will lead to unexpected results from the query cache.
   1. Parameters for the query should be set on the filter object by ``SQLFilter#setParameter()`` before the filter is used by the ORM ( i.e. do not set parameters inside ``SQLFilter#addFilterConstraint()`` function ).
-  2. The filter must be detrimistic. Don't cahange the values base on external inputs.
+  2. The filter must be deterministic. Don't change the values base on external inputs.
 
 The ``SQLFilter#getParameter()`` function takes care of the proper quoting of parameters.
 
