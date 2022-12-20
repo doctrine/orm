@@ -1448,6 +1448,9 @@ class BasicEntityPersister implements EntityPersister
         $columnAlias  = $this->getSQLColumnAlias($fieldMapping['columnName']);
 
         $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field);
+        if (! empty($fieldMapping['enumType'])) {
+            $this->currentPersisterContext->rsm->addEnumResult($columnAlias, $fieldMapping['enumType']);
+        }
 
         $type = Type::getType($fieldMapping['type']);
         $sql  = $type->convertToPHPValueSQL($sql, $this->platform);
