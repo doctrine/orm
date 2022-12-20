@@ -29,7 +29,7 @@ class Lexer extends AbstractLexer
      *
      * @param string $input A query string.
      */
-    public function __construct($input)
+    public function __construct(string $input)
     {
         $this->setInput($input);
     }
@@ -56,9 +56,7 @@ class Lexer extends AbstractLexer
         return ['\s+', '--.*', '(.)'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** @param string $value */
     protected function getType(&$value): TokenType
     {
         $type = TokenType::T_NONE;

@@ -56,7 +56,7 @@ class TrimFunction extends FunctionNode
             $parser->match(TokenType::T_STRING);
 
             assert($lexer->token !== null);
-            $this->trimChar = $lexer->token['value'];
+            $this->trimChar = $lexer->token->value;
         }
 
         if ($this->leading || $this->trailing || $this->both || $this->trimChar) {
@@ -90,7 +90,7 @@ class TrimFunction extends FunctionNode
     {
         $lexer = $parser->getLexer();
         assert($lexer->lookahead !== null);
-        $value = $lexer->lookahead['value'];
+        $value = $lexer->lookahead->value;
 
         if (strcasecmp('leading', $value) === 0) {
             $parser->match(TokenType::T_LEADING);
