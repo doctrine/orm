@@ -3,13 +3,12 @@ Implementing a TypedFieldMapper
 
 .. versionadded:: 2.14
 
-You can specify custom typed field mapping between PHP type and DBAL type using ``Configuration``
+You can specify custom typed field mapping between PHP type and DBAL type using ``Doctrine\ORM\Configuration``
 and a custom ``Doctrine\ORM\Mapping\TypedFieldMapper`` implementation.
 
 .. code-block:: php
 
     <?php
-
     $configuration->setTypedFieldMapper(new CustomTypedFieldMapper());
 
 
@@ -24,6 +23,7 @@ PHP type => DBAL type mappings into its constructor to override the default beha
     <?php
     use App\CustomIds\CustomIdObject;
     use App\DBAL\Type\CustomIdObjectType;
+    use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
 
     $configuration->setTypedFieldMapper(new DefaultTypedFieldMapper([
         CustomIdObject::class => CustomIdObjectType::class,
@@ -84,6 +84,7 @@ It is perfectly valid to override even the "automatic" mapping rules mentioned a
 
     <?php
     use App\DBAL\Type\CustomIntType;
+    use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
 
     $configuration->setTypedFieldMapper(new DefaultTypedFieldMapper([
         'int' => CustomIntType::class,
@@ -126,10 +127,12 @@ the instances were supplied to the ``ChainTypedFieldMapper`` constructor.
 
     <?php
     use App\DBAL\Type\CustomIntType;
+    use Doctrine\ORM\Mapping\ChainTypedFieldMapper;
+    use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
 
     $configuration->setTypedFieldMapper(
         new ChainTypedFieldMapper(
-            DefaultTypedFieldMapper(['int' => CustomIntType::class,]),
+            new DefaultTypedFieldMapper(['int' => CustomIntType::class,]),
             new CustomTypedFieldMapper()
         )
     );
@@ -173,4 +176,4 @@ You need to create a class which implements ``Doctrine\ORM\Mapping\TypedFieldMap
 
     Note that this case checks whether the mapping is already assigned, and if yes, it skips it. This is up to your
     implementation. You can make a "greedy" mapper which will always override the mapping with its own type, or one
-    that behaves like ``DefaultTypedFieldMapper`` and does not modify the type once its set prior in the chain.
+    that behaves like the ``DefaultTypedFieldMapper`` and does not modify the type once its set prior in the chain.

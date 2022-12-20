@@ -57,9 +57,6 @@ jobs:
       - name: "Require specific persistence version"
         run: "composer require doctrine/persistence ^$([ ${{ matrix.persistence-version }} = default ] && echo '3.1' || echo ${{ matrix.persistence-version }}) --no-update"
 
-      - name: "Uninstall PHPBench"
-        run: "composer remove --dev --no-update phpbench/phpbench"
-
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v2"
         with:
@@ -96,9 +93,6 @@ jobs:
 
       - name: "Require specific persistence version"
         run: "composer require doctrine/persistence ^3.1 --no-update"
-
-      - name: "Uninstall PHPBench"
-        run: "composer remove --dev --no-update phpbench/phpbench"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v2"
