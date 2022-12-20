@@ -28,7 +28,7 @@ table alias of the SQL table of the entity.
     In the case of joined or single table inheritance, you always get passed the ClassMetadata of the
     inheritance root. This is necessary to avoid edge cases that would break the SQL when applying the filters.
 
-For the filter to correctly function the following rules must be followed, failure to do so will lead to unexpected results from the query cache.
+For the filter to correctly function, the following rules must be followed. Failure to do so will lead to unexpected results from the query cache.
   1. Parameters for the query should be set on the filter object by ``SQLFilter#setParameter()`` before the filter is used by the ORM ( i.e. do not set parameters inside ``SQLFilter#addFilterConstraint()`` function ).
   2. The filter must be detrimistic. Don't cahange the values base on external inputs.
 
