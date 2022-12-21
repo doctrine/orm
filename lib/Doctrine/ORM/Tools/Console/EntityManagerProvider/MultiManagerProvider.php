@@ -7,6 +7,8 @@ namespace Doctrine\ORM\Tools\Console\EntityManagerProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 
+use function array_keys;
+
 final class MultiManagerProvider implements EntityManagerProvider
 {
     /** @var EntityManagerInterface[] */
@@ -28,8 +30,8 @@ final class MultiManagerProvider implements EntityManagerProvider
 
     public function getManager(string $name): EntityManagerInterface
     {
-        if (!isset($this->entityManagers[$name])) {
-            throw UnknownManagerException::unknownManager($name, $this->entityManagers);
+        if (! isset($this->entityManagers[$name])) {
+            throw UnknownManagerException::unknownManager($name, array_keys($this->entityManagers));
         }
 
         return $this->entityManagers[$name];
