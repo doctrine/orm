@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Persisters\Entity;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
+use Doctrine\ORM\Mapping\GeneratedValue;
 use function sprintf;
 
 /**
@@ -23,10 +24,13 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     {
         $data = parent::prepareInsertData($entity);
 
-        // Populate the discriminator column
-        $discColumn                                                          = $this->class->getDiscriminatorColumn();
-        $this->columnTypes[$discColumn['name']]                              = $discColumn['type'];
-        $data[$this->getDiscriminatorColumnTableName()][$discColumn['name']] = $this->class->discriminatorValue;
+        // Populate the discriminator column only if not generated ALWAYS or on INSERT
+        $discColumn = $this->class->getDiscriminatorColumn();
+        if (false === in_array($discColumn['generated'], ['INSERT', 'ALWAYS'])) {
+            $this->columnTypes[$discColumn['name']] = $discColumn['type'];
+            $data[$this->getDiscriminatorColumnTableName()][$discColumn['name']] =
+                $this->class->discriminatorValue;
+        }
 
         return $data;
     }

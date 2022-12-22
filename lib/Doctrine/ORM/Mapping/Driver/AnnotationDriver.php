@@ -314,6 +314,7 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
                             'type'             => $discrColumnAnnot->type ?: 'string',
                             'length'           => $discrColumnAnnot->length ?? 255,
                             'columnDefinition' => $discrColumnAnnot->columnDefinition,
+                            'generated'        => $discrColumnAnnot->generated ?? null,
                         ]
                     );
                 } else {

@@ -34,15 +34,24 @@ final class DiscriminatorColumn implements Annotation
     /** @var string */
     public $columnDefinition;
 
+    /**
+     * @var string|null
+     * @psalm-var 'NEVER'|'INSERT'|'ALWAYS'|null
+     * @Enum({"NEVER", "INSERT", "ALWAYS"})
+     */
+    public $generated;
+
     public function __construct(
         ?string $name = null,
         ?string $type = null,
         ?int $length = null,
-        ?string $columnDefinition = null
+        ?string $columnDefinition = null,
+        ?string $generated = null
     ) {
         $this->name             = $name;
         $this->type             = $type;
         $this->length           = $length;
         $this->columnDefinition = $columnDefinition;
+        $this->generated        = $generated;
     }
 }
