@@ -314,11 +314,10 @@ EOPHP;
     {
         $skippedProperties = ['__isCloning' => true];
         $identifiers       = array_flip($class->getIdentifierFieldNames());
+        $filter            = ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED | ReflectionProperty::IS_PRIVATE;
+        $reflector         = $class->getReflectionClass();
 
-        $filter = ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED | ReflectionProperty::IS_PRIVATE;
-        $reflector = $class->getReflectionClass();
-
-        do {
+        while ($reflector) {
             foreach ($reflector->getProperties($filter) as $property) {
                 $name = $property->getName();
 
@@ -330,8 +329,10 @@ EOPHP;
 
                 $skippedProperties[$prefix . $name] = true;
             }
-            $filter = ReflectionProperty::IS_PRIVATE;
-        } while ($reflector = $reflector->getParentClass());
+
+            $filter    = ReflectionProperty::IS_PRIVATE;
+            $reflector = $reflector->getParentClass();
+        }
 
         uksort($skippedProperties, 'strnatcmp');
 
