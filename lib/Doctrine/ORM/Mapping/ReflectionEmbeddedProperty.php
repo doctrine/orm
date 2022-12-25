@@ -8,6 +8,8 @@ use Doctrine\Instantiator\Instantiator;
 use ReflectionProperty;
 use ReturnTypeWillChange;
 
+use const PHP_VERSION_ID;
+
 /**
  * Acts as a proxy to a nested Property structure, making it look like
  * just a single scalar property.
@@ -74,6 +76,22 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
             $embeddedObject = $this->instantiator->instantiate($this->embeddedClass);
 
             $this->parentProperty->setValue($object, $embeddedObject);
+        }
+
+        if (PHP_VERSION_ID >= 80100) {
+            if ($this->childProperty->isReadOnly()) {
+                $declaringClass = $this->childProperty->getDeclaringClass();
+
+                if ($declaringClass->getName() !== $this->embeddedClass) {
+                    $scopedChildProperty = $declaringClass->getProperty($this->childProperty->getName());
+
+                    if (! $scopedChildProperty->isInitialized($embeddedObject)) {
+                        $scopedChildProperty->setValue($embeddedObject, $value);
+                    }
+
+                    return;
+                }
+            }
         }
 
         $this->childProperty->setValue($embeddedObject, $value);
