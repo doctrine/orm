@@ -84,7 +84,10 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
 
                 if ($declaringClass->getName() !== $this->embeddedClass) {
                     $scopedChildProperty = $declaringClass->getProperty($this->childProperty->getName());
-                    $scopedChildProperty->setValue($embeddedObject, $value);
+
+                    if (! $scopedChildProperty->isInitialized($embeddedObject)) {
+                        $scopedChildProperty->setValue($embeddedObject, $value);
+                    }
 
                     return;
                 }
