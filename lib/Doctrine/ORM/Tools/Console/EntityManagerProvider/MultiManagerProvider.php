@@ -17,6 +17,7 @@ final class MultiManagerProvider implements EntityManagerProvider
     /** @var string */
     private $defaultManagerName;
 
+    /** @param array<string, EntityManagerInterface> $entityManagers Available entity managers */
     public function __construct(array $entityManagers, string $defaultManagerName = 'default')
     {
         $this->entityManagers     = $entityManagers;
