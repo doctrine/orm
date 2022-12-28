@@ -64,6 +64,7 @@ class SqlExpressionVisitor extends ExpressionVisitor
         return match ($expr->getType()) {
             CompositeExpression::TYPE_AND => '(' . implode(' AND ', $expressionList) . ')',
             CompositeExpression::TYPE_OR => '(' . implode(' OR ', $expressionList) . ')',
+            CompositeExpression::TYPE_NOT => 'NOT (' . $expressionList[0] . ')',
             default => throw new RuntimeException('Unknown composite ' . $expr->getType()),
         };
     }

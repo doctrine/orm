@@ -23,7 +23,7 @@
         "php": "^8.1",
         "composer-runtime-api": "^2",
         "ext-ctype": "*",
-        "doctrine/collections": "^2.0",
+        "doctrine/collections": "^2.1",
         "doctrine/common": "^3.3",
         "doctrine/dbal": "^3.5",
         "doctrine/deprecations": "^0.5.3 || ^1",

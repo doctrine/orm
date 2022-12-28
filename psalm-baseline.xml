@@ -7,18 +7,13 @@
     <InvalidFalsableReturnType occurrences="1">
       <code>Parameter|null</code>
     </InvalidFalsableReturnType>
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$queryCacheProfile-&gt;generateCacheKeys($sql, $parameters, $hints)</code>
-    </LessSpecificReturnStatement>
     <MissingClosureParamType occurrences="3">
       <code>$alias</code>
       <code>$data</code>
       <code>$data</code>
     </MissingClosureParamType>
-    <MoreSpecificReturnType occurrences="1">
-      <code>array{string, string}</code>
-    </MoreSpecificReturnType>
     <PossiblyInvalidArgument occurrences="1">
+      <code>$stmt</code>
       <code>$stmt</code>
     </PossiblyInvalidArgument>
     <PossiblyNullReference occurrences="2">

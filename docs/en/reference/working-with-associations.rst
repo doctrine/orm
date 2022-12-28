@@ -718,6 +718,7 @@ methods:
 
 * ``andX($arg1, $arg2, ...)``
 * ``orX($arg1, $arg2, ...)``
+* ``not($expression)``
 * ``eq($field, $value)``
 * ``gt($field, $value)``
 * ``lt($field, $value)``
