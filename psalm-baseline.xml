@@ -19,17 +19,11 @@
     <InvalidNullableReturnType occurrences="1">
       <code>\Doctrine\Common\Cache\Cache</code>
     </InvalidNullableReturnType>
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$queryCacheProfile-&gt;generateCacheKeys($sql, $parameters, $hints)</code>
-    </LessSpecificReturnStatement>
     <MissingClosureParamType occurrences="3">
       <code>$alias</code>
       <code>$data</code>
       <code>$data</code>
     </MissingClosureParamType>
-    <MoreSpecificReturnType occurrences="1">
-      <code>array{string, string}</code>
-    </MoreSpecificReturnType>
     <NullableReturnStatement occurrences="2">
       <code>$this-&gt;_em-&gt;getConfiguration()-&gt;getResultCacheImpl()</code>
       <code>$this-&gt;_queryCacheProfile-&gt;getResultCacheDriver()</code>
@@ -244,10 +238,6 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$className</code>
     </ArgumentTypeCoercion>
-    <DeprecatedClass occurrences="2">
-      <code>new CachedReader($reader, new ArrayCache())</code>
-      <code>new SimpleAnnotationReader()</code>
-    </DeprecatedClass>
     <DeprecatedMethod occurrences="2">
       <code>getMetadataCacheImpl</code>
       <code>getQueryCacheImpl</code>
@@ -1110,8 +1100,9 @@
     </PossiblyInvalidArgument>
   </file>
   <file src="lib/Doctrine/ORM/PersistentCollection.php">
-    <ImplementedReturnTypeMismatch occurrences="2">
+    <ImplementedReturnTypeMismatch occurrences="3">
       <code>Collection&lt;TKey, T&gt;</code>
+      <code>object|null</code>
       <code>object|null</code>
     </ImplementedReturnTypeMismatch>
     <InvalidReturnStatement occurrences="2">
