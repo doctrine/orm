@@ -642,35 +642,27 @@ class QueryBuilderTest extends OrmTestCase
         self::assertFalse($inferred->typeWasSpecified());
     }
 
-    public function testSetParameters(): void
+    public function testParametersAreConvertedToArrayCollection(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
-        $qb->select('u')
-           ->from(CmsUser::class, 'u')
-           ->where($qb->expr()->orX('u.username = :username', 'u.username = :username2'));
 
         $parameters = new ArrayCollection();
         $parameters->add(new Parameter('username', 'jwage'));
         $parameters->add(new Parameter('username2', 'jonwage'));
 
-        $qb->setParameters($parameters);
+        $qb->setParameters([
+            'username' => 'jwage',
+            'username2' => 'jonwage',
+        ]);
 
         self::assertEquals($parameters, $qb->getQuery()->getParameters());
     }
 
-    public function testGetParameters(): void
+    public function testSetArrayCollectionParametersIsDeprecated(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
-        $qb->select('u')
-           ->from(CmsUser::class, 'u')
-           ->where('u.id = :id');
-
-        $parameters = new ArrayCollection();
-        $parameters->add(new Parameter('id', 1));
-
-        $qb->setParameters($parameters);
-
-        self::assertEquals($parameters, $qb->getParameters());
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9816');
+        $qb->setParameters(new ArrayCollection());
     }
 
     public function testGetParameter(): void
@@ -683,7 +675,7 @@ class QueryBuilderTest extends OrmTestCase
         $parameters = new ArrayCollection();
         $parameters->add(new Parameter('id', 1));
 
-        $qb->setParameters($parameters);
+        $qb->setParameters(['id' => 1]);
 
         self::assertEquals($parameters->first(), $qb->getParameter('id'));
     }

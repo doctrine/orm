@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
+use LogicException;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 use stdClass;
@@ -107,13 +110,49 @@ final class AbstractQueryTest extends TestCase
 
     public function testSettingTheFetchModeToRandomIntegersIsDeprecated(): void
     {
-        $query = $this->getMockForAbstractClass(
+        $query = $this->dependencylessMock();
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9777');
+        $query->setFetchMode(stdClass::class, 'foo', 42);
+    }
+
+    public function testSetArrayCollectionParametersIsDeprecated(): void
+    {
+        $query = $this->dependencylessMock();
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9816');
+        $query->setParameters(new ArrayCollection());
+    }
+
+    public function testExecuteWithArrayCollectionParametersIsDeprecated(): void
+    {
+        $query = $this->dependencylessMock();
+        $query
+            ->method('_doExecute')
+            ->willReturn(42);
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9816');
+        $query->execute(new ArrayCollection());
+    }
+
+    public function testToIterableWithArrayCollectionParametersIsDeprecated(): void
+    {
+        $query = $this->dependencylessMock();
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9816');
+        try {
+            $query->toIterable(new ArrayCollection());
+        } catch (LogicException $e) {
+            // the result set mapping is not initialized
+        }
+    }
+
+    /**
+     * @return AbstractQuery&MockObject
+     */
+    private function dependencylessMock(): AbstractQuery
+    {
+        return $this->getMockForAbstractClass(
             AbstractQuery::class,
             [],
             '',
-            false // no need to call the constructor
+            false
         );
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9777');
-        $query->setFetchMode(stdClass::class, 'foo', 42);
     }
 }

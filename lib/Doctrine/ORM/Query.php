@@ -26,6 +26,7 @@ use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use Psr\Cache\CacheItemPoolInterface;
+use Traversable;
 
 use function array_keys;
 use function array_values;
@@ -34,6 +35,7 @@ use function count;
 use function get_debug_type;
 use function in_array;
 use function is_int;
+use function iterator_to_array;
 use function ksort;
 use function md5;
 use function method_exists;
@@ -737,6 +739,16 @@ final class Query extends AbstractQuery
     /** {@inheritDoc} */
     public function toIterable(iterable $parameters = [], $hydrationMode = self::HYDRATE_OBJECT): iterable
     {
+        if ($parameters instanceof Traversable) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/9816',
+                'Passing a Traversable to %s is deprecated.',
+                __METHOD__
+            );
+            $parameters = iterator_to_array($parameters);
+        }
+
         $this->setHint(self::HINT_INTERNAL_ITERATION, true);
 
         return parent::toIterable($parameters, $hydrationMode);

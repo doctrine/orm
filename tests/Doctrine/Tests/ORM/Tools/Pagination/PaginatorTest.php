@@ -60,7 +60,10 @@ class PaginatorTest extends OrmTestCase
             FROM Doctrine\\Tests\\Models\\CMS\\CmsUser u
             WHERE u.id = :paramInWhere'
         );
-        $query->setParameters(['paramInWhere' => $paramInWhere, 'paramInSubSelect' => $paramInSubSelect]);
+        $query->setParameters([
+            'paramInWhere' => $paramInWhere,
+            'paramInSubSelect' => $paramInSubSelect,
+        ]);
         $query->setMaxResults(1);
         $paginator = (new Paginator($query, true))->setUseOutputWalkers(false);
 

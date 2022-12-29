@@ -6,11 +6,9 @@ namespace Doctrine\ORM\Tools\Pagination;
 
 use ArrayIterator;
 use Countable;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
@@ -179,7 +177,7 @@ class Paginator implements Countable, IteratorAggregate
     {
         $cloneQuery = clone $query;
 
-        $cloneQuery->setParameters(clone $query->getParameters());
+        $cloneQuery->setParameters($query->getParameters()->toArray());
         $cloneQuery->setCacheable(false);
 
         foreach ($query->getHints() as $name => $value) {
@@ -251,8 +249,7 @@ class Paginator implements Countable, IteratorAggregate
     {
         $parser            = new Parser($query);
         $parameterMappings = $parser->parse()->getParameterMappings();
-        /** @var Collection|Parameter[] $parameters */
-        $parameters = $query->getParameters();
+        $parameters        = $query->getParameters();
 
         foreach ($parameters as $key => $parameter) {
             $parameterName = $parameter->getName();
@@ -262,6 +259,6 @@ class Paginator implements Countable, IteratorAggregate
             }
         }
 
-        $query->setParameters($parameters);
+        $query->setParameters($parameters->toArray());
     }
 }

@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\DbalTypes\UpperCaseStringType;
@@ -204,10 +202,6 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
     public function testFluentInterface(): void
     {
-        $parameters = new ArrayCollection();
-        $parameters->add(new Parameter(1, 'foo'));
-        $parameters->add(new Parameter(2, 'bar'));
-
         $rsm = new ResultSetMapping();
 
         $q  = $this->_em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
@@ -216,7 +210,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
           ->expireResultCache(true)
           ->setHint('foo', 'bar')
           ->setParameter(1, 'foo')
-          ->setParameters($parameters)
+          ->setParameters([1 => 'foo', 2 => 'bar'])
           ->setResultCacheDriver(null)
           ->setResultCacheLifetime(3500);
 

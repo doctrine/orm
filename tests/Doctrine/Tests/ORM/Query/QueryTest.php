@@ -80,7 +80,10 @@ class QueryTest extends OrmTestCase
         $parameters->add(new Parameter(1, 'foo'));
         $parameters->add(new Parameter(2, 'bar'));
 
-        $query->setParameters($parameters);
+        $query->setParameters([
+            1 => 'foo',
+            2 => 'bar',
+        ]);
 
         self::assertEquals($parameters, $query->getParameters());
     }
@@ -121,7 +124,7 @@ class QueryTest extends OrmTestCase
           ->setHint('foo', 'bar')
           ->setHint('bar', 'baz')
           ->setParameter(1, 'bar')
-          ->setParameters(new ArrayCollection([new Parameter(2, 'baz')]))
+          ->setParameters([2 => 'baz'])
           ->setResultCacheDriver(null)
           ->setResultCache(null)
           ->setResultCacheId('foo')
@@ -229,6 +232,13 @@ class QueryTest extends OrmTestCase
         }
 
         self::assertTrue(true);
+    }
+
+    public function testToIterableWithArrayCollectionParametersIsDeprecated(): void
+    {
+        $q = $this->entityManager->createQuery('SELECT u from Doctrine\Tests\Models\CMS\CmsUser u');
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9816');
+        $q->toIterable(new ArrayCollection());
     }
 
     /** @group DDC-1697 */

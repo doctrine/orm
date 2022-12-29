@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnexpectedResultException;
 use Doctrine\Tests\IterableTester;
@@ -230,30 +229,6 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testSetParameters(): void
     {
-        $parameters = new ArrayCollection();
-        $parameters->add(new Parameter(1, 'jwage'));
-        $parameters->add(new Parameter(2, 'active'));
-
-        $this->_em->createQuery('SELECT u FROM ' . CmsUser::class . ' u WHERE u.name = ?1 AND u.status = ?2')
-                  ->setParameters($parameters)
-                  ->getResult();
-
-        if (! class_exists(LoggingMiddleware::class)) {
-            // DBAL 2 logs queries before resolving parameter positions
-            self::assertSame(
-                ['jwage', 'active'],
-                $this->getLastLoggedQuery()['params']
-            );
-        } else {
-            self::assertSame(
-                [1 => 'jwage', 2 => 'active'],
-                $this->getLastLoggedQuery()['params']
-            );
-        }
-    }
-
-    public function testSetParametersBackwardsCompatible(): void
-    {
         $parameters = [1 => 'jwage', 2 => 'active'];
 
         $this->_em->createQuery('SELECT u FROM ' . CmsUser::class . ' u WHERE u.name = ?1 AND u.status = ?2')
@@ -285,7 +260,7 @@ class QueryTest extends OrmFunctionalTestCase
         $articleId = $article1->id;
 
         $query    = $this->_em->createQuery('select a from ' . CmsArticle::class . ' a WHERE a.topic = ?1');
-        $articles = $query->iterate(new ArrayCollection([new Parameter(1, 'Doctrine 2')]), Query::HYDRATE_ARRAY);
+        $articles = $query->iterate([1 => 'Doctrine 2'], Query::HYDRATE_ARRAY);
 
         $expectedArticle = [
             'id'      => $articleId,
@@ -300,7 +275,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertEquals([[$expectedArticle]], $articles);
 
         $articles = $query->toIterable(
-            new ArrayCollection([new Parameter(1, 'Doctrine 2')]),
+            [1 => 'Doctrine 2'],
             Query::HYDRATE_ARRAY
         );
 
@@ -705,12 +680,12 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status = :a AND u.id IN (:b)');
-        $query->setParameters(new ArrayCollection(
+        $query->setParameters(
             [
-                new Parameter('b', [$user1->id, $user2->id, $user3->id]),
-                new Parameter('a', 'developer'),
+                'b' => [$user1->id, $user2->id, $user3->id],
+                'a' => 'developer',
             ]
-        ));
+        );
         $result = $query->getResult();
 
         self::assertCount(3, $result);

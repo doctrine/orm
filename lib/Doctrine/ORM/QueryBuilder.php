@@ -379,9 +379,8 @@ class QueryBuilder
      */
     public function getQuery()
     {
-        $parameters = clone $this->parameters;
-        $query      = $this->_em->createQuery($this->getDQL())
-            ->setParameters($parameters)
+        $query = $this->_em->createQuery($this->getDQL())
+            ->setParameters($this->parameters->toArray())
             ->setFirstResult($this->_firstResult)
             ->setMaxResults($this->_maxResults);
 
@@ -598,21 +597,25 @@ class QueryBuilder
      */
     public function setParameters($parameters)
     {
-        // BC compatibility with 2.3-
-        if (is_array($parameters)) {
-            /** @psalm-var ArrayCollection<int, Parameter> $parameterCollection */
-            $parameterCollection = new ArrayCollection();
+        if (! is_array($parameters)) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/9816',
+                'Passing an ArrayCollection to %s is deprecated.',
+                __METHOD__
+            );
+            $this->parameters = $parameters;
 
-            foreach ($parameters as $key => $value) {
-                $parameter = new Parameter($key, $value);
-
-                $parameterCollection->add($parameter);
-            }
-
-            $parameters = $parameterCollection;
+            return $this;
         }
 
-        $this->parameters = $parameters;
+        $this->parameters = new ArrayCollection();
+
+        foreach ($parameters as $key => $value) {
+            $parameter = new Parameter($key, $value);
+
+            $this->parameters->add($parameter);
+        }
 
         return $this;
     }
