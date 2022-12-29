@@ -66,6 +66,9 @@ final class Column implements Annotation
      */
     public $generated;
 
+    /** @var string|null the name of a class implementing ChangeDetectorInterface */
+    public $changeDetector;
+
     /**
      * @param class-string<\BackedEnum>|null $enumType
      * @param array<string,mixed>            $options
@@ -84,7 +87,8 @@ final class Column implements Annotation
         ?string $enumType = null,
         array $options = [],
         ?string $columnDefinition = null,
-        ?string $generated = null
+        ?string $generated = null,
+        ?string $changeDetector = null,
     ) {
         $this->name             = $name;
         $this->type             = $type;
@@ -99,5 +103,6 @@ final class Column implements Annotation
         $this->options          = $options;
         $this->columnDefinition = $columnDefinition;
         $this->generated        = $generated;
+        $this->changeDetector   = $changeDetector;
     }
 }

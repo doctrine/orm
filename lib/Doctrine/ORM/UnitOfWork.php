@@ -36,6 +36,7 @@ use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
+use Doctrine\ORM\Tools\ChangeDetector\ChangeDetectorRegistry;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\NotifyPropertyChanged;
@@ -311,6 +312,8 @@ class UnitOfWork implements PropertyChangedListener
     /** @var ReflectionPropertiesGetter */
     private $reflectionPropertiesGetter;
 
+    private ChangeDetectorRegistry $changeDetectorRegistry;
+
     /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      */
@@ -323,6 +326,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->identifierFlattener        = new IdentifierFlattener($this, $em->getMetadataFactory());
         $this->hydrationCompleteHandler   = new HydrationCompleteHandler($this->listenersInvoker, $em);
         $this->reflectionPropertiesGetter = new ReflectionPropertiesGetter(new RuntimeReflectionService());
+        $this->changeDetectorRegistry     = new ChangeDetectorRegistry();
     }
 
     /**
@@ -709,7 +713,12 @@ class UnitOfWork implements PropertyChangedListener
         if (! isset($this->originalEntityData[$oid])) {
             // Entity is either NEW or MANAGED but not yet fully persisted (only has an id).
             // These result in an INSERT.
-            $this->originalEntityData[$oid] = $actualData;
+            $dataCopy = [];
+            foreach ($actualData as $key => $value) {
+                $dataCopy[$key] = $this->changeDetectorRegistry->copyOriginalValue($class, $key, $value);
+            }
+
+            $this->originalEntityData[$oid] = $dataCopy;
             $changeSet                      = [];
 
             foreach ($actualData as $propName => $actualValue) {
@@ -759,7 +768,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // skip if value haven't changed
-                if ($orgValue === $actualValue) {
+                if (! $this->changeDetectorRegistry->isChanged($class, $propName, $actualValue, $orgValue)) {
                     continue;
                 }
 
@@ -820,9 +829,14 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
+            $dataCopy = [];
+            foreach ($actualData as $key => $value) {
+                $dataCopy[$key] = $this->changeDetectorRegistry->copyOriginalValue($class, $key, $value);
+            }
+
             if ($changeSet) {
                 $this->entityChangeSets[$oid]   = $changeSet;
-                $this->originalEntityData[$oid] = $actualData;
+                $this->originalEntityData[$oid] = $dataCopy;
                 $this->entityUpdates[$oid]      = $entity;
             }
         }
@@ -843,8 +857,13 @@ class UnitOfWork implements PropertyChangedListener
                 $val instanceof PersistentCollection &&
                 $val->isDirty()
             ) {
+                $dataCopy = [];
+                foreach ($actualData as $key => $value) {
+                    $dataCopy[$key] = $this->changeDetectorRegistry->copyOriginalValue($class, $key, $value);
+                }
+
                 $this->entityChangeSets[$oid]   = [];
-                $this->originalEntityData[$oid] = $actualData;
+                $this->originalEntityData[$oid] = $dataCopy;
                 $this->entityUpdates[$oid]      = $entity;
             }
         }
@@ -1201,6 +1220,8 @@ class UnitOfWork implements PropertyChangedListener
 
             $identifier[$idField]                     = $value ?? $origValue;
             $this->originalEntityData[$oid][$idField] = $origValue;
+            // would the line below be usefull in some case?
+            // $this->originalEntityData[$oid][$idField] = $this->changeDetectorRegistry->copyOriginalValue($class, $idField, $origValue);
         }
 
         $this->entityStates[$oid]      = self::STATE_MANAGED;
@@ -2735,15 +2756,12 @@ class UnitOfWork implements PropertyChangedListener
             if ($entity instanceof ObjectManagerAware) {
                 $entity->injectObjectManager($this->em, $class);
             }
-
-            $this->originalEntityData[$oid] = $data;
         } else {
             $entity = $this->newInstance($class);
             $oid    = spl_object_id($entity);
 
-            $this->entityIdentifiers[$oid]  = $id;
-            $this->entityStates[$oid]       = self::STATE_MANAGED;
-            $this->originalEntityData[$oid] = $data;
+            $this->entityIdentifiers[$oid] = $id;
+            $this->entityStates[$oid]      = self::STATE_MANAGED;
 
             $this->identityMap[$class->rootEntityName][$idHash] = $entity;
 
@@ -2756,8 +2774,12 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
+        $this->originalEntityData[$oid] = [];
+
         foreach ($data as $field => $value) {
             if (isset($class->fieldMappings[$field])) {
+                $valueCopy                              = $this->changeDetectorRegistry->copyOriginalValue($class, $field, $value);
+                $this->originalEntityData[$oid][$field] = $valueCopy;
                 $class->reflFields[$field]->setValue($entity, $value);
             }
         }
@@ -3275,9 +3297,15 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_id($entity);
 
+        $dataCopy = [];
+        $class    = $this->em->getClassMetadata(get_class($entity));
+        foreach ($data as $field => $value) {
+            $dataCopy = $this->changeDetectorRegistry->copyOriginalValue($class, $field, $value);
+        }
+
         $this->entityIdentifiers[$oid]  = $id;
         $this->entityStates[$oid]       = self::STATE_MANAGED;
-        $this->originalEntityData[$oid] = $data;
+        $this->originalEntityData[$oid] = $dataCopy;
 
         $this->addToIdentityMap($entity);
 
