@@ -278,6 +278,48 @@ class ClassMetadataTest extends OrmTestCase
         $cm->setVersionMapping($field);
     }
 
+    public function testDisablingVersioningRestoresOriginalState(): void
+    {
+        $versionedField = ['fieldName' => 'version', 'type' => 'integer'];
+
+        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+        $cm->setVersionMapping($versionedField);
+
+        self::assertTrue($cm->isVersioned);
+        self::assertEquals('version', $cm->versionField);
+        self::assertTrue($cm->requiresFetchAfterChange);
+
+        $cm->setVersioned(false);
+        $cm->setVersionField(null);
+
+        self::assertFalse($cm->isVersioned);
+        self::assertNull($cm->versionField);
+        self::assertFalse($cm->requiresFetchAfterChange);
+    }
+
+    public function testDisablingVersioningWithGeneratedFieldsRestoresOriginalState(): void
+    {
+        $versionedField = ['fieldName' => 'version', 'type' => 'integer'];
+        $generatedField = ['fieldName' => 'id', 'type' => 'integer', 'generated' => ClassMetadata::GENERATED_ALWAYS];
+
+        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+        $cm->setVersionMapping($versionedField);
+        $cm->mapField($generatedField);
+
+        self::assertTrue($cm->isVersioned);
+        self::assertEquals('version', $cm->versionField);
+        self::assertTrue($cm->requiresFetchAfterChange);
+
+        $cm->setVersioned(false);
+        $cm->setVersionField(null);
+
+        self::assertFalse($cm->isVersioned);
+        self::assertNull($cm->versionField);
+        self::assertTrue($cm->requiresFetchAfterChange);
+    }
+
     public function testGetSingleIdentifierFieldNameMultipleIdentifierEntityThrowsException(): void
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
