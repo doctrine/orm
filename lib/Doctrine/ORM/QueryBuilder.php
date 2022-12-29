@@ -1129,7 +1129,8 @@ class QueryBuilder
      *         ->where($or);
      * </code>
      *
-     * @param mixed $predicates The restriction predicates.
+     * @param                 string|object|array $predicates The restriction predicates.
+     * @phpstan-param literal-string|object|array $predicates
      *
      * @return $this
      */
