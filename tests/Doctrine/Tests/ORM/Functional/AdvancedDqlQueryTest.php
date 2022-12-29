@@ -222,6 +222,8 @@ DQL;
 
     public function testDeleteAs(): void
     {
+        $this->disableAutoCommit();
+
         $dql = 'DELETE Doctrine\Tests\Models\Company\CompanyEmployee AS p';
         $this->_em->createQuery($dql)->getResult();
 

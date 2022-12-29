@@ -11,6 +11,8 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -107,6 +109,10 @@ class GH9109Product
      * @var Collection|GH9109User[]
      * @psalm-var Collection<int, GH9109User>
      * @ManyToMany(targetEntity="GH9109User")
+     * @JoinTable(name="GH9109Product_GH9109User",
+     *    joinColumns={@JoinColumn(name="GH9109Product_id", referencedColumnName="`id`")},
+     *    inverseJoinColumns={@JoinColumn(name="GH9109User_id", referencedColumnName="`id`")}
+     * )
      */
     private $buyers;
 

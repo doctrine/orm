@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity()
- * @Table(name="one_to_one_inverse_side_load_owning")
+ * @Table(name="o2o_side_owning")
  */
 class OwningSide
 {

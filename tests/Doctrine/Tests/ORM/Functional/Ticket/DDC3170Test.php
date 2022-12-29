@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /** @group DDC-2306 */
@@ -92,6 +93,7 @@ class DDC3170ProductJoined extends DDC3170AbstractEntityJoined
 
 /**
  * @Entity
+ * @Table(name="DDC3170_abstr_single_tab")
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="type", type="string")
  * @DiscriminatorMap({"product" = "DDC3170ProductSingleTable"})

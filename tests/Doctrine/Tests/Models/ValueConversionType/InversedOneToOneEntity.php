@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
- * @Table(name="vct_inversed_onetoone")
+ * @Table(name="vct_invers_o2o")
  */
 class InversedOneToOneEntity
 {

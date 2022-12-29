@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
- * @Table(name="vct_inversed_manytomany_extralazy")
+ * @Table(name="vct_invers_m2m_exlazy")
  */
 class InversedManyToManyExtraLazyEntity
 {

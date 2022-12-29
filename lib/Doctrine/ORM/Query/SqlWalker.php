@@ -10,6 +10,7 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\OptimisticLockException;
@@ -47,6 +48,8 @@ use function trim;
  */
 class SqlWalker implements TreeWalker
 {
+    use SQLResultCasing;
+
     public const HINT_DISTINCT = 'doctrine.distinct';
 
     /**
@@ -773,7 +776,7 @@ class SqlWalker implements TreeWalker
                 $sqlSelectExpressions[] = $tblAlias . '.' . $discrColumn['name'] . ' AS ' . $columnAlias;
 
                 $this->rsm->setDiscriminatorColumn($dqlAlias, $columnAlias);
-                $this->rsm->addMetaResult($dqlAlias, $columnAlias, $discrColumn['fieldName'], false, $discrColumn['type']);
+                $this->rsm->addMetaResult($dqlAlias, $columnAlias, $this->getSQLResultCasing($this->platform, $discrColumn['fieldName']), false, $discrColumn['type']);
             }
 
             // Add foreign key columns to SQL, if necessary

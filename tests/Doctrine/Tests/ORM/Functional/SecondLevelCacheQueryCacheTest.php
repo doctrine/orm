@@ -10,6 +10,7 @@ use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Cache\QueryCacheKey;
+use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -22,6 +23,8 @@ use ReflectionMethod;
 /** @group DDC-2183 */
 class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
 {
+    use SQLResultCasing;
+
     public function testBasicQueryCache(): void
     {
         $this->evictRegions();
@@ -695,10 +698,11 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
-        $rsm = new ResultSetMapping();
+        $platform = $this->_em->getConnection()->getDatabasePlatform();
+        $rsm      = new ResultSetMapping();
         $rsm->addEntityResult(Country::class, 'c');
-        $rsm->addFieldResult('c', 'name', 'name');
-        $rsm->addFieldResult('c', 'id', 'id');
+        $rsm->addFieldResult('c', $this->getSQLResultCasing($platform, 'name'), 'name');
+        $rsm->addFieldResult('c', $this->getSQLResultCasing($platform, 'id'), 'id');
 
         $this->getQueryLog()->reset()->enable();
         $sql     = 'SELECT id, name FROM cache_country';

@@ -22,7 +22,7 @@ abstract class DDC3597Media extends DDC3597Root
 
     /**
      * @var int
-     * @Column
+     * @Column(name="`size`")
      */
     private $size = 0;
 

@@ -4,7 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                             https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-    <entity name="Doctrine\Tests\Models\OrnementalOrphanRemoval\Person" table="ornemental_orphan_removal_person">
+    <entity name="Doctrine\Tests\Models\OrnementalOrphanRemoval\Person" table="orn_orp_rem_person">
         <id name="id" column="id" length="255">
             <generator strategy="NONE" />
         </id>

@@ -27,11 +27,11 @@ final class GH7875Test extends OrmFunctionalTestCase
     public function cleanUpSchema(): void
     {
         $connection = $this->_em->getConnection();
+        $platform   = $connection->getDatabasePlatform();
 
-        $connection->executeStatement('DROP TABLE IF EXISTS gh7875_my_entity');
-        $connection->executeStatement('DROP TABLE IF EXISTS gh7875_my_other_entity');
+        $connection->executeStatement($this->getSqlForDrop('gh7875_my_entity', $platform)); // Oracle DB not support 'IF EXISTS'
+        $connection->executeStatement($this->getSqlForDrop('gh7875_my_other_entity', $platform));
 
-        $platform = $connection->getDatabasePlatform();
         if ($platform instanceof PostgreSQLPlatform) {
             $connection->executeStatement('DROP SEQUENCE IF EXISTS gh7875_my_entity_id_seq');
             $connection->executeStatement('DROP SEQUENCE IF EXISTS gh7875_my_other_entity_id_seq');

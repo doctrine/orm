@@ -167,14 +167,14 @@ class DDC2252User
     /**
      * @var int
      * @Id
-     * @Column(type="integer")
+     * @Column(type="integer", name="uid_column")
      */
     protected $uid = 222;
 
     /**
      * @psalm-var Collection<int, DDC2252Membership>
      * @OneToMany(targetEntity="DDC2252Membership", mappedBy="userAccount", cascade={"persist"})
-     * @JoinColumn(name="uid", referencedColumnName="uid")
+     * @JoinColumn(name="uid_column", referencedColumnName="uid_column")
      */
     protected $memberships;
 
@@ -211,7 +211,7 @@ class DDC2252Membership
      * @var DDC2252User
      * @Id
      * @ManyToOne(targetEntity="DDC2252User", inversedBy="memberships")
-     * @JoinColumn(name="uid", referencedColumnName="uid")
+     * @JoinColumn(name="uid_column", referencedColumnName="uid_column")
      */
     protected $userAccount;
 
@@ -226,10 +226,10 @@ class DDC2252Membership
     /**
      * @psalm-var Collection<int, DDC2252Privilege>
      * @ManyToMany(targetEntity="DDC2252Privilege", indexBy="privilegeid")
-     * @JoinTable(name="ddc2252_user_mch_account_privilege",
+     * @JoinTable(name="ddc2252_u2account_privilege",
      *   joinColumns={
      *       @JoinColumn(name="mch_accountid", referencedColumnName="mch_accountid"),
-     *       @JoinColumn(name="uid", referencedColumnName="uid")
+     *       @JoinColumn(name="uid_column", referencedColumnName="uid_column")
      *   },
      *   inverseJoinColumns={
      *       @JoinColumn(name="privilegeid", referencedColumnName="privilegeid")

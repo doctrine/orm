@@ -52,7 +52,7 @@ use Doctrine\ORM\Mapping\Table;
  *      @NamedNativeQuery(
  *          name            = "fetchJoinedPhonenumber",
  *          resultSetMapping= "mappingJoinedPhonenumber",
- *          query           = "SELECT id, name, status, phonenumber AS number FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?"
+ *          query           = "SELECT id, name, status, phonenumber AS ""number"" FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?"
  *      ),
  *      @NamedNativeQuery(
  *          name            = "fetchUserPhonenumberCount",
@@ -92,7 +92,7 @@ use Doctrine\ORM\Mapping\Table;
  *                      @FieldResult("id"),
  *                      @FieldResult("name"),
  *                      @FieldResult("status"),
- *                      @FieldResult("phonenumbers.phonenumber" , column = "number"),
+ *                      @FieldResult("phonenumbers.phonenumber" , column = "`number`"),
  *                  }
  *              )
  *          }
@@ -365,7 +365,7 @@ class CmsUser
         $metadata->addNamedNativeQuery(
             [
                 'name'              => 'fetchJoinedPhonenumber',
-                'query'             => 'SELECT id, name, status, phonenumber AS number FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?',
+                'query'             => 'SELECT id, name, status, phonenumber AS "number" FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?',
                 'resultSetMapping'  => 'mappingJoinedPhonenumber',
             ]
         );
@@ -450,7 +450,7 @@ class CmsUser
                             ],
                             [
                                 'name'      => 'phonenumbers.phonenumber',
-                                'column'    => 'number',
+                                'column'    => '`number`',
                             ],
                         ],
                         'entityClass'   => self::class,

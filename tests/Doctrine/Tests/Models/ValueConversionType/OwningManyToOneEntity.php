@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
- * @Table(name="vct_owning_manytoone")
+ * @Table(name="vct_owning_m2o")
  */
 class OwningManyToOneEntity
 {

@@ -43,7 +43,7 @@ class Ticket4646InstanceOfAbstractTest extends OrmFunctionalTestCase
 
 /**
  * @Entity()
- * @Table(name="instance_of_abstract_test_person")
+ * @Table(name="inst_abstract_person")
  * @InheritanceType(value="JOINED")
  * @DiscriminatorColumn(name="kind", type="string")
  * @DiscriminatorMap(value={
@@ -68,7 +68,7 @@ abstract class PersonTicket4646Abstract
 
 /**
  * @Entity()
- * @Table(name="instance_of_abstract_test_employee")
+ * @Table(name="inst_abstract_employee")
  */
 class EmployeeTicket4646Abstract extends PersonTicket4646Abstract
 {

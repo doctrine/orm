@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
- * @Table(name="one_to_one_single_table_inheritance_litter_box")
+ * @Table(name="o2o_single_tab_inherit_lb")
  */
 class LitterBox
 {

@@ -6,6 +6,8 @@ namespace Doctrine\Tests;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\DatabaseObjectNotFoundException;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\DB2Platform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
@@ -53,6 +55,7 @@ use function realpath;
 use function sprintf;
 use function str_contains;
 use function strtolower;
+use function strtoupper;
 use function var_export;
 
 use const PHP_EOL;
@@ -553,8 +556,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($this->_usedModelSets['ornemental_orphan_removal'])) {
-            $conn->executeStatement('DELETE FROM ornemental_orphan_removal_person');
-            $conn->executeStatement('DELETE FROM ornemental_orphan_removal_phone_number');
+            $conn->executeStatement('DELETE FROM orn_orp_rem_person');
+            $conn->executeStatement('DELETE FROM orn_orp_rem_phone_number');
         }
 
         if (isset($this->_usedModelSets['quote'])) {
@@ -575,65 +578,65 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($this->_usedModelSets['vct_onetoone'])) {
-            $conn->executeStatement('DELETE FROM vct_owning_onetoone');
-            $conn->executeStatement('DELETE FROM vct_inversed_onetoone');
+            $conn->executeStatement('DELETE FROM vct_owning_o2o');
+            $conn->executeStatement('DELETE FROM vct_invers_o2o');
         }
 
         if (isset($this->_usedModelSets['vct_onetoone_compositeid'])) {
-            $conn->executeStatement('DELETE FROM vct_owning_onetoone_compositeid');
-            $conn->executeStatement('DELETE FROM vct_inversed_onetoone_compositeid');
+            $conn->executeStatement('DELETE FROM vct_owning_o2o_compos');
+            $conn->executeStatement('DELETE FROM vct_invers_o2o_compos');
         }
 
         if (isset($this->_usedModelSets['vct_onetoone_compositeid_foreignkey'])) {
-            $conn->executeStatement('DELETE FROM vct_owning_onetoone_compositeid_foreignkey');
-            $conn->executeStatement('DELETE FROM vct_inversed_onetoone_compositeid_foreignkey');
+            $conn->executeStatement('DELETE FROM vct_owning_o2o_compos_fk');
+            $conn->executeStatement('DELETE FROM vct_invers_o2o_compos_fk');
             $conn->executeStatement('DELETE FROM vct_auxiliary');
         }
 
         if (isset($this->_usedModelSets['vct_onetomany'])) {
-            $conn->executeStatement('DELETE FROM vct_owning_manytoone');
-            $conn->executeStatement('DELETE FROM vct_inversed_onetomany');
+            $conn->executeStatement('DELETE FROM vct_owning_m2o');
+            $conn->executeStatement('DELETE FROM vct_invers_o2m');
         }
 
         if (isset($this->_usedModelSets['vct_onetomany_compositeid'])) {
-            $conn->executeStatement('DELETE FROM vct_owning_manytoone_compositeid');
-            $conn->executeStatement('DELETE FROM vct_inversed_onetomany_compositeid');
+            $conn->executeStatement('DELETE FROM vct_owning_m2o_compos');
+            $conn->executeStatement('DELETE FROM vct_invers_o2m_compos');
         }
 
         if (isset($this->_usedModelSets['vct_onetomany_compositeid_foreignkey'])) {
-            $conn->executeStatement('DELETE FROM vct_owning_manytoone_compositeid_foreignkey');
-            $conn->executeStatement('DELETE FROM vct_inversed_onetomany_compositeid_foreignkey');
+            $conn->executeStatement('DELETE FROM vct_owning_m2o_compos_fk');
+            $conn->executeStatement('DELETE FROM vct_invers_o2m_compos_fk');
             $conn->executeStatement('DELETE FROM vct_auxiliary');
         }
 
         if (isset($this->_usedModelSets['vct_onetomany_extralazy'])) {
-            $conn->executeStatement('DELETE FROM vct_owning_manytoone_extralazy');
-            $conn->executeStatement('DELETE FROM vct_inversed_onetomany_extralazy');
+            $conn->executeStatement('DELETE FROM vct_owning_m2o_exlazy');
+            $conn->executeStatement('DELETE FROM vct_invers_o2m_exlazy');
         }
 
         if (isset($this->_usedModelSets['vct_manytomany'])) {
-            $conn->executeStatement('DELETE FROM vct_xref_manytomany');
-            $conn->executeStatement('DELETE FROM vct_owning_manytomany');
-            $conn->executeStatement('DELETE FROM vct_inversed_manytomany');
+            $conn->executeStatement('DELETE FROM vct_xref_m2m');
+            $conn->executeStatement('DELETE FROM vct_owning_m2m');
+            $conn->executeStatement('DELETE FROM vct_invers_m2m');
         }
 
         if (isset($this->_usedModelSets['vct_manytomany_compositeid'])) {
-            $conn->executeStatement('DELETE FROM vct_xref_manytomany_compositeid');
-            $conn->executeStatement('DELETE FROM vct_owning_manytomany_compositeid');
-            $conn->executeStatement('DELETE FROM vct_inversed_manytomany_compositeid');
+            $conn->executeStatement('DELETE FROM vct_xref_m2m_compos');
+            $conn->executeStatement('DELETE FROM vct_owning_m2m_compos');
+            $conn->executeStatement('DELETE FROM vct_invers_m2m_compos');
         }
 
         if (isset($this->_usedModelSets['vct_manytomany_compositeid_foreignkey'])) {
-            $conn->executeStatement('DELETE FROM vct_xref_manytomany_compositeid_foreignkey');
-            $conn->executeStatement('DELETE FROM vct_owning_manytomany_compositeid_foreignkey');
-            $conn->executeStatement('DELETE FROM vct_inversed_manytomany_compositeid_foreignkey');
+            $conn->executeStatement('DELETE FROM vct_xref_m2m_compos_fk');
+            $conn->executeStatement('DELETE FROM vct_owning_m2m_compos_fk');
+            $conn->executeStatement('DELETE FROM vct_invers_m2m_compos_fk');
             $conn->executeStatement('DELETE FROM vct_auxiliary');
         }
 
         if (isset($this->_usedModelSets['vct_manytomany_extralazy'])) {
-            $conn->executeStatement('DELETE FROM vct_xref_manytomany_extralazy');
-            $conn->executeStatement('DELETE FROM vct_owning_manytomany_extralazy');
-            $conn->executeStatement('DELETE FROM vct_inversed_manytomany_extralazy');
+            $conn->executeStatement('DELETE FROM vct_xref_m2m_exlazy');
+            $conn->executeStatement('DELETE FROM vct_owning_m2m_exlazy');
+            $conn->executeStatement('DELETE FROM vct_invers_m2m_exlazy');
         }
 
         if (isset($this->_usedModelSets['geonames'])) {
@@ -656,8 +659,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($this->_usedModelSets['versioned_many_to_one'])) {
-            $conn->executeStatement('DELETE FROM versioned_many_to_one_article');
-            $conn->executeStatement('DELETE FROM versioned_many_to_one_category');
+            $conn->executeStatement('DELETE FROM ver_m2o_article');
+            $conn->executeStatement('DELETE FROM ver_m2o_category');
         }
 
         if (isset($this->_usedModelSets['issue5989'])) {
@@ -713,6 +716,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             ) {
                 static::$sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/');
             } elseif ($platform instanceof OraclePlatform) {
+                $test = 'SELECT 1 /*' . static::class . '*/ FROM dual';
                 static::$sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/ FROM dual');
             }
         }
@@ -967,5 +971,55 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         $this->dropTableIfExists($tableName);
         $schemaManager->createTable($table);
+    }
+
+    public function getLimitSQLByPlatform($limit, AbstractPlatform $platform): string
+    {
+        $sql = ' LIMIT';
+        if ($platform instanceof OraclePlatform) {
+            $sql = ' WHERE ROWNUM <=';
+        }
+
+        return $sql . ' ' . $limit;
+    }
+
+    public function getDiscriminatorByPlatform($key, AbstractPlatform $platform): string
+    {
+        if ($platform instanceof OraclePlatform || $platform instanceof DB2Platform) {
+            return strtoupper($key);
+        }
+
+        return $key;
+    }
+
+    /**
+     * Due to autocommit in oracle database, all data in temporary tables for the current session is dropped
+     * and the tests do not pass. And autocommit is disabled only in this way
+     *
+     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function disableAutoCommit(): void
+    {
+        $conn = $this->_em->getConnection();
+        if ($conn->getDatabasePlatform() instanceof OraclePlatform) {
+            $conn->getWrappedConnection()->beginTransaction();
+        }
+    }
+
+    public function getSqlForDrop(string $tableName, AbstractPlatform $platform): string
+    {
+        if (! $platform instanceof OraclePlatform) {
+            return 'DROP TABLE IF EXISTS ' . $tableName;
+        }
+
+        return 'BEGIN
+           EXECUTE IMMEDIATE \'DROP TABLE ' . $tableName . '\';
+        EXCEPTION
+           WHEN OTHERS THEN
+              IF SQLCODE != -942 THEN
+                 RAISE;
+              END IF;
+        END;';
     }
 }

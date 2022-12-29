@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
- * @Table(name="vct_owning_manytomany_compositeid_foreignkey")
+ * @Table(name="vct_owning_m2m_compos_fk")
  */
 class OwningManyToManyCompositeIdForeignKeyEntity
 {
@@ -31,7 +31,7 @@ class OwningManyToManyCompositeIdForeignKeyEntity
      * @var Collection<int, InversedManyToManyCompositeIdForeignKeyEntity>
      * @ManyToMany(targetEntity="InversedManyToManyCompositeIdForeignKeyEntity", inversedBy="associatedEntities")
      * @JoinTable(
-     *     name="vct_xref_manytomany_compositeid_foreignkey",
+     *     name="vct_xref_m2m_compos_fk",
      *     joinColumns={@JoinColumn(name="owning_id", referencedColumnName="id2")},
      *     inverseJoinColumns={
      *         @JoinColumn(name="associated_id", referencedColumnName="id1"),

@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
- * @Table(name="vct_inversed_onetomany")
+ * @Table(name="vct_invers_o2m")
  */
 class InversedOneToManyEntity
 {

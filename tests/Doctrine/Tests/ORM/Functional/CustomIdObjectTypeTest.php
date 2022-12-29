@@ -86,7 +86,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
                 . ' parent LEFT JOIN parent.children children '
                 . 'WHERE children.id = ?1'
             )
-            ->setParameter(1, $parent->children->first()->id)
+            ->setParameter(1, $parent->children->first()->id->id)
             ->getResult();
 
         self::assertCount(1, $result);

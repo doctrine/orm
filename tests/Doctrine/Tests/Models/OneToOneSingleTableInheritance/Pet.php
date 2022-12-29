@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
- * @Table(name="one_to_one_single_table_inheritance_pet")
+ * @Table(name="o2o_single_tab_inherit_pet")
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorMap({"cat" = "Cat"})
  */

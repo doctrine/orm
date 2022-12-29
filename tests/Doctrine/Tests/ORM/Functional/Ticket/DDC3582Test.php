@@ -25,9 +25,9 @@ class DDC3582Test extends OrmFunctionalTestCase
         $entity = $this->_em->find(DDC3582Entity::class, 'foo');
         assert($entity instanceof DDC3582Entity);
 
-        self::assertInstanceOf(DDC3582Embeddable1::class, $entity->embeddable1);
-        self::assertInstanceOf(DDC3582Embeddable2::class, $entity->embeddable1->embeddable2);
-        self::assertInstanceOf(DDC3582Embeddable3::class, $entity->embeddable1->embeddable2->embeddable3);
+        self::assertInstanceOf(DDC3582Embeddable1::class, $entity->embed1);
+        self::assertInstanceOf(DDC3582Embeddable2::class, $entity->embed1->embed2);
+        self::assertInstanceOf(DDC3582Embeddable3::class, $entity->embed1->embed2->embed3);
     }
 }
 
@@ -45,12 +45,12 @@ class DDC3582Entity
      * @var DDC3582Embeddable1
      * @Embedded(class="DDC3582Embeddable1")
      */
-    public $embeddable1;
+    public $embed1;
 
     public function __construct(string $id)
     {
-        $this->id          = $id;
-        $this->embeddable1 = new DDC3582Embeddable1();
+        $this->id     = $id;
+        $this->embed1 = new DDC3582Embeddable1();
     }
 }
 
@@ -61,11 +61,11 @@ class DDC3582Embeddable1
      * @var DDC3582Embeddable2
      * @Embedded(class="DDC3582Embeddable2")
      */
-    public $embeddable2;
+    public $embed2;
 
     public function __construct()
     {
-        $this->embeddable2 = new DDC3582Embeddable2();
+        $this->embed2 = new DDC3582Embeddable2();
     }
 }
 
@@ -76,11 +76,11 @@ class DDC3582Embeddable2
      * @var DDC3582Embeddable3
      * @Embedded(class="DDC3582Embeddable3")
      */
-    public $embeddable3;
+    public $embed3;
 
     public function __construct()
     {
-        $this->embeddable3 = new DDC3582Embeddable3();
+        $this->embed3 = new DDC3582Embeddable3();
     }
 }
 
@@ -91,5 +91,5 @@ class DDC3582Embeddable3
      * @var string
      * @Column
      */
-    public $embeddedValue = 'foo';
+    public $embedVal = 'foo';
 }

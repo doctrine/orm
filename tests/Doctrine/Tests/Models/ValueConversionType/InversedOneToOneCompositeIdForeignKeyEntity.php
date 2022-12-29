@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
- * @Table(name="vct_inversed_onetoone_compositeid_foreignkey")
+ * @Table(name="vct_invers_o2o_compos_fk")
  */
 class InversedOneToOneCompositeIdForeignKeyEntity
 {

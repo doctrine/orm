@@ -660,7 +660,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals(['name' => 'id', 'column' => 'id'], $mapping['entities'][0]['fields'][0]);
         self::assertEquals(['name' => 'name', 'column' => 'name'], $mapping['entities'][0]['fields'][1]);
         self::assertEquals(['name' => 'status', 'column' => 'status'], $mapping['entities'][0]['fields'][2]);
-        self::assertEquals(['name' => 'phonenumbers.phonenumber', 'column' => 'number'], $mapping['entities'][0]['fields'][3]);
+        self::assertEquals(['name' => 'phonenumbers.phonenumber', 'column' => 'number', 'quoted' => true], $mapping['entities'][0]['fields'][3]);
         self::assertEquals($userMetadata->name, $mapping['entities'][0]['entityClass']);
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingUserPhonenumberCount');

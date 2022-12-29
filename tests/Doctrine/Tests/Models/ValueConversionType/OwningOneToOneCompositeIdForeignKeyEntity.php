@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping\UniqueConstraint;
 /**
  * @Entity
  * @Table(
- *     name="vct_owning_onetoone_compositeid_foreignkey",
+ *     name="vct_owning_o2o_compos_fk",
  *     uniqueConstraints={
  *         @UniqueConstraint(name="associated_entity_uniq", columns={"associated_id", "associated_foreign_id"})
  *     }

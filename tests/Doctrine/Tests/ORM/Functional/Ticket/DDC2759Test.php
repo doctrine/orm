@@ -111,7 +111,7 @@ class DDC2759Category
 
 /**
  * @Entity
- * @Table(name="ddc_2759_qualification_metadata")
+ * @Table(name="ddc2759_quali_metadata")
  */
 class DDC2759QualificationMetadata
 {

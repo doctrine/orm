@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\ReadonlyProperties\Author;
@@ -13,6 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\TestUtil;
 
 use function dirname;
+use function strtoupper;
 
 /**
  * @requires PHP 8.1
@@ -40,7 +42,7 @@ class ReadonlyPropertiesTest extends OrmFunctionalTestCase
         $connection = $this->_em->getConnection();
 
         $connection->insert('author', ['name' => 'Jane Austen']);
-        $authorId = $connection->lastInsertId();
+        $authorId = $connection->lastInsertId($this->getLastInsertName('author'));
 
         $author = $this->_em->find(Author::class, $authorId);
 
@@ -53,10 +55,10 @@ class ReadonlyPropertiesTest extends OrmFunctionalTestCase
         $connection = $this->_em->getConnection();
 
         $connection->insert('author', ['name' => 'Jane Austen']);
-        $authorId = $connection->lastInsertId();
+        $authorId = $connection->lastInsertId($this->getLastInsertName('author'));
 
         $connection->insert('simple_book', ['title' => 'Pride and Prejudice', 'author_id' => $authorId]);
-        $bookId = $connection->lastInsertId();
+        $bookId = $connection->lastInsertId($this->getLastInsertName('simple_book'));
 
         $book = $this->_em->find(SimpleBook::class, $bookId);
 
@@ -69,11 +71,12 @@ class ReadonlyPropertiesTest extends OrmFunctionalTestCase
     {
         $connection = $this->_em->getConnection();
 
+        $this->disableAutoCommit();
         $connection->insert('author', ['name' => 'Jane Austen']);
-        $authorId = $connection->lastInsertId();
+        $authorId = $connection->lastInsertId($this->getLastInsertName('author'));
 
         $connection->insert('simple_book', ['title' => 'Pride and Prejudice', 'author_id' => $authorId]);
-        $bookId = $connection->lastInsertId();
+        $bookId = $connection->lastInsertId($this->getLastInsertName('simple_book'));
 
         [$book] = $this->_em->createQueryBuilder()
             ->from(SimpleBook::class, 'b')
@@ -94,11 +97,12 @@ class ReadonlyPropertiesTest extends OrmFunctionalTestCase
     {
         $connection = $this->_em->getConnection();
 
+        $this->disableAutoCommit();
         $connection->insert('author', ['name' => 'Jane Austen']);
-        $authorId = $connection->lastInsertId();
+        $authorId = $connection->lastInsertId($this->getLastInsertName('author'));
 
         $connection->insert('book', ['title' => 'Pride and Prejudice']);
-        $bookId = $connection->lastInsertId();
+        $bookId = $connection->lastInsertId($this->getLastInsertName('book'));
 
         $connection->insert('book_author', ['book_id' => $bookId, 'author_id' => $authorId]);
 
@@ -107,5 +111,17 @@ class ReadonlyPropertiesTest extends OrmFunctionalTestCase
         self::assertSame('Pride and Prejudice', $book->getTitle());
         self::assertEquals($bookId, $book->getId());
         self::assertSame('Jane Austen', $book->getAuthors()[0]->getName());
+    }
+
+    /**
+     * Getting LastInsertName is needed, since in DBAL there is no other option to get the last added id
+     */
+    private function getLastInsertName($name): ?string
+    {
+        if ($this->_em->getConnection()->getDatabasePlatform() instanceof OraclePlatform) {
+            return strtoupper($name) . '_SEQ';
+        }
+
+        return null;
     }
 }

@@ -18,7 +18,7 @@ Doctrine\Tests\Models\CMS\CmsUser:
     fetchJoinedPhonenumber:
       name: fetchJoinedPhonenumber
       resultSetMapping: mappingJoinedPhonenumber
-      query: SELECT id, name, status, phonenumber AS number FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?
+      query: SELECT id, name, status, phonenumber AS "number" FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?
     fetchUserPhonenumberCount:
       name: fetchUserPhonenumberCount
       resultSetMapping: mappingUserPhonenumberCount
@@ -63,7 +63,7 @@ Doctrine\Tests\Models\CMS\CmsUser:
               name: status
             3:
               name: phonenumbers.phonenumber
-              column: number
+              column: "`number`"
     mappingUserPhonenumberCount:
       name: mappingUserPhonenumberCount
       columnResult:

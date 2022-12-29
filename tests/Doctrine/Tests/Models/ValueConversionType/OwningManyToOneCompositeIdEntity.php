@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
- * @Table(name="vct_owning_manytoone_compositeid")
+ * @Table(name="vct_owning_m2o_compos")
  */
 class OwningManyToOneCompositeIdEntity
 {

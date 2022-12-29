@@ -93,6 +93,70 @@ jobs:
           name: "phpunit-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage*.xml"
 
+  phpunit-oci8:
+    name: "PHPUnit on OCI8"
+    runs-on: "ubuntu-22.04"
+    needs: "phpunit-smoke-check"
+
+    strategy:
+      matrix:
+        php-version:
+          - "8.1"
+        oracle-version:
+          - "11"
+          - "21"
+        dbal-version:
+          - "default"
+        include:
+          - php-version: "8.0"
+            dbal-version: "default"
+            oracle-version: "21"
+          - php-version: "8.1"
+            dbal-version: "3@dev"
+            oracle-version: "21"
+
+    services:
+      oracle:
+        image: gvenzl/oracle-xe:${{ matrix.oracle-version }}
+        env:
+          ORACLE_PASSWORD: oracle
+        ports:
+          - "1521:1521"
+        options: >-
+          --health-cmd healthcheck.sh
+          --health-interval 20s
+          --health-timeout 10s
+          --health-retries 10
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+        with:
+          fetch-depth: 2
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          extensions: "oci8"
+          coverage: "pcov"
+          ini-values: "zend.assertions=1"
+
+      - name: "Require specific DBAL version"
+        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
+        if: "${{ matrix.dbal-version != 'default' }}"
+
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v1"
+
+      - name: "Run PHPUnit"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/oci8.xml --coverage-clover=coverage.xml"
+
+      - name: "Upload coverage file"
+        uses: "actions/upload-artifact@v2"
+        with:
+          name: "${{ github.job }}-${{ matrix.php-version }}.coverage"
+          path: "coverage.xml"
 
   phpunit-postgres:
     name: "PHPUnit with PostgreSQL"
@@ -343,6 +407,7 @@ jobs:
     runs-on: "ubuntu-22.04"
     needs:
       - "phpunit-smoke-check"
+      - "phpunit-oci8"
       - "phpunit-postgres"
       - "phpunit-mariadb"
       - "phpunit-mysql"

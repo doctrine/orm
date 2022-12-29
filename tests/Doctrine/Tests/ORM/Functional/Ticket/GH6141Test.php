@@ -60,18 +60,21 @@ class GH6141Test extends OrmFunctionalTestCase
             ->setMaxResults(1)
             ->getQuery();
 
+        $keyDiscr = $this->getDiscriminatorByPlatform('discr', $this->_em->getConnection()->getDatabasePlatform());
+
         $query->setParameter('name', 'John');
+        $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY);
         self::assertEquals($boss, $query->getOneOrNullResult(AbstractQuery::HYDRATE_OBJECT));
         self::assertEquals(
             GH6141People::get(GH6141People::BOSS),
-            $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY)['discr']
+            $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY)[$keyDiscr]
         );
 
         $query->setParameter('name', 'Bob');
         self::assertEquals($employee, $query->getOneOrNullResult(AbstractQuery::HYDRATE_OBJECT));
         self::assertEquals(
             GH6141People::get(GH6141People::EMPLOYEE),
-            $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY)['discr']
+            $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY)[$keyDiscr]
         );
     }
 }

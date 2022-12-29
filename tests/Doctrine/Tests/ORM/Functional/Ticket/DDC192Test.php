@@ -13,6 +13,8 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function array_map;
+
 /** @group DDC-192 */
 class DDC192Test extends OrmFunctionalTestCase
 {
@@ -30,7 +32,7 @@ class DDC192Test extends OrmFunctionalTestCase
         foreach ($classes as $class) {
             self::assertContains(
                 $this->_em->getClassMetadata($class)->getTableName(),
-                $tables
+                array_map('strtolower', $tables)
             );
         }
     }

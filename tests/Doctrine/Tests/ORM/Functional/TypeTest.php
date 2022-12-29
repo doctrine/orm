@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use DateTime;
 use DateTimeZone;
+use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
@@ -25,6 +26,10 @@ class TypeTest extends OrmFunctionalTestCase
 
     public function testDecimal(): void
     {
+        if ($this->_em->getConnection()->getDatabasePlatform() instanceof OraclePlatform) {
+            self::markTestSkipped('First you need to implement the TO_CHAR method');
+        }
+
         $decimal            = new DecimalModel();
         $decimal->decimal   = 0.15;
         $decimal->highScale = 0.1515;

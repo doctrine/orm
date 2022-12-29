@@ -290,22 +290,25 @@ class ResultSetMappingBuilder extends ResultSetMapping
         $classMetadata = $this->em->getClassMetadata($resultClassName);
         assert($classMetadata->reflClass !== null);
 
+        $platform  = $this->em->getConnection()->getDatabasePlatform();
         $shortName = $classMetadata->reflClass->getShortName();
         $alias     = strtolower($shortName[0]) . '0';
 
         $this->addEntityResult($class->name, $alias);
 
         if ($classMetadata->discriminatorColumn) {
-            $discrColumn = $classMetadata->discriminatorColumn;
+            $discrColumn     = $classMetadata->discriminatorColumn;
+            $discrColumnName = $this->getSQLResultCasing($platform, $discrColumn['name']);
 
-            $this->setDiscriminatorColumn($alias, $discrColumn['name']);
-            $this->addMetaResult($alias, $discrColumn['name'], $discrColumn['fieldName'], false, $discrColumn['type']);
+            $this->setDiscriminatorColumn($alias, $discrColumnName);
+            $this->addMetaResult($alias, $discrColumnName, $discrColumn['fieldName'], false, $discrColumn['type']);
         }
 
         foreach ($classMetadata->getColumnNames() as $key => $columnName) {
-            $propertyName = $classMetadata->getFieldName($columnName);
+            $propertyName     = $classMetadata->getFieldName($columnName);
+            $columnNameCasing = $this->getSQLResultCasing($platform, $columnName);
 
-            $this->addFieldResult($alias, $columnName, $propertyName);
+            $this->addFieldResult($alias, $columnNameCasing, $propertyName);
         }
 
         foreach ($classMetadata->associationMappings as $associationMapping) {
@@ -313,10 +316,11 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 $targetClass = $this->em->getClassMetadata($associationMapping['targetEntity']);
 
                 foreach ($associationMapping['joinColumns'] as $joinColumn) {
-                    $columnName = $joinColumn['name'];
-                    $columnType = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
+                    $columnName       = $joinColumn['name'];
+                    $columnNameCasing = $this->getSQLResultCasing($platform, $columnName);
+                    $columnType       = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
-                    $this->addMetaResult($alias, $columnName, $columnName, $classMetadata->isIdentifier($columnName), $columnType);
+                    $this->addMetaResult($alias, $columnNameCasing, $columnName, $classMetadata->isIdentifier($columnName), $columnType);
                 }
             }
         }
@@ -367,12 +371,15 @@ class ResultSetMappingBuilder extends ResultSetMapping
         }
 
         if (isset($resultMapping['columns'])) {
+            $platform = $this->em->getConnection()->getDatabasePlatform();
             foreach ($resultMapping['columns'] as $entityMapping) {
                 $type = isset($class->fieldNames[$entityMapping['name']])
                     ? PersisterHelper::getTypeOfColumn($entityMapping['name'], $class, $this->em)
                     : 'string';
 
-                $this->addScalarResult($entityMapping['name'], $entityMapping['name'], $type);
+                $nameCasing = $this->getSQLResultCasing($platform, $entityMapping['name']);
+
+                $this->addScalarResult($nameCasing, $entityMapping['name'], $type);
             }
         }
 
@@ -394,8 +401,9 @@ class ResultSetMappingBuilder extends ResultSetMapping
      */
     public function addNamedNativeQueryEntityResultMapping(ClassMetadataInfo $classMetadata, array $entityMapping, $alias)
     {
+        $platform = $this->em->getConnection()->getDatabasePlatform();
         if (isset($entityMapping['discriminatorColumn']) && $entityMapping['discriminatorColumn']) {
-            $discriminatorColumn = $entityMapping['discriminatorColumn'];
+            $discriminatorColumn = $this->getSQLResultCasing($platform, $entityMapping['discriminatorColumn']);
             $discriminatorType   = $classMetadata->getDiscriminatorColumn()['type'];
 
             $this->setDiscriminatorColumn($alias, $discriminatorColumn);
@@ -411,6 +419,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
                     [$relation, $fieldName] = explode('.', $fieldName);
                 }
 
+                $columnNameCasing = $field['column'];
+
+                if (empty($field['quoted'])) {
+                    $columnNameCasing = $this->getSQLResultCasing($platform, $field['column']);
+                }
+
                 if (isset($classMetadata->associationMappings[$relation])) {
                     if ($relation) {
                         $associationMapping = $classMetadata->associationMappings[$relation];
@@ -418,23 +432,24 @@ class ResultSetMappingBuilder extends ResultSetMapping
                         $parentAlias        = $alias;
 
                         $this->addJoinedEntityResult($associationMapping['targetEntity'], $joinAlias, $parentAlias, $relation);
-                        $this->addFieldResult($joinAlias, $field['column'], $fieldName);
+                        $this->addFieldResult($joinAlias, $columnNameCasing, $fieldName);
                     } else {
-                        $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
+                        $this->addFieldResult($alias, $columnNameCasing, $fieldName, $classMetadata->name);
                     }
                 } else {
                     if (! isset($classMetadata->fieldMappings[$fieldName])) {
                         throw new InvalidArgumentException("Entity '" . $classMetadata->name . "' has no field '" . $fieldName . "'. ");
                     }
 
-                    $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
+                    $this->addFieldResult($alias, $columnNameCasing, $fieldName, $classMetadata->name);
                 }
             }
         } else {
             foreach ($classMetadata->getColumnNames() as $columnName) {
-                $propertyName = $classMetadata->getFieldName($columnName);
+                $propertyName     = $classMetadata->getFieldName($columnName);
+                $columnNameCasing = $this->getSQLResultCasing($platform, $columnName);
 
-                $this->addFieldResult($alias, $columnName, $propertyName);
+                $this->addFieldResult($alias, $columnNameCasing, $propertyName);
             }
         }
 

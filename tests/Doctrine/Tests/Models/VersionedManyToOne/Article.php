@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping\Version;
 
 /**
  * @Entity
- * @Table(name="versioned_many_to_one_article")
+ * @Table(name="ver_m2o_article")
  */
 class Article
 {

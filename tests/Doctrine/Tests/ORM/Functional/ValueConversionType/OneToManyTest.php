@@ -45,18 +45,19 @@ class OneToManyTest extends OrmFunctionalTestCase
     {
         $conn = static::$sharedConn;
 
-        $conn->executeStatement('DROP TABLE vct_owning_manytoone');
-        $conn->executeStatement('DROP TABLE vct_inversed_onetomany');
+        $conn->executeStatement('DROP TABLE vct_owning_m2o');
+        $conn->executeStatement('DROP TABLE vct_invers_o2m');
     }
 
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase(): void
     {
-        $conn = $this->_em->getConnection();
+        $conn  = $this->_em->getConnection();
+        $limit = $this->getLimitSQLByPlatform(1, $conn->getDatabasePlatform());
 
-        self::assertEquals('nop', $conn->fetchOne('SELECT id1 FROM vct_inversed_onetomany LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchOne('SELECT id1 FROM vct_invers_o2m' . $limit));
 
-        self::assertEquals('qrs', $conn->fetchOne('SELECT id2 FROM vct_owning_manytoone LIMIT 1'));
-        self::assertEquals('nop', $conn->fetchOne('SELECT associated_id FROM vct_owning_manytoone LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchOne('SELECT id2 FROM vct_owning_m2o' . $limit));
+        self::assertEquals('nop', $conn->fetchOne('SELECT associated_id FROM vct_owning_m2o' . $limit));
     }
 
     /** @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase */

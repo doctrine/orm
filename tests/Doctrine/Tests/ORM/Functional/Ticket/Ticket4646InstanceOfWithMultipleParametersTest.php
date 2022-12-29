@@ -48,7 +48,7 @@ class Ticket4646InstanceOfWithMultipleParametersTest extends OrmFunctionalTestCa
 
 /**
  * @Entity()
- * @Table(name="instance_of_test_multiple_person")
+ * @Table(name="inst_test_multiple_person")
  * @InheritanceType(value="JOINED")
  * @DiscriminatorColumn(name="kind", type="string")
  * @DiscriminatorMap(value={
@@ -76,7 +76,7 @@ class PersonTicket4646Multiple
 
 /**
  * @Entity()
- * @Table(name="instance_of_test_multiple_employee")
+ * @Table(name="inst_test_multiple_employee")
  */
 class EmployeeTicket4646Multiple extends PersonTicket4646Multiple
 {
@@ -84,7 +84,7 @@ class EmployeeTicket4646Multiple extends PersonTicket4646Multiple
 
 /**
  * @Entity()
- * @Table(name="instance_of_test_multiple_manager")
+ * @Table(name="inst_test_multiple_manager")
  */
 class ManagerTicket4646Multiple extends PersonTicket4646Multiple
 {
@@ -92,7 +92,7 @@ class ManagerTicket4646Multiple extends PersonTicket4646Multiple
 
 /**
  * @Entity()
- * @Table(name="instance_of_test_multiple_intern")
+ * @Table(name="inst_test_multiple_intern")
  */
 class InternTicket4646Multiple extends PersonTicket4646Multiple
 {
