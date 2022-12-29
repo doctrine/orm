@@ -13,8 +13,6 @@ use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
 use PHPUnit\Framework\TestCase;
 
-use function method_exists;
-
 /**
  * Test for QueryExpressionVisitor
  */
@@ -108,10 +106,6 @@ class QueryExpressionVisitorTest extends TestCase
 
     public function testWalkNotCompositeExpression(): void
     {
-        if (! method_exists(CriteriaBuilder::class, 'not')) {
-            self::markTestSkipped('doctrine/collections in version ^2.1 is required for this test to run.');
-        }
-
         $qb = new QueryBuilder();
         $cb = new CriteriaBuilder();
 
