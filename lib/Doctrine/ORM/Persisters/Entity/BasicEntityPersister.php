@@ -8,6 +8,7 @@ use BackedEnum;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Util\ClassUtils;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\ParameterType;
@@ -1885,9 +1886,9 @@ class BasicEntityPersister implements EntityPersister
         }
 
         return match ($type) {
-            ParameterType::STRING => Connection::PARAM_STR_ARRAY,
-            ParameterType::INTEGER => Connection::PARAM_INT_ARRAY,
-            ParameterType::ASCII => Connection::PARAM_ASCII_STR_ARRAY,
+            ParameterType::STRING => ArrayParameterType::STRING,
+            ParameterType::INTEGER => ArrayParameterType::INTEGER,
+            ParameterType::ASCII => ArrayParameterType::ASCII,
         };
     }
 
