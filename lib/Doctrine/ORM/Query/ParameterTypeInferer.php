@@ -8,7 +8,7 @@ use BackedEnum;
 use DateInterval;
 use DateTimeImmutable;
 use DateTimeInterface;
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Types;
 
@@ -64,8 +64,8 @@ final class ParameterTypeInferer
             }
 
             return is_int($firstValue)
-                ? Connection::PARAM_INT_ARRAY
-                : Connection::PARAM_STR_ARRAY;
+                ? ArrayParameterType::INTEGER
+                : ArrayParameterType::STRING;
         }
 
         return ParameterType::STRING;
