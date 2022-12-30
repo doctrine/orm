@@ -332,7 +332,7 @@ class BasicEntityPersister implements EntityPersister
      * @param mixed[] $id
      *
      * @return list<ParameterType|int|string>
-     * @psalm-return list<ParameterType::*|int|string>
+     * @psalm-return list<ParameterType::*|ArrayParameterType::*|string>
      */
     private function extractIdentifierTypes(array $id, ClassMetadata $versionedClass): array
     {
@@ -1812,7 +1812,7 @@ class BasicEntityPersister implements EntityPersister
      *                             - class to which the field belongs to
      *
      * @return mixed[][]
-     * @psalm-return array{0: array, 1: list<ParameterType::*|int|string>}
+     * @psalm-return array{0: array, 1: list<ParameterType::*|ArrayParameterType::*|string>}
      */
     private function expandToManyParameters(array $criteria): array
     {
@@ -1834,8 +1834,8 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Infers field types to be used by parameter type casting.
      *
-     * @return list<ParameterType|int|string>
-     * @psalm-return list<ParameterType::*|int|string>
+     * @return list<ParameterType|ArrayParameterType|int|string>
+     * @psalm-return list<ParameterType::*|ArrayParameterType::*|string>
      *
      * @throws QueryException
      */
@@ -1879,7 +1879,8 @@ class BasicEntityPersister implements EntityPersister
         return $types;
     }
 
-    private function getArrayBindingType(ParameterType|int|string $type): int
+    /** @psalm-return ArrayParameterType::* */
+    private function getArrayBindingType(ParameterType|int|string $type): ArrayParameterType|int
     {
         if (! $type instanceof ParameterType) {
             $type = Type::getType((string) $type)->getBindingType();

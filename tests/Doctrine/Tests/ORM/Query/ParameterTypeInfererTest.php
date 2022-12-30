@@ -18,7 +18,7 @@ use Generator;
 
 class ParameterTypeInfererTest extends OrmTestCase
 {
-    /** @psalm-return Generator<string, array{mixed, (ParameterType|int|string)}> */
+    /** @psalm-return Generator<string, array{mixed, (ParameterType::*|ArrayParameterType::*|string)}> */
     public function providerParameterTypeInferer(): Generator
     {
         yield 'integer' => [1, Types::INTEGER];
@@ -39,7 +39,7 @@ class ParameterTypeInfererTest extends OrmTestCase
     }
 
     /** @dataProvider providerParameterTypeInferer */
-    public function testParameterTypeInferer(mixed $value, ParameterType|int|string $expected): void
+    public function testParameterTypeInferer(mixed $value, ParameterType|ArrayParameterType|int|string $expected): void
     {
         self::assertEquals($expected, ParameterTypeInferer::inferType($value));
     }

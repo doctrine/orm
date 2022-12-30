@@ -29,7 +29,7 @@ final class ParameterTypeInferer
      * - Type (\Doctrine\DBAL\Types\Type::*)
      * - Connection (\Doctrine\DBAL\Connection::PARAM_*)
      */
-    public static function inferType(mixed $value): ParameterType|int|string
+    public static function inferType(mixed $value): ParameterType|ArrayParameterType|int|string
     {
         if (is_int($value)) {
             return Types::INTEGER;
