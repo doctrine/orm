@@ -10,7 +10,7 @@ use function sprintf;
 
 final class UnrecognizedField extends PersisterException
 {
-    /** @deprecated This method is deprecated and will be removed in Doctrine ORM 3.0. Use {@see byFullyQualifiedName} instead */
+    /** @deprecated Use {@see byFullyQualifiedName()} instead. */
     public static function byName(string $field): self
     {
         return new self(sprintf('Unrecognized field: %s', $field));

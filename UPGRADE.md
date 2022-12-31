@@ -2,7 +2,7 @@
 
 ## Deprecated `Doctrine\ORM\Persisters\Exception\UnrecognizedField::byName($field)` method.
 
-It will be removed in 3.0. Use `Doctrine\ORM\Persisters\Exception\UnrecognizedField::byFullyQualifiedName($className, $field)` instead.
+Use `Doctrine\ORM\Persisters\Exception\UnrecognizedField::byFullyQualifiedName($className, $field)` instead.
 
 ## Deprecated constants of `Doctrine\ORM\Internal\CommitOrderCalculator`
 
