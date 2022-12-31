@@ -1030,9 +1030,11 @@ abstract class AbstractQuery
     protected function getHydrationCacheId(): array
     {
         $parameters = [];
+        $types      = [];
 
         foreach ($this->getParameters() as $parameter) {
             $parameters[$parameter->getName()] = $this->processParameterValue($parameter->getValue());
+            $types[$parameter->getName()]      = $parameter->getType();
         }
 
         $sql = $this->getSQL();
@@ -1044,7 +1046,7 @@ abstract class AbstractQuery
         ksort($hints);
         assert($queryCacheProfile !== null);
 
-        return $queryCacheProfile->generateCacheKeys($sql, $parameters, $hints);
+        return $queryCacheProfile->generateCacheKeys($sql, $parameters, $types, $hints);
     }
 
     /**

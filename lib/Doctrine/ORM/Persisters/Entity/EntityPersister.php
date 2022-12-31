@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -69,14 +70,14 @@ interface EntityPersister
      *
      * @param string[] $criteria
      *
-     * @psalm-return array{list<mixed>, list<ParameterType::*|int|string>}
+     * @psalm-return array{list<mixed>, list<ParameterType::*|ArrayParameterType::*|string>}
      */
     public function expandParameters(array $criteria): array;
 
     /**
      * Expands Criteria Parameters by walking the expressions and grabbing all parameters and types from it.
      *
-     * @psalm-return array{list<mixed>, list<ParameterType::*|int|string>}
+     * @psalm-return array{list<mixed>, list<ParameterType::*|ArrayParameterType::*|string>}
      */
     public function expandCriteriaParameters(Criteria $criteria): array;
 

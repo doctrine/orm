@@ -16,3 +16,6 @@ parameters:
         -
             message: '~^Method Doctrine\\ORM\\Query\\AST\\Functions\\TrimFunction::getTrimMode\(\) never returns .* so it can be removed from the return type\.$~'
             path: lib/Doctrine/ORM/Query/AST/Functions/TrimFunction.php
+        -
+            message: '~^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
+            path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
