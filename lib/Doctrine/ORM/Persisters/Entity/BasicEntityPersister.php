@@ -444,7 +444,7 @@ class BasicEntityPersister implements EntityPersister
             $targetType    = PersisterHelper::getTypeOfField($targetMapping->identifier[0], $targetMapping, $this->em);
 
             if ($targetType === []) {
-                throw UnrecognizedField::byName($targetMapping->identifier[0]);
+                throw UnrecognizedField::byFullyQualifiedName($this->class->name, $targetMapping->identifier[0]);
             }
 
             $types[] = reset($targetType);
@@ -1154,7 +1154,7 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            throw UnrecognizedField::byName($fieldName);
+            throw UnrecognizedField::byFullyQualifiedName($this->class->name, $fieldName);
         }
 
         return ' ORDER BY ' . implode(', ', $orderByList);
@@ -1673,7 +1673,7 @@ class BasicEntityPersister implements EntityPersister
             return [$field];
         }
 
-        throw UnrecognizedField::byName($field);
+        throw UnrecognizedField::byFullyQualifiedName($this->class->name, $field);
     }
 
     /**

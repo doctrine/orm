@@ -529,6 +529,10 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.14
 
+## Deprecated `Doctrine\ORM\Persisters\Exception\UnrecognizedField::byName($field)` method.
+
+Use `Doctrine\ORM\Persisters\Exception\UnrecognizedField::byFullyQualifiedName($className, $field)` instead.
+
 ## Deprecated constants of `Doctrine\ORM\Internal\CommitOrderCalculator`
 
 The following public constants have been deprecated:
