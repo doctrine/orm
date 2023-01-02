@@ -8,6 +8,9 @@ use Doctrine\Tests\Models\GH10336\GH10336Entity;
 use Doctrine\Tests\Models\GH10336\GH10336Relation;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+/**
+ * @requires PHP 7.4
+ */
 final class GH10336Test extends OrmFunctionalTestCase
 {
     public function setUp(): void
