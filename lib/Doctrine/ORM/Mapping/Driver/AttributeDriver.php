@@ -615,7 +615,8 @@ class AttributeDriver extends CompatibilityAnnotationDriver
     /**
      * Parses the given method.
      *
-     * @return callable[]
+     * @return list<array{string, string}>
+     * @psalm-return list<array{string, (Events::*)}>
      */
     private function getMethodCallbacks(ReflectionMethod $method): array
     {

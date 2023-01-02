@@ -696,8 +696,8 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
     /**
      * Parses the given method.
      *
-     * @return callable[]
-     * @psalm-return list<callable-array>
+     * @return list<array{string, string}>
+     * @psalm-return list<array{string, (Events::*)}>
      */
     private function getMethodCallbacks(ReflectionMethod $method): array
     {
