@@ -38,7 +38,7 @@
     "require-dev": {
         "doctrine/coding-standard": "^11.0",
         "phpbench/phpbench": "^1.0 || dev-master",
-        "phpstan/phpstan": "1.9.4",
+        "phpstan/phpstan": "1.9.5",
         "phpunit/phpunit": "^9.5.28@dev",
         "psr/log": "^1 || ^2 || ^3",
         "squizlabs/php_codesniffer": "3.7.1",
