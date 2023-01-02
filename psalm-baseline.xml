@@ -2108,24 +2108,19 @@
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;SimpleArithmeticExpression()</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PossiblyNullArgument occurrences="2">
+    <PossiblyNullArgument occurrences="3">
       <code>$dql</code>
       <code>$this-&gt;query-&gt;getDQL()</code>
+      <code>$token-&gt;value</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess occurrences="2">
-      <code>$this-&gt;lexer-&gt;glimpse()['type']</code>
-      <code>$token['value']</code>
-    </PossiblyNullArrayAccess>
-    <PossiblyNullReference occurrences="2">
-      <code>$this-&gt;lexer-&gt;glimpse()</code>
-      <code>$token</code>
-    </PossiblyNullReference>
+    <PossiblyNullPropertyFetch occurrences="3">
+      <code>$this-&gt;lexer-&gt;glimpse()-&gt;type</code>
+      <code>$token-&gt;value</code>
+      <code>$token-&gt;value</code>
+    </PossiblyNullPropertyFetch>
     <PossiblyUndefinedVariable occurrences="1">
       <code>$args</code>
     </PossiblyUndefinedVariable>
-    <RedundantCondition occurrences="1">
-      <code>$this-&gt;lexer-&gt;lookahead !== null</code>
-    </RedundantCondition>
     <RedundantConditionGivenDocblockType occurrences="2">
       <code>$AST instanceof AST\SelectStatement</code>
       <code>$token === Lexer::T_IDENTIFIER</code>
