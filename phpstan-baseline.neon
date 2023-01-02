@@ -271,17 +271,17 @@ parameters:
 			path: lib/Doctrine/ORM/Persisters/Entity/CachedPersisterContext.php
 
 		-
-			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Proxy::\\$__isCloning\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$isEmbeddedClass\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$isMappedSuperclass\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
+
+		-
+			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Proxy\\:\\:\\$__isCloning\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
 
@@ -306,77 +306,7 @@ parameters:
 			path: lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php
 
 		-
-			message: "#^Parameter \\#2 \\$days of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getDateAddDaysExpression\\(\\) expects int\\|numeric\\-string, string given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php
-
-		-
-			message: "#^Parameter \\#2 \\$hours of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getDateAddHourExpression\\(\\) expects int\\|numeric\\-string, string given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php
-
-		-
-			message: "#^Parameter \\#2 \\$minutes of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getDateAddMinutesExpression\\(\\) expects int\\|numeric\\-string, string given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php
-
-		-
-			message: "#^Parameter \\#2 \\$months of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getDateAddMonthExpression\\(\\) expects int\\|numeric\\-string, string given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php
-
-		-
-			message: "#^Parameter \\#2 \\$seconds of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getDateAddSecondsExpression\\(\\) expects int\\|numeric\\-string, string given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php
-
-		-
-			message: "#^Parameter \\#2 \\$weeks of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getDateAddWeeksExpression\\(\\) expects int\\|numeric\\-string, string given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php
-
-		-
-			message: "#^Parameter \\#2 \\$years of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getDateAddYearsExpression\\(\\) expects int\\|numeric\\-string, string given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php
-
-		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\:\\:\\$value\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php
-
-		-
-			message: "#^Parameter \\#2 \\$days of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getDateSubDaysExpression\\(\\) expects int\\|numeric\\-string, string given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php
-
-		-
-			message: "#^Parameter \\#2 \\$hours of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getDateSubHourExpression\\(\\) expects int\\|numeric\\-string, string given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php
-
-		-
-			message: "#^Parameter \\#2 \\$minutes of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getDateSubMinutesExpression\\(\\) expects int\\|numeric\\-string, string given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php
-
-		-
-			message: "#^Parameter \\#2 \\$months of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getDateSubMonthExpression\\(\\) expects int\\|numeric\\-string, string given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php
-
-		-
-			message: "#^Parameter \\#2 \\$seconds of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getDateSubSecondsExpression\\(\\) expects int\\|numeric\\-string, string given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php
-
-		-
-			message: "#^Parameter \\#2 \\$weeks of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getDateSubWeeksExpression\\(\\) expects int\\|numeric\\-string, string given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php
-
-		-
-			message: "#^Parameter \\#2 \\$years of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getDateSubYearsExpression\\(\\) expects int\\|numeric\\-string, string given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php
 
@@ -707,11 +637,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#3 \\$changeSet of class Doctrine\\\\ORM\\\\Event\\\\PreUpdateEventArgs constructor is passed by reference, so it expects variables only$#"
-			count: 1
-			path: lib/Doctrine/ORM/UnitOfWork.php
-
-		-
-			message: "#^Parameter \\#3 \\$collection of class Doctrine\\\\ORM\\\\PersistentCollection constructor expects Doctrine\\\\Common\\\\Collections\\\\Collection\\<\\(int\\|string\\), mixed\\>&Doctrine\\\\Common\\\\Collections\\\\Selectable\\<\\(int\\|string\\), mixed\\>, Doctrine\\\\Common\\\\Collections\\\\Collection given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/UnitOfWork.php
 
