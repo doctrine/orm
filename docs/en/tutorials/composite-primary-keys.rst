@@ -180,7 +180,7 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
         class Article
         {
             #[Id, Column, GeneratedValue]
-            private int|null $id = null;
+            private ?int $id = null;
             #[Column]
             private string $title;
 
@@ -227,7 +227,7 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
         class Article
         {
             /** @Id @Column(type="integer") @GeneratedValue */
-            private int|null $id = null;
+            private ?int $id = null;
             /** @Column(type="string") */
             private string $title;
 
@@ -249,7 +249,7 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
         class ArticleAttribute
         {
             /** @Id @ManyToOne(targetEntity="Article", inversedBy="attributes") */
-            private Article|null $article;
+            private ?Article $article;
 
             /** @Id @Column(type="string") */
             private string $attribute;
@@ -318,14 +318,14 @@ One good example for this is a user-address relationship:
         class User
         {
             #[Id, Column, GeneratedValue]
-            private int|null $id = null;
+            private ?int $id = null;
         }
 
         #[Entity]
         class Address
         {
             #[Id, OneToOne(targetEntity: User::class)]
-            private User|null $user = null;
+            private ?User $user = null;
         }
 
     .. code-block:: yaml
@@ -366,7 +366,7 @@ of products purchased and maybe even the current price.
     class Order
     {
         #[Id, Column, GeneratedValue]
-        private int|null $id = null;
+        private ?int $id = null;
 
         /** @var ArrayCollection<int, OrderItem> */
         #[OneToMany(targetEntity: OrderItem::class, mappedBy: 'order')]
@@ -392,7 +392,7 @@ of products purchased and maybe even the current price.
     class Product
     {
         #[Id, Column, GeneratedValue]
-        private int|null $id = null;
+        private ?int $id = null;
 
         #[Column]
         private string $name;
@@ -410,10 +410,10 @@ of products purchased and maybe even the current price.
     class OrderItem
     {
         #[Id, ManyToOne(targetEntity: Order::class)]
-        private Order|null $order = null;
+        private ?Order $order = null;
 
         #[Id, ManyToOne(targetEntity: Product::class)]
-        private Product|null $product = null;
+        private ?Product $product = null;
 
         #[Column]
         private int $amount = 1;
